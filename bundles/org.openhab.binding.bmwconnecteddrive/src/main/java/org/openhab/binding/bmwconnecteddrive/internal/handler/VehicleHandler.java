@@ -14,8 +14,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
@@ -52,7 +49,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.StateOption;
 
 /**
  * The {@link VehicleHandler} is responsible for handling commands, which are
@@ -441,17 +437,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 DestinationContainer dc = Converter.getGson().fromJson(content.get(), DestinationContainer.class);
 
                 if (dc.destinations != null) {
-                    destinationList = dc.destinations;
-                    List<StateOption> options = new ArrayList<>();
-                    if (destinationList.size() == 0) {
-                        destinationList.add(Destination.getUndefined());
-                    }
-                    destinationList.forEach(destination -> {
-                        options.add(new StateOption(destination.getAddress(), destination.getAddress()));
-                    });
-                    logger.info("Added {} options to {}", destinationList.size(), destinationName.getAsString());
-                    logger.info("Options {}", options.toArray());
-                    optionProvider.setStateOptions(destinationName, options);
+                    updateDestinations(dc.destinations);
                 }
             }
         }

@@ -49,6 +49,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -329,16 +330,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
         }
     }
 
-    public synchronized void nextService() {
-        serviceListIndex++;
-        updateService();
-    }
-
-    public synchronized void setServiceList(List<CBSMessage> l) {
-        serviceList = l;
-        updateService();
-    }
-
     private void updateService() {
         if (!serviceList.isEmpty()) {
             if (serviceListIndex < 0 || serviceListIndex >= serviceList.size()) {
@@ -364,6 +355,26 @@ public class VehicleChannelHandler extends BaseThingHandler {
             } else {
                 updateState(serviceMileage, QuantityType.valueOf(-1, MetricPrefix.KILO(SIUnits.METRE)));
             }
+        }
+    }
+
+    protected void updateDestinations(List<Destination> dl) {
+        boolean isFirstUpdate = destinationList.isEmpty();
+        destinationList = dl;
+        List<StateOption> options = new ArrayList<>();
+        if (destinationList.size() == 0) {
+            destinationList.add(Destination.getUndefined());
+        } else {
+            destinationList.forEach(destination -> {
+                options.add(new StateOption(destination.getAddress(), destination.getAddress()));
+            });
+        }
+        logger.info("Added {} options to {}", destinationList.size(), destinationName.getAsString());
+        logger.info("Options {}", options.toArray());
+        optionProvider.setStateOptions(destinationName, options);
+        if (isFirstUpdate) {
+            updateState(destinationName, StringType.valueOf(destinationList.get(0).getAddress()));
+            updateState(destinationLocation, PointType.valueOf(destinationList.get(0).getCoordinates()));
         }
     }
 
