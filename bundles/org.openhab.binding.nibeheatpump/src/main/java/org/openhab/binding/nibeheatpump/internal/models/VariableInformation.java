@@ -54,6 +54,8 @@ public class VariableInformation {
                 return F1X45.getVariableInfo(key);
             case F1X55:
                 return F1X55.getVariableInfo(key);
+            case SMO40:
+                return SMO40.getVariableInfo(key);
             case F750:
                 return F750.getVariableInfo(key);
             case F470:

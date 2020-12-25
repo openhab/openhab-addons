@@ -151,14 +151,16 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private NibeHeatPumpConnector getConnector() throws NibeHeatPumpException {
         ThingTypeUID type = thing.getThingTypeUID();
 
-        if (THING_TYPE_F1X45_UDP.equals(type) || THING_TYPE_F1X55_UDP.equals(type) || THING_TYPE_F750_UDP.equals(type)
-                || THING_TYPE_F470_UDP.equals(type)) {
+        if (THING_TYPE_F1X45_UDP.equals(type) || THING_TYPE_F1X55_UDP.equals(type) || THING_TYPE_SMO40_UDP.equals(type)
+                || THING_TYPE_F750_UDP.equals(type) || THING_TYPE_F470_UDP.equals(type)) {
             return new UDPConnector();
         } else if (THING_TYPE_F1X45_SERIAL.equals(type) || THING_TYPE_F1X55_SERIAL.equals(type)
-                || THING_TYPE_F750_SERIAL.equals(type) || THING_TYPE_F470_SERIAL.equals(type)) {
+                || THING_TYPE_SMO40_SERIAL.equals(type) || THING_TYPE_F750_SERIAL.equals(type)
+                || THING_TYPE_F470_SERIAL.equals(type)) {
             return new SerialConnector(serialPortManager);
         } else if (THING_TYPE_F1X45_SIMULATOR.equals(type) || THING_TYPE_F1X55_SIMULATOR.equals(type)
-                || THING_TYPE_F750_SIMULATOR.equals(type) || THING_TYPE_F470_SIMULATOR.equals(type)) {
+                || THING_TYPE_SMO40_SIMULATOR.equals(type) || THING_TYPE_F750_SIMULATOR.equals(type)
+                || THING_TYPE_F470_SIMULATOR.equals(type)) {
             return new SimulatorConnector();
         }
 
