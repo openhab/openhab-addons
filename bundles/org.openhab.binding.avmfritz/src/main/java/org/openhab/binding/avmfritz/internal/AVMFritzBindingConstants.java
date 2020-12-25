@@ -87,6 +87,7 @@ public class AVMFritzBindingConstants {
     // List of all Properties
     public static final String PROPERTY_MASTER = "master";
     public static final String PROPERTY_MEMBERS = "members";
+    public static final String PRODUCT_NAME = "productName";
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_SENSORS = "sensors";
