@@ -384,9 +384,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 isSelectedElementIn = true;
             }
         }
-
-        logger.info("Added {} options to {}", destinationList.size(), destinationName.getAsString());
-        logger.info("Options {}", options.toArray());
         optionProvider.setStateOptions(destinationName, options);
 
         // if current selected item isn't anymore in the list select first entry
