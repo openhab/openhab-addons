@@ -170,6 +170,11 @@ public class VehicleHandler extends VehicleChannelHandler {
             if (command instanceof StringType) {
                 selectDestination(((StringType) command).toFullString());
             }
+        } else if (CHANNEL_GROUP_SERVICE.equals(group)) {
+            // receive new destination location
+            if (command instanceof StringType) {
+                selectService(((StringType) command).toFullString());
+            }
         }
         if (channelUID.getIdWithoutGroup().equals(VEHICLE_FINGERPRINT)) {
             // Log Troubleshoot data
@@ -555,7 +560,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 }
                 updateVehicleStatus(vStatus);
                 setCheckControlList(vStatus.checkControlMessages);
-                // setServiceList(vStatus.cbsData);
+                updateServices(vStatus.cbsData);
                 updatePosition(vStatus.position);
             }
         }

@@ -18,8 +18,6 @@ import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Dynamic provider of state options while leaving other state description fields as original.
@@ -29,18 +27,15 @@ import org.slf4j.LoggerFactory;
 @Component(service = { DynamicStateDescriptionProvider.class, BMWConnectedDriveOptionProvider.class })
 @NonNullByDefault
 public class BMWConnectedDriveOptionProvider extends BaseDynamicStateDescriptionProvider {
-    protected final Logger logger = LoggerFactory.getLogger(BMWConnectedDriveOptionProvider.class);
 
     @Reference
     protected void setChannelTypeI18nLocalizationService(
             final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
-        logger.info("LocalizationService set");
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
     }
 
     protected void unsetChannelTypeI18nLocalizationService(
             final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
-        logger.info("LocalizationService unset");
         this.channelTypeI18nLocalizationService = null;
     }
 }
