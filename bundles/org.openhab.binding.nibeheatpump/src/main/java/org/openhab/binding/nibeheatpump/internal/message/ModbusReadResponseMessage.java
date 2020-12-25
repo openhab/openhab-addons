@@ -60,12 +60,12 @@ public class ModbusReadResponseMessage extends NibeHeatPumpBaseMessage {
     public void encodeMessage(byte[] data) throws NibeHeatPumpException {
         if (NibeHeatPumpProtocol.isModbus40ReadResponse(data)) {
             super.encodeMessage(data);
-            coilAddress = ((rawMessage[NibeHeatPumpProtocol.OFFSET_DATA + 1] & 0xFF) << 8
-                    | (rawMessage[NibeHeatPumpProtocol.OFFSET_DATA + 0] & 0xFF));
-            value = (rawMessage[NibeHeatPumpProtocol.OFFSET_DATA + 5] & 0xFF) << 24
-                    | (rawMessage[NibeHeatPumpProtocol.OFFSET_DATA + 4] & 0xFF) << 16
-                    | (rawMessage[NibeHeatPumpProtocol.OFFSET_DATA + 3] & 0xFF) << 8
-                    | (rawMessage[NibeHeatPumpProtocol.OFFSET_DATA + 2] & 0xFF);
+            coilAddress = ((rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 1] & 0xFF) << 8
+                    | (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 0] & 0xFF));
+            value = (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 5] & 0xFF) << 24
+                    | (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 4] & 0xFF) << 16
+                    | (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 3] & 0xFF) << 8
+                    | (rawMessage[NibeHeatPumpProtocol.RES_OFFS_DATA + 2] & 0xFF);
 
         } else {
             throw new NibeHeatPumpException("Not Read Response message");
@@ -74,13 +74,9 @@ public class ModbusReadResponseMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-        return createModbusReadResponsePdu(coilAddress, value);
-    }
-
-    private byte[] createModbusReadResponsePdu(int coilAddress, int value) {
         byte[] data = new byte[12];
 
-        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_FROM_NIBE;
+        data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_RES;
         data[1] = 0x00;
         data[2] = NibeHeatPumpProtocol.ADR_MODBUS40;
         data[3] = NibeHeatPumpProtocol.CMD_MODBUS_READ_RESP;
@@ -101,9 +97,7 @@ public class ModbusReadResponseMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public String toString() {
-        String str = "";
-
-        str += super.toString();
+        String str = super.toString();
         str += ", Coil address = " + coilAddress;
         str += ", Value = " + value;
 

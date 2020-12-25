@@ -56,7 +56,6 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
 
     public byte[] rawMessage;
     public MessageType msgType = MessageType.UNKNOWN;
-    public byte msgId;
 
     public NibeHeatPumpBaseMessage() {
     }
@@ -67,12 +66,15 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws NibeHeatPumpException {
-        byte[] d = NibeHeatPumpProtocol.checkMessageChecksumAndRemoveDoubles(data);
-        rawMessage = d.clone();
-        msgId = d[1];
+        if (data.length >= NibeHeatPumpProtocol.PDU_MIN_LEN) {
+            byte[] d = NibeHeatPumpProtocol.checkMessageChecksumAndRemoveDoubles(data);
+            rawMessage = d.clone();
 
-        byte messageTypeByte = NibeHeatPumpProtocol.getMessageType(d);
-        msgType = NibeHeatPumpBaseMessage.getMessageType(messageTypeByte);
+            byte messageTypeByte = NibeHeatPumpProtocol.getMessageType(d);
+            msgType = NibeHeatPumpBaseMessage.getMessageType(messageTypeByte);
+        } else {
+            throw new NibeHeatPumpException("Too short message");
+        }
     }
 
     @Override
