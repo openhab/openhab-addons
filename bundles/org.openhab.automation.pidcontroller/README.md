@@ -65,7 +65,7 @@ A value of 0 disables the P part.
 
 A value of 1 sets the output to the current setpoint deviation (error).
 E.g. the setpoint is 25°C and the measured value is 20°C, the output will be set to 5.
-If the output is the opening of a valve in %, you might want to set this parameter to higher values (`Kp=10` would result in 50%).
+If the output is the opening of a valve in %, you might want to set this parameter to higher values (`kp=10` would result in 50%).
 
 ## Integral (I) Gain Parameter
 
@@ -79,7 +79,7 @@ A value of 0 disables the I part.
 A value of 1 adds the current setpoint deviation (error) to the output each second.
 E.g. the setpoint is 25°C and the measured value is 20°C, the output will be set to 5 after 1 sec.
 After 2 sec the output will be 10.
-If the output is the opening of a valve in %, you might want to set this parameter to a lower value (Ki=0.1 would result in 30% after 60 sec: 5\*0.1\*60=30).
+If the output is the opening of a valve in %, you might want to set this parameter to a lower value (`ki=0.1` would result in 30% after 60 sec: 5\*0.1\*60=30).
 
 ## Derivative (D) Gain Parameter
 
@@ -108,13 +108,13 @@ The "stretching" also results in a lower amplitude, i.e. if you increase this va
 
 ## Tuning
 
-Tuning the `Kp`, `Ki` and `Kd` parameters can be done by appling science.
+Tuning the `Kp`, `Ki` and `Kd` parameters can be done by applying science.
 It can also be done by heuristic methods like the [Ziegler–Nichols method](https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method).
 But it can also be done by trial and error.
 This results in quite reasonable working systems in most cases.
 So, this will be described in the following.
 
-To be able to proceed with this method, you need to visualization the input and the output value of the PID controller over time.
+To be able to proceed with this method, you need to visualize the input and the output value of the PID controller over time.
 It's also good to visualize the individual P, I and D parts (these are forming the output value) via the inspector Items.
 The visualization can be done by the analyze function in Main UI or by adding a persistence and use Grafana for example.
 
@@ -124,7 +124,7 @@ After you added a [Rule](https://www.openhab.org/docs/configuration/rules-dsl.ht
 E.g. the time it takes from opening the heater valve and seeing an effect of the measured temperature.
 
 1. Set `kp`, `ki` and `kd` to 0
-2. Increase `kp` as long as the system starts to oscillate (continuous over- and undershoot)
+2. Increase `kp` until the system starts to oscillate (continuous over- and undershoot)
 3. Decrease `kp` a bit, that the system doesn't oscillate anymore
 4. Repeat the two steps for the `ki` parameter (keep `kp` set)
 5. Repeat the two steps for the `kd` parameter (keep `kp` and `ki` set)

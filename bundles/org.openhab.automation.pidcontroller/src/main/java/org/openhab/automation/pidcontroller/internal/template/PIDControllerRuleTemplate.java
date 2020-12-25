@@ -13,8 +13,6 @@
 package org.openhab.automation.pidcontroller.internal.template;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,20 +42,18 @@ public class PIDControllerRuleTemplate extends RuleTemplate {
     public static PIDControllerRuleTemplate initialize() {
         final String triggerId = UUID.randomUUID().toString();
 
-        final List<Trigger> triggers = Collections.singletonList(ModuleBuilder.createTrigger().withId(triggerId)
+        final List<Trigger> triggers = List.of(ModuleBuilder.createTrigger().withId(triggerId)
                 .withTypeUID(PIDControllerTriggerHandler.MODULE_TYPE_ID).withLabel("PID Controller Trigger").build());
 
-        final Map<String, String> actionInputs = new HashMap<String, String>();
-        actionInputs.put(PIDControllerActionType.INPUT, triggerId + "." + PIDControllerConstants.OUTPUT);
+        final Map<String, String> actionInputs = Map.of(PIDControllerActionType.INPUT,
+                triggerId + "." + PIDControllerConstants.OUTPUT);
 
-        final List<Action> actions = Collections.singletonList(ModuleBuilder.createAction()
-                .withId(UUID.randomUUID().toString()).withTypeUID(PIDControllerActionHandler.MODULE_TYPE_ID)
-                .withLabel("PID Controller Action").withInputs(actionInputs).build());
+        final List<Action> actions = List.of(ModuleBuilder.createAction().withId(UUID.randomUUID().toString())
+                .withTypeUID(PIDControllerActionHandler.MODULE_TYPE_ID).withLabel("PID Controller Action")
+                .withInputs(actionInputs).build());
 
-        Set<String> tags = new HashSet<String>();
-        tags.add("PID Controller");
-
-        return new PIDControllerRuleTemplate(tags, triggers, Collections.emptyList(), actions, Collections.emptyList());
+        return new PIDControllerRuleTemplate(Set.of("PID Controller"), triggers, Collections.emptyList(), actions,
+                Collections.emptyList());
     }
 
     public PIDControllerRuleTemplate(Set<String> tags, List<Trigger> triggers, List<Condition> conditions,

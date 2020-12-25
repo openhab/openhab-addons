@@ -78,9 +78,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
         Configuration config = module.getConfiguration();
 
-        String inputItemName = (String) Objects.requireNonNull(config.get(CONFIG_INPUT_ITEM), "Input item is not set");
-        String setpointItemName = (String) Objects.requireNonNull(config.get(CONFIG_SETPOINT_ITEM),
-                "Setpoint item is not set");
+        String inputItemName = (String) requireNonNull(config.get(CONFIG_INPUT_ITEM), "Input item is not set");
+        String setpointItemName = (String) requireNonNull(config.get(CONFIG_SETPOINT_ITEM), "Setpoint item is not set");
 
         try {
             inputItem = itemRegistry.getItem(inputItemName);
@@ -101,8 +100,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double kdAdjuster = getDoubleFromConfig(config, CONFIG_KD_GAIN);
         double kdTimeConstant = getDoubleFromConfig(config, CONFIG_KD_TIMECONSTANT);
 
-        loopTimeMs = ((BigDecimal) Objects.requireNonNull(config.get(CONFIG_LOOP_TIME),
-                CONFIG_LOOP_TIME + " is not set")).intValue();
+        loopTimeMs = ((BigDecimal) requireNonNull(config.get(CONFIG_LOOP_TIME), CONFIG_LOOP_TIME + " is not set"))
+                .intValue();
 
         controller = new PIDController(outputLowerLimit, outputUpperLimit, kpAdjuster, kiAdjuster, kdAdjuster,
                 kdTimeConstant);
@@ -120,6 +119,13 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         eventPublisher.post(ItemEventFactory.createCommandEvent(inputItemName, RefreshType.REFRESH));
 
         controllerjob = scheduler.scheduleWithFixedDelay(this::calculate, 0, loopTimeMs, TimeUnit.MILLISECONDS);
+    }
+
+    private <T> T requireNonNull(T obj, String message) {
+        if (obj == null) {
+            throw new IllegalArgumentException(message);
+        }
+        return obj;
     }
 
     private double getDoubleFromConfig(Configuration config, String key) {
@@ -210,8 +216,9 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     public void dispose() {
         eventSubscriberRegistration.unregister();
 
-        if (controllerjob != null) {
-            controllerjob.cancel(true);
+        ScheduledFuture<?> localControllerjob = controllerjob;
+        if (localControllerjob != null) {
+            localControllerjob.cancel(true);
         }
 
         super.dispose();

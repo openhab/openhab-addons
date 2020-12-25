@@ -52,8 +52,7 @@ public class PIDControllerActionHandler extends BaseModuleHandler<Action> implem
     }
 
     @Override
-    @Nullable
-    public Map<String, Object> execute(Map<String, Object> context) {
+    public @Nullable Map<String, Object> execute(Map<String, Object> context) {
         Stream.of(OUTPUT, P_INSPECTOR, I_INSPECTOR, D_INSPECTOR, E_INSPECTOR).forEach(arg -> {
             final String itemName = (String) module.getConfiguration().get(arg);
 

@@ -13,10 +13,8 @@
 package org.openhab.automation.pidcontroller.internal.template;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,21 +30,16 @@ import org.osgi.service.component.annotations.Component;
 @Component
 @NonNullByDefault
 public class PIDControllerTemplateProvider implements RuleTemplateProvider {
-    private final Map<String, RuleTemplate> providedRuleTemplates = new HashMap<String, RuleTemplate>();
-
-    public PIDControllerTemplateProvider() {
-        providedRuleTemplates.put(PIDControllerRuleTemplate.UID, PIDControllerRuleTemplate.initialize());
-    }
+    private static final RuleTemplate PROVIDED_RULE_TEMPLATE = PIDControllerRuleTemplate.initialize();
 
     @Override
-    @Nullable
-    public RuleTemplate getTemplate(String UID, @Nullable Locale locale) {
-        return providedRuleTemplates.get(UID);
+    public @Nullable RuleTemplate getTemplate(String uid, @Nullable Locale locale) {
+        return uid.equals(PIDControllerRuleTemplate.UID) ? PROVIDED_RULE_TEMPLATE : null;
     }
 
     @Override
     public Collection<RuleTemplate> getTemplates(@Nullable Locale locale) {
-        return providedRuleTemplates.values();
+        return Set.of(PROVIDED_RULE_TEMPLATE);
     }
 
     @Override
@@ -56,7 +49,7 @@ public class PIDControllerTemplateProvider implements RuleTemplateProvider {
 
     @Override
     public Collection<RuleTemplate> getAll() {
-        return Collections.unmodifiableCollection(providedRuleTemplates.values());
+        return Set.of(PROVIDED_RULE_TEMPLATE);
     }
 
     @Override

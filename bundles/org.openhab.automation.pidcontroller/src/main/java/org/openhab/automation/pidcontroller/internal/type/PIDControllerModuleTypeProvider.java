@@ -14,7 +14,6 @@ package org.openhab.automation.pidcontroller.internal.type;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -34,23 +33,20 @@ import org.osgi.service.component.annotations.Component;
 @Component
 @NonNullByDefault
 public class PIDControllerModuleTypeProvider implements ModuleTypeProvider {
-    private final Map<String, ModuleType> providedModuleTypes = new HashMap<String, ModuleType>();
-
-    public PIDControllerModuleTypeProvider() {
-        providedModuleTypes.put(PIDControllerActionHandler.MODULE_TYPE_ID, PIDControllerActionType.initialize());
-        providedModuleTypes.put(PIDControllerTriggerHandler.MODULE_TYPE_ID, PIDControllerTriggerType.initialize());
-    }
+    private static final Map<String, ModuleType> PROVIDED_MODULE_TYPES = Map.of(
+            PIDControllerActionHandler.MODULE_TYPE_ID, PIDControllerActionType.initialize(),
+            PIDControllerTriggerHandler.MODULE_TYPE_ID, PIDControllerTriggerType.initialize());
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends ModuleType> T getModuleType(@Nullable String UID, @Nullable Locale locale) {
-        return (T) providedModuleTypes.get(UID);
+        return (T) PROVIDED_MODULE_TYPES.get(UID);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends ModuleType> Collection<T> getModuleTypes(@Nullable Locale locale) {
-        return (Collection<T>) providedModuleTypes.values();
+        return (Collection<T>) PROVIDED_MODULE_TYPES.values();
     }
 
     @Override
@@ -60,7 +56,7 @@ public class PIDControllerModuleTypeProvider implements ModuleTypeProvider {
 
     @Override
     public Collection<ModuleType> getAll() {
-        return Collections.unmodifiableCollection(providedModuleTypes.values());
+        return Collections.unmodifiableCollection(PROVIDED_MODULE_TYPES.values());
     }
 
     @Override
