@@ -72,7 +72,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected String selectedService = Constants.UNKNOWN;
     protected List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
     protected String selectedCC = Constants.UNKNOWN;
-    private int checkControlListIndex = -1;
     protected List<Destination> destinationList = new ArrayList<Destination>();
     protected String selectedDestination = Constants.UNKNOWN;
 
@@ -291,36 +290,45 @@ public class VehicleChannelHandler extends BaseThingHandler {
     public void initialize() {
     }
 
-    public synchronized void setCheckControlList(List<CCMMessage> l) {
-        checkControlList = l;
-        updateCheckControls();
-    }
+    protected void updateCheckControls(List<CCMMessage> ccl) {
+        // if list is empty add "undefined" element
+        if (ccl.size() == 0) {
+            ccl.add(new CCMMessage());
+        }
 
-    private void updateCheckControls() {
-        if (!checkControlList.isEmpty()) {
-            if (checkControlListIndex < 0 || checkControlListIndex >= checkControlList.size()) {
-                // select first item
-                checkControlListIndex = 0;
-            }
-            CCMMessage entry = checkControlList.get(checkControlListIndex);
-            updateState(checkControlName, StringType.valueOf(entry.ccmDescriptionShort));
-            if (imperial) {
-                updateState(checkControlMileage,
-                        QuantityType.valueOf(Converter.round(entry.ccmMileage), ImperialUnits.MILE));
-            } else {
-                updateState(checkControlMileage,
-                        QuantityType.valueOf(Converter.round(entry.ccmMileage), MetricPrefix.KILO(SIUnits.METRE)));
-            }
-        } else {
-            // list is empty - set all fields to INVALID. If this isn't done the old values remain
-            updateState(checkControlName, StringType.valueOf(Constants.INVALID));
-            if (imperial) {
-                updateState(checkControlMileage, QuantityType.valueOf(Converter.round(-1), ImperialUnits.MILE));
-            } else {
-                updateState(checkControlMileage,
-                        QuantityType.valueOf(Converter.round(-1), MetricPrefix.KILO(SIUnits.METRE)));
+        // add all elements to options
+        checkControlList = ccl;
+        List<StateOption> options = new ArrayList<>();
+        boolean isSelectedElementIn = false;
+        for (CCMMessage ccEntry : checkControlList) {
+            options.add(new StateOption(ccEntry.ccmDescriptionShort, ccEntry.ccmDescriptionShort));
+            if (selectedCC.equals(ccEntry.ccmDescriptionShort)) {
+                isSelectedElementIn = true;
             }
         }
+        optionProvider.setStateOptions(checkControlName, options);
+
+        // if current selected item isn't anymore in the list select first entry
+        if (!isSelectedElementIn) {
+            selectCC(checkControlList.get(0).ccmDescriptionShort);
+        }
+    }
+
+    protected void selectCC(String selection) {
+        checkControlList.forEach(entry -> {
+            if (selection.equals(entry.ccmDescriptionShort)) {
+                selectedCC = selection;
+                updateState(checkControlName, StringType.valueOf(entry.ccmDescriptionShort));
+                if (imperial) {
+                    updateState(checkControlMileage,
+                            QuantityType.valueOf(Converter.round(entry.ccmMileage), ImperialUnits.MILE));
+                } else {
+                    updateState(checkControlMileage,
+                            QuantityType.valueOf(Converter.round(entry.ccmMileage), MetricPrefix.KILO(SIUnits.METRE)));
+                }
+                return;
+            }
+        });
     }
 
     protected void updateServices(List<CBSMessage> sl) {

@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+
 /**
  * The {@link CCMMessage} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class CCMMessage {
-    public String ccmDescriptionLong;// ": "You can continue driving. Check tyre pressure when tyres are cold and adjust
-                                     // if necessary. Perform reset after adjustment. See Owner's Handbook for further
-                                     // information.",
-    public String ccmDescriptionShort;// ": "Tyre pressure notification",
-    public int ccmId;// ": 955,
-    public int ccmMileage;// ": 41544
+    public String ccmDescriptionLong = Constants.INVALID;// ": "You can continue driving. Check tyre pressure when tyres
+                                                         // are cold and adjust
+    // if necessary. Perform reset after adjustment. See Owner's Handbook for further
+    // information.",
+    public String ccmDescriptionShort = Constants.INVALID;// ": "Tyre pressure notification",
+    public int ccmId = -1;// ": 955,
+    public int ccmMileage = -1;// ": 41544
 }

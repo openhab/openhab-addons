@@ -11,16 +11,4 @@
 		<item-type>Number:Length</item-type>
 		<label>CheckControl Mileage Occurrence</label>
 	</channel-type>
-	<channel-type id="checkcontrol-size-channel">
-		<item-type>Number</item-type>
-		<label>Number of Active CheckControl Messages</label>
-	</channel-type>
-	<channel-type id="checkcontrol-index-channel">
-		<item-type>Number</item-type>
-		<label>Index of Selected CheckControl Message</label>
-	</channel-type>
-	<channel-type id="checkcontrol-next-channel">
-		<item-type>Switch</item-type>
-		<label>Next CheckControl Message</label>
-	</channel-type>
 </thing:thing-descriptions>
