@@ -127,9 +127,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
         }
 
         Map<String, String> editProperties = editProperties();
-        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensorMessage.swversion);
-        editProperties.put(Thing.PROPERTY_MODEL_ID, sensorMessage.modelid);
         editProperties.put(UNIQUE_ID, sensorMessage.uniqueid);
+        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensorMessage.swversion);
+        editProperties.put(Thing.PROPERTY_VENDOR, sensorMessage.manufacturername);
+        editProperties.put(Thing.PROPERTY_MODEL_ID, sensorMessage.modelid);
         ignoreConfigurationUpdate = true;
         updateProperties(editProperties);
 
