@@ -175,8 +175,4 @@ public class ConnectedDriveConstants {
     public static final String REMOTE_SERVICE_AIR_CONDITIONING = "climate";
     public static final String REMOTE_SERVICE_COMMAND = "command";
     public static final String REMOTE_STATE = "state";
-
-    // Troubleshoot
-    public static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
-    public static final String VEHICLE_FINGERPRINT = "vehicle-fingerprint";
 }

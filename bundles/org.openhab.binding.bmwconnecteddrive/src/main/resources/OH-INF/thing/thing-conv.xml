@@ -22,7 +22,6 @@
 			<channel-group id="remote" typeId="remote-services"/>
 			<channel-group id="destination" typeId="destination-values"/>
 			<channel-group id="image" typeId="image-values"/>
-			<channel-group id="troubleshoot" typeId="troubleshoot-control"/>
 		</channel-groups>
 
 		<config-description>

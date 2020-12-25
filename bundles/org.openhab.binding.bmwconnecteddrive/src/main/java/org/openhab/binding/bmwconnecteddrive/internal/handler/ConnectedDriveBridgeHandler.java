@@ -30,7 +30,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesCont
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -58,31 +57,19 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
 
-    private static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
-    private ChannelUID discoveryFingerprintChannel;
-
     public ConnectedDriveBridgeHandler(Bridge bridge, HttpClientFactory hcf, BundleContext bc) {
         super(bridge);
         httpClientFactory = hcf;
-        discoveryFingerprintChannel = new ChannelUID(bridge.getUID(), DISCOVERY_FINGERPRINT);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (DISCOVERY_FINGERPRINT.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
-            if (command.equals(OnOffType.ON)) {
-                logger.warn(
-                        "###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - BEGIN ######");
-                logger.warn("### Discovery Result ###");
-                logger.warn("{}", getDiscoveryFingerprint());
-                logger.warn("###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - END ######");
-                updateState(discoveryFingerprintChannel, OnOffType.OFF);
-            }
-        }
+        // no commands available
     }
 
     @Override
     public void initialize() {
+        troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
         configuration = Optional.of(getConfigAs(ConnectedDriveConfiguration.class));
         if (configuration.isPresent()) {
@@ -92,7 +79,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
-        updateState(discoveryFingerprintChannel, OnOffType.OFF);
     }
 
     @Override
@@ -140,11 +126,19 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         }
     }
 
+    private void logFingerPrint() {
+        logger.debug("###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - BEGIN ######");
+        logger.debug("### Discovery Result ###");
+        logger.debug("{}", getDiscoveryFingerprint());
+        logger.debug("###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - END ######");
+    }
+
     /**
      * There's only the Vehicles response available
      */
     @Override
     public void onResponse(Optional<String> response) {
+        boolean firstResponse = troubleshootFingerprint.isEmpty();
         if (response.isPresent()) {
             troubleshootFingerprint = response;
             VehiclesContainer container = Converter.getGson().fromJson(response.get(), VehiclesContainer.class);
@@ -169,11 +163,18 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         } else {
             troubleshootFingerprint = Optional.of(Constants.EMPTY_VEHICLES);
         }
+        if (firstResponse) {
+            logFingerPrint();
+        }
     }
 
     @Override
     public void onError(NetworkError error) {
+        boolean firstResponse = troubleshootFingerprint.isEmpty();
         troubleshootFingerprint = Optional.of(error.toJson());
+        if (firstResponse) {
+            logFingerPrint();
+        }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
     }
 

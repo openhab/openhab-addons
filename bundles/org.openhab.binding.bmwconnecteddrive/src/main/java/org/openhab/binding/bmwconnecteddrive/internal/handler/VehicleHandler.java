@@ -14,6 +14,8 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -37,7 +39,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -64,6 +65,7 @@ public class VehicleHandler extends VehicleChannelHandler {
     private Optional<VehicleConfiguration> configuration = Optional.empty();
     private Optional<ConnectedDriveBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<List<ResponseCallback>> callbackCounter = Optional.empty();
 
     private ImageProperties imageProperties = new ImageProperties();
     VehicleStatusCallback vehicleStatusCallback = new VehicleStatusCallback();
@@ -178,91 +180,11 @@ public class VehicleHandler extends VehicleChannelHandler {
                 selectCC(((StringType) command).toFullString());
             }
         }
-        if (channelUID.getIdWithoutGroup().equals(VEHICLE_FINGERPRINT)) {
-            // Log Troubleshoot data
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
-                    logger.warn(
-                            "###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - BEGIN ######");
-                    logger.warn("### Discovery Result ###");
-                    logger.warn("{}", bridgeHandler.get().getDiscoveryFingerprint());
-                    if (vehicleStatusCache.isPresent()) {
-                        logger.warn("### Vehicle Status ###");
-
-                        // Anonymous data for VIN and Position
-                        VehicleStatusContainer container = Converter.getGson().fromJson(vehicleStatusCache.get(),
-                                VehicleStatusContainer.class);
-                        VehicleStatus status = container.vehicleStatus;
-                        if (status != null) {
-                            status.vin = Constants.ANONYMOUS;
-                            if (status.position != null) {
-                                status.position.lat = -1;
-                                status.position.lon = -1;
-                                status.position.heading = -1;
-                            }
-                        }
-                        logger.warn("{}", Converter.getGson().toJson(container));
-                    } else {
-                        logger.warn("### Vehicle Status Empty ###");
-                    }
-                    if (lastTripCache.isPresent()) {
-                        logger.warn("### Last Trip ###");
-                        logger.warn("{}", lastTripCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
-                    } else {
-                        logger.warn("### Last Trip Empty ###");
-                    }
-                    if (allTripsCache.isPresent()) {
-                        logger.warn("### All Trips ###");
-                        logger.warn("{}", allTripsCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
-                    } else {
-                        logger.warn("### All Trips Empty ###");
-                    }
-                    if (isElectric) {
-                        if (chargeProfileCache.isPresent()) {
-                            logger.warn("### Charge Profile ###");
-                            logger.warn("{}",
-                                    chargeProfileCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
-                        } else {
-                            logger.warn("### Charge Profile Empty ###");
-                        }
-                    }
-                    if (destinationCache.isPresent()) {
-                        logger.warn("### Charge Profile ###");
-                        DestinationContainer container = Converter.getGson().fromJson(destinationCache.get(),
-                                DestinationContainer.class);
-                        if (container.destinations != null) {
-                            container.destinations.forEach(entry -> {
-                                entry.lat = 0;
-                                entry.lon = 0;
-                                entry.city = Constants.ANONYMOUS;
-                                entry.street = Constants.ANONYMOUS;
-                                entry.streetNumber = Constants.ANONYMOUS;
-                                entry.country = Constants.ANONYMOUS;
-                            });
-                            logger.warn("{}", Converter.getGson().toJson(container));
-                        } else {
-                            logger.warn("### Destinations Empty ###");
-                        }
-                    } else {
-                        logger.warn("### Charge Profile Empty ###");
-                    }
-                    if (rangeMapCache.isPresent()) {
-                        logger.warn("### Range Map ###");
-                        logger.warn("{}", rangeMapCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
-                    } else {
-                        logger.warn("### Range Map Empty ###");
-                    }
-                    logger.warn(
-                            "###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - END ######");
-                }
-                // Switch back to off immediately
-                updateState(channelUID, OnOffType.OFF);
-            }
-        }
     }
 
     @Override
     public void initialize() {
+        callbackCounter = Optional.of(new ArrayList<ResponseCallback>());
         updateStatus(ThingStatus.UNKNOWN);
         configuration = Optional.of(getConfigAs(VehicleConfiguration.class));
         if (configuration.isPresent()) {
@@ -329,24 +251,119 @@ public class VehicleHandler extends VehicleChannelHandler {
             } else {
                 proxy.get().requestLegacyVehcileStatus(configuration.get(), oldVehicleStatusCallback);
             }
+            addCallback(vehicleStatusCallback);
             if (isSupported(Constants.STATISTICS)) {
                 proxy.get().requestLastTrip(configuration.get(), lastTripCallback);
                 proxy.get().requestAllTrips(configuration.get(), allTripsCallback);
+                addCallback(lastTripCallback);
+                addCallback(allTripsCallback);
             }
             if (isSupported(Constants.LAST_DESTINATIONS)) {
                 proxy.get().requestDestinations(configuration.get(), destinationCallback);
+                addCallback(destinationCallback);
             }
             if (isElectric) {
                 proxy.get().requestChargingProfile(configuration.get(), chargeProfileCallback);
+                addCallback(chargeProfileCallback);
             }
             synchronized (imageProperties) {
                 if (!imageCache.isPresent() && !imageProperties.failLimitReached()) {
                     proxy.get().requestImage(configuration.get(), imageProperties, imageCallback);
+                    addCallback(imageCallback);
                 }
             }
         } else {
             logger.warn("ConnectedDrive Proxy isn't present");
         }
+    }
+
+    private synchronized void addCallback(ResponseCallback rc) {
+        if (callbackCounter.isPresent()) {
+            callbackCounter.get().add(rc);
+        }
+    }
+
+    private synchronized void removeCallback(ResponseCallback rc) {
+        if (callbackCounter.isPresent()) {
+            callbackCounter.get().remove(rc);
+            // all necessary callbacks received => print and set to empty
+            if (callbackCounter.get().isEmpty()) {
+                logFingerPrint();
+                callbackCounter = Optional.empty();
+            }
+        }
+    }
+
+    private void logFingerPrint() {
+        logger.debug("###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - BEGIN ######");
+        logger.debug("### Discovery Result ###");
+        logger.debug("{}", bridgeHandler.get().getDiscoveryFingerprint());
+        if (vehicleStatusCache.isPresent()) {
+            logger.debug("### Vehicle Status ###");
+
+            // Anonymous data for VIN and Position
+            VehicleStatusContainer container = Converter.getGson().fromJson(vehicleStatusCache.get(),
+                    VehicleStatusContainer.class);
+            VehicleStatus status = container.vehicleStatus;
+            if (status != null) {
+                status.vin = Constants.ANONYMOUS;
+                if (status.position != null) {
+                    status.position.lat = -1;
+                    status.position.lon = -1;
+                    status.position.heading = -1;
+                }
+            }
+            logger.debug("{}", Converter.getGson().toJson(container));
+        } else {
+            logger.debug("### Vehicle Status Empty ###");
+        }
+        if (lastTripCache.isPresent()) {
+            logger.debug("### Last Trip ###");
+            logger.debug("{}", lastTripCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
+        } else {
+            logger.debug("### Last Trip Empty ###");
+        }
+        if (allTripsCache.isPresent()) {
+            logger.debug("### All Trips ###");
+            logger.debug("{}", allTripsCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
+        } else {
+            logger.debug("### All Trips Empty ###");
+        }
+        if (isElectric) {
+            if (chargeProfileCache.isPresent()) {
+                logger.debug("### Charge Profile ###");
+                logger.debug("{}", chargeProfileCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
+            } else {
+                logger.debug("### Charge Profile Empty ###");
+            }
+        }
+        if (destinationCache.isPresent()) {
+            logger.debug("### Charge Profile ###");
+            DestinationContainer container = Converter.getGson().fromJson(destinationCache.get(),
+                    DestinationContainer.class);
+            if (container.destinations != null) {
+                container.destinations.forEach(entry -> {
+                    entry.lat = 0;
+                    entry.lon = 0;
+                    entry.city = Constants.ANONYMOUS;
+                    entry.street = Constants.ANONYMOUS;
+                    entry.streetNumber = Constants.ANONYMOUS;
+                    entry.country = Constants.ANONYMOUS;
+                });
+                logger.debug("{}", Converter.getGson().toJson(container));
+            } else {
+                logger.debug("### Destinations Empty ###");
+            }
+        } else {
+            logger.debug("### Charge Profile Empty ###");
+        }
+        if (rangeMapCache.isPresent()) {
+            logger.debug("### Range Map ###");
+            logger.debug("{}", rangeMapCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
+        } else {
+            logger.debug("### Range Map Empty ###");
+        }
+        logger.debug("###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - END ######");
     }
 
     /**
@@ -399,6 +416,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     updateChargeProfile(cp);
                 }
             }
+            removeCallback(this);
         }
 
         /**
@@ -408,6 +426,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
             chargeProfileCache = Optional.of(Converter.getGson().toJson(error));
+            removeCallback(this);
         }
     }
 
@@ -416,6 +435,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onResponse(Optional<String> content) {
             rangeMapCache = content;
+            removeCallback(this);
         }
 
         /**
@@ -425,6 +445,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
             rangeMapCache = Optional.of(Converter.getGson().toJson(error));
+            removeCallback(this);
         }
     }
 
@@ -441,6 +462,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     updateDestinations(dc.destinations);
                 }
             }
+            removeCallback(this);
         }
 
         /**
@@ -450,6 +472,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
             destinationCache = Optional.of(Converter.getGson().toJson(error));
+            removeCallback(this);
         }
     }
 
@@ -466,6 +489,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     imageProperties.failed();
                 }
             }
+            removeCallback(this);
         }
 
         /**
@@ -477,6 +501,7 @@ public class VehicleHandler extends VehicleChannelHandler {
             synchronized (imageProperties) {
                 imageProperties.failed();
             }
+            removeCallback(this);
         }
     }
 
@@ -492,6 +517,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     updateAllTrips(at);
                 }
             }
+            removeCallback(this);
         }
 
         /**
@@ -501,6 +527,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
             allTripsCache = Optional.of(Converter.getGson().toJson(error));
+            removeCallback(this);
         }
     }
 
@@ -516,6 +543,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     updateLastTrip(trip);
                 }
             }
+            removeCallback(this);
         }
 
         /**
@@ -525,6 +553,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
             lastTripCache = Optional.of(Converter.getGson().toJson(error));
+            removeCallback(this);
         }
     }
 
@@ -565,6 +594,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 updateServices(vStatus.cbsData);
                 updatePosition(vStatus.position);
             }
+            removeCallback(this);
         }
 
         @Override
@@ -577,6 +607,7 @@ public class VehicleHandler extends VehicleChannelHandler {
             }
             vehicleStatusCache = Optional.of(Converter.getGson().toJson(error));
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
+            removeCallback(this);
         }
     }
 
