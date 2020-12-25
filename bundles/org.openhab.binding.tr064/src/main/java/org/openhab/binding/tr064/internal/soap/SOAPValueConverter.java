@@ -85,6 +85,7 @@ public class SOAPValueConverter {
             switch (dataType) {
                 case "ui2":
                     return Optional.of(String.valueOf(value.shortValue()));
+                case "i4":
                 case "ui4":
                     return Optional.of(String.valueOf(value.intValue()));
                 default:
@@ -94,6 +95,7 @@ public class SOAPValueConverter {
             switch (dataType) {
                 case "ui2":
                     return Optional.of(String.valueOf(value.shortValue()));
+                case "i4":
                 case "ui4":
                     return Optional.of(String.valueOf(value.intValue()));
                 default:
@@ -132,6 +134,7 @@ public class SOAPValueConverter {
                 case "string":
                     return new StringType(rawValue);
                 case "ui2":
+                case "i4":
                 case "ui4":
                     if (!unit.isEmpty()) {
                         return new QuantityType<>(rawValue + " " + unit);
