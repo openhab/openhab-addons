@@ -489,7 +489,12 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
             session.clearListeners();
             session.connect();
 
-            response = atlonaHandler.login();
+            if (this.getCapabilities().isUHDModel()) {
+                response = atlonaHandler.loginUHD();
+            } else {
+                response = atlonaHandler.loginHD();
+            }
+
             if (response == null) {
                 final AtlonaPro3Config config = getAtlonaConfig();
                 if (config != null) {
