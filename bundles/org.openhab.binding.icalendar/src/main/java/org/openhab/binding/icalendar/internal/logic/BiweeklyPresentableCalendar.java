@@ -178,7 +178,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     @Override
     public List<Event> getFilteredEventsBetween(Instant begin, Instant end, @Nullable EventTextFilter filter,
             int maximumCount) {
-        List<VEventWPeriod> candidates = this.getVEventWPeriodsBetween(begin, end);
+        List<VEventWPeriod> candidates = this.getVEventWPeriodsBetween(begin, end, maximumCount);
         final List<Event> results = new ArrayList<>(candidates.size());
 
         if (filter != null) {
@@ -237,9 +237,10 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      *
      * @param frameBegin Begin of the frame where to search events.
      * @param frameEnd End of the time frame where to search events.
+     * @param maximumPerSeries Limit the results per series. Set to 0 for no limit.
      * @return All events which begin in the time frame.
      */
-    private List<VEventWPeriod> getVEventWPeriodsBetween(Instant frameBegin, Instant frameEnd) {
+    private List<VEventWPeriod> getVEventWPeriodsBetween(Instant frameBegin, Instant frameEnd, int maximumPerSeries) {
         final List<VEvent> positiveEvents = new ArrayList<>();
         final List<VEvent> negativeEvents = new ArrayList<>();
         classifyEvents(positiveEvents, negativeEvents);
@@ -248,6 +249,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         for (final VEvent positiveEvent : positiveEvents) {
             final DateIterator positiveBeginDates = getRecurredEventDateIterator(positiveEvent);
             positiveBeginDates.advanceTo(Date.from(frameBegin));
+            int foundInSeries = 0;
             while (positiveBeginDates.hasNext()) {
                 final Instant begInst = positiveBeginDates.next().toInstant();
                 if (begInst.isAfter(frameEnd)) {
@@ -263,9 +265,17 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 if (eventUid != null) {
                     if (!isCounteredBy(begInst, eventUid, negativeEvents)) {
                         eventList.add(resultingVEWP);
+                        foundInSeries++;
+                        if (maximumPerSeries != 0 && foundInSeries >= maximumPerSeries) {
+                            break;
+                        }
                     }
                 } else {
                     eventList.add(resultingVEWP);
+                    foundInSeries++;
+                    if (maximumPerSeries != 0 && foundInSeries >= maximumPerSeries) {
+                        break;
+                    }
                 }
             }
         }
