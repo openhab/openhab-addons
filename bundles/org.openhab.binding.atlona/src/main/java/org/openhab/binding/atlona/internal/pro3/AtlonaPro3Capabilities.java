@@ -23,6 +23,7 @@ import org.openhab.binding.atlona.internal.handler.AtlonaCapabilities;
  * powered, the number of audio ports there are and which (output) ports are HDMI ports.
  *
  * @author Tim Roberts - Initial contribution
+ * @author Michael Lobstein - Add support for AT-PRO3HD66M
  */
 public class AtlonaPro3Capabilities extends AtlonaCapabilities {
 
@@ -42,22 +43,19 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
     private final Set<Integer> hdmiPorts;
 
     /**
+     * Indicates if the thing is a 4K/UHD model vs an older HD model
+     */
+    private final boolean isUHDModel;
+
+    /**
      * Constructs the capabilities from the parms
      *
      * @param nbrPowerPorts a greater than 0 number of power ports
      * @param nbrAudioPorts a greater than 0 number of audio ports
      * @param hdmiPorts a non-null, non-empty set of hdmi ports
      */
-    public AtlonaPro3Capabilities(int nbrPowerPorts, int nbrAudioPorts, Set<Integer> hdmiPorts) {
+    public AtlonaPro3Capabilities(int nbrPowerPorts, int nbrAudioPorts, Set<Integer> hdmiPorts, boolean isUHDModel) {
         super();
-
-        if (nbrPowerPorts < 1) {
-            throw new IllegalArgumentException("nbrPowerPorts must be greater than 0");
-        }
-
-        if (nbrAudioPorts < 1) {
-            throw new IllegalArgumentException("nbrAudioPorts must be greater than 0");
-        }
 
         if (hdmiPorts == null) {
             throw new IllegalArgumentException("hdmiPorts cannot be null");
@@ -70,6 +68,7 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
         this.nbrPowerPorts = nbrPowerPorts;
         this.nbrAudioPorts = nbrAudioPorts;
         this.hdmiPorts = Collections.unmodifiableSet(new HashSet<>(hdmiPorts));
+        this.isUHDModel = isUHDModel;
     }
 
     /**
@@ -97,5 +96,14 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
      */
     Set<Integer> getHdmiPorts() {
         return hdmiPorts;
+    }
+
+    /**
+     * Returns a flag indicating the model type
+     *
+     * @return boolean true if the thing is a 4K/UHD model
+     */
+    boolean isUHDModel() {
+        return isUHDModel;
     }
 }
