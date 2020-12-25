@@ -69,13 +69,12 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     // List Interfaces
     protected List<CBSMessage> serviceList = new ArrayList<CBSMessage>();
-    protected String selectedService = Constants.INVALID;
-    private int serviceListIndex = -1;
+    protected String selectedService = Constants.UNKNOWN;
     protected List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
-    protected String selectedCC = Constants.INVALID;
+    protected String selectedCC = Constants.UNKNOWN;
     private int checkControlListIndex = -1;
     protected List<Destination> destinationList = new ArrayList<Destination>();
-    protected String selectedDestination = Constants.INVALID;
+    protected String selectedDestination = Constants.UNKNOWN;
 
     protected BMWConnectedDriveOptionProvider optionProvider;
 
@@ -324,55 +323,49 @@ public class VehicleChannelHandler extends BaseThingHandler {
         }
     }
 
-    private void updateService(List sl) {
-        boolean isFirstUpdate = serviceList.isEmpty();
+    protected void updateServices(List<CBSMessage> sl) {
+        // if list is empty add "undefined" element
+        if (sl.size() == 0) {
+            sl.add(new CBSMessage());
+        }
+
+        // add all elements to options
         serviceList = sl;
         List<StateOption> options = new ArrayList<>();
-        if (destinationList.size() == 0) {
-            destinationList.add(Destination.getUndefined());
+        boolean isSelectedElementIn = false;
+        for (CBSMessage serviceEntry : serviceList) {
+            options.add(new StateOption(serviceEntry.getType(), serviceEntry.getType()));
+            if (selectedService.equals(serviceEntry.getType())) {
+                isSelectedElementIn = true;
+            }
         }
+        optionProvider.setStateOptions(serviceName, options);
 
-        destinationList.forEach(destination -> {
-            options.add(new StateOption(destination.getAddress(), destination.getAddress()));
-        });
-
-        logger.info("Added {} options to {}", destinationList.size(), destinationName.getAsString());
-        logger.info("Options {}", options.toArray());
-        optionProvider.setStateOptions(destinationName, options);
-        if (isFirstUpdate) {
-            updateState(destinationName, StringType.valueOf(destinationList.get(0).getAddress()));
-            updateState(destinationLocation, PointType.valueOf(destinationList.get(0).getCoordinates()));
-        }
-
-        if (!serviceList.isEmpty()) {
-            if (serviceListIndex < 0 || serviceListIndex >= serviceList.size()) {
-                // select first item
-                serviceListIndex = 0;
-            }
-            CBSMessage entry = serviceList.get(serviceListIndex);
-            updateState(serviceName, StringType.valueOf(Converter.toTitleCase(entry.getType())));
-            updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(entry.getDueDate())));
-            if (imperial) {
-                updateState(serviceMileage,
-                        QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage), ImperialUnits.MILE));
-            } else {
-                updateState(serviceMileage, QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage),
-                        MetricPrefix.KILO(SIUnits.METRE)));
-            }
-        } else {
-            // list is empty - set all fields to INVALID. If this isn't done the old values remain
-            updateState(serviceName, StringType.valueOf(Constants.INVALID));
-            updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(Constants.NULL_DATE)));
-            if (imperial) {
-                updateState(serviceMileage, QuantityType.valueOf(-1, ImperialUnits.MILE));
-            } else {
-                updateState(serviceMileage, QuantityType.valueOf(-1, MetricPrefix.KILO(SIUnits.METRE)));
-            }
+        // if current selected item isn't anymore in the list select first entry
+        if (!isSelectedElementIn) {
+            selectService(serviceList.get(0).getType());
         }
     }
 
+    protected void selectService(String selection) {
+        serviceList.forEach(entry -> {
+            if (selection.equals(entry.getType())) {
+                selectedService = selection;
+                updateState(serviceName, StringType.valueOf(Converter.toTitleCase(entry.getType())));
+                updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(entry.getDueDate())));
+                if (imperial) {
+                    updateState(serviceMileage,
+                            QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage), ImperialUnits.MILE));
+                } else {
+                    updateState(serviceMileage, QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage),
+                            MetricPrefix.KILO(SIUnits.METRE)));
+                }
+                return;
+            }
+        });
+    }
+
     protected void updateDestinations(List<Destination> dl) {
-        List<StateOption> options = new ArrayList<>();
         // if list is empty add "undefined" element
         if (dl.size() == 0) {
             dl.add(Destination.getUndefined());
@@ -380,6 +373,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         // add all elements to options
         destinationList = dl;
+        List<StateOption> options = new ArrayList<>();
         boolean isSelectedElementIn = false;
         for (Destination destination : destinationList) {
             options.add(new StateOption(destination.getAddress(), destination.getAddress()));
@@ -394,17 +388,17 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
-            updateState(destinationName, StringType.valueOf(destinationList.get(0).getAddress()));
-            updateState(destinationLocation, PointType.valueOf(destinationList.get(0).getCoordinates()));
+            selectDestination(destinationList.get(0).getAddress());
         }
     }
 
-    protected void selectDestination(String destinationName) {
+    protected void selectDestination(String selection) {
         destinationList.forEach(entry -> {
-            if (destinationName.equals(entry.getAddress())) {
+            if (selection.equals(entry.getAddress())) {
                 // update selected Item
-                selectedDestination = destinationName;
+                selectedDestination = selection;
                 // update coordinates according to new set location
+                updateState(destinationName, StringType.valueOf(entry.getAddress()));
                 updateState(destinationLocation, PointType.valueOf(entry.getCoordinates()));
                 return;
             }

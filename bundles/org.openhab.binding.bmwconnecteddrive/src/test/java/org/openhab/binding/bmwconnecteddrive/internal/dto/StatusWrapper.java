@@ -434,7 +434,7 @@ public class StatusWrapper {
                 st = (StringType) state;
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
-                        wanted = StringType.valueOf(Constants.INVALID);
+                        wanted = StringType.valueOf(Converter.toTitleCase(Constants.INVALID));
                         if (!vStatus.cbsData.isEmpty()) {
                             wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
                         }
