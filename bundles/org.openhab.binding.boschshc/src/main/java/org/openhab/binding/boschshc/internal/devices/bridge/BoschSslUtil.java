@@ -165,8 +165,8 @@ public class BoschSslUtil {
         logger.debug("Adding Issuing CA to keystore");
         try (BufferedInputStream streamIssuingCA = new BufferedInputStream(
                 this.getClass().getResourceAsStream("SmartHomeControllerIssuingCA.pem"))) {
-            Certificate certIssueingCA = cf.generateCertificate(streamIssuingCA);
-            keyStore.setCertificateEntry("Smart Home Controller Issuing CA", certIssueingCA);
+            Certificate certIssuingCA = cf.generateCertificate(streamIssuingCA);
+            keyStore.setCertificateEntry("Smart Home Controller Issuing CA", certIssuingCA);
         }
 
         logger.debug("Adding root CA to keystore");
