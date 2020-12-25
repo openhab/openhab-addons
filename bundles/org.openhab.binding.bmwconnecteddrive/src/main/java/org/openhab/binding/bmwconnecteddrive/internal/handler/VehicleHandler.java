@@ -166,14 +166,16 @@ public class VehicleHandler extends VehicleChannelHandler {
                 }
             }
         } else if (CHANNEL_GROUP_DESTINATION.equals(group)) {
-            // receive new destination location
             if (command instanceof StringType) {
                 selectDestination(((StringType) command).toFullString());
             }
         } else if (CHANNEL_GROUP_SERVICE.equals(group)) {
-            // receive new destination location
             if (command instanceof StringType) {
                 selectService(((StringType) command).toFullString());
+            }
+        } else if (CHANNEL_GROUP_CHECK_CONTROL.equals(group)) {
+            if (command instanceof StringType) {
+                selectCC(((StringType) command).toFullString());
             }
         }
         if (channelUID.getIdWithoutGroup().equals(VEHICLE_FINGERPRINT)) {
@@ -559,7 +561,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     return;
                 }
                 updateVehicleStatus(vStatus);
-                setCheckControlList(vStatus.checkControlMessages);
+                updateCheckControls(vStatus.checkControlMessages);
                 updateServices(vStatus.cbsData);
                 updatePosition(vStatus.position);
             }

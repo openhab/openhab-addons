@@ -9,9 +9,6 @@
 		<channels>
 			<channel id="name" typeId="checkcontrol-name-channel"/>
 			<channel id="mileage" typeId="checkcontrol-mileage-channel"/>
-			<channel id="size" typeId="checkcontrol-size-channel"/>
-			<channel id="index" typeId="checkcontrol-index-channel"/>
-			<channel id="next" typeId="checkcontrol-next-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
