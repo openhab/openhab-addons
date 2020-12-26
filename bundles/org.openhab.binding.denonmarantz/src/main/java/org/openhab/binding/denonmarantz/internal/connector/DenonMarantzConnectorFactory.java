@@ -29,9 +29,9 @@ import org.openhab.binding.denonmarantz.internal.connector.telnet.DenonMarantzTe
 public class DenonMarantzConnectorFactory {
 
     public DenonMarantzConnector getConnector(DenonMarantzConfiguration config, DenonMarantzState state,
-            ScheduledExecutorService scheduler, HttpClient httpClient) {
+            ScheduledExecutorService scheduler, HttpClient httpClient, String thingUID) {
         if (config.isTelnet()) {
-            return new DenonMarantzTelnetConnector(config, state, scheduler);
+            return new DenonMarantzTelnetConnector(config, state, scheduler, thingUID);
         } else {
             return new DenonMarantzHttpConnector(config, state, scheduler, httpClient);
         }
