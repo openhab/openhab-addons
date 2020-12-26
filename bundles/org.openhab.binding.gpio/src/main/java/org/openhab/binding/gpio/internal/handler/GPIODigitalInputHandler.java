@@ -80,25 +80,7 @@ public class GPIODigitalInputHandler extends GPIOHandler {
 
                     Date thisChange = new Date();
                     scheduler.schedule(() -> {
-                        try {
-                            // Check if value changed over time
-                            if (!thisChange.before(lastChanged)) {
-                                Channel channel = getThing().getChannel(THING_TYPE_DIGITAL_INPUT_CHANNEL);
-                                if (channel == null) {
-                                    logger.warn("Cannot find Channel: " + THING_TYPE_DIGITAL_INPUT_CHANNEL);
-                                    return;
-                                }
-                                OnOffType value = getValue();
-                                if (value == null) {
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                            "GPIO is null");
-                                } else {
-                                    updateState(channel.getUID(), value);
-                                }
-                            }
-                        } catch (PigpioException e) {
-                            logger.warn("Unknown pigpio exception", e);
-                        }
+                        afterDebounce(thisChange);
                     }, debouncingTime, TimeUnit.MILLISECONDS);
                 }
             });
@@ -109,6 +91,27 @@ public class GPIODigitalInputHandler extends GPIOHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         e.getLocalizedMessage());
             }
+        }
+    }
+
+    private void afterDebounce(Date thisChange) {
+        try {
+            // Check if value changed over time
+            if (!thisChange.before(lastChanged)) {
+                Channel channel = getThing().getChannel(THING_TYPE_DIGITAL_INPUT_CHANNEL);
+                if (channel == null) {
+                    logger.warn("Cannot find Channel: " + THING_TYPE_DIGITAL_INPUT_CHANNEL);
+                    return;
+                }
+                OnOffType value = getValue();
+                if (value == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "GPIO is null");
+                } else {
+                    updateState(channel.getUID(), value);
+                }
+            }
+        } catch (PigpioException e) {
+            logger.warn("Unknown pigpio exception", e);
         }
     }
 }
