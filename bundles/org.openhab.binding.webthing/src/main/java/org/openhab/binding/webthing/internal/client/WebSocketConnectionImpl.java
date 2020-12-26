@@ -139,11 +139,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     }
 
     private void onError(String message) {
-        try {
-            errorHandler.accept(message);
-        } catch (Exception e) {
-            logger.warn("error occurred by performing on disconnect", e);
-        }
+        errorHandler.accept(message);
     }
 
     private void sendPing() {
