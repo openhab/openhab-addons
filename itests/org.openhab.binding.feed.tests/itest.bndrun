@@ -60,7 +60,7 @@ Fragment-Host: org.openhab.binding.feed
 	org.ops4j.pax.web.pax-web-jetty;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-runtime;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-spi;version='[7.2.11,7.2.12)',\
-	org.openhab.binding.feed;version='[2.5.11,2.5.12)',\
-	org.openhab.binding.feed.tests;version='[2.5.11,2.5.12)',\
+	org.openhab.binding.feed;version='[2.5.12,2.5.13)',\
+	org.openhab.binding.feed.tests;version='[2.5.12,2.5.13)',\
 	slf4j.api;version='[1.7.16,1.7.17)',\
 	slf4j.simple;version='[1.7.21,1.7.22)'
