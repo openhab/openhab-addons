@@ -118,6 +118,13 @@ public class SenecHomeHandler extends BaseThingHandler {
         refreshCache.getValue();
     }
 
+    private void updateChannelState(String channelConstant, org.openhab.core.types.State channelState) {
+        Channel channel = getThing().getChannel(channelConstant);
+        if (channel != null) {
+            updateState(channel.getUID(), channelState);
+        }
+    }
+
     public @Nullable Boolean refreshState() {
         try {
             SenecHomeResponse response = senecHomeApi.getStatistics();
@@ -136,137 +143,91 @@ public class SenecHomeHandler extends BaseThingHandler {
                         (100 - pvLimitation.intValue()) <= config.limitationTresholdValue, config.limitationDuration);
             }
 
-            Channel channelConsumption = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_POWER_CONSUMPTION);
-            if (channelConsumption != null) {
-                updateState(channelConsumption.getUID(),
-                        new QuantityType<Power>(
-                                getSenecValue(response.energy.homePowerConsumption).setScale(2, RoundingMode.HALF_UP),
-                                Units.WATT));
-            }
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_POWER_CONSUMPTION, new QuantityType<Power>(
+                    getSenecValue(response.energy.homePowerConsumption).setScale(2, RoundingMode.HALF_UP), Units.WATT));
 
-            Channel channelEnergyProduction = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_ENERGY_PRODUCTION);
-            if (channelEnergyProduction != null) {
-                updateState(channelEnergyProduction.getUID(), new QuantityType<Power>(
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_ENERGY_PRODUCTION,
+                    new QuantityType<Power>(
                             getSenecValue(response.energy.inverterPowerGeneration).setScale(0, RoundingMode.HALF_UP),
                             Units.WATT));
-            }
 
-            Channel channelBatteryPower = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_POWER);
-            if (channelBatteryPower != null) {
-                updateState(channelBatteryPower.getUID(), new QuantityType<Power>(
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_POWER, new QuantityType<Power>(
                     getSenecValue(response.energy.batteryPower).setScale(2, RoundingMode.HALF_UP), Units.WATT));
-            }
 
-            Channel channelBatteryFuelCharge = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_FUEL_CHARGE);
-            if (channelBatteryFuelCharge != null) {
-                updateState(channelBatteryFuelCharge.getUID(),
-                        new QuantityType<Dimensionless>(
-                                getSenecValue(response.energy.batteryFuelCharge).setScale(0, RoundingMode.HALF_UP),
-                                Units.PERCENT));
-            }
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_FUEL_CHARGE,
+                    new QuantityType<Dimensionless>(
+                            getSenecValue(response.energy.batteryFuelCharge).setScale(0, RoundingMode.HALF_UP),
+                            Units.PERCENT));
 
-            Channel channelGridCurrentPhase1 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH1);
-            updateState(channelGridCurrentPhase1.getUID(), new QuantityType<ElectricCurrent>(
-                    getSenecValue(response.grid.currentGridCurrentPerPhase[0]).setScale(2, RoundingMode.HALF_UP),
-                    Units.AMPERE));
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH1,
+                    new QuantityType<ElectricCurrent>(getSenecValue(response.grid.currentGridCurrentPerPhase[0])
+                            .setScale(2, RoundingMode.HALF_UP), Units.AMPERE));
 
-            Channel channelGridCurrentPhase2 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH2);
-            updateState(channelGridCurrentPhase2.getUID(), new QuantityType<ElectricCurrent>(
-                    getSenecValue(response.grid.currentGridCurrentPerPhase[1]).setScale(2, RoundingMode.HALF_UP),
-                    Units.AMPERE));
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH2,
+                    new QuantityType<ElectricCurrent>(getSenecValue(response.grid.currentGridCurrentPerPhase[1])
+                            .setScale(2, RoundingMode.HALF_UP), Units.AMPERE));
 
-            Channel channelGridCurrentPhase3 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH3);
-            updateState(channelGridCurrentPhase3.getUID(), new QuantityType<ElectricCurrent>(
-                    getSenecValue(response.grid.currentGridCurrentPerPhase[2]).setScale(2, RoundingMode.HALF_UP),
-                    Units.AMPERE));
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH3,
+                    new QuantityType<ElectricCurrent>(getSenecValue(response.grid.currentGridCurrentPerPhase[2])
+                            .setScale(2, RoundingMode.HALF_UP), Units.AMPERE));
 
-            Channel channelGridPowerPhase1 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH1);
-            updateState(channelGridPowerPhase1.getUID(),
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH1,
                     new QuantityType<Power>(
                             getSenecValue(response.grid.currentGridPowerPerPhase[0]).setScale(2, RoundingMode.HALF_UP),
                             Units.WATT));
 
-            Channel channelGridPowerPhase2 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH2);
-            updateState(channelGridPowerPhase2.getUID(),
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH2,
                     new QuantityType<Power>(
                             getSenecValue(response.grid.currentGridPowerPerPhase[1]).setScale(2, RoundingMode.HALF_UP),
                             Units.WATT));
 
-            Channel channelGridPowerPhase3 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH3);
-            updateState(channelGridPowerPhase3.getUID(),
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH3,
                     new QuantityType<Power>(
                             getSenecValue(response.grid.currentGridPowerPerPhase[2]).setScale(2, RoundingMode.HALF_UP),
                             Units.WATT));
 
-            Channel channelGridVoltagePhase1 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH1);
-            updateState(channelGridVoltagePhase1.getUID(), new QuantityType<ElectricPotential>(
-                    getSenecValue(response.grid.currentGridVoltagePerPhase[0]).setScale(2, RoundingMode.HALF_UP),
-                    Units.VOLT));
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH1,
+                    new QuantityType<ElectricPotential>(getSenecValue(response.grid.currentGridVoltagePerPhase[0])
+                            .setScale(2, RoundingMode.HALF_UP), Units.VOLT));
 
-            Channel channelGridVoltagePhase2 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH2);
-            updateState(channelGridVoltagePhase2.getUID(), new QuantityType<ElectricPotential>(
-                    getSenecValue(response.grid.currentGridVoltagePerPhase[1]).setScale(2, RoundingMode.HALF_UP),
-                    Units.VOLT));
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH2,
+                    new QuantityType<ElectricPotential>(getSenecValue(response.grid.currentGridVoltagePerPhase[1])
+                            .setScale(2, RoundingMode.HALF_UP), Units.VOLT));
 
-            Channel channelGridVoltagePhase3 = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH3);
-            updateState(channelGridVoltagePhase3.getUID(), new QuantityType<ElectricPotential>(
-                    getSenecValue(response.grid.currentGridVoltagePerPhase[2]).setScale(2, RoundingMode.HALF_UP),
-                    Units.VOLT));
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH3,
+                    new QuantityType<ElectricPotential>(getSenecValue(response.grid.currentGridVoltagePerPhase[2])
+                            .setScale(2, RoundingMode.HALF_UP), Units.VOLT));
 
-            Channel channelGridFrequency = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_FREQUENCY);
-            updateState(channelGridFrequency.getUID(), new QuantityType<Frequency>(
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_FREQUENCY, new QuantityType<Frequency>(
                     getSenecValue(response.grid.currentGridFrequency).setScale(2, RoundingMode.HALF_UP), Units.HERTZ));
 
-            Channel channelSystemStateValue = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_SYSTEM_STATE_VALUE);
-            updateState(channelSystemStateValue.getUID(),
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_SYSTEM_STATE_VALUE,
                     new DecimalType(getSenecValue(response.energy.systemState).intValue()));
 
-            Channel channelLiveBatCharge = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_BAT_CHARGE);
-            updateState(channelLiveBatCharge.getUID(),
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_BAT_CHARGE,
                     new QuantityType<Energy>(
                             getSenecValue(response.statistics.liveBatCharge).setScale(2, RoundingMode.HALF_UP),
                             Units.WATT_HOUR));
 
-            Channel channelLiveBatDischarge = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_BAT_DISCHARGE);
-            updateState(channelLiveBatDischarge.getUID(),
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_BAT_DISCHARGE,
                     new QuantityType<Energy>(
                             getSenecValue(response.statistics.liveBatDischarge).setScale(2, RoundingMode.HALF_UP),
                             Units.WATT_HOUR));
 
-            Channel channelLiveGridImport = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_GRID_IMPORT);
-            updateState(channelLiveGridImport.getUID(),
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_GRID_IMPORT,
                     new QuantityType<Energy>(
                             getSenecValue(response.statistics.liveGridImport).setScale(2, RoundingMode.HALF_UP),
                             Units.WATT_HOUR));
 
-            Channel channelLiveGridExport = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_GRID_EXPORT);
-            updateState(channelLiveGridExport.getUID(),
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_GRID_EXPORT,
                     new QuantityType<Energy>(
                             getSenecValue(response.statistics.liveGridExport).setScale(2, RoundingMode.HALF_UP),
                             Units.WATT_HOUR));
 
-            Channel channelBatteryVoltage = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_VOLTAGE);
-            updateState(channelBatteryVoltage.getUID(), new QuantityType<ElectricPotential>(
-                    getSenecValue(response.energy.batteryVoltage).setScale(2, RoundingMode.HALF_UP), Units.VOLT));
+            updateChannelState(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_VOLTAGE,
+                    new QuantityType<ElectricPotential>(
+                            getSenecValue(response.energy.batteryVoltage).setScale(2, RoundingMode.HALF_UP),
+                            Units.VOLT));
 
             Channel channelSystemState = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_SYSTEM_STATE);
             if (channelSystemState != null) {
