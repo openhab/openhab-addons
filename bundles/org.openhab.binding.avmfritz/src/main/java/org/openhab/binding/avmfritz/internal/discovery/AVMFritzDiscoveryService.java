@@ -127,7 +127,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
             Map<String, Object> properties = new HashMap<>();
             properties.put(CONFIG_AIN, device.getIdentifier());
             properties.put(PROPERTY_VENDOR, device.getManufacturer());
-            properties.put(PROPERTY_MODEL_ID, device.getDeviceId());
+            properties.put(PRODUCT_NAME, device.getProductName());
             properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
             properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
             if (device instanceof GroupModel && ((GroupModel) device).getGroupinfo() != null) {
