@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
@@ -29,7 +28,6 @@ import javax.jmdns.ServiceListener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.webthing.internal.client.DescriptionLoader;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -59,7 +57,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
     private final Logger logger = LoggerFactory.getLogger(WebthingDiscoveryService.class);
     private final DescriptionLoader descriptionLoader;
     private final MDNSClient mdnsClient;
-    private final HttpClient httpClient;
+    private final List<Future<Set<DiscoveryResult>>> runningDiscoveryTasks = new CopyOnWriteArrayList<>();
 
     /**
      * constructor
@@ -72,9 +70,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
             @Reference Scheduler executor, @Reference HttpClientFactory httpClientFactory) {
         super(30);
         this.mdnsClient = mdnsClient;
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.descriptionLoader = new DescriptionLoader(httpClient);
-
+        this.descriptionLoader = new DescriptionLoader(httpClientFactory.getCommonHttpClient());
         super.activate(configProperties);
         if (isBackgroundDiscoveryEnabled()) {
             mdnsClient.addServiceListener(MDNS_SERVICE_TYPE, this);
@@ -133,6 +129,12 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
     @Override
     protected synchronized void stopScan() {
         removeOlderResults(Instant.now().minus(Duration.ofMinutes(10)).toEpochMilli());
+
+        // stop running discovery tasks
+        for (var future : runningDiscoveryTasks) {
+            future.cancel(true);
+            runningDiscoveryTasks.remove(future);
+        }
         super.stopScan();
     }
 
@@ -146,19 +148,21 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                 : mdnsClient.list(MDNS_SERVICE_TYPE, FOREGROUND_SCAN_TIMEOUT);
         logger.debug("got {} mDNS entries", serviceInfos.length);
 
-        // create discovery task for each detected service and process these in parallel to increase total discovery
-        // speed
-        var discoveryTasks = Arrays.stream(serviceInfos).map(DiscoveryTask::new).collect(Collectors.toList());
-        try {
-            for (var future : scheduler.invokeAll(discoveryTasks, 5, TimeUnit.MINUTES)) {
-                try {
-                    future.get(5, TimeUnit.MINUTES);
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    logger.warn("discovering task {} terminated. {}", future, e.getMessage());
-                }
+        // create discovery task for each detected service and process these in parallel to increase total
+        // discovery speed
+        for (var serviceInfo : serviceInfos) {
+            var future = scheduler.submit(new DiscoveryTask(serviceInfo));
+            runningDiscoveryTasks.add(future);
+        }
+
+        // wait until all tasks are completed
+        for (var future : runningDiscoveryTasks) {
+            try {
+                future.get(5, TimeUnit.MINUTES);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                logger.warn("discovering task {} terminated", future);
             }
-        } catch (InterruptedException ie) {
-            logger.warn("discovering interrupted. {}", ie.getMessage());
+            runningDiscoveryTasks.remove(future);
         }
     }
 
@@ -180,6 +184,11 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                         discoveryResult.getProperties().get("schemas"));
             }
             return results;
+        }
+
+        @Override
+        public String toString() {
+            return "DiscoveryTask{" + "serviceInfo=" + serviceInfo + '}';
         }
     }
 
