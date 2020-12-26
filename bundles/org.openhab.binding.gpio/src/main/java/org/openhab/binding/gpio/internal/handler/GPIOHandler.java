@@ -118,16 +118,11 @@ public abstract class GPIOHandler extends BaseThingHandler {
         this.jPigpio = jPigpio;
         GPIOConfiguration config = getConfigAs(GPIOConfiguration.class);
         Integer gpioId = config.gpioId;
-        Boolean invert = config.invert;
+        this.invert = config.invert;
         if (gpioId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "GPIO Pin not set.");
             return;
         }
-        if (invert == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invert not set.");
-            return;
-        }
-        this.invert = invert;
 
         try {
             gpio = new GPIO(jPigpio, gpioId, input ? 1 : 0);

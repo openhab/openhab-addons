@@ -61,11 +61,6 @@ public class GPIODigitalInputHandler extends GPIOHandler {
 
         GPIOInputConfiguration config = getConfigAs(GPIOInputConfiguration.class);
         Integer debouncingTime = config.debouncingTime;
-        if (debouncingTime == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Debouncing time not set.");
-            return;
-        }
         try {
             JPigpio jPigpio = this.jPigpio;
             GPIO gpio = this.gpio;

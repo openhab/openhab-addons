@@ -13,7 +13,6 @@
 package org.openhab.binding.gpio.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GPIOInputConfiguration} class contains fields mapping thing configuration parameters.
@@ -25,5 +24,5 @@ public class GPIOInputConfiguration extends GPIOConfiguration {
     /**
      * Time in ms to double check if value hasn't changed
      */
-    public @Nullable Integer debouncingTime;
+    public Integer debouncingTime = 10;
 }

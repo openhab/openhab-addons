@@ -64,9 +64,6 @@ public class PigpioRemoteBridgeHandler extends BaseBridgeHandler implements Pigp
         if (ipAddress == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to PiGPIO Service on remote raspberry. IP address not set.");
-        } else if (port == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot connect to PiGPIO Service on remote raspberry. Port not set.");
         } else {
             try {
                 jPigpio = new PigpioSocket(ipAddress, port);
