@@ -29,8 +29,8 @@ public class SenecHomeBindingConstants {
 
     public static final String CHANNEL_SENEC_POWER_LIMITATION = "powerLimitation";
     public static final String CHANNEL_SENEC_POWER_LIMITATION_STATE = "powerLimitationState";
-    public static final String CHANNEL_SENEC_BATTERY_STATE = "batteryState";
-    public static final String CHANNEL_SENEC_BATTERY_STATE_VALUE = "batteryStateValue";
+    public static final String CHANNEL_SENEC_SYSTEM_STATE = "systemState";
+    public static final String CHANNEL_SENEC_SYSTEM_STATE_VALUE = "systemStateValue";
     public static final String CHANNEL_SENEC_POWER_CONSUMPTION = "houseConsumption";
     public static final String CHANNEL_SENEC_ENERGY_PRODUCTION = "energyProduction";
     public static final String CHANNEL_SENEC_BATTERY_POWER = "batteryPower";

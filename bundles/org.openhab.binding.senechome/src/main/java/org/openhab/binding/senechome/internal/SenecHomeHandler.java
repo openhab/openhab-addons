@@ -149,14 +149,14 @@ public class SenecHomeHandler extends BaseThingHandler {
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_ENERGY_PRODUCTION);
             if (channelEnergyProduction != null) {
                 updateState(channelEnergyProduction.getUID(), new QuantityType<Power>(
-                        getSenecValue(response.energy.inverterPowerGeneration).setScale(0, RoundingMode.HALF_UP),
-                        Units.WATT));
+                            getSenecValue(response.energy.inverterPowerGeneration).setScale(0, RoundingMode.HALF_UP),
+                            Units.WATT));
             }
 
             Channel channelBatteryPower = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_POWER);
             if (channelBatteryPower != null) {
                 updateState(channelBatteryPower.getUID(), new QuantityType<Power>(
-                        getSenecValue(response.energy.batteryPower).setScale(2, RoundingMode.HALF_UP), Units.WATT));
+                    getSenecValue(response.energy.batteryPower).setScale(2, RoundingMode.HALF_UP), Units.WATT));
             }
 
             Channel channelBatteryFuelCharge = getThing()
@@ -230,10 +230,10 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateState(channelGridFrequency.getUID(), new QuantityType<Frequency>(
                     getSenecValue(response.grid.currentGridFrequency).setScale(2, RoundingMode.HALF_UP), Units.HERTZ));
 
-            Channel channelBatteryStateValue = getThing()
-                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE_VALUE);
-            updateState(channelBatteryStateValue.getUID(),
-                    new DecimalType(getSenecValue(response.energy.batteryState).intValue()));
+            Channel channelSystemStateValue = getThing()
+                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_SYSTEM_STATE_VALUE);
+            updateState(channelSystemStateValue.getUID(),
+                    new DecimalType(getSenecValue(response.energy.systemState).intValue()));
 
             Channel channelLiveBatCharge = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_BAT_CHARGE);
@@ -268,9 +268,9 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateState(channelBatteryVoltage.getUID(), new QuantityType<ElectricPotential>(
                     getSenecValue(response.energy.batteryVoltage).setScale(2, RoundingMode.HALF_UP), Units.VOLT));
 
-            Channel channelBatteryState = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE);
-            if (channelBatteryState != null) {
-                updateBatteryState(channelBatteryState, getSenecValue(response.energy.batteryState).intValue());
+            Channel channelSystemState = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_SYSTEM_STATE);
+            if (channelSystemState != null) {
+                updateSystemState(channelSystemState, getSenecValue(response.energy.systemState).intValue());
             }
 
             updateGridPowerValues(getSenecValue(response.grid.currentGridValue));
@@ -341,7 +341,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         updateState(channel.getUID(), status ? OnOffType.ON : OnOffType.OFF);
     }
 
-    protected void updateBatteryState(Channel channel, int code) {
+    protected void updateSystemState(Channel channel, int code) {
         updateState(channel.getUID(), new StringType(SenecBatteryStatus.descriptionFromCode(code)));
     }
 
