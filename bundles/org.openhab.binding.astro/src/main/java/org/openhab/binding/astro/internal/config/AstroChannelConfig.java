@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Channel configuration from Eclipse SmartHome.
+ * Astro Channel configuration.
  *
  * @author Gerhard Riegler - Initial contribution
  */

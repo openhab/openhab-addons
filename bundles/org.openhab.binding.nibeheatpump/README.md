@@ -1,7 +1,7 @@
 # Nibe Heatpump Binding
 
 The Nibe Heatpump binding is used to get live data from Nibe heat pumps without using an expensive MODBUS40 adapter.
-This binding is compatible with the F750, F1145, F1245, F1155, F1255 and F470 heat pump models.
+This binding is compatible with the F750, F1145, F1245, F1155, F1255, F470 and SMO40 heat pump models.
 
 The binding supports data telegrams (containing a maximum of 20 registers) from the heat pump.
 The binding can also read other registers from the pump.
@@ -30,10 +30,13 @@ This binding supports direct serial port connection (RS-485 adapter needed) to h
 | f470-serial     | Serial port connected F470 Heat Pumps            |
 | f470-udp        | UDP connected Nibe F470 Heat Pumps               |
 | f470-simulator  | Simulator for Nibe F470 Heat Pumps               |
+| smo40-serial    | Serial port connected SMO40 controller           |
+| smo40-udp       | UDP connected Nibe SMO40 controller              |
+| smo40-simulator | Simulator for Nibe SMO40 controller              |
 
 ## Discovery
 
-Discovery is not supported, therefore the binding and things need to be configured via Paper UI or thing files. 
+Discovery is not supported. 
 
 ## Prerequisites
 
@@ -111,7 +114,7 @@ No binding configuration required.
 
 ## Thing Configuration
 
-Things can be fully configured via Paper UI.
+Things can be fully configured via the UI.
 The following information is useful when configuring things via thing configuration files.
 
 ### UDP connection
@@ -1896,3 +1899,12 @@ This binding currently supports following channels for F1x55 pump models:
 | 49380           | Switch    | 0           | 1          | Setting | External ERS 3 accessory bypass at heat                  |                                                                                                                                                                    |
 | 49381           | Switch    | 0           | 1          | Setting | External ERS 2 accessory bypass at heat                  |                                                                                                                                                                    |
 | 49430           | Number    | 0           | 255        | Setting | AUX ERS Fire Place Guard                                 |                                                                                                                                                                    |
+
+
+### SMO40
+
+To keep this documentation light, all parameters are documented in the NIBE ModbusManager except of:
+| Channel Type ID | Item Type | Min         | Max        | Type    | Description                                              | Values                                                                                                                                                             |
+|-----------------|-----------|-------------|------------|---------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 45780           | Number    | 0           | 120        | Setting | Silent Mode Frequency 1 (defined in the service-menu)    |                                                                                                                                                                    |
+| 49806           | Number    | 0           | 120        | Setting | Silent Mode Frequency 2 (defined in the service-menu)    |                                                                                                                                                                    |

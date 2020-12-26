@@ -60,7 +60,7 @@ public class ScaleTransformationProfileFactory implements ProfileFactory, Profil
         return Arrays.asList(ScaleTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=SCALE)")
+    @Reference(target = "(openhab.transform=SCALE)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

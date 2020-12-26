@@ -60,6 +60,7 @@
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -77,6 +78,7 @@
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -93,11 +95,12 @@
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="color" id="color"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:light"/>
+		<config-description-ref uri="thing-type:deconz:colorlight"/>
 	</thing-type>
 
 	<thing-type id="extendedcolorlight">
@@ -110,11 +113,12 @@
 		<channels>
 			<channel typeId="color" id="color"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:light"/>
+		<config-description-ref uri="thing-type:deconz:colorlight"/>
 	</thing-type>
 
 	<thing-type id="doorlock">
@@ -177,10 +181,34 @@
 		<state pattern="%d K" min="15" max="100000" step="100"/>
 	</channel-type>
 
+	<channel-type id="effect">
+		<item-type>String</item-type>
+		<label>Effect Channel</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="effectSpeed">
+		<item-type>Number</item-type>
+		<label>Effect Speed Channel</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state min="0" max="10" step="1"/>
+	</channel-type>
+
 	<channel-type id="alert">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Alert</label>
 		<category>Alarm</category>
+		<command>
+			<options>
+				<option value="none">No Alarm</option>
+				<option value="select">Blinking (short time)</option>
+				<option value="lselect">Blinking (long time)</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="lock">

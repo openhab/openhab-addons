@@ -25,11 +25,13 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemRegistryChangeListener;
+import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -41,7 +43,7 @@ import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.server.impl.HomekitRoot;
 
 /**
- * Listens for changes to the item registry. When changes are detected, check
+ * Listens for changes to the item and metadata registry. When changes are detected, check
  * for HomeKit tags and, if present, add the items to the HomekitAccessoryRegistry.
  *
  * @author Andy Lintner - Initial contribution
@@ -55,6 +57,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final HomekitAccessoryRegistry accessoryRegistry = new HomekitAccessoryRegistry();
     private final MetadataRegistry metadataRegistry;
     private final Storage<String> storage;
+    private final RegistryChangeListener<Metadata> metadataChangeListener;
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private HomekitSettings settings;
     private int lastAccessoryCount;
@@ -82,8 +85,39 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         storage = storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY);
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices", scheduler, Duration.ofMillis(1000),
                 Clock.systemUTC(), this::applyUpdates);
+        metadataChangeListener = new RegistryChangeListener<Metadata>() {
+            @Override
+            public void added(final Metadata metadata) {
+                try {
+                    markDirty(itemRegistry.getItem(metadata.getUID().getItemName()));
+                } catch (ItemNotFoundException e) {
+                    logger.debug("Could not found item for metadata {}", metadata);
+                }
+            }
 
+            @Override
+            public void removed(final Metadata metadata) {
+                try {
+                    markDirty(itemRegistry.getItem(metadata.getUID().getItemName()));
+                } catch (ItemNotFoundException e) {
+                    logger.debug("Could not found item for metadata {}", metadata);
+                }
+            }
+
+            @Override
+            public void updated(final Metadata metadata, final Metadata e1) {
+                try {
+                    markDirty(itemRegistry.getItem(metadata.getUID().getItemName()));
+                    if (!metadata.getUID().getItemName().equals(e1.getUID().getItemName())) {
+                        markDirty(itemRegistry.getItem(e1.getUID().getItemName()));
+                    }
+                } catch (ItemNotFoundException e) {
+                    logger.debug("Could not found item for metadata {}", metadata);
+                }
+            }
+        };
         itemRegistry.addRegistryChangeListener(this);
+        metadataRegistry.addRegistryChangeListener(metadataChangeListener);
         itemRegistry.getItems().forEach(this::createRootAccessories);
         initialiseRevision();
         logger.info("Created {} HomeKit items.", accessoryRegistry.getAllAccessories().size());
@@ -211,6 +245,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     public void stop() {
         this.itemRegistry.removeRegistryChangeListener(this);
+        this.metadataRegistry.removeRegistryChangeListener(metadataChangeListener);
     }
 
     public Map<String, HomekitAccessory> getAccessories() {

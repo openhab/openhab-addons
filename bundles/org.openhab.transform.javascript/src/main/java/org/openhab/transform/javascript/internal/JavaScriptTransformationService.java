@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Kordelle - pre compiled scripts
  */
 @NonNullByDefault
-@Component(property = { "smarthome.transform=JS" })
+@Component(property = { "openhab.transform=JS" })
 public class JavaScriptTransformationService implements TransformationService {
 
     private Logger logger = LoggerFactory.getLogger(JavaScriptTransformationService.class);

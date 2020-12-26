@@ -56,7 +56,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
     }
 
     /**
-     * Method to add a Thing to the Smarthome Inbox.
+     * Method to add a Thing to the Inbox.
      *
      * @param bridge
      * @param caddxThingType

@@ -22,7 +22,9 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -96,7 +98,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
 
-    private static final long CONNECTION_TIMEOUT_MILLIS = TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES);
     private static final int MAX_STATE_SIZE_FOR_LOGGING = 50;
 
     private final Logger logger = LoggerFactory.getLogger(RemoteopenhabBridgeHandler.class);
@@ -111,6 +112,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
     private @Nullable ScheduledFuture<?> checkConnectionJob;
     private RemoteopenhabRestClient restClient;
+
+    private Map<ChannelUID, State> channelsLastStates = new HashMap<>();
 
     public RemoteopenhabBridgeHandler(Bridge bridge, HttpClient httpClient, HttpClient httpClientTrustingCert,
             ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
@@ -173,7 +176,10 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        startCheckConnectionJob();
+        scheduler.submit(this::checkConnection);
+        if (config.accessibilityInterval > 0) {
+            startCheckConnectionJob(config.accessibilityInterval, config.aliveInterval);
+        }
     }
 
     @Override
@@ -181,6 +187,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         logger.debug("Disposing remote openHAB handler for bridge {}", getThing().getUID());
         stopStreamingUpdates();
         stopCheckConnectionJob();
+        channelsLastStates.clear();
     }
 
     @Override
@@ -192,7 +199,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         try {
             if (command instanceof RefreshType) {
                 String state = restClient.getRemoteItemState(channelUID.getId());
-                updateChannelState(channelUID.getId(), null, state);
+                updateChannelState(channelUID.getId(), null, state, false);
             } else if (isLinked(channelUID)) {
                 restClient.sendCommandToRemoteItem(channelUID.getId(), command);
                 String commandStr = command.toFullString();
@@ -329,7 +336,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                 createChannels(items, true);
                 setStateOptions(items);
                 for (RemoteopenhabItem item : items) {
-                    updateChannelState(item.name, null, item.state);
+                    updateChannelState(item.name, null, item.state, false);
                 }
 
                 updateStatus(ThingStatus.ONLINE);
@@ -343,19 +350,25 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void startCheckConnectionJob() {
+    private void startCheckConnectionJob(int accessibilityInterval, int aliveInterval) {
         ScheduledFuture<?> localCheckConnectionJob = checkConnectionJob;
         if (localCheckConnectionJob == null || localCheckConnectionJob.isCancelled()) {
             checkConnectionJob = scheduler.scheduleWithFixedDelay(() -> {
                 long millisSinceLastEvent = System.currentTimeMillis() - restClient.getLastEventTimestamp();
-                if (millisSinceLastEvent > CONNECTION_TIMEOUT_MILLIS) {
-                    logger.debug("Check: Maybe disconnected from streaming events, millisSinceLastEvent={}",
+                if (aliveInterval == 0 || restClient.getLastEventTimestamp() == 0) {
+                    logger.debug("Time to check server accessibility");
+                    checkConnection();
+                } else if (millisSinceLastEvent > (aliveInterval * 60000)) {
+                    logger.debug(
+                            "Time to check server accessibility (maybe disconnected from streaming events, millisSinceLastEvent={})",
                             millisSinceLastEvent);
                     checkConnection();
                 } else {
-                    logger.debug("Check: Receiving streaming events, millisSinceLastEvent={}", millisSinceLastEvent);
+                    logger.debug(
+                            "Bypass server accessibility check (receiving streaming events, millisSinceLastEvent={})",
+                            millisSinceLastEvent);
                 }
-            }, 0, CONNECTION_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+            }, accessibilityInterval, accessibilityInterval, TimeUnit.MINUTES);
         }
     }
 
@@ -405,8 +418,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onItemStateEvent(String itemName, String stateType, String state) {
-        updateChannelState(itemName, stateType, state);
+    public void onItemStateEvent(String itemName, String stateType, String state, boolean onlyIfStateChanged) {
+        updateChannelState(itemName, stateType, state, onlyIfStateChanged);
     }
 
     @Override
@@ -429,7 +442,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void updateChannelState(String itemName, @Nullable String stateType, String state) {
+    private void updateChannelState(String itemName, @Nullable String stateType, String state,
+            boolean onlyIfStateChanged) {
         Channel channel = getThing().getChannel(itemName);
         if (channel == null) {
             logger.trace("No channel for item {}", itemName);
@@ -549,6 +563,12 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             }
         }
         if (channelState != null) {
+            if (onlyIfStateChanged && channelState.equals(channelsLastStates.get(channel.getUID()))) {
+                logger.trace("ItemStateChangedEvent ignored for item {} as state is identical to the last state",
+                        itemName);
+                return;
+            }
+            channelsLastStates.put(channel.getUID(), channelState);
             updateState(channel.getUID(), channelState);
             String channelStateStr = channelState.toFullString();
             logger.debug("updateState {} with {}", channel.getUID(),

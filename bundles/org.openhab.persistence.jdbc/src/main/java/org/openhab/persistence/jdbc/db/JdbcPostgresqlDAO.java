@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,8 +74,10 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlTypes.put("CONTACTITEM", "VARCHAR");
         sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
         sqlTypes.put("DIMMERITEM", "SMALLINT");
+        sqlTypes.put("IMAGEITEM", "VARCHAR");
         sqlTypes.put("LOCATIONITEM", "VARCHAR");
         sqlTypes.put("NUMBERITEM", "DOUBLE PRECISION");
+        sqlTypes.put("PLAYERITEM", "VARCHAR");
         sqlTypes.put("ROLLERSHUTTERITEM", "SMALLINT");
         sqlTypes.put("STRINGITEM", "VARCHAR");
         sqlTypes.put("SWITCHITEM", "VARCHAR");
@@ -144,8 +147,8 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
 
     @Override
     public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
-            String table, String name) {
-        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name);
+            String table, String name, ZoneId timeZone) {
+        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
         logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
 
@@ -161,14 +164,8 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
      ****************************/
     static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    /**
-     * @param filter
-     * @param numberDecimalcount
-     * @param table
-     * @return
-     */
     private String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
-            String simpleName) {
+            String simpleName, ZoneId timeZone) {
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
                 filter.toString(), numberDecimalcount, table, simpleName);
@@ -176,11 +173,13 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'";
+            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
+                    + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'";
+            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
+                    + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
         if (filter.getPageSize() != 0x7fffffff) {

@@ -322,12 +322,12 @@ DateTime localLastMeasurement "Timestamp of Last Measurement [%1$tY-%1$tm-%1$tdT
 DateTime localTodaySunrise "Todays Sunrise [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="openweathermap:onecall:api:local:current#sunrise" }
 DateTime localTodaySunset "Todays Sunset [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]"  <time> { channel="openweathermap:onecall:api:local:current#sunset" }
 String localCurrentCondition "Current Condition [%s]" <sun_clouds> { channel="openweathermap:onecall:api:local:current#condition" }
-Image localCurrentConditionIcon "Icon" { channel="openweathermap:onecall:api:local:current#Icon" }
+Image localCurrentConditionIcon "Icon" { channel="openweathermap:onecall:api:local:current#icon" }
 Number:Temperature localCurrentTemperature "Current Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall:api:local:current#temperature" }
 Number:Temperature localCurrentApparentTemperature "Current Apparent Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall:api:local:current#apparent-temperature" }
 Number:Pressure localCurrentPressure "Current barometric Pressure [%.1f %unit%]" <pressure> { channel="openweathermap:onecall:api:local:current#pressure" }
 Number:Dimensionless localCurrentHumidity "Current atmospheric Humidity [%d %unit%]" <humidity> { channel="openweathermap:onecall:api:local:current#humidity" }
-Number:Temperature localCurrentDewpoint  "Current Dew-point [%.1f %unit%]" <Temperature> { channea="openweathermap:onecall:api:local:eurrent#dew-point" }
+Number:Temperature localCurrentDewpoint  "Current dew point [%.1f %unit%]" <Temperature> { channel="openweathermap:onecall:api:local:current#dew-point" }
 Number:Speed localCurrentWindSpeed "Current wind Speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:current#wind-speed" }
 Number:Angle localCurrentWindDirection "Current wind Direction [%d %unit%]" <wind> { channel="openweathermap:onecall:api:local:current#wind-direction" }
 Number:Speed localCurrentGustSpeed  "Current Gust Speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:current#gust-speed" }
@@ -349,7 +349,7 @@ Number:Temperature localHours01Temperature "Temperature [%.1f %unit%]" <temperat
 Number:Temperature localHours01ApparentTemperature  "Apparent temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall:api:local:forecastHours01#apparent-temperature" }
 Number:Pressure localHours01Pressure  "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall:api:local:forecastHours01#pressure" }
 Number:Dimensionless localHours01Humidity  "Atmospheric humidity [%d %unit%]" <humidity> { channel="openweathermap:onecall:api:local:forecastHours01#humidity" }
-Number:Temperature localHours01Dewpoint "Dew point [%.1f %unit%]" <Temperature> { channea="openweathermap:onecall:api:local:eurrent#dew-point" }
+Number:Temperature localHours01Dewpoint "Dew point [%.1f %unit%]" <Temperature> { channel="openweathermap:onecall:api:local:current#dew-point" }
 Number:Speed localHours01WindSpeed  "Wind speed [%.1f km/h]"   <wind> { channel="openweathermap:onecall:api:local:forecastHours01#wind-speed" }
 Number:Angle localHours01WindDirection  "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall:api:local:forecastHours01#wind-direction" }
 Number:Speed localHours01GustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastHours01#gust-speed" }
@@ -365,7 +365,7 @@ Number:Temperature localHours48Temperature "Temperature [%.1f %unit%]" <temperat
 Number:Temperature localHours48ApparentTemperature  "Apparent temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall:api:local:forecastHours48#apparent-temperature" }
 Number:Pressure localHours48Pressure  "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall:api:local:forecastHours48#pressure" }
 Number:Dimensionless localHours48Humidity  "Atmospheric humidity [%d %unit%]" <humidity> { channel="openweathermap:onecall:api:local:forecastHours48#humidity" }
-Number:Temperature localHours48Dewpoint "Dew point [%.1f %unit%]" <Temperature> { channea="openweathermap:onecall:api:local:eurrent#dew-point" }
+Number:Temperature localHours48Dewpoint "Dew point [%.1f %unit%]" <Temperature> { channel="openweathermap:onecall:api:local:current#dew-point" }
 Number:Speed localHours48WindSpeed  "Wind speed [%.1f km/h]"   <wind> { channel="openweathermap:onecall:api:local:forecastHours48#wind-speed" }
 Number:Angle localHours48WindDirection  "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall:api:local:forecastHours48#wind-direction" }
 Number:Speed localHours48GustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastHours48#gust-speed" }
@@ -389,16 +389,15 @@ Number:Temperature localTodayEveningApparent "Evening apparent Temperature [%.1f
 Number:Temperature localTodayNightApparent "Night apparent Temperature [%.1f %unit%]"  <temperature> { channel="openweathermap:onecall:api:local:forecastToday#apparent-night" }
 Number:Pressure localTodayPressure  "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall:api:local:forecastToday#pressure" }
 Number:Dimensionless localTodayHumidity  "Atmospheric humidity [%d %unit%]"  <humidity> { channel="openweathermap:onecall:api:local:forecastToday#humidity" }
-Number:Temperature localTodayDewpoint "Dew point [%.1f %unit%]"  <Temperature> { channea="openweathermap:onecall:api:local:forecastToday#dew-point" }
+Number:Temperature localTodayDewpoint "Dew point [%.1f %unit%]"  <Temperature> { channel="openweathermap:onecall:api:local:forecastToday#dew-point" }
 Number:Speed localTodayWindSpeed  "Wind speed [%.1f km/h]"   <wind> { channel="openweathermap:onecall:api:local:forecastToday#wind-speed" }
 Number:Angle localTodayWindDirection "Wind direction [%d %unit%]" <wind> { channel="openweathermap:onecall:api:local:forecastToday#wind-direction" }
 Number:Speed localTodayGustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastToday#gust-speed" }
-Number:Dimensionless localTodayPrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastToday#probability" }
+Number:Dimensionless localTodayPrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastToday#precip-probability" }
 Number:Dimensionless localTodayCloudiness  "Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall:api:local:forecastToday#cloudiness" }
 Number:Dimensionless localTodayUvindex  "Current UV Index [%d]"    { channel="openweathermap:onecall:api:local:forecastToday#uvindex" }
 Number:Length localTodayRainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall:api:local:forecastToday#rain" }
 Number:Length localTodaySnowVolume "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall:api:local:forecastToday#snow" }
-Number:Length localTodayVisibility "Visibility [%.1f km]" <visibility> { channel="openweathermap:onecall:api:local:forecastToday#visibility" }
 
 DateTime localTomorrowTimestamp  "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:onecall:api:local:forecastTomorrow#time-stamp" }
 DateTime localTomorrowSunrise "Tomorrow Sunrise [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="openweathermap:onecall:api:local:forecastTomorrow#sunrise" }
@@ -417,16 +416,15 @@ Number:Temperature localTomorrowEveningApparent "Evening apparent Temperature [%
 Number:Temperature localTomorrowNightApparent "Night apparent Temperature [%.1f %unit%]"  <temperature> { channel="openweathermap:onecall:api:local:forecastTomorrow#apparent-night" }
 Number:Pressure localTomorrowPressure  "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall:api:local:forecastTomorrow#pressure" }
 Number:Dimensionless localTomorrowHumidity  "Atmospheric humidity [%d %unit%]"  <humidity> { channel="openweathermap:onecall:api:local:forecastTomorrow#humidity" }
-Number:Temperature localTomorrowDewpoint "Dew point [%.1f %unit%]"  <Temperature> { channea="openweathermap:onecall:api:local:forecastTomorrow#dew-point" }
+Number:Temperature localTomorrowDewpoint "Dew point [%.1f %unit%]"  <Temperature> { channel="openweathermap:onecall:api:local:forecastTomorrow#dew-point" }
 Number:Speed localTomorrowWindSpeed  "Wind speed [%.1f km/h]"   <wind> { channel="openweathermap:onecall:api:local:forecastTomorrow#wind-speed" }
 Number:Angle localTomorrowWindDirection "Wind direction [%d %unit%]" <wind> { channel="openweathermap:onecall:api:local:forecastTomorrow#wind-direction" }
 Number:Speed localTomorrowGustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastTomorrow#gust-speed" }
-Number:Dimensionless localTomorrowPrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastTomorrow#probability" }
+Number:Dimensionless localTomorrowPrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastTomorrow#precip-probability" }
 Number:Dimensionless localTomorrowCloudiness  "Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall:api:local:forecastTomorrow#cloudiness" }
 Number:Dimensionless localTomorrowUvindex  "Current UV Index [%d]"    { channel="openweathermap:onecall:api:local:forecastTomorrow#uvindex" }
 Number:Length localTomorrowRainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall:api:local:forecastTomorrow#rain" }
 Number:Length localTomorrowSnowVolume "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall:api:local:forecastTomorrow#snow" }
-Number:Length localTomorrowVisibility "Visibility [%.1f km]" <visibility> { channel="openweathermap:onecall:api:local:forecastTomorrow#visibility" }
 
 DateTime localDay6Timestamp  "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:onecall:api:local:forecastDay6#time-stamp" }
 DateTime localDay6Sunrise "Sunrise [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="openweathermap:onecall:api:local:forecastDay6#sunrise" }
@@ -445,16 +443,15 @@ Number:Temperature localDay6EveningApparent "Evening apparent Temperature [%.1f 
 Number:Temperature localDay6NightApparent "Night apparent Temperature [%.1f %unit%]"  <temperature> { channel="openweathermap:onecall:api:local:forecastDay6#apparent-night" }
 Number:Pressure localDay6Pressure  "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall:api:local:forecastDay6#pressure" }
 Number:Dimensionless localDay6Humidity  "Atmospheric humidity [%d %unit%]"  <humidity> { channel="openweathermap:onecall:api:local:forecastDay6#humidity" }
-Number:Temperature localDay6Dewpoint "Dew point [%.1f %unit%]"  <Temperature> { channea="openweathermap:onecall:api:local:forecastDay6#dew-point" }
+Number:Temperature localDay6Dewpoint "Dew point [%.1f %unit%]"  <Temperature> { channel="openweathermap:onecall:api:local:forecastDay6#dew-point" }
 Number:Speed localDay6WindSpeed  "Wind speed [%.1f km/h]"   <wind> { channel="openweathermap:onecall:api:local:forecastDay6#wind-speed" }
 Number:Angle localDay6WindDirection "Wind direction [%d %unit%]" <wind> { channel="openweathermap:onecall:api:local:forecastDay6#wind-direction" }
 Number:Speed localDay6GustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastDay6#gust-speed" }
-Number:Dimensionless localDay6PrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastDay6#probability" }
+Number:Dimensionless localDay6PrecipProbability  "Precipitation probability [%.1f]"    { channel="openweathermap:onecall:api:local:forecastDay6#precip-probability" }
 Number:Dimensionless localDay6Cloudiness  "Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall:api:local:forecastDay6#cloudiness" }
 Number:Dimensionless localDay6Uvindex  "Current UV Index [%d]"    { channel="openweathermap:onecall:api:local:forecastDay6#uvindex" }
 Number:Length localDay6RainVolume "Rain volume [%.1f %unit%]"  <rain> { channel="openweathermap:onecall:api:local:forecastDay6#rain" }
 Number:Length localDay6SnowVolume "Snow volume [%.1f %unit%]"  <snow> { channel="openweathermap:onecall:api:local:forecastDay6#snow" }
-Number:Length localDay6Visibility "Visibility [%.1f km]" <visibility> { channel="openweathermap:onecall:api:local:forecastDay6#visibility" }
 
 DateTime localHistory1LastMeasurement  "Timestamp of history [%1$tY-%1$tm-%1$td]"  <time> { channel="openweathermap:onecall-history:api:local-history:history#time-stamp" }
 DateTime localHistory1Sunrise  "Sunrise [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="openweathermap:onecall-history:api:local-history:history#sunrise" }
@@ -465,7 +462,7 @@ Number:Temperature localHistory1Temperature "Temperature [%.1f %unit%]"   <tempe
 Number:Temperature localHistory1ApparentTemperature "Apparent temperature [%.1f %unit%]"   <temperature> { channel="openweathermap:onecall-history:api:local-history:history#apparent-temperature" }
 Number:Pressure localHistory1Pressure "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall-history:api:local-history:history#pressure" }
 Number:Dimensionless localHistory1Humidity "Atmospheric humidity [%d %unit%]"  <humidity> { channel="openweathermap:onecall-history:api:local-history:history#humidity" }
-Number:Temperature localHistory1Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channea="openweathermap:onecall-history:api:local-history:eurrent#dew-point" }
+Number:Temperature localHistory1Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channel="openweathermap:onecall-history:api:local-history:current#dew-point" }
 Number:Speed localHistory1WindSpeed "Wind speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:history#wind-speed" }
 Number:Angle localHistory1WindDirection "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall-history:api:local-history:history#wind-direction" }
 Number:Speed localHistory1GustSpeed "Gust speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:history#gust-speed" }
@@ -484,7 +481,7 @@ Number:Temperature localHistory1Hours01Temperature "Minimum temperature [%.1f %u
 Number:Temperature localHistory1Hours01ApparentTemperature "Minimum temperature [%.1f %unit%]"   <temperature> { channel="openweathermap:onecall-history:api:local-history:historyHours01#apparent-temperature" }
 Number:Pressure localHistory1Hours01Pressure "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall-history:api:local-history:historyHours01#pressure" }
 Number:Dimensionless localHistory1Hours01Humidity "Atmospheric humidity [%d %unit%]"  <humidity> { channel="openweathermap:onecall-history:api:local-history:historyHours01#humidity" }
-Number:Temperature localHistory1Hours01Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channea="openweathermap:onecall-history:api:local-history:eurrent#dew-point" }
+Number:Temperature localHistory1Hours01Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channel="openweathermap:onecall-history:api:local-history:current#dew-point" }
 Number:Speed localHistory1Hours01WindSpeed "Wind speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours01#wind-speed" }
 Number:Angle localHistory1Hours01WindDirection "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours01#wind-direction" }
 Number:Speed localHistory1Hours01GustSpeed "Gust speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours01#gust-speed" }
@@ -503,7 +500,7 @@ Number:Temperature localHistory1Hours24Temperature "Minimum temperature [%.1f %u
 Number:Temperature localHistory1Hours24ApparentTemperature "Minimum temperature [%.1f %unit%]"   <temperature> { channel="openweathermap:onecall-history:api:local-history:historyHours24#apparent-temperature" }
 Number:Pressure localHistory1Hours24Pressure "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall-history:api:local-history:historyHours24#pressure" }
 Number:Dimensionless localHistory1Hours24Humidity "Atmospheric humidity [%d %unit%]"  <humidity> { channel="openweathermap:onecall-history:api:local-history:historyHours24#humidity" }
-Number:Temperature localHistory1Hours24Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channea="openweathermap:onecall-history:api:local-history:eurrent#dew-point" }
+Number:Temperature localHistory1Hours24Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channel="openweathermap:onecall-history:api:local-history:current#dew-point" }
 Number:Speed localHistory1Hours24WindSpeed "Wind speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours24#wind-speed" }
 Number:Angle localHistory1Hours24WindDirection "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours24#wind-direction" }
 Number:Speed localHistory1Hours24GustSpeed "Gust speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours24#gust-speed" }

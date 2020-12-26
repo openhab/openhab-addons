@@ -36,13 +36,24 @@ public enum MiIoQuantiyTypes {
 
     CELCIUS(SIUnits.CELSIUS, "C"),
     FAHRENHEIT(ImperialUnits.FAHRENHEIT),
+    KELVIN(Units.KELVIN, "K"),
+    PASCAL(SIUnits.PASCAL),
     SECOND(Units.SECOND, "seconds"),
     MINUTE(Units.MINUTE, "minutes"),
     HOUR(Units.HOUR, "hours"),
+    DAY(Units.DAY, "days"),
     AMPERE(Units.AMPERE),
+    VOLT(Units.VOLT),
     WATT(Units.WATT),
+    LITRE(Units.LITRE, "liter"),
+    LUX(Units.LUX),
+    RADIANS(Units.RADIAN, "radians"),
+    KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh"),
     SQUARE_METRE(SIUnits.SQUARE_METRE, "square_meter", "squaremeter"),
-    PERCENT(Units.PERCENT);
+    PERCENT(Units.PERCENT),
+    KGM3(Units.KILOGRAM_PER_CUBICMETRE, "kilogram_per_cubicmeter"),
+    UGM3(Units.MICROGRAM_PER_CUBICMETRE, "microgram_per_cubicmeter"),
+    PPM(Units.PARTS_PER_MILLION, "parts_per_million");
 
     private final Unit<?> unit;
     private final String[] aliasses;

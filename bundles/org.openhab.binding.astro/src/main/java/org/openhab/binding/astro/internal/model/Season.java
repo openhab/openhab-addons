@@ -109,7 +109,7 @@ public class Season {
      * Returns the next season.
      */
     public Calendar getNextSeason() {
-        return DateTimeUtils.getNext(spring, summer, autumn, winter);
+        return DateTimeUtils.getNextFromToday(spring, summer, autumn, winter);
     }
 
     /**

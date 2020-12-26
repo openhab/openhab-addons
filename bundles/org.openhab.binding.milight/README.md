@@ -33,9 +33,9 @@ Read the device manual for more information about how to connect your device to 
 
 ## Thing Configuration
 
-Besides adding bridges through Paper UI, you can also add them manually in your Thing
+Besides adding bridges through the UI, you can also add them manually in your Thing
 configuration file.
-iBox and iBox2 have the version 6, older milight bridges have the version 3.
+iBox and iBox2 have the version 6, older Milight bridges have the version 3.
 The ID is the MAC address of the bridge in hexadecimal digits.
 
     Bridge milight:bridgeV3:mybridge [ host="192.168.0.70", bridgeid="ACCF23A6C0B4", passwordByte1=0, passwordByte2=0, repeat=2, delayTime=75 ] {
@@ -112,11 +112,10 @@ For rgbwLed/rgbwwLed bulbs these channels are supported:
     animation_speed_relative  Changes the speed of your chosen animation mode
     ledlink                   Sync bulb to this zone within 3 seconds of light bulb socket power on
     ledunlink                 Clear bulb from this zone within 3 seconds of light bulb socket power on
-
-
+    
 Limitations:
 
-*   Only the rgbww bulbs support changing their saturation, for rgbv2Led/rgbwLed the colorpicker will only set the hue and brightness and change to whitemode if the saturation is under a given threshold of 50%.
+*   Only the rgbww bulbs support changing their saturation, for rgbv2Led/rgbwLed the colorpicker will only set the hue and brightness and change to white mode if the saturation is under a given threshold of 50%.
 
 ## Example
 
@@ -129,7 +128,7 @@ Dimmer Light_LivingroomC	{channel="milight:whiteLed:ACCF23A6C0B4:1:ledtemperatur
 Dimmer RGBW_LivingroomB		{channel="milight:rgbwLed:ACCF23A6C0B4:2:ledbrightness"}   //Dimmer changing brightness for RGBW bulb in zone 2
 Color Light_Party           {channel="milight:rgbwLed:ACCF23A6C0B4:1:ledcolor"}        //Colorpicker for rgb bulbs
 
-//You have to link the items to the channels of your prefered group e.g. in Paper UI after you have saved your items file.
+# You have to link the items to the channels of your prefered group.
 
 //The command types nightMode and whiteMode are stateless and should be configured as pushbuttons as they only support a trigger action:
 Switch Light_GroundfloorN	{channel="milight:whiteLed:ACCF23A6C0B4:0:lednightmode", autoupdate="false"} //Activate the NightMode for all bulbs

@@ -13,8 +13,6 @@ This binding allows you to integrate, view, control and configure the Nuki Bridg
 
 It is absolutely recommended to configure static IP addresses for both, the openHAB server and the Nuki Bridge!  
 
-You can configure the Nuki Binding either by using Paper UI or manually through text files.  
-
 ### Nuki Bridge Callback
 
 The Nuki Binding will manage the required callback from the Nuki Bridge to the openHAB server if *manageCallbacks* is set to `true`.

@@ -79,7 +79,7 @@ The discovery also will discover all called scenes, if they aren't automatically
 Temperature control scenes, like *eco* will be ignored, so they cannot be discovered. 
 
 If you only want to discover one of the thing types, you can start a discovery scan on the thing type you want to have discovered.
-You can use the command line command, e.g.: ``smarthome:discovery start digitalstrom:namedScene`` to start the scan.
+You can use the command line command, e.g.: ``openhab:discovery start digitalstrom:namedScene`` to start the scan.
 Which thing types this binding supports, please have a look at **Supported Things**. 
 
 ## Thing Configuration and Properties

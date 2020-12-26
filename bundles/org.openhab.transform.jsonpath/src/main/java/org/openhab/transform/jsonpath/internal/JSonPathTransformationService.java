@@ -38,7 +38,7 @@ import com.jayway.jsonpath.PathNotFoundException;
  *
  */
 @NonNullByDefault
-@Component(property = { "smarthome.transform=JSONPATH" })
+@Component(property = { "openhab.transform=JSONPATH" })
 public class JSonPathTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(JSonPathTransformationService.class);

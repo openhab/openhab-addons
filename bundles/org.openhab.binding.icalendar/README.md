@@ -59,6 +59,7 @@ They are all read-only.
 | next_title        | String    | Title of the next event                                                             |
 | next_start        | DateTime  | Start of the next event                                                             |
 | next_end          | DateTime  | End of the next event                                                               |
+| last_update       | DateTime  | The time and date of the last successful update of the calendar                     |
 
 ### Channels for `eventfilter`
 
@@ -165,6 +166,11 @@ Command tags in a calendar event (in the case that configuration parameter `auth
 BEGIN:Calendar_Test_Switch:ON
 END:Calendar_Test_Switch:OFF
 ```
+
+### Notes for Nextcloud
+
+The `url` should be: `https://<URL_TO_SERVER>/remote.php/dav/calendars/<username>/<calendar_name>?export`, so the `?export` is important to get an `ical` file from the calendar.
+Username and password for the nextcloud account have to be set as well.
 
 ## Breaking changes
 

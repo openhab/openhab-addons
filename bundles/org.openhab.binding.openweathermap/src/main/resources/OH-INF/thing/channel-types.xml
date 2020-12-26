@@ -189,6 +189,7 @@
 			<channel id="apparent-night" typeId="apparent-night"/>
 			<channel id="pressure" typeId="system.barometric-pressure"/>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
 			<channel id="wind-speed" typeId="system.wind-speed"/>
 			<channel id="wind-direction" typeId="system.wind-direction"/>
 			<channel id="gust-speed" typeId="gust-speed"/>
@@ -197,7 +198,6 @@
 			<channel id="precip-probability" typeId="precip-probability"/>
 			<channel id="rain" typeId="rain"/>
 			<channel id="snow" typeId="snow"/>
-			<channel id="visibility" typeId="visibility"/>
 		</channels>
 	</channel-group-type>
 

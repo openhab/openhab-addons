@@ -150,8 +150,10 @@ public class JdbcBaseDAO {
         sqlTypes.put("CONTACTITEM", "VARCHAR(6)");
         sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
         sqlTypes.put("DIMMERITEM", "TINYINT");
+        sqlTypes.put("IMAGEITEM", "VARCHAR(65500)");// jdbc max 21845
         sqlTypes.put("LOCATIONITEM", "VARCHAR(30)");
         sqlTypes.put("NUMBERITEM", "DOUBLE");
+        sqlTypes.put("PLAYERITEM", "VARCHAR(20)");
         sqlTypes.put("ROLLERSHUTTERITEM", "TINYINT");
         sqlTypes.put("STRINGITEM", "VARCHAR(65500)");// jdbc max 21845
         sqlTypes.put("SWITCHITEM", "VARCHAR(6)");
@@ -328,8 +330,8 @@ public class JdbcBaseDAO {
     }
 
     public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
-            String table, String name) {
-        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name);
+            String table, String name, ZoneId timeZone) {
+        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
         logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
 
@@ -346,7 +348,7 @@ public class JdbcBaseDAO {
     static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
-            String simpleName) {
+            String simpleName, ZoneId timeZone) {
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
                 filter.toString(), numberDecimalcount, table, simpleName);
@@ -354,11 +356,13 @@ public class JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'";
+            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
+                    + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'";
+            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
+                    + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC ";
         if (filter.getPageSize() != 0x7fffffff) {
@@ -391,10 +395,10 @@ public class JdbcBaseDAO {
         String itemType = getItemType(item);
 
         logger.debug("JDBC::storeItemValueProvider: item '{}' as Type '{}' in '{}' with state '{}'", item.getName(),
-                itemType, vo.getTableName(), item.getState().toString());
+                itemType, vo.getTableName(), item.getState());
 
         // insertItemValue
-        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", item.getState().toString());
+        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", item.getState());
         if ("COLORITEM".equals(itemType)) {
             vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
             vo.setValue(item.getState().toString());
@@ -407,9 +411,9 @@ public class JdbcBaseDAO {
                 vo.setValue(newVal.doubleValue());
             } else if (it.toUpperCase().contains("DECIMAL") || it.toUpperCase().contains("NUMERIC")) {
                 vo.setValueTypes(it, java.math.BigDecimal.class);
-                DecimalType newVal = (DecimalType) item.getState();
-                logger.debug("JDBC::storeItemValueProvider: newVal.toBigDecimal: '{}'", newVal.toBigDecimal());
-                vo.setValue(newVal.toBigDecimal());
+                BigDecimal newVal = BigDecimal.valueOf(((Number) item.getState()).doubleValue());
+                logger.debug("JDBC::storeItemValueProvider: newVal.toBigDecimal: '{}'", newVal);
+                vo.setValue(newVal);
             } else if (it.toUpperCase().contains("INT")) {
                 vo.setValueTypes(it, java.lang.Integer.class);
                 Number newVal = (Number) item.getState();
@@ -417,8 +421,7 @@ public class JdbcBaseDAO {
                 vo.setValue(newVal.intValue());
             } else {// fall back to String
                 vo.setValueTypes(it, java.lang.String.class);
-                logger.warn("JDBC::storeItemValueProvider: item.getState().toString(): '{}'",
-                        item.getState().toString());
+                logger.warn("JDBC::storeItemValueProvider: item.getState().toString(): '{}'", item.getState());
                 vo.setValue(item.getState().toString());
             }
         } else if ("ROLLERSHUTTERITEM".equals(itemType) || "DIMMERITEM".equals(itemType)) {
@@ -449,8 +452,7 @@ public class JdbcBaseDAO {
              */
             // All other items should return the best format by default
             vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
-            logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'",
-                    item.getState().toString());
+            logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'", item.getState());
             vo.setValue(item.getState().toString());
         }
         return vo;
@@ -488,7 +490,7 @@ public class JdbcBaseDAO {
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsLong(v)), ZoneId.systemDefault()));
         } else if (item instanceof StringItem) {
             return StringType.valueOf(((String) v).toString());
-        } else {// Call, Location, String
+        } else {// Call, Image, Location, Player, String
             return StringType.valueOf(((String) v).toString());
         }
     }
