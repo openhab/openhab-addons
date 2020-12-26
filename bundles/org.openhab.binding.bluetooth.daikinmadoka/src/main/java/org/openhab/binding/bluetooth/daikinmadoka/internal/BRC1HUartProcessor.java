@@ -87,24 +87,27 @@ public class BRC1HUartProcessor {
 
     public void chunkReceived(byte[] byteValue) {
         stateLock.lock();
-        this.uartMessages.add(byteValue);
-        if (isMessageComplete()) {
-            logger.debug("Complete message received!");
+        try {
+            this.uartMessages.add(byteValue);
+            if (isMessageComplete()) {
+                logger.debug("Complete message received!");
 
-            // Beyond this point, full message received
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                // Beyond this point, full message received
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-            for (byte[] msg : uartMessages) {
-                if (msg.length > 1) {
-                    bos.write(msg, 1, msg.length - 1);
+                for (byte[] msg : uartMessages) {
+                    if (msg.length > 1) {
+                        bos.write(msg, 1, msg.length - 1);
+                    }
                 }
+
+                this.uartMessages.clear();
+
+                this.responseListener.receivedResponse(bos.toByteArray());
             }
-
-            this.uartMessages.clear();
-
-            this.responseListener.receivedResponse(bos.toByteArray());
+        } finally {
+            stateLock.unlock();
         }
-        stateLock.unlock();
     }
 
     public void abandon() {
