@@ -7,7 +7,7 @@ The API provides a lot of diagnostic data and provide access to remote control f
 ## Discovery
 
 The binding supports automated discovery of vehicles.
-For now only Audi is supported, other brand might follow in the future, because the API has a big overlap between various brands.
+For now only Audi is supported, other brand might follo w in the future, because the API has a big overlap between various brands.
 The CarNet Account Thing has to be added manually giving the neccesary credentials.
 Once the account is online the binding can query all registered vehicles and creates a vehicle thing for each of them.
 
@@ -17,7 +17,7 @@ The binding itself has no configuration options
 
 ## Supported Things
 
-### CarNet Account (`account`)
+### CarNet Account (account)
 
 The Account thing implements the online connect to the CarNet service.
 An account is required to setup the connection (register on the manufacture's portal, e.g. myAudi.de).
@@ -36,7 +36,7 @@ Thing Configuration
 
 The account thing has no channels.
 
-### Vehicle (`vehicle`)
+### Vehicle (vehicle)
 
 The thing type vehicle represents a registered vehicle.
 The vehicle is associated with an account and an online connection is required to access the service.
@@ -63,7 +63,7 @@ Thing Configuration
 
 | Parameter        | Description                                                                 | Mandatory |Default      |
 |------------------|-----------------------------------------------------------------------------|-----------|-------------|
-| PIN              | Security PIN (SPIN) required for privileged functions like lock/unlock     | no        | 1           |
+| PIN              | Security PIN (SPIN) required for priveledged functions like lock/unlock     | no        | 1           |
 | numShortTrip     | Number of entries in the Short Trip History (one channel group each)        | no        | 1           |
 | numLongTrip      | Number of entries in the Long Trip History (one channel group each)         | no        | 1           |
 | numActionHistory | Number of entries in the Action History (one channel group each)            | no        | 1           |
@@ -80,27 +80,17 @@ The following channels are available depending on the vehicle type:
 |Group         |Channel                  |Type                  |read-only| Description                                                                           |
 |--------------|-------------------------|----------------------|---------|---------------------------------------------------------------------------------------|
 | general      | kilometerStatus         | Number:Length        | yes     | The kilometers from the odometer when status was captured.                            |
-|              | monthlyMilage           | Number:Length        | yes     | Average milage per month.                                                             |
 |              | parkingLight            | Switch               | yes     | ON: Parking light is turned on                                                        |
-|              | tempOutside             | Number:Temperature   | yes     | The outside temperature.                                                              |
+|              | tempOutside             | Number:Temperature   | yes     | The outside temperature in °C.                                                        |
 |              | parkingBrake            | Switch               | yes     | State of the parking brake                                                            |
-| control      | climater                | Switch               | no      | Turn climater on/off                                                                  |
+|              | monthlyMilage           | Number:Length        | yes     | Average milage per month.                                                             |
+|              | lastAction              | String               | yes     | Last action send to the vehicle, check last action status to see if the request has been processed |
+|              | lastActionStatus        | String               | yes     | Result from last action sent to the vehicle                                           |
+|              | lastActionPending       | Switch               | yes     | ON: An action was send to the vehicle and is in status progressing                    |
+| control      | lock                    | Switch               | no      | Lock/Unlock doors                                                                     |
+|              | climater                | Switch               | no      | Turn climater on/off                                                                  |
 |              | windowHeat              | Switch               | no      | Turn window heating on/off                                                            |
 |              | preHeater               | Switch               | no      | Turn pre-heating on/off                                                               |
-|              | lock                    | Switch               | no      | Lock/Unlock doors                                                                     |
-| status       | currentSpeed            | Number:Speed         | yes     | Current speed when data was last updated                                              |
-|              | roofMotorCoverState     | Switch               | yes     | ON: Closed                                                                            |
-|              | roofRearMotorCoverState | Switch               | yes     | State of the rear sun roof motor cover                                                |
-|              | serviceFlapState        | Switch               | yes     | ON: Service flap is closed and locked, OFF: flap is open or closed, but not locked    |
-|              | spoilerState            | Switch               | yes     | State of the spoiler.                                                                 |
-| range        | totalRange              | Number:Length        | yes     | Total remaining range.                                                                |
-|              | primaryRange            | Number:Length        | yes     | Range of the primary battery engine system.                                           |
-|              | primaryFuelType         | Number               | yes     | Fuel type of the primary engine system.                                               |
-|              | secondaryRange          | Number:Length        | yes     | Range of secondary drive, e.g. electrical engine                                      |
-|              | secondaryFuelType       | Number               | yes     | Fuel type of the secondary engine system.                                             |
-|              | fuelPercentage          | Number:Dimensionless | yes     | Percentage of fuel remaining.                                                         |
-|              | fuelMethod              | String               | yes     | Method: 0=measured, 1=calculated                                                      |
-|              | gasPercentage           | Number:Dimensionless | yes     | Percentage of natural gas remaining.                                                  |
 | location     | position                | Location             | yes     | Last known Car location                                                               |
 |              | positionLastUpdate      | DateTime             | yes     | Time of last update for the vehicle position.                                         |
 |              | parkingPosition         | Location             | yes     | Last position where the vehicle was parked.                                           |
@@ -114,6 +104,19 @@ The following channels are available depending on the vehicle type:
 |              | oilWarningLevel         | Switch               | yes     | Minimum oil warning level                                                             |
 |              | oilPercentage           | Number:Dimensionless | yes     | Dipstick oil percentage                                                               |
 |              | distanceAdBlue          | Number:Length        | yes     | Distance before the next Ad Blue fill-up is required.                                 |
+| range        | totalRange              | Number:Length        | yes     | Total remaining range.                                                                |
+|              | primaryRange            | Number:Length        | yes     | Range or the primary battery engine system.                                           |
+|              | primaryFuelType         | Number               | yes     | Fuel type of the primary engine system.                                               |
+|              | secondaryRange          | Number:Length        | yes     | ??? Range or the secondary battery?                                                   |
+|              | secondaryFuelType       | Number               | yes     | ???  Drive                                                                            |
+|              | fuelPercentage          | Number:Dimensionless | yes     | Percentage of fuel remaining.                                                         |
+|              | fuelMethod              | String               | yes     | Method: 0=measured, 1=calculated                                                      |
+|              | gasPercentage           | Number:Dimensionless | yes     | Percentage of natural gas remaining                                                   |
+| status       | currentSpeed            | Number:Speed         | yes     | Current speed when data was last updated                                              |
+|              | roofMotorCoverState     | Switch               | yes     | ON: Closed                                                                            |
+|              | roofRearMotorCoverState | Switch               | yes     | State of the rear sun root motor cover                                                |
+|              | serviceFlapState        | Switch               | yes     | ON: Service flap is closed and locked, OFF: flap is open or closed, but not locked    |
+|              | spoilerState            | Switch               | yes     | State of the spoiler.                                                                 |
 | charger      | chargingStatus          | String               | yes     | Charging status                                                                       |
 |              | powerState              | String               | yes     | Indicates availability of charging power                                              |
 |              | chargingState           | String               | yes     | Current status of the charging process                                                |
@@ -133,7 +136,7 @@ The following channels are available depending on the vehicle type:
 |              | mirrorHeat              | Switch               | yes     | ON: Mirror heating is active                                                          |
 | rluHistory1  | rluOperation            | String               | yes     | Action type: lock/unlock                                                              |
 |              | rluTimestamp            | DateTime             | yes     | Timestamp when the action was initiated.                                              |
-|              | rluResult               | String               | yes     | Action result: 1=okchannel-type.carnet.rluResult.label = Action Result                |
+|              | rluResult               | String               | yes     | Action result: 1=ok                                                                   |
 | tripShort1   | timestamp               | DateTime             | yes     | Trip time                                                                             |
 |              | avgElectricConsumption  | Number:Energy        | yes     | Electrical Consumptio during the trip                                                 |
 |              | avgFuelConsumption      | Number:Volume        | yes     | Average fuel consumption for this trip                                                |
@@ -142,10 +145,10 @@ The following channels are available depending on the vehicle type:
 |              | mileage                 | Number:Length        | yes     | Distance for this trip.                                                               |
 |              | overallMileage          | Number:Length        | yes     | Overall milage after this trip                                                        |
 | tripLong1    | timestamp               | DateTime             | yes     | Trip time                                                                             |
-|              | avgElectricConsumption  | Number:Energy        | yes     | Electrical consumptio during the trip                                                 |
+|              | avgElectricConsumption  | Number:Energy        | yes     | Electrical Consumptio during the trip                                                 |
 |              | avgFuelConsumption      | Number:Volume        | yes     | Average fuel consumption for this trip                                                |
 |              | avgSpeed                | Number:Speed         | yes     | Average Speed for this trip                                                           |
-|              | startMileage            | Number:Length        | yes     | Start milage for the trip                                                             |
+|              | startMileage            | Number:Length        | yes     | Start Milage for the trip                                                             |
 |              | mileage                 | Number:Length        | yes     | Distance for this trip.                                                               |
 |              | overallMileage          | Number:Length        | yes     | Overall milage after this trip                                                        |
 | destination1 | destinationName         | String               | yes     | The textual description of this destination, might be empty/NaN.                      |
@@ -242,7 +245,6 @@ Switch                      ChargerSwitch        "Charging ON/OFF"              
 Switch                      PreHeater            "Pre-Heater ON/OFF"                   { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#preHeater" }
 Number                      Current_Speed        "Current Speed [%.1f %unit%]"         { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:status#currentSpeed" }
 ```
-
 .sitemap
 
 .rule

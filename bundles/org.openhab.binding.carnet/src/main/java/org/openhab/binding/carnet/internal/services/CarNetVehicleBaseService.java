@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.carnet.internal.services;
 
-import static org.openhab.binding.carnet.internal.CarNetUtils.mkChannelId;
-
 import java.util.Map;
 
 import javax.measure.Unit;
@@ -89,12 +87,7 @@ public class CarNetVehicleBaseService {
 
     public boolean addChannel(Map<String, ChannelIdMapEntry> channels, String group, String channel, String itemType,
             @Nullable Unit<?> unit, boolean advanced, boolean readOnly) {
-        if (!channels.containsKey(mkChannelId(group, channel))) {
-            logger.debug("{}: Adding channel definition for channel {}", thingId, mkChannelId(group, channel));
-            channels.put(mkChannelId(group, channel), idMapper.add(group, channel, itemType, unit, advanced, readOnly));
-            return true;
-        }
-        return false;
+        return thingHandler.addChannel(channels, group, channel, itemType, unit, advanced, readOnly);
     }
 
     protected boolean updateChannel(String group, String channel, State value) {

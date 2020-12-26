@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.carnet.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
@@ -25,10 +28,8 @@ import javax.measure.quantity.Volume;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link CarNetBindingConstants} class defines common constants, which are
@@ -48,7 +49,8 @@ public class CarNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_MYAUDI = new ThingTypeUID(BINDING_ID, THING_MYAUDI);
     public static final ThingTypeUID THING_TYPE_MYVOLKSWAGEN = new ThingTypeUID(BINDING_ID, THING_MYVOLKSWAGEN);
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MYAUDI, THING_TYPE_VEHICLE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_MYAUDI, THING_TYPE_VEHICLE).collect(Collectors.toSet()));
 
     // List of all ChannelGroups and Channels
     public static final String CHANNEL_GROUP_GENERAL = "general";
@@ -166,10 +168,10 @@ public class CarNetBindingConstants {
     public static final int API_REQUEST_CHECK_INT = 15 / POLL_INTERVAL_SEC; // interval for checking pending requests
 
     public static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
-    public static final Unit<Power> KWATT = MetricPrefix.KILO(SmartHomeUnits.WATT);
+    public static final Unit<Power> KWATT = MetricPrefix.KILO(Units.WATT);
     public static final Unit<Time> QDAYS = Units.DAY;
     public static final Unit<Time> QMINUTES = Units.MINUTE;
-    public static final Unit<Dimensionless> PERCENT = SmartHomeUnits.PERCENT;
+    public static final Unit<Dimensionless> PERCENT = Units.PERCENT;
     public static final Unit<Temperature> DKELVIN = MetricPrefix.DECI(Units.KELVIN);
     public static final Unit<Volume> DLITRE = MetricPrefix.DECI(Units.LITRE);
 }

@@ -28,7 +28,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetVehicleSta
 import org.openhab.binding.carnet.internal.handler.CustomUnits;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -54,10 +54,10 @@ public class CarNetIChanneldMapper {
         this.resources = resources;
 
         // Status
-        add("KILOMETER_STATUS", "0x0101010002", "kilometerStatus", ITEMT_DISTANCE, CHANNEL_GROUP_GENERAL, KILOMETRE);
-        add("TEMPERATURE_OUTSIDE", "0x0301020001", "tempOutside", ITEMT_TEMP, CHANNEL_GROUP_GENERAL, SIUnits.CELSIUS);
-        add("STATE1_PARKING_LIGHT", "0x0301010001", "parkingLight", ITEMT_SWITCH, CHANNEL_GROUP_GENERAL);
-        add("STATE1_PARKING_BRAKE", "0x0301030001", "parkingBrake", ITEMT_SWITCH, CHANNEL_GROUP_GENERAL);
+        add("KILOMETER_STATUS", "0x0101010002", "kilometerStatus", ITEMT_DISTANCE, CHANNEL_GROUP_STATUS, KILOMETRE);
+        add("TEMPERATURE_OUTSIDE", "0x0301020001", "tempOutside", ITEMT_TEMP, CHANNEL_GROUP_STATUS, SIUnits.CELSIUS);
+        add("STATE1_PARKING_LIGHT", "0x0301010001", "parkingLight", ITEMT_SWITCH);
+        add("STATE1_PARKING_BRAKE", "0x0301030001", "parkingBrake", ITEMT_SWITCH);
         add("POSITION_CONVERTIBLE_TOP", "0x030105000A", "positionConvertableTop", ITEMT_PERCENT);
         add("STATE3_SUN_ROOF_MOTOR_COVER", "0x030105000B", "roofMotorCoverState", ITEMT_SWITCH);
         add("POSITION_SUN_ROOF_MOTOR_COVER", "0x030105000C");
@@ -76,7 +76,8 @@ public class CarNetIChanneldMapper {
         add("FUEL_METHOD", "0x030103000B", "fuelMethod", ITEMT_STRING, CHANNEL_GROUP_RANGE, null, true, true); // '0':'measured',
         // '1':'calculated'
         add("TOTAL_RANGE", "0x0301030005", "totalRange", ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE);
-        add("PRIMARY_RANGE", "0x0301030006", "primaryRange", ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE);
+        add("PRIMARY_RANGE", "0x0301030006", "primaryRange", ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE, true,
+                true);
         add("PRIMARY_FUEL_TYPE", "0x0301030007", "primaryFuelType", ITEMT_NUMBER, CHANNEL_GROUP_RANGE, null, true,
                 true);
         add("SECONDARY_RANGE", "0x0301030008", "secondaryRange", ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE, true,
@@ -103,7 +104,7 @@ public class CarNetIChanneldMapper {
         add("MAINT_DISTANCE_TO_OIL_CHANGE", "0x0203010001", "distanceOilChange", ITEMT_DISTANCE, CHANNEL_GROUP_MAINT,
                 KILOMETRE);
         add("MAINT_OIL_TIME_TO_CHANGE", "0x0203010002", "intervalOilChange", ITEMT_TIME, CHANNEL_GROUP_MAINT, QDAYS);
-        add("MAINT_MONTHLY_MILEAGE", "0x0203010007", "monthlyMilage", ITEMT_DISTANCE, CHANNEL_GROUP_GENERAL, KILOMETRE);
+        add("MAINT_MONTHLY_MILEAGE", "0x0203010007", "monthlyMilage", ITEMT_DISTANCE, CHANNEL_GROUP_STATUS, KILOMETRE);
 
         // Doors/trunk
         add("STATE3_CONVERTABLE_TOP", "0x0301050009", "covertableTopState", ITEMT_NUMBER, CHANNEL_GROUP_DOORS);
@@ -229,7 +230,7 @@ public class CarNetIChanneldMapper {
         }
         if (fieldUnit.contains("%")) {
             itemType = ITEMT_PERCENT;
-            unit = SmartHomeUnits.PERCENT;
+            unit = Units.PERCENT;
         } else if (fieldUnit.equalsIgnoreCase("d")) {
             itemType = ITEMT_TIME;
             unit = QDAYS;
@@ -238,7 +239,7 @@ public class CarNetIChanneldMapper {
             unit = QMINUTES;
         } else if (fieldUnit.equalsIgnoreCase("l")) {
             itemType = ITEMT_VOLUME;
-            unit = SmartHomeUnits.LITRE;
+            unit = Units.LITRE;
         } else if (fieldUnit.equalsIgnoreCase("gal")) {
             itemType = ITEMT_VOLUME;
             unit = CustomUnits.GALLON;
@@ -288,7 +289,7 @@ public class CarNetIChanneldMapper {
         entry.channelName = channel;
         entry.itemType = itemType;
         if (itemType.equals(ITEMT_PERCENT) && (unit == null)) {
-            entry.unit = SmartHomeUnits.PERCENT;
+            entry.unit = Units.PERCENT;
         } else {
             entry.unit = unit;
         }

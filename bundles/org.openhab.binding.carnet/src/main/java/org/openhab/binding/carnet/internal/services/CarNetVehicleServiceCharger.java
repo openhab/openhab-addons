@@ -26,7 +26,7 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNChargerInfo.Ca
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -72,7 +72,7 @@ public class CarNetVehicleServiceCharger extends CarNetVehicleBaseService {
                 String group = CHANNEL_GROUP_CHARGER;
                 updateChannel(group, CHANNEL_CHARGER_CURRENT,
                         cs.settings != null ? getDecimal(cs.settings.maxChargeCurrent.content) : UnDefType.UNDEF,
-                        SmartHomeUnits.AMPERE);
+                        Units.AMPERE);
                 if (sd.chargingState != null) {
                     updateChannel(group, CHANNEL_CHARGER_CHG_STATE, getStringType(sd.chargingState.content));
                     updateChannel(group, CHANNEL_CHARGER_STATUS, getStringType(sd.chargingState.content));

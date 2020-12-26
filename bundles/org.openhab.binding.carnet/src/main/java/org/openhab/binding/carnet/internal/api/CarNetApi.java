@@ -484,12 +484,17 @@ public class CarNetApi {
         try {
             json = http.get(uri, vin, fillAppHeaders());
         } catch (CarNetException e) {
+            if (e.isSecurityException()) { // check for login error
+                throw e;
+            }
             CarNetApiResult res = e.getApiResult();
             logger.debug("{}: API call {} failed: {}", config.vehicle.vin, function, e.toString());
             if (res.isHttpUnauthorized()) {
                 json = loadJson(function);
             }
         } catch (RuntimeException e) {
+            logger.debug("{}: API call {} failed", config.vehicle.vin, function, e);
+        } catch (Exception e) {
             logger.debug("{}: API call {} failed", config.vehicle.vin, function, e);
         }
 
@@ -563,11 +568,21 @@ public class CarNetApi {
             remove = true;
         } else {
             try {
+                int error = -1;
                 if (status.isEmpty()) {
-                    logger.debug("{}: Check request {} status for action {}.{}; checkUrl={}", config.vehicle.vin,
-                            request.requestId, request.service, request.action, request.checkUrl);
-                    CNRequestStatus rs = callApi(request.checkUrl, "getRequestStatus", CNRequestStatus.class);
-                    status = rs.requestStatusResponse.status;
+                    if (request.checkUrl.isEmpty()) {
+                        // this should not happen
+                        logger.warn("{}: Unable to check request {} status for action {}.{}; checkUrl is missing!",
+                                config.vehicle.vin, request.requestId, request.service, request.action);
+                    } else {
+                        logger.debug("{}: Check request {} status for action {}.{}; checkUrl={}", config.vehicle.vin,
+                                request.requestId, request.service, request.action, request.checkUrl);
+                        CNRequestStatus rs = callApi(request.checkUrl, "getRequestStatus", CNRequestStatus.class);
+                        status = rs.requestStatusResponse.status;
+                        if (rs.requestStatusResponse.error != null) {
+                            error = rs.requestStatusResponse.error;
+                        }
+                    }
                 }
 
                 logger.debug("{}: Request {} for action {}.{} is in status {}", config.vehicle.vin, request.requestId,
@@ -581,7 +596,8 @@ public class CarNetApi {
                         break;
                     case CNAPI_REQUEST_NOT_FOUND:
                     case CNAPI_REQUEST_FAIL:
-                    case "general_error":
+                        logger.warn("{}: Action {}.{} failed with status {}, error={} (requestId={})",
+                                config.vehicle.vin, request.service, request.action, status, error, request.requestId);
                         remove = true;
                         break;
                     default:

@@ -19,12 +19,12 @@ import javax.measure.quantity.Volume;
 import javax.measure.spi.SystemOfUnits;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.Units;
 
 import tec.uom.se.AbstractSystemOfUnits;
 import tec.uom.se.format.SimpleUnitFormat;
 import tec.uom.se.function.RationalConverter;
 import tec.uom.se.unit.TransformedUnit;
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link CustomUnits} implements missing unit definitions.

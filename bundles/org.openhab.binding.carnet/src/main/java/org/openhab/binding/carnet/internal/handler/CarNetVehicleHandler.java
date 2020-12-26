@@ -16,6 +16,8 @@ import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.*;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -114,7 +116,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     @Override
     public void initialize() {
         logger.debug("Initializing!");
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
 
         // Register listener and wait for account being ONLINE
         CarNetAccountHandler handler = null;
@@ -253,27 +255,36 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                     new CarNetVehicleServiceDestinations(this, api));
 
             if (!channelsCreated) {
-                // Add additional channels
+                // General channels
                 Map<String, ChannelIdMapEntry> channels = new LinkedHashMap<>();
+                addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, null, false, false);
+                addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_LOCKED, ITEMT_SWITCH, null, false, true);
+                addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ, ITEMT_SWITCH, null, false, true);
+                addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED, ITEMT_SWITCH, null, false, true);
+                addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_TIRESOK, ITEMT_SWITCH, null, false, true);
+                addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, null, false, true);
+
+                // Add channels based on service information
                 for (Map.Entry<String, CarNetVehicleBaseService> s : services.entrySet()) {
                     s.getValue().createChannels(channels);
                 }
 
                 logger.debug("{}: Creating {} channels", thingId, channels.size());
                 ArrayList<ChannelIdMapEntry> channelList = new ArrayList<>(channels.values());
-                /*
-                 * try (FileWriter myWriter = new FileWriter("carnetChannels.MD")) {
-                 * String lastGroup = "";
-                 * for (ChannelIdMapEntry e : channelList) {
-                 * String group = lastGroup.equals(e.groupName) ? "" : e.groupName;
-                 * String s = String.format("| %-12.12s | %-23.23s | %-20.20s | %-7s | %-85s |\n", group,
-                 * e.channelName, e.itemType, e.readOnly ? "yes" : "no", e.getDescription());
-                 * myWriter.write(s);
-                 * lastGroup = e.groupName;
-                 * }
-                 * } catch (IOException e) {
-                 * }
-                 */
+
+                try (FileWriter myWriter = new FileWriter("carnetChannels.MD")) {
+                    String lastGroup = "";
+                    for (Map.Entry<String, ChannelIdMapEntry> m : channels.entrySet()) {
+                        ChannelIdMapEntry e = m.getValue();
+                        String group = lastGroup.equals(e.groupName) ? "" : e.groupName;
+                        String s = String.format("| %-12.12s | %-23.23s | %-20.20s | %-7s | %-85s |\n", group,
+                                e.channelName, e.itemType, e.readOnly ? "yes" : "no", e.getDescription());
+                        myWriter.write(s);
+                        lastGroup = e.groupName;
+                    }
+                } catch (IOException e) {
+                }
+
                 createChannels(channelList);
                 channelsCreated = true;
             }
@@ -378,7 +389,9 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                     break;
             }
 
-            updateActionStatus(action, actionStatus);
+            if (!action.isEmpty()) {
+                updateActionStatus(action, actionStatus);
+            }
             forceUpdate = true; // update on successful command
         } catch (CarNetException e) {
             CarNetApiErrorDTO res = e.getApiResult().getApiError();
@@ -407,10 +420,14 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                 updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION, getStringType(action));
             }
             updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_STATUS, getStringType(actionStatus));
-            boolean inProgress = actionStatus.equalsIgnoreCase(CNAPI_REQUEST_IN_PROGRESS);
+            boolean inProgress = actionStatus.equalsIgnoreCase(CNAPI_REQUEST_IN_PROGRESS)
+                    || actionStatus.equalsIgnoreCase(CNAPI_REQUEST_QUEUED);
             updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_PENDING,
                     inProgress ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, getTimestamp());
+            if (!inProgress) {
+                forceUpdate = true; // refresh vehicle status
+            }
         }
     }
 
@@ -486,7 +503,10 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                         }
                         updateVehicleStatus();
 
-                        updateStatus(ThingStatus.ONLINE); // on success thing must be online
+                        if (getThing().getStatus() != ThingStatus.ONLINE) {
+                            logger.debug("{}: Thing is now online", thingId);
+                            updateStatus(ThingStatus.ONLINE); // on success thing must be online
+                        }
                     } catch (CarNetException e) {
                         error = getError(e);
                     } catch (RuntimeException e) {
@@ -604,6 +624,16 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     private boolean addService(boolean add, String serviceId, CarNetVehicleBaseService service) {
         if (add && !services.containsKey(serviceId)) {
             services.put(serviceId, service);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addChannel(Map<String, ChannelIdMapEntry> channels, String group, String channel, String itemType,
+            @Nullable Unit<?> unit, boolean advanced, boolean readOnly) {
+        if (!channels.containsKey(mkChannelId(group, channel))) {
+            logger.debug("{}: Adding channel definition for channel {}", thingId, mkChannelId(group, channel));
+            channels.put(mkChannelId(group, channel), idMapper.add(group, channel, itemType, unit, advanced, readOnly));
             return true;
         }
         return false;

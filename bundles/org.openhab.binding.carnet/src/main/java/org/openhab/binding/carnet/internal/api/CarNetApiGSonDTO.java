@@ -837,10 +837,12 @@ public class CarNetApiGSonDTO {
 
     public static class CNRequestStatus {
         // {"requestStatusResponse":{"vin":"WAUZZZF21LN046449","status":"request_not_found"}}
+        // {"requestStatusResponse":{"vin":"WAUZZZF21LN046449","status":"request_fail","error":200}}
         public class CarNetRequestStatus {
             public String vin;
             public String status;
             public String resultData;
+            public Integer error;
         }
 
         public CarNetRequestStatus requestStatusResponse;

@@ -30,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarNetSecurityException;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNApiToken;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetSecurityPinAuthInfo;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetSecurityPinAuthentication;
@@ -131,8 +132,8 @@ public class CarNetTokenManager {
             if (url.contains("error=consent_require")) {
                 String message = URLDecoder.decode(url);
                 message = substringBefore(substringAfter(message, "&error_description="), "&");
-                throw new CarNetException(
-                        "Login failed, Consent missing. Login to Web App and give consent: " + message);
+                throw new CarNetSecurityException(
+                        "Login failed, Consent missing. Login to the Web App and give consent: " + message);
             }
             html = http.get(url, headers);
             url = http.getRedirect();
@@ -167,6 +168,9 @@ public class CarNetTokenManager {
             data.put("hmac", hmac);
             html = http.post(url, headers, data, false);
             url = http.getRedirect(); // Continue URL
+            if (url.contains("error=login.error.throttled")) {
+                throw new CarNetSecurityException("Login failed due to invalid password or API throtteling!");
+            }
 
             // Now we need to follow multiple redirects, required data is fetched from the redirect URLs
             // String userId = "";
@@ -192,10 +196,8 @@ public class CarNetTokenManager {
                     break; // that's what we are looking for
                 }
             }
-        } catch (CarNetException e) {
-            throw new CarNetException("Login failed", e);
-        } catch (UnsupportedEncodingException e) {
-            throw new CarNetException("Login failed", e);
+        } catch (CarNetException | UnsupportedEncodingException e) {
+            throw new CarNetSecurityException("Login failed", e);
         }
 
         try {
@@ -210,7 +212,7 @@ public class CarNetTokenManager {
                 if (authCode.isEmpty()) {
                     logger.debug("{}: Unable to obtain authCode, last url={}, last response: {}", config.vehicle.vin,
                             url, html);
-                    throw new CarNetException("Unable to complete OAuth, check credentials");
+                    throw new CarNetSecurityException("Unable to complete OAuth, check credentials");
                 }
 
                 logger.trace("{}: OAuth successful, obtain ID token (auth code={})", config.vehicle.vin, authCode);
@@ -238,7 +240,7 @@ public class CarNetTokenManager {
                 // process token
                 token = gson.fromJson(json, CNApiToken.class);
                 if ((token.accessToken == null) || token.accessToken.isEmpty()) {
-                    throw new CarNetException("Authentication failed: Unable to get id token!");
+                    throw new CarNetSecurityException("Authentication failed: Unable to get id token!");
                 }
 
                 tokens.idToken = new CarNetToken(token);
@@ -265,16 +267,16 @@ public class CarNetTokenManager {
             token = gson.fromJson(json, CNApiToken.class);
             if (token != null) {
                 if ((token.accessToken == null) || token.accessToken.isEmpty()) {
-                    throw new CarNetException("Authentication failed: Unable to get access token!");
+                    throw new CarNetSecurityException("Authentication failed: Unable to get access token!");
                 }
                 tokens.vwToken = new CarNetToken(token);
                 updateTokenSet(config.tokenSetId, tokens);
                 return tokens.vwToken.accessToken;
             } else {
-                throw new CarNetException("Unable to parse token information from JSON");
+                throw new CarNetSecurityException("Unable to parse token information from JSON");
             }
         } catch (CarNetException e) {
-            throw new CarNetException("Unable to create API access token", e);
+            throw new CarNetSecurityException("Unable to create API access token", e);
         }
     }
 
@@ -341,11 +343,11 @@ public class CarNetTokenManager {
                 headers, data);
         CNApiToken t = gson.fromJson(json, CNApiToken.class);
         if (t == null) {
-            throw new CarNetException("Unable to parse token information from JSON");
+            throw new CarNetSecurityException("Unable to parse token information from JSON");
         }
         CarNetToken securityToken = new CarNetToken(t);
         if (securityToken.securityToken.isEmpty()) {
-            throw new CarNetException("Authentication failed: Unable to get access token!");
+            throw new CarNetSecurityException("Authentication failed: Unable to get access token!");
         }
         logger.debug("securityToken granted successful!");
         synchronized (securityTokens) {
@@ -413,7 +415,6 @@ public class CarNetTokenManager {
         TokenSet tokens = getTokenSet(config.tokenSetId);
         if (token.isExpired()) {
             logger.debug("{}: Refreshing Token {}", config.vehicle.vin, token);
-
             try {
                 String url = "";
                 Map<String, String> data = new TreeMap<>();
@@ -424,10 +425,11 @@ public class CarNetTokenManager {
                 String json = http.post(url, http.fillRefreshHeaders(), data, false);
                 CNApiToken newToken = gson.fromJson(json, CNApiToken.class);
                 if (newToken == null) {
-                    throw new CarNetException("Unable to parse token information from JSON");
+                    throw new CarNetSecurityException("Unable to parse token information from JSON");
                 }
                 tokens.vwToken = new CarNetToken(newToken);
                 updateTokenSet(config.tokenSetId, tokens);
+                logger.debug("{}: Token refresh successful", config.vehicle.vin);
                 return true;
             } catch (CarNetException e) {
                 logger.debug("{}: Unable to refresh token: {}", config.vehicle.vin, e.toString());

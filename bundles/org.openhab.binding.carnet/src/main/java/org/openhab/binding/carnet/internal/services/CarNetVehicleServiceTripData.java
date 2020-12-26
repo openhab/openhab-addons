@@ -31,7 +31,7 @@ import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * {@link CarNetVehicleServiceTripData} implements the drip data service (short-term + long-term).
@@ -66,8 +66,8 @@ public class CarNetVehicleServiceTripData extends CarNetVehicleBaseService {
         boolean a = false;
         String group = CHANNEL_GROUP_TRIP_PRE + type + index;
         a |= addChannel(ch, group, CHANNEL_TRIP_TIME, ITEMT_DATETIME, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_TRIP_AVG_ELCON, ITEMT_ENERGY, SmartHomeUnits.KILOWATT_HOUR, false, true);
-        a |= addChannel(ch, group, CHANNEL_TRIP_AVG_FUELCON, ITEMT_VOLUME, SmartHomeUnits.LITRE, false, true);
+        a |= addChannel(ch, group, CHANNEL_TRIP_AVG_ELCON, ITEMT_ENERGY, Units.KILOWATT_HOUR, false, true);
+        a |= addChannel(ch, group, CHANNEL_TRIP_AVG_FUELCON, ITEMT_VOLUME, Units.LITRE, false, true);
         a |= addChannel(ch, group, CHANNEL_TRIP_AVG_SPEED, ITEMT_SPEED, SIUnits.KILOMETRE_PER_HOUR, false, true);
         a |= addChannel(ch, group, CHANNEL_TRIP_START_MIL, ITEMT_DISTANCE, KILOMETRE, false, true);
         a |= addChannel(ch, group, CHANNEL_TRIP_MILAGE, ITEMT_DISTANCE, KILOMETRE, false, true);
@@ -108,10 +108,10 @@ public class CarNetVehicleServiceTripData extends CarNetVehicleBaseService {
                         double fuel = getDouble(entry.averageFuelConsumption) / 10.0; // convert dL to l
                         updated |= updateChannel(group, CHANNEL_TRIP_TIME, getDateTime(getString(entry.timestamp)));
                         updated |= updateChannel(group, CHANNEL_TRIP_AVG_FUELCON, new DecimalType(fuel), 1,
-                                SmartHomeUnits.LITRE);
+                                Units.LITRE);
                         updated |= updateChannel(group, CHANNEL_TRIP_AVG_ELCON,
                                 new DecimalType(getInteger(entry.averageElectricEngineConsumption) * 100 / 1000), 3,
-                                SmartHomeUnits.KILOWATT_HOUR); // convert kw per km to kw/h per 100km
+                                Units.KILOWATT_HOUR); // convert kw per km to kw/h per 100km
                         updated |= updateChannel(group, CHANNEL_TRIP_AVG_SPEED, getDecimal(entry.averageSpeed), 1,
                                 SIUnits.KILOMETRE_PER_HOUR);
                         updated |= updateChannel(group, CHANNEL_TRIP_START_MIL, getDecimal(entry.startMileage),

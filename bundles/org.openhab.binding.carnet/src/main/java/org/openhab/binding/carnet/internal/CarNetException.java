@@ -94,6 +94,10 @@ public class CarNetException extends Exception {
         return apiResult;
     }
 
+    public boolean isSecurityException() {
+        return getCauseClass() == CarNetSecurityException.class;
+    }
+
     public boolean isHttpAccessUnauthorized() {
         return apiResult.isHttpUnauthorized();
     }
