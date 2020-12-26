@@ -42,9 +42,9 @@ public class PowermaxPowerMasterMessage extends PowermaxBaseMessage {
         byte subType = message[3];
         byte msgLen = message[4];
 
-        addDebugInfo("Type", msgType);
-        addDebugInfo("Subtype", subType);
-        addDebugInfo("Message length", msgLen);
+        debug("Type", msgType);
+        debug("Subtype", subType);
+        debug("Message length", msgLen);
 
         if ((msgType == 0x03) && (subType == 0x39)) {
             commManager.sendMessage(PowermaxSendType.POWERMASTER_ZONE_STAT1);

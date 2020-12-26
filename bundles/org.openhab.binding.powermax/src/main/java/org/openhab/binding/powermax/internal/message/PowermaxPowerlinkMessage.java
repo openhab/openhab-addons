@@ -49,7 +49,7 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
         if (subType == 0x03) {
             // keep alive message
 
-            addDebugInfo("Subtype", subType, "Keep Alive");
+            debug("Subtype", subType, "Keep Alive");
 
             commManager.sendAck(this, (byte) 0x02);
             updatedState = commManager.createNewState();
@@ -57,8 +57,8 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
         } else if (subType == 0x0A) {
             byte enroll = message[4];
 
-            addDebugInfo("Subtype", subType, "Enroll");
-            addDebugInfo("Enroll", enroll);
+            debug("Subtype", subType, "Enroll");
+            debug("Enroll", enroll);
 
             if (enroll == 0x01) {
                 logger.debug("Powermax alarm binding: Enrolling Powerlink");
@@ -69,7 +69,7 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
                 commManager.sendAck(this, (byte) 0x02);
             }
         } else {
-            addDebugInfo("Subtype", subType, "UNKNOWN");
+            debug("Subtype", subType, "UNKNOWN");
             commManager.sendAck(this, (byte) 0x02);
         }
 

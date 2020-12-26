@@ -50,8 +50,8 @@ public class PowermaxSettingsMessage extends PowermaxBaseMessage {
         int page = message[3] & 0x000000FF;
         int length = 0;
 
-        addDebugInfo("Page", page, Integer.toString(page));
-        addDebugInfo("Index", index, Integer.toString(index));
+        debug("Page", page, Integer.toString(page));
+        debug("Index", index, Integer.toString(index));
 
         if (getReceiveType() == PowermaxReceiveType.SETTINGS) {
             length = message.length - 6;

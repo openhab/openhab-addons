@@ -44,13 +44,13 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
         byte[] message = getRawData();
         int eventNum = message[3] & 0x000000FF;
 
-        addDebugInfo("Event number", eventNum);
+        debug("Event number", eventNum);
 
         if (eventNum == 1) {
             int eventCnt = message[2] & 0x000000FF;
             updatedState.setEventLogSize(eventCnt - 1);
 
-            addDebugInfo("Event count", eventCnt);
+            debug("Event count", eventCnt);
         } else {
             int second = message[4] & 0x000000FF;
             int minute = message[5] & 0x000000FF;
@@ -83,9 +83,9 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
             updatedState.setEventLogSize(eventNum - 1);
             updatedState.setEventLog(eventNum - 1, eventStr);
 
-            addDebugInfo("Event " + eventNum + " date/time", timestamp);
-            addDebugInfo("Event " + eventNum + " zone code", eventZone, logUserStr);
-            addDebugInfo("Event " + eventNum + " event code", logEvent, logEventStr);
+            debug("Event " + eventNum + " date/time", timestamp);
+            debug("Event " + eventNum + " zone code", eventZone, logUserStr);
+            debug("Event " + eventNum + " event code", logEvent, logEventStr);
         }
 
         return updatedState;

@@ -80,7 +80,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
         byte eventType = message[3];
         String eventTypeStr = PowermaxMessageConstants.getMessageTypeString(eventType & 0x000000FF);
 
-        addDebugInfo("Event type", eventType, eventTypeStr);
+        debug("Event type", eventType, eventTypeStr);
 
         if (eventType == 0x02) {
             byte[] zoneStatusBytes = zoneBytes(message[4], message[5], message[6], message[7]);
@@ -97,8 +97,8 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
                 updatedState.setSensorLowBattery(i, batteryStatus[i]);
             }
 
-            addDebugInfo("Zone status", zoneStatusBytes, zoneStatusStr);
-            addDebugInfo("Battery status", batteryStatusBytes, batteryStatusStr);
+            debug("Zone status", zoneStatusBytes, zoneStatusStr);
+            debug("Battery status", batteryStatusBytes, batteryStatusStr);
         } else if (eventType == 0x04) {
             byte sysStatus = message[4];
             byte sysFlags = message[5];
@@ -190,11 +190,11 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             updatedState.setArmMode(statusStr);
             updatedState.setStatusStr(statusStr + ", " + sysStatusStr);
 
-            addDebugInfo("System status", sysStatus, statusStr);
-            addDebugInfo("System flags", sysFlags, sysStatusStr);
-            addDebugInfo("Event zone", eventZone, eventZoneStr);
-            addDebugInfo("Zone event type", zoneEType, zoneETypeStr);
-            addDebugInfo("X10 status", x10Status);
+            debug("System status", sysStatus, statusStr);
+            debug("System flags", sysFlags, sysStatusStr);
+            debug("Event zone", eventZone, eventZoneStr);
+            debug("Zone event type", zoneEType, zoneETypeStr);
+            debug("X10 status", x10Status);
 
             for (int i = 1; i <= panelSettings.getNbZones(); i++) {
                 PowermaxZoneSettings zone = panelSettings.getZoneSettings(i);
@@ -220,7 +220,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
                 updatedState.setSensorBypassed(i, zoneBypass[i]);
             }
 
-            addDebugInfo("Zone bypass", zoneBypassBytes, zoneBypassStr);
+            debug("Zone bypass", zoneBypassBytes, zoneBypassStr);
         }
 
         return updatedState;

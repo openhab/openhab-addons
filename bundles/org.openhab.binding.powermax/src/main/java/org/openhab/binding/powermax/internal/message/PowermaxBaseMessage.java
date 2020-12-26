@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.core.util.HexUtils;
@@ -34,7 +31,7 @@ public class PowermaxBaseMessage {
     private int code;
     private PowermaxSendType sendType;
     private PowermaxReceiveType receiveType;
-    private List<String> debugInfo;
+    private Object messageType;
 
     /**
      * Constructor.
@@ -42,8 +39,8 @@ public class PowermaxBaseMessage {
      * @param message the message as a buffer of bytes
      */
     public PowermaxBaseMessage(byte[] message) {
-        this.debugInfo = new ArrayList<>();
         this.sendType = null;
+        this.messageType = "UNKNOWN";
         decodeMessage(message);
     }
 
@@ -63,8 +60,8 @@ public class PowermaxBaseMessage {
      * @param param the dynamic part of a message to be sent; null if no dynamic part
      */
     public PowermaxBaseMessage(PowermaxSendType sendType, byte[] param) {
-        this.debugInfo = new ArrayList<>();
         this.sendType = sendType;
+        this.messageType = "UNKNOWN";
         byte[] message = new byte[sendType.getMessage().length + 3];
         int index = 0;
         message[index++] = 0x0D;
@@ -95,10 +92,7 @@ public class PowermaxBaseMessage {
             receiveType = null;
         }
 
-        Object messageType = sendType != null ? sendType : receiveType != null ? receiveType : "";
-
-        addDebugInfo("Raw data", rawData);
-        addDebugInfo("Message type", code, messageType.toString());
+        messageType = sendType != null ? sendType : receiveType != null ? receiveType : "UNKNOWN";
     }
 
     /**
@@ -112,12 +106,15 @@ public class PowermaxBaseMessage {
             commManager.sendAck(this, (byte) 0x02);
         }
 
-        PowermaxState newState = handleMessageInternal(commManager);
-
         if (logger.isDebugEnabled()) {
-            logger.debug("{}message was handled by class {}: {}", (receiveType == null) ? "Unsupported " : "",
-                    this.getClass().getSimpleName(), this);
+            logger.debug("{}message will be handled by class {}:", (receiveType == null) ? "Unsupported " : "",
+                    this.getClass().getSimpleName());
+
+            debug("Raw data", rawData);
+            debug("Message type", code, messageType.toString());
         }
+
+        PowermaxState newState = handleMessageInternal(commManager);
 
         return newState;
     }
@@ -167,52 +164,40 @@ public class PowermaxBaseMessage {
 
     // Debugging helpers
 
-    public void addDebugInfo(String name, String info, @Nullable String decoded) {
-        StringBuilder debugLine = new StringBuilder();
+    public void debug(String name, String info, @Nullable String decoded) {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
 
-        debugLine.append(name);
-        debugLine.append(" = ");
-        debugLine.append(info);
+        String decodedStr = "";
 
         if (decoded != null && !decoded.isBlank()) {
-            debugLine.append(" - " + decoded);
+            decodedStr = " - " + decoded;
         }
 
-        debugInfo.add(debugLine.toString());
+        logger.debug("| {} = {}{}", name, info, decodedStr);
     }
 
-    public void addDebugInfo(String name, String info) {
-        addDebugInfo(name, info, null);
+    public void debug(String name, String info) {
+        debug(name, info, null);
     }
 
-    public void addDebugInfo(String name, byte[] data, @Nullable String decoded) {
+    public void debug(String name, byte[] data, @Nullable String decoded) {
         String hex = "0x" + HexUtils.bytesToHex(data);
-        addDebugInfo(name, hex, decoded);
+        debug(name, hex, decoded);
     }
 
-    public void addDebugInfo(String name, byte[] data) {
-        addDebugInfo(name, data, null);
+    public void debug(String name, byte[] data) {
+        debug(name, data, null);
     }
 
-    public void addDebugInfo(String name, int data, @Nullable String decoded) {
+    public void debug(String name, int data, @Nullable String decoded) {
         String hex = String.format("0x%02X", data);
-        addDebugInfo(name, hex, decoded);
+        debug(name, hex, decoded);
     }
 
-    public void addDebugInfo(String name, int data) {
-        addDebugInfo(name, data, null);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-
-        for (String line : debugInfo) {
-            str.append("\n - ");
-            str.append(line);
-        }
-
-        return str.toString();
+    public void debug(String name, int data) {
+        debug(name, data, null);
     }
 
     /**

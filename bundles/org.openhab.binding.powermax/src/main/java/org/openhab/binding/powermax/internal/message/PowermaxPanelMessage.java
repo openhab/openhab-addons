@@ -42,7 +42,7 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
         byte[] message = getRawData();
         int msgCnt = message[2] & 0x000000FF;
 
-        addDebugInfo("Event count", msgCnt);
+        debug("Event count", msgCnt);
 
         for (int i = 1; i <= msgCnt; i++) {
             byte eventZone = message[2 + 2 * i];
@@ -52,8 +52,8 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
             String logUserStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
             updatedState.setPanelStatus(logEventStr + " (" + logUserStr + ")");
 
-            addDebugInfo("Event " + i + " zone code", eventZone, logUserStr);
-            addDebugInfo("Event " + i + " event code", eventType, logEventStr);
+            debug("Event " + i + " zone code", eventZone, logUserStr);
+            debug("Event " + i + " event code", eventType, logEventStr);
 
             String alarmStatus;
             try {

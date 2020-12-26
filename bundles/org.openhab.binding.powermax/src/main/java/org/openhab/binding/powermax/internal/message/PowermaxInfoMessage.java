@@ -57,7 +57,7 @@ public class PowermaxInfoMessage extends PowermaxBaseMessage {
             panelTypeStr = "UNKNOWN";
         }
 
-        addDebugInfo("Panel type", panelTypeNr, panelTypeStr);
+        debug("Panel type", panelTypeNr, panelTypeStr);
 
         logger.debug("Reading panel settings");
         updatedState.setDownloadMode(true);

@@ -40,7 +40,7 @@ public class PowermaxDownloadRetryMessage extends PowermaxBaseMessage {
         byte[] message = getRawData();
         int waitTime = message[4] & 0x000000FF;
 
-        addDebugInfo("Wait time", waitTime + " seconds");
+        debug("Wait time", waitTime + " seconds");
 
         commManager.sendMessageLater(PowermaxSendType.DOWNLOAD, waitTime);
 
