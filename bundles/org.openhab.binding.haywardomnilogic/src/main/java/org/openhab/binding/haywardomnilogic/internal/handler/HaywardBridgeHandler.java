@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -38,6 +39,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
 import org.openhab.binding.haywardomnilogic.internal.HaywardAccount;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
+import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.binding.haywardomnilogic.internal.HaywardTypeToRequest;
 import org.openhab.binding.haywardomnilogic.internal.config.HaywardConfig;
@@ -153,7 +155,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "scheduledInitialize exception: " + e);
+                    "scheduledInitialize exception: " + e.getMessage());
             clearPolling(pollTelemetryFuture);
             clearPolling(pollAlarmsFuture);
             commFailureCount = 50;
@@ -242,7 +244,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public synchronized String getMspConfig() throws Exception {
+    public synchronized String getMspConfig() throws HaywardException {
         // *****getMspConfig from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetMspConfigFile</Name><Parameters>"
                 + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
@@ -269,7 +271,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return xmlResponse;
     }
 
-    public synchronized boolean getTelemetryData() throws Exception {
+    public synchronized boolean getTelemetryData() throws HaywardException {
         // *****getTelemetry from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetTelemetryData</Name><Parameters>"
                 + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
@@ -327,7 +329,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     return;
                 }
             } catch (Exception e) {
-                logger.debug("Hayward Connection thing: Exception during poll", e);
+                logger.debug("Hayward Connection thing: Exception during poll: {}", e.getMessage());
             }
         }, initalDelay, config.telemetryPollTime, TimeUnit.SECONDS);
         return;
@@ -338,7 +340,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             try {
                 getAlarmList();
             } catch (Exception e) {
-                logger.debug("Hayward Connection thing: Exception during poll", e);
+                logger.debug("Hayward Connection thing: Exception during poll: {}", e.getMessage());
             }
         }, initalDelay, config.alarmPollTime, TimeUnit.SECONDS);
     }
@@ -362,7 +364,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return null;
     }
 
-    public List<String> evaluateXPath(String xpathExp, String xmlResponse) throws Exception {
+    public List<String> evaluateXPath(String xpathExp, String xmlResponse) throws HaywardException {
         List<String> values = new ArrayList<>();
         try {
             InputSource inputXML = new InputSource(new StringReader(xmlResponse));
@@ -373,7 +375,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 values.add(nodes.item(i).getNodeValue());
             }
         } catch (XPathExpressionException e) {
-            logger.warn("XPathExpression exception:", e);
+            logger.warn("XPathExpression exception: {}", e.getMessage());
         }
         return values;
     }
@@ -386,7 +388,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
-    public synchronized String httpXmlResponse(String urlParameters) throws Exception {
+    public synchronized String httpXmlResponse(String urlParameters) throws HaywardException {
         String urlParameterslength = Integer.toString(urlParameters.length());
         String statusMessage;
 
@@ -422,11 +424,15 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 }
                 return "";
             }
-        } catch (java.net.UnknownHostException e) {
+        } catch (ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to resolve host.  Check Hayward hostname and your internet connection.");
             return "";
         } catch (TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Connection Timeout.  Check Hayward hostname and your internet connection.");
+            return "";
+        } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Connection Timeout.  Check Hayward hostname and your internet connection.");
             return "";

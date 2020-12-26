@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
+import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingProperties;
 import org.openhab.core.library.types.OnOffType;
@@ -48,7 +49,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
     }
 
     @Override
-    public void getTelemetry(String xmlResponse) throws Exception {
+    public void getTelemetry(String xmlResponse) throws HaywardException {
         List<String> systemIDs = new ArrayList<>();
         List<String> data = new ArrayList<>();
 
@@ -140,8 +141,8 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                     return;
                 }
             } catch (Exception e) {
-                logger.debug("Unable to send command to Hayward's server {}:{}", bridgehandler.config.endpointUrl,
-                        bridgehandler.config.username, e);
+                logger.debug("Unable to send command to Hayward's server {}:{}:{}", bridgehandler.config.endpointUrl,
+                        bridgehandler.config.username, e.getMessage());
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {

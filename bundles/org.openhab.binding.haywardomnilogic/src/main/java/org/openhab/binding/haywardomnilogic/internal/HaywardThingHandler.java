@@ -51,7 +51,7 @@ public class HaywardThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public void getTelemetry(String xmlResponse) throws Exception {
+    public void getTelemetry(String xmlResponse) throws HaywardException {
     }
 
     public State toState(String type, String channelID, String value) throws NumberFormatException {

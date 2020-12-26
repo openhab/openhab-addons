@@ -22,6 +22,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
+import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardTypeToRequest;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -75,12 +76,12 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 String xmlResults = bridgehandler.getMspConfig();
                 mspConfigDiscovery(xmlResults);
             }
-        } catch (Exception e) {
-            logger.warn("Exception during discovery scan", e);
+        } catch (HaywardException e) {
+            logger.warn("Exception during discovery scan: {}", e.getMessage());
         }
     }
 
-    public synchronized boolean mspConfigDiscovery(String xmlResponse) throws Exception {
+    public synchronized boolean mspConfigDiscovery(String xmlResponse) throws HaywardException {
         List<String> systemIDs = new ArrayList<>();
         List<String> names = new ArrayList<>();
         List<String> bowName = new ArrayList<>();

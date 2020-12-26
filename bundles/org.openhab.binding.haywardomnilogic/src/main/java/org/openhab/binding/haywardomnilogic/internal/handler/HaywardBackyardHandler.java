@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
+import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -36,7 +37,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
     }
 
     @Override
-    public void getTelemetry(String xmlResponse) throws Exception {
+    public void getTelemetry(String xmlResponse) throws HaywardException {
         List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
 
