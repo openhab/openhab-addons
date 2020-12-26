@@ -100,8 +100,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                     logger.debug("WebThing {} connected", getWebThingLabel());
                 }
             } else {
-                logger.warn("could not initialize WebThing. URI is not set or invalid. {}",
-                        getConfigAs(WebThingConfiguration.class).webThingURI);
+                logger.warn("could not initialize WebThing. URI is not set or invalid. {}", this.webThingURI);
             }
         });
 
