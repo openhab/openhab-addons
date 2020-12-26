@@ -15,17 +15,12 @@
 			<channel id="gpio-digital-output" typeId="gpio-digital-output"/>
 		</channels>
 		<config-description>
-			<parameter-group name="pin-settings">
-				<advanced>true</advanced>
-				<description>Settings for the GPIO Pin</description>
-				<label>Pin Settings</label>
-			</parameter-group>
-			<parameter name="gpioId" type="integer" required="true" groupName="pin-settings">
+			<parameter name="gpioId" type="integer" required="true">
 				<label>GPIO Pin</label>
 				<description>GPIO pin to use as output
 				</description>
 			</parameter>
-			<parameter name="invert" type="boolean" required="true" groupName="pin-settings">
+			<parameter name="invert" type="boolean" required="true">
 				<default>false</default>
 				<label>Invert</label>
 			</parameter>

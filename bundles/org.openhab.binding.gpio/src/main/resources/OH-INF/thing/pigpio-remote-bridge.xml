@@ -14,18 +14,13 @@
 		</properties>
 
 		<config-description>
-			<parameter-group name="remote-settings">
-				<advanced>true</advanced>
-				<description>Settings for remote pi</description>
-				<label>Remote settings</label>
-			</parameter-group>
-			<parameter name="ipAddress" type="text" groupName="remote-settings">
+			<parameter name="ipAddress" type="text">
 				<context>network_address</context>
 				<label>Network Address</label>
 				<description>Network address of the raspberry pi.</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="port" type="integer" groupName="remote-settings" min="0" max="65535">
+			<parameter name="port" type="integer" min="0" max="65535">
 				<context>port</context>
 				<label>Port</label>
 				<description>Port of pigpio on the remote raspberry pi.</description>
