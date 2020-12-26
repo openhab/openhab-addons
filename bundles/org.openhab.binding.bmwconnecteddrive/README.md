@@ -376,9 +376,11 @@ If the access to the Portal and listing of the Vehicle is checked some debug dat
 
 If you checked the above pre-conditions you need to get the debug fingerprint from the debug logs.
 First [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for the binding.
+
 ```
 log:set DEBUG org.openhab.binding.bmwconnecteddrive
 ```
+
 The debug fingerprint is generated when the Vehicle Thing is initialized the first time, e.g. after openHAB startup. 
 To force a new fingerprint disable the thing shortly and enable it again. 
 Personal Data is eliminated from the log entries so it should be possible to share them in public.

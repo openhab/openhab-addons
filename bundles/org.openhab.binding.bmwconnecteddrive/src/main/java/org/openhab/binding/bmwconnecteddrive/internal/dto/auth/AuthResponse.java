@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.auth;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Timer} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class AuthResponse {
-    public String access_token;
-    public String token_type;
-    public int expires_in;
+    @SerializedName("access_token")
+    public String accessToken;
+    @SerializedName("token_type")
+    public String tokenType;
+    @SerializedName("expires_in")
+    public int expiresIn;
 }

@@ -38,37 +38,37 @@ public class VehicleAttributesContainer {
         vsc.vehicleStatus = vs;
 
         vs.mileage = attributesMap.mileage;
-        vs.doorLockState = attributesMap.door_lock_state;
+        vs.doorLockState = attributesMap.doorLockState;
 
-        vs.doorDriverFront = attributesMap.door_driver_front;
-        vs.doorDriverRear = attributesMap.door_driver_rear;
-        vs.doorPassengerFront = attributesMap.door_passenger_front;
-        vs.doorPassengerRear = attributesMap.door_passenger_rear;
-        vs.hood = attributesMap.hood_state;
-        vs.trunk = attributesMap.trunk_state;
+        vs.doorDriverFront = attributesMap.doorDriverFront;
+        vs.doorDriverRear = attributesMap.doorDriverRear;
+        vs.doorPassengerFront = attributesMap.doorPassengerFront;
+        vs.doorPassengerRear = attributesMap.doorPassengerRear;
+        vs.hood = attributesMap.hoodState;
+        vs.trunk = attributesMap.trunkState;
 
-        vs.windowDriverFront = attributesMap.window_driver_front;
-        vs.windowDriverRear = attributesMap.window_driver_rear;
-        vs.windowPassengerFront = attributesMap.window_passenger_front;
-        vs.windowPassengerRear = attributesMap.window_passenger_rear;
-        vs.sunroof = attributesMap.sunroof_state;
+        vs.windowDriverFront = attributesMap.winDriverFront;
+        vs.windowDriverRear = attributesMap.winDriverRear;
+        vs.windowPassengerFront = attributesMap.winPassengerFront;
+        vs.windowPassengerRear = attributesMap.winPassengerRear;
+        vs.sunroof = attributesMap.sunroofState;
 
-        vs.remainingFuel = attributesMap.remaining_fuel;
+        vs.remainingFuel = attributesMap.remainingFuel;
         vs.remainingRangeElectric = attributesMap.beRemainingRangeElectricKm;
         vs.remainingRangeElectricMls = attributesMap.beRemainingRangeElectricMile;
         vs.remainingRangeFuel = attributesMap.beRemainingRangeFuelKm;
         vs.remainingRangeFuelMls = attributesMap.beRemainingRangeFuelMile;
-        vs.remainingFuel = attributesMap.remaining_fuel;
+        vs.remainingFuel = attributesMap.remainingFuel;
         vs.chargingLevelHv = attributesMap.chargingLevelHv;
         vs.chargingStatus = attributesMap.chargingHVStatus;
         vs.lastChargingEndReason = attributesMap.lastChargingEndReason;
 
-        vs.updateTime = attributesMap.updateTime_converted;
+        vs.updateTime = attributesMap.updateTimeConverted;
         // vs.internalDataTimeUTC = attributesMap.updateTime;
 
         Position p = new Position();
-        p.lat = attributesMap.gps_lat;
-        p.lon = attributesMap.gps_lng;
+        p.lat = attributesMap.gpsLat;
+        p.lon = attributesMap.gpsLon;
         p.heading = attributesMap.heading;
         vs.position = p;
 
