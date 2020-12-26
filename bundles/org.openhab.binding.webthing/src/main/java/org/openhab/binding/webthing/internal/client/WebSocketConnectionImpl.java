@@ -66,8 +66,13 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     WebSocketConnectionImpl(ScheduledExecutorService executor, Consumer<String> errorHandler, Duration pingPeriod) {
         this.errorHandler = errorHandler;
         this.pingPeriod = pingPeriod;
+
+        // send a ping message are x seconds to validate if the connection is not broken
         this.pingHandle = executor.scheduleWithFixedDelay(this::sendPing, pingPeriod.dividedBy(2).toMillis(),
                 pingPeriod.toMillis(), TimeUnit.MILLISECONDS);
+
+        // checks if a message (regular message or pong message) has been received recently. If not, connection is
+        // seen as broken
         this.watchDogHandle = executor.scheduleWithFixedDelay(this::checkConnection, pingPeriod.toMillis(),
                 pingPeriod.toMillis(), TimeUnit.MILLISECONDS);
     }

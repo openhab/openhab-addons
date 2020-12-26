@@ -73,7 +73,7 @@ public class DescriptionLoader {
                 var schema = description.contextKeyword.replaceFirst("/$", "").toLowerCase(Locale.US).trim();
 
                 // currently, the old and new location of the WebThings schema are supported only.
-                // In the future other schemas such as http://iotschema.org/docs/full.html may be supported
+                // In the future, other schemas such as http://iotschema.org/docs/full.html may be supported
                 if (schema.equals("https://webthings.io/schemas") || schema.equals("https://iot.mozilla.org/schemas")) {
                     return description;
                 }
