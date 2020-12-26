@@ -75,6 +75,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     private @Nullable AbstractPresentableCalendar runtimeCalendar;
     private @Nullable ScheduledFuture<?> updateJobFuture;
     private Instant updateStatesLastCalledTime;
+    private @Nullable Instant calendarDownloadedTime;
 
     public ICalendarHandler(Bridge bridge, HttpClient httpClient, EventPublisher eventPublisher,
             TimeZoneProvider tzProvider) {
@@ -265,6 +266,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * @return Whether the calendar was loaded successfully.
      */
     private boolean reloadCalendar() {
+        logger.trace("reloading calendar of {}", getThing().getUID());
         if (!calendarFile.isFile()) {
             logger.info("Local file for reloading calendar is missing.");
             return false;
@@ -278,6 +280,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             final AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(fileStream);
             runtimeCalendar = calendar;
             rescheduleCalendarStateUpdate();
+            calendarDownloadedTime = Instant.ofEpochMilli(calendarFile.lastModified());
         } catch (IOException | CalendarException e) {
             logger.warn("Loading calendar failed: {}", e.getMessage());
             return false;
@@ -312,6 +315,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 ICalendarHandler.this.updateStates();
                 ICalendarHandler.this.rescheduleCalendarStateUpdate();
             }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+            logger.debug("Scheduled update in {} seconds", currentEvent.end.getEpochSecond() - now.getEpochSecond());
         } else {
             final Event nextEvent = currentCalendar.getNextEvent(now);
             final ICalendarConfiguration currentConfig = this.configuration;
@@ -324,11 +328,14 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
                 }, 1L, TimeUnit.DAYS);
+                logger.debug("Scheduled reschedule in 1 day");
             } else {
                 updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.updateStates();
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
                 }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+                logger.debug("Scheduled update in {} seconds", nextEvent.start.getEpochSecond() - now.getEpochSecond());
+
             }
         }
     }
@@ -337,6 +344,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * Updates the states of the Thing and its channels.
      */
     private void updateStates() {
+        logger.trace("updating states of {}", getThing().getUID());
         final AbstractPresentableCalendar calendar = runtimeCalendar;
         if (calendar == null) {
             updateStatus(ThingStatus.OFFLINE);
@@ -374,6 +382,11 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 updateState(CHANNEL_NEXT_EVENT_START, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_END, UnDefType.UNDEF);
             }
+
+            final Instant lastUpdate = calendarDownloadedTime;
+            updateState(CHANNEL_LAST_UPDATE,
+                    (lastUpdate != null ? new DateTimeType(lastUpdate.atZone(tzProvider.getTimeZone()))
+                            : UnDefType.UNDEF));
 
             // process all Command Tags in all Calendar Events which ENDED since updateStates was last called
             // the END Event tags must be processed before the BEGIN ones

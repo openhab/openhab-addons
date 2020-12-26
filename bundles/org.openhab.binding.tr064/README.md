@@ -78,14 +78,18 @@ This is an optional parameter and multiple values are allowed.
 | `callList`                 | `String`                  |     x    | A string containing the call list as JSON (see below)          |    
 | `deviceLog`                | `String`                  |     x    | A string containing the last log messages                      |
 | `dslCRCErrors`             | `Number:Dimensionless`    |     x    | DSL CRC Errors                                                 |
+| `dslDownstreamMaxRate`     | `Number:DataTransferRate` |     x    | DSL Max Downstream Rate                                        |
+| `dslDownstreamCurrRate`    | `Number:DataTransferRate` |     x    | DSL Curr. Downstream Rate                                      |
 | `dslDownstreamNoiseMargin` | `Number:Dimensionless`    |     x    | DSL Downstream Noise Margin                                    |
-| `dslDownstreamNoiseMargin` | `Number:Dimensionless`    |     x    | DSL Downstream Attenuation                                     |
+| `dslDownstreamAttenuation` | `Number:Dimensionless`    |     x    | DSL Downstream Attenuation                                     |
 | `dslEnable`                | `Switch`                  |          | DSL Enable                                                     |
 | `dslFECErrors`             | `Number:Dimensionless`    |     x    | DSL FEC Errors                                                 |
 | `dslHECErrors`             | `Number:Dimensionless`    |     x    | DSL HEC Errors                                                 |
 | `dslStatus`                | `Switch`                  |          | DSL Status                                                     |
+| `dslUpstreamMaxRate`       | `Number:DataTransferRate` |     x    | DSL Max Upstream Rate                                          |
+| `dslUpstreamCurrRate`      | `Number:DataTransferRate` |     x    | DSL Curr. Upstream Rate                                        |
 | `dslUpstreamNoiseMargin`   | `Number:Dimensionless`    |     x    | DSL Upstream Noise Margin                                      |
-| `dslUpstreamNoiseMargin`   | `Number:Dimensionless`    |     x    | DSL Upstream Attenuation                                       |
+| `dslUpstreamAttenuation`   | `Number:Dimensionless`    |     x    | DSL Upstream Attenuation                                       |
 | `inboundCalls`             | `Number`                  |     x    | Number of inbound calls within the given number of days.       |
 | `macOnline`                | `Switch`                  |     x    | Online status of the device with the given MAC                 |
 | `missedCalls`              | `Number`                  |          | Number of missed calls within the given number of days.        |

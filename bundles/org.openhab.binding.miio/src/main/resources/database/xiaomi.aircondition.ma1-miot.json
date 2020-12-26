@@ -1,0 +1,315 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.aircondition.ma1",
+			"xiaomi.aircondition.ma2",
+			"xiaomi.aircondition.ma4",
+			"xiaomi.aircondition.ma5",
+			"xiaomi.aircondition.ma6",
+			"xiaomi.aircondition.ma9"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Conditioner - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Cool"
+						},
+						{
+							"value": "2",
+							"label": "Dry"
+						},
+						{
+							"value": "3",
+							"label": "Heat"
+						},
+						{
+							"value": "4",
+							"label": "Fan"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping [2\u003d\"Cool\",3\u003d\"Dry\",4\u003d\"Fan\",5\u003d\"Heat\"]"
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Air Conditioner - Target Temperature",
+				"channel": "target-temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 16,
+					"maximum": 31,
+					"step": 0.0,
+					"pattern": "%.1f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "eco",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Air Conditioner - Eco",
+				"channel": "eco",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "heater",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Air Conditioner - Heater",
+				"channel": "heater",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "sleep-mode",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Air Conditioner - Sleep Mode",
+				"channel": "sleep-mode",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "dryer",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Air Conditioner - Dryer",
+				"channel": "dryer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Fan Control - Fan Level",
+				"channel": "fan-level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Level1"
+						},
+						{
+							"value": "2",
+							"label": "Level2"
+						},
+						{
+							"value": "3",
+							"label": "Level3"
+						},
+						{
+							"value": "4",
+							"label": "Level4"
+						},
+						{
+							"value": "5",
+							"label": "Level5"
+						},
+						{
+							"value": "6",
+							"label": "Level6"
+						},
+						{
+							"value": "7",
+							"label": "Level7"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping [0\u003d\"Auto\",1\u003d\"Level1\",2\u003d\"Level2\",3\u003d\"Level3\",4\u003d\"Level4\",5\u003d\"Level5\",6\u003d\"Level6\",7\u003d\"Level7\"]"
+			},
+			{
+				"property": "vertical-swing",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Fan Control - Vertical Swing",
+				"channel": "vertical-swing",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Control",
+					"Opening"
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Environment - Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -20.0,
+					"maximum": 80.0,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Alarm - Alarm",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Indicator Light - Switch Status",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			}
+		],
+		"experimental": true
+	}
+}

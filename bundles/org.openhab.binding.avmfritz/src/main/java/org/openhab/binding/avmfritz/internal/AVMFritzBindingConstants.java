@@ -87,8 +87,10 @@ public class AVMFritzBindingConstants {
     // List of all Properties
     public static final String PROPERTY_MASTER = "master";
     public static final String PROPERTY_MEMBERS = "members";
+    public static final String PRODUCT_NAME = "productName";
 
     // List of all channel groups
+    public static final String CHANNEL_GROUP_SENSORS = "sensors";
     public static final String CHANNEL_GROUP_TOP_LEFT = "top-left";
     public static final String CHANNEL_GROUP_BOTTOM_LEFT = "bottom-left";
     public static final String CHANNEL_GROUP_TOP_RIGHT = "top-right";
@@ -105,6 +107,7 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_DEVICE_LOCKED = "device_locked";
     public static final String CHANNEL_APPLY_TEMPLATE = "apply_template";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_VOLTAGE = "voltage";
