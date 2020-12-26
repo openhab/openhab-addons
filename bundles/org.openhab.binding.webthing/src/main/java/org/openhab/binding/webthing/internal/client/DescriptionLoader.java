@@ -87,7 +87,7 @@ public class DescriptionLoader {
         } catch (JsonSyntaxException se) {
             throw new IOException("resource seems not to be a WebThing. Typo?");
         } catch (InterruptedException ie) {
-            throw new IOException(ie.getMessage());
+            throw new IOException("resource seems not to be reachable");
         }
     }
 }
