@@ -278,9 +278,9 @@ public class ConnectedDriveProxy {
             } else if (contentResponse.getStatus() == 200) {
                 AuthResponse authResponse = Converter.getGson().fromJson(contentResponse.getContentAsString(),
                         AuthResponse.class);
-                token.setToken(authResponse.access_token);
-                token.setType(authResponse.token_type);
-                token.setExpiration(authResponse.expires_in);
+                token.setToken(authResponse.accessToken);
+                token.setType(authResponse.tokenType);
+                token.setExpiration(authResponse.expiresIn);
             } else {
                 logger.debug("Authorization status {} reason {}", contentResponse.getStatus(),
                         contentResponse.getReason());

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.compat;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link VehicleAttributes} Data Transfer Object
  *
@@ -19,18 +21,30 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.compat;
  */
 public class VehicleAttributes {
     // Windows & Doors
-    public String door_driver_front;// "CLOSED",
-    public String door_driver_rear;// "CLOSED",
-    public String door_passenger_front;// "CLOSED",
-    public String door_passenger_rear;// "CLOSED",
-    public String hood_state;// "CLOSED",
-    public String trunk_state;// "CLOSED",
-    public String window_driver_front;// "CLOSED",
-    public String window_driver_rear;// "CLOSED",
-    public String window_passenger_front;// "CLOSED",
-    public String window_passenger_rear;// "CLOSED",
-    public String sunroof_state;// "CLOSED",
-    public String door_lock_state;// "SECURED",
+    @SerializedName("door_driver_front")
+    public String doorDriverFront;// "CLOSED",
+    @SerializedName("door_driver_rear")
+    public String doorDriverRear;// "CLOSED",
+    @SerializedName("door_passenger_front")
+    public String doorPassengerFront;// "CLOSED",
+    @SerializedName("door_passenger_rear")
+    public String doorPassengerRear;// "CLOSED",
+    @SerializedName("hood_state")
+    public String hoodState;// "CLOSED",
+    @SerializedName("trunk_state")
+    public String trunkState;// "CLOSED",
+    @SerializedName("window_driver_front")
+    public String winDriverFront;// "CLOSED",
+    @SerializedName("window_driver_rear")
+    public String winDriverRear;// "CLOSED",
+    @SerializedName("window_passenger_front")
+    public String winPassengerFront;// "CLOSED",
+    @SerializedName("window_passenger_rear")
+    public String winPassengerRear;// "CLOSED",
+    @SerializedName("sunroof_state")
+    public String sunroofState;// "CLOSED",
+    @SerializedName("door_lock_state")
+    public String doorLockState;// "SECURED",
     public String shdStatusUnified;// "CLOSED",
 
     // Charge Status
@@ -39,7 +53,8 @@ public class VehicleAttributes {
     public String connectorStatus;// "DISCONNECTED",
     public String chargingLogicCurrentlyActive;// "NOT_CHARGING",
     public String chargeNowAllowed;// "NOT_ALLOWED",
-    public String charging_status;// "NOCHARGING",
+    @SerializedName("charging_status")
+    public String chargingStatus;// "NOCHARGING",
     public String lastChargingEndResult;// "SUCCESS",
     public String chargingSystemStatus;// "NOCHARGING",
     public String lastUpdateReason;// "VEHCSHUTDOWN_SECURED"
@@ -55,46 +70,73 @@ public class VehicleAttributes {
     public double beRemainingRangeFuelKm;// "67.0",
     public double beRemainingRangeFuelMile;// "41.0",
     public double beRemainingRangeFuel;// "67.0",
-    public double kombi_current_remaining_range_fuel;// "67.0",
+    @SerializedName("kombi_current_remaining_range_fuel")
+    public double kombiRemainingRangeFuel;// "67.0",
 
     public double chargingLevelHv;// "89.0",
-    public double soc_hv_percent;// "82.6",
-    public double remaining_fuel;// "4",
+    @SerializedName("soc_hv_percent")
+    public double socHvPercent;// "82.6",
+    @SerializedName("remaining_fuel")
+    public double remainingFuel;// "4",
     public double fuelPercent;// "47",
 
     // Last Status update
     public String updateTime;// "22.08.2020 12:55:46 UTC",
-    public String updateTime_converted;// "22.08.2020 13:55",
-    public String updateTime_converted_date;// "22.08.2020",
-    public String updateTime_converted_time;// "13:55",
+    @SerializedName("updateTime_converted")
+    public String updateTimeConverted;// "22.08.2020 13:55",
+    @SerializedName("updateTime_converted_date")
+    public String updateTimeConvertedDate;// "22.08.2020",
+    @SerializedName("updateTime_converted_time")
+    public String updateTimeConvertedTime;// "13:55",
+    @SerializedName("updateTime_converted_timestamp")
+    public String updateTimeConvertedTimestamp;// "1598104546000",
+
     // Last Trip Update
-    public String Segment_LastTrip_time_segment_end_formatted_date;// "22.08.2020",
-    public String Segment_LastTrip_time_segment_end_formatted;// "22.08.2020 14:52",
-    public String Segment_LastTrip_time_segment_end_formatted_time;// "14:52",
-    public String Segment_LastTrip_time_segment_end;// "22.08.2020 14:52:00 UTC",
+    @SerializedName("Segment_LastTrip_time_segment_end")
+    public String lastTripEnd;// "22.08.2020 14:52:00 UTC",
+    @SerializedName("Segment_LastTrip_time_segment_end_formatted")
+    public String lastTripEndFormatted;// "22.08.2020 14:52",
+    @SerializedName("Segment_LastTrip_time_segment_end_formatted_date")
+    public String lastTripEndFormattedDate;// "22.08.2020",
+    @SerializedName("Segment_LastTrip_time_segment_end_formatted_time")
+    public String lastTripEndFormattedTime;// "14:52",
 
     // Location
-    public float gps_lat;// "43.21",
-    public float gps_lng;// "8.765",
+    @SerializedName("gps_lat")
+    public float gpsLat;// "43.21",
+    @SerializedName("gps_lng")
+    public float gpsLon;// "8.765",
     public int heading;// "41",
 
     public String unitOfLength;// "km",
     public String unitOfEnergy;// "kWh",
-    public String vehicle_tracking;// "1",
-    public String head_unit_pu_software;// "07/16",
-    public String check_control_messages;// "",
-    public String sunroof_position;// "0",
-    public String single_immediate_charging;// "isUnused",
+    @SerializedName("vehicle_tracking")
+    public String vehicleTracking;// "1",
+    @SerializedName("head_unit_pu_software")
+    public String headunitSoftware;// "07/16",
+    @SerializedName("check_control_messages")
+    public String checkControlMessages;// "",
+    @SerializedName("sunroof_position")
+    public String sunroofPosition;// "0",
+    @SerializedName("single_immediate_charging")
+    public String singleImmediateCharging;// "isUnused",
     public String unitOfCombustionConsumption;// "l/100km",
-    public String Segment_LastTrip_ratio_electric_driven_distance;// "100",
-    public String condition_based_services;// "00003,OK,2021-11,;00017,OK,2021-11,;00001,OK,2021-11,;00032,OK,2021-11,",
-    public String updateTime_converted_timestamp;// "1598104546000",
-    public String charging_inductive_positioning;// "not_positioned",
-    public String lsc_trigger;// "VEHCSHUTDOWN_SECURED",
-    public String lights_parking;// "OFF",
+    @SerializedName("Segment_LastTrip_ratio_electric_driven_distance")
+    public String lastTripElectricRation;// "100",
+    @SerializedName("condition_based_services")
+    public String conditionBasedServices;// "00003,OK,2021-11,;00017,OK,2021-11,;00001,OK,2021-11,;00032,OK,2021-11,",
+    @SerializedName("charging_inductive_positioning")
+    public String chargingInductivePositioning;// "not_positioned",
+    @SerializedName("lsc_trigger")
+    public String lscTrigger;// "VEHCSHUTDOWN_SECURED",
+    @SerializedName("lights_parking")
+    public String lightsParking;// "OFF",
     public String prognosisWhileChargingStatus;// "NOT_NEEDED",
-    public String head_unit;// "EntryNav",
-    public String battery_size_max;// "33200",
-    public String charging_connection_type;// "CONDUCTIVE",
+    @SerializedName("head_unit")
+    public String headunit;// "EntryNav",
+    @SerializedName("battery_size_max")
+    public String batterySizeMax;// "33200",
+    @SerializedName("charging_connection_type")
+    public String chargingConnectionType;// "CONDUCTIVE",
     public String unitOfElectricConsumption;// "kWh/100km",
 }
