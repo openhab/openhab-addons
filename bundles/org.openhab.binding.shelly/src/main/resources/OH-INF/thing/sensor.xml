@@ -286,13 +286,6 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="motionActive">
-		<item-type>Switch</item-type>
-		<label>Motion Active</label>
-		<description>ON: Motion was detected and is still active</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
 	<channel-type id="motionTimestamp">
 		<item-type>DateTime</item-type>
 		<label>Last motion</label>

@@ -243,6 +243,7 @@
 		<label>Brightness</label>
 		<description>Brightness: 0..100%</description>
 		<category>DimmableLight</category>
+		<state min="0" max="100" step="1" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="colorEffectBulb">
 		<item-type>Number</item-type>

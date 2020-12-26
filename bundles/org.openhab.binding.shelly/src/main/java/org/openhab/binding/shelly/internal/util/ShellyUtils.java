@@ -15,6 +15,8 @@ package org.openhab.binding.shelly.internal.util;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DateTimeException;
@@ -213,15 +215,11 @@ public class ShellyUtils {
     }
 
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {
-        /*
-         * if (value == null) {
-         *
-         * return UnDefType.NULL;
-         * }
-         * BigDecimal bd = new BigDecimal(value.doubleValue());
-         * return toQuantityType(bd.setScale(digits, RoundingMode.HALF_UP), unit);
-         */
-        return toQuantityType(value, unit);
+        if (value == null) {
+            return UnDefType.NULL;
+        }
+        BigDecimal bd = new BigDecimal(value.doubleValue());
+        return toQuantityType(bd.setScale(digits, RoundingMode.HALF_UP), unit);
     }
 
     public static State toQuantityType(@Nullable Number value, Unit<?> unit) {

@@ -251,7 +251,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_ALARM_STATE = "alarmState";
     public static final String CHANNEL_SENSOR_MOTION = "motion";
     public static final String CHANNEL_SENSOR_MOTION_TS = "motionTimestamp";
-    public static final String CHANNEL_SENSOR_MOTION_ACTIVE = "motionActive";
     public static final String CHANNEL_SENSOR_ERROR = "lastError";
 
     // External sensors for Shelly1/1PM
@@ -349,11 +348,11 @@ public class ShellyBindingConstants {
 
     // Formatting: Number of scaling digits
     public static final int DIGITS_NONE = 0;
-    public static final int DIGITS_WATT = 1;
+    public static final int DIGITS_WATT = 2;
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 1;
     public static final int DIGITS_TEMP = 1;
-    public static final int DIGITS_LUX = 1;
+    public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;
 
     public static final int SHELLY_API_TIMEOUT_MS = 5000;

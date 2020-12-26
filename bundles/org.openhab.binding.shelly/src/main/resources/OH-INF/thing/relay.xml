@@ -371,7 +371,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Roller Position (100=open, 0=closed)</label>
 		<description>Position the roller (100..0 in %, where 100%=open, 0%=closed)</description>
-		<state readOnly="false" min="0" max="100"/>
+		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="rollerFavorite">
 		<item-type>Number</item-type>
@@ -453,14 +453,14 @@
 		<item-type>Number:Power</item-type>
 		<label>Watt</label>
 		<description>Current power consumption in Watt</description>
-		<state readOnly="true" pattern="%.3f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterAccuWatts" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Accumulated Watt</label>
 		<description>Accumulated current power consumption in Watt from all meters</description>
-		<state readOnly="true" pattern="%.3f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterAccuTotal" advanced="true">
