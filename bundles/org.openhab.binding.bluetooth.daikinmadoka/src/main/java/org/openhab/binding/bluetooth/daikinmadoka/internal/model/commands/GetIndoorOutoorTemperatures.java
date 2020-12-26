@@ -14,11 +14,13 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
 import java.util.concurrent.Executor;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +35,8 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetIndoorOutoorTemperatures.class);
 
-    private @Nullable DecimalType indoorTemperature;
-    private @Nullable DecimalType outdoorTemperature;
+    private @Nullable QuantityType<Temperature> indoorTemperature;
+    private @Nullable QuantityType<Temperature> outdoorTemperature;
 
     @Override
     public byte[][] getRequest() {
@@ -64,11 +66,13 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
         }
 
         if (iIndoorTemperature != null) {
-            indoorTemperature = new DecimalType(iIndoorTemperature);
+            indoorTemperature = new QuantityType<Temperature>(iIndoorTemperature,
+                    org.openhab.core.library.unit.SIUnits.CELSIUS);
         }
 
         if (iOutdoorTemperature != null) {
-            outdoorTemperature = new DecimalType(iOutdoorTemperature);
+            outdoorTemperature = new QuantityType<Temperature>(iOutdoorTemperature,
+                    org.openhab.core.library.unit.SIUnits.CELSIUS);
         }
 
         logger.debug("Indoor Temp: {}", indoorTemperature);
@@ -78,11 +82,11 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
         executor.execute(() -> listener.receivedResponse(this));
     }
 
-    public @Nullable DecimalType getIndoorTemperature() {
+    public @Nullable QuantityType<Temperature> getIndoorTemperature() {
         return indoorTemperature;
     }
 
-    public @Nullable DecimalType getOutdoorTemperature() {
+    public @Nullable QuantityType<Temperature> getOutdoorTemperature() {
         return outdoorTemperature;
     }
 

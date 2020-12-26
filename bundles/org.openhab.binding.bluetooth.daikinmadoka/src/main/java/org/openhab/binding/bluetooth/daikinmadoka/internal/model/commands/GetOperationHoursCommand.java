@@ -15,12 +15,14 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 import java.nio.ByteOrder;
 import java.util.concurrent.Executor;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +38,9 @@ public class GetOperationHoursCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetOperationHoursCommand.class);
 
-    private @Nullable DecimalType indoorOperationHours;
-    private @Nullable DecimalType indoorFanHours;
-    private @Nullable DecimalType indoorPowerHours;
+    private @Nullable QuantityType<Time> indoorOperationHours;
+    private @Nullable QuantityType<Time> indoorFanHours;
+    private @Nullable QuantityType<Time> indoorPowerHours;
 
     @Override
     public byte[][] getRequest() {
@@ -77,9 +79,10 @@ public class GetOperationHoursCommand extends BRC1HCommand {
             Integer iIndoorFanHours = (int) (mm.getValues().get(0x41).getComputedValue(ByteOrder.LITTLE_ENDIAN));
             Integer iIndoorPowerHours = (int) (mm.getValues().get(0x42).getComputedValue(ByteOrder.LITTLE_ENDIAN));
 
-            this.indoorOperationHours = new DecimalType(iIndoorOperationHours);
-            this.indoorFanHours = new DecimalType(iIndoorFanHours);
-            this.indoorPowerHours = new DecimalType(iIndoorPowerHours);
+            this.indoorOperationHours = new QuantityType<Time>(iIndoorOperationHours,
+                    org.openhab.core.library.unit.Units.HOUR);
+            this.indoorFanHours = new QuantityType<Time>(iIndoorFanHours, org.openhab.core.library.unit.Units.HOUR);
+            this.indoorPowerHours = new QuantityType<Time>(iIndoorPowerHours, org.openhab.core.library.unit.Units.HOUR);
 
             logger.debug("indoorOperationHours: {}", indoorOperationHours);
             logger.debug("indoorFanHours: {}", indoorFanHours);
@@ -98,15 +101,15 @@ public class GetOperationHoursCommand extends BRC1HCommand {
         return 274;
     }
 
-    public @Nullable DecimalType getIndoorOperationHours() {
+    public @Nullable QuantityType<Time> getIndoorOperationHours() {
         return indoorOperationHours;
     }
 
-    public @Nullable DecimalType getIndoorFanHours() {
+    public @Nullable QuantityType<Time> getIndoorFanHours() {
         return indoorFanHours;
     }
 
-    public @Nullable DecimalType getIndoorPowerHours() {
+    public @Nullable QuantityType<Time> getIndoorPowerHours() {
         return indoorPowerHours;
     }
 }

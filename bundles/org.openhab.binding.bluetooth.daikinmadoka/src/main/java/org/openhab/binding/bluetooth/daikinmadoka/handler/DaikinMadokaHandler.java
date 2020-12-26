@@ -20,6 +20,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -220,9 +223,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT:
                 try {
-                    QuantityType<?> setpoint = (QuantityType<?>) command;
-                    DecimalType dt = new DecimalType(setpoint.intValue());
-                    submitCommand(new SetSetpointCommand(dt, dt));
+                    QuantityType<Temperature> setpoint = (QuantityType<Temperature>) command;
+                    submitCommand(new SetSetpointCommand(setpoint, setpoint));
                 } catch (Exception e) {
                     logger.warn("Data received is not a valid temperature.", e);
                 }
@@ -585,7 +587,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             return;
         }
 
-        DecimalType sp;
+        QuantityType<Temperature> sp;
 
         switch (operationMode) {
             case AUTO:
@@ -614,7 +616,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         this.madokaSettings.setSetpoint(sp);
 
-        DecimalType dt = this.madokaSettings.getSetpoint();
+        QuantityType<Temperature> dt = this.madokaSettings.getSetpoint();
         if (dt != null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT, dt);
         }
@@ -714,13 +716,13 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     @Override
     public void receivedResponse(GetIndoorOutoorTemperatures command) {
-        DecimalType newIndoorTemp = command.getIndoorTemperature();
+        QuantityType<Temperature> newIndoorTemp = command.getIndoorTemperature();
         if (newIndoorTemp != null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_TEMPERATURE, newIndoorTemp);
             this.madokaSettings.setIndoorTemperature(newIndoorTemp);
         }
 
-        DecimalType newOutdoorTemp = command.getOutdoorTemperature();
+        QuantityType<Temperature> newOutdoorTemp = command.getOutdoorTemperature();
         if (newOutdoorTemp == null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE, UnDefType.UNDEF);
         } else {
@@ -790,9 +792,9 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     public void receivedResponse(GetOperationHoursCommand command) {
         logger.debug("receivedResponse(GetOperationHoursCommand command)");
 
-        DecimalType indoorPowerHours = command.getIndoorPowerHours();
-        DecimalType indoorOperationHours = command.getIndoorOperationHours();
-        DecimalType indoorFanHours = command.getIndoorFanHours();
+        QuantityType<Time> indoorPowerHours = command.getIndoorPowerHours();
+        QuantityType<Time> indoorOperationHours = command.getIndoorOperationHours();
+        QuantityType<Time> indoorFanHours = command.getIndoorFanHours();
 
         if (indoorPowerHours != null) {
             this.madokaSettings.setIndoorPowerHours(indoorPowerHours);
@@ -839,7 +841,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 return;
         }
 
-        DecimalType dt = madokaSettings.getSetpoint();
+        QuantityType<Temperature> dt = madokaSettings.getSetpoint();
         if (dt != null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT, dt);
         }
