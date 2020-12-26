@@ -54,7 +54,6 @@ public class BroadlinkThermostatHandlerFactory extends BaseThingHandlerFactory {
         if (FLOUREON_THERMOSTAT_THING_TYPE.equals(thingTypeUID) || HYSEN_THERMOSTAT_THING_TYPE.equals(thingTypeUID)) {
             return new FloureonThermostatHandler(thing);
         }
-        logger.warn("No handler for {} available", thingTypeUID);
         return null;
     }
 }

@@ -114,7 +114,7 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
             try {
                 floureonDevice.setPower(command == OnOffType.ON);
             } catch (Exception e) {
-                logger.error("Error while setting power of {} to {}", thing.getUID(), command, e);
+                logger.warn("Error while setting power of {} to {}: {}", thing.getUID(), command, e.getMessage());
             }
         } else {
             logger.warn("Channel {} does not support command {}", channelUID, command);

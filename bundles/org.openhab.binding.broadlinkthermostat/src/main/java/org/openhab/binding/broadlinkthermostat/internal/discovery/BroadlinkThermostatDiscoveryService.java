@@ -46,7 +46,7 @@ import com.github.mob41.blapi.BLDevice;
  *
  * @author Florian Mueller - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.broadlinkthermostat")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.broadlinkthermostat")
 @NonNullByDefault
 public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryService {
 
@@ -77,7 +77,7 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
             }
 
         } catch (IOException e) {
-            logger.debug("Error while trying to discover broadlinkthermostat devices: ", e);
+            logger.debug("Error while trying to discover broadlinkthermostat devices: {}", e.getMessage());
         }
         logger.debug("Discovery service found {} broadlinkthermostat devices.", blDevices.length);
 

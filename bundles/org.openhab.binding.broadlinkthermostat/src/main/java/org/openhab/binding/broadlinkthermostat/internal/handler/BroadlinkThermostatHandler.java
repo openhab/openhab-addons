@@ -76,8 +76,9 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        host = getConfigAs(BroadlinkThermostatConfig.class).getHost();
-        mac = getConfigAs(BroadlinkThermostatConfig.class).getMac();
+        BroadlinkThermostatConfig config = getConfigAs(BroadlinkThermostatConfig.class);
+        host = config.getHost();
+        mac = config.getMac();
 
         // schedule a new scan every minute
         scanJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, 1, TimeUnit.MINUTES);

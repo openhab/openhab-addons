@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+broadlink-java-api
+* License: MIT License
+* Project: https://github.com/mob41/broadlink-java-api
+* Source: https://github.com/mob41/broadlink-java-api
