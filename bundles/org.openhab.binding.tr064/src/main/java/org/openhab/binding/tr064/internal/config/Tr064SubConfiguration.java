@@ -27,7 +27,7 @@ public class Tr064SubConfiguration extends Tr064BaseThingConfiguration {
     public String uuid = "";
 
     // Lan Device
-    public List<String> macOnline = Collections.emptyList();
+    public List<String> macOnline = List.of();
 
     public boolean isValid() {
         return !uuid.isEmpty();
