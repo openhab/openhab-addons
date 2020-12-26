@@ -19,7 +19,7 @@
       <groupId>eu.xeli</groupId>
       <artifactId>jpigpio_2.12</artifactId>
       <version>0.1.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

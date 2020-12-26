@@ -18,8 +18,6 @@
 
 	<feature name="openhab-binding-gpio" description="gpio Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature prerequisite="true">wrap</feature>
-		<bundle dependency="true">wrap:mvn:eu.xeli/jpigpio_2.12/0.1.0</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.gpio/${project.version}</bundle>
 	</feature>
 </features>
