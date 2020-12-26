@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.gardena.internal.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * Exception if a device is not found, this happens if a device is requested and the data from Gardena Smart Home has
+ * Exception if a device is not found, this happens if a device is requested and the data from Gardena smart system has
  * not been loaded.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaDeviceNotFoundException extends GardenaException {
 
     private static final long serialVersionUID = 2704767320916725490L;

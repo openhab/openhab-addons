@@ -151,7 +151,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     }
 
     /**
-     * Get a homie property (which translates to an ESH channel).
+     * Get a homie property (which translates to a channel).
      *
      * @param channelUID The group ID corresponds to the Homie Node, the channel ID (without group ID) corresponds to
      *            the Nodes Property.

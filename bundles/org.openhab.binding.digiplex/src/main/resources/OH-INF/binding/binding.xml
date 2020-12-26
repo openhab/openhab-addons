@@ -5,6 +5,5 @@
 
 	<name>Digiplex/EVO Binding</name>
 	<description>Binding for Digiplex/EVO alarm systems (utilizing PRT3 module)</description>
-	<author>Robert Michalak</author>
 
 </binding:binding>

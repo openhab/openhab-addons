@@ -256,15 +256,15 @@ The disadvantage is of course, that all events for this channel are delayed.
 ```java
   Thing HM-LC-Dim1T-Pl-2    JEQ0999999 "Name"  @  "Location" {
       Channels:
-          Type HM-LC-Dim1T-Pl-2_1_level : 1#LEVEL [
+          Type HM-LC-Dim1T-Pl-2_1_LEVEL : 1#LEVEL [
               delay = 0,
               receiveDelay = 4
           ]
   }
 ```
 
-The `Type` is the device type, channel number and lowercase channel name separated with an underscore.
-Note that, for Homegear devices, in contrast to the specification of the Rhing above no `HG-` prefix is needed for the specification of the Type of the Channel.
+The `Type` is the device type, channel number and UPPERCASE channel name separated with an underscore.
+Note that, for Homegear devices, in contrast to the specification of the Thing above no `HG-` prefix is needed for the specification of the Type of the Channel.
 
 The channel configs are optional.
 
@@ -521,7 +521,7 @@ Display_CombinedParam.sendCommand("{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=J
 If you want to use the combined parameter in the console, you have to use ' instead of ", to prevent evaluation of curly braces:
 
 ```shell
-smarthome:send Display_CombinedParam '{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=Just a test,DDID=3,DDC=true}'
+openhab:send Display_CombinedParam '{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=Just a test,DDID=3,DDC=true}'
 ```
 
 **Key translation:**
@@ -662,7 +662,7 @@ E.g you have an item linked to a variable with the name `Var_1`.
 In the console:
 
 ```shell
-smarthome:send Var_1 REFRESH
+openhab:send Var_1 REFRESH
 ```
 
 In scripts:

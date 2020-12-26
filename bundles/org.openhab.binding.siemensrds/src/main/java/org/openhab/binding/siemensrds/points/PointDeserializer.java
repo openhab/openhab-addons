@@ -41,12 +41,8 @@ public class PointDeserializer implements JsonDeserializer<BasePoint> {
     }
 
     @Override
-    public BasePoint deserialize(@Nullable JsonElement element, @Nullable Type guff,
-            @Nullable JsonDeserializationContext ctxt) throws JsonParseException {
-        if (element == null || ctxt == null) {
-            throw new JsonParseException("method called with null argument(s)");
-        }
-
+    public @Nullable BasePoint deserialize(JsonElement element, Type guff, JsonDeserializationContext ctxt)
+            throws JsonParseException {
         JsonObject obj = element.getAsJsonObject();
         JsonElement value = obj.get("value");
         if (value == null) {

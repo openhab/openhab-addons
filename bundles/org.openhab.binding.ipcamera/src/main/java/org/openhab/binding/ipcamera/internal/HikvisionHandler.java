@@ -20,9 +20,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -69,15 +67,10 @@ public class HikvisionHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = "";
-        int debounce = 3;
         try {
-            content = msg.toString();
-            if (content.isEmpty()) {
-                return;
-            }
+            int debounce = 3;
+            String content = msg.toString();
             logger.trace("HTTP Result back from camera is \t:{}:", content);
-
             if (content.contains("--boundary")) {// Alarm checking goes in here//
                 if (content.contains("<EventNotificationAlert version=\"")) {
                     if (content.contains("hannelID>" + nvrChannel + "</")) {// some camera use c or <dynChannelID>
@@ -116,7 +109,8 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             countDown();
                             countDown();
                         }
-                    } else if (content.contains("<channelID>0</channelID>")) {// NVR uses channel 0 to say all channels
+                    } else if (content.contains("<channelID>0</channelID>")) {// NVR uses channel 0 to say all
+                                                                              // channels
                         if (content.contains("<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
                             if (vmdCount > 1) {
                                 vmdCount = 1;
@@ -440,19 +434,6 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                     hikSendXml("/ISAPI/System/IO/outputs/" + nvrChannel + "/trigger",
                             "<IOPortData version=\"1.0\" xmlns=\"http://www.hikvision.com/ver10/XMLSchema\">\r\n    <outputState>low</outputState>\r\n</IOPortData>\r\n");
                 }
-                return;
-            case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = false;
-                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                } else {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                    ipCameraHandler.motionThreshold = Double.valueOf(command.toString());
-                    ipCameraHandler.motionThreshold = ipCameraHandler.motionThreshold / 10000;
-                }
-                ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                 return;
         }
     }

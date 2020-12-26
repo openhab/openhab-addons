@@ -6,11 +6,11 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:smhi:forecast">
-		<parameter name="latitude" type="decimal" required="true">
+		<parameter name="latitude" type="decimal" step="0.000001" required="true">
 			<label>Latitude</label>
 			<description>Latitude for the forecast</description>
 		</parameter>
-		<parameter name="longitude" type="decimal" required="true">
+		<parameter name="longitude" type="decimal" step="0.000001" required="true">
 			<label>Longitude</label>
 			<description>Longitude for the forecast</description>
 		</parameter>

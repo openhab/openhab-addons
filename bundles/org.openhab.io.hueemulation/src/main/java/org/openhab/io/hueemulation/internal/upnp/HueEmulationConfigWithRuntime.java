@@ -95,8 +95,7 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
         }
     }
 
-    public synchronized CompletableFuture<@Nullable HueEmulationConfigWithRuntime> startNow(
-            @Nullable HueEmulationConfigWithRuntime ignored) {
+    public synchronized CompletableFuture<@Nullable HueEmulationConfigWithRuntime> startNow() {
         if (hasAlreadyBeenStarted) {
             logger.debug("Cannot restart thread");
             return future;

@@ -5,6 +5,5 @@
 
 	<name>FSInternetRadio Binding</name>
 	<description>This is the binding for internet radios based on the Frontier Silicon chipset.</description>
-	<author>Patrick Koenemann</author>
 
 </binding:binding>

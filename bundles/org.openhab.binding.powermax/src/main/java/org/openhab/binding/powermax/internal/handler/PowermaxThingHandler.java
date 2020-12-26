@@ -17,6 +17,7 @@ import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.config.PowermaxX10Configuration;
 import org.openhab.binding.powermax.internal.config.PowermaxZoneConfiguration;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
@@ -190,6 +191,8 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 updateState(BYPASSED, state.isSensorBypassed(num) ? OnOffType.ON : OnOffType.OFF);
             } else if (channel.equals(ARMED) && (state.isSensorArmed(num) != null)) {
                 updateState(ARMED, state.isSensorArmed(num) ? OnOffType.ON : OnOffType.OFF);
+            } else if (channel.equals(LOCKED) && (state.isSensorArmed(num) != null)) {
+                updateState(LOCKED, state.isSensorArmed(num) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             } else if (channel.equals(LOW_BATTERY) && (state.isSensorLowBattery(num) != null)) {
                 updateState(LOW_BATTERY, state.isSensorLowBattery(num) ? OnOffType.ON : OnOffType.OFF);
             }
@@ -202,7 +205,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
     }
 
     @Override
-    public void onPanelSettingsUpdated(PowermaxPanelSettings settings) {
+    public void onPanelSettingsUpdated(@Nullable PowermaxPanelSettings settings) {
         if (getThing().getThingTypeUID().equals(THING_TYPE_ZONE)) {
             PowermaxZoneConfiguration config = getConfigAs(PowermaxZoneConfiguration.class);
             onZoneSettingsUpdated(config.zoneNumber, settings);
@@ -234,7 +237,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
     }
 
     @Override
-    public void onZoneSettingsUpdated(int zoneNumber, PowermaxPanelSettings settings) {
+    public void onZoneSettingsUpdated(int zoneNumber, @Nullable PowermaxPanelSettings settings) {
         if (getThing().getThingTypeUID().equals(THING_TYPE_ZONE)) {
             PowermaxZoneConfiguration config = getConfigAs(PowermaxZoneConfiguration.class);
             if (zoneNumber == config.zoneNumber) {

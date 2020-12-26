@@ -31,8 +31,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.tr064.internal.dto.phonebook.NumberType;
-import org.openhab.binding.tr064.internal.dto.phonebook.PhonebooksType;
+import org.openhab.binding.tr064.internal.dto.additions.NumberType;
+import org.openhab.binding.tr064.internal.dto.additions.PhonebooksType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,9 +88,12 @@ public class Tr064PhonebookImpl implements Phonebook {
 
     @Override
     public Optional<String> lookupNumber(String number, int matchCount) {
-        String matchString = matchCount < number.length() ? number.substring(number.length() - matchCount) : number;
-        logger.trace("matchString for {} is {}", number, matchString);
-        return phonebook.keySet().stream().filter(n -> n.endsWith(matchString)).findAny().map(phonebook::get);
+        String matchString = matchCount > 0 && matchCount < number.length()
+                ? number.substring(number.length() - matchCount)
+                : number;
+        logger.trace("matchString for '{}' is '{}'", number, matchString);
+        return matchString.isBlank() ? Optional.empty()
+                : phonebook.keySet().stream().filter(n -> n.endsWith(matchString)).findFirst().map(phonebook::get);
     }
 
     @Override

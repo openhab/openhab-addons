@@ -1,0 +1,92 @@
+{
+	"deviceMapping": {
+		"id": [
+			"scishare.coffee.s1102",
+			"scishare.coffee.s1301"
+		],
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Power",
+				"channel": "power",
+				"channelType": "power",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "Machine_*",
+						"parameterType": "ONOFFPARA"
+					}
+				]
+			},
+			{
+				"property": "Query_Machine_Status",
+				"friendlyName": "status",
+				"channel": "Status",
+				"type": "String",
+				"refresh": true,
+				"customRefreshCommand": "true",
+				"ChannelGroup": "actions",
+				"actions": []
+			},
+			{
+				"property": "",
+				"friendlyName": "Brew Expresso",
+				"channel": "expresso",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Espresso_Coffee_Set",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							85
+						]
+					}
+				],
+				"readmeComment": "Value is the amount of coffee in ml. 2nd parameter in the json db is the water temperature"
+			},
+			{
+				"property": "",
+				"friendlyName": "Brew Americano",
+				"channel": "expresso",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Americano_Coffee_Set",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							40,
+							80,
+							90
+						]
+					}
+				],
+				"readmeComment": "Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90"
+			},
+			{
+				"property": "",
+				"friendlyName": "Boil water",
+				"channel": "boil",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Hot_Wate",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							55
+						]
+					}
+				],
+				"readmeComment": "Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature"
+			}
+		],
+		"readmeComment": "This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.",
+		"experimental": true
+	}
+}

@@ -4,5 +4,4 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 	<name>evohome Binding</name>
 	<description>The evohome binding controls the Honeywell evohome system.</description>
-	<author>Jasper van Zuijlen</author>
 </binding:binding>

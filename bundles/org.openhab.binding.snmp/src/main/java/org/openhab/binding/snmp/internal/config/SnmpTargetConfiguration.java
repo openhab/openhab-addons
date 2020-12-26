@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.snmp.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.snmp.internal.SnmpProtocolVersion;
 
 /**
@@ -19,8 +21,9 @@ import org.openhab.binding.snmp.internal.SnmpProtocolVersion;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class SnmpTargetConfiguration {
-    public String hostname;
+    public @Nullable String hostname;
     public int port = 161;
     public String community = "public";
     public int refresh = 60;

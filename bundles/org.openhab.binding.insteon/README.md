@@ -199,27 +199,27 @@ Sample things file:
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device 22F8A8 [address="22.F8.A8", productKey="F00.00.15"] {
     Channels:
-      Type switch : keypadButtonA [ group=3 ]
-      Type switch : keypadButtonB [ group=4 ]
-      Type switch : keypadButtonC [ group=5 ]
-      Type switch : keypadButtonD [ group=6 ]
+      Type keypadButtonA : keypadButtonA [ group=3 ]
+      Type keypadButtonB : keypadButtonB [ group=4 ]
+      Type keypadButtonC : keypadButtonC [ group=5 ]
+      Type keypadButtonD : keypadButtonD [ group=6 ]
   }
   Thing device 238D93 [address="23.8D.93", productKey="F00.00.12"]
   Thing device 238F55 [address="23.8F.55", productKey="F00.00.11"] {
     Channels:
-      Type dimmer : dimmer [related="23.B0.D9+23.8F.C9"]
+      Type dimmer        : dimmer [related="23.B0.D9+23.8F.C9"]
   }
   Thing device 238FC9 [address="23.8F.C9", productKey="F00.00.11"] {
     Channels:
-      Type dimmer : dimmer [related="23.8F.55+23.B0.D9"]
+      Type dimmer        : dimmer [related="23.8F.55+23.B0.D9"]
   }
   Thing device 23B0D9 [address="23.B0.D9", productKey="F00.00.11"] {
     Channels:
-      Type dimmer : dimmer [related="23.8F.55+23.8F.C9"]
+      Type dimmer        : dimmer [related="23.8F.55+23.8F.C9"]
   }
   Thing device 243141 [address="24.31.41", productKey="F00.00.11"]  {
     Channels:
-      Type dimmer : dimmer [dimmermax=60]
+      Type dimmer        : dimmer [dimmermax=60]
   }
 }
 ```
@@ -242,22 +242,23 @@ Dimmer dimmer  { channel="insteon:device:home:238D93:dimmer" }
 ## Console Commands
 
 The binding provides commands you can use to help with troubleshooting.
-Enter `smarthome:insteon` in the console and you will get a list of available commands.
+Enter `openhab:insteon` or `insteon` in the console and you will get a list of available commands.
+The `openhab:` prefix is optional:
 
 ```
-openhab> smarthome:insteon
-Usage: smarthome:insteon display_devices - display devices that are online, along with available channels
-Usage: smarthome:insteon display_channels - display channels that are linked, along with configuration information
-Usage: smarthome:insteon display_local_database - display Insteon PLM or hub database details
-Usage: smarthome:insteon display_monitored - display monitored device(s)
-Usage: smarthome:insteon start_monitoring all|address - start displaying messages received from device(s)
-Usage: smarthome:insteon stop_monitoring all|address - stop displaying messages received from device(s)
-Usage: smarthome:insteon send_standard_message address flags cmd1 cmd2 - send standard message to a device
-Usage: smarthome:insteon send_extended_message address flags cmd1 cmd2 [up to 13 bytes] - send extended message to a device
-Usage: smarthome:insteon send_extended_message_2 address flags cmd1 cmd2 [up to 12 bytes] - send extended message with a two byte crc to a device
+openhab> openhab:insteon
+Usage: openhab:insteon display_devices - display devices that are online, along with available channels
+Usage: openhab:insteon display_channels - display channels that are linked, along with configuration information
+Usage: openhab:insteon display_local_database - display Insteon PLM or hub database details
+Usage: openhab:insteon display_monitored - display monitored device(s)
+Usage: openhab:insteon start_monitoring all|address - start displaying messages received from device(s)
+Usage: openhab:insteon stop_monitoring all|address - stop displaying messages received from device(s)
+Usage: openhab:insteon send_standard_message address flags cmd1 cmd2 - send standard message to a device
+Usage: openhab:insteon send_extended_message address flags cmd1 cmd2 [up to 13 bytes] - send extended message to a device
+Usage: openhab:insteon send_extended_message_2 address flags cmd1 cmd2 [up to 12 bytes] - send extended message with a two byte crc to a device
 ```
 
-Here is an example of command: `smarthome:insteon display_local_database`.
+Here is an example of command: `insteon display_local_database`.
 
 When monitoring devices, the output will be displayed where openHAB was started.
 You may need to redirect the output to a log file to see the messages.
@@ -329,11 +330,11 @@ The below example sets a maximum level of 70% for dim 1 and 60% for dim 2:
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11"]  {
     Channels:
-      Type dimmer : dimmer [dimmermax=70]
+      Type dimmer     : dimmer [dimmermax=70]
   }
   Thing device AABBCD [address="AA.BB.CD", productKey="F00.00.15"]  {
     Channels:
-      Type dimmer : loadDimmer [dimmermax=60]
+      Type loadDimmer : loadDimmer [dimmermax=60]
   }
 }
 ```
@@ -576,10 +577,10 @@ To make the buttons available, add the following:
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.15"] {
     Channels:
-      Type switch : keypadButtonA [ group="0xf3" ]
-      Type switch : keypadButtonB [ group="0xf4" ]
-      Type switch : keypadButtonC [ group="0xf5" ]
-      Type switch : keypadButtonD [ group="0xf6" ]
+      Type keypadButtonA : keypadButtonA [ group="0xf3" ]
+      Type keypadButtonB : keypadButtonB [ group="0xf4" ]
+      Type keypadButtonC : keypadButtonC [ group="0xf5" ]
+      Type keypadButtonD : keypadButtonD [ group="0xf6" ]
   }
 }
 ```
@@ -747,7 +748,7 @@ The format is `broadcastOnOff#X` where X is the group that you want to be able t
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC             [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
-      Type switch : broadcastOnOff#2
+      Type broadcastOnOff : broadcastOnOff#2
   }
 }
 
@@ -802,7 +803,7 @@ A typical example would be a switch configured to broadcast to a group, and one 
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
-      Type switch : broadcastOnOff#3 [related="AA.BB.DD"]
+      Type broadcastOnOff : broadcastOnOff#3 [related="AA.BB.DD"]
   }
   Thing device AABBDD [address="AA.BB.DD", productKey="F00.00.11"]
 }

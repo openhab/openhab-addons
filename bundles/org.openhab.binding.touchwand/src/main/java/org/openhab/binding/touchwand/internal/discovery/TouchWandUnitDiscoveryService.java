@@ -90,9 +90,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                     for (JsonElement unit : jsonArray) {
                         TouchWandUnitData touchWandUnit;
                         touchWandUnit = TouchWandUnitFromJson.parseResponse(unit.getAsJsonObject());
-                        if (touchWandUnit == null) {
-                            continue;
-                        }
+
                         if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {
                             if (!Arrays.asList(CONNECTIVITY_OPTIONS).contains(touchWandUnit.getConnectivity())) {
                                 continue;
@@ -117,6 +115,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                                 break;
                             case TYPE_SHUTTER:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
+                                break;
+                            case TYPE_ALARMSENSOR:
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_ALARMSENSOR);
                                 break;
                             default:
                                 continue;

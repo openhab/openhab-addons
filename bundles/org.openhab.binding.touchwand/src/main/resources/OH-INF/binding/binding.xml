@@ -5,6 +5,5 @@
 
 	<name>TouchWand Binding</name>
 	<description>Connect to TouchWand Wanderfull™ Hub and communicate with units connected to the controller.</description>
-	<author>Roie Geron</author>
 
 </binding:binding>

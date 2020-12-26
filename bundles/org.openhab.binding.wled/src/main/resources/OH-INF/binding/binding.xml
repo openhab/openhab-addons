@@ -5,6 +5,5 @@
 
 	<name>WLED Binding</name>
 	<description>This is the binding for WLED</description>
-	<author>Matthew Skinner</author>
 
 </binding:binding>

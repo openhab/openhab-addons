@@ -120,6 +120,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     public void dispose() {
         BluetoothDevice dev = device;
         if (dev != null) {
+            if (Boolean.TRUE.equals(dev.isPaired())) {
+                return;
+            }
+
             try {
                 dev.getAdapter().removeDevice(dev.getRawDevice());
             } catch (DBusException ex) {
@@ -359,8 +363,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         }
         BluetoothCharacteristic c = getCharacteristic(UUID.fromString(characteristic.getUuid()));
         if (c != null) {
-            c.setValue(event.getData());
-            notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, c, BluetoothCompletionStatus.SUCCESS);
+            synchronized (c) {
+                c.setValue(event.getData());
+                notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, c, BluetoothCompletionStatus.SUCCESS);
+            }
         }
     }
 
@@ -396,7 +402,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
                     for (BluetoothGattDescriptor dBusBlueZDescriptor : dBusBlueZCharacteristic.getGattDescriptors()) {
                         BluetoothDescriptor descriptor = new BluetoothDescriptor(characteristic,
-                                UUID.fromString(dBusBlueZDescriptor.getUuid()));
+                                UUID.fromString(dBusBlueZDescriptor.getUuid()), 0);
                         characteristic.addDescriptor(descriptor);
                     }
                     service.addCharacteristic(characteristic);

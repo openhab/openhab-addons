@@ -111,11 +111,13 @@
 				"friendlyName": "Filter Hours used",
 				"channel": "filterhours",
 				"channelType": "filterhours",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "motor1_speed",
@@ -138,7 +140,7 @@
 			},
 			{
 				"property": "filter1_life",
-				"friendlyName": "Filter  Life",
+				"friendlyName": "Filter Life",
 				"channel": "filterlife",
 				"type": "Number",
 				"refresh": true,
@@ -164,12 +166,18 @@
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperature",
-				"type": "Number",
+				"channelType": "temperatureC",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"transformation": "/10",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "child_lock",

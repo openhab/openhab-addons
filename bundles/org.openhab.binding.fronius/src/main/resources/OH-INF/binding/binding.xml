@@ -5,6 +5,5 @@
 
 	<name>Fronius Binding</name>
 	<description>Binding for Fronius inverters.</description>
-	<author>Thomas Rokohl, Gerrit Beine</author>
 
 </binding:binding>

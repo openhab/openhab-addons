@@ -34,19 +34,14 @@ import com.google.gson.JsonSerializer;
 @NonNullByDefault
 public class ThermostatModeGsonTypeAdapter implements JsonDeserializer<ThermostatMode>, JsonSerializer<ThermostatMode> {
     @Override
-    public ThermostatMode deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-            @Nullable JsonDeserializationContext context) throws JsonParseException {
-        JsonElement jsonLocal = json;
-        if (jsonLocal != null) {
-            String s = jsonLocal.getAsString();
-            return s == null ? ThermostatMode.UNKNOWN : ThermostatMode.fromString(s);
-        }
-        return ThermostatMode.UNKNOWN;
+    public @Nullable ThermostatMode deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        return ThermostatMode.fromString(json.getAsString());
     }
 
     @Override
-    public JsonElement serialize(ThermostatMode src, @Nullable Type typeOfSrc,
-            @Nullable JsonSerializationContext context) throws JsonParseException {
+    public JsonElement serialize(ThermostatMode src, Type typeOfSrc, JsonSerializationContext context)
+            throws JsonParseException {
         return src != ThermostatMode.UNKNOWN ? new JsonPrimitive(src.getDeconzValue()) : JsonNull.INSTANCE;
     }
 }

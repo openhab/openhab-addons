@@ -117,25 +117,27 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     }
 
     public void createOAuthClientService() {
-        logger.debug("API: Creating OAuth Client Service");
-        OAuthClientService service = oAuthFactory.createOAuthClientService(
-                bridgeHandler.getThing().getUID().getAsString(), ECOBEE_TOKEN_URL, null, apiKey, "", ECOBEE_SCOPE,
-                false);
+        String bridgeUID = bridgeHandler.getThing().getUID().getAsString();
+        logger.debug("API: Creating OAuth Client Service for {}", bridgeUID);
+        OAuthClientService service = oAuthFactory.createOAuthClientService(bridgeUID, ECOBEE_TOKEN_URL, null, apiKey,
+                "", ECOBEE_SCOPE, false);
         service.addAccessTokenRefreshListener(this);
         ecobeeAuth = new EcobeeAuth(bridgeHandler, apiKey, apiTimeout, service, httpClient);
         oAuthClientService = service;
     }
 
     public void deleteOAuthClientService() {
-        logger.debug("API: Deleting OAuth Client Service");
+        String bridgeUID = bridgeHandler.getThing().getUID().getAsString();
+        logger.debug("API: Deleting OAuth Client Service for {}", bridgeUID);
         oAuthClientService.removeAccessTokenRefreshListener(this);
-        oAuthFactory.deleteServiceAndAccessToken(bridgeHandler.getThing().getUID().getAsString());
+        oAuthFactory.deleteServiceAndAccessToken(bridgeUID);
     }
 
     public void closeOAuthClientService() {
-        logger.debug("API: Closing OAuth Client Service");
+        String bridgeUID = bridgeHandler.getThing().getUID().getAsString();
+        logger.debug("API: Closing OAuth Client Service for {}", bridgeUID);
         oAuthClientService.removeAccessTokenRefreshListener(this);
-        oAuthFactory.ungetOAuthService(bridgeHandler.getThing().getUID().getAsString());
+        oAuthFactory.ungetOAuthService(bridgeUID);
     }
 
     /**
@@ -165,9 +167,18 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             accessTokenResponse = localAccessTokenResponse;
             ecobeeAuth.doAuthorization();
         } catch (OAuthException | IOException | RuntimeException e) {
-            logger.info("API: Got exception trying to get access token from OAuth service", e);
+            if (logger.isDebugEnabled()) {
+                logger.info("API: Got exception trying to get access token from OAuth service", e);
+            } else {
+                logger.info("API: Got {} trying to get access token from OAuth service: {}",
+                        e.getClass().getSimpleName(), e.getMessage());
+            }
         } catch (EcobeeAuthException e) {
-            logger.info("API: The Ecobee authorization process threw an exception", e);
+            if (logger.isDebugEnabled()) {
+                logger.info("API: The Ecobee authorization process threw an exception", e);
+            } else {
+                logger.info("API: The Ecobee authorization process threw an exception: {}", e.getMessage());
+            }
             ecobeeAuth.setState(EcobeeAuthState.NEED_PIN);
         } catch (OAuthResponseException e) {
             handleOAuthException(e);
@@ -319,10 +330,8 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     }
 
     private boolean isSuccess(@Nullable AbstractResponseDTO response) {
-        boolean success = true;
         if (response == null) {
             logger.info("API: Ecobee API returned null response");
-            success = false;
         } else if (response.status.code.intValue() != 0) {
             logger.info("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
                     response.status.message);
@@ -334,13 +343,16 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             } else if (response.status.code == ECOBEE_TOKEN_EXPIRED) {
                 // Check isAuthorized again to see if we can get a valid token
                 logger.info("API: Unable to complete API call because token is expired");
-                if (!isAuthorized()) {
+                if (isAuthorized()) {
+                    return true;
+                } else {
                     logger.warn("API: isAuthorized was NOT successful on second try");
                 }
             }
-            success = false;
+        } else {
+            return true;
         }
-        return success;
+        return false;
     }
 
     private Properties setHeaders() throws EcobeeAuthException {

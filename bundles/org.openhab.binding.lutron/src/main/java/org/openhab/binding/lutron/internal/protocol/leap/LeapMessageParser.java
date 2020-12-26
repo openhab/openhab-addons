@@ -14,6 +14,7 @@ package org.openhab.binding.lutron.internal.protocol.leap;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -212,6 +213,7 @@ public class LeapMessageParser {
         try {
             if (messageBody.has(memberName)) {
                 JsonObject jsonObject = messageBody.get(memberName).getAsJsonObject();
+                @Nullable
                 T obj = gson.fromJson(jsonObject, type);
                 return obj;
             } else {
@@ -233,7 +235,7 @@ public class LeapMessageParser {
 
                 for (JsonElement element : jsonArray) {
                     JsonObject jsonObject = element.getAsJsonObject();
-                    T obj = gson.fromJson(jsonObject, type);
+                    T obj = Objects.requireNonNull(gson.fromJson(jsonObject, type));
                     objList.add(obj);
                 }
                 return objList;

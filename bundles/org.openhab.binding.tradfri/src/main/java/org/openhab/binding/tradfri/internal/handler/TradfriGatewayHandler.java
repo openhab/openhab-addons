@@ -17,10 +17,7 @@ import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -114,8 +111,8 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
             }
         } else {
             String currentFirmware = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
-            if (!isNullOrEmpty(currentFirmware)
-                    && MIN_SUPPORTED_VERSION.compareTo(new TradfriVersion(currentFirmware)) > 0) {
+            if (!isNullOrEmpty(currentFirmware) && MIN_SUPPORTED_VERSION
+                    .compareTo(new TradfriVersion(Objects.requireNonNull(currentFirmware))) > 0) {
                 // older firmware not supported
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format(

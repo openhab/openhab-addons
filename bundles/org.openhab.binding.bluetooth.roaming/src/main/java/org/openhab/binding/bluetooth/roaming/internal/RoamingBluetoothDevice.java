@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.roaming.internal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -52,7 +53,7 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
     }
 
     public void addBluetoothDevice(BluetoothDevice device) {
-        device.addListener(devices.computeIfAbsent(device, Listener::new));
+        device.addListener(Objects.requireNonNull(devices.computeIfAbsent(device, Listener::new)));
     }
 
     public void removeBluetoothDevice(BluetoothDevice device) {

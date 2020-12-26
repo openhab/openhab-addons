@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Warning Device</label>
 		<description>A warning device</description>
+		<category>Siren</category>
 		<channels>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
@@ -25,6 +26,7 @@
 		</supported-bridge-type-refs>
 		<label>Window Covering</label>
 		<description>A device to cover windows.</description>
+		<category>Blinds</category>
 		<channels>
 			<channel typeId="position" id="position"/>
 		</channels>
@@ -55,8 +57,10 @@
 		</supported-bridge-type-refs>
 		<label>Dimmable Light</label>
 		<description>A dimmable light.</description>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -70,9 +74,11 @@
 		</supported-bridge-type-refs>
 		<label>Color-Temperature Light</label>
 		<description>A dimmable light with adjustable color temperature.</description>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -86,13 +92,15 @@
 		</supported-bridge-type-refs>
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="color" id="color"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:light"/>
+		<config-description-ref uri="thing-type:deconz:colorlight"/>
 	</thing-type>
 
 	<thing-type id="extendedcolorlight">
@@ -101,14 +109,16 @@
 		</supported-bridge-type-refs>
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="color" id="color"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:light"/>
+		<config-description-ref uri="thing-type:deconz:colorlight"/>
 	</thing-type>
 
 	<thing-type id="doorlock">
@@ -117,6 +127,7 @@
 		</supported-bridge-type-refs>
 		<label>Doorlock</label>
 		<description>A doorlock that can be locked (ON) or unlocked (OFF).</description>
+		<category>Lock</category>
 		<channels>
 			<channel typeId="lock" id="switch"/>
 		</channels>
@@ -129,34 +140,75 @@
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
+		<category>Rollershutter</category>
 		<state pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="onoff">
 		<item-type>Switch</item-type>
 		<label>On/Off</label>
+		<category>Switch</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
+		<category>Slider</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 		<state pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
+		<category>Colorpicker</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ct">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 		<state pattern="%d K" min="15" max="100000" step="100"/>
 	</channel-type>
 
+	<channel-type id="effect">
+		<item-type>String</item-type>
+		<label>Effect Channel</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="effectSpeed">
+		<item-type>Number</item-type>
+		<label>Effect Speed Channel</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state min="0" max="10" step="1"/>
+	</channel-type>
+
 	<channel-type id="alert">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Alert</label>
+		<category>Alarm</category>
+		<command>
+			<options>
+				<option value="none">No Alarm</option>
+				<option value="select">Blinking (short time)</option>
+				<option value="lselect">Blinking (long time)</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="lock">

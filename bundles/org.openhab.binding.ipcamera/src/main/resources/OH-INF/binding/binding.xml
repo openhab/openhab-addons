@@ -5,5 +5,4 @@
 
 	<name>IpCamera Binding</name>
 	<description>This binding interfaces IP cameras of various vendors via open protocols.</description>
-	<author>Matthew Skinner</author>
 </binding:binding>

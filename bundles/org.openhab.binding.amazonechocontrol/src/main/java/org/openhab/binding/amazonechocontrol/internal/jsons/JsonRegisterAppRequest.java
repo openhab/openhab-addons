@@ -25,7 +25,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class JsonRegisterAppRequest {
 
-    public JsonRegisterAppRequest(String serial, String accessToken, String frc, JsonWebSiteCookie[] webSiteCookies) {
+    public JsonRegisterAppRequest(String serial, @Nullable String accessToken, String frc,
+            JsonWebSiteCookie[] webSiteCookies) {
         registrationData.deviceSerial = serial;
         authData.accessToken = accessToken;
         userContextMap.frc = frc;

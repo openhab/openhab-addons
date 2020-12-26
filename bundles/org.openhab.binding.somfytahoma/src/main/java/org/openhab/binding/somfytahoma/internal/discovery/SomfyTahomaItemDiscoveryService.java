@@ -237,10 +237,14 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
             case CLASS_HEATING_SYSTEM:
                 if ("SomfyThermostat".equals(device.getWidget())) {
                     deviceDiscovered(device, THING_TYPE_THERMOSTAT);
+                } else if ("ValveHeatingTemperatureInterface".equals(device.getWidget())) {
+                    deviceDiscovered(device, THING_TYPE_VALVE_HEATING_SYSTEM);
                 } else if (isOnOffHeatingSystem(device)) {
                     deviceDiscovered(device, THING_TYPE_ONOFF_HEATING_SYSTEM);
+                } else if (isZwaveHeatingSystem(device)) {
+                    deviceDiscovered(device, THING_TYPE_ZWAVE_HEATING_SYSTEM);
                 } else {
-                    deviceDiscovered(device, THING_TYPE_HEATING_SYSTEM);
+                    logUnsupportedDevice(device);
                 }
                 break;
             case CLASS_EXTERIOR_HEATING_SYSTEM:
@@ -352,6 +356,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
 
     private boolean isOnOffHeatingSystem(SomfyTahomaDevice device) {
         return hasCommmand(device, COMMAND_SET_HEATINGLEVEL);
+    }
+
+    private boolean isZwaveHeatingSystem(SomfyTahomaDevice device) {
+        return hasState(device, ZWAVE_SET_POINT_TYPE_STATE);
     }
 
     private boolean hasCommmand(SomfyTahomaDevice device, String command) {

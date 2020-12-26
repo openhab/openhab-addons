@@ -414,6 +414,10 @@ public class EcobeeActions implements ThingActions {
         EventDTO event = new EventDTO();
         for (String key : params.keySet()) {
             Object value = params.get(key);
+            if (value == null) {
+                LOGGER.warn("Event field '{}' has null value, ignored.", key);
+                continue;
+            }
             switch (key) {
                 case "isOccupied":
                     event.isOccupied = ((Boolean) value);

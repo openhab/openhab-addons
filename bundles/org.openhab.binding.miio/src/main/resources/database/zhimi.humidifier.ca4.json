@@ -1,0 +1,281 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.humidifier.ca4"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "power",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "power",
+				"channelType": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"channelType": "humidifierOperationMode",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Humidifier Device Fault",
+				"channel": "Fault",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "humidity",
+				"siid": 3,
+				"piid": 9,
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"channelType": "humidity",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "target_humidity",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Target Humidity",
+				"channel": "targetHumidity",
+				"channelType": "humidity",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "water_level",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Water Level",
+				"channel": "waterlevel",
+				"channelType": "waterlevel",
+				"type": "Number",
+				"refresh": true,
+				"transformation": "tankLevel",
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "led_brightness",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "LED Brightness",
+				"channel": "bright",
+				"channelType": "humidifierLedBrightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "buzzer",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Buzzer Status",
+				"channel": "buzzer",
+				"channelType": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "dry",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Dry",
+				"channel": "dry",
+				"channelType": "dry",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "use_time",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Run Time",
+				"channel": "usedhours",
+				"channelType": "usedhours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "time"
+			},
+			{
+				"property": "power_time",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "Power Time",
+				"channel": "powerhours",
+				"channelType": "powerhours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "time"
+			},
+			{
+				"property": "speed_level",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Target Motor Speed",
+				"channel": "targetmotorspeed",
+				"channelType": "motorspeed",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "actual_speed",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Actual Motor Speed",
+				"channel": "actualmotorspeed",
+				"channelType": "motorspeed",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "temp_dec",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"channelType": "temperatureC",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "child_lock",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "childlock",
+				"channelType": "childlock",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "button_pressed",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Button Pressed",
+				"channel": "ButtonPressed",
+				"channelType": "humidifierLastPressedButton",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "clean",
+				"siid": 7,
+				"piid": 5,
+				"friendlyName": "Clean Mode",
+				"channel": "clean",
+				"channelType": "clean",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "country_code",
+				"siid": 7,
+				"piid": 4,
+				"friendlyName": "Country Code",
+				"channel": "countryCode",
+				"channelType": "countryCode",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
+		]
+	}
+}

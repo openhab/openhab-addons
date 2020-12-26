@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
@@ -24,7 +26,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeTags.Js
 @NonNullByDefault
 public class JsonSmartHomeDevices {
     public static class SmartHomeDevice implements SmartHomeBaseDevice {
-
         public @Nullable Integer updateIntervalInSeconds;
 
         @Override
@@ -52,11 +53,29 @@ public class JsonSmartHomeDevices {
         public @Nullable SmartHomeDevice @Nullable [] groupDevices;
         public @Nullable String connectedVia;
         public @Nullable DriverIdentity driverIdentity;
+
+        @Override
+        public String toString() {
+            return "SmartHomeDevice{" + "updateIntervalInSeconds=" + updateIntervalInSeconds + ", applianceId='"
+                    + applianceId + '\'' + ", manufacturerName='" + manufacturerName + '\'' + ", friendlyDescription='"
+                    + friendlyDescription + '\'' + ", modelName='" + modelName + '\'' + ", friendlyName='"
+                    + friendlyName + '\'' + ", reachability='" + reachability + '\'' + ", entityId='" + entityId + '\''
+                    + ", applianceNetworkState=" + applianceNetworkState + ", capabilities="
+                    + Arrays.toString(capabilities) + ", tags=" + tags + ", applianceTypes="
+                    + Arrays.toString(applianceTypes) + ", aliases=" + Arrays.toString(aliases) + ", groupDevices="
+                    + Arrays.toString(groupDevices) + ", connectedVia='" + connectedVia + '\'' + ", driverIdentity="
+                    + driverIdentity + '}';
+        }
     }
 
     public static class DriverIdentity {
         public @Nullable String namespace;
         public @Nullable String identifier;
+
+        @Override
+        public String toString() {
+            return "DriverIdentity{" + "namespace='" + namespace + '\'' + ", identifier='" + identifier + '\'' + '}';
+        }
     }
 
     public @Nullable SmartHomeDevice @Nullable [] smarthomeDevices;

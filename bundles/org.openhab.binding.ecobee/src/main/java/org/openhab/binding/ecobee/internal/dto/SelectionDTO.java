@@ -165,9 +165,13 @@ public class SelectionDTO {
     }
 
     public void setThermostats(Set<String> thermostatIds) {
-        boolean isRegistered = thermostatIds == null || thermostatIds.isEmpty();
-        selectionType = isRegistered ? SelectionType.REGISTERED : SelectionType.THERMOSTATS;
-        selectionMatch = isRegistered ? "" : String.join(",", thermostatIds);
+        if (thermostatIds == null || thermostatIds.isEmpty()) {
+            selectionType = SelectionType.REGISTERED;
+            selectionMatch = "";
+        } else {
+            selectionType = SelectionType.THERMOSTATS;
+            selectionMatch = String.join(",", thermostatIds);
+        }
     }
 
     public void setSelectionType(SelectionType selectionType) {

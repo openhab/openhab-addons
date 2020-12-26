@@ -32,6 +32,7 @@ public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
     public SomfyTahomaGateHandler(Thing thing) {
         super(thing);
         stateNames.put(GATE_STATE, "core:OpenClosedPedestrianState");
+        stateNames.put(GATE_POSITION, "core:ClosureState");
     }
 
     @Override
@@ -42,6 +43,8 @@ public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
         } else {
             if (GATE_COMMAND.equals(channelUID.getId())) {
                 sendCommand(getGateCommand(command.toString().toLowerCase()));
+            } else if (GATE_POSITION.equals(channelUID.getId())) {
+                sendCommand(COMMAND_SET_CLOSURE, "[" + toInteger(command) + "]");
             }
         }
     }

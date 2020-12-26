@@ -33,10 +33,6 @@ The bridge enables communication with other Nikobus components:
 * `rollershutter-module` - Nikobus roller shutter module,
 * `push-button` - Nikobus physical push button.
 
-## Discovery
-
-The binding does not support any automatic discovery of Things.
-
 ## Bridge Configuration
 
 The binding can connect to the PC-Link via serial interface.
@@ -135,6 +131,24 @@ Defines a `rollershutter-module` with address `4C6C`.
 | output-5  | Rollershutter | Output 5     |
 | output-6  | Rollershutter | Output 6     |
 
+##### Estimating Position
+
+Nikobus rollershuter module does not provide information about rollershutter's position. In order to bridge this gap, an optional parameter `duration` can be set per channel, describing the amount of time needed by a rollershutter to get from open to closed state (or vice-versa).
+
+Binding uses this information to interpolate rollershutter’s position. On startup binding will assume completely open rollershutters but opening/closing a rollershutter once should bring it back in sync.
+
+After `duration` seconds elapsed, binding will set module's output back to neutral (OFF) state after additional number of seconds, as specified by the `delay` parameter. If not specified, it defaults to 5 seconds.
+
+Example:
+
+`duration = 30s`
+
+binding will automatically switch Nikobus rollershutter module’s output to OFF after
+
+`30s + 5s = 35s`
+
+**Note:** Please ensure all Nikobus Push Buttons manipulating rollershutters have `impactedModules` set so binding is notified about changes.
+
 ### Buttons
 
 Once an openHAB item has been configured as a Nikobus button, it will receive a status update to ON when the physical button is pressed.
@@ -173,6 +187,108 @@ Thing push-button pb1 [ address = "28092A", impactedModules = "switch-module:s1:
 ```
 
 In addition to the status requests triggered by button presses, there is also a scheduled status update interval defined by the `refreshInterval` parameter and explained above.
+
+#### Push Button Trigger Channels
+
+Beside receiving a status update (ON) when a physical Nikobus push button is pressed (and kept pressed), additional triggers can be added and configured to determine how press&hold of a physical push button should generate trigger events. Two types of trigger channels are supported:
+
+* filter trigger and
+* button trigger.
+
+##### Filter Trigger
+
+* `command` - command to be send,
+* `delay` - a required delay in milliseconds defining how much time must a button be pressed before an initial trigger event is fired,
+* `period` - optional time in milliseconds between successive triggers.
+
+Examples:
+
+* `command = PRESSED, delay = 0, period = <empty>` - triggers `PRESSED` event immediatelly when Nikobus button is pressed and is not triggered anymore while holding down the button,
+* `command = INCREMENT, delay = 1000, period = 500` - triggers initial `INCREMENT` event after 1 second and then every half a second while holding down the button.
+
+
+##### Button Trigger
+
+`threshold` - a required long-press threshold in miliseconds. Defines how long must a button be pressed before a long press event is triggered - pressing&holding a Nikobus push-button for `threshold` or more miliseconds will trigger long press event, otherwise a short press event will be triggered.
+
+## Discovery
+
+Pressing a physical Nikobus push-button will generate a new inbox entry with an exception of buttons already discovered or setup.
+
+Nikobus push buttons have the following format in inbox:
+
+```
+Nikobus Push Button 14E7F4:3
+4BF9CA
+nikobus:push-button
+```
+
+where first line contains name of the discovered button and second one contains button's bus address.
+
+Each discovered button has a Nikobus address appended to its name, same as can be seen in Nikobus's PC application, `14E7F4:3` in above example.
+
+ * `14E7F4` - address of the Nikobus switch, as can be seen in Nikobus PC software and
+ * `3` - represents a button on Nikobus switch.
+
+### Button mappings
+
+##### 2 buttons switch
+
+![Nikobus Switch with 2 buttons](doc/s2.png)
+
+```
+ 1 = A
+ 2 = B
+ ```
+
+##### 4 buttons switch
+
+![Nikobus Switch with 4 buttons](doc/s4.png)
+
+maps as 
+
+```
+ 3  1  
+ 4  2
+```
+
+so
+
+```
+1 = C
+2 = D
+3 = A
+4 = B
+```
+
+##### 8 buttons switch
+
+![Nikobus Switch with 8 buttons](doc/s8.png)
+
+maps as
+
+```
+ 7  5  3  1  
+ 8  6  4  2
+```
+
+so
+
+```
+1 = 2C
+2 = 2D
+3 = 2A
+4 = 2B
+5 = 1C
+6 = 1D
+7 = 1A
+8 = 1B
+```
+
+Above example `14E7F4:3` would give:
+
+* for 4 buttons switch - push button A,
+* for 8 buttons switch - push button 2A.
 
 ## Full Example
 

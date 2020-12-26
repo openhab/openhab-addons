@@ -100,18 +100,21 @@ public class SnmpServiceImpl implements SnmpService {
     }
 
     private void shutdownSnmp() throws IOException {
+        DefaultUdpTransportMapping transport = this.transport;
         if (transport != null) {
             transport.close();
-            transport = null;
+            this.transport = null;
         }
+        Snmp snmp = this.snmp;
         if (snmp != null) {
             snmp.close();
-            snmp = null;
+            this.snmp = null;
         }
     }
 
     @Override
     public void addCommandResponder(CommandResponder listener) {
+        Snmp snmp = this.snmp;
         if (snmp != null) {
             snmp.addCommandResponder(listener);
         }
@@ -120,6 +123,7 @@ public class SnmpServiceImpl implements SnmpService {
 
     @Override
     public void removeCommandResponder(CommandResponder listener) {
+        Snmp snmp = this.snmp;
         if (snmp != null) {
             snmp.removeCommandResponder(listener);
         }
@@ -129,6 +133,7 @@ public class SnmpServiceImpl implements SnmpService {
     @Override
     public void send(PDU pdu, Target target, @Nullable Object userHandle, ResponseListener listener)
             throws IOException {
+        Snmp snmp = this.snmp;
         if (snmp != null) {
             snmp.send(pdu, target, userHandle, listener);
             logger.trace("send {} to {}", pdu, target);

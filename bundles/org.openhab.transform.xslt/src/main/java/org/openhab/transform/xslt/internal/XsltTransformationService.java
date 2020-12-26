@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Thomas.Eichstaedt-Engelen
  */
 @NonNullByDefault
-@Component(property = { "smarthome.transform=XSLT" })
+@Component(property = { "openhab.transform=XSLT" })
 public class XsltTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(XsltTransformationService.class);

@@ -30,9 +30,8 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class GroupTypeDeserializer implements JsonDeserializer<GroupType> {
     @Override
-    public GroupType deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-            @Nullable JsonDeserializationContext context) throws JsonParseException {
-        String s = json != null ? json.getAsString() : null;
-        return s == null ? GroupType.UNKNOWN : GroupType.fromString(s);
+    public @Nullable GroupType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        return GroupType.fromString(json.getAsString());
     }
 }

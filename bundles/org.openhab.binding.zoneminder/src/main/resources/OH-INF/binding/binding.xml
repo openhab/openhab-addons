@@ -5,6 +5,5 @@
 
 	<name>ZoneMinder Binding</name>
 	<description>Binding for ZoneMinder video surveillance system</description>
-	<author>Mark Hilbush</author>
 
 </binding:binding>

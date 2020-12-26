@@ -22,7 +22,7 @@ import org.openhab.binding.teleinfo.internal.dto.common.FrameHcOption;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -87,28 +87,22 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
     }
 
     protected void updateStatesForBaseFrameOption(FrameBaseOption frameBaseOption) {
-        updateState(CHANNEL_BASE_FRAME_BASE, QuantityType.valueOf(frameBaseOption.getBase(), SmartHomeUnits.WATT_HOUR));
+        updateState(CHANNEL_BASE_FRAME_BASE, QuantityType.valueOf(frameBaseOption.getBase(), Units.WATT_HOUR));
     }
 
     protected void updateStatesForHcFrameOption(FrameHcOption frameHcOption) {
-        updateState(CHANNEL_HC_FRAME_HCHC, QuantityType.valueOf(frameHcOption.getHchc(), SmartHomeUnits.WATT_HOUR));
-        updateState(CHANNEL_HC_FRAME_HCHP, QuantityType.valueOf(frameHcOption.getHchp(), SmartHomeUnits.WATT_HOUR));
+        updateState(CHANNEL_HC_FRAME_HCHC, QuantityType.valueOf(frameHcOption.getHchc(), Units.WATT_HOUR));
+        updateState(CHANNEL_HC_FRAME_HCHP, QuantityType.valueOf(frameHcOption.getHchp(), Units.WATT_HOUR));
         updateState(CHANNEL_HC_FRAME_HHPHC, new StringType(frameHcOption.getHhphc().name()));
     }
 
     protected void updateStatesForTempoFrameOption(FrameTempoOption frameTempoOption) {
-        updateState(CHANNEL_TEMPO_FRAME_BBRHPJR,
-                QuantityType.valueOf(frameTempoOption.getBbrhpjr(), SmartHomeUnits.WATT_HOUR));
-        updateState(CHANNEL_TEMPO_FRAME_BBRHCJR,
-                QuantityType.valueOf(frameTempoOption.getBbrhcjr(), SmartHomeUnits.WATT_HOUR));
-        updateState(CHANNEL_TEMPO_FRAME_BBRHPJW,
-                QuantityType.valueOf(frameTempoOption.getBbrhpjw(), SmartHomeUnits.WATT_HOUR));
-        updateState(CHANNEL_TEMPO_FRAME_BBRHCJW,
-                QuantityType.valueOf(frameTempoOption.getBbrhcjw(), SmartHomeUnits.WATT_HOUR));
-        updateState(CHANNEL_TEMPO_FRAME_BBRHPJB,
-                QuantityType.valueOf(frameTempoOption.getBbrhpjb(), SmartHomeUnits.WATT_HOUR));
-        updateState(CHANNEL_TEMPO_FRAME_BBRHCJB,
-                QuantityType.valueOf(frameTempoOption.getBbrhcjb(), SmartHomeUnits.WATT_HOUR));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHPJR, QuantityType.valueOf(frameTempoOption.getBbrhpjr(), Units.WATT_HOUR));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHCJR, QuantityType.valueOf(frameTempoOption.getBbrhcjr(), Units.WATT_HOUR));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHPJW, QuantityType.valueOf(frameTempoOption.getBbrhpjw(), Units.WATT_HOUR));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHCJW, QuantityType.valueOf(frameTempoOption.getBbrhcjw(), Units.WATT_HOUR));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHPJB, QuantityType.valueOf(frameTempoOption.getBbrhpjb(), Units.WATT_HOUR));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHCJB, QuantityType.valueOf(frameTempoOption.getBbrhcjb(), Units.WATT_HOUR));
         updateState(CHANNEL_TEMPO_FRAME_HHPHC, new StringType(frameTempoOption.getHhphc().name()));
         updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_1,
                 new StringType(frameTempoOption.getProgrammeCircuit1().name()));
@@ -123,14 +117,13 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
     }
 
     protected void updateStatesForEjpFrameOption(FrameEjpOption frameEjpOption) {
-        updateState(CHANNEL_EJP_FRAME_EJPHN, QuantityType.valueOf(frameEjpOption.getEjphn(), SmartHomeUnits.WATT_HOUR));
-        updateState(CHANNEL_EJP_FRAME_EJPHPM,
-                QuantityType.valueOf(frameEjpOption.getEjphpm(), SmartHomeUnits.WATT_HOUR));
+        updateState(CHANNEL_EJP_FRAME_EJPHN, QuantityType.valueOf(frameEjpOption.getEjphn(), Units.WATT_HOUR));
+        updateState(CHANNEL_EJP_FRAME_EJPHPM, QuantityType.valueOf(frameEjpOption.getEjphpm(), Units.WATT_HOUR));
 
         if (frameEjpOption.getPejp() == null) {
             updateState(CHANNEL_EJP_FRAME_PEJP, UnDefType.NULL);
         } else {
-            updateState(CHANNEL_EJP_FRAME_PEJP, QuantityType.valueOf(frameEjpOption.getPejp(), SmartHomeUnits.MINUTE));
+            updateState(CHANNEL_EJP_FRAME_PEJP, QuantityType.valueOf(frameEjpOption.getPejp(), Units.MINUTE));
         }
     }
 

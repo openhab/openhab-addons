@@ -1,0 +1,216 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.curtain.hagl05"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Curtain - Device Fault",
+				"channel": "fault",
+				"channelType": "LumiCurtainHagl05_fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\"]"
+			},
+			{
+				"property": "current-position",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Curtain - Current Position",
+				"channel": "current-position",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Curtain - Status",
+				"channel": "status",
+				"channelType": "LumiCurtainHagl05_status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Stopped"
+						},
+						{
+							"value": "1",
+							"label": "Opening"
+						},
+						{
+							"value": "2",
+							"label": "Closing"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Stopped\",\"1\"\u003d\"Opening\",\"2\"\u003d\"Closing\"]"
+			},
+			{
+				"property": "target-position",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Curtain - Target Position",
+				"channel": "target-position",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "manual-enabled",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "curtain_cfg - Manual Enabled",
+				"channel": "manual-enabled",
+				"channelType": "LumiCurtainHagl05_manual-enabled",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Disable"
+						},
+						{
+							"value": "1",
+							"label": "Enable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]"
+			},
+			{
+				"property": "polarity",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "curtain_cfg - Polarity",
+				"channel": "polarity",
+				"channelType": "LumiCurtainHagl05_polarity",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Positive"
+						},
+						{
+							"value": "1",
+							"label": "Reverse"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Positive\",\"1\"\u003d\"Reverse\"]"
+			},
+			{
+				"property": "pos-limit",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "curtain_cfg - Position Limit",
+				"channel": "pos-limit",
+				"channelType": "LumiCurtainHagl05_pos-limit",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Unlimit"
+						},
+						{
+							"value": "1",
+							"label": "Limit"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Unlimit\",\"1\"\u003d\"Limit\"]"
+			},
+			{
+				"property": "en-night-tip-light",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Set Night Tip Light",
+				"channel": "en-night-tip-light",
+				"channelType": "LumiCurtainHagl05_en-night-tip-light",
+				"type": "Switch",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Disable"
+						},
+						{
+							"value": "1",
+							"label": "Enable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]"
+			},
+			{
+				"property": "run-time",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "curtain_cfg - Run-time",
+				"channel": "run-time",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"experimental": true
+	}
+}

@@ -13,6 +13,8 @@
 package org.openhab.binding.neeo.internal.net;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 import javax.ws.rs.ProcessingException;
@@ -47,8 +49,8 @@ public class HttpRequest implements AutoCloseable {
     /**
      * Instantiates a new request
      */
-    public HttpRequest() {
-        client = ClientBuilder.newClient();
+    public HttpRequest(ClientBuilder clientBuilder) {
+        client = clientBuilder.build();
 
         if (logger.isDebugEnabled()) {
             client.register(new LoggingFilter(new Slf4LoggingAdapter(logger), true));
@@ -81,16 +83,23 @@ public class HttpRequest implements AutoCloseable {
     /**
      * Send post JSON command using the body
      *
-     * @param uri the non empty uri
+     * @param uriString the non empty uri
      * @param body the non-null, possibly empty body
      * @return the {@link HttpResponse}
      */
-    public HttpResponse sendPostJsonCommand(String uri, String body) {
-        NeeoUtil.requireNotEmpty(uri, "uri cannot be empty");
+    public HttpResponse sendPostJsonCommand(String uriString, String body) {
+        NeeoUtil.requireNotEmpty(uriString, "uri cannot be empty");
         Objects.requireNonNull(body, "body cannot be null");
 
+        logger.trace("sendPostJsonCommand: target={}, body={}", uriString, body);
+
         try {
-            final Builder request = client.target(uri).request(MediaType.APPLICATION_JSON);
+            URI targetUri = new URI(uriString);
+            if (!targetUri.isAbsolute()) {
+                logger.warn("Absolute URI required but provided URI '{}' is non-absolute. ", uriString);
+                return new HttpResponse(HttpStatus.NOT_ACCEPTABLE_406, "Absolute URI required");
+            }
+            final Builder request = client.target(targetUri).request(MediaType.APPLICATION_JSON);
 
             final Response content = request.post(Entity.entity(body, MediaType.APPLICATION_JSON));
 
@@ -103,6 +112,8 @@ public class HttpRequest implements AutoCloseable {
             // as well
         } catch (IOException | IllegalStateException | IllegalArgumentException | ProcessingException e) {
             return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, e.getMessage());
+        } catch (URISyntaxException e) {
+            return new HttpResponse(HttpStatus.NOT_ACCEPTABLE_406, e.getMessage());
         }
     }
 

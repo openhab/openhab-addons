@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
@@ -36,6 +36,11 @@
                   <classifier>dynamodb</classifier>
                 </artifact>
                 <artifact>
+                  <file>src/main/resources/conf/exec.whitelist</file>
+                  <type>cfg</type>
+                  <classifier>exec.whitelist</classifier>
+                </artifact>
+                <artifact>
                   <file>src/main/resources/conf/influxdb.cfg</file>
                   <type>cfg</type>
                   <classifier>influxdb</classifier>
@@ -56,9 +61,29 @@
                   <classifier>mapdb</classifier>
                 </artifact>
                 <artifact>
+                  <file>src/main/resources/conf/openhabcloud.cfg</file>
+                  <type>cfg</type>
+                  <classifier>openhabcloud</classifier>
+                </artifact>
+                <artifact>
                   <file>src/main/resources/conf/rrd4j.cfg</file>
                   <type>cfg</type>
                   <classifier>rrd4j</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/conf/voicerss.cfg</file>
+                  <type>cfg</type>
+                  <classifier>voicerss</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/lib/libLeap.dylib</file>
+                  <type>lib</type>
+                  <classifier>libLeap</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/lib/libLeapJava.dylib</file>
+                  <type>lib</type>
+                  <classifier>libLeapJava</classifier>
                 </artifact>
               </artifacts>
             </configuration>

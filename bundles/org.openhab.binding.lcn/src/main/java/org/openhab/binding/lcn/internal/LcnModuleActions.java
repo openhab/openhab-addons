@@ -125,6 +125,11 @@ public class LcnModuleActions implements ThingActions {
                 text = new String();
             }
 
+            // some LCN-GTxD don't display the text if it fits exactly in one chunk. Observed with GT10D 8.0.
+            if (text.getBytes(LcnDefs.LCN_ENCODING).length % DYN_TEXT_CHUNK_LENGTH == 0) {
+                text += " ";
+            }
+
             // convert String to bytes to split the data every 12 bytes, because a unicode character can take more than
             // one byte
             ByteBuffer bb = ByteBuffer.wrap(text.getBytes(LcnDefs.LCN_ENCODING));

@@ -35,16 +35,15 @@ import com.google.gson.JsonPrimitive;
 public class NeohubBoolDeserializer implements JsonDeserializer<NeohubBool> {
 
     @Override
-    public NeohubBool deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-            @Nullable JsonDeserializationContext context) throws JsonParseException {
-        if (json != null) {
-            JsonPrimitive jsonPrimitive = json.getAsJsonPrimitive();
-            if (jsonPrimitive.isBoolean()) {
-                return new NeohubBool(jsonPrimitive.getAsBoolean());
-            } else if (jsonPrimitive.isNumber()) {
-                return new NeohubBool(jsonPrimitive.getAsNumber().intValue() != 0);
-            }
+    public @Nullable NeohubBool deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        JsonPrimitive jsonPrimitive = json.getAsJsonPrimitive();
+        if (jsonPrimitive.isBoolean()) {
+            return new NeohubBool(jsonPrimitive.getAsBoolean());
+        } else if (jsonPrimitive.isNumber()) {
+            return new NeohubBool(jsonPrimitive.getAsNumber().intValue() != 0);
         }
+
         return new NeohubBool(false);
     }
 }

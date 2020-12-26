@@ -5,6 +5,5 @@
 
 	<name>IRtrans Binding</name>
 	<description>This is the binding for IRtrans (www.irtrans.de) Transceivers</description>
-	<author>Karel Goderis</author>
 
 </binding:binding>

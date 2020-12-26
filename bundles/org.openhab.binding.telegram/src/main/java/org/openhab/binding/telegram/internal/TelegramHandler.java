@@ -214,7 +214,7 @@ public class TelegramHandler extends BaseThingHandler {
         return new GetUpdates().timeout(longPollingTime * 1000);
     }
 
-    private void handleExceptions(TelegramException exception) {
+    private void handleExceptions(@Nullable TelegramException exception) {
         final TelegramBot localBot = bot;
         if (exception != null) {
             if (exception.response() != null) {

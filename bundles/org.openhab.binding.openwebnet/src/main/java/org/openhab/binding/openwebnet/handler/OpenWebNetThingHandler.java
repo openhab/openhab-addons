@@ -72,17 +72,22 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                 if (!(deviceWhereConfig instanceof String)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "WHERE parameter in configuration is null or invalid");
-                    return;
                 } else {
                     String deviceWhereStr = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
                     Where w;
-                    if (brH.isBusGateway()) {
-                        w = new WhereLightAutom(deviceWhereStr);
-                    } else {
-                        w = new WhereZigBee(deviceWhereStr);
+                    try {
+                        if (brH.isBusGateway()) {
+                            w = new WhereLightAutom(deviceWhereStr);
+                        } else {
+                            w = new WhereZigBee(deviceWhereStr);
+                        }
+                    } catch (IllegalArgumentException ia) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "WHERE parameter in configuration is invalid");
+                        return;
                     }
                     deviceWhere = w;
-                    final String oid = brH.ownIdFromDeviceWhere(w.value(), this);
+                    final String oid = brH.ownIdFromDeviceWhere(w, this);
                     ownId = oid;
                     Map<String, String> properties = editProperties();
                     properties.put(PROPERTY_OWNID, oid);
@@ -91,11 +96,11 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                     logger.debug("associated thing to bridge with ownId={}", ownId);
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
                 }
-                return;
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "No bridge associated, please assign a bridge in thing configuration.");
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "No bridge associated, please assign a bridge in thing configuration.");
     }
 
     @Override
@@ -105,8 +110,12 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         if (handler != null) {
             OpenGateway gw = handler.gateway;
             if (gw != null && !gw.isConnected()) {
-                logger.info("Cannot handle command {}:{} for {}: gateway is not connected", channel, command,
-                        getThing().getUID());
+                logger.info("Cannot handle {} command for {}: gateway is not connected", command, getThing().getUID());
+                return;
+            }
+            if (deviceWhere == null) {
+                logger.info("Cannot handle {} command for {}: 'where' parameter is not configured or is invalid",
+                        command, getThing().getUID());
                 return;
             }
             if (command instanceof RefreshType) {

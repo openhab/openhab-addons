@@ -51,7 +51,7 @@ public class HeliosEasyControlsActions implements ThingActions {
                 handler.writeValue(variableName, "1");
             }
         } catch (HeliosException e) {
-            logger.warn("Error executing action 'resetFilterChangeTimer': {}", e.getMessage());
+            logger.warn("Error executing action triggering switch for variable {}: {}", variableName, e.getMessage());
         }
     }
 

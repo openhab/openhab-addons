@@ -5,6 +5,5 @@
 
 	<name>AVM FRITZ! Binding</name>
 	<description>This is the binding for AVM FRITZ! devices.</description>
-	<author>Robert Bausdorf</author>
 
 </binding:binding>

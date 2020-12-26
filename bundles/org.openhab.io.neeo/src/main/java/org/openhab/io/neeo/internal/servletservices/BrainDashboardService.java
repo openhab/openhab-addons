@@ -96,33 +96,40 @@ public class BrainDashboardService extends DefaultServletService {
                 NeeoUtil.write(resp, gson.toJson(status));
             } else if (StringUtils.equalsIgnoreCase(paths[0], "blinkled")) {
                 final String brainId = req.getParameter("brainid");
-                final NeeoBrainServlet servlet = service.getServlet(brainId);
-                if (servlet == null) {
-                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Unknown BraidID: " + brainId)));
+                if (brainId == null) {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("BrainID is null")));
                 } else {
-                    try {
-                        servlet.getBrainApi().blinkLed();
-                        NeeoUtil.write(resp, gson.toJson(new ReturnStatus(true)));
-                    } catch (IOException e) {
-                        NeeoUtil.write(resp,
-                                gson.toJson(new ReturnStatus("Exception occurred blinking LED: " + e.getMessage())));
+                    final NeeoBrainServlet servlet = service.getServlet(brainId);
+                    if (servlet == null) {
+                        NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Unknown BrainID: " + brainId)));
+                    } else {
+                        try {
+                            servlet.getBrainApi().blinkLed();
+                            NeeoUtil.write(resp, gson.toJson(new ReturnStatus(true)));
+                        } catch (IOException e) {
+                            NeeoUtil.write(resp, gson
+                                    .toJson(new ReturnStatus("Exception occurred blinking LED: " + e.getMessage())));
+                        }
                     }
                 }
             } else if (StringUtils.equalsIgnoreCase(paths[0], "getlog")) {
                 final String brainId = req.getParameter("brainid");
-                final NeeoBrainServlet servlet = service.getServlet(brainId);
-                if (servlet == null) {
-                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Unknown BraidID: " + brainId)));
+                if (brainId == null) {
+                    NeeoUtil.write(resp, gson.toJson(new ReturnStatus("BrainID is null")));
                 } else {
-                    try {
-                        final String log = servlet.getBrainApi().getLog();
-                        NeeoUtil.write(resp, gson.toJson(new ReturnStatus(true, log)));
-                    } catch (IOException e) {
-                        NeeoUtil.write(resp,
-                                gson.toJson(new ReturnStatus("Exception occurred getting log: " + e.getMessage())));
+                    final NeeoBrainServlet servlet = service.getServlet(brainId);
+                    if (servlet == null) {
+                        NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Unknown BraidID: " + brainId)));
+                    } else {
+                        try {
+                            final String log = servlet.getBrainApi().getLog();
+                            NeeoUtil.write(resp, gson.toJson(new ReturnStatus(true, log)));
+                        } catch (IOException e) {
+                            NeeoUtil.write(resp,
+                                    gson.toJson(new ReturnStatus("Exception occurred getting log: " + e.getMessage())));
+                        }
                     }
                 }
-
             } else {
                 logger.debug("Unknown get path: {}", StringUtils.join(paths, ','));
             }

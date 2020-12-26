@@ -16,10 +16,7 @@ import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -127,6 +124,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
                     if (allCommand) {
                         sendRunAllCommand(((DecimalType) command).intValue());
                     } else {
+                        Objects.requireNonNull(relay);
                         sendRunCommand(((DecimalType) command).intValue(), relay);
                     }
                     break;
@@ -142,6 +140,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
                             sendStopAllCommand();
                         }
                     } else {
+                        Objects.requireNonNull(relay);
                         if (command == OnOffType.ON) {
                             sendRunCommand(relay);
                         } else {

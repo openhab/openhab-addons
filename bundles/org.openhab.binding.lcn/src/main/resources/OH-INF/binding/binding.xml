@@ -5,6 +5,5 @@
 
 	<name>LCN Binding</name>
 	<description>This is the binding for Local Control Network (LCN)</description>
-	<author>Fabian Wolter</author>
 
 </binding:binding>

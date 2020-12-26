@@ -88,7 +88,7 @@ public class WemoDiscoveryOSGiTest extends GenericWemoOSGiTest {
             assertTrue(inbox.stream().anyMatch(forThingUID(thingUID)));
         });
 
-        inbox.approve(thingUID, DEVICE_FRIENDLY_NAME);
+        inbox.approve(thingUID, DEVICE_FRIENDLY_NAME, null);
 
         waitForAssert(() -> {
             Thing thing = thingRegistry.get(thingUID);

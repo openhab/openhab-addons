@@ -15,7 +15,7 @@ package org.openhab.binding.meteostick.internal.handler;
 import static org.openhab.binding.meteostick.internal.MeteostickBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 import static org.openhab.core.library.unit.SIUnits.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

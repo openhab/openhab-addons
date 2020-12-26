@@ -54,15 +54,21 @@ public class KM200Utils {
      */
     public static String checkParameterReplacement(Channel channel, KM200Device device) {
         String service = KM200Utils.translatesNameToPath(channel.getProperties().get("root"));
-        if (service.contains(SWITCH_PROGRAM_REPLACEMENT)) {
-            String currentService = KM200Utils
-                    .translatesNameToPath(channel.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME));
+        if (service == null) {
+            LOGGER.warn("Root property not found in device {}", device);
+            throw new IllegalStateException("root property not found");
+        }
+        String currentService = KM200Utils
+                .translatesNameToPath(channel.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME));
+        if (currentService != null) {
             if (device.containsService(currentService)) {
                 KM200ServiceObject curSerObj = device.getServiceObject(currentService);
                 if (null != curSerObj) {
                     if (DATA_TYPE_STRING_VALUE.equals(curSerObj.getServiceType())) {
                         String val = (String) curSerObj.getValue();
-                        service = service.replace(SWITCH_PROGRAM_REPLACEMENT, val);
+                        if (val != null) {
+                            service = service.replace(SWITCH_PROGRAM_REPLACEMENT, val);
+                        }
                         return service;
                     }
                 }
