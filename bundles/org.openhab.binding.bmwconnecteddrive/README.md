@@ -191,11 +191,11 @@ Channel Group ID is **doors**.
 | Passenger Door Rear        | passenger-rear          | String        |
 | Trunk                      | trunk                   | String        |
 | Hood                       | hood                    | String        |
-| Driver Door Window         | window-driver-front     | String        |
-| Driver Door Rear Window    | window-driver-rear      | String        |
-| Passenger Door Window      | window-passenger-front  | String        |
-| Passenger Door Rear Window | window-passenger-rear   | String        |
-| Rear Window                | window-rear             | String        |
+| Driver Door Window         | win-driver-front        | String        |
+| Driver Door Rear Window    | win-driver-rear         | String        |
+| Passenger Door Window      | win-passenger-front     | String        |
+| Passenger Door Rear Window | win-passenger-rear      | String        |
+| Rear Window                | win-rear                | String        |
 | Sunroof                    | sunroof                 | String        |
 
 Following Strings will be delivered
@@ -272,9 +272,9 @@ Channel Group ID is **last-trip**.
 |-----------------------------------------|------------------------------|---------------|
 | Last Trip Date                          | date                         | DateTime      |
 | Last Trip Duration                      | duration                     | Number:Time   |
-| Average Power Consumption per 100 km    | average-consumption          | Number:Power  |
-| Average Combined Consumption per 100 km | average-combined-consumption | Number:Volume |
-| Average Power Recuperation per 100 km   | average-recuperation         | Number:Power  |
+| Average Power Consumption per 100 km    | avg-consumption              | Number:Power  |
+| Average Combined Consumption per 100 km | avg-combined-consumption     | Number:Volume |
+| Average Power Recuperation per 100 km   | avg-recuperation             | Number:Power  |
 | Last Trip Distance                      | distance                     | Number:Length |
 | Distance since Last Charge              | distance-since-charging      | Number:Length |
 
@@ -287,10 +287,10 @@ Channel Group ID is **lifetime**.
 
 | Channel Label                           | Channel ID                   | Type          | 
 |-----------------------------------------|------------------------------|---------------|
-| Average Power Consumption per 100 km    | average-consumption          | Number:Power  |
-| Average Power Recuperation per 100 km   | average-recuperation         | Number:Power  |
+| Average Power Consumption per 100 km    | avg-consumption              | Number:Power  |
+| Average Power Recuperation per 100 km   | avg-recuperation             | Number:Power  |
 | Cumulated Electric Driven Distance      | cumulated-driven-distance    | Number:Length |
-| Average Combined Consumption per 100 km | average-combined-consumption | Number:Volume |
+| Average Combined Consumption per 100 km | avg-combined-consumption     | Number:Volume |
 | Longest Distance with one Charge        | single-longest-distance      | Number:Length |
 
 

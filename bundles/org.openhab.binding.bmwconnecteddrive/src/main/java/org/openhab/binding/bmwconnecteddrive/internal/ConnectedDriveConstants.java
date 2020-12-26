@@ -91,7 +91,6 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_CHARGE = "charge";
     public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
     public static final String CHANNEL_GROUP_DESTINATION = "destination";
-    public static final String CHANNEL_GROUP_TROUBLESHOOT = "troubleshoot";
 
     // Generic Constants for several groups
     public static final String NAME = "name";
@@ -117,11 +116,11 @@ public class ConnectedDriveConstants {
     public static final String DOOR_PASSENGER_REAR = "passenger-rear";
     public static final String HOOD = "hood";
     public static final String TRUNK = "trunk";
-    public static final String WINDOW_DOOR_DRIVER_FORNT = "window-driver-front";
-    public static final String WINDOW_DOOR_DRIVER_REAR = "window-driver-rear";
-    public static final String WINDOW_DOOR_PASSENGER_FRONT = "window-passenger-front";
-    public static final String WINDOW_DOOR_PASSENGER_REAR = "window-passenger-rear";
-    public static final String WINDOW_REAR = "window-rear";
+    public static final String WINDOW_DOOR_DRIVER_FORNT = "win-driver-front";
+    public static final String WINDOW_DOOR_DRIVER_REAR = "win-driver-rear";
+    public static final String WINDOW_DOOR_PASSENGER_FRONT = "win-passenger-front";
+    public static final String WINDOW_DOOR_PASSENGER_REAR = "win-passenger-rear";
+    public static final String WINDOW_REAR = "win-rear";
     public static final String SUNROOF = "sunroof";
 
     // Charge Profile
@@ -153,9 +152,9 @@ public class ConnectedDriveConstants {
     public static final String DURATION = "duration";
     public static final String DISTANCE = "distance";
     public static final String DISTANCE_SINCE_CHARGING = "distance-since-charging";
-    public static final String AVG_CONSUMPTION = "average-consumption";
-    public static final String AVG_COMBINED_CONSUMPTION = "average-combined-consumption";
-    public static final String AVG_RECUPERATION = "average-recuperation";
+    public static final String AVG_CONSUMPTION = "avg-consumption";
+    public static final String AVG_COMBINED_CONSUMPTION = "avg-combined-consumption";
+    public static final String AVG_RECUPERATION = "avg-recuperation";
 
     // Lifetime + Average Consumptions
     public static final String CUMULATED_DRIVEN_DISTANCE = "cumulated-driven-distance";

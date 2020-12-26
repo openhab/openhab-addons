@@ -7,9 +7,9 @@
 		<label>Lifetime Statistics</label>
 		<description>Consumption Values and Distances over Lifetime</description>
 		<channels>
-			<channel id="average-consumption" typeId="average-consumption-channel"/>
-			<channel id="average-combined-consumption" typeId="average-combined-consumption-channel"/>
-			<channel id="average-recuperation" typeId="average-recuperation-channel"/>
+			<channel id="avg-consumption" typeId="average-consumption-channel"/>
+			<channel id="avg-combined-consumption" typeId="average-combined-consumption-channel"/>
+			<channel id="avg-recuperation" typeId="average-recuperation-channel"/>
 			<channel id="cumulated-driven-distance" typeId="cumulated-driven-distance-channel"/>
 			<channel id="single-longest-distance" typeId="single-longest-distance-channel"/>
 		</channels>
