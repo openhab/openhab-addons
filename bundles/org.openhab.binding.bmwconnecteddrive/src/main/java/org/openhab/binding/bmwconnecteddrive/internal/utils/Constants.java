@@ -28,12 +28,12 @@ public class Constants {
     public static final String OK = "Ok";
     public static final String ACTIVE = "ACTIVE";
     public static final String NOT_ACTIVE = "NOT ACTIVE";
+    public static final String NO_SERVICES = "NO SERVICES PLANNED";
     public static final String OPEN = "OPEN";
     public static final String INVALID = "INVALID";
     public static final String CLOSED = "CLOSED";
     public static final String INTERMEDIATE = "INTERMEDIATE";
     public static final String UNKNOWN = "UNKNOWN";
-    public static final String NO_SERVICE_REQUEST = "No Service Requests";
     public static final String UTC_APPENDIX = "-01T12:00:00";
     public static final String NULL_DATE = "1900-01-01T00:00:00";
 

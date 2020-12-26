@@ -434,14 +434,14 @@ public class StatusWrapper {
                 st = (StringType) state;
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
-                        wanted = StringType.valueOf(Converter.toTitleCase(Constants.INVALID));
+                        wanted = StringType.valueOf(Converter.toTitleCase(Constants.NO_SERVICES));
                         if (!vStatus.cbsData.isEmpty()) {
                             wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
                         }
                         assertEquals(wanted.toString(), st.toString(), "Service Name");
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
-                        wanted = StringType.valueOf(Constants.INVALID);
+                        wanted = StringType.valueOf(Constants.NOT_ACTIVE);
                         if (!vStatus.checkControlMessages.isEmpty()) {
                             wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionShort);
                         }
