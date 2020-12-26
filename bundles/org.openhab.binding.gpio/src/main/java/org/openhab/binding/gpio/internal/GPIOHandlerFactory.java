@@ -12,18 +12,13 @@
  */
 package org.openhab.binding.gpio.internal;
 
-import static org.openhab.binding.gpio.internal.GPIOBindingConstants.THING_TYPE_DIGITAL_INPUT;
-import static org.openhab.binding.gpio.internal.GPIOBindingConstants.THING_TYPE_DIGITAL_OUTPUT;
-import static org.openhab.binding.gpio.internal.GPIOBindingConstants.THING_TYPE_PIGPIO_REMOTE_BRIDGE;
+import static org.openhab.binding.gpio.internal.GPIOBindingConstants.THING_TYPE_PIGPIO_REMOTE_THING;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.gpio.internal.handler.GPIODigitalInputHandler;
-import org.openhab.binding.gpio.internal.handler.GPIODigitalOutputHandler;
-import org.openhab.binding.gpio.internal.handler.PigpioRemoteBridgeHandler;
-import org.openhab.core.thing.Bridge;
+import org.openhab.binding.gpio.internal.handler.PigpioRemoteThingHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -41,8 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.gpio", service = ThingHandlerFactory.class)
 public class GPIOHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DIGITAL_INPUT,
-            THING_TYPE_DIGITAL_OUTPUT, THING_TYPE_PIGPIO_REMOTE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PIGPIO_REMOTE_THING);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -53,12 +47,8 @@ public class GPIOHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_DIGITAL_INPUT)) {
-            return new GPIODigitalInputHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_DIGITAL_OUTPUT)) {
-            return new GPIODigitalOutputHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_PIGPIO_REMOTE_BRIDGE)) {
-            return new PigpioRemoteBridgeHandler((Bridge) thing);
+        if (thingTypeUID.equals(THING_TYPE_PIGPIO_REMOTE_THING)) {
+            return new PigpioRemoteThingHandler(thing);
         }
 
         return null;

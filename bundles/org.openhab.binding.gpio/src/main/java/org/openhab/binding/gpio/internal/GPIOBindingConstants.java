@@ -14,6 +14,7 @@ package org.openhab.binding.gpio.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link gpioBindingConstants} class defines common constants, which are
@@ -26,12 +27,12 @@ public class GPIOBindingConstants {
 
     private static final String BINDING_ID = "gpio";
 
-    public static final ThingTypeUID THING_TYPE_PIGPIO_REMOTE_BRIDGE = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_PIGPIO_REMOTE_THING = new ThingTypeUID(BINDING_ID,
             "pigpio-remote-bridge");
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_DIGITAL_INPUT = new ThingTypeUID(BINDING_ID, "gpio-digital-input");
-    public static final ThingTypeUID THING_TYPE_DIGITAL_OUTPUT = new ThingTypeUID(BINDING_ID, "gpio-digital-output");
+    public static final ChannelTypeUID CHANNEL_TYPE_DIGITAL_INPUT = new ChannelTypeUID(BINDING_ID, "digital-input");
+    public static final ChannelTypeUID CHANNEL_TYPE_DIGITAL_OUTPUT = new ChannelTypeUID(BINDING_ID, "digital-output");
 
     // List of all Channel ids
     public static final String THING_TYPE_DIGITAL_INPUT_CHANNEL = "gpio-digital-input";

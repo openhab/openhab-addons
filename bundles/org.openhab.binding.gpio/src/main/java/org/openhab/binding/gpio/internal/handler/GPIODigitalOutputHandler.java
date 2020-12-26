@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.gpio.internal.handler;
 
-import static org.openhab.binding.gpio.internal.GPIOBindingConstants.THING_TYPE_DIGITAL_OUTPUT_CHANNEL;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gpio.internal.configuration.GPIOOutputConfiguration;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.xeli.jpigpio.GPIO;
+import eu.xeli.jpigpio.JPigpio;
 import eu.xeli.jpigpio.PigpioException;
 
 /**
@@ -31,45 +33,37 @@ import eu.xeli.jpigpio.PigpioException;
  * @author Nils Bauer - Initial contribution
  */
 @NonNullByDefault
-public class GPIODigitalOutputHandler extends GPIOHandler {
+public class GPIODigitalOutputHandler implements ChannelHandler {
 
     /** The logger. */
     private final Logger logger = LoggerFactory.getLogger(GPIODigitalOutputHandler.class);
 
-    /**
-     * Instantiates a new GPIO digital output handler.
-     *
-     * @param thing the thing
-     */
-    public GPIODigitalOutputHandler(Thing thing) {
-        super(thing, THING_TYPE_DIGITAL_OUTPUT_CHANNEL, false);
+    private final GPIOOutputConfiguration configuration;
+    private final GPIO gpio;
+    private final Consumer<State> updateStatus;
+
+    public GPIODigitalOutputHandler(GPIOOutputConfiguration configuration, JPigpio jPigpio,
+            Consumer<State> updateStatus) throws PigpioException {
+        this.configuration = configuration;
+        this.updateStatus = updateStatus;
+        this.gpio = new GPIO(jPigpio, configuration.gpioId, 0);
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-        if (command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
+    public void handleCommand(Command command) {
+        if (command instanceof RefreshType) {
             try {
-                setValue(s);
+                updateStatus.accept(OnOffType.from(configuration.invert != gpio.getValue()));
+            } catch (PigpioException e) {
+                logger.warn("Unknown pigpio exception while handling Refresh", e);
+            }
+        }
+        if (command instanceof OnOffType) {
+            try {
+                gpio.setValue(configuration.invert != (OnOffType.ON.equals(command)));
             } catch (PigpioException e) {
                 logger.warn("An error occured while changing the gpio value: {}", e.getMessage());
             }
-        }
-    }
-
-    /**
-     * Sets the value (inverted).
-     *
-     * @param onOffType the value
-     * @throws PigpioException the pigpio exception
-     */
-    private void setValue(OnOffType onOffType) throws PigpioException {
-        GPIO gpio = this.gpio;
-        if (gpio == null) {
-            logger.warn("Cannot set gpio value because gpio is null");
-        } else {
-            gpio.setValue(invert != (onOffType == OnOffType.ON));
         }
     }
 }

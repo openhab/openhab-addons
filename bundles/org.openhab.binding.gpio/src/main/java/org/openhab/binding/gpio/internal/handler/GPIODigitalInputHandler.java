@@ -12,22 +12,22 @@
  */
 package org.openhab.binding.gpio.internal.handler;
 
-import static org.openhab.binding.gpio.internal.GPIOBindingConstants.THING_TYPE_DIGITAL_INPUT_CHANNEL;
-
 import java.util.Date;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.xeli.jpigpio.Alert;
 import eu.xeli.jpigpio.GPIO;
 import eu.xeli.jpigpio.JPigpio;
 import eu.xeli.jpigpio.PigpioException;
@@ -38,80 +38,54 @@ import eu.xeli.jpigpio.PigpioException;
  * @author Nils Bauer - Initial contribution
  */
 @NonNullByDefault
-public class GPIODigitalInputHandler extends GPIOHandler {
+public class GPIODigitalInputHandler implements ChannelHandler {
 
-    /** The logger. */
     private final Logger logger = LoggerFactory.getLogger(GPIODigitalInputHandler.class);
-
-    /** The last change. */
     private Date lastChanged = new Date();
 
-    /**
-     * Instantiates a new GPIO digital input handler.
-     *
-     * @param thing the thing
-     */
-    public GPIODigitalInputHandler(Thing thing) {
-        super(thing, THING_TYPE_DIGITAL_INPUT_CHANNEL, true);
-    }
+    private final GPIOInputConfiguration configuration;
+    private final GPIO gpio;
+    private final JPigpio jPigpio;
+    private final ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> scheduledFuture;
+    private final Consumer<State> updateStatus;
 
-    @Override
-    public void initialize() {
-        super.initialize();
+    public GPIODigitalInputHandler(GPIOInputConfiguration configuration, JPigpio jPigpio,
+            ScheduledExecutorService scheduler, Consumer<State> updateStatus) throws PigpioException {
+        this.configuration = configuration;
+        this.jPigpio = jPigpio;
+        this.scheduler = scheduler;
+        this.updateStatus = updateStatus;
+        gpio = new GPIO(jPigpio, configuration.gpioId, 1);
 
-        GPIOInputConfiguration config = getConfigAs(GPIOInputConfiguration.class);
-        Integer debouncingTime = config.debouncingTime;
-        try {
-            JPigpio jPigpio = this.jPigpio;
-            GPIO gpio = this.gpio;
-            if (jPigpio == null) {
-                logger.warn("Cannot setup gpio change alert because jPigpio is null");
-                return;
-            }
-            if (gpio == null) {
-                logger.warn("Cannot setup gpio change alert because gpio is null");
-                return;
-            }
-            jPigpio.gpioSetAlertFunc(gpio.getPin(), new Alert() {
+        jPigpio.gpioSetAlertFunc(gpio.getPin(), (gpio, level, tick) -> {
+            lastChanged = new Date();
 
-                @Override
-                public void alert(int gpio, int level, long tick) {
-                    lastChanged = new Date();
-
-                    Date thisChange = new Date();
-                    scheduler.schedule(() -> {
-                        afterDebounce(thisChange);
-                    }, debouncingTime, TimeUnit.MILLISECONDS);
-                }
-            });
-        } catch (PigpioException e) {
-            if (e.getErrorCode() == PigpioException.PI_BAD_GPIO) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Bad GPIO Pin");
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        e.getLocalizedMessage());
-            }
-        }
+            Date thisChange = new Date();
+            scheduledFuture = scheduler.schedule(() -> afterDebounce(thisChange), configuration.debouncingTime,
+                    TimeUnit.MILLISECONDS);
+        });
     }
 
     private void afterDebounce(Date thisChange) {
         try {
             // Check if value changed over time
             if (!thisChange.before(lastChanged)) {
-                Channel channel = getThing().getChannel(THING_TYPE_DIGITAL_INPUT_CHANNEL);
-                if (channel == null) {
-                    logger.warn("Cannot find Channel: " + THING_TYPE_DIGITAL_INPUT_CHANNEL);
-                    return;
-                }
-                OnOffType value = getValue();
-                if (value == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "GPIO is null");
-                } else {
-                    updateState(channel.getUID(), value);
-                }
+                updateStatus.accept(OnOffType.from(configuration.invert != gpio.getValue()));
             }
         } catch (PigpioException e) {
             logger.warn("Unknown pigpio exception", e);
+        }
+    }
+
+    @Override
+    public void handleCommand(Command command) {
+        if (command instanceof RefreshType) {
+            try {
+                updateStatus.accept(OnOffType.from(configuration.invert != gpio.getValue()));
+            } catch (PigpioException e) {
+                logger.warn("Unknown pigpio exception while handling Refresh", e);
+            }
         }
     }
 }
