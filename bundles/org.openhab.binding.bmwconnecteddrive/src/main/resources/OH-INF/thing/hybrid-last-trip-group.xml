@@ -11,9 +11,9 @@
 			<channel id="duration" typeId="trip-duration-channel"/>
 			<channel id="distance" typeId="distance-channel"/>
 			<channel id="distance-since-charging" typeId="distance-since-charging-channel"/>
-			<channel id="average-consumption" typeId="average-consumption-channel"/>
-			<channel id="average-combined-consumption" typeId="average-combined-consumption-channel"/>
-			<channel id="average-recuperation" typeId="average-recuperation-channel"/>
+			<channel id="avg-consumption" typeId="average-consumption-channel"/>
+			<channel id="avg-combined-consumption" typeId="average-combined-consumption-channel"/>
+			<channel id="avg-recuperation" typeId="average-recuperation-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

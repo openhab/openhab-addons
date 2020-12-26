@@ -13,11 +13,11 @@
 			<channel id="passenger-rear" typeId="passenger-rear-channel"/>
 			<channel id="hood" typeId="hood-channel"/>
 			<channel id="trunk" typeId="trunk-channel"/>
-			<channel id="window-driver-front" typeId="window-driver-front-channel"/>
-			<channel id="window-driver-rear" typeId="window-driver-rear-channel"/>
-			<channel id="window-passenger-front" typeId="window-passenger-front-channel"/>
-			<channel id="window-passenger-rear" typeId="window-passenger-rear-channel"/>
-			<channel id="window-rear" typeId="window-rear-channel"/>
+			<channel id="win-driver-front" typeId="window-driver-front-channel"/>
+			<channel id="win-driver-rear" typeId="window-driver-rear-channel"/>
+			<channel id="win-passenger-front" typeId="window-passenger-front-channel"/>
+			<channel id="win-passenger-rear" typeId="window-passenger-rear-channel"/>
+			<channel id="win-rear" typeId="window-rear-channel"/>
 			<channel id="sunroof" typeId="sunroof-channel"/>
 		</channels>
 	</channel-group-type>
