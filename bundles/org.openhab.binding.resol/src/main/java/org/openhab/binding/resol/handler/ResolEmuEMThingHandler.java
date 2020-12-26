@@ -98,7 +98,6 @@ public class ResolEmuEMThingHandler extends BaseThingHandler implements Property
         @Override
         public void run() {
             EmDeviceEmulator d = device;
-            logger.trace("ping...");
             if (d != null) {
                 long now = System.currentTimeMillis();
                 int diff = (int) (now - lastTime);
