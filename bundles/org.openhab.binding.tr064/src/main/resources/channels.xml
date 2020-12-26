@@ -258,7 +258,7 @@
 		<item type="Number:Dimensionless"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
-		<getAction name="GetStatisticsTotal" argument="NeCRCErrors"/>
+		<getAction name="GetStatisticsTotal" argument="NewCRCErrors"/>
 	</channel>
 
 	<!-- WAN Connection device -->
