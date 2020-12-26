@@ -23,13 +23,13 @@
 				<context>network_address</context>
 				<label>Network Address</label>
 				<description>Network address of the raspberry pi.</description>
-				<required>false</required>
+				<required>true</required>
 			</parameter>
 			<parameter name="port" type="integer" groupName="remote-settings" min="0" max="65535">
 				<context>port</context>
 				<label>Port</label>
 				<description>Port of pigpio on the remote raspberry pi.</description>
-				<required>false</required>
+				<required>true</required>
 				<default>8888</default>
 
 			</parameter>
