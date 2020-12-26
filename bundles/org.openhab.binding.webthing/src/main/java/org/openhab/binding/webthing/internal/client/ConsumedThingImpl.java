@@ -110,18 +110,17 @@ public class ConsumedThingImpl implements ConsumedThing {
                 pingPeriod);
     }
 
-    private URI getPropertyUri(String propertyName) {
+    private Optional<URI> getPropertyUri(String propertyName) {
         var optionalProperty = description.getProperty(propertyName);
         if (optionalProperty.isPresent()) {
             var propertyDescription = optionalProperty.get();
             for (var link : propertyDescription.links) {
                 if ((link.rel != null) && (link.href != null) && link.rel.equals("property")) {
-                    return webThingURI.resolve(link.href);
+                    return Optional.of(webThingURI.resolve(link.href));
                 }
             }
         }
-        throw new IllegalStateException(
-                "WebThing " + webThingURI + " does not support a property uri. WebThing description: " + description);
+        return Optional.empty();
     }
 
     private URI getEventStreamUri() {
@@ -178,65 +177,77 @@ public class ConsumedThingImpl implements ConsumedThing {
 
     @Override
     public Object readProperty(String propertyName) throws PropertyAccessException {
-        var propertyUri = getPropertyUri(propertyName);
-        try {
-            var response = httpClient.newRequest(propertyUri).timeout(30, TimeUnit.SECONDS).send();
-            if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                onError("WebThing " + webThingURI + " disconnected");
-                throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ")");
-            }
-            var body = response.getContentAsString();
-            var properties = gson.fromJson(body, Map.class);
-            if (properties == null) {
-                onError("WebThing " + webThingURI + " erroneous");
-                throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri
-                        + "). Response does not include any property (" + propertyUri + "): " + body);
-            } else {
-                var value = properties.get(propertyName);
-                if (value != null) {
-                    return value;
-                } else {
+        var optionalPropertyUri = getPropertyUri(propertyName);
+        if (optionalPropertyUri.isPresent()) {
+            var propertyUri = optionalPropertyUri.get();
+            try {
+                var response = httpClient.newRequest(propertyUri).timeout(30, TimeUnit.SECONDS).send();
+                if (response.getStatus() < 200 || response.getStatus() >= 300) {
+                    onError("WebThing " + webThingURI + " disconnected");
+                    throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ")");
+                }
+                var body = response.getContentAsString();
+                var properties = gson.fromJson(body, Map.class);
+                if (properties == null) {
                     onError("WebThing " + webThingURI + " erroneous");
                     throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri
-                            + "). Response does not include " + propertyName + "(" + propertyUri + "): " + body);
+                            + "). Response does not include any property (" + propertyUri + "): " + body);
+                } else {
+                    var value = properties.get(propertyName);
+                    if (value != null) {
+                        return value;
+                    } else {
+                        onError("WebThing " + webThingURI + " erroneous");
+                        throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri
+                                + "). Response does not include " + propertyName + "(" + propertyUri + "): " + body);
+                    }
                 }
+            } catch (ExecutionException | TimeoutException | InterruptedException e) {
+                onError("WebThing resource " + webThingURI + " disconnected");
+                throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ").", e);
             }
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            onError("WebThing resource " + webThingURI + " disconnected");
-            throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ").", e);
+        } else {
+            onError("WebThing " + webThingURI + " does not support " + propertyName);
+            throw new PropertyAccessException("WebThing " + webThingURI + " does not support " + propertyName);
         }
     }
 
     @Override
     public void writeProperty(String propertyName, Object newValue) throws PropertyAccessException {
-        var propertyUri = getPropertyUri(propertyName);
-        var optionalProperty = description.getProperty(propertyName);
-        if (optionalProperty.isPresent()) {
-            try {
-                if (optionalProperty.get().readOnly) {
-                    throw new PropertyAccessException("could not write " + propertyName + " (" + propertyUri + ") with "
-                            + newValue + ". Property is readOnly");
-                } else {
-                    logger.debug("updating {} with {}", propertyName, newValue);
-                    Map<String, Object> payload = Map.of(propertyName, newValue);
-                    var json = gson.toJson(payload);
-                    var response = httpClient.newRequest(propertyUri).method("PUT")
-                            .content(new StringContentProvider(json)).timeout(30, TimeUnit.SECONDS).send();
-                    if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                        onError("WebThing " + webThingURI + "could not write " + propertyName + " (" + propertyUri
-                                + ") with " + newValue);
-                        throw new PropertyAccessException(
-                                "could not write " + propertyName + " (" + propertyUri + ") with " + newValue);
+        var optionalPropertyUri = getPropertyUri(propertyName);
+        if (optionalPropertyUri.isPresent()) {
+            var propertyUri = optionalPropertyUri.get();
+            var optionalProperty = description.getProperty(propertyName);
+            if (optionalProperty.isPresent()) {
+                try {
+                    if (optionalProperty.get().readOnly) {
+                        throw new PropertyAccessException("could not write " + propertyName + " (" + propertyUri
+                                + ") with " + newValue + ". Property is readOnly");
+                    } else {
+                        logger.debug("updating {} with {}", propertyName, newValue);
+                        Map<String, Object> payload = Map.of(propertyName, newValue);
+                        var json = gson.toJson(payload);
+                        var response = httpClient.newRequest(propertyUri).method("PUT")
+                                .content(new StringContentProvider(json)).timeout(30, TimeUnit.SECONDS).send();
+                        if (response.getStatus() < 200 || response.getStatus() >= 300) {
+                            onError("WebThing " + webThingURI + "could not write " + propertyName + " (" + propertyUri
+                                    + ") with " + newValue);
+                            throw new PropertyAccessException(
+                                    "could not write " + propertyName + " (" + propertyUri + ") with " + newValue);
+                        }
                     }
+                } catch (ExecutionException | TimeoutException | InterruptedException e) {
+                    onError("WebThing resource " + webThingURI + " disconnected");
+                    throw new PropertyAccessException(
+                            "could not write " + propertyName + " (" + propertyUri + ") with " + newValue, e);
                 }
-            } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                onError("WebThing resource " + webThingURI + " disconnected");
-                throw new PropertyAccessException(
-                        "could not write " + propertyName + " (" + propertyUri + ") with " + newValue, e);
+            } else {
+                throw new PropertyAccessException("could not write " + propertyName + " (" + propertyUri + ") with "
+                        + newValue + " WebTing does not support a property named " + propertyName);
             }
         } else {
-            throw new PropertyAccessException("could not write " + propertyName + " (" + propertyUri + ") with "
-                    + newValue + " WebTing does not support a property named " + propertyName);
+            onError("WebThing " + webThingURI + " does not support " + propertyName);
+            throw new PropertyAccessException("WebThing " + webThingURI + " does not support " + propertyName);
         }
     }
 
