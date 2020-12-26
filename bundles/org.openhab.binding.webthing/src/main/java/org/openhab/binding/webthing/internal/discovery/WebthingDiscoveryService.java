@@ -54,6 +54,9 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "webthingdiscovery.mdns")
 public class WebthingDiscoveryService extends AbstractDiscoveryService implements ServiceListener {
     private static final Duration FOREGROUND_SCAN_TIMEOUT = Duration.ofMillis(200);
+    public static final String ID = "id";
+    public static final String SCHEMAS = "schemas";
+    public static final String WEB_THING_URI = "webThingURI";
     private final Logger logger = LoggerFactory.getLogger(WebthingDiscoveryService.class);
     private final DescriptionLoader descriptionLoader;
     private final MDNSClient mdnsClient;
@@ -180,8 +183,8 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                 results.add(discoveryResult);
                 thingDiscovered(discoveryResult);
                 logger.debug("WebThing '{}' (uri: {}, id: {}, schemas: {}) discovered", discoveryResult.getLabel(),
-                        discoveryResult.getProperties().get("webThingURI"), discoveryResult.getProperties().get("id"),
-                        discoveryResult.getProperties().get("schemas"));
+                        discoveryResult.getProperties().get(WEB_THING_URI), discoveryResult.getProperties().get(ID),
+                        discoveryResult.getProperties().get(SCHEMAS));
             }
             return results;
         }
@@ -269,11 +272,11 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
 
             var thingUID = new ThingUID(THING_TYPE_UID, id);
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put("id", id);
-            properties.put("schemas", description.contextKeyword);
+            properties.put(ID, id);
+            properties.put(SCHEMAS, description.contextKeyword);
             return Optional.of(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_UID)
-                    .withProperty("webThingURI", uri).withLabel(description.title).withProperties(properties)
-                    .withRepresentationProperty("id").build());
+                    .withProperty(WEB_THING_URI, uri).withLabel(description.title).withProperties(properties)
+                    .withRepresentationProperty(ID).build());
         } catch (IOException ioe) {
             return Optional.empty();
         }
