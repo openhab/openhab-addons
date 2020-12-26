@@ -61,7 +61,7 @@
 		<item-type>Contact</item-type>
 		<label>Device Locked (external)</label>
 		<description>Device is locked for switching over external sources.</description>
-		<category>Contact</category>
+		<category>Lock</category>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -69,7 +69,7 @@
 		<item-type>Contact</item-type>
 		<label>Locked (manual)</label>
 		<description>Device is locked for switching by pressing the button on the device.</description>
-		<category>Contact</category>
+		<category>Lock</category>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -163,7 +163,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Thermostat Setpoint temperature.</description>
-		<category>Temperature</category>
+		<category>Heating</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -187,6 +187,7 @@
 		<item-type>String</item-type>
 		<label>Radiator Mode</label>
 		<description>States the mode of the radiator (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN).</description>
+		<category>Heating</category>
 		<state pattern="%s">
 			<options>
 				<option value="ON">On</option>
