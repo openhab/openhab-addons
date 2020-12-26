@@ -2,32 +2,32 @@
 
 <img align="right" src="./doc/bmw-connected.png" width="150" height="150"/>
 
-The Binding provides a Connection between [BMWs ConnectedDrive Portal](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) and openHAB.
-All Vehicles connected to an Account will be detected by the Discovery with the correct type 
+The binding provides a connection between [BMW's ConnectedDrive Portal](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) and openHAB.
+AllvVehicles connected to an account will be detected by the discovery with the correct type 
 
 * Conventional Fuel Vehicle
 * Plugin-Hybrid Electrical Vehicle 
 * Battery Electric Vehicle with Range Extender
 * Battery Electric Vehicle 
 
-In addition Properties are attached with Information and Services provided by this Vehicle.
+In addition properties are attached with information and services provided by this vehicle.
 The provided data depends on 
 
-1. the [Type](#Things) and 
-2. the Services mentioned in [Properties](#properties)
+1. the [Thing Type](#Things) and 
+2. the services mentioned in [Properties](#properties)
 
-Different Channel Groups are clustering all informations.
-Check for each Group if it's supported for this Vehicle.
+Different channel groups are clustering all informations.
+Check for each group if it's supported for this Vehicle.
 
-Please note **this isn't a real-time Binding**. 
-If the Door is opened the state isn't transmitted and changed immediately. 
-This isn't a flaw in the Binding itself because the state in BMWs own ConnectedDrive App is also updated with some delay. 
+Please note **this isn't a real-time binding**. 
+If the aoor is opened the state isn't transmitted and changed immediately. 
+This isn't a flaw in the binding itself because the state in BMW's own ConnectedDrive App is also updated with some delay. 
 
 ## Supported Things
 
 ### Bridge
 
-The Bridge establishes the Connection between BMW ConnectedDrive Portal and openHAB.
+The bridge establishes the connection between BMW ConnectedDrive Portal and openHAB.
 
 | Name                       | Bridge Type ID | Description                                                |
 |----------------------------|----------------|------------------------------------------------------------|
@@ -36,32 +36,32 @@ The Bridge establishes the Connection between BMW ConnectedDrive Portal and open
 
 ### Things
 
-Four different Vehicle Types are provided. 
-They differ in the supported Channel Groups & Channels. 
+Four different vehicle types are provided. 
+They differ in the supported channel groups & channels. 
 Conventional Fuel Vehicles have no _Charging Profile_, Electric Vehicles don't provide a _Fuel Range_. 
-For Hybrid Vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ is shown.
+For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ is shown.
  
-| Name                                | Thing Type ID | Supported Channel Groups                                             |
-|-------------------------------------|---------------|----------------------------------------------------------------------|
-| BMW Electric Vehicle                | BEV           | status, range, location, service, check, charge, image, troubleshoot |
-| BMW Electric Vehicle with REX       | BEV_REX       | status, range, location, service, check, charge, image, troubleshoot |
-| BMW Plug-In-Hybrid Electric Vehicle | PHEV          | status, range, location, service, check, charge, image, troubleshoot |
-| BMW Conventional Vehicle            | CONV          | status, range, location, service, check, image, troubleshoot         |
+| Name                                | Thing Type ID | Supported Channel Groups                               |
+|-------------------------------------|---------------|--------------------------------------------------------|
+| BMW Electric Vehicle                | bev           | status, range, location, service, check, charge, image |
+| BMW Electric Vehicle with REX       | bev_rex       | status, range, location, service, check, charge, image |
+| BMW Plug-In-Hybrid Electric Vehicle | phev          | status, range, location, service, check, charge, image |
+| BMW Conventional Vehicle            | conv          | status, range, location, service, check, image         |
 
  
 #### Properties
 
 <img align="right" src="./doc/properties.png" width="500" height="600"/>
 
-For each Vehicle Properties are available. 
-Basically 3 Types of Information are registered as Properties
+For each vehicle properties are available. 
+Basically 3 types of information are registered as properties
 
-* Informations regarding your Dealer with Address and Phone Number
+* Informations regarding your dealer with address and phone number
 * Which services are available / not available
-* Vehicle Properties like Color, Model Type, Drive Train and Construction Year
+* Vehicle properties like color, model type, drive train and construction year
 
-In the right picture  can see in *Services Activated* e.g. the *DoorLock* and *DoorUnlock* Services are mentioned. 
-This ensures [Channel Group _Remote Services_](#remote-services) is supporting Door lock and Door unlock.
+In the right picture can see in *Services Activated* e.g. the *DoorLock* and *DoorUnlock* services are mentioned. 
+This ensures [Channel Group _Remote Services_](#remote-services) is supporting door lock and door unlock.
 
 In  *Services Supported* the entry *LastDestination* is mentioned.
 So it's valid to connect Channel Group [Last Destinations](#destinations) in order to display the last 3 Navigation Destinations.
@@ -75,20 +75,20 @@ So it's valid to connect Channel Group [Last Destinations](#destinations) in ord
 
 ## Discovery
 
-Auto Discovery is starting after creation of the Bridge towards BMW ConnectedDrive. 
-A list of your registered Vehicles is queried and all found Vehicles are added in Inbox.
-Unique Identifier is the *Vehicle Identification Number* (VIN). 
-If a Thing is already declared in a  *.things configuration* Discovery won't highlight it again.
-Properties will be attached to predefined Vehicles if the VIN is matching.
+Auto discovery is starting after creation of the bridge towards BMW's ConnectedDrive. 
+A list of your registered vehicles is queried and all found items are added in Inbox.
+Unique identifier is the *Vehicle Identification Number* (VIN). 
+If a thing is already declared in a  *.things configuration* discovery won't highlight it again.
+Properties will be attached to predefined vehicles if the VIN is matching.
 
 ## Configuration
 
 ### Bridge
 
-| Parameter       | Type    | Description                                                             |           
-|-----------------|---------|-------------------------------------------------------------------------|
-| userName        | text    | BMW Connected Drive Username                  |
-| password        | text    | BMW Connected Drive Password                  |
+| Parameter       | Type    | Description                                                        |           
+|-----------------|---------|--------------------------------------------------------------------|
+| userName        | text    | BMW Connected Drive Username                                       |
+| password        | text    | BMW Connected Drive Password                                       |
 | region          | text    | Select Region in order to connect to the appropriate BMW Server.   |
 
 The region Configuration has 3 different possibilities
@@ -99,7 +99,7 @@ The region Configuration has 3 different possibilities
 
 ### Thing
 
-Same Configuration is needed for all Things
+Same configuration is needed for all things
 
 | Parameter       | Type    | Description                           |           
 |-----------------|---------|---------------------------------------|
@@ -111,11 +111,11 @@ Same Configuration is needed for all Things
 
 The units can be configured in 3 ways
 
-* _AUTODETECT_ selects Miles for US & UK, Kilometer otherwise
-* _METRIC_ selects directly Kilometers
-* _IMPERIAL_ selects directly Miles
+* _AUTODETECT_ selects miles for US & UK, kilometer otherwise
+* _METRIC_ selects directly kilometers
+* _IMPERIAL_ selects directly miles
 
-The imageVieport allows to show the Vehicle from different angels.
+The _imageVieport_ allows to show the vehicle from different angels.
 Possible values are 
 
 * FRONT
@@ -126,204 +126,208 @@ Possible values are
 
 ## Channels
 
-There are many Channels available for each Vehicle. 
-For better overview they are clustered in different Channel Groups.
-The Channel Groups are different for the Vehicle Types, on the build-in Sensors of the Vehicle and the activated Services.
+There are many channels available for each vehicle. 
+For better overview they are clustered in different channel groups.
+The channel groups are different for the vehicle types, on the build-in sensors of the vehicle and the activated services.
 
-### Bridge Channels
-
-If the Vehicle isn't found in the Discovery force a log of Fingerprint Data which helps to analyze the problem.
-Please check [TroubleShooting Section](#TroubleShooting) for further advice.
-
-| Channel Label         | Channel ID            | Type   | Description                                       |
-|-----------------------|-----------------------|--------|---------------------------------------------------|
-| Discovery Fingerprint | discovery-fingerprint | Switch | Forcing a log entry to analyze Discovery Problems |
 
 ### Thing Channel Groups 
 
 #### Vehicle Status
 
-Reflects Status of the Vehicle.
-Available for all Vehicles, Read-only.
+Reflects status of the vehicle.
+Available for all vehicles, read-only.
+Channel Group ID is **status**.
 
-| Channel Label             | Channel Group ID | Channel ID          | Type          | Description                                                                       |
-|---------------------------|------------------|---------------------|---------------|-----------------------------------------------------------------------------------|
-| Overall Door Status       | status           | doors               | String        | **Closed** if all closed otherwise **Open**. **Unknown** if no data is delivered  |
-| Overall Window Status     | status           | windows             | String        | **Closed** if all closed otherwise **Open** or **Intermediate**. **Unknown** if no data is delivered   |
-| Doors Locked              | status           | lock                | String        | Status if Doors are locked or unlocked                                            |
-| Next Service Date         | status           | service-date        | DateTime      | Date of Upcoming Service                                                          |
-| Mileage till Next Service | status           | service-mileage     | Number:Length | Mileage till Upcoming Service                                                     |
-| Check Control             | status           | check-control       | String        | Indicator if CheckControl is **Active** or **Not Active**. **Unknown** if no data is delivered         |
-| Charging Status           | status           | charge              | String        | Only available for PHEV, BEV_REX and BEV                                          |
-| Last Status Timestamp     | status           | last-update         | DateTime      | Date and Time of last status update.                                              |
+| Channel Label             | Channel ID          | Type          | Description                                                                       |
+|---------------------------|---------------------|---------------|-----------------------------------------------------------------------------------|
+| Overall Door Status       | doors               | String        | **Closed** if all closed otherwise **Open**. **Unknown** if no data is delivered  |
+| Overall Window Status     | windows             | String        | **Closed** if all closed otherwise **Open** or **Intermediate**. **Unknown** if no data is delivered   |
+| Doors Locked              | lock                | String        | Status if Doors are locked or unlocked                                            |
+| Next Service Date         | service-date        | DateTime      | Date of Upcoming Service                                                          |
+| Mileage till Next Service | service-mileage     | Number:Length | Mileage till Upcoming Service                                                     |
+| Check Control             | check-control       | String        | Indicator if CheckControl is **Active** or **Not Active**. **Unknown** if no data is delivered         |
+| Charging Status           | charge              | String        | Only available for PHEV, BEV_REX and BEV                                          |
+| Last Status Timestamp     | last-update         | DateTime      | Date and Time of last status update.                                              |
 
 See [further details for DateTime](#last-status-update-timestamp) in case of wrong timestamp values
 
 #### Services
 
-Group for all upcoming Services with Description, Service Date and / or Service Mileage
-It's designed as [List Interface](#list-interface) so all upcoming Services can be checked.
+Group for all upcoming services with description, service date and / or service mileage
+Channel Group ID is **service**.
 
-| Channel Label                  | Channel Group ID | Channel ID          | Type           | 
-|--------------------------------|------------------|---------------------|----------------|
-| Service Name                   | service          | name                | String         |
-| Service Date                   | service          | date                | Number         |
-| Mileage till Service           | service          | mileage             | Number:Length  |
-| Number of Scheduled Services   | service          | size                | String         |
-| Current Selected Service Index | service          | index               | Number         |
-| Select next Service            | service          | next                | Switch         |
+| Channel Label                  | Channel ID          | Type           | 
+|--------------------------------|---------------------|----------------|
+| Service Name                   | name                | String         |
+| Service Date                   | date                | Number         |
+| Mileage till Service           | mileage             | Number:Length  |
+
+If more than one service is scheduled in the future the String channel _name_ has all possible options attached.
 
 #### Check Control
 
 Group for all current active CheckControl Messages.
-It's designed as [List Interface](#list-interface) to show all active Messages.
+Channel Group ID is **check**.
 
-| Channel Label                   | Channel Group ID | Channel ID          | Type           | 
-|---------------------------------|------------------|---------------------|----------------|
-| CheckControl Description        | check            | name                | String         |
-| CheckControl Mileage Occurrence | check            | mileage             | Number:Length  |
-| Active CheckControl Messages    | check            | size                | String         |
-| Selected CheckControl Message   | check            | index               | Number         |
-| Next CheckControl Message       | check            | next                | Switch         |
+| Channel Label                   | Channel ID          | Type           | 
+|---------------------------------|---------------------|----------------|
+| CheckControl Description        | name                | String         |
+| CheckControl Mileage Occurrence | mileage             | Number:Length  |
+
+If more than one check control message is active all possibilities are set as options to the String channel _name_. 
 
 #### Doors Details
 
-Detailed Status of all Doors and Windows
-Available for all Vehicles, Read-only. 
+Detailed status of all doors and windows
+Available for all vehicles, read-only. 
+Channel Group ID is **doors**.
 
-| Channel Label              | Channel Group ID | Channel ID              | Type          | 
-|----------------------------|------------------|-------------------------|---------------|
-| Driver Door                | doors            | driver-front            | String        |
-| Driver Door Rear           | doors            | driver-rear             | String        |
-| Passenger Door             | doors            | passenger-front         | String        |
-| Passenger Door Rear        | doors            | passenger-rear          | String        |
-| Trunk                      | doors            | trunk                   | String        |
-| Hood                       | doors            | hood                    | String        |
-| Driver Door Window         | doors            | window-driver-front     | String        |
-| Driver Door Rear Window    | doors            | window-driver-rear      | String        |
-| Passenger Door Window      | doors            | window-passenger-front  | String        |
-| Passenger Door Rear Window | doors            | window-passenger-rear   | String        |
-| Rear Window                | doors            | window-rear             | String        |
-| Sunroof                    | doors            | sunroof                 | String        |
+| Channel Label              | Channel ID              | Type          | 
+|----------------------------|-------------------------|---------------|
+| Driver Door                | driver-front            | String        |
+| Driver Door Rear           | driver-rear             | String        |
+| Passenger Door             | passenger-front         | String        |
+| Passenger Door Rear        | passenger-rear          | String        |
+| Trunk                      | trunk                   | String        |
+| Hood                       | hood                    | String        |
+| Driver Door Window         | window-driver-front     | String        |
+| Driver Door Rear Window    | window-driver-rear      | String        |
+| Passenger Door Window      | window-passenger-front  | String        |
+| Passenger Door Rear Window | window-passenger-rear   | String        |
+| Rear Window                | window-rear             | String        |
+| Sunroof                    | sunroof                 | String        |
 
 Following Strings will be delivered
 
 * UNKNOWN - no status data available
-* INVALID - this item isn't applicable for this Vehicle
-* CLOSED - the Door / Window is closed
-* OPEN - the Door / Window is open
-* INTERMEDIATE - Window in intermediate position, not applicable for Doors
+* INVALID - this item isn't applicable for this vehicle
+* CLOSED - the door / window is closed
+* OPEN - the door / window is open
+* INTERMEDIATE - window in intermediate position, not applicable for doors
 
 #### Range Data
 
-Based on Vehicle Type (Thing Type ID) some Channels are presented or not. 
-Conventional Fuel Vehicles don't provide *Electric Range* and Battery Electric Vehicles don't show *Range Fuel*.
-Hybrid Vehicles have both and in addition *Hybrid Range*.
-These are Read-only values.
+Based on vehicle type (Thing Type ID) some channels are presented or not. 
+Conventional fuel vehicles don't provide *Electric Range* and Battery electric Vehicles don't show *Range Fuel*.
+Hybrid vehicles have both and in addition *Hybrid Range*.
+These are read-only values.
+Channel Group ID is **range**.
 
-| Channel Label         | Channel Group ID | Channel ID            | Type                 | CONV | PHEV | BEV_REX | BEV |
-|-----------------------|------------------|-----------------------|----------------------|------|------|---------|-----|
-| Mileage               | range            | mileage               | Number:Length        |  X   |  X   |    X    |  X  |
-| Fuel Range            | range            | range-fuel            | Number:Length        |  X   |  X   |    X    |     |
-| Battery Range         | range            | range-electric        | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range          | range            | range-hybrid          | Number:Length        |      |  X   |    X    |     | 
-| Battery Charge Level  | range            | soc                   | Number:Dimensionless |      |  X   |    X    |  X  |
-| Remaining Fuel        | range            | remaining-fuel        | Number:Volume        |  X   |  X   |    X    |     | 
-| Fuel Range Radius     | range            | range-radius-fuel     | Number:Length        |  X   |  X   |    X    |     | 
-| Electric Range Radius | range            | range-radius-electric | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range Radius   | range            | range-radius-hybrid   | Number:Length        |      |  X   |    X    |     | 
+| Channel Label         | Channel ID            | Type                 | CONV | PHEV | BEV_REX | BEV |
+|-----------------------|-----------------------|----------------------|------|------|---------|-----|
+| Mileage               | mileage               | Number:Length        |  X   |  X   |    X    |  X  |
+| Fuel Range            | range-fuel            | Number:Length        |  X   |  X   |    X    |     |
+| Battery Range         | range-electric        | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range          | range-hybrid          | Number:Length        |      |  X   |    X    |     | 
+| Battery Charge Level  | soc                   | Number:Dimensionless |      |  X   |    X    |  X  |
+| Remaining Fuel        | remaining-fuel        | Number:Volume        |  X   |  X   |    X    |     | 
+| Fuel Range Radius     | range-radius-fuel     | Number:Length        |  X   |  X   |    X    |     | 
+| Electric Range Radius | range-radius-electric | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range Radius   | range-radius-hybrid   | Number:Length        |      |  X   |    X    |     | 
 
 See Description [Range vs Range Radius](#range-vs-range-radius) to get more information
 
 #### Charge Profile
 
-Valid for Electric and Hybrid Vehicles
-These are Read-only values.
+Valid for electric and hybrid vehicles
+These are read-only values.
+Channel Group ID is **charge**.
 
-| Channel Label                      | Channel Group ID | Channel ID          | Type   | 
-|------------------------------------|------------------|---------------------|--------|
-| Air Conditioning at Departure Time | charge           | profile-climate     | Switch | 
-| Charging Mode for Profile          | charge           | profile-mode        | String | 
-| Charging Window Start Time         | charge           | window-start        | String | 
-| Charging Window End Time           | charge           | window-end          | String | 
-| Timer 1: Departure Time            | charge           | timer1-departure    | String | 
-| Timer 1: Scheduled Days            | charge           | timer1-days         | String | 
-| Timer 1: Enabled                   | charge           | timer1-enabled      | Switch | 
-| Timer 2: Departure Time            | charge           | timer2-departure    | String | 
-| Timer 2: Scheduled Days            | charge           | timer2-days         | String | 
-| Timer 2: Enabled                   | charge           | timer2-enabled      | Switch | 
-| Timer 3: Departure Time            | charge           | timer3-departure    | String | 
-| Timer 3: Scheduled Days            | charge           | timer3-days         | String | 
-| Timer 3: Enabled                   | charge           | timer3-enabled      | Switch | 
+| Channel Label                      | Channel ID          | Type   | 
+|------------------------------------|---------------------|--------|
+| Air Conditioning at Departure Time | profile-climate     | Switch | 
+| Charging Mode for Profile          | profile-mode        | String | 
+| Charging Window Start Time         | window-start        | String | 
+| Charging Window End Time           | window-end          | String | 
+| Timer 1: Departure Time            | timer1-departure    | String | 
+| Timer 1: Scheduled Days            | timer1-days         | String | 
+| Timer 1: Enabled                   | timer1-enabled      | Switch | 
+| Timer 2: Departure Time            | timer2-departure    | String | 
+| Timer 2: Scheduled Days            | timer2-days         | String | 
+| Timer 2: Enabled                   | timer2-enabled      | Switch | 
+| Timer 3: Departure Time            | timer3-departure    | String | 
+| Timer 3: Scheduled Days            | timer3-days         | String | 
+| Timer 3: Enabled                   | timer3-enabled      | Switch | 
 
 
 #### Location
 
-Available for all Vehicles.
-These are Read-only values.
+Available for all vehicles.
+These are read-only values.
+Channel Group ID is **location**.
 
-| Channel Label  | Channel Group ID | Channel ID          | Type         | 
-|----------------|------------------|---------------------|--------------|
-| Latitude       | location         | latitude            | Number       | 
-| Longitude      | location         | longitude           | Number       |
-| Heading        | location         | heading             | Number:Angle | 
+| Channel Label   | Channel ID          | Type         | 
+|-----------------|---------------------|--------------|
+| GPS Coordinates | gps                 | Location     | 
+| Heading         | heading             | Number:Angle | 
 
 #### Last Trip
 
 Check [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
-These are Read-only values.
+These are read-only values.
+Channel Group ID is **last-trip**.
 
-| Channel Label                           | Channel Group ID | Channel ID                   | Type          |
-|-----------------------------------------|------------------|------------------------------|---------------|
-| Last Trip Date                          | last-trip        | date                         | DateTime      |
-| Last Trip Duration                      | last-trip        | duration                     | Number:Time   |
-| Average Power Consumption per 100 km    | last-trip        | average-consumption          | Number:Power  |
-| Average Combined Consumption per 100 km | last-trip        | average-combined-consumption | Number:Volume |
-| Average Power Recuperation per 100 km   | last-trip        | average-recuperation         | Number:Power  |
-| Last Trip Distance                      | last-trip        | distance                     | Number:Length |
-| Distance since Last Charge              | last-trip        | distance-since-charging      | Number:Length |
+| Channel Label                           | Channel ID                   | Type          |
+|-----------------------------------------|------------------------------|---------------|
+| Last Trip Date                          | date                         | DateTime      |
+| Last Trip Duration                      | duration                     | Number:Time   |
+| Average Power Consumption per 100 km    | average-consumption          | Number:Power  |
+| Average Combined Consumption per 100 km | average-combined-consumption | Number:Volume |
+| Average Power Recuperation per 100 km   | average-recuperation         | Number:Power  |
+| Last Trip Distance                      | distance                     | Number:Length |
+| Distance since Last Charge              | distance-since-charging      | Number:Length |
 
 
 #### Lifetime Statistics
 
 Check [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
-These are Read-only values.
+These are read-only values.
+Channel Group ID is **lifetime**.
 
-| Channel Label                           | Channel Group ID | Channel ID                   | Type          | 
-|-----------------------------------------|------------------|------------------------------|---------------|
-| Average Power Consumption per 100 km    | lifetime         | average-consumption          | Number:Power  |
-| Average Power Recuperation per 100 km   | lifetime         | average-recuperation         | Number:Power  |
-| Cumulated Electric Driven Distance      | lifetime         | cumulated-driven-distance    | Number:Length |
-| Average Combined Consumption per 100 km | lifetime         | average-combined-consumption | Number:Volume |
-| Longest Distance with one Charge        | lifetime         | single-longest-distance      | Number:Length |
+| Channel Label                           | Channel ID                   | Type          | 
+|-----------------------------------------|------------------------------|---------------|
+| Average Power Consumption per 100 km    | average-consumption          | Number:Power  |
+| Average Power Recuperation per 100 km   | average-recuperation         | Number:Power  |
+| Cumulated Electric Driven Distance      | cumulated-driven-distance    | Number:Length |
+| Average Combined Consumption per 100 km | average-combined-consumption | Number:Volume |
+| Longest Distance with one Charge        | single-longest-distance      | Number:Length |
 
 
 #### Remote Services
 
-Check [Vehicle Properties](#Properties) *Services Activated* which Remote Services are available
-Only one Remote Service can be executed each Time.
+Check [Vehicle Properties](#Properties) *Services Activated* which remote services are available
+Only one remote service can be executed each Time.
 Parallel execution isn't supported.
-The *Service Execution State* Channel is reporting the state.
-State *Executed* is the final State when Execution is finished.
+The *Service Execution State* channel is reporting the state.
+State *Executed* is the final state when execution is finished.
+Channel Group ID is **remote**.
 
-| Channel Label           | Channel Group ID | Channel ID          | Type    | 
-|-------------------------|------------------|---------------------|---------|
-| Remote Service Command  | remote           | command             | String  |
-| Service Execution State | remote           | state               | String  |
+| Channel Label           | Channel ID          | Type    | 
+|-------------------------|---------------------|---------|
+| Remote Service Command  | command             | String  |
+| Service Execution State | state               | String  |
+
+The channel _command_ has the following value options:
+
+* _Flash Lights_ 
+* _Vehicle Finder_
+* _Door Lock_
+* _Door Unlock_
+* _Horn Blow_
+* _Climate Control_
 
 #### Destinations
 
 Check [Vehicle Properties](#Properties) if *LastDestinations* is present in *Services Supported*
-It's designed as [List Interface](#list-interface) in order to have access to all stored Destinations.
+Channel Group ID is **destination**.
 
-| Channel Label                    | Channel Group ID | Channel ID          | Type    | 
-|----------------------------------|------------------|---------------------|---------|
-| Destination Name                 | destination      | name                | String  |
-| Destination Latitude             | destination      | latitude            | Number  |
-| Destination Longitude            | destination      | longitude           | Number  |
-| Number of Available Destinations | destination      | size                | String  |
-| Index of Selected Destination    | destination      | index               | Number  |
-| Skip to Next Destination         | destination      | next                | Switch  |
+| Channel Label                    | Channel ID          | Type      | 
+|----------------------------------|---------------------|-----------|
+| Destination Name                 | name                | String    |
+| Destination GPS Coordinates      | gps                 | Location  |
+
+If more than one service is scheduled in the future the String channel _name_ has all possible options attached.
 
 
 #### Image
@@ -331,40 +335,64 @@ It's designed as [List Interface](#list-interface) in order to have access to al
 Available for all Vehicles.
 Picture can be modified regarding *Viewport* and *Size*.
 See [Things Section](#thing) for Viewport possibilities and [Status Image](#status-image) for possible Use Cases.
+Channel Group ID is **image**.
 
-| Channel Label                 | Channel Group ID | Channel ID          | Type   | 
-|-------------------------------|------------------|---------------------|--------|
-| Rendered Image of the Vehicle | image            | png                 | Image  |
-| Image Viewport                | image            | view                | String |
-| Image Picture Size            | image            | size                | Number |
+| Channel Label                 | Channel ID          | Type   | 
+|-------------------------------|---------------------|--------|
+| Rendered Image of the Vehicle | png                 | Image  |
+| Image Viewport                | view                | String |
+| Image Picture Size            | size                | Number |
 
-
-#### Troubleshooting
-
-Available for all Vehicles!
-Switch will log a *Vehicle Data Fingerprint* into the openHAB log.
-Please check [TroubleShooting Section](#TroubleShooting) for further advice.
-
-| Channel Label                       | Channel Group ID | Channel ID          | Type   | Description                                       |
-|-------------------------------------|------------------|---------------------|--------|---------------------------------------------------|
-| Log Vehicle Fingerprint             | troubleshoot     | vehicle-fingerprint | Switch | Forces log entries in openHAB logger in order to raise issues |
 
 ## Further Descriptions
 
 ### List Interface
 
+<img align="right" src="./doc/ServiceOptions.png" width="400" height="350"/>
+
 Currently there are 3 occurrences of dynamic data delivered as Lists
 
-* Upcoming Services
-* Check Control Messages
-* Last Destinations
+* Upcoming Services delivered in group [Services](#services)
+* Check Control Messages delivered in group [Check Control](#check_control)
+* Last Destinations delivered in group [Destinations](#destinations)
 
-In order to provide all data the lists are organized the following way based on the Service Group example
+The channel **name** shows the first element. 
+All other elements are attached as options. 
+The picture on the right shows the _Service Name_ item and all plus the 4 available options. 
+With this you're able to select each service and the corresponding _Service Date & Milage_ will be shown.  
 
-* **size** is the total length of the list. Read-only.
-* **index** is the current selected index starting with 0 => list with size 10, valid index is between 0 - 9. If the index is set to _out of bounds_ it's set to first element. Read-write.
-* **next** declares a switch for scrolling forward through the list in an endless way. Reaching end of list will start again from 0. Read-write.
-* **name**, **mileage** and **date** declares the list item. It will change when setting new index or perform next. Read-only.
+### TroubleShooting
+
+BMW has a high range of Vehicles supported by BMWs ConnectedDrive.
+In case of any issues with this Binding please help to resolve it! 
+Please perform the following Steps:
+
+* Can you login [into ConnectedDrive](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) with your Credentials? _Please note this isn't the BMW Customer Portal - it's the ConnectedDrive Portal_
+* Is the Vehicle listed in your Account? _There's a one-to-one dependency from User to Vehicle_
+
+If the access to the Portal and listing of the Vehicle is checked some debug data is needed in order to identify the issue. 
+
+#### Generate Debug Fingerprint
+
+If you checked the above pre-conditions you need to get the debug fingerprint from the debug logs.
+First [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for the binding.
+```
+log:set DEBUG org.openhab.binding.bmwconnecteddrive
+```
+The debug fingerprint is generated when the Vehicle Thing is initialized the first time, e.g. after openHAB startup. 
+To force a new fingerprint disable the thing shortly and enable it again. 
+Personal Data is eliminated from the log entries so it should be possible to share them in public.
+Data like
+
+* Dealer Properties
+* Vehicle Identification Number (VIN)
+* Location Latitude / Longitude 
+
+are anonymized.
+
+After the corresponding Fingerprint is generated please [follow the instructions to raise an Issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the Fingerprint data!
+Your feedback is highly appreciated!
+
 
 ### Range vs Range Radius
 
@@ -390,59 +418,6 @@ One restart of openHAB service with *systemctl restart openhab2* is necessary in
 Correct TimeZone is crucial for handling all Time information in openHAB and it's discussed many times in the Forum.
 See [similar discussion in the openHAB Forum](https://community.openhab.org/t/solved-wrong-local-time-how-to-change/90938) which deals with the same problem.
 
-### TroubleShooting
-
-BMW has a high range of Vehicles supported by BMWs ConnectedDrive.
-In case of any issues with this Binding please help to resolve it! 
-Please perform the following Steps:
-
-* Can you login [into ConnectedDrive](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) with your Credentials? _Please note this isn't the BMW Customer Portal - it's the ConnectedDrive Portal_
-* Is the Vehicle listed in your Account? _There's a one-to-one dependency from User to Vehicle_
-
-If the access to the Portal and listing of the Vehicle is checked some debug data is needed in order to identify the issue. 
-The [Example Sitemap](#Sitemap) contains the necessary items to generate Debug Data.
-
-#### My Vehicle isn't found automatically!
-
-The Vehicle isn't recognized or a predefined Vehicle doesn't show the right properties?
-For this the [Discovery Fingerprint](#bridge-channels) is needed.
-Short press on the Switch will force some logging entries which can be [normally found in the logs here](http://openhab:9001/) 
-
-#### My Vehicle shows wrong data or data is missing!
-
-Now the [Vehicle Fingerprint](#troubleshooting) is needed.
-Proceed like before, shortly press the Switch and the log contains the data.
-
-Personal Data is eliminated from the log entries so it should be possible to share them in public.
-Data like
-
-* Dealer Properties
-* Vehicle Identification Number (VIN)
-* Location Latitude / Longitude 
-
-are anonymized.
-
-After the corresponding Fingerprint is generated please [follow the instructions to raise an Issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the Fingerprint data!
-Your feedback is highly appreciated!
-
-Here an example of Debug Fingerprint Data from a BEV_REX Vehicle
-
-```
-2020-09-07 17:27:21.101 [WARN ] [rive.internal.handler.VehicleHandler] - ###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - BEGIN ######
-2020-09-07 17:27:21.105 [WARN ] [rive.internal.handler.VehicleHandler] - ### Discovery Result ###
-2020-09-07 17:27:21.116 [WARN ] [rive.internal.handler.VehicleHandler] - {"vehicles":[{"vin":"ANONYMOUS","model":"i3 94 (+ REX)","driveTrain":"BEV_REX","brand":"BMW_I","yearOfConstruction":2017,"bodytype":"I01","color":"CAPPARISWEISS MIT AKZENT BMW I BLAU","statisticsCommunityEnabled":false,"statisticsAvailable":true,"hasAlarmSystem":true,"dealer":{"name":"ANONYMOUS","street":"ANONYMOUS","postalCode":"ANONYMOUS","city":"ANONYMOUS","country":"ANONYMOUS","phone":"ANONYMOUS"},"breakdownNumber":"ANONYMOUS","supportedChargingModes":["AC_LOW","DC"],"chargingControl":"WEEKLY_PLANNER","vehicleFinder":"ACTIVATED","hornBlow":"ACTIVATED","lightFlash":"ACTIVATED","doorLock":"ACTIVATED","doorUnlock":"ACTIVATED","climateNow":"ACTIVATED","sendPoi":"ACTIVATED","remote360":"NOT_SUPPORTED","climateControl":"NOT_SUPPORTED","chargeNow":"NOT_SUPPORTED","lastDestinations":"SUPPORTED","carCloud":"NOT_SUPPORTED","remoteSoftwareUpgrade":"NOT_SUPPORTED","climateNowRES":"NOT_SUPPORTED","climateControlRES":"NOT_SUPPORTED","smartSolution":"NOT_SUPPORTED","ipa":"NOT_SUPPORTED"}]}
-2020-09-07 17:27:21.121 [WARN ] [rive.internal.handler.VehicleHandler] - ### Vehicle Status ###
-2020-09-07 17:27:21.125 [WARN ] [rive.internal.handler.VehicleHandler] - {"vehicleStatus":{"mileage":17708,"remainingFuel":4.0,"remainingRangeElectric":146.0,"remainingRangeElectricMls":90.0,"remainingRangeFuel":65.0,"remainingRangeFuelMls":40.0,"maxRangeElectric":203.0,"maxRangeElectricMls":126.0,"maxFuel":8.5,"chargingLevelHv":74.0,"vin":"ANONYMOUS","updateReason":"VEHICLE_SECURED","updateTime":"2020-09-07T12:47:08+0000","doorDriverFront":"CLOSED","doorDriverRear":"CLOSED","doorPassengerFront":"CLOSED","doorPassengerRear":"CLOSED","windowDriverFront":"CLOSED","windowDriverRear":"CLOSED","windowPassengerFront":"CLOSED","windowPassengerRear":"CLOSED","sunroof":"CLOSED","trunk":"CLOSED","rearWindow":"INVALID","hood":"OPEN","doorLockState":"SECURED","parkingLight":"OFF","positionLight":"ON","connectionStatus":"DISCONNECTED","chargingStatus":"INVALID","lastChargingEndReason":"END_REQUESTED_BY_DRIVER","lastChargingEndResult":"SUCCESS","position":{"lat":-1.0,"lon":-1.0,"heading":-1,"status":"OK"},"internalDataTimeUTC":"2020-09-07T12:47:08","singleImmediateCharging":false,"chargingConnectionType":"CONDUCTIVE","chargingInductivePositioning":"NOT_POSITIONED","vehicleCountry":"DE","DCS_CCH_Activation":"NA","DCS_CCH_Ongoing":false,"checkControlMessages":[],"cbsData":[{"cbsType":"BRAKE_FLUID","cbsState":"OK","cbsDueDate":"2021-11","cbsDescription":"Next change due at the latest by the stated date.","cbsRemainingMileage":0},{"cbsType":"VEHICLE_CHECK","cbsState":"OK","cbsDueDate":"2021-11","cbsDescription":"Next visual inspection due when the stated distance has been covered or by the stated date.","cbsRemainingMileage":0},{"cbsType":"OIL","cbsState":"OK","cbsDueDate":"2021-11","cbsDescription":"Next change due when the stated distance has been covered or by the specified date.","cbsRemainingMileage":0},{"cbsType":"VEHICLE_TUV","cbsState":"OK","cbsDueDate":"2021-11","cbsDescription":"Next statutory vehicle inspection due by the stated date.","cbsRemainingMileage":0}]}}
-2020-09-07 17:27:21.130 [WARN ] [rive.internal.handler.VehicleHandler] - ### Last Trip ###
-2020-09-07 17:27:21.133 [WARN ] [rive.internal.handler.VehicleHandler] - {"lastTrip":{"efficiencyValue":0.8,"totalDistance":14,"electricDistance":14,"avgElectricConsumption":13.7,"avgRecuperation":3,"drivingModeValue":1,"accelerationValue":0.27,"anticipationValue":0.87,"totalConsumptionValue":0.98,"auxiliaryConsumptionValue":0.89,"avgCombinedConsumption":0,"electricDistanceRatio":100,"savedFuel":0,"date":"2020-09-07T14:35:00+0000","duration":13}}
-2020-09-07 17:27:21.135 [WARN ] [rive.internal.handler.VehicleHandler] - ### All Trips ###
-2020-09-07 17:27:21.138 [WARN ] [rive.internal.handler.VehicleHandler] - {"allTrips":{"avgElectricConsumption":{"communityLow":11,"communityAverage":16.28,"communityHigh":22,"userAverage":16.46},"avgRecuperation":{"communityLow":0.47,"communityAverage":3.37,"communityHigh":11.51,"userAverage":4.53},"chargecycleRange":{"communityAverage":194.57,"communityHigh":270,"userAverage":57.28,"userHigh":185.48,"userCurrentChargeCycle":33},"totalElectricDistance":{"communityLow":58,"communityAverage":41269.29,"communityHigh":193882,"userTotal":17060.4},"avgCombinedConsumption":{"communityLow":0,"communityAverage":0.92,"communityHigh":4.44,"userAverage":0.64},"savedCO2":473.033,"savedCO2greenEnergy":2782.551,"totalSavedFuel":0,"resetDate":"2020-09-07T12:00:04+0000","batterySizeMax":33200}}
-2020-09-07 17:27:21.140 [WARN ] [rive.internal.handler.VehicleHandler] - ### Charge Profile ###
-2020-09-07 17:27:21.142 [WARN ] [rive.internal.handler.VehicleHandler] - {"weeklyPlanner":{"climatizationEnabled":false,"chargingMode":"DELAYED_CHARGING","chargingPreferences":"CHARGING_WINDOW","timer1":{"departureTime":"05:00","timerEnabled":true,"weekdays":["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"]},"timer2":{"departureTime":"12:00","timerEnabled":false,"weekdays":["SATURDAY"]},"timer3":{"departureTime":"00:00","timerEnabled":false,"weekdays":[]},"overrideTimer":{"departureTime":"05:00","timerEnabled":false,"weekdays":["TUESDAY"]},"preferredChargingWindow":{"startTime":"11:00","endTime":"17:00"}}}
-2020-09-07 17:27:21.144 [WARN ] [rive.internal.handler.VehicleHandler] - ### Charge Profile ###
-2020-09-07 17:27:21.151 [WARN ] [rive.internal.handler.VehicleHandler] - {"destinations":[{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-08-16T12:52:58+0000"},{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-08-12T17:03:35+0000"},{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-08-03T08:15:20+0000"},{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-07-31T13:09:15+0000"},{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-07-25T11:20:18+0000"},{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-07-18T11:22:37+0000"},{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-02-08T11:06:52+0000"},{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-02-02T14:07:54+0000"},{"lat":0.0,"lon":0.0,"country":"ANONYMOUS","city":"ANONYMOUS","street":"ANONYMOUS","streetNumber":"ANONYMOUS","type":"DESTINATION","createdAt":"2020-02-02T13:24:36+0000"}]}
-2020-09-07 17:27:21.158 [WARN ] [rive.internal.handler.VehicleHandler] - ###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - END ######
-```
 
 ## Full Example
 
