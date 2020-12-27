@@ -70,7 +70,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
      */
     @Activate
     public WebthingDiscoveryService(@Nullable Map<String, Object> configProperties, @Reference MDNSClient mdnsClient,
-                                    @Reference Scheduler executor, @Reference HttpClientFactory httpClientFactory) {
+            @Reference Scheduler executor, @Reference HttpClientFactory httpClientFactory) {
         super(30);
         this.mdnsClient = mdnsClient;
         this.descriptionLoader = new DescriptionLoader(httpClientFactory.getCommonHttpClient());
