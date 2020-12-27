@@ -314,8 +314,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         if (connector != null) {
             connector.dispose();
         }
-        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient,
-                this.getThing().getUID().getAsString());
+        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient);
         connector.connect();
     }
 

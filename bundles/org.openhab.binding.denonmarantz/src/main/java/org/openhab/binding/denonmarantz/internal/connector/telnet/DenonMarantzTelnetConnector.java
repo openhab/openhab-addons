@@ -46,7 +46,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
 
     private static final BigDecimal NINETYNINE = new BigDecimal("99");
 
-    private DenonMarantzTelnetClientThread telnetClientThread;
+    private DenonMarantzTelnetClient telnetClient;
 
     private boolean displayNowplaying = false;
 
@@ -54,14 +54,13 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
 
     private Future<?> telnetStateRequest;
 
-    private String thingUID;
+    private Future<?> telnetRunnable;
 
     public DenonMarantzTelnetConnector(DenonMarantzConfiguration config, DenonMarantzState state,
-            ScheduledExecutorService scheduler, String thingUID) {
+            ScheduledExecutorService scheduler) {
         this.config = config;
         this.scheduler = scheduler;
         this.state = state;
-        this.thingUID = thingUID;
     }
 
     /**
@@ -69,9 +68,8 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
      */
     @Override
     public void connect() {
-        telnetClientThread = new DenonMarantzTelnetClientThread(config, this);
-        telnetClientThread.setName("OH-binding-" + thingUID);
-        telnetClientThread.start();
+        telnetClient = new DenonMarantzTelnetClient(config, this);
+        telnetRunnable = scheduler.submit(telnetClient);
     }
 
     @Override
@@ -100,12 +98,9 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
             telnetStateRequest = null;
         }
 
-        if (telnetClientThread != null) {
-            telnetClientThread.interrupt();
-            // Invoke a shutdown after interrupting the thread to close the socket immediately,
-            // otherwise the client keeps running until a line was received from the telnet connection
-            telnetClientThread.shutdown();
-            telnetClientThread = null;
+        if (telnetClient != null && !telnetRunnable.isDone()) {
+            telnetRunnable.cancel(true);
+            telnetClient.shutdown();
         }
     }
 
@@ -267,7 +262,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
             logger.warn("Trying to send empty command");
             return;
         }
-        telnetClientThread.sendCommand(command);
+        telnetClient.sendCommand(command);
     }
 
     /**
