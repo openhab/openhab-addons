@@ -38,7 +38,7 @@ public class AuthTest {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     @Test
-    public void testAtuthServerMap() {
+    public void testAuthServerMap() {
         Map<String, String> authServers = BimmerConstants.AUTH_SERVER_MAP;
         assertEquals(3, authServers.size(), "Number of Servers");
         Map<String, String> api = BimmerConstants.SERVER_MAP;

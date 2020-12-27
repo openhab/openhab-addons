@@ -29,6 +29,7 @@ import com.google.gson.Gson;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class RemoteStatusTest {
     private static final Gson GSON = new Gson();
 

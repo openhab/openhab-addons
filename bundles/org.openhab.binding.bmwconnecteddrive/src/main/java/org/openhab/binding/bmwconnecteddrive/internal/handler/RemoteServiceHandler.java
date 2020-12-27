@@ -139,14 +139,17 @@ public class RemoteServiceHandler implements StringResponseCallback {
     public void onResponse(Optional<String> result) {
         if (result.isPresent()) {
             ExecutionStatusContainer esc = Converter.getGson().fromJson(result.get(), ExecutionStatusContainer.class);
-            ExecutionStatus execStatus = esc.executionStatus;
-            handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
-            if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
-                handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
-            } else {
-                // refresh loop ends - update of status handled in the normal refreshInterval. Earlier update doesn't
-                // show better results!
-                reset();
+            if (esc != null) {
+                ExecutionStatus execStatus = esc.executionStatus;
+                handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
+                if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
+                    handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
+                } else {
+                    // refresh loop ends - update of status handled in the normal refreshInterval. Earlier update
+                    // doesn't
+                    // show better results!
+                    reset();
+                }
             }
         } else {
             // schedule even if no result is present until retries exceeded

@@ -29,9 +29,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -46,12 +44,12 @@ import com.google.gson.Gson;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class TripWrapper {
     private static final Gson GSON = new Gson();
     private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
 
     private LastTrip lastTrip;
-    private boolean imperial;
     private boolean isElectric;
     private boolean hasFuel;
     private boolean isHybrid;
@@ -59,7 +57,6 @@ public class TripWrapper {
     private Map<String, State> specialHandlingMap = new HashMap<String, State>();
 
     public TripWrapper(String type, boolean imperial, String statusJson) {
-        this.imperial = imperial;
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
                 || type.equals(VehicleType.ELECTRIC_REX.toString());
         isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
@@ -99,13 +96,11 @@ public class TripWrapper {
         return this;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void checkResult(ChannelUID channelUID, State state) {
         String cUid = channelUID.getIdWithoutGroup();
         QuantityType<Length> qt;
-        StringType st;
-        StringType wanted;
         DateTimeType dtt;
-        DecimalType dt;
         switch (cUid) {
             case DATE:
                 assertTrue(state instanceof DateTimeType);

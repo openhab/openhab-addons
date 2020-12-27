@@ -33,7 +33,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -52,6 +51,7 @@ import com.google.gson.Gson;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class StatusWrapper {
     private static final Gson GSON = new Gson();
     private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
@@ -105,6 +105,7 @@ public class StatusWrapper {
         return this;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void checkResult(ChannelUID channelUID, State state) {
         String cUid = channelUID.getIdWithoutGroup();
         String gUid = channelUID.getGroupId();
@@ -112,7 +113,6 @@ public class StatusWrapper {
         StringType st;
         StringType wanted;
         DateTimeType dtt;
-        DecimalType dt;
         PointType pt;
         switch (cUid) {
             case MILEAGE:

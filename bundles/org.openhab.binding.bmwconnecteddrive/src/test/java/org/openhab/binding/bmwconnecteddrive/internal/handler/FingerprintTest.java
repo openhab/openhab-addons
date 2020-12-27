@@ -24,7 +24,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +40,7 @@ public class FingerprintTest {
         Bridge b = mock(Bridge.class);
         when(b.getUID()).thenReturn(new ThingUID("bmwconnecteddrive", "account", "user"));
         HttpClientFactory hcf = mock(HttpClientFactory.class);
-        BundleContext bc = mock(BundleContext.class);
-        ConnectedDriveBridgeHandler bh = new ConnectedDriveBridgeHandler(b, hcf, bc);
+        ConnectedDriveBridgeHandler bh = new ConnectedDriveBridgeHandler(b, hcf);
         // when(bh.getThing()).thenReturn(b);
 
         bh.onResponse(Optional.of(Constants.EMPTY_VEHICLES));
