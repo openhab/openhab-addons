@@ -57,6 +57,11 @@ public class Channels {
         var itemType = TypeMapping.toItemType(property);
         var channelUID = createChannelUID(thingUID, propertyName);
         var channelBuilder = ChannelBuilder.create(channelUID, itemType.getType());
+
+        // Currently, few predefined, generic channel types such as number, string or color are defined
+        // inside the thing-types.xml file. A better solution would be to create the channel types
+        // dynamically based on the WebThing description to make most of the meta data of a WebThing.
+        // The goal of the WebThing meta data is to enable semantic interoperability for connected things
         channelBuilder.withType(new ChannelTypeUID(BINDING_ID, itemType.getType()));
         channelBuilder.withDescription(property.description);
         channelBuilder.withLabel(property.title);

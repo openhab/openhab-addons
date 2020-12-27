@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
+import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 
 /**
  * Factory to create new instances of a WebSocket connection
@@ -36,22 +37,20 @@ interface WebSocketConnectionFactory {
      * @param errorHandler the error handler
      * @param pingPeriod the ping period to check the healthiness of the connection
      * @return the newly opened WebSocket connection
+     * @throws IOException if the web socket connection can not be established
      */
     WebSocketConnection create(URI webSocketURI, ScheduledExecutorService executor, Consumer<String> errorHandler,
-            Duration pingPeriod);
+            Duration pingPeriod) throws IOException;
 
     /**
+     * @param webSocketClient the web socket client to use
      * @return the default instance of the factory
      */
-    static WebSocketConnectionFactory instance() {
-        return new WebSocketConnectionFactory() {
-            @Override
-            public WebSocketConnection create(URI webSocketURI, ScheduledExecutorService executor,
-                    Consumer<String> errorHandler, Duration pingPeriod) {
-                var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
-                HttpClient.newHttpClient().newWebSocketBuilder().buildAsync(webSocketURI, webSocketConnection).join();
-                return webSocketConnection;
-            }
+    static WebSocketConnectionFactory instance(WebSocketClient webSocketClient) {
+        return (webSocketURI, executor, errorHandler, pingPeriod) -> {
+            var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
+            webSocketClient.connect(webSocketConnection, webSocketURI);
+            return webSocketConnection;
         };
     }
 }

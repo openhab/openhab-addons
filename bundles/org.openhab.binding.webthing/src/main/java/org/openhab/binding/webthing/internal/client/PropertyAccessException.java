@@ -18,6 +18,7 @@ package org.openhab.binding.webthing.internal.client;
  * @author Gregor Roth - Initial contribution
  */
 public class PropertyAccessException extends Exception {
+    private static final long serialVersionUID = 5177277585758195790L;
 
     /**
      * contructor

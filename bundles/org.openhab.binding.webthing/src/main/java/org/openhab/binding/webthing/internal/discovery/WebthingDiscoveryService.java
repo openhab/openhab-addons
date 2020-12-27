@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
@@ -34,6 +33,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.thing.ThingTypeUID;
@@ -54,10 +54,13 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "webthingdiscovery.mdns")
 public class WebthingDiscoveryService extends AbstractDiscoveryService implements ServiceListener {
     private static final Duration FOREGROUND_SCAN_TIMEOUT = Duration.ofMillis(200);
+    public static final String ID = "id";
+    public static final String SCHEMAS = "schemas";
+    public static final String WEB_THING_URI = "webThingURI";
     private final Logger logger = LoggerFactory.getLogger(WebthingDiscoveryService.class);
-    private final DescriptionLoader descriptionLoader = new DescriptionLoader();
+    private final DescriptionLoader descriptionLoader;
     private final MDNSClient mdnsClient;
-    private final Scheduler executor;
+    private final List<Future<Set<DiscoveryResult>>> runningDiscoveryTasks = new CopyOnWriteArrayList<>();
 
     /**
      * constructor
@@ -67,11 +70,10 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
      */
     @Activate
     public WebthingDiscoveryService(@Nullable Map<String, Object> configProperties, @Reference MDNSClient mdnsClient,
-            @Reference Scheduler executor) {
+            @Reference Scheduler executor, @Reference HttpClientFactory httpClientFactory) {
         super(30);
         this.mdnsClient = mdnsClient;
-        this.executor = executor;
-
+        this.descriptionLoader = new DescriptionLoader(httpClientFactory.getCommonHttpClient());
         super.activate(configProperties);
         if (isBackgroundDiscoveryEnabled()) {
             mdnsClient.addServiceListener(MDNS_SERVICE_TYPE, this);
@@ -130,6 +132,12 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
     @Override
     protected synchronized void stopScan() {
         removeOlderResults(Instant.now().minus(Duration.ofMinutes(10)).toEpochMilli());
+
+        // stop running discovery tasks
+        for (var future : runningDiscoveryTasks) {
+            future.cancel(true);
+            runningDiscoveryTasks.remove(future);
+        }
         super.stopScan();
     }
 
@@ -143,15 +151,21 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                 : mdnsClient.list(MDNS_SERVICE_TYPE, FOREGROUND_SCAN_TIMEOUT);
         logger.debug("got {} mDNS entries", serviceInfos.length);
 
-        // create discovery task for each detected service and process these in parallel to increase total discovery
-        // speed
-        var discoveryTasks = Arrays.stream(serviceInfos).map(DiscoveryTask::new).collect(Collectors.toList());
-        try {
-            for (var future : scheduler.invokeAll(discoveryTasks, 5, TimeUnit.MINUTES)) {
+        // create discovery task for each detected service and process these in parallel to increase total
+        // discovery speed
+        for (var serviceInfo : serviceInfos) {
+            var future = scheduler.submit(new DiscoveryTask(serviceInfo));
+            runningDiscoveryTasks.add(future);
+        }
+
+        // wait until all tasks are completed
+        for (var future : runningDiscoveryTasks) {
+            try {
                 future.get(5, TimeUnit.MINUTES);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                logger.warn("discovering task {} terminated", future);
             }
-        } catch (Exception e) {
-            logger.warn("error occurred by discovering", e);
+            runningDiscoveryTasks.remove(future);
         }
     }
 
@@ -165,18 +179,19 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
         @Override
         public Set<DiscoveryResult> call() {
             var results = new HashSet<DiscoveryResult>();
-            try {
-                for (var discoveryResult : discoverWebThing(serviceInfo)) {
-                    results.add(discoveryResult);
-                    thingDiscovered(discoveryResult);
-                    logger.debug("WebThing '{}' ({}) discovered (id: {})", discoveryResult.getLabel(),
-                            discoveryResult.getProperties().get("webThingURI"),
-                            discoveryResult.getProperties().get("id"));
-                }
-            } catch (Exception e) {
-                logger.warn("error occurred by discovering {}", serviceInfo.getNiceTextString(), e);
+            for (var discoveryResult : discoverWebThing(serviceInfo)) {
+                results.add(discoveryResult);
+                thingDiscovered(discoveryResult);
+                logger.debug("WebThing '{}' (uri: {}, id: {}, schemas: {}) discovered", discoveryResult.getLabel(),
+                        discoveryResult.getProperties().get(WEB_THING_URI), discoveryResult.getProperties().get(ID),
+                        discoveryResult.getProperties().get(SCHEMAS));
             }
             return results;
+        }
+
+        @Override
+        public String toString() {
+            return "DiscoveryTask{" + "serviceInfo=" + serviceInfo + '}';
         }
     }
 
@@ -205,7 +220,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
             //
             // In the routine below the enpoint will be checked for single WebThings first, than for multiple
             // WebThings if a ingle WebTHing has not been found.
-            // Furthermore, first it will be tried to connect the endppint using https. If this fails, as fallback
+            // Furthermore, first it will be tried to connect the endpoint using https. If this fails, as fallback
             // plain http is used.
 
             // check single WebThing path via https (e.g. https://192.168.0.23:8433/)
@@ -221,14 +236,14 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                     // check multiple WebThing path via https (e.g. https://192.168.0.23:8433/0,
                     // https://192.168.0.23:8433/1,...)
                     outer: for (int i = 0; i < 50; i++) { // search 50 entries at maximum
-                        optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + i, true));
+                        optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + i + "/", true));
                         if (optionalDiscoveryResult.isPresent()) {
                             discoveryResults.add(optionalDiscoveryResult.get());
                         } else if (i == 0) {
                             // check multiple WebThing path via plain http (e.g. http://192.168.0.23:8433/0,
                             // http://192.168.0.23:8433/1,...)
                             for (int j = 0; j < 50; j++) { // search 50 entries at maximum
-                                optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + j, false));
+                                optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + j + "/", false));
                                 if (optionalDiscoveryResult.isPresent()) {
                                     discoveryResults.add(optionalDiscoveryResult.get());
                                 } else {
@@ -257,10 +272,11 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
 
             var thingUID = new ThingUID(THING_TYPE_UID, id);
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put("id", id);
+            properties.put(ID, id);
+            properties.put(SCHEMAS, description.contextKeyword);
             return Optional.of(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_UID)
-                    .withProperty("webThingURI", uri).withLabel(description.title).withProperties(properties)
-                    .withRepresentationProperty("id").build());
+                    .withProperty(WEB_THING_URI, uri).withLabel(description.title).withProperties(properties)
+                    .withRepresentationProperty(ID).build());
         } catch (IOException ioe) {
             return Optional.empty();
         }

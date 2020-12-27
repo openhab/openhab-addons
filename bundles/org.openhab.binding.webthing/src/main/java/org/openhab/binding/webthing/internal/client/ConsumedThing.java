@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
+import java.util.function.BiConsumer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
 
@@ -36,7 +38,7 @@ public interface ConsumedThing {
      * @param propertyName the property to be observed
      * @param listener the listener to call on changes
      */
-    void observeProperty(String propertyName, PropertyChangedListener listener);
+    void observeProperty(String propertyName, BiConsumer<String, Object> listener);
 
     /**
      * Writes a single Property.
@@ -55,6 +57,11 @@ public interface ConsumedThing {
      * @throws PropertyAccessException if the property can not be written
      */
     void writeProperty(String propertyName, Object newValue) throws PropertyAccessException;
+
+    /**
+     * @return true, if connection is alive
+     */
+    boolean isAlive();
 
     /**
      * closes the connection

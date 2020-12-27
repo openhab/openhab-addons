@@ -18,6 +18,7 @@ package org.openhab.binding.webthing.internal.link;
  * @author Gregor Roth - Initial contribution
  */
 public class UnknownPropertyException extends Exception {
+    private static final long serialVersionUID = -5302763943749264616L;
 
     /**
      * contructor

@@ -25,6 +25,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.webthing.internal.channel.Channels;
 import org.openhab.binding.webthing.internal.client.*;
 import org.openhab.binding.webthing.internal.link.ChannelToPropertyLink;
@@ -47,11 +49,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WebThingHandler extends BaseThingHandler implements ChannelHandler {
     private static final Duration RECONNECT_PERIOD = Duration.ofHours(23);
-    private static final int HEALTH_CHECK_PERIOD_SEC = 50;
+    private static final Duration HEALTH_CHECK_PERIOD = Duration.ofSeconds(70);
     private static final ItemChangedListener EMPTY_ITEM_CHANGED_LISTENER = (channelUID, stateCommand) -> {
     };
 
     private final Logger logger = LoggerFactory.getLogger(WebThingHandler.class);
+    private final HttpClient httpClient;
+    private final WebSocketClient webSocketClient;
     private final AtomicBoolean isActivated = new AtomicBoolean(true);
     private final Map<ChannelUID, ItemChangedListener> itemChangedListenerMap = new ConcurrentHashMap<>();
     private final AtomicReference<Optional<ConsumedThing>> webThingConnectionRef = new AtomicReference<>(
@@ -61,16 +65,22 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             Optional.empty());
     private @Nullable URI webThingURI = null;
 
-    public WebThingHandler(Thing thing) {
+    public WebThingHandler(Thing thing, HttpClient httpClient, WebSocketClient webSocketClient) {
         super(thing);
+        this.httpClient = httpClient;
+        this.webSocketClient = webSocketClient;
     }
 
-    private boolean isConnected() {
+    private boolean isOnline() {
         return getThing().getStatus() == ThingStatus.ONLINE;
     }
 
     private boolean isDisconnected() {
         return (getThing().getStatus() == ThingStatus.OFFLINE) || (getThing().getStatus() == ThingStatus.UNKNOWN);
+    }
+
+    private boolean isAlive() {
+        return webThingConnectionRef.get().map(ConsumedThing::isAlive).orElse(false);
     }
 
     @Override
@@ -90,14 +100,14 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                     logger.debug("WebThing {} connected", getWebThingLabel());
                 }
             } else {
-                logger.warn("could not initialize WebThing. URI is not set or invalid. {}",
-                        getConfigAs(WebThingConfiguration.class).webThingURI);
+                logger.warn("could not initialize WebThing. URI is not set or invalid. {}", this.webThingURI);
             }
         });
 
         // starting watchdog that checks the healthiness of the WebThing connection, periodically
-        watchdogHandle.getAndSet(Optional.of(scheduler.scheduleWithFixedDelay(new WatchdogTask(),
-                HEALTH_CHECK_PERIOD_SEC, HEALTH_CHECK_PERIOD_SEC, TimeUnit.SECONDS)))
+        watchdogHandle
+                .getAndSet(Optional.of(scheduler.scheduleWithFixedDelay(this::checkWebThingConnection,
+                        HEALTH_CHECK_PERIOD.getSeconds(), HEALTH_CHECK_PERIOD.getSeconds(), TimeUnit.SECONDS)))
                 .ifPresent(future -> future.cancel(true));
     }
 
@@ -119,7 +129,8 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             try {
                 // create the client-side WebThing representation
                 if (uri != null) {
-                    var webThing = ConsumedThingFactory.instance().create(uri, scheduler, this::onError);
+                    var webThing = ConsumedThingFactory.instance().create(webSocketClient, httpClient, uri, scheduler,
+                            this::onError);
                     this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::close);
 
                     // update the Thing structure based on the WebThing description
@@ -144,7 +155,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     }
 
     public void onError(String reason) {
-        var wasConnectedBefore = isConnected();
+        var wasConnectedBefore = isOnline();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
 
         // close the WebThing connection. If the handler is still active, the WebThing connection
@@ -152,11 +163,11 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::close);
 
         if (wasConnectedBefore) { // to reduce log messages, just log in case of connection state changed
-            logger.info("WebThing {} disconnected. {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
-                    HEALTH_CHECK_PERIOD_SEC);
+            logger.debug("WebThing {} disconnected {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
+                    HEALTH_CHECK_PERIOD.getSeconds());
         } else {
-            logger.debug("WebThing {} is offline. {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
-                    HEALTH_CHECK_PERIOD_SEC);
+            logger.debug("WebThing {} is offline {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
+                    HEALTH_CHECK_PERIOD.getSeconds());
         }
     }
 
@@ -265,29 +276,25 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     //
     /////////////
 
-    private final class WatchdogTask implements Runnable {
+    private void checkWebThingConnection() {
+        // try reconnect, if necessary
+        if (isDisconnected() || (isOnline() && !isAlive())) {
+            logger.debug("try reconnecting WebThing {}", getWebThingLabel());
+            if (tryReconnect(webThingURI)) {
+                logger.debug("WebThing {} reconnected", getWebThingLabel());
+            }
 
-        @Override
-        public void run() {
-            // try reconnect, if necessary
-            if (isDisconnected()) {
-                logger.debug("try reconnecting WebThing {}", getWebThingLabel());
+        } else {
+            // force reconnecting periodically, to fix erroneous states that occurs for unknown reasons
+            var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
+            if (isOnline() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
                 if (tryReconnect(webThingURI)) {
-                    logger.debug("WebThing {} reconnected", getWebThingLabel());
+                    logger.debug("WebThing {} reconnected. Initiated by periodic reconnect", getWebThingLabel());
+                } else {
+                    logger.debug("could not reconnect WebThing {} (periodic reconnect failed). Next trial in {} sec",
+                            getWebThingLabel(), HEALTH_CHECK_PERIOD.getSeconds());
                 }
-            } else {
-                // force reconnecting periodically, to fix erroneous states that occurs for unknown reasons
-                var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
-                if (isConnected() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
-                    if (tryReconnect(webThingURI)) {
-                        logger.debug("WebThing {} reconnected. (periodical reconnect each {} h)", getWebThingLabel(),
-                                RECONNECT_PERIOD.toHours());
-                    } else {
-                        logger.debug("could not reconnect WebThing {} (periodical reconnect). Next trial in {} sec",
-                                getWebThingLabel(), HEALTH_CHECK_PERIOD_SEC);
-                    }
 
-                }
             }
         }
     }

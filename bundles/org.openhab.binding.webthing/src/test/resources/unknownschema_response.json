@@ -1,7 +1,7 @@
 {
   "id":"urn:dev:ops:anwing-TB6612FNG",
   "title":"Awning lane1",
-  "@context":"https://webthings.io/schemas",
+  "@context":"https://www.w3.org/2019/wot/td/v1",
   "properties":{
     "target_position":{
       "@type":"LevelProperty",

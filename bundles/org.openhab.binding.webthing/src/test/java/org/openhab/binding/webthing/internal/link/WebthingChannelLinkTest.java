@@ -12,20 +12,20 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.channel.Channels;
+import org.openhab.binding.webthing.internal.client.Mocks;
 import org.openhab.binding.webthing.internal.client.WebthingTest;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
 import org.openhab.core.library.types.*;
@@ -34,7 +34,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
-import com.pgssoft.httpclient.HttpClientMock;
 
 /**
  * Mapping test.
@@ -45,23 +44,22 @@ import com.pgssoft.httpclient.HttpClientMock;
  * @author Gregor Roth - Initial contribution
  */
 public class WebthingChannelLinkTest {
+    private final Gson gson = new Gson();
 
-    @SuppressWarnings("null")
     @Test
     public void testChannelToProperty() throws Exception {
-        HttpClientMock httpClientMock = new HttpClientMock();
-        httpClientMock.onGet("http://example.org:8090/0").doReturn(load("/awning_response.json"));
-        httpClientMock.onGet("http://example.org:8090/0/properties/target_position")
-                .doReturn(load("/awning_property.json"));
-        httpClientMock.onPut("http://example.org:8090/0/properties/target_position")
-                .withBody(is("{\"target_position\":10}")).doReturnStatus(200);
-        httpClientMock.onPut("http://example.org:8090/0/properties/target_position")
-                .withBody(is("{\"target_position\":130}")).doReturnStatus(500);
+        var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
+        var request = Mocks.mockRequest(null, load("/awning_response.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090/0"))).thenReturn(request);
+
+        var request2 = Mocks.mockRequest("{\"target_position\":10}", load("/awning_property.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090/0/properties/target_position")))
+                .thenReturn(request2);
 
         var thingUID = new ThingUID("webthing", "anwing");
         var channelUID = Channels.createChannelUID(thingUID, "target_position");
 
-        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClientMock);
+        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClient);
         var channel = Channels.createChannel(thingUID, "target_position",
                 Objects.requireNonNull(webthing.getPropertyDescription("target_position")));
 
@@ -69,25 +67,47 @@ public class WebthingChannelLinkTest {
         ChannelToPropertyLink.establish(testWebthingThingHandler, channel, webthing, "target_position");
 
         testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, new DecimalType(10));
+    }
+
+    @Test
+    public void testChannelToPropertyServerError() throws Exception {
+        var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
+        var request = Mocks.mockRequest(null, load("/awning_response.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090/0"))).thenReturn(request);
+
+        var request2 = Mocks.mockRequest("{\"target_position\":130}", load("/awning_property.json"), 200, 500);
+        when(httpClient.newRequest(URI.create("http://example.org:8090/0/properties/target_position")))
+                .thenReturn(request2);
+
+        var thingUID = new ThingUID("webthing", "anwing");
+        var channelUID = Channels.createChannelUID(thingUID, "target_position");
+
+        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClient);
+        var channel = Channels.createChannel(thingUID, "target_position",
+                Objects.requireNonNull(webthing.getPropertyDescription("target_position")));
+
+        var testWebthingThingHandler = new TestWebthingThingHandler();
+        ChannelToPropertyLink.establish(testWebthingThingHandler, channel, webthing, "target_position");
 
         testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, new DecimalType(130));
     }
 
     @Test
     public void testPropertyToChannel() throws Exception {
-        HttpClientMock httpClientMock = new HttpClientMock();
-        httpClientMock.onGet("http://example.org:8090/0").doReturn(load("/awning_response.json"));
-        httpClientMock.onGet("http://example.org:8090/0/properties/target_position")
-                .doReturn(load("/awning_property.json"));
-        httpClientMock.onPut("http://example.org:8090/0/properties/target_position")
-                .withBody(is("{\"target_position\":10}")).doReturnStatus(200);
+        var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
+        var request = Mocks.mockRequest(null, load("/awning_response.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090/0"))).thenReturn(request);
+
+        var request2 = Mocks.mockRequest("{\"target_position\":10}", load("/awning_property.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090/0/properties/target_position")))
+                .thenReturn(request2);
 
         var thingUID = new ThingUID("webthing", "anwing");
         var channelUID = Channels.createChannelUID(thingUID, "target_position");
 
         var errorHandler = new WebthingTest.ErrorHandler();
         var websocketConnectionFactory = new WebthingTest.TestWebsocketConnectionFactory();
-        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClientMock, errorHandler,
+        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClient, errorHandler,
                 websocketConnectionFactory);
         var channel = Channels.createChannel(thingUID, "target_position",
                 Objects.requireNonNull(webthing.getPropertyDescription("target_position")));
@@ -103,20 +123,8 @@ public class WebthingChannelLinkTest {
         assertEquals(new DecimalType(77), testWebthingThingHandler.itemState.get(channelUID));
     }
 
-    private static final class TestConsumer implements BiConsumer<ChannelUID, Command> {
-        public final AtomicReference<ChannelUID> channelUidRef = new AtomicReference<>();
-        public final AtomicReference<Command> commandRef = new AtomicReference<>();
-
-        @Override
-        public void accept(ChannelUID channelUID, Command command) {
-            channelUidRef.set(channelUID);
-            commandRef.set(command);
-        }
-    }
-
     @Test
     public void testDataTypeMapping() throws Exception {
-
         performDataTypeMappingTest("level_prop", 56.5, new DecimalType(56.5), 3.5, new DecimalType(3.5));
         performDataTypeMappingTest("level_unit_prop", 10, new PercentType(10), 90, new PercentType(90));
         performDataTypeMappingTest("thermo_prop", "off", new StringType("off"), "auto", new StringType("auto"));
@@ -141,20 +149,21 @@ public class WebthingChannelLinkTest {
 
     private void performDataTypeMappingTest(String propertyName, Object initialValue, State initialState,
             Object updatedValue, State updatedState) throws Exception {
-        HttpClientMock httpClientMock = new HttpClientMock();
-        httpClientMock.onGet("http://example.org:8090/").doReturn(load("/datatypes_test_response.json"));
-        httpClientMock.onGet("http://example.org:8090/properties/" + propertyName)
-                .doReturn(new Gson().toJson(Map.of(propertyName, initialValue)));
-        var json = new Gson().toJson(Map.of(propertyName, updatedValue));
-        httpClientMock.onPut("http://example.org:8090/properties/" + propertyName).withBody(is(json))
-                .doReturnStatus(200);
+        var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
+        var request = Mocks.mockRequest(null, load("/datatypes_test_response.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090/"))).thenReturn(request);
+
+        var request2 = Mocks.mockRequest(gson.toJson(Map.of(propertyName, updatedValue)),
+                gson.toJson(Map.of(propertyName, initialValue)));
+        when(httpClient.newRequest(URI.create("http://example.org:8090/properties/" + propertyName)))
+                .thenReturn(request2);
 
         var thingUID = new ThingUID("webthing", "test");
         var channelUID = Channels.createChannelUID(thingUID, propertyName);
 
         var errorHandler = new WebthingTest.ErrorHandler();
         var websocketConnectionFactory = new WebthingTest.TestWebsocketConnectionFactory();
-        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/", httpClientMock, errorHandler,
+        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/", httpClient, errorHandler,
                 websocketConnectionFactory);
         var channel = Channels.createChannel(thingUID, propertyName,
                 Objects.requireNonNull(webthing.getPropertyDescription(propertyName)));

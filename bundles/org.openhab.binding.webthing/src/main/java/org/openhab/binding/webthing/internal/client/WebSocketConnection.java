@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
+import java.util.function.BiConsumer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -29,10 +31,15 @@ interface WebSocketConnection {
      * @param propertyName the property to be observed
      * @param listener the listener to call on changes
      */
-    void observeProperty(String propertyName, PropertyChangedListener listener);
+    void observeProperty(String propertyName, BiConsumer<String, Object> listener);
 
     /**
      * closes the WebSocket connection
      */
     void close();
+
+    /**
+     * @return true, if connection is alive
+     */
+    boolean isAlive();
 }
