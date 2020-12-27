@@ -218,18 +218,18 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                     }
                     if (source != null) {
                         try {
-                            logger.debug("opening a new connection...");
+                            logger.debug("Opening a new connection...");
                             connection = source.connectLive(0, 0x0020);
                             tcpConnection = connection;
                         } catch (Exception e) {
                             // this generic Exception catch is required, as TcpDataSource.connectLive throws this
                             // generic
                             // type
-                            logger.debug("... failed");
+                            logger.debug("... failed.");
                             isConnected = false;
                             unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
                         }
-                        logger.debug("... succeeded");
+                        logger.debug("... succeeded.");
 
                         if (connection != null) {
                             try {
@@ -282,11 +282,11 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     /* check if the given value is a special one like 888.8 or 999.9 for shortcut or open load on a sensor wire */
     private boolean isSpecialValue(Double dd) {
-        if ((Math.abs(dd - 888.8) < 1) || (Math.abs(dd - (-888.8)) < 1)) {
+        if ((Math.abs(dd - 888.8) < 0.1) || (Math.abs(dd - (-888.8)) < 0.1)) {
             /* value out of range */
             return true;
         }
-        if (Math.abs(dd - 999.9) < 1) {
+        if (Math.abs(dd - 999.9) < 0.1) {
             /* sensor not reachable */
             return true;
         }
@@ -346,20 +346,22 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private class ResolConnectorAdapter extends ConnectionAdapter {
         @Override
         public void connectionStateChanged(@Nullable Connection connection) {
-            if (connection == null) {
-                isConnected = false;
-            } else {
-                ConnectionState connState = connection.getConnectionState();
-                isConnected = ConnectionState.CONNECTED.equals(connState);
-                logger.trace("Connection state changed to: {}", connState.toString());
-
-                if (isConnected) {
-                    unconnectedReason = "";
+            synchronized (ResolBridgeHandler.this) {
+                if (connection == null) {
+                    isConnected = false;
                 } else {
-                    unconnectedReason = "TCP connection failed: " + connState.toString();
+                    ConnectionState connState = connection.getConnectionState();
+                    isConnected = ConnectionState.CONNECTED.equals(connState);
+                    logger.info("Connection state changed to: {}", connState.toString());
+
+                    if (isConnected) {
+                        unconnectedReason = "";
+                    } else {
+                        unconnectedReason = "TCP connection failed: " + connState.toString();
+                    }
                 }
+                updateStatus();
             }
-            updateStatus();
         }
 
         @Override

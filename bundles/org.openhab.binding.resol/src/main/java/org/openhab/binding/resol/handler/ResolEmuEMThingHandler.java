@@ -194,7 +194,6 @@ public class ResolEmuEMThingHandler extends BaseThingHandler implements Property
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("command " + command + " on " + channelUID);
 
         String chID = channelUID.getId();
         boolean update = false;
