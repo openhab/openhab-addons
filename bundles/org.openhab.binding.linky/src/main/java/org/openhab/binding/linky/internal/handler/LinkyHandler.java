@@ -130,6 +130,12 @@ public class LinkyHandler extends BaseThingHandler {
                 Aggregate days = consumption.aggregats.days;
                 Aggregate months = consumption.aggregats.months;
                 if (logger.isDebugEnabled()) {
+                    logger.debug("Day {} {} value {}",
+                            days.periodes.get(days.datas.size() - 1).dateDebut
+                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            days.periodes.get(days.datas.size() - 1).dateFin.format(
+                                    DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            days.datas.get(days.datas.size() - 1));
                     for (int i = 0; i < months.datas.size(); i++) {
                         logger.debug("Month {} {} value {}",
                                 months.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
@@ -152,6 +158,12 @@ public class LinkyHandler extends BaseThingHandler {
                 Aggregate days = consumption.aggregats.days;
                 Aggregate years = consumption.aggregats.years;
                 if (logger.isDebugEnabled()) {
+                    logger.debug("Day {} {} value {}",
+                            days.periodes.get(days.datas.size() - 1).dateDebut
+                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            days.periodes.get(days.datas.size() - 1).dateFin.format(
+                                    DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            days.datas.get(days.datas.size() - 1));
                     for (int i = 0; i < years.datas.size(); i++) {
                         logger.debug("Year {} {} value {}",
                                 years.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
