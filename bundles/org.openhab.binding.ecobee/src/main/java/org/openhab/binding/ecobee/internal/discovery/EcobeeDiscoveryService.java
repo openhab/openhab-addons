@@ -92,7 +92,7 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
         logger.debug("EcobeeDiscovery: Starting background discovery job");
         Future<?> localDiscoveryJob = discoveryJob;
         if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::discover, DISCOVERY_INITIAL_DELAY_SECONDS,
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundDiscover, DISCOVERY_INITIAL_DELAY_SECONDS,
                     DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
     }
@@ -113,10 +113,14 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
         discover();
     }
 
-    private void discover() {
+    private void backgroundDiscover() {
         if (!bridgeHandler.isBackgroundDiscoveryEnabled()) {
             return;
         }
+        discover();
+    }
+
+    private void discover() {
         if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("EcobeeDiscovery: Skipping discovery because Account Bridge thing is not ONLINE");
             return;
