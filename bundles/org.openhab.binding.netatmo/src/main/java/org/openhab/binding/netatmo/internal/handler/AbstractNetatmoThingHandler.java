@@ -74,7 +74,6 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
 
     protected final TimeZoneProvider timeZoneProvider;
-    protected final MeasurableChannels measurableChannels = new MeasurableChannels();
     private @Nullable RadioHelper radioHelper;
     private @Nullable BatteryHelper batteryHelper;
     protected @Nullable Configuration config;
@@ -131,9 +130,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         if (result.isPresent()) {
             return result.get();
         }
-        result = measurableChannels.getNAThingProperty(channelId);
-
-        return result.orElse(UnDefType.UNDEF);
+        return UnDefType.UNDEF;
     }
 
     protected void updateChannels() {
@@ -171,18 +168,6 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
      * @param channelId channel id
      */
     protected void triggerChannelIfRequired(String channelId) {
-    }
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-        measurableChannels.addChannel(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        super.channelUnlinked(channelUID);
-        measurableChannels.removeChannel(channelUID);
     }
 
     @Override
