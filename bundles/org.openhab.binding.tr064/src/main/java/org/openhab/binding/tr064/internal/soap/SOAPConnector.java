@@ -153,7 +153,7 @@ public class SOAPConnector {
                     String soapReason = getSOAPElement(soapMessage, "errorDescription").orElse("unknown");
                     String error = String.format("HTTP-Response-Code %d (%s), SOAP-Fault: %s (%s)",
                             response.getStatus(), response.getReason(), soapError, soapReason);
-                    throw new Tr064CommunicationException(error);
+                    throw new Tr064CommunicationException(error, response.getStatus(), soapError);
                 }
                 return soapMessage;
             }
@@ -248,7 +248,17 @@ public class SOAPConnector {
                     .orElseThrow(() -> new Tr064CommunicationException("failed to transform '"
                             + channelConfig.getChannelTypeDescription().getGetAction().getArgument() + "'"));
         } catch (Tr064CommunicationException e) {
-            logger.info("Failed to get {}: {}", channelConfig, e.getMessage());
+            if (e.getHttpError() == 500) {
+                switch (e.getSoapError()) {
+                    case "714":
+                        // NoSuchEntryInArray usually is an unknown entry in the MAC list
+                        logger.debug("Failed to get {}: {}", channelConfig, e.getMessage());
+                        return UnDefType.UNDEF;
+                    default:
+                }
+            }
+            // all other cases are an error
+            logger.warn("Failed to get {}: {}", channelConfig, e.getMessage());
             return UnDefType.UNDEF;
         }
     }
