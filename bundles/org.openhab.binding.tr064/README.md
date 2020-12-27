@@ -136,6 +136,7 @@ The phonebooks of a `fritzbox` thing can be used to lookup a number from rules v
 `String name = phonebookLookup(String number, String phonebook, int matchCount)`
 
 `phonebook` and `matchCount` are optional parameters.
+You can omit one or both of these parameters.
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
 A `matchCount` of `0` is considered as "match everything" and is used as default if no other value is given.
 The return value is either the phonebook entry (if found) or the input number.
@@ -144,5 +145,5 @@ Example (use all phonebooks, match 5 digits from right):
 
 ```
 val tr064Actions = getActions("tr064","tr064:fritzbox:2a28aee1ee")
-val result = tr064Actions.phonebookLookup("49157712341234", null, 5)
+val result = tr064Actions.phonebookLookup("49157712341234", 5)
 ```
