@@ -1,7 +1,6 @@
 {
   "id":"urn:dev:ops:eltakowsSensor-1",
   "title":"Wind",
-  "@context":"https://iot.mozilla.org/schemas/",
   "properties":{
     "windspeed":{
       "@type":"LevelProperty",

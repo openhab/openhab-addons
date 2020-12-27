@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
+import java.util.function.BiConsumer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
-import org.openhab.binding.webthing.internal.client.PropertyChangedListener;
 import org.openhab.core.thing.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
-public class PropertyToChannelLink implements PropertyChangedListener {
+public class PropertyToChannelLink implements BiConsumer<String, Object> {
     private final Logger logger = LoggerFactory.getLogger(PropertyToChannelLink.class);
     private final ChannelHandler channelHandler;
     private final Channel channel;
@@ -66,15 +67,10 @@ public class PropertyToChannelLink implements PropertyChangedListener {
     }
 
     @Override
-    public void onPropertyValueChanged(String propertyName, Object value) {
-        try {
-            var stateCommand = typeConverter.toStateCommand(value);
-            channelHandler.updateItemState(channel.getUID(), stateCommand);
-            logger.debug("channel {} updated with {} ({})", channel.getUID().getAsString(), value,
-                    channel.getAcceptedItemType());
-        } catch (Exception e) {
-            logger.warn("updating channel {} with {} ({}) failed", channel.getUID().getAsString(),
-                    channel.getAcceptedItemType(), value, e);
-        }
+    public void accept(String propertyName, Object value) {
+        var stateCommand = typeConverter.toStateCommand(value);
+        channelHandler.updateItemState(channel.getUID(), stateCommand);
+        logger.debug("channel {} updated with {} ({})", channel.getUID().getAsString(), value,
+                channel.getAcceptedItemType());
     }
 }
