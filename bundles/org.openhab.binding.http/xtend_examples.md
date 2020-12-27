@@ -53,6 +53,8 @@ Thing http:url:feinstaub "Feinstaub" [ baseURL="http://feinstaubsensor-14255834/
 
 ### airpressure.js (transformation)
 
+I have a BME2080 sensor connected. The Humidity must be diveded by 100 to show hPa.
+
 ```
 (function(x) {
     var json = JSON.parse(x);
