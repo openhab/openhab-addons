@@ -18,16 +18,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -82,19 +76,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TeleinfoInputStream extends InputStream {
 
-    public static final long DEFAULT_TIMEOUT_NEXT_HEADER_FRAME_US = 33400;
-    public static final long DEFAULT_TIMEOUT_READING_FRAME_US = 33400;
-
     private final Logger logger = LoggerFactory.getLogger(TeleinfoInputStream.class);
     private static final Map<Class<?>, Converter> LABEL_VALUE_CONVERTERS;
 
     private BufferedReader bufferedReader;
     private @Nullable String groupLine;
-    private ExecutorService executorService;
-    private long waitNextHeaderFrameTimeoutInUs;
-    private long readingFrameTimeoutInUs;
     private boolean autoRepairInvalidADPSgroupLine;
-    private boolean useOwnScheduler;
 
     static {
         LABEL_VALUE_CONVERTERS = new HashMap<>();
@@ -107,38 +94,16 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     public TeleinfoInputStream(final InputStream teleinfoInputStream) {
-        this(teleinfoInputStream, DEFAULT_TIMEOUT_NEXT_HEADER_FRAME_US, DEFAULT_TIMEOUT_READING_FRAME_US, false);
+        this(teleinfoInputStream, false);
     }
 
-    public TeleinfoInputStream(final InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine) {
-        this(teleinfoInputStream, DEFAULT_TIMEOUT_NEXT_HEADER_FRAME_US, DEFAULT_TIMEOUT_READING_FRAME_US,
-                autoRepairInvalidADPSgroupLine);
-    }
-
-    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
-            long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine) {
-        this(teleinfoInputStream, waitNextHeaderFrameTimeoutInUs, readingFrameTimeoutInUs,
-                autoRepairInvalidADPSgroupLine, null);
-    }
-
-    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
-            long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine,
-            @Nullable ExecutorService executorService) {
+    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream,
+            boolean autoRepairInvalidADPSgroupLine) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
 
-        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInUs;
-        this.readingFrameTimeoutInUs = readingFrameTimeoutInUs;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
-        if (executorService == null) {
-            this.executorService = Executors.newFixedThreadPool(2);
-            this.useOwnScheduler = true;
-        } else {
-            this.executorService = executorService;
-            this.useOwnScheduler = false;
-        }
-
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
 
         groupLine = null;
@@ -148,9 +113,6 @@ public class TeleinfoInputStream extends InputStream {
     public void close() throws IOException {
         logger.debug("close() [start]");
         bufferedReader.close();
-        if (useOwnScheduler) {
-            executorService.shutdownNow();
-        }
         super.close();
         logger.debug("close() [end]");
     }
@@ -164,137 +126,82 @@ public class TeleinfoInputStream extends InputStream {
      * @throws InvalidFrameException
      * @throws Exception
      */
-    public synchronized @Nullable Frame readNextFrame() throws TimeoutException, InvalidFrameException, IOException {
+    public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, IOException {
         // seek the next header frame
-        Future<@Nullable Void> seekNextHeaderFrameTask = executorService.submit(() -> {
-            while (!isHeaderFrame(groupLine)) {
-                groupLine = bufferedReader.readLine();
-                if (logger.isTraceEnabled()) {
-                    logger.trace("groupLine = {}", groupLine);
-                }
-                if (groupLine == null) { // end of stream
-                    logger.trace("end of stream reached !");
-                    return null;
-                }
+        while (!isHeaderFrame(groupLine)) {
+            groupLine = bufferedReader.readLine();
+            if (logger.isTraceEnabled()) {
+                logger.trace("groupLine = {}", groupLine);
             }
-
-            logger.trace("header frame found !");
-            return null;
-        });
-        try {
-            logger.debug("seeking the next header frame...");
-            logger.trace("waitNextHeaderFrameTimeoutInUs = {}", waitNextHeaderFrameTimeoutInUs);
-            seekNextHeaderFrameTask.get(waitNextHeaderFrameTimeoutInUs, TimeUnit.MICROSECONDS);
-
             if (groupLine == null) { // end of stream
+                logger.trace("end of stream reached !");
                 return null;
             }
-        } catch (InterruptedException e) {
-            logger.debug("Got interrupted exception", e);
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            rethrowTaskExecutionException(e);
         }
 
-        Future<Map<Label, Object>> nextFrameFuture = executorService.submit(new Callable<Map<Label, Object>>() {
-            @Override
-            public Map<Label, Object> call() throws Exception {
-                // read label values
-                Map<Label, Object> frameValues = new HashMap<>();
-                while ((groupLine = bufferedReader.readLine()) != null && !isHeaderFrame(groupLine)) {
-                    logger.trace("groupLine = {}", groupLine);
-                    String groupLineRef = groupLine;
-                    if (groupLineRef != null) {
-                        String[] groupLineTokens = groupLineRef.split("\\s");
-                        if (groupLineTokens.length != 2 && groupLineTokens.length != 3) {
-                            final String error = String.format("The groupLine '%1$s' is incomplete", groupLineRef);
-                            throw new InvalidFrameException(error);
-                        }
-                        String labelStr = groupLineTokens[0];
-                        String valueString = groupLineTokens[1];
+        Map<Label, Object> frameValues = new EnumMap<>(Label.class);
+        while ((groupLine = bufferedReader.readLine()) != null && !isHeaderFrame(groupLine)) {
+            logger.trace("groupLine = {}", groupLine);
+            String groupLineRef = groupLine;
+            if (groupLineRef != null) {
+                String[] groupLineTokens = groupLineRef.split("\\s");
+                if (groupLineTokens.length != 2 && groupLineTokens.length != 3) {
+                    final String error = String.format("The groupLine '%1$s' is incomplete", groupLineRef);
+                    throw new InvalidFrameException(error);
+                }
+                String labelStr = groupLineTokens[0];
+                String valueString = groupLineTokens[1];
 
-                        // verify integrity (through checksum)
-                        char checksum = (groupLineTokens.length == 3 ? groupLineTokens[2].charAt(0) : ' ');
-                        char computedChecksum = FrameUtil.computeGroupLineChecksum(labelStr, valueString);
-                        if (computedChecksum != checksum) {
-                            logger.trace("computedChecksum = {}", computedChecksum);
-                            logger.trace("checksum = {}", checksum);
-                            final String error = String.format(
-                                    "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
-                                    groupLineRef, checksum, computedChecksum);
-                            throw new InvalidFrameException(error);
-                        }
+                // verify integrity (through checksum)
+                char checksum = (groupLineTokens.length == 3 ? groupLineTokens[2].charAt(0) : ' ');
+                char computedChecksum = FrameUtil.computeGroupLineChecksum(labelStr, valueString);
+                if (computedChecksum != checksum) {
+                    logger.trace("computedChecksum = {}", computedChecksum);
+                    logger.trace("checksum = {}", checksum);
+                    final String error = String.format(
+                            "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
+                            groupLineRef, checksum, computedChecksum);
+                    throw new InvalidFrameException(error);
+                }
 
-                        Label label;
-                        try {
-                            label = Label.valueOf(labelStr);
-                        } catch (IllegalArgumentException e) {
-                            if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
-                                // in this hardware issue, label variable is composed by label name and value. E.g:
-                                // ADPS032
-                                logger.warn("Try to auto repair malformed ADPS groupLine '{}'", labelStr);
-                                label = Label.ADPS;
-                                valueString = labelStr.substring(Label.ADPS.name().length());
-                            } else {
-                                final String error = String.format("The label '%s' is unknown", labelStr);
-                                throw new InvalidFrameException(error);
-                            }
-                        }
-
-                        Class<?> labelType = label.getType();
-                        Converter converter = LABEL_VALUE_CONVERTERS.get(labelType);
-                        try {
-                            Object value = converter.convert(valueString);
-                            if (value != null) {
-                                frameValues.put(label, value);
-                            }
-                        } catch (ConversionException e) {
-                            final String error = String.format("An error occurred during '%s' value conversion",
-                                    valueString);
-                            throw new InvalidFrameException(error, e);
-                        }
+                Label label;
+                try {
+                    label = Label.valueOf(labelStr);
+                } catch (IllegalArgumentException e) {
+                    if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
+                        // in this hardware issue, label variable is composed by label name and value. E.g:
+                        // ADPS032
+                        logger.warn("Try to auto repair malformed ADPS groupLine '{}'", labelStr);
+                        label = Label.ADPS;
+                        valueString = labelStr.substring(Label.ADPS.name().length());
+                    } else {
+                        final String error = String.format("The label '%s' is unknown", labelStr);
+                        throw new InvalidFrameException(error);
                     }
                 }
 
-                return frameValues;
+                Class<?> labelType = label.getType();
+                Converter converter = LABEL_VALUE_CONVERTERS.get(labelType);
+                try {
+                    if (converter != null) {
+                        Object value = converter.convert(valueString);
+                        if (value != null) {
+                            frameValues.put(label, value);
+                        }
+                    }
+                } catch (ConversionException e) {
+                    final String error = String.format("An error occurred during '%s' value conversion", valueString);
+                    throw new InvalidFrameException(error, e);
+                }
             }
-        });
-
-        try {
-            logger.debug("reading data frame...");
-            logger.trace("readingFrameTimeoutInUs = {}", readingFrameTimeoutInUs);
-            Map<Label, Object> frameValues = nextFrameFuture.get(readingFrameTimeoutInUs, TimeUnit.MICROSECONDS);
-
-            // build the frame from map values
-            final Frame frame = buildFrame(frameValues);
-            frame.setTimestamp(LocalDate.now());
-            frame.setId(UUID.randomUUID());
-
-            return frame;
-        } catch (InterruptedException e) {
-            logger.debug("Got interrupted exception", e);
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException(e);
-        } catch (ExecutionException e) {
-            rethrowTaskExecutionException(e);
         }
-        return null;
-    }
 
-    public long getWaitNextHeaderFrameTimeoutInUs() {
-        return waitNextHeaderFrameTimeoutInUs;
-    }
+        // build the frame from map values
+        final Frame frame = buildFrame(frameValues);
+        frame.setTimestamp(LocalDate.now());
+        frame.setId(UUID.randomUUID());
 
-    public void setWaitNextHeaderFrameTimeoutInUs(long waitNextHeaderFrameTimeoutInUs) {
-        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInUs;
-    }
-
-    public long getReadingFrameTimeoutInUs() {
-        return readingFrameTimeoutInUs;
-    }
-
-    public void setReadingFrameTimeoutInUs(long readingFrameTimeoutInUs) {
-        this.readingFrameTimeoutInUs = readingFrameTimeoutInUs;
+        return frame;
     }
 
     public boolean isAutoRepairInvalidADPSgroupLine() {
@@ -672,19 +579,5 @@ public class TeleinfoInputStream extends InputStream {
 
     private String computeProgrammeCircuitBinaryValue(char value) {
         return String.format("%8s", Integer.toBinaryString(value)).replace(' ', '0');
-    }
-
-    private void rethrowTaskExecutionException(ExecutionException e)
-            throws InvalidFrameException, IOException, TimeoutException {
-        Throwable cause = e.getCause();
-        if (cause instanceof InvalidFrameException) {
-            throw (InvalidFrameException) cause;
-        } else if (cause instanceof IOException) {
-            throw (IOException) cause;
-        } else if (cause instanceof TimeoutException) {
-            throw (TimeoutException) cause;
-        } else {
-            throw new IllegalStateException(e);
-        }
     }
 }

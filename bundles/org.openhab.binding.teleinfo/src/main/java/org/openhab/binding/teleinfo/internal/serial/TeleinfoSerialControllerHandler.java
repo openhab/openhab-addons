@@ -161,7 +161,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             }
             logger.debug("Starting receive thread");
             TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this,
-                    config.autoRepairInvalidADPSgroupLine, scheduler);
+                    config.autoRepairInvalidADPSgroupLine);
             this.receiveThread = receiveThread;
             receiveThread.start();
 
