@@ -48,7 +48,7 @@ public class Destination {
             }
         }
         if (buf.length() == 0) {
-            return Converter.toTitleCase(UNKNOWN);
+            return UNKNOWN;
         } else {
             return Converter.toTitleCase(buf.toString());
         }
@@ -56,13 +56,5 @@ public class Destination {
 
     public String getCoordinates() {
         return new StringBuilder().append(lat).append(Constants.COMMA).append(lon).toString();
-    }
-
-    public static Destination getUndefined() {
-        Destination dest = new Destination();
-        dest.lat = -1;
-        dest.lon = -1;
-        dest.city = "Undefined";
-        return dest;
     }
 }

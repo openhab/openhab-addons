@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="remote-command-channel">
 		<item-type>String</item-type>
-		<label>Remote Command Execution</label>
+		<label>Remote Command</label>
 		<command>
 			<options>
 				<option value="light">Flash Lights</option>

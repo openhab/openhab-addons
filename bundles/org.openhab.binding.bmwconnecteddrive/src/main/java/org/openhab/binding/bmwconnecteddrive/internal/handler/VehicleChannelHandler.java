@@ -289,8 +289,8 @@ public class VehicleChannelHandler extends BaseThingHandler {
         if (ccl.size() == 0) {
             // No Check Control available - show not active
             CCMMessage ccm = new CCMMessage();
-            ccm.ccmDescriptionLong = Constants.NOT_ACTIVE;
-            ccm.ccmDescriptionShort = Constants.NOT_ACTIVE;
+            ccm.ccmDescriptionLong = Constants.NO_ENTRIES;
+            ccm.ccmDescriptionShort = Constants.NO_ENTRIES;
             ccm.ccmId = -1;
             ccm.ccmMileage = -1;
             ccl.add(ccm);
@@ -306,7 +306,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 isSelectedElementIn = true;
             }
         }
-        optionProvider.setStateOptions(checkControlName, options);
+        setOptions(checkControlName, options);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
@@ -335,7 +335,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         // if list is empty add "undefined" element
         if (sl.size() == 0) {
             CBSMessage cbsm = new CBSMessage();
-            cbsm.cbsType = Constants.NO_SERVICES;
+            cbsm.cbsType = Constants.NO_ENTRIES;
             sl.add(cbsm);
         }
 
@@ -349,7 +349,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 isSelectedElementIn = true;
             }
         }
-        optionProvider.setStateOptions(serviceName, options);
+        setOptions(serviceName, options);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
@@ -378,7 +378,11 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected void updateDestinations(List<Destination> dl) {
         // if list is empty add "undefined" element
         if (dl.size() == 0) {
-            dl.add(Destination.getUndefined());
+            Destination dest = new Destination();
+            dest.city = Constants.NO_ENTRIES;
+            dest.lat = -1;
+            dest.lon = -1;
+            dl.add(dest);
         }
 
         // add all elements to options
@@ -391,7 +395,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 isSelectedElementIn = true;
             }
         }
-        optionProvider.setStateOptions(destinationName, options);
+        setOptions(destinationName, options);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
@@ -410,6 +414,10 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 return;
             }
         });
+    }
+
+    private void setOptions(ChannelUID cuid, List<StateOption> options) {
+        optionProvider.setStateOptions(cuid, options);
     }
 
     protected void updateAllTrips(AllTrips allTrips) {
@@ -466,21 +474,21 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateDoors(Doors doorState) {
-        updateState(doorDriverFront, StringType.valueOf(doorState.doorDriverFront));
-        updateState(doorDriverRear, StringType.valueOf(doorState.doorDriverRear));
-        updateState(doorPassengerFront, StringType.valueOf(doorState.doorPassengerFront));
-        updateState(doorPassengerRear, StringType.valueOf(doorState.doorPassengerRear));
-        updateState(doorTrunk, StringType.valueOf(doorState.trunk));
-        updateState(doorHood, StringType.valueOf(doorState.hood));
+        updateState(doorDriverFront, StringType.valueOf(Converter.toTitleCase(doorState.doorDriverFront)));
+        updateState(doorDriverRear, StringType.valueOf(Converter.toTitleCase(doorState.doorDriverRear)));
+        updateState(doorPassengerFront, StringType.valueOf(Converter.toTitleCase(doorState.doorPassengerFront)));
+        updateState(doorPassengerRear, StringType.valueOf(Converter.toTitleCase(doorState.doorPassengerRear)));
+        updateState(doorTrunk, StringType.valueOf(Converter.toTitleCase(doorState.trunk)));
+        updateState(doorHood, StringType.valueOf(Converter.toTitleCase(doorState.hood)));
     }
 
     protected void updateWindows(Windows windowState) {
-        updateState(windowDriverFront, StringType.valueOf(windowState.windowDriverFront));
-        updateState(windowDriverRear, StringType.valueOf(windowState.windowDriverRear));
-        updateState(windowPassengerFront, StringType.valueOf(windowState.windowPassengerFront));
-        updateState(windowPassengerRear, StringType.valueOf(windowState.windowPassengerRear));
-        updateState(windowRear, StringType.valueOf(windowState.rearWindow));
-        updateState(windowSunroof, StringType.valueOf(windowState.sunroof));
+        updateState(windowDriverFront, StringType.valueOf(Converter.toTitleCase(windowState.windowDriverFront)));
+        updateState(windowDriverRear, StringType.valueOf(Converter.toTitleCase(windowState.windowDriverRear)));
+        updateState(windowPassengerFront, StringType.valueOf(Converter.toTitleCase(windowState.windowPassengerFront)));
+        updateState(windowPassengerRear, StringType.valueOf(Converter.toTitleCase(windowState.windowPassengerRear)));
+        updateState(windowRear, StringType.valueOf(Converter.toTitleCase(windowState.rearWindow)));
+        updateState(windowSunroof, StringType.valueOf(Converter.toTitleCase(windowState.sunroof)));
     }
 
     protected void updatePosition(Position pos) {
