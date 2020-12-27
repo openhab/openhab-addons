@@ -23,7 +23,6 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Bernd Weymann - Initial contribution
  */
-@SuppressWarnings("serial")
 @NonNullByDefault
 public class ConnectedDriveConstants {
 

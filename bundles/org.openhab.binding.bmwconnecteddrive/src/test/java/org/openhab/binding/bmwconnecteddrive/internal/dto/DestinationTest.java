@@ -31,6 +31,7 @@ import com.google.gson.Gson;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class DestinationTest {
     private final Logger logger = LoggerFactory.getLogger(DestinationTest.class);
     private static final Gson GSON = new Gson();

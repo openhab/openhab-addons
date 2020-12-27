@@ -26,8 +26,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ErrorResponseTest} is responsible for handling commands, which are
@@ -36,9 +34,8 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class ErrorResponseTest {
-    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
     @Nullable

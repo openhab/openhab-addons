@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.discovery.VehicleDiscovery;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
@@ -37,7 +36,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +48,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements StringResponseCallback {
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveBridgeHandler.class);
-    private @Nullable VehicleDiscovery discoveryService;
     private HttpClientFactory httpClientFactory;
+    private Optional<VehicleDiscovery> discoveryService = Optional.empty();
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<ConnectedDriveConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
 
-    public ConnectedDriveBridgeHandler(Bridge bridge, HttpClientFactory hcf, BundleContext bc) {
+    public ConnectedDriveBridgeHandler(Bridge bridge, HttpClientFactory hcf) {
         super(bridge);
         httpClientFactory = hcf;
     }
@@ -98,32 +96,33 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         if (troubleshootFingerprint.isPresent()) {
             VehiclesContainer container = Converter.getGson().fromJson(troubleshootFingerprint.get(),
                     VehiclesContainer.class);
-            if (container.vehicles != null) {
-                if (container.vehicles.isEmpty()) {
-                    return Constants.EMPTY_VEHICLES;
+            if (container != null) {
+                if (container.vehicles != null) {
+                    if (container.vehicles.isEmpty()) {
+                        return Constants.EMPTY_VEHICLES;
+                    } else {
+                        container.vehicles.forEach(entry -> {
+                            entry.vin = ANONYMOUS;
+                            entry.breakdownNumber = ANONYMOUS;
+                            if (entry.dealer != null) {
+                                Dealer d = entry.dealer;
+                                d.city = ANONYMOUS;
+                                d.country = ANONYMOUS;
+                                d.name = ANONYMOUS;
+                                d.phone = ANONYMOUS;
+                                d.postalCode = ANONYMOUS;
+                                d.street = ANONYMOUS;
+                            }
+                        });
+                        return Converter.getGson().toJson(container);
+                    }
                 } else {
-                    container.vehicles.forEach(entry -> {
-                        entry.vin = ANONYMOUS;
-                        entry.breakdownNumber = ANONYMOUS;
-                        if (entry.dealer != null) {
-                            Dealer d = entry.dealer;
-                            d.city = ANONYMOUS;
-                            d.country = ANONYMOUS;
-                            d.name = ANONYMOUS;
-                            d.phone = ANONYMOUS;
-                            d.postalCode = ANONYMOUS;
-                            d.street = ANONYMOUS;
-                        }
-                    });
-                    return Converter.getGson().toJson(container);
+                    // Vehicles is empty so deliver fingerprint as it is
+                    return troubleshootFingerprint.get();
                 }
-            } else {
-                // Vehicles is empty so deliver fingerprint as it is
-                return troubleshootFingerprint.get();
             }
-        } else {
-            return Constants.INVALID;
         }
+        return Constants.INVALID;
     }
 
     private void logFingerPrint() {
@@ -143,21 +142,25 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
             troubleshootFingerprint = response;
             VehiclesContainer container = Converter.getGson().fromJson(response.get(), VehiclesContainer.class);
             updateStatus(ThingStatus.ONLINE);
-            if (container.vehicles != null) {
-                discoveryService.onResponse(container);
-                container.vehicles.forEach(entry -> {
-                    entry.vin = ANONYMOUS;
-                    entry.breakdownNumber = ANONYMOUS;
-                    if (entry.dealer != null) {
-                        Dealer d = entry.dealer;
-                        d.city = ANONYMOUS;
-                        d.country = ANONYMOUS;
-                        d.name = ANONYMOUS;
-                        d.phone = ANONYMOUS;
-                        d.postalCode = ANONYMOUS;
-                        d.street = ANONYMOUS;
+            if (discoveryService.isPresent()) {
+                if (container != null) {
+                    if (container.vehicles != null) {
+                        discoveryService.get().onResponse(container);
+                        container.vehicles.forEach(entry -> {
+                            entry.vin = ANONYMOUS;
+                            entry.breakdownNumber = ANONYMOUS;
+                            if (entry.dealer != null) {
+                                Dealer d = entry.dealer;
+                                d.city = ANONYMOUS;
+                                d.country = ANONYMOUS;
+                                d.name = ANONYMOUS;
+                                d.phone = ANONYMOUS;
+                                d.postalCode = ANONYMOUS;
+                                d.street = ANONYMOUS;
+                            }
+                        });
                     }
-                });
+                }
                 troubleshootFingerprint = Optional.of(Converter.getGson().toJson(container));
             }
         } else {
@@ -188,6 +191,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     }
 
     public void setDiscoveryService(VehicleDiscovery discoveryService) {
-        this.discoveryService = discoveryService;
+        this.discoveryService = Optional.of(discoveryService);
     }
 }

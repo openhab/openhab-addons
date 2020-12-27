@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class ChargeProfileTest {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 

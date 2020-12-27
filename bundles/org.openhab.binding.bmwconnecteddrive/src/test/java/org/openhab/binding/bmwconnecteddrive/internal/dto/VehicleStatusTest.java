@@ -33,6 +33,7 @@ import com.google.gson.Gson;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class VehicleStatusTest {
     private static final Gson GSON = new Gson();
 

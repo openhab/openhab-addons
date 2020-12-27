@@ -304,13 +304,15 @@ public class VehicleHandler extends VehicleChannelHandler {
             // Anonymous data for VIN and Position
             VehicleStatusContainer container = Converter.getGson().fromJson(vehicleStatusCache.get(),
                     VehicleStatusContainer.class);
-            VehicleStatus status = container.vehicleStatus;
-            if (status != null) {
-                status.vin = Constants.ANONYMOUS;
-                if (status.position != null) {
-                    status.position.lat = -1;
-                    status.position.lon = -1;
-                    status.position.heading = -1;
+            if (container != null) {
+                VehicleStatus status = container.vehicleStatus;
+                if (status != null) {
+                    status.vin = Constants.ANONYMOUS;
+                    if (status.position != null) {
+                        status.position.lat = -1;
+                        status.position.lon = -1;
+                        status.position.heading = -1;
+                    }
                 }
             }
             logger.debug("{}", Converter.getGson().toJson(container));
@@ -341,16 +343,18 @@ public class VehicleHandler extends VehicleChannelHandler {
             logger.debug("### Charge Profile ###");
             DestinationContainer container = Converter.getGson().fromJson(destinationCache.get(),
                     DestinationContainer.class);
-            if (container.destinations != null) {
-                container.destinations.forEach(entry -> {
-                    entry.lat = 0;
-                    entry.lon = 0;
-                    entry.city = Constants.ANONYMOUS;
-                    entry.street = Constants.ANONYMOUS;
-                    entry.streetNumber = Constants.ANONYMOUS;
-                    entry.country = Constants.ANONYMOUS;
-                });
-                logger.debug("{}", Converter.getGson().toJson(container));
+            if (container != null) {
+                if (container.destinations != null) {
+                    container.destinations.forEach(entry -> {
+                        entry.lat = 0;
+                        entry.lon = 0;
+                        entry.city = Constants.ANONYMOUS;
+                        entry.street = Constants.ANONYMOUS;
+                        entry.streetNumber = Constants.ANONYMOUS;
+                        entry.country = Constants.ANONYMOUS;
+                    });
+                    logger.debug("{}", Converter.getGson().toJson(container));
+                }
             } else {
                 logger.debug("### Destinations Empty ###");
             }
@@ -373,8 +377,9 @@ public class VehicleHandler extends VehicleChannelHandler {
      * @return
      */
     private boolean isSupported(String service) {
-        if (thing.getProperties().containsKey(Constants.SERVICES_SUPPORTED)) {
-            if (thing.getProperties().get(Constants.SERVICES_SUPPORTED).contains(Constants.STATISTICS)) {
+        String services = thing.getProperties().get(Constants.SERVICES_SUPPORTED);
+        if (services != null) {
+            if (services.contains(service)) {
                 return true;
             }
         }
@@ -457,9 +462,10 @@ public class VehicleHandler extends VehicleChannelHandler {
             destinationCache = content;
             if (content.isPresent()) {
                 DestinationContainer dc = Converter.getGson().fromJson(content.get(), DestinationContainer.class);
-
-                if (dc.destinations != null) {
-                    updateDestinations(dc.destinations);
+                if (dc != null) {
+                    if (dc.destinations != null) {
+                        updateDestinations(dc.destinations);
+                    }
                 }
             }
             removeCallback(this);
@@ -512,9 +518,11 @@ public class VehicleHandler extends VehicleChannelHandler {
             if (content.isPresent()) {
                 allTripsCache = content;
                 AllTripsContainer atc = Converter.getGson().fromJson(content.get(), AllTripsContainer.class);
-                AllTrips at = atc.allTrips;
-                if (at != null) {
-                    updateAllTrips(at);
+                if (atc != null) {
+                    AllTrips at = atc.allTrips;
+                    if (at != null) {
+                        updateAllTrips(at);
+                    }
                 }
             }
             removeCallback(this);
@@ -538,9 +546,11 @@ public class VehicleHandler extends VehicleChannelHandler {
             if (content.isPresent()) {
                 lastTripCache = content;
                 LastTripContainer lt = Converter.getGson().fromJson(content.get(), LastTripContainer.class);
-                LastTrip trip = lt.lastTrip;
-                if (trip != null) {
-                    updateLastTrip(trip);
+                if (lt != null) {
+                    LastTrip trip = lt.lastTrip;
+                    if (trip != null) {
+                        updateLastTrip(trip);
+                    }
                 }
             }
             removeCallback(this);
@@ -585,14 +595,16 @@ public class VehicleHandler extends VehicleChannelHandler {
                 vehicleStatusCache = content;
                 VehicleStatusContainer status = Converter.getGson().fromJson(content.get(),
                         VehicleStatusContainer.class);
-                VehicleStatus vStatus = status.vehicleStatus;
-                if (vStatus == null) {
-                    return;
+                if (status != null) {
+                    VehicleStatus vStatus = status.vehicleStatus;
+                    if (vStatus == null) {
+                        return;
+                    }
+                    updateVehicleStatus(vStatus);
+                    updateCheckControls(vStatus.checkControlMessages);
+                    updateServices(vStatus.cbsData);
+                    updatePosition(vStatus.position);
                 }
-                updateVehicleStatus(vStatus);
-                updateCheckControls(vStatus.checkControlMessages);
-                updateServices(vStatus.cbsData);
-                updatePosition(vStatus.position);
             }
             removeCallback(this);
         }
@@ -629,7 +641,9 @@ public class VehicleHandler extends VehicleChannelHandler {
             if (content.isPresent()) {
                 VehicleAttributesContainer vac = Converter.getGson().fromJson(content.get(),
                         VehicleAttributesContainer.class);
-                vehicleStatusCallback.onResponse(Optional.of(vac.transform()));
+                if (vac != null) {
+                    vehicleStatusCallback.onResponse(Optional.of(vac.transform()));
+                }
             }
         }
 

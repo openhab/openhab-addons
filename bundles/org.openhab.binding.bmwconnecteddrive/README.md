@@ -136,27 +136,61 @@ They differ for each vehicle type, build-in sensors and activated services.
 #### Vehicle Status
 
 Reflects status of the vehicle.
-Available for all vehicles, read-only.
-Channel Group ID is **status**.
-
-| Channel Label             | Channel ID          | Type          | Description                                                                       |
-|---------------------------|---------------------|---------------|-----------------------------------------------------------------------------------|
-| Overall Door Status       | doors               | String        | **Closed** if all closed otherwise **Open**. **Unknown** if no data is delivered  |
-| Overall Window Status     | windows             | String        | **Closed** if all closed otherwise **Open** or **Intermediate**. **Unknown** if no data is delivered   |
-| Doors Locked              | lock                | String        | Status if doors are locked or unlocked                                            |
-| Next Service Date         | service-date        | DateTime      | Date of upcoming service                                                          |
-| Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                                                     |
-| Check Control             | check-control       | String        | Indicator if CheckControl is **Active** or **Not Active**. **Unknown** if no data is delivered         |
-| Charging Status           | charge              | String        | Only available for phev, bev_rex and bev                                          |
-| Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update                                               |
-
 See [further details for DateTime](#last-status-update-timestamp) in case of wrong timestamp values
+
+* Channel Group ID is **status**
+* Available for all vehicles
+* Read-only values
+
+| Channel Label             | Channel ID          | Type          | Description                                    |
+|---------------------------|---------------------|---------------|------------------------------------------------|
+| Overall Door Status       | doors               | String        | Combined status for all doors                  |
+| Overall Window Status     | windows             | String        | Combined status for all windows                |
+| Doors Locked              | lock                | String        | Status if doors are locked or unlocked         |
+| Next Service Date         | service-date        | DateTime      | Date of upcoming service                       |
+| Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                  |
+| Check Control             | check-control       | String        | Presence of active warning messages            |
+| Charging Status           | charge              | String        | Only available for phev, bev_rex and bev       |
+| Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |
+
+Overall Door Status values
+
+* _Closed_ - all doors closed
+* _Open_ - at least one door is open
+* _Unknown_ - no door data delivered at all
+
+Overall Windows Status values
+
+* _Closed_ - all windows closed
+* _Open_ - at least one window is completely open
+* _Intermediate_ - at least one window is partially open
+* _Unknown_ - no window data delivered at all
+
+Check Control values
+
+* _Active_ - at least one warning message is active
+* _Not Active_ - no warning message is active
+* _Unknown_ - no data for warnings delivered
+
+Charging Status values
+
+* _Charging_
+* _Error_
+* _Finished Fully Charged_
+* _Fiished Not Full_
+* _Invalid_
+* _Not Charging_
+* _Charging Goal reached_
+* _Waiting For Charging_
 
 #### Services
 
 Group for all upcoming services with description, service date and/or service mileage.
-Channel Group ID is **service**.
 If more than one service is scheduled in the future the String channel _name_ contains all future services as options.
+
+* Channel Group ID is **service**
+* Available for all vehicles
+* Read-only values,  _name_ channel has selection options
 
 | Channel Label                  | Channel ID          | Type           | 
 |--------------------------------|---------------------|----------------|
@@ -167,8 +201,11 @@ If more than one service is scheduled in the future the String channel _name_ co
 #### Check Control
 
 Group for all current active CheckControl Messages.
-Channel Group ID is **check**.
 If more than one check control message is active the String channel _name_ contains all active messages as options.
+
+* Channel Group ID is **check**
+* Available for all vehicles
+* Read-only values, _name_ channel has selection options
 
 | Channel Label                   | Channel ID          | Type           | 
 |---------------------------------|---------------------|----------------|
@@ -178,9 +215,11 @@ If more than one check control message is active the String channel _name_ conta
 #### Doors Details
 
 Detailed status of all doors and windows.
-Available for all vehicles, read-only. 
-Channel Group ID is **doors**.
 
+* Channel Group ID is **doors**
+* Available for all vehicles if corresponding sensors are built-in 
+* Read-only values
+ 
 | Channel Label              | Channel ID              | Type          | 
 |----------------------------|-------------------------|---------------|
 | Driver Door                | driver-front            | String        |
@@ -209,9 +248,11 @@ Following String states are possible
 Based on vehicle type some channels are presented or not. 
 Conventional fuel vehicles don't provide *Electric Range* and Battery electric Vehicles don't show *Fuel Range*.
 Hybrid vehicles have both and in addition *Hybrid Range*.
-These are read-only values.
-Channel Group ID is **range**.
 See description [Range vs Range Radius](#range-vs-range-radius) to get more information.
+
+* Channel Group ID is **range**
+* Availability according to table
+* Read-only values
 
 | Channel Label         | Channel ID            | Type                 | CONV | PHEV | BEV_REX | BEV |
 |-----------------------|-----------------------|----------------------|------|------|---------|-----|
@@ -228,9 +269,11 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 
 #### Charge Profile
 
-Valid for electric and hybrid vehicles
-These are read-only values.
-Channel Group ID is **charge**.
+Charging options with date and time for preferred time windows and charging modes.
+
+* Channel Group ID is **charge**
+* Available for electric and hybrid vehicles
+* Read-only values
 
 | Channel Label                      | Channel ID          | Type   | 
 |------------------------------------|---------------------|--------|
@@ -251,9 +294,11 @@ Channel Group ID is **charge**.
 
 #### Location
 
-Available for all vehicles.
-These are read-only values.
-Channel Group ID is **location**.
+GPS location and heading of the vehicle.
+
+* Channel Group ID is **location**
+* Available for all vehicles with built-in GPS sensor. Function can be enabled/disabled in the head unit
+* Read-only values
 
 | Channel Label   | Channel ID          | Type         | 
 |-----------------|---------------------|--------------|
@@ -262,9 +307,11 @@ Channel Group ID is **location**.
 
 #### Last Trip
 
-Check [Vehicle Properties](#properties) if *Statistics* is present in *Services Supported*.
-These are read-only values.
-Channel Group ID is **last-trip**.
+Statistic values of duration, distance and consumption of the last trip.
+
+* Channel Group ID is **last-trip**
+* Available if *Statistics* is present in *Services Supported*. See [Vehicle Properties](#properties) for further details
+* Read-only values
 
 | Channel Label                           | Channel ID                   | Type          |
 |-----------------------------------------|------------------------------|---------------|
@@ -279,9 +326,11 @@ Channel Group ID is **last-trip**.
 
 #### Lifetime Statistics
 
-Check [Vehicle Properties](#properties) if *Statistics* is present in *Services Supported*.
-These are read-only values.
-Channel Group ID is **lifetime**.
+Providing lifetime consumption values.
+
+* Channel Group ID is **lifetime**
+* Available if *Statistics* is present in *Services Supported*. See [Vehicle Properties](#properties) for further details
+* Read-only values
 
 | Channel Label                           | Channel ID                   | Type          | 
 |-----------------------------------------|------------------------------|---------------|
@@ -294,19 +343,22 @@ Channel Group ID is **lifetime**.
 
 #### Remote Services
 
-Check [Vehicle Properties](#properties) *Services Activated* which remote services are available.
-Only one remote service can be executed each Time.
+Remote control of the vehicle. 
+Send a *command* to the vehicle and the *state* is reporting the execution progress.
+Only one command can be executed each time.
 Parallel execution isn't supported.
-The *Service Execution State* channel is reporting the state.
-State *Executed* is the final state when execution is finished.
-Channel Group ID is **remote**.
 
-| Channel Label           | Channel ID          | Type    | 
-|-------------------------|---------------------|---------|
-| Remote Service Command  | command             | String  |
-| Service Execution State | state               | String  |
+* Channel Group ID is **remote**
+* Available for all commands mentioned in *Services Activated*. See [Vehicle Properties](#properties) for further details
+* Read/Write access
 
-The channel _command_ provides these options
+
+| Channel Label           | Channel ID          | Type    | Access |
+|-------------------------|---------------------|---------|--------|
+| Remote Service Command  | command             | String  | Write  |
+| Service Execution State | state               | String  | Read   |
+
+The channel _command_ provides options
 
 * _Flash Lights_ 
 * _Vehicle Finder_
@@ -316,19 +368,21 @@ The channel _command_ provides these options
 * _Climate Control_
 
 The channel _state_ shows the progress of the command execution in the following order
-
-* _Initiated_ 
-* _Pending_
-* _Delivered_
-* _Executed_
+1) _Initiated_ 
+2) _Pending_
+3) _Delivered_
+4) _Executed_
 
 #### Destinations
 
-Check [Vehicle Properties](#properties) if *LastDestinations* is present in *Services Supported*
-Channel Group ID is **destination**.
-If more than one last destination is avialble in the navigation system the String channel _name_ contains all destinations as options.
+Shows the last destinations stored in the navigation system.
 
-| Channel Label                    | Channel ID          | Type      | 
+* Channel Group ID is **destination**
+* Available if *LastDestinations* is present in *Services Supported*. Check [Vehicle Properties](#properties) for further details
+* Read-only values,  _name_ channel has selection options for all available destinations
+
+
+| Channel Label                    | Channel ID          | Type      |
 |----------------------------------|---------------------|-----------|
 | Destination Name                 | name                | String    |
 | Destination GPS Coordinates      | gps                 | Location  |
@@ -337,18 +391,19 @@ If more than one last destination is avialble in the navigation system the Strin
 
 #### Image
 
-Available for all Vehicles.
-Picture can be modified regarding *Viewport* and *Size*.
-See [Things Section](#thing) for Viewport possibilities and [Status Image](#status-image) for possible Use Cases.
-Channel Group ID is **image**.
-
-| Channel Label                 | Channel ID          | Type   | 
-|-------------------------------|---------------------|--------|
-| Rendered Image of the Vehicle | png                 | Image  |
-| Image Viewport                | view                | String |
-| Image Picture Size            | size                | Number |
-
+Image representation of the Vehicle. Size and viewport are writable and can be 
 The possible values are the same mentioned in [Thing Configuration](#thing-configuration).
+
+* Channel Group ID is **image**
+* Available for all vehicles
+* Read/Write access
+
+| Channel Label                 | Channel ID          | Type   |  Access  |
+|-------------------------------|---------------------|--------|----------|
+| Rendered Image of the Vehicle | png                 | Image  | Read     |
+| Image Viewport                | view                | String | Write    |
+| Image Picture Size            | size                | Number | Write    |
+
 
 ## Further Descriptions
 
@@ -362,19 +417,19 @@ There are 3 occurrences of dynamic data delivered
 * Check Control Messages delivered in group [Check Control](#check-control)
 * Last Destinations delivered in group [Destinations](#destinations)
 
-The channel **name** shows the first element as default. 
-All other elements are attached as options. 
-The picture on the right shows the _Service Name_ item and all plus the 4 available options. 
-With this you're able to select each service and the corresponding _Service Date & Milage_ will be shown.  
+The channel id _name_ shows the first element as default. 
+All other possibilities are attached as options. 
+The picture on the right shows the _Service Name_ item and all four possible options. 
+Select the wanted service and the corresponding _Service Date & Milage_ will be shown.  
 
 ### TroubleShooting
 
-BMW has a high range of Vehicles supported by ConnectedDrive.
-In case of any issues with this Binding please help to resolve it! 
-Please perform the following Steps:
+BMW has a high range of vehicles supported by ConnectedDrive.
+In case of any issues with this binding please help to resolve it! 
+Please perform the following steps:
 
-* Can you login [into ConnectedDrive](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) with your Credentials? _Please note this isn't the BMW Customer Portal - it's the ConnectedDrive Portal_
-* Is the Vehicle listed in your Account? _There's a one-to-one dependency from User to Vehicle_
+* Can you [log into ConnectedDrive](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) with your credentials? Please note this isn't the BMW Customer portal - it's the ConnectedDrive portal
+* Is the vehicle listed in your account? There's a one-to-one relation from user to vehicle
 
 If the access to the portal is working and the vehicle is listed some debug data is needed in order to identify the issue. 
 
@@ -403,7 +458,7 @@ You'll find the fingerprint in the logs with the command
 less openhab.log | grep "BMW ConnectedDrive Binding"
 ```
 
-After the corresponding fingerprint is generated please [follow the instructions to raise an Issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!
+After the corresponding fingerprint is generated please [follow the instructions to raise an ssue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!
 Your feedback is highly appreciated!
 
 
@@ -416,10 +471,9 @@ While range is indicating the possible distance to be driven on roads the range 
 
 The right picture shows the distance between Kassel and Frankfurt in Germany. 
 While the air-line distance is ~145 kilometer the route distance is ~192 kilometer.
-So range value is the normal remaining range.
-See the Section [OpenStreetMap](#openstreetmap-widget) how the range radius is used to indicate the reachable range on map.
-Please note this is just an indicator and the effective range, especially for electric vehicles, 
-depends on many factors like driving style and electric consumers. 
+So range value is the normal remaining range while the range radius values can be used e.g. on [Mapview](https://www.openhab.org/docs/configuration/sitemaps.html#element-type-mapview) to indicate the reachable range on map.
+Please note this is just an indicator of the effective range.
+Especially for electric vehicles it depends on many factors like driving style and electric consumers. 
  
 ### Last Status Update Timestamp
 
@@ -436,7 +490,7 @@ See [similar discussion in the openHAB Forum](https://community.openhab.org/t/so
 ## Full Example
 
 The example is based on a BMW i3 with Range Extender (REX). 
-Exchange the 3 configuration parameters in the Things section
+Exchange the three configuration parameters in the Things section
 
 * YOUR_USERNAME - with your ConnectedDrive Login Username
 * YOUR_PASSWORD - with your ConnectedDrive Password Credentials
@@ -444,15 +498,15 @@ Exchange the 3 configuration parameters in the Things section
 
 In addition search for all occurrences of *i3* and replace it with your Vehicle Identification like *x3* or *535d* and you're ready to go!
 
-### Things
+### Things File
 
 ```
 Bridge bmwconnecteddrive:account:user   "BMW ConnectedDrive Account" [userName="YOUR_USERNAME",password="YOUR_PASSWORD",region="ROW"] {
-         Thing BEV_REX i3       "BMW i3 94h REX"                [ vin="VEHICLE_VIN",units="AUTODETECT",imageSize=600,imageViewport="FRONT",refreshInterval=5]
+         Thing bev_rex i3       "BMW i3 94h REX"                [ vin="VEHICLE_VIN",units="AUTODETECT",imageSize=600,imageViewport="FRONT",refreshInterval=5]
 }
 ```
 
-### Items
+### Items File
 
 ```
 Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:range#mileage" }                                                                           
@@ -535,7 +589,7 @@ String                  i3ImageViewport           "Image Viewport [%s]"         
 Number                  i3ImageSize               "Image Size [%d]"                             <zoom>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:image#size" }  
 ```
 
-### Sitemap
+### Sitemap File
 
 ```
 sitemap BMW label="BMW" {
