@@ -320,73 +320,73 @@ public class StatusWrapper {
             case DOOR_DRIVER_FRONT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.doorDriverFront);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.doorDriverFront));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case DOOR_DRIVER_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.doorDriverRear);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.doorDriverRear));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case DOOR_PASSENGER_FRONT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.doorPassengerFront);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.doorPassengerFront));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case DOOR_PASSENGER_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.doorPassengerRear);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.doorPassengerRear));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case TRUNK:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.trunk);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.trunk));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case HOOD:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.hood);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.hood));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case WINDOW_DOOR_DRIVER_FORNT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.windowDriverFront);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowDriverFront));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case WINDOW_DOOR_DRIVER_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.windowDriverRear);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowDriverRear));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case WINDOW_DOOR_PASSENGER_FRONT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.windowPassengerFront);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowPassengerFront));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case WINDOW_DOOR_PASSENGER_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.windowPassengerRear);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowPassengerRear));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case WINDOW_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.rearWindow);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.rearWindow));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case SUNROOF:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.sunroof);
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.sunroof));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case SERVICE_DATE:
@@ -434,14 +434,14 @@ public class StatusWrapper {
                 st = (StringType) state;
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
-                        wanted = StringType.valueOf(Converter.toTitleCase(Constants.NO_SERVICES));
+                        wanted = StringType.valueOf(Converter.toTitleCase(Constants.NO_ENTRIES));
                         if (!vStatus.cbsData.isEmpty()) {
                             wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
                         }
                         assertEquals(wanted.toString(), st.toString(), "Service Name");
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
-                        wanted = StringType.valueOf(Constants.NOT_ACTIVE);
+                        wanted = StringType.valueOf(Constants.NO_ENTRIES);
                         if (!vStatus.checkControlMessages.isEmpty()) {
                             wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionShort);
                         }

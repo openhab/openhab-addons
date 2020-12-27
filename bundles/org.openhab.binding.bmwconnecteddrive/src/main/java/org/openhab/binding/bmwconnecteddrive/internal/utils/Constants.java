@@ -26,14 +26,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Constants {
     // For Vehicle Status
     public static final String OK = "Ok";
-    public static final String ACTIVE = "ACTIVE";
-    public static final String NOT_ACTIVE = "NOT ACTIVE";
-    public static final String NO_SERVICES = "NO SERVICES PLANNED";
-    public static final String OPEN = "OPEN";
-    public static final String INVALID = "INVALID";
-    public static final String CLOSED = "CLOSED";
-    public static final String INTERMEDIATE = "INTERMEDIATE";
-    public static final String UNKNOWN = "UNKNOWN";
+    public static final String ACTIVE = "Active";
+    public static final String NOT_ACTIVE = "Not Active";
+    public static final String NO_ENTRIES = "No Entries";
+    public static final String OPEN = "Open";
+    public static final String INVALID = "Invalid";
+    public static final String CLOSED = "Closed";
+    public static final String INTERMEDIATE = "Intermediate";
+    public static final String UNKNOWN = "Unknown";
     public static final String UTC_APPENDIX = "-01T12:00:00";
     public static final String NULL_DATE = "1900-01-01T00:00:00";
 
@@ -57,7 +57,7 @@ public class Constants {
     public static final String COMMA = ",";
     public static final String QUESTION = "?";
 
-    public static final String ANONYMOUS = "ANONYMOUS";
+    public static final String ANONYMOUS = "Anonymous";
     public static final int MILES_TO_FEET_FACTOR = 5280;
     public static final String EMPTY_VEHICLES = "{}";
 

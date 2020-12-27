@@ -15,7 +15,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.charge;
 import java.util.List;
 
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
-import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 /**
  * The {@link Timer} Data Transfer Object
@@ -37,7 +36,7 @@ public class Timer {
      */
     public String getDays() {
         if (weekdays == null) {
-            return Converter.toTitleCase(Constants.UNKNOWN);
+            return Constants.UNKNOWN;
         }
         StringBuilder days = new StringBuilder();
         weekdays.forEach(entry -> {

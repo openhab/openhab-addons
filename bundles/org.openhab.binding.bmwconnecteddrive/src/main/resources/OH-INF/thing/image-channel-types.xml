@@ -10,6 +10,15 @@
 	<channel-type id="image-view-channel">
 		<item-type>String</item-type>
 		<label>Image Viewport</label>
+		<command>
+			<options>
+				<option value="FRONT">Front View</option>
+				<option value="REAR">Rear View</option>
+				<option value="SIDE">Side View</option>
+				<option value="DASHBOARD">Dashboard View</option>
+				<option value="DRIVERDOOR">Driver Door View</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="image-size-channel">
 		<item-type>Number</item-type>
