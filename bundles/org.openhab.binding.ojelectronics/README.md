@@ -61,7 +61,7 @@ This example shows how to configure the OJElecttronics binding.
 ### demo.things
 
 ```
-Binding ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName" password="MyPassword" apiKey="The Key" ] {
+Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName", password="MyPassword", apiKey="The Key" ] {
     Thing owd5 myThermostat [ serialNumber="123" ]
 }
 ```
