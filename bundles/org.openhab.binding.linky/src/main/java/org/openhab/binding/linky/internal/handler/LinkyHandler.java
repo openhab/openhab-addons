@@ -65,8 +65,8 @@ import com.google.gson.Gson;
 public class LinkyHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
-    private static final int REFRESH_FIRST_HOUR_OF_DAY = 2;
-    private static final int REFRESH_INTERVAL_IN_MIN = 180;
+    private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
+    private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final HttpClient httpClient;
     private final Gson gson;
@@ -265,13 +265,11 @@ public class LinkyHandler extends BaseThingHandler {
                 Aggregate weeks = values.aggregats.weeks;
                 if (weeks.datas.size() > idxLast) {
                     updateKwhChannel(LAST_WEEK, weeks.datas.get(idxLast));
-                } else {
-                    updateKwhChannel(LAST_WEEK, Double.NaN);
                 }
                 if (weeks.datas.size() > (idxLast + 1)) {
                     updateKwhChannel(THIS_WEEK, weeks.datas.get(idxLast + 1));
                 } else {
-                    updateKwhChannel(THIS_WEEK, Double.NaN);
+                    updateKwhChannel(THIS_WEEK, 0.0);
                 }
             });
         }
@@ -288,7 +286,7 @@ public class LinkyHandler extends BaseThingHandler {
                 if (months.datas.size() > 1) {
                     updateKwhChannel(THIS_MONTH, months.datas.get(1));
                 } else {
-                    updateKwhChannel(THIS_MONTH, Double.NaN);
+                    updateKwhChannel(THIS_MONTH, 0.0);
                 }
             });
         }
@@ -305,7 +303,7 @@ public class LinkyHandler extends BaseThingHandler {
                 if (years.datas.size() > 1) {
                     updateKwhChannel(THIS_YEAR, years.datas.get(1));
                 } else {
-                    updateKwhChannel(THIS_YEAR, Double.NaN);
+                    updateKwhChannel(THIS_YEAR, 0.0);
                 }
             });
         }
