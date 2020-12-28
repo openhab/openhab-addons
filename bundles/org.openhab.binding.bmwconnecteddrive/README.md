@@ -190,13 +190,13 @@ If more than one service is scheduled in the future the String channel _name_ co
 
 * Channel Group ID is **service**
 * Available for all vehicles
-* Read-only values,  _name_ channel has selection options
+* Read/Write access
 
-| Channel Label                  | Channel ID          | Type           | 
-|--------------------------------|---------------------|----------------|
-| Service Name                   | name                | String         |
-| Service Date                   | date                | Number         |
-| Mileage till Service           | mileage             | Number:Length  |
+| Channel Label                  | Channel ID          | Type           | Access     |
+|--------------------------------|---------------------|----------------|------------|
+| Service Name                   | name                | String         | Read/Write |
+| Service Date                   | date                | Number         | Read       |
+| Mileage till Service           | mileage             | Number:Length  | Read       |
 
 #### Check Control
 
@@ -205,12 +205,12 @@ If more than one check control message is active the String channel _name_ conta
 
 * Channel Group ID is **check**
 * Available for all vehicles
-* Read-only values, _name_ channel has selection options
+* Read/Write access
 
-| Channel Label                   | Channel ID          | Type           | 
-|---------------------------------|---------------------|----------------|
-| CheckControl Description        | name                | String         |
-| CheckControl Mileage Occurrence | mileage             | Number:Length  |
+| Channel Label                   | Channel ID          | Type           | Access     |
+|---------------------------------|---------------------|----------------|------------|
+| CheckControl Description        | name                | String         | Read/Write |
+| CheckControl Mileage Occurrence | mileage             | Number:Length  | Read       |
 
 #### Doors Details
 
@@ -368,6 +368,7 @@ The channel _command_ provides options
 * _Climate Control_
 
 The channel _state_ shows the progress of the command execution in the following order
+
 1) _Initiated_ 
 2) _Pending_
 3) _Delivered_
@@ -379,13 +380,13 @@ Shows the last destinations stored in the navigation system.
 
 * Channel Group ID is **destination**
 * Available if *LastDestinations* is present in *Services Supported*. Check [Vehicle Properties](#properties) for further details
-* Read-only values,  _name_ channel has selection options for all available destinations
+* Read/Write access
 
 
-| Channel Label                    | Channel ID          | Type      |
-|----------------------------------|---------------------|-----------|
-| Destination Name                 | name                | String    |
-| Destination GPS Coordinates      | gps                 | Location  |
+| Channel Label                    | Channel ID          | Type      | Access      |
+|----------------------------------|---------------------|-----------|-------------|
+| Destination Name                 | name                | String    | Read/Write  |
+| Destination GPS Coordinates      | gps                 | Location  | Read        |
 
 
 
@@ -474,18 +475,6 @@ While the air-line distance is ~145 kilometer the route distance is ~192 kilomet
 So range value is the normal remaining range while the range radius values can be used e.g. on [Mapview](https://www.openhab.org/docs/configuration/sitemaps.html#element-type-mapview) to indicate the reachable range on map.
 Please note this is just an indicator of the effective range.
 Especially for electric vehicles it depends on many factors like driving style and electric consumers. 
- 
-### Last Status Update Timestamp
-
-A timestamp is showing the last vehicle status update. 
-If this isn't shown correctly please check the date settings.
-In case of Raspberry Pi execute *raspi-config*, select *Localization Options*, the *Change Time Zone*
-Select your *Geographical Area* and afterwards the correct city.
-One restart of openHAB service with *systemctl restart openhab2* is necessary in order to see the corrected time settings.
- 
-Correct TimeZone is crucial for handling all time information in openHAB and it's discussed many times in the forum.
-See [similar discussion in the openHAB Forum](https://community.openhab.org/t/solved-wrong-local-time-how-to-change/90938) which deals with the same problem.
-
 
 ## Full Example
 
