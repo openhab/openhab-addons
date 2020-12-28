@@ -276,7 +276,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
     @SuppressWarnings("null")
     private boolean checkEndpoint(ModbusSlaveEndpoint endpointParam) {
-        return endpointParam.equals(new ModbusTCPSlaveEndpoint(HOST, PORT));
+        return endpointParam.equals(new ModbusTCPSlaveEndpoint(HOST, PORT, false));
     }
 
     private boolean checkRequest(ModbusReadRequestBlueprint request, ModbusReadFunctionCode functionCode) {

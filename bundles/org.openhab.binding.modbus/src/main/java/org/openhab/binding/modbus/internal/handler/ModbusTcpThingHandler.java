@@ -51,7 +51,7 @@ public class ModbusTcpThingHandler
         }
 
         this.config = config;
-        endpoint = new ModbusTCPSlaveEndpoint(host, config.getPort());
+        endpoint = new ModbusTCPSlaveEndpoint(host, config.getPort(), config.getRtuEncoded());
 
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
         this.poolConfiguration = poolConfiguration;

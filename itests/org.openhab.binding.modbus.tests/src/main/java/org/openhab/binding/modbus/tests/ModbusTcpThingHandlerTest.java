@@ -70,7 +70,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
         ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
         assertNotNull(thingHandler);
         ModbusSlaveEndpoint slaveEndpoint = thingHandler.getEndpoint();
-        assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44))));
+        assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44, false))));
         assertThat(thingHandler.getSlaveId(), is(9));
 
         InOrder orderedVerify = Mockito.inOrder(mockedModbusManager);

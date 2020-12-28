@@ -32,6 +32,11 @@ public class ModbusTcpConfiguration {
     private int reconnectAfterMillis;
     private int connectTimeoutMillis;
     private boolean enableDiscovery;
+    private boolean rtuEncoded;
+
+    public boolean getRtuEncoded() {
+        return rtuEncoded;
+    }
 
     public @Nullable String getHost() {
         return host;
