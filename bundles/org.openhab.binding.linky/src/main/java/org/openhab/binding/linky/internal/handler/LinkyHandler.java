@@ -93,11 +93,17 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.minusDays(15), today);
             if (consumption != null) {
+                try {
+                    checkData(consumption);
+                } catch (LinkyException e) {
+                    logger.debug("Daily data: {}", e.getMessage());
+                    return null;
+                }
                 logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, false);
                 logData(consumption.aggregats.weeks, "Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
                 if (!isDataLastDayAvailable(consumption)) {
-                    logger.debug("Dayly data including yesterday are not yet available");
-                    consumption = null;
+                    logger.debug("Daily data including yesterday are not yet available");
+                    return null;
                 }
             }
             return consumption;
@@ -106,18 +112,33 @@ public class LinkyHandler extends BaseThingHandler {
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate to = LocalDate.now().plusDays(1);
             LocalDate from = to.minusDays(2);
-            return getPowerData(from, to);
+            Consumption consumption = getPowerData(from, to);
+            if (consumption != null) {
+                try {
+                    checkData(consumption);
+                } catch (LinkyException e) {
+                    logger.debug("Power data: {}", e.getMessage());
+                    return null;
+                }
+            }
+            return consumption;
         });
 
         this.cachedMonthlyData = new ExpiringDayCache<>("monthly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
             if (consumption != null) {
+                try {
+                    checkData(consumption);
+                } catch (LinkyException e) {
+                    logger.debug("Monthly data: {}", e.getMessage());
+                    return null;
+                }
                 logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
                 logData(consumption.aggregats.months, "Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
                 if (!isDataLastDayAvailable(consumption)) {
                     logger.debug("Monthly data including yesterday are not yet available");
-                    consumption = null;
+                    return null;
                 }
             }
             return consumption;
@@ -127,11 +148,17 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
             if (consumption != null) {
+                try {
+                    checkData(consumption);
+                } catch (LinkyException e) {
+                    logger.debug("Yearly data: {}", e.getMessage());
+                    return null;
+                }
                 logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
                 logData(consumption.aggregats.years, "Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
                 if (!isDataLastDayAvailable(consumption)) {
                     logger.debug("Yearly data including yesterday are not yet available");
-                    consumption = null;
+                    return null;
                 }
             }
             return consumption;
@@ -312,7 +339,9 @@ public class LinkyHandler extends BaseThingHandler {
             Consumption result = getConsumptionData(startDay, endDay.plusDays(1));
             if (result != null) {
                 Aggregate days = result.aggregats.days;
-                for (int i = 0; i < days.datas.size(); i++) {
+                int size = (days.datas == null || days.periodes == null) ? 0
+                        : (days.datas.size() <= days.periodes.size() ? days.datas.size() : days.periodes.size());
+                for (int i = 0; i < size; i++) {
                     double consumption = days.datas.get(i);
                     String line = days.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
                     if (consumption >= 0) {
@@ -349,7 +378,6 @@ public class LinkyHandler extends BaseThingHandler {
         if (api != null) {
             try {
                 Consumption consumption = api.getEnergyData(userId, prmId, from, to);
-                checkData(consumption);
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
@@ -366,7 +394,6 @@ public class LinkyHandler extends BaseThingHandler {
         if (api != null) {
             try {
                 Consumption consumption = api.getPowerData(userId, prmId, from, to);
-                checkData(consumption);
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
