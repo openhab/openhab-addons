@@ -18,11 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -123,7 +119,7 @@ public class RefreshingUrlCache {
 
                 request.send(new HttpResponseListener(response, fallbackEncoding, bufferSize));
             }).exceptionally(e -> {
-                if (e instanceof InterruptedException) {
+                if (e instanceof CancellationException) {
                     logger.debug("Request to URL {} was cancelled by thing handler.", finalUrl);
                 } else {
                     logger.warn("Request to URL {} failed: {}", finalUrl, e.getMessage());

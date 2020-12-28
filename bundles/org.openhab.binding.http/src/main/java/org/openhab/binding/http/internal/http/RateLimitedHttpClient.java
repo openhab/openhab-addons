@@ -47,7 +47,7 @@ public class RateLimitedHttpClient {
      */
     public void shutdown() {
         stopProcessJob();
-        requestQueue.forEach(queueEntry -> queueEntry.future.completeExceptionally(new InterruptedException()));
+        requestQueue.forEach(queueEntry -> queueEntry.future.completeExceptionally(new CancellationException()));
     }
 
     /**
