@@ -49,7 +49,6 @@ public class DataTypeBoolean implements ComfoAirDataType {
         } else {
             int[] readReplyDataPos = commandType.getReadReplyDataPos();
             int readReplyDataBits = commandType.getReadReplyDataBits();
-            int readCommand = commandType.getReadCommand();
             boolean result;
 
             if (readReplyDataPos != null && readReplyDataPos[0] < data.length) {
@@ -59,8 +58,6 @@ public class DataTypeBoolean implements ComfoAirDataType {
                     result = (data[readReplyDataPos[0]] & readReplyDataBits) == readReplyDataBits;
                 }
                 return OnOffType.from(result);
-            } else if (readCommand == 0) {
-                return OnOffType.OFF; // handle write-only commands (resets)
             } else {
                 return UnDefType.NULL;
             }
