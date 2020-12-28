@@ -15,8 +15,6 @@ package org.openhab.binding.linky.internal.dto;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.openhab.binding.linky.internal.LinkyException;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -64,32 +62,4 @@ public class ConsumptionReport {
 
     @SerializedName("1")
     public FirstLevel firstLevel;
-
-    public void checkData() throws LinkyException {
-        Consumption cons = firstLevel.consumptions;
-        if (cons.aggregats.days.periodes.size() == 0) {
-            throw new LinkyException("invalid consumptions data: no day period");
-        }
-        if (cons.aggregats.days.periodes.size() != cons.aggregats.days.datas.size()) {
-            throw new LinkyException("invalid consumptions data: not one data for each day period");
-        }
-        if (cons.aggregats.weeks.periodes.size() == 0) {
-            throw new LinkyException("invalid consumptions data: no week period");
-        }
-        if (cons.aggregats.weeks.periodes.size() != cons.aggregats.weeks.datas.size()) {
-            throw new LinkyException("invalid consumptions data: not one data for each week period");
-        }
-        if (cons.aggregats.months.periodes.size() == 0) {
-            throw new LinkyException("invalid consumptions data: no month period");
-        }
-        if (cons.aggregats.months.periodes.size() != cons.aggregats.months.datas.size()) {
-            throw new LinkyException("invalid consumptions data: not one data for each month period");
-        }
-        if (cons.aggregats.years.periodes.size() == 0) {
-            throw new LinkyException("invalid consumptions data: no year period");
-        }
-        if (cons.aggregats.years.periodes.size() != cons.aggregats.years.datas.size()) {
-            throw new LinkyException("invalid consumptions data: not one data for each year period");
-        }
-    }
 }

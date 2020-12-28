@@ -349,6 +349,7 @@ public class LinkyHandler extends BaseThingHandler {
         if (api != null) {
             try {
                 Consumption consumption = api.getEnergyData(userId, prmId, from, to);
+                checkData(consumption);
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
@@ -365,6 +366,7 @@ public class LinkyHandler extends BaseThingHandler {
         if (api != null) {
             try {
                 Consumption consumption = api.getPowerData(userId, prmId, from, to);
+                checkData(consumption);
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
@@ -434,6 +436,33 @@ public class LinkyHandler extends BaseThingHandler {
             }
         } else {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
+        }
+    }
+
+    public void checkData(Consumption consumption) throws LinkyException {
+        if (consumption.aggregats.days.periodes.size() == 0) {
+            throw new LinkyException("invalid consumptions data: no day period");
+        }
+        if (consumption.aggregats.days.periodes.size() != consumption.aggregats.days.datas.size()) {
+            throw new LinkyException("invalid consumptions data: not one data for each day period");
+        }
+        if (consumption.aggregats.weeks.periodes.size() == 0) {
+            throw new LinkyException("invalid consumptions data: no week period");
+        }
+        if (consumption.aggregats.weeks.periodes.size() != consumption.aggregats.weeks.datas.size()) {
+            throw new LinkyException("invalid consumptions data: not one data for each week period");
+        }
+        if (consumption.aggregats.months.periodes.size() == 0) {
+            throw new LinkyException("invalid consumptions data: no month period");
+        }
+        if (consumption.aggregats.months.periodes.size() != consumption.aggregats.months.datas.size()) {
+            throw new LinkyException("invalid consumptions data: not one data for each month period");
+        }
+        if (consumption.aggregats.years.periodes.size() == 0) {
+            throw new LinkyException("invalid consumptions data: no year period");
+        }
+        if (consumption.aggregats.years.periodes.size() != consumption.aggregats.years.datas.size()) {
+            throw new LinkyException("invalid consumptions data: not one data for each year period");
         }
     }
 
