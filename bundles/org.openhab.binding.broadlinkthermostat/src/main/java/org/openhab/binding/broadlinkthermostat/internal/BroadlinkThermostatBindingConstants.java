@@ -47,7 +47,6 @@ public class BroadlinkThermostatBindingConstants {
 
     // Config properties
     public static final String HOST = "host";
-    public static final String MAC = "mac";
     public static final String DESCRIPTION = "description";
 
     public static final String MODE_AUTO = "auto";

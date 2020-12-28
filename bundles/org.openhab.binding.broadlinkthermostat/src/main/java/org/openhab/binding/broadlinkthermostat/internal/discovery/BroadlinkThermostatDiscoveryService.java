@@ -30,6 +30,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -109,14 +110,14 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
 
             Map<String, Object> properties = new HashMap<>();
             properties.put(BroadlinkThermostatBindingConstants.HOST, dev.getHost());
-            properties.put(BroadlinkThermostatBindingConstants.MAC, dev.getMac().getMacString());
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, dev.getMac().getMacString());
             properties.put(BroadlinkThermostatBindingConstants.DESCRIPTION, dev.getDeviceDescription());
 
             logger.debug("Property map: {}", properties);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withLabel(dev.getDeviceDescription() + " (" + id + ")")
-                    .withRepresentationProperty(BroadlinkThermostatBindingConstants.HOST).build();
+                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
 
             thingDiscovered(discoveryResult);
 

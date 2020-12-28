@@ -13,15 +13,12 @@
 package org.openhab.binding.broadlinkthermostat.internal.handler;
 
 import java.io.IOException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants;
 import org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatConfig;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -43,12 +40,10 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
 
     @Nullable
     BLDevice blDevice;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
     private @Nullable ScheduledFuture<?> scanJob;
     protected @Nullable String host;
     @Nullable
     String mac;
-    private String deviceDescription;
 
     /**
      * Creates a new instance of this class for the {@link Thing}.
@@ -57,15 +52,12 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
      */
     BroadlinkThermostatHandler(Thing thing) {
         super(thing);
-        String deviceDescription = thing.getProperties().get(BroadlinkThermostatBindingConstants.DESCRIPTION);
-        this.deviceDescription = deviceDescription == null ? "" : deviceDescription;
     }
 
     void authenticate() {
         logger.debug("Authenticating with broadlinkthermostat device {}...", thing.getLabel());
         try {
             if (blDevice.auth()) {
-                logger.debug("Authentication for device {} successful", thing.getLabel());
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {

@@ -71,7 +71,9 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
             this.floureonDevice = (FloureonDevice) blDevice;
         } catch (IOException e) {
             logger.error("Could not find broadlinkthermostat device at Host {} with MAC {} ", host, mac, e);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not find broadlinkthermostat device at host" + host + "with MAC+" + mac + ": "
+                            + e.getMessage());
         }
         authenticate();
     }
