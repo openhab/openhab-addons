@@ -93,8 +93,8 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.minusDays(15), today);
             if (consumption != null) {
-                consumption.aggregats.days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, false);
-                consumption.aggregats.weeks.log("Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
+                logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, false);
+                logData(consumption.aggregats.weeks, "Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
                 if (!isDataLastDayAvailable(consumption)) {
                     logger.debug("Dayly data including yesterday are not yet available");
                     consumption = null;
@@ -113,8 +113,8 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
             if (consumption != null) {
-                consumption.aggregats.days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
-                consumption.aggregats.months.log("Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
+                logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
+                logData(consumption.aggregats.months, "Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
                 if (!isDataLastDayAvailable(consumption)) {
                     logger.debug("Monthly data including yesterday are not yet available");
                     consumption = null;
@@ -127,8 +127,8 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
             if (consumption != null) {
-                consumption.aggregats.days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
-                consumption.aggregats.years.log("Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
+                logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
+                logData(consumption.aggregats.years, "Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
                 if (!isDataLastDayAvailable(consumption)) {
                     logger.debug("Yearly data including yesterday are not yet available");
                     consumption = null;
@@ -136,11 +136,6 @@ public class LinkyHandler extends BaseThingHandler {
             }
             return consumption;
         });
-    }
-
-    private boolean isDataLastDayAvailable(Consumption consumption) {
-        Aggregate days = consumption.aggregats.days;
-        return days.datas != null && days.datas.size() > 0 && !days.datas.get(days.datas.size() - 1).isNaN();
     }
 
     @Override
@@ -439,6 +434,40 @@ public class LinkyHandler extends BaseThingHandler {
             }
         } else {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
+        }
+    }
+
+    private boolean isDataLastDayAvailable(Consumption consumption) {
+        Aggregate days = consumption.aggregats.days;
+        return days.datas != null && days.datas.size() > 0 && !days.datas.get(days.datas.size() - 1).isNaN();
+    }
+
+    private void logData(Aggregate aggregate, String title, boolean withDateFin, DateTimeFormatter dateTimeFormatter,
+            boolean onlyLast) {
+        if (logger.isDebugEnabled()) {
+            int size = (aggregate.datas == null || aggregate.periodes == null) ? 0
+                    : (aggregate.datas.size() <= aggregate.periodes.size() ? aggregate.datas.size()
+                            : aggregate.periodes.size());
+            if (onlyLast) {
+                if (size > 0) {
+                    logData(aggregate, size - 1, title, withDateFin, dateTimeFormatter);
+                }
+            } else {
+                for (int i = 0; i < size; i++) {
+                    logData(aggregate, i, title, withDateFin, dateTimeFormatter);
+                }
+            }
+        }
+    }
+
+    private void logData(Aggregate aggregate, int index, String title, boolean withDateFin,
+            DateTimeFormatter dateTimeFormatter) {
+        if (withDateFin) {
+            logger.debug("{} {} {} value {}", title, aggregate.periodes.get(index).dateDebut.format(dateTimeFormatter),
+                    aggregate.periodes.get(index).dateFin.format(dateTimeFormatter), aggregate.datas.get(index));
+        } else {
+            logger.debug("{} {} value {}", title, aggregate.periodes.get(index).dateDebut.format(dateTimeFormatter),
+                    aggregate.datas.get(index));
         }
     }
 }
