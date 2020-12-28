@@ -119,7 +119,6 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
             if (consumption != null) {
-                logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
                 logData(consumption.aggregats.months, "Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
                 consumption = getConsumptionAfterChecks(consumption);
             }
@@ -130,7 +129,6 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
             if (consumption != null) {
-                logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
                 logData(consumption.aggregats.years, "Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
                 consumption = getConsumptionAfterChecks(consumption);
             }
@@ -482,6 +480,7 @@ public class LinkyHandler extends BaseThingHandler {
 
     private boolean isDataLastDayAvailable(Consumption consumption) {
         Aggregate days = consumption.aggregats.days;
+        logData(days, "Last day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
         return days.datas != null && days.datas.size() > 0 && !days.datas.get(days.datas.size() - 1).isNaN();
     }
 
