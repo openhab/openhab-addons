@@ -13,9 +13,12 @@
 package org.openhab.binding.linky.internal.dto;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.openhab.binding.linky.internal.LinkyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,6 +29,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 public class ConsumptionReport {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumptionReport.class);
+
     public class Period {
         public String grandeurPhysiqueEnum;
         public ZonedDateTime dateDebut;
@@ -36,6 +41,32 @@ public class ConsumptionReport {
         public List<String> labels;
         public List<Period> periodes;
         public List<Double> datas;
+
+        public void log(String title, boolean withDateFin, DateTimeFormatter dateTimeFormatter, boolean onlyLast) {
+            if (LOGGER.isDebugEnabled()) {
+                int size = (datas == null || periodes == null) ? 0
+                        : (datas.size() <= periodes.size() ? datas.size() : periodes.size());
+                if (onlyLast) {
+                    if (size > 0) {
+                        log(size - 1, title, withDateFin, dateTimeFormatter);
+                    }
+                } else {
+                    for (int i = 0; i < size; i++) {
+                        log(i, title, withDateFin, dateTimeFormatter);
+                    }
+                }
+            }
+        }
+
+        private void log(int index, String title, boolean withDateFin, DateTimeFormatter dateTimeFormatter) {
+            if (withDateFin) {
+                LOGGER.debug("{} {} {} value {}", title, periodes.get(index).dateDebut.format(dateTimeFormatter),
+                        periodes.get(index).dateFin.format(dateTimeFormatter), datas.get(index));
+            } else {
+                LOGGER.debug("{} {} value {}", title, periodes.get(index).dateDebut.format(dateTimeFormatter),
+                        datas.get(index));
+            }
+        }
     }
 
     public class ChronoData {
