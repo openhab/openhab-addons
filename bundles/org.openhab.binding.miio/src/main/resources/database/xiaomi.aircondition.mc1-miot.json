@@ -81,7 +81,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [2\u003d\"Cool\",3\u003d\"Dry\",4\u003d\"Fan\",5\u003d\"Heat\"]"
+				"readmeComment": "Value mapping [\"2\"\u003d\"Cool\",\"3\"\u003d\"Dry\",\"4\"\u003d\"Fan\",\"5\"\u003d\"Heat\"]"
 			},
 			{
 				"property": "target-temperature",
@@ -241,7 +241,7 @@
 					"Control",
 					"Level"
 				],
-				"readmeComment": "Value mapping [0\u003d\"Auto\",1\u003d\"Level1\",2\u003d\"Level2\",3\u003d\"Level3\",4\u003d\"Level4\",5\u003d\"Level5\",6\u003d\"Level6\",7\u003d\"Level7\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"4\"\u003d\"Level4\",\"5\"\u003d\"Level5\",\"6\"\u003d\"Level6\",\"7\"\u003d\"Level7\"]"
 			},
 			{
 				"property": "vertical-swing",

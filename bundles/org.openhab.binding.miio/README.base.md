@@ -85,10 +85,6 @@ or in case of unknown models include the model information of a similar device t
 
 `Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4", communication="cloud"]`
 
-# Mi IO Devices
-
-!!!devices
-
 # Advanced: Unsupported devices
 
 Newer devices may not yet be supported.
@@ -118,7 +114,7 @@ After validation, please share the logfile and json files on the openHAB forum o
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
+The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
 During the start of the binding the exact path used in your system will be printed in the debug log. 
 Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …`
 If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
@@ -168,6 +164,9 @@ This won't work, the Roborock app is using a different communication method.
 Reset your vacuum and connect it to the Xiaomi MiHome app. 
 This will change the communication method and the Mi IO binding can communicate with the vacuum.
 
+# Mi IO Devices
+
+!!!devices
 
 # Channels
 

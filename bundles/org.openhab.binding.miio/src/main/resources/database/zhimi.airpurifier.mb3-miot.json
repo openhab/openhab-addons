@@ -31,6 +31,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -63,6 +67,9 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
@@ -178,7 +185,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "alarm"
 			},
 			{
 				"property": "brightness",
@@ -194,6 +202,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -430,7 +443,8 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "purify-volume",
