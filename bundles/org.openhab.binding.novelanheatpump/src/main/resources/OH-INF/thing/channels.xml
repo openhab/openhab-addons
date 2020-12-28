@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="novelanheatpump"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="temperature_outside">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Outside</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_outside_avg">
+		<item-type>Number:Temperature</item-type>
+		<label>Average Temperature Outside</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_return" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Return</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_reference_return" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Reference Return</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_supplay" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Supplay</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_servicewater_reference">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Service Water Reference</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_servicewater">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Service Water</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="simple_state">
+		<item-type>String</item-type>
+		<label>Simple state</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="simple_state_num" advanced="true">
+		<item-type>Number</item-type>
+		<label>Simple State</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="switchoff_reason_0" advanced="true">
+		<item-type>Number</item-type>
+		<label>Switch Off Reason</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="switchoff_code_0" advanced="true">
+		<item-type>Number</item-type>
+		<label>Switch Off Code</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="extended_state">
+		<item-type>String</item-type>
+		<label>Extended state</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_solar_collector" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature solar collector</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_hot_gas" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature hot gas</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_probe_in" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature probe in</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_probe_out" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature probe out</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_mk1" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature MK1</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_mk1_reference" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature MK1 Reference</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_mk2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature MK2</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_mk2_reference" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature MK2 Reference</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_external_source" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature External Source</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_compressor1" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours Compressor 1</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="starts_compressor1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Starts Compressor 1</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_compressor2" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours Compressor 2</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="starts_compressor2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Starts Compressor 2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_out_external" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Out External</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_zwe1" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours ZWE 1</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_zwe2" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours ZWE 2</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_zwe3" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours ZWE 3</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_heatpump">
+		<item-type>Number:Time</item-type>
+		<label>Hours Heatpump</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_heating">
+		<item-type>Number:Time</item-type>
+		<label>Hours Heating</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_warmwater">
+		<item-type>Number:Time</item-type>
+		<label>Hours Warmwater</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hours_cooling">
+		<item-type>Number:Time</item-type>
+		<label>Hours Cooling</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="thermalenergy_heating" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Thermalenergy Heating</label>
+		<description></description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="thermalenergy_warmwater" advanced="true">
+		<item-type>Number</item-type>
+		<label>Thermalenergy Warmwater</label>
+		<description></description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="thermalenergy_pool" advanced="true">
+		<item-type>Number</item-type>
+		<label>Thermalenergy Pool</label>
+		<description></description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="thermalenergy_total" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Thermalenergy Total</label>
+		<description></description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="massflow" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Massflow</label>
+		<description></description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature_solar_storage" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Solar Storage</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="heating_operation_mode">
+		<item-type>Switch</item-type>
+		<label>Heating Operation Mode</label>
+		<description></description>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Zuheizer</option>
+				<option value="2">Party</option>
+				<option value="3">Ferien</option>
+				<option value="4">Aus</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="heating_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Temperature</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="warmwater_operation_mode">
+		<item-type>Switch</item-type>
+		<label>Warmwater Operation Mode</label>
+		<description></description>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Zuheizer</option>
+				<option value="2">Party</option>
+				<option value="3">Ferien</option>
+				<option value="4">Aus</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="warmwater_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Warmwater Temperature</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="cooling_operation_mode">
+		<item-type>Switch</item-type>
+		<label>Cooling Operation Mode</label>
+		<description></description>
+		<state>
+			<options>
+				<option value="1">Auto</option>
+				<option value="0">Aus</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="cooling_release_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Cooling Release Temperature</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="cooling_inlet_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Cooling Inlet Temperature</label>
+		<description></description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="cooling_start_hours">
+		<item-type>Number</item-type>
+		<label>Cooling Start Hours</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f h" readOnly="true"/>
+	</channel-type>
+	<channel-type id="cooling_stop_hours">
+		<item-type>Number</item-type>
+		<label>Cooling Stop Hours</label>
+		<description></description>
+		<category>Time</category>
+		<state pattern="%.1f h" readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_av" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output AV</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_bup" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output BUP</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_hup" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output HUP</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_ma1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output MA1</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_mz1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output MZ1</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_ven" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output Ventialtion</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_vbo" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VBO</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_vd1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VD1</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_vd2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VD2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_zip" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output ZIP</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_zup" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output ZUP</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_zw1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output ZW1</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_zw2sst" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output ZW2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_zw3sst" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output ZW3</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_fp2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output FP2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_slp" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output SLP</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_sup" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output SUP</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_ma2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output MA2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_mz2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output MZ2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_ma3" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output MA3</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_mz3" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output MZ3</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_fp3" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output FP3</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_vsk" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VSK</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_frh" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output FRH</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_vdh" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VDH</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_av2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output AV2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_vbo2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VBO2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_vd12" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VD12</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="output_vdh2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VDH2</label>
+		<description></description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

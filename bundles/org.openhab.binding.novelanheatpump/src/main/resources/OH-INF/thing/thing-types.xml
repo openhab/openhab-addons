@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="novelanheatpump"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="heatpump">
+		<label>Novelan/Luxtronic Heatpump</label>
+		<description>Provides various values and actions for a heatpump</description>
+
+		<channels>
+			<channel id="temperature_outside" typeId="temperature_outside"/>
+			<channel id="temperature_outside_avg" typeId="temperature_outside_avg"/>
+			<channel id="temperature_return" typeId="temperature_return"/>
+			<channel id="temperature_reference_return" typeId="temperature_reference_return"/>
+			<channel id="temperature_supplay" typeId="temperature_supplay"/>
+			<channel id="temperature_servicewater_reference" typeId="temperature_servicewater_reference"/>
+			<channel id="temperature_servicewater" typeId="temperature_servicewater"/>
+			<channel id="state" typeId="state"/>
+			<channel id="simple_state" typeId="simple_state"/>
+			<channel id="simple_state_num" typeId="simple_state_num"/>
+			<channel id="switchoff_reason_0" typeId="switchoff_reason_0"/>
+			<channel id="switchoff_code_0" typeId="switchoff_code_0"/>
+			<channel id="extended_state" typeId="extended_state"/>
+			<channel id="temperature_solar_collector" typeId="temperature_solar_collector"/>
+			<channel id="temperature_hot_gas" typeId="temperature_hot_gas"/>
+			<channel id="temperature_probe_in" typeId="temperature_probe_in"/>
+			<channel id="temperature_probe_out" typeId="temperature_probe_out"/>
+			<channel id="temperature_mk1" typeId="temperature_mk1"/>
+			<channel id="temperature_mk1_reference" typeId="temperature_mk1_reference"/>
+			<channel id="temperature_mk2" typeId="temperature_mk2"/>
+			<channel id="temperature_mk2_reference" typeId="temperature_mk2_reference"/>
+			<channel id="temperature_external_source" typeId="temperature_external_source"/>
+			<channel id="hours_compressor1" typeId="hours_compressor1"/>
+			<channel id="starts_compressor1" typeId="starts_compressor1"/>
+			<channel id="hours_compressor2" typeId="hours_compressor2"/>
+			<channel id="starts_compressor2" typeId="starts_compressor2"/>
+			<channel id="temperature_out_external" typeId="temperature_out_external"/>
+			<channel id="hours_zwe1" typeId="hours_zwe1"/>
+			<channel id="hours_zwe2" typeId="hours_zwe2"/>
+			<channel id="hours_zwe3" typeId="hours_zwe3"/>
+			<channel id="hours_heatpump" typeId="hours_heatpump"/>
+			<channel id="hours_heating" typeId="hours_heating"/>
+			<channel id="hours_warmwater" typeId="hours_warmwater"/>
+			<channel id="hours_cooling" typeId="hours_cooling"/>
+			<channel id="thermalenergy_heating" typeId="thermalenergy_heating"/>
+			<channel id="thermalenergy_warmwater" typeId="thermalenergy_warmwater"/>
+			<channel id="thermalenergy_pool" typeId="thermalenergy_pool"/>
+			<channel id="thermalenergy_total" typeId="thermalenergy_total"/>
+			<channel id="massflow" typeId="massflow"/>
+			<channel id="temperature_solar_storage" typeId="temperature_solar_storage"/>
+			<channel id="heating_operation_mode" typeId="heating_operation_mode"/>
+			<channel id="heating_temperature" typeId="heating_temperature"/>
+			<channel id="warmwater_operation_mode" typeId="warmwater_operation_mode"/>
+			<channel id="warmwater_temperature" typeId="warmwater_temperature"/>
+			<channel id="cooling_operation_mode" typeId="cooling_operation_mode"/>
+			<channel id="cooling_release_temperature" typeId="cooling_release_temperature"/>
+			<channel id="cooling_inlet_temperature" typeId="cooling_inlet_temperature"/>
+			<channel id="cooling_start_hours" typeId="cooling_start_hours"/>
+			<channel id="cooling_stop_hours" typeId="cooling_stop_hours"/>
+			<channel id="output_bup" typeId="output_bup"/>
+			<channel id="output_hup" typeId="output_hup"/>
+			<channel id="output_ma1" typeId="output_ma1"/>
+			<channel id="output_mz1" typeId="output_mz1"/>
+			<channel id="output_ven" typeId="output_ven"/>
+			<channel id="output_vbo" typeId="output_vbo"/>
+			<channel id="output_vd1" typeId="output_vd1"/>
+			<channel id="output_vd2" typeId="output_vd2"/>
+			<channel id="output_zip" typeId="output_zip"/>
+			<channel id="output_zup" typeId="output_zup"/>
+			<channel id="output_zw1" typeId="output_zw1"/>
+			<channel id="output_zw2sst" typeId="output_zw2sst"/>
+			<channel id="output_zw3sst" typeId="output_zw3sst"/>
+			<channel id="output_fp2" typeId="output_fp2"/>
+			<channel id="output_slp" typeId="output_slp"/>
+			<channel id="output_sup" typeId="output_sup"/>
+			<channel id="output_ma2" typeId="output_ma2"/>
+			<channel id="output_mz2" typeId="output_mz2"/>
+			<channel id="output_ma3" typeId="output_ma3"/>
+			<channel id="output_mz3" typeId="output_mz3"/>
+			<channel id="output_fp3" typeId="output_fp3"/>
+			<channel id="output_vsk" typeId="output_vsk"/>
+			<channel id="output_frh" typeId="output_frh"/>
+			<channel id="output_vdh" typeId="output_vdh"/>
+			<channel id="output_av2" typeId="output_av2"/>
+			<channel id="output_vbo2" typeId="output_vbo2"/>
+			<channel id="output_vd12" typeId="output_vd12"/>
+			<channel id="output_vdh2" typeId="output_vdh2"/>
+
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP address</label>
+				<description>IP address of the heat pump to connect to</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<default>8888</default>
+				<description>Port number of the heat pump to connect to. Defaults to 8888. Please be aware that from
+					firmware version
+					1.73, Alpha Innotec has changed the port to 8889.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh inverval</label>
+				<default>300</default>
+				<description>Refresh inverval in seconds. Defaults to 300</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>
