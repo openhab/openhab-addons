@@ -20,6 +20,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bondhome.internal.discovery.BondDiscoveryService;
+import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
+import org.openhab.binding.bondhome.internal.handler.BondDeviceHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -28,9 +31,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.bondhome.internal.discovery.BondDiscoveryService;
-import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
-import org.openhab.binding.bondhome.internal.handler.BondDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -77,7 +77,9 @@ public class BondHomeHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof BondBridgeHandler) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            serviceReg.unregister();
+            if (serviceReg != null) {
+                serviceReg.unregister();
+            }
         }
     }
 

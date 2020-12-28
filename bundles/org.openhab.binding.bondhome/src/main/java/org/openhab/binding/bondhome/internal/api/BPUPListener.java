@@ -24,8 +24,8 @@ import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -241,6 +241,7 @@ public class BPUPListener implements Runnable {
     }
 
     private void datagramSocketHealthRoutine() {
+        @Nullable
         DatagramSocket datagramSocket = this.socket;
         if (datagramSocket == null
                 || (datagramSocket != null && (datagramSocket.isClosed() || !datagramSocket.isConnected()))) {

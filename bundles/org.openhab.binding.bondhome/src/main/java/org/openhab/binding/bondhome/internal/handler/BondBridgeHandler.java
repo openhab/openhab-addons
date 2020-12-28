@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.bondhome.internal.handler;
 
-import static org.openhab.core.thing.Thing.*;
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
+import static org.openhab.core.thing.Thing.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -29,8 +29,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.Configuration;
+import org.openhab.binding.bondhome.internal.api.BPUPListener;
+import org.openhab.binding.bondhome.internal.api.BPUPUpdate;
+import org.openhab.binding.bondhome.internal.api.BondDeviceState;
+import org.openhab.binding.bondhome.internal.api.BondHttpApi;
+import org.openhab.binding.bondhome.internal.api.BondSysVersion;
+import org.openhab.binding.bondhome.internal.config.BondBridgeConfiguration;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -39,12 +45,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.binding.bondhome.internal.api.BPUPListener;
-import org.openhab.binding.bondhome.internal.api.BPUPUpdate;
-import org.openhab.binding.bondhome.internal.api.BondDeviceState;
-import org.openhab.binding.bondhome.internal.api.BondHttpApi;
-import org.openhab.binding.bondhome.internal.api.BondSysVersion;
-import org.openhab.binding.bondhome.internal.config.BondBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

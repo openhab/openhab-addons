@@ -22,14 +22,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bondhome.internal.api.BondDevice;
+import org.openhab.binding.bondhome.internal.api.BondHttpApi;
+import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.binding.bondhome.internal.api.BondDevice;
-import org.openhab.binding.bondhome.internal.api.BondHttpApi;
-import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
