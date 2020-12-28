@@ -258,7 +258,8 @@ public class EnedisHttpApi {
         }
         logger.trace("getData returned {}", data);
         try {
-            return gson.fromJson(data, ConsumptionReport.class).firstLevel.consumptions;
+            ConsumptionReport report = gson.fromJson(data, ConsumptionReport.class);
+            return report.firstLevel.consumptions;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
             throw new LinkyException(

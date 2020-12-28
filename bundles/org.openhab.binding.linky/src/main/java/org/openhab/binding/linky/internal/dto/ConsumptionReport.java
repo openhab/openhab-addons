@@ -24,7 +24,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 public class ConsumptionReport {
-
     public class Period {
         public String grandeurPhysiqueEnum;
         public ZonedDateTime dateDebut;
