@@ -93,10 +93,9 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.minusDays(15), today);
             if (consumption != null) {
-                Aggregate days = consumption.aggregats.days;
-                days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, false);
+                consumption.aggregats.days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, false);
                 consumption.aggregats.weeks.log("Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
-                if (days.datas == null || days.datas.size() == 0 || days.datas.get(days.datas.size() - 1).isNaN()) {
+                if (!isDataLastDayAvailable(consumption)) {
                     logger.debug("Dayly data including yesterday are not yet available");
                     consumption = null;
                 }
@@ -114,10 +113,9 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
             if (consumption != null) {
-                Aggregate days = consumption.aggregats.days;
-                days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
+                consumption.aggregats.days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
                 consumption.aggregats.months.log("Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
-                if (days.datas == null || days.datas.size() == 0 || days.datas.get(days.datas.size() - 1).isNaN()) {
+                if (!isDataLastDayAvailable(consumption)) {
                     logger.debug("Monthly data including yesterday are not yet available");
                     consumption = null;
                 }
@@ -129,16 +127,20 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
             if (consumption != null) {
-                Aggregate days = consumption.aggregats.days;
-                days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
+                consumption.aggregats.days.log("Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
                 consumption.aggregats.years.log("Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
-                if (days.datas == null || days.datas.size() == 0 || days.datas.get(days.datas.size() - 1).isNaN()) {
+                if (!isDataLastDayAvailable(consumption)) {
                     logger.debug("Yearly data including yesterday are not yet available");
                     consumption = null;
                 }
             }
             return consumption;
         });
+    }
+
+    private boolean isDataLastDayAvailable(Consumption consumption) {
+        Aggregate days = consumption.aggregats.days;
+        return days.datas != null && days.datas.size() > 0 && !days.datas.get(days.datas.size() - 1).isNaN();
     }
 
     @Override
