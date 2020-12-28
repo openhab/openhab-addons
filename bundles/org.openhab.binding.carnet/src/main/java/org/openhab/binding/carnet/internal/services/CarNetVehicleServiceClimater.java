@@ -32,6 +32,8 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNClimater.CarNe
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper.ChannelIdMapEntry;
 import org.openhab.core.library.unit.SIUnits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link CarNetVehicleServiceClimater} implements climater service.
@@ -40,6 +42,8 @@ import org.openhab.core.library.unit.SIUnits;
  */
 @NonNullByDefault
 public class CarNetVehicleServiceClimater extends CarNetVehicleBaseService {
+    private final Logger logger = LoggerFactory.getLogger(CarNetVehicleServiceClimater.class);
+
     public CarNetVehicleServiceClimater(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(thingHandler, api);
         serviceId = CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION;
@@ -108,7 +112,7 @@ public class CarNetVehicleServiceClimater extends CarNetVehicleBaseService {
                 }
             }
         } catch (IncommensurableException e) {
-
+            logger.debug("IncommensurableException ignored");
         }
         return updated;
     }

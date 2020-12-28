@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.CarNetException;
+import org.openhab.binding.carnet.internal.CarNetUtils;
 import org.openhab.binding.carnet.internal.api.CarNetApi;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
@@ -62,6 +63,10 @@ public class CarNetVehicleBaseService {
         return false;
     }
 
+    public void disable() {
+        enabled = false;
+    }
+
     public boolean update() throws CarNetException {
         try {
             if (!enabled) {
@@ -70,11 +75,11 @@ public class CarNetVehicleBaseService {
             return serviceUpdate();
         } catch (CarNetException e) {
             int httpCode = e.getApiResult().httpCode;
-            if (httpCode == HttpStatus.FORBIDDEN_403) {
+            if (e.isSecurityException()) {
                 enabled = false;
-                logger.debug("Service not available!");
+                logger.debug("Service {} is not available!", serviceId);
             } else if (httpCode == HttpStatus.NO_CONTENT_204) {
-                logger.debug("Service return NO_CONTENT (204)");
+                logger.debug("Service {} returned NO_CONTENT (204)", serviceId);
             }
         }
         return false;
@@ -100,6 +105,10 @@ public class CarNetVehicleBaseService {
 
     protected boolean updateChannel(String group, String channel, State value, int digits, Unit<?> unit) {
         return thingHandler.updateChannel(group, channel, value, digits, unit);
+    }
+
+    protected State getDateTime(String time) {
+        return CarNetUtils.getDateTime(time, thingHandler.getZoneId());
     }
 
     protected CarNetCombinedConfig getConfig() {

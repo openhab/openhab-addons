@@ -14,6 +14,7 @@ package org.openhab.binding.carnet.internal;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.openhab.binding.carnet.internal.handler.CarNetAccountHandler;
 import org.openhab.binding.carnet.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -50,14 +52,16 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
     private final CarNetTextResources resources;
     private final CarNetIChanneldMapper channelIdMapper;
     private final CarNetTokenManager tokenManager;
+    private final ZoneId zoneId;
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Activate
-    public CarNetHandlerFactory(@Reference CarNetTextResources resources,
+    public CarNetHandlerFactory(@Reference TimeZoneProvider tzProvider, @Reference CarNetTextResources resources,
             @Reference CarNetIChanneldMapper channelIdMapper, @Reference CarNetTokenManager tokenManager) {
         this.resources = resources;
         this.channelIdMapper = channelIdMapper;
         this.tokenManager = tokenManager;
+        zoneId = tzProvider.getTimeZone();
     }
 
     @Override
@@ -74,7 +78,7 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-            return new CarNetVehicleHandler(thing, resources, channelIdMapper, tokenManager);
+            return new CarNetVehicleHandler(thing, resources, zoneId, channelIdMapper, tokenManager);
         }
 
         return null;

@@ -17,6 +17,7 @@ import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.CNAPI_SERVICE_VEHICLE_STATUS_REPORT;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 
 import javax.measure.IncommensurableException;
@@ -213,18 +214,19 @@ public class CarNetVehicleServiceStatus extends CarNetVehicleBaseService {
             }
             BigDecimal bd = new BigDecimal(value);
             if (definition.unit != null) {
-                ChannelIdMapEntry fromDef = definition;
-                fromDef = idMapper.updateDefinition(field, definition);
-                if ((fromDef.fromUnit != null) && !fromDef.fromUnit.equals(definition.unit)) {
+                ChannelIdMapEntry fromDef = idMapper.updateDefinition(field, definition);
+                Unit<?> fromUnit = fromDef.fromUnit;
+                Unit<?> toUnit = definition.unit;
+                if ((fromUnit != null) && (toUnit != null) && !fromUnit.equals(toUnit)) {
                     try {
                         // Convert between units
-                        bd = new BigDecimal(fromDef.fromUnit.getConverterToAny(definition.unit).convert(value));
+                        bd = new BigDecimal(fromUnit.getConverterToAny(toUnit).convert(value));
                     } catch (UnconvertibleException | IncommensurableException e) {
                         logger.debug("{}: Unable to covert value", thingId, e);
                     }
                 }
             }
-            value = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            value = bd.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
             Unit<?> unit = definition.unit;
             if (unit != null) {
                 state = new QuantityType<>(value, unit);

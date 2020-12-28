@@ -7,8 +7,8 @@ The API provides a lot of diagnostic data and provide access to remote control f
 ## Discovery
 
 The binding supports automated discovery of vehicles.
-For now only Audi is supported, other brand might follo w in the future, because the API has a big overlap between various brands.
-The CarNet Account Thing has to be added manually giving the neccesary credentials.
+For now only Audi is supported, other brand might follow in the future, because the API has a big overlap between various brands.
+The CarNet Account Thing has to be added manually giving the necessary credentials.
 Once the account is online the binding can query all registered vehicles and creates a vehicle thing for each of them.
 
 ## Binding Configuration
@@ -21,7 +21,7 @@ The binding itself has no configuration options
 
 The Account thing implements the online connect to the CarNet service.
 An account is required to setup the connection (register on the manufacture's portal, e.g. myAudi.de).
-Usually the manufacturer supports to register a single or multiple vehicles under this account (identified by their unique identification number - VIN).
+Usually the manufacturer supports to register a single or multiple vehicles under this account (identified by their unique vehicle identification number - VIN).
 Once the account gets online the binding retrieves the complete vehicle list and creates a thing per vehicle.
 
 Thing Configuration
@@ -245,6 +245,7 @@ Switch                      ChargerSwitch        "Charging ON/OFF"              
 Switch                      PreHeater            "Pre-Heater ON/OFF"                   { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#preHeater" }
 Number                      Current_Speed        "Current Speed [%.1f %unit%]"         { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:status#currentSpeed" }
 ```
+
 .sitemap
 
 .rule

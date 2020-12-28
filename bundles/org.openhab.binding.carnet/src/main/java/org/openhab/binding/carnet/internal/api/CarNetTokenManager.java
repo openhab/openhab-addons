@@ -35,7 +35,6 @@ import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CNApiToken;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetSecurityPinAuthInfo;
 import org.openhab.binding.carnet.internal.api.CarNetApiGSonDTO.CarNetSecurityPinAuthentication;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,23 +50,15 @@ import com.google.gson.Gson;
 @Component(service = CarNetTokenManager.class)
 public class CarNetTokenManager {
     private final Logger logger = LoggerFactory.getLogger(CarNetTokenManager.class);
-
     private final Gson gson = new Gson();
+    private Map<String, TokenSet> accountTokens = new HashMap<>();
+    private CarNetHttpClient http = new CarNetHttpClient();
+    private CopyOnWriteArrayList<CarNetToken> securityTokens = new CopyOnWriteArrayList<CarNetToken>();
 
-    // private CarNetCombinedConfig config = new CarNetCombinedConfig();
     private class TokenSet {
         private CarNetToken idToken = new CarNetToken();
         private CarNetToken vwToken = new CarNetToken();
         private String csrf = "";
-    }
-
-    private Map<String, TokenSet> accountTokens = new HashMap<>();
-
-    private CarNetHttpClient http = new CarNetHttpClient();
-    private CopyOnWriteArrayList<CarNetToken> securityTokens = new CopyOnWriteArrayList<CarNetToken>();
-
-    @Activate
-    public CarNetTokenManager() {
     }
 
     public void setHttpClient(String tokenSetId, CarNetHttpClient httpClient) {
@@ -130,7 +121,7 @@ public class CarNetTokenManager {
                 throw new CarNetException("Unable to get signin URL");
             }
             if (url.contains("error=consent_require")) {
-                String message = URLDecoder.decode(url);
+                String message = URLDecoder.decode(url, UTF_8);
                 message = substringBefore(substringAfter(message, "&error_description="), "&");
                 throw new CarNetSecurityException(
                         "Login failed, Consent missing. Login to the Web App and give consent: " + message);
@@ -238,7 +229,7 @@ public class CarNetTokenManager {
                 json = http.post(CNAPI_AUDI_TOKEN_URL, headers, data, true);
 
                 // process token
-                token = gson.fromJson(json, CNApiToken.class);
+                token = fromJson(gson, json, CNApiToken.class);
                 if ((token.accessToken == null) || token.accessToken.isEmpty()) {
                     throw new CarNetSecurityException("Authentication failed: Unable to get id token!");
                 }
@@ -264,17 +255,13 @@ public class CarNetTokenManager {
             data.put("token", tokens.idToken.idToken);
             data.put("scope", "sc2:fal");
             json = http.post(CNAPI_URL_GET_SEC_TOKEN, headers, data, false);
-            token = gson.fromJson(json, CNApiToken.class);
-            if (token != null) {
-                if ((token.accessToken == null) || token.accessToken.isEmpty()) {
-                    throw new CarNetSecurityException("Authentication failed: Unable to get access token!");
-                }
-                tokens.vwToken = new CarNetToken(token);
-                updateTokenSet(config.tokenSetId, tokens);
-                return tokens.vwToken.accessToken;
-            } else {
-                throw new CarNetSecurityException("Unable to parse token information from JSON");
+            token = fromJson(gson, json, CNApiToken.class);
+            if ((token.accessToken == null) || token.accessToken.isEmpty()) {
+                throw new CarNetSecurityException("Authentication failed: Unable to get access token!");
             }
+            tokens.vwToken = new CarNetToken(token);
+            updateTokenSet(config.tokenSetId, tokens);
+            return tokens.vwToken.accessToken;
         } catch (CarNetException e) {
             throw new CarNetSecurityException("Unable to create API access token", e);
         }
@@ -326,7 +313,7 @@ public class CarNetTokenManager {
                 + config.vehicle.vin.toUpperCase() + "/services/" + service + "/operations/" + action
                 + "/security-pin-auth-requested";
         String json = http.get(url, headers, accessToken);
-        CarNetSecurityPinAuthInfo authInfo = gson.fromJson(json, CarNetSecurityPinAuthInfo.class);
+        CarNetSecurityPinAuthInfo authInfo = fromJson(gson, json, CarNetSecurityPinAuthInfo.class);
         String pinHash = sha512(config.vehicle.pin, authInfo.securityPinAuthInfo.securityPinTransmission.challenge)
                 .toUpperCase();
         logger.debug("Authenticating SPIN, retires={}",
@@ -341,10 +328,7 @@ public class CarNetTokenManager {
         json = http.post(
                 "https://mal-1a.prd.ece.vwg-connect.com/api/rolesrights/authorization/v2/security-pin-auth-completed",
                 headers, data);
-        CNApiToken t = gson.fromJson(json, CNApiToken.class);
-        if (t == null) {
-            throw new CarNetSecurityException("Unable to parse token information from JSON");
-        }
+        CNApiToken t = fromJson(gson, json, CNApiToken.class);
         CarNetToken securityToken = new CarNetToken(t);
         if (securityToken.securityToken.isEmpty()) {
             throw new CarNetSecurityException("Authentication failed: Unable to get access token!");

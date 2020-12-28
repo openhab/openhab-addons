@@ -80,7 +80,7 @@ public class CarNetVehicleServiceCarFinder extends CarNetVehicleBaseService {
                 updateLocation(api.getStoredPosition(), CHANNEL_PARK_LOCATION);
                 String parkingTime = getString(position.getParkingTime());
                 updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME,
-                        !parkingTime.isEmpty() ? new DateTimeType(position.getParkingTime()) : UnDefType.NULL);
+                        !parkingTime.isEmpty() ? getDateTime(parkingTime) : UnDefType.NULL);
                 return true;
             }
         } catch (CarNetException e) {

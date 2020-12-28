@@ -144,8 +144,6 @@ public class CarNetApiConstants {
     public static final String CNAPI_ACTION_REMOTE_BATTERY_CHARGE_START_CHARGING_NO_SET = "P_START_NOSET";
     public static final String CNAPI_ACTION_REMOTE_BATTERY_CHARGE_START_CHARGING_TIMER_BASED = "START_CHARGING_TIMER_BASED";
     public static final String CNAPI_ACTION_REMOTE_DEPARTURE_TIMER_GET_STATUS = "G_STATUS";
-    // public static final String CNAPI_ACTION_f363x73823fb6="P_SETTINGS_AU";
-    // public static final String CNAPI_ACTION_f364x1ca850bf="P_SETTINGS_EL";
     public static final String CNAPI_ACTION_REMOTE_HEATING_GET_REQUEST_STATUS = "G_RQSTAT";
     public static final String CNAPI_ACTION_REMOTE_HEATING_GET_STATUS = "G_STAT";
     public static final String CNAPI_ACTION_REMOTE_HEATING_QUICK_START = "P_QSACT";

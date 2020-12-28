@@ -13,6 +13,7 @@
 package org.openhab.binding.carnet.internal;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -53,19 +54,10 @@ public class CarNetUtils {
     private static final String PRE = "Can't create object of type ";
 
     public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws CarNetException {
-        return fromJson(gson, json, classOfT, true);
-    }
-
-    public static @Nullable <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT, boolean exceptionOnNull)
-            throws CarNetException {
         String className = CarNetUtils.substringAfter(classOfT.getName(), "$");
 
         if (json == null) {
-            if (exceptionOnNull) {
-                throw new IllegalArgumentException(PRE + className + ": json is null!");
-            } else {
-                return null;
-            }
+            throw new IllegalArgumentException(PRE + className + ": json is null!");
         }
 
         if (classOfT.isInstance(json)) {
@@ -74,9 +66,10 @@ public class CarNetUtils {
             throw new CarNetException(PRE + className + "from empty JSON");
         } else {
             try {
+                @Nullable
                 T obj = gson.fromJson(json, classOfT);
-                if ((obj == null) && exceptionOnNull) { // new in OH3: fromJson may return null
-                    throw new CarNetException(PRE + className + "from JSON: " + json);
+                if (obj == null) { // new in OH3: fromJson may return null
+                    throw new IllegalArgumentException(PRE + className + ": json is null!");
                 }
                 return obj;
             } catch (JsonSyntaxException e) {
@@ -196,7 +189,7 @@ public class CarNetUtils {
         }
         BigDecimal bd = new BigDecimal(value.doubleValue());
         if (digits >= 1) {
-            bd = bd.setScale(digits, BigDecimal.ROUND_HALF_UP);
+            bd = bd.setScale(digits, RoundingMode.HALF_EVEN);
         }
         return toQuantityType(bd, unit);
     }
@@ -213,29 +206,28 @@ public class CarNetUtils {
         return System.currentTimeMillis() / 1000L;
     }
 
-    public static DateTimeType getTimestamp() {
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now()), ZoneId.systemDefault()));
+    public static DateTimeType getTimestamp(ZoneId zoneId) {
+        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now()), zoneId));
     }
 
-    public static DateTimeType getTimestamp(String zone, long timestamp) {
+    public static DateTimeType getTimestamp(ZoneId zoneId, long timestamp) {
         try {
             if (timestamp == 0) {
-                return getTimestamp();
+                return getTimestamp(zoneId);
             }
-            ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
             ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
             int delta = zdt.getOffset().getTotalSeconds();
             return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp - delta), zoneId));
         } catch (DateTimeException e) {
             // Unable to convert device's timezone, use system one
-            return getTimestamp();
+            return getTimestamp(zoneId);
         }
     }
 
-    public static State getDateTime(String timestamp) {
+    public static State getDateTime(String timestamp, ZoneId zoneId) {
         try {
             Date date = Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(timestamp)));
-            return new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()));
+            return new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), zoneId));
         } catch (DateTimeException e) {
             return UnDefType.UNDEF;
         }

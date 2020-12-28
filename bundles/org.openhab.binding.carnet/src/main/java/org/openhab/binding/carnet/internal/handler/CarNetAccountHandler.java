@@ -41,11 +41,9 @@ import org.openhab.binding.carnet.internal.config.CarNetAccountConfiguration;
 import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -87,15 +85,16 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         HttpClient httpClient = new HttpClient();
         try {
             SslContextFactory ssl = new SslContextFactory();
-            // ssl.setIncludeCipherSuites("^TLS_RSA_.*$");
             String[] excludedCiphersWithoutTlsRsaExclusion = Arrays.stream(ssl.getExcludeCipherSuites())
                     .filter(cipher -> !cipher.equals("^TLS_RSA_.*$")).toArray(String[]::new);
             ssl.setExcludeCipherSuites(excludedCiphersWithoutTlsRsaExclusion);
             httpClient = new HttpClient(ssl);
             httpClient.start();
-            logger.debug("{}", httpClient.dump());
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}", httpClient.dump());
+            }
         } catch (Exception e) {
-            logger.warn("{}", messages.get("init-fialed", "Unable to start HttpClient!"));
+            logger.warn("{}", messages.get("init-fialed", "Unable to start HttpClient!"), e);
         }
 
         this.http = new CarNetHttpClient(httpClient);
@@ -114,7 +113,6 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
         scheduler.execute(() -> {
             try {
                 initializeThing();
@@ -212,14 +210,6 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Thing configuration was updated
-     */
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-    }
-
-    /**
      * Empty handleCommand for Account Thing
      */
     @Override
@@ -239,7 +229,7 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
      */
     private void setupRefreshJob(int initialWaitTime) {
         cancelRefreshJob();
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> refreshStatus(), initialWaitTime,
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refreshStatus, initialWaitTime,
                 API_TOKEN_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
     }
 
@@ -296,16 +286,6 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
             }
         }
         updateProperties(thingProperties);
-    }
-
-    @Override
-    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        super.childHandlerInitialized(childHandler, childThing);
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        super.childHandlerDisposed(childHandler, childThing);
     }
 
     /**

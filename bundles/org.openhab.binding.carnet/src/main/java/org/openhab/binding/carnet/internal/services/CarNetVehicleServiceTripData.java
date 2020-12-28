@@ -101,6 +101,7 @@ public class CarNetVehicleServiceTripData extends CarNetVehicleBaseService {
             while ((i < std.tripDataList.tripData.size()) && (l <= numTrips)) {
                 if (channels != null) {
                     createChannels(channels, shortTerm ? CHANNEL_TRIP_SHORT : CHANNEL_TRIP_LONG, l);
+                    updated = true;
                 } else {
                     String group = (shortTerm ? CHANNEL_GROUP_STRIP : CHANNEL_GROUP_LTRIP) + l;
                     CarNetTripDataEntry entry = std.tripDataList.tripData.get(i);

@@ -14,7 +14,6 @@ package org.openhab.binding.carnet.internal.api;
 
 import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.API_STATUS_CLASS_SECURUTY;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.CarNetApiErrorDTO.CNApiError2.CNErrorMessage2;
 
@@ -25,7 +24,6 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Markus Michels - Initial contribution
  */
-@NonNullByDefault
 public class CarNetApiErrorDTO {
     /*
      * {
@@ -48,12 +46,14 @@ public class CarNetApiErrorDTO {
     }
 
     public CarNetApiErrorDTO(CNApiError2 format2) {
-        if (format2.error != null) {
+        if (format2 != null) {
             CNErrorMessage2 error2 = format2.error;
-            error = getString(error2.error);
-            code = getString(error2.code);
-            description = getString(error2.description);
-            details = error2.details;
+            if (error2 != null) {
+                error = getString(error2.error);
+                code = getString(error2.code);
+                description = getString(error2.description);
+                details = error2.details;
+            }
         }
     }
 
