@@ -31,5 +31,5 @@ public class GPIOConfiguration {
     /**
      * Should the input/output be inverted?
      */
-    public Boolean invert = false;
+    public boolean invert = false;
 }

@@ -68,7 +68,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     public void initialize() {
         PigpioConfiguration config = getConfigAs(PigpioConfiguration.class);
         String ipAddress = config.ipAddress;
-        Integer port = config.port;
+        int port = config.port;
         JPigpio jPigpio;
         if (ipAddress == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,

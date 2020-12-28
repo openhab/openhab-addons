@@ -31,5 +31,5 @@ public class PigpioConfiguration {
     /**
      * Port of pigpio on the remote raspberry pi
      */
-    public Integer port = 8888;
+    public int port = 8888;
 }

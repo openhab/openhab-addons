@@ -24,5 +24,5 @@ public class GPIOInputConfiguration extends GPIOConfiguration {
     /**
      * Time in ms to double check if value hasn't changed
      */
-    public Integer debouncingTime = 10;
+    public int debouncingTime = 10;
 }
