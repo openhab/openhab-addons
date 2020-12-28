@@ -44,10 +44,7 @@ import org.openhab.binding.http.internal.converter.ImageItemConverter;
 import org.openhab.binding.http.internal.converter.ItemValueConverter;
 import org.openhab.binding.http.internal.converter.PlayerItemConverter;
 import org.openhab.binding.http.internal.converter.RollershutterItemConverter;
-import org.openhab.binding.http.internal.http.Content;
-import org.openhab.binding.http.internal.http.HttpAuthException;
-import org.openhab.binding.http.internal.http.HttpResponseListener;
-import org.openhab.binding.http.internal.http.RefreshingUrlCache;
+import org.openhab.binding.http.internal.http.*;
 import org.openhab.binding.http.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -81,6 +78,7 @@ public class HttpThingHandler extends BaseThingHandler {
     private final ValueTransformationProvider valueTransformationProvider;
     private final HttpClientProvider httpClientProvider;
     private HttpClient httpClient;
+    private RateLimitedHttpClient rateLimitedHttpClient;
     private final HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider;
 
     private HttpThingConfig config = new HttpThingConfig();
@@ -95,6 +93,7 @@ public class HttpThingHandler extends BaseThingHandler {
         super(thing);
         this.httpClientProvider = httpClientProvider;
         this.httpClient = httpClientProvider.getSecureClient();
+        this.rateLimitedHttpClient = new RateLimitedHttpClient(httpClient, scheduler);
         this.valueTransformationProvider = valueTransformationProvider;
         this.httpDynamicStateDescriptionProvider = httpDynamicStateDescriptionProvider;
     }
@@ -139,6 +138,26 @@ public class HttpThingHandler extends BaseThingHandler {
                     "Parameter baseURL must not be empty!");
             return;
         }
+
+        if (config.ignoreSSLErrors) {
+            logger.info("Using the insecure client for thing '{}'.", thing.getUID());
+            httpClient = httpClientProvider.getInsecureClient();
+        } else {
+            logger.info("Using the secure client for thing '{}'.", thing.getUID());
+            httpClient = httpClientProvider.getSecureClient();
+        }
+        rateLimitedHttpClient.setHttpClient(httpClient);
+        rateLimitedHttpClient.setDelay(config.delay);
+
+        int channelCount = thing.getChannels().size();
+        if (channelCount * config.delay > config.refresh * 1000) {
+            // this should prevent the rate limit queue from filling up
+            config.refresh = (channelCount * config.delay) / 1000 + 1;
+            logger.warn(
+                    "{} channels in thing {} with a delay of {} incompatible with the configured refresh time. Refresh-Time increased to the minimum of {}",
+                    channelCount, thing.getUID(), config.delay, config.refresh);
+        }
+
         authentication = null;
         if (!config.username.isEmpty()) {
             try {
@@ -170,14 +189,6 @@ public class HttpThingHandler extends BaseThingHandler {
             logger.debug("No authentication configured for thing '{}'", thing.getUID());
         }
 
-        if (config.ignoreSSLErrors) {
-            logger.info("Using the insecure client for thing '{}'.", thing.getUID());
-            httpClient = httpClientProvider.getInsecureClient();
-        } else {
-            logger.info("Using the secure client for thing '{}'.", thing.getUID());
-            httpClient = httpClientProvider.getSecureClient();
-        }
-
         thing.getChannels().forEach(this::createChannel);
 
         updateStatus(ThingStatus.ONLINE);
@@ -187,6 +198,7 @@ public class HttpThingHandler extends BaseThingHandler {
     public void dispose() {
         // stop update tasks
         urlHandlers.values().forEach(RefreshingUrlCache::stop);
+        rateLimitedHttpClient.shutdown();
 
         // clear lists
         urlHandlers.clear();
@@ -266,7 +278,9 @@ public class HttpThingHandler extends BaseThingHandler {
         channels.put(channelUID, itemValueConverter);
         if (channelConfig.mode != HttpChannelMode.WRITEONLY) {
             channelUrls.put(channelUID, stateUrl);
-            urlHandlers.computeIfAbsent(stateUrl, url -> new RefreshingUrlCache(scheduler, httpClient, url, config))
+            urlHandlers
+                    .computeIfAbsent(stateUrl,
+                            url -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, url, config))
                     .addConsumer(itemValueConverter::process);
         }
 
