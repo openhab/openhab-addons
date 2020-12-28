@@ -28,7 +28,6 @@
 				"channel": "bh_mode",
 				"type": "String",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_bh_mode",
