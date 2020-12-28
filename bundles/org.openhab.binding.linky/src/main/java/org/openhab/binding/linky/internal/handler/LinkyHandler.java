@@ -351,7 +351,9 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getEnergyData(userId, prmId, from, to);
+                Consumption consumption = api.getEnergyData(userId, prmId, from, to);
+                updateStatus(ThingStatus.ONLINE);
+                return consumption;
             } catch (LinkyException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -365,7 +367,9 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getPowerData(userId, prmId, from, to);
+                Consumption consumption = api.getPowerData(userId, prmId, from, to);
+                updateStatus(ThingStatus.ONLINE);
+                return consumption;
             } catch (LinkyException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
