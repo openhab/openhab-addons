@@ -29,6 +29,7 @@ public class HttpThingConfig {
     public String baseURL = "";
     public int refresh = 30;
     public int timeout = 3000;
+    public int delay = 0;
 
     public String username = "";
     public String password = "";

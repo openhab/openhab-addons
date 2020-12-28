@@ -18,19 +18,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.http.internal.Util;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
 import org.slf4j.Logger;
@@ -47,7 +41,7 @@ public class RefreshingUrlCache {
     private final Logger logger = LoggerFactory.getLogger(RefreshingUrlCache.class);
 
     private final String url;
-    private final HttpClient httpClient;
+    private final RateLimitedHttpClient httpClient;
     private final int timeout;
     private final int bufferSize;
     private final @Nullable String fallbackEncoding;
@@ -57,7 +51,7 @@ public class RefreshingUrlCache {
     private final ScheduledFuture<?> future;
     private @Nullable Content lastContent;
 
-    public RefreshingUrlCache(ScheduledExecutorService executor, HttpClient httpClient, String url,
+    public RefreshingUrlCache(ScheduledExecutorService executor, RateLimitedHttpClient httpClient, String url,
             HttpThingConfig thingConfig) {
         this.httpClient = httpClient;
         this.url = url;
@@ -85,43 +79,53 @@ public class RefreshingUrlCache {
             URI finalUrl = new URI(String.format(this.url, new Date()));
 
             logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, finalUrl, timeout);
-            Request request = httpClient.newRequest(finalUrl).timeout(timeout, TimeUnit.MILLISECONDS);
 
-            headers.forEach(header -> {
-                String[] keyValuePair = header.split("=", 2);
-                if (keyValuePair.length == 2) {
-                    request.header(keyValuePair[0].trim(), keyValuePair[1].trim());
-                } else {
-                    logger.warn("Splitting header '{}' failed. No '=' was found. Ignoring", header);
-                }
-            });
+            httpClient.newRequest(finalUrl).thenAccept(request -> {
+                request.timeout(timeout, TimeUnit.MILLISECONDS);
 
-            CompletableFuture<@Nullable Content> response = new CompletableFuture<>();
-            response.exceptionally(e -> {
-                if (e instanceof HttpAuthException) {
-                    if (isRetry) {
-                        logger.warn("Retry after authentication  failure failed again for '{}', failing here",
-                                finalUrl);
+                headers.forEach(header -> {
+                    String[] keyValuePair = header.split("=", 2);
+                    if (keyValuePair.length == 2) {
+                        request.header(keyValuePair[0].trim(), keyValuePair[1].trim());
                     } else {
-                        AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                        Authentication.Result authResult = authStore.findAuthenticationResult(finalUrl);
-                        if (authResult != null) {
-                            authStore.removeAuthenticationResult(authResult);
-                            logger.debug("Cleared authentication result for '{}', retrying immediately", finalUrl);
-                            refresh(true);
+                        logger.warn("Splitting header '{}' failed. No '=' was found. Ignoring", header);
+                    }
+                });
+
+                CompletableFuture<@Nullable Content> response = new CompletableFuture<>();
+                response.exceptionally(e -> {
+                    if (e instanceof HttpAuthException) {
+                        if (isRetry) {
+                            logger.warn("Retry after authentication  failure failed again for '{}', failing here",
+                                    finalUrl);
                         } else {
-                            logger.warn("Could not find authentication result for '{}', failing here", finalUrl);
+                            AuthenticationStore authStore = httpClient.getAuthenticationStore();
+                            Authentication.Result authResult = authStore.findAuthenticationResult(finalUrl);
+                            if (authResult != null) {
+                                authStore.removeAuthenticationResult(authResult);
+                                logger.debug("Cleared authentication result for '{}', retrying immediately", finalUrl);
+                                refresh(true);
+                            } else {
+                                logger.warn("Could not find authentication result for '{}', failing here", finalUrl);
+                            }
                         }
                     }
+                    return null;
+                }).thenAccept(this::processResult);
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Sending to '{}': {}", finalUrl, Util.requestToLogString(request));
+                }
+
+                request.send(new HttpResponseListener(response, fallbackEncoding, bufferSize));
+            }).exceptionally(e -> {
+                if (e instanceof CancellationException) {
+                    logger.debug("Request to URL {} was cancelled by thing handler.", finalUrl);
+                } else {
+                    logger.warn("Request to URL {} failed: {}", finalUrl, e.getMessage());
                 }
                 return null;
-            }).thenAccept(this::processResult);
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("Sending to '{}': {}", finalUrl, Util.requestToLogString(request));
-            }
-
-            request.send(new HttpResponseListener(response, fallbackEncoding, bufferSize));
+            });
         } catch (IllegalArgumentException | URISyntaxException e) {
             logger.warn("Creating request for '{}' failed: {}", url, e.getMessage());
         }

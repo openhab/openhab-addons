@@ -101,7 +101,7 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory
 
     @Override
     public ValueTransformation getValueTransformation(@Nullable String pattern) {
-        if (pattern == null) {
+        if (pattern == null || pattern.isEmpty()) {
             return NoOpValueTransformation.getInstance();
         }
         return new CascadedValueTransformationImpl(pattern,
