@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.bondhome.internal.discovery;
 
-import static org.openhab.core.thing.Thing.*;
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
+import static org.openhab.core.thing.Thing.*;
 
 import java.util.Set;
 

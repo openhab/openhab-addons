@@ -27,12 +27,11 @@ import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.HttpMethod;
 
-import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
+import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,7 +179,9 @@ public class BondHttpApi {
                 headers.put("BOND-Token", bridgeHandler.getBridgeToken());
 
                 httpResponse = HttpUtil.executeUrl(HttpMethod.GET, url, headers, null, "", BOND_API_TIMEOUT_MS);
-                Validate.notNull(httpResponse, "httpResponse must not be null");
+                if (httpResponse == null) {
+                    throw new IOException("No response received!");
+                }
                 // handle known errors
                 if (httpResponse.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
                     // Don't retry or throw an exception if we get unauthorized, just set the bridge offline
@@ -203,12 +204,25 @@ public class BondHttpApi {
                 logger.debug("HTTP response from request to {}: {}", uri, httpResponse);
                 return httpResponse;
             } catch (IOException e) {
-                if (e.getCause() != null) {
+                Throwable ioeCause = e.getCause();
+                @Nullable
+                String errorMessage = e.getMessage();
+                if (ioeCause != null) {
+                    @Nullable
+                    String innerErrorMessage = ioeCause.getMessage();
+                    if (innerErrorMessage != null) {
+                        logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
+                                numRetriesRemaining, innerErrorMessage);
+                    } else {
+                        logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause unknown",
+                                numRetriesRemaining);
+                    }
+                } else if (errorMessage != null) {
                     logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
-                            numRetriesRemaining, e.getCause().getMessage());
+                            numRetriesRemaining, errorMessage);
                 } else {
-                    logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
-                            numRetriesRemaining, e.getMessage());
+                    logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause unknown",
+                            numRetriesRemaining);
                 }
                 numRetriesRemaining--;
                 if (numRetriesRemaining == 0) {

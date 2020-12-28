@@ -28,6 +28,13 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bondhome.internal.api.BondDevice;
+import org.openhab.binding.bondhome.internal.api.BondDeviceAction;
+import org.openhab.binding.bondhome.internal.api.BondDeviceProperties;
+import org.openhab.binding.bondhome.internal.api.BondDeviceState;
+import org.openhab.binding.bondhome.internal.api.BondDeviceType;
+import org.openhab.binding.bondhome.internal.api.BondHttpApi;
+import org.openhab.binding.bondhome.internal.config.BondDeviceConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -48,13 +55,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.binding.bondhome.internal.api.BondDevice;
-import org.openhab.binding.bondhome.internal.api.BondDeviceAction;
-import org.openhab.binding.bondhome.internal.api.BondDeviceProperties;
-import org.openhab.binding.bondhome.internal.api.BondDeviceState;
-import org.openhab.binding.bondhome.internal.api.BondDeviceType;
-import org.openhab.binding.bondhome.internal.api.BondHttpApi;
-import org.openhab.binding.bondhome.internal.config.BondDeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,16 +127,22 @@ public class BondDeviceHandler extends BaseThingHandler {
                         deviceState = api.getDeviceState(config.deviceId);
                         updateChannelsFromState(deviceState);
                     } catch (IOException e) {
-                        if (e.getMessage().contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Incorrect local token for Bond Bridge.");
-                            setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Incorrect local token for Bond Bridge.");
-                        } else if (e.getMessage().contains(API_ERR_HTTP_404_NOTFOUND)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "No Bond device found with the given device id.");
+                        @Nullable
+                        String errorMessage = e.getMessage();
+                        if (errorMessage != null) {
+                            if (errorMessage.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "Incorrect local token for Bond Bridge.");
+                                setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "Incorrect local token for Bond Bridge.");
+                            } else if (errorMessage.contains(API_ERR_HTTP_404_NOTFOUND)) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "No Bond device found with the given device id.");
+                            } else {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                            }
                         } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         }
                     }
                 } else {
@@ -489,13 +495,17 @@ public class BondDeviceHandler extends BaseThingHandler {
             logger.trace("Getting device properties for {} ({})", config.deviceId, this.getThing().getLabel());
             deviceProperties = api.getDeviceProperties(config.deviceId);
         } catch (IOException e) {
-            if (e.getMessage().contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Incorrect local token for Bond Bridge.");
-                setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect local token for Bond Bridge.");
-            } else if (e.getMessage().contains(API_ERR_HTTP_404_NOTFOUND)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "No Bond device found with the given device id.");
+            @Nullable
+            String errorMessage = e.getMessage();
+            if (errorMessage != null) {
+                if (errorMessage.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Incorrect local token for Bond Bridge.");
+                    setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect local token for Bond Bridge.");
+                } else if (errorMessage.contains(API_ERR_HTTP_404_NOTFOUND)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "No Bond device found with the given device id.");
+                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -596,10 +606,12 @@ public class BondDeviceHandler extends BaseThingHandler {
         availableChannelIds.add(CHANNEL_LAST_UPDATE);
 
         for (BondDeviceAction action : availableActions) {
-            if (action != null && action.getChannelTypeId() != null) {
-                availableChannelIds.add(action.getChannelTypeId());
-                logger.trace(" Action: {}, Relevant Channel Type Id: {}", action.getActionId(),
-                        action.getChannelTypeId());
+            if (action != null) {
+                String actionType = action.getChannelTypeId();
+                if (actionType != null) {
+                    availableChannelIds.add(actionType);
+                    logger.trace(" Action: {}, Relevant Channel Type Id: {}", action.getActionId(), actionType);
+                }
             }
         }
 
@@ -782,14 +794,18 @@ public class BondDeviceHandler extends BaseThingHandler {
                         deviceState = api.getDeviceState(config.deviceId);
                         updateChannelsFromState(deviceState);
                     } catch (IOException e) {
-                        if (e.getMessage().contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Incorrect local token for Bond Bridge.");
-                            setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Incorrect local token for Bond Bridge.");
-                        } else if (e.getMessage().contains(API_ERR_HTTP_404_NOTFOUND)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "No Bond device found with the given device id.");
+                        @Nullable
+                        String errorMessage = e.getMessage();
+                        if (errorMessage != null) {
+                            if (errorMessage.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "Incorrect local token for Bond Bridge.");
+                                setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "Incorrect local token for Bond Bridge.");
+                            } else if (errorMessage.contains(API_ERR_HTTP_404_NOTFOUND)) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "No Bond device found with the given device id.");
+                            }
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }

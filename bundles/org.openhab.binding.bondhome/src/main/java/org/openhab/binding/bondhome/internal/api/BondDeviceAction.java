@@ -257,7 +257,7 @@ public enum BondDeviceAction {
     /**
      * @return the channelTypeId
      */
-    public String getChannelTypeId() {
+    public @Nullable String getChannelTypeId() {
         return channelTypeId;
     }
 }
