@@ -16,8 +16,11 @@ import static org.openhab.binding.velux.internal.VeluxBindingConstants.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
@@ -59,6 +62,9 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
     private Localization localization = Localization.UNKNOWN;
     private final Set<VeluxBridgeHandler> bridgeHandlers = new HashSet<>();
+
+    @Nullable
+    private ScheduledFuture<?> backgroundTask = null;
 
     // Private
 
@@ -301,6 +307,23 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
                     .withRepresentationProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS)
                     .withLabel(String.format("Velux Bridge (%s)", ipAddr)).build();
             thingDiscovered(result);
+        }
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.trace("startBackgroundDiscovery() called.");
+        if (backgroundTask == null || backgroundTask.isCancelled()) {
+            this.backgroundTask = scheduler.scheduleWithFixedDelay(this::startScan, 10, 600, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.trace("stopBackgroundDiscovery() called.");
+        ScheduledFuture<?> task = this.backgroundTask;
+        if (task != null) {
+            task.cancel(true);
         }
     }
 }

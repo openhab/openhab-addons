@@ -105,7 +105,6 @@ public class VeluxBridgeFinder implements Closeable {
 
             // create a multicast listener socket
             try (MulticastSocket rcvSocket = new MulticastSocket(MDNS_PORT)) {
-
                 final byte[] rcvBytes = new byte[BUFFER_SIZE];
                 final long finishTime = System.currentTimeMillis() + SEARCH_DURATION_MSECS;
 
