@@ -33,7 +33,7 @@ public class RateLimitedHttpClient {
     private HttpClient httpClient;
     private int delay = 0; // in ms
     private final ScheduledExecutorService scheduler;
-    private final LinkedBlockingQueue<RequestQueueEntry> requestQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<RequestQueueEntry> requestQueue = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
 
     private @Nullable ScheduledFuture<?> processJob;
 
@@ -86,11 +86,10 @@ public class RateLimitedHttpClient {
         if (delay == 0) {
             return CompletableFuture.completedFuture(httpClient.newRequest(finalUrl));
         }
-        if (requestQueue.size() >= MAX_QUEUE_SIZE) {
-            return CompletableFuture.failedFuture(new IllegalStateException("Maximum queue size exceeded."));
-        }
         CompletableFuture<Request> future = new CompletableFuture<>();
-        requestQueue.add(new RequestQueueEntry(finalUrl, future));
+        if (!requestQueue.offer(new RequestQueueEntry(finalUrl, future))) {
+            future.completeExceptionally(new RejectedExecutionException("Maximum queue size exceeded."));
+        }
         return future;
     }
 
