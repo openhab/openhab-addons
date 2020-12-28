@@ -93,18 +93,9 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.minusDays(15), today);
             if (consumption != null) {
-                try {
-                    checkData(consumption);
-                } catch (LinkyException e) {
-                    logger.debug("Daily data: {}", e.getMessage());
-                    return null;
-                }
                 logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, false);
                 logData(consumption.aggregats.weeks, "Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
-                if (!isDataLastDayAvailable(consumption)) {
-                    logger.debug("Daily data including yesterday are not yet available");
-                    return null;
-                }
+                consumption = getConsumptionAfterChecks(consumption);
             }
             return consumption;
         });
@@ -128,18 +119,9 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
             if (consumption != null) {
-                try {
-                    checkData(consumption);
-                } catch (LinkyException e) {
-                    logger.debug("Monthly data: {}", e.getMessage());
-                    return null;
-                }
                 logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
                 logData(consumption.aggregats.months, "Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
-                if (!isDataLastDayAvailable(consumption)) {
-                    logger.debug("Monthly data including yesterday are not yet available");
-                    return null;
-                }
+                consumption = getConsumptionAfterChecks(consumption);
             }
             return consumption;
         });
@@ -148,18 +130,9 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
             if (consumption != null) {
-                try {
-                    checkData(consumption);
-                } catch (LinkyException e) {
-                    logger.debug("Yearly data: {}", e.getMessage());
-                    return null;
-                }
                 logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, true);
                 logData(consumption.aggregats.years, "Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, false);
-                if (!isDataLastDayAvailable(consumption)) {
-                    logger.debug("Yearly data including yesterday are not yet available");
-                    return null;
-                }
+                consumption = getConsumptionAfterChecks(consumption);
             }
             return consumption;
         });
@@ -464,6 +437,20 @@ public class LinkyHandler extends BaseThingHandler {
         } else {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
         }
+    }
+
+    private @Nullable Consumption getConsumptionAfterChecks(Consumption consumption) {
+        try {
+            checkData(consumption);
+        } catch (LinkyException e) {
+            logger.debug("Consumption data: {}", e.getMessage());
+            return null;
+        }
+        if (!isDataLastDayAvailable(consumption)) {
+            logger.debug("Data including yesterday are not yet available");
+            return null;
+        }
+        return consumption;
     }
 
     public void checkData(Consumption consumption) throws LinkyException {
