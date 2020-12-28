@@ -14,12 +14,11 @@ package org.openhab.binding.gpio.internal.handler;
 
 import java.util.Date;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.gpio.internal.NoGpioIdException;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
@@ -36,34 +35,32 @@ import eu.xeli.jpigpio.PigpioException;
  * Thing Handler for digital GPIO inputs.
  *
  * @author Nils Bauer - Initial contribution
+ * @author Jan N. Klug - Channel redesign
  */
 @NonNullByDefault
-public class GPIODigitalInputHandler implements ChannelHandler {
+public class PigpioDigitalInputHandler implements ChannelHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(GPIODigitalInputHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PigpioDigitalInputHandler.class);
     private Date lastChanged = new Date();
 
     private final GPIOInputConfiguration configuration;
     private final GPIO gpio;
-    private final JPigpio jPigpio;
-    private final ScheduledExecutorService scheduler;
-    private @Nullable ScheduledFuture<?> scheduledFuture;
     private final Consumer<State> updateStatus;
 
-    public GPIODigitalInputHandler(GPIOInputConfiguration configuration, JPigpio jPigpio,
-            ScheduledExecutorService scheduler, Consumer<State> updateStatus) throws PigpioException {
+    public PigpioDigitalInputHandler(GPIOInputConfiguration configuration, JPigpio jPigpio,
+            ScheduledExecutorService scheduler, Consumer<State> updateStatus)
+            throws PigpioException, NoGpioIdException {
         this.configuration = configuration;
-        this.jPigpio = jPigpio;
-        this.scheduler = scheduler;
         this.updateStatus = updateStatus;
-        gpio = new GPIO(jPigpio, configuration.gpioId, 1);
-
+        Integer gpioId = configuration.gpioId;
+        if (gpioId == null) {
+            throw new NoGpioIdException();
+        }
+        gpio = new GPIO(jPigpio, gpioId, 1);
         jPigpio.gpioSetAlertFunc(gpio.getPin(), (gpio, level, tick) -> {
             lastChanged = new Date();
-
             Date thisChange = new Date();
-            scheduledFuture = scheduler.schedule(() -> afterDebounce(thisChange), configuration.debouncingTime,
-                    TimeUnit.MILLISECONDS);
+            scheduler.schedule(() -> afterDebounce(thisChange), configuration.debouncingTime, TimeUnit.MILLISECONDS);
         });
     }
 

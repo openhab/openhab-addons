@@ -15,6 +15,7 @@ package org.openhab.binding.gpio.internal.handler;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gpio.internal.NoGpioIdException;
 import org.openhab.binding.gpio.internal.configuration.GPIOOutputConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
@@ -31,22 +32,32 @@ import eu.xeli.jpigpio.PigpioException;
  * Thing Handler for digital GPIO outputs.
  *
  * @author Nils Bauer - Initial contribution
+ * @author Jan N. Klug - Channel redesign
  */
 @NonNullByDefault
-public class GPIODigitalOutputHandler implements ChannelHandler {
+public class PigpioDigitalOutputHandler implements ChannelHandler {
 
     /** The logger. */
-    private final Logger logger = LoggerFactory.getLogger(GPIODigitalOutputHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PigpioDigitalOutputHandler.class);
 
     private final GPIOOutputConfiguration configuration;
     private final GPIO gpio;
     private final Consumer<State> updateStatus;
 
-    public GPIODigitalOutputHandler(GPIOOutputConfiguration configuration, JPigpio jPigpio,
-            Consumer<State> updateStatus) throws PigpioException {
+    /**
+     * @throws NoGpioIdException
+     * @throws GpioIdNotSetException
+     * 
+     */
+    public PigpioDigitalOutputHandler(GPIOOutputConfiguration configuration, JPigpio jPigpio,
+            Consumer<State> updateStatus) throws PigpioException, NoGpioIdException {
         this.configuration = configuration;
         this.updateStatus = updateStatus;
-        this.gpio = new GPIO(jPigpio, configuration.gpioId, 0);
+        Integer gpioId = configuration.gpioId;
+        if (gpioId == null) {
+            throw new NoGpioIdException();
+        }
+        this.gpio = new GPIO(jPigpio, gpioId, 0);
     }
 
     @Override

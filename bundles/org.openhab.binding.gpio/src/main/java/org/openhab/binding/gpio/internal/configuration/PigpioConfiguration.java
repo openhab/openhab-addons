@@ -16,12 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link PigpioBridgeConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link PigpioConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nils Bauer - Initial contribution
  */
 @NonNullByDefault
-public class PigpioBridgeConfiguration {
+public class PigpioConfiguration {
 
     /**
      * Network address of the raspberry pi

@@ -27,18 +27,15 @@ public class GPIOBindingConstants {
 
     private static final String BINDING_ID = "gpio";
 
-    public static final ThingTypeUID THING_TYPE_PIGPIO_REMOTE_THING = new ThingTypeUID(BINDING_ID,
-            "pigpio-remote-bridge");
+    public static final ThingTypeUID THING_TYPE_PIGPIO_REMOTE_THING = new ThingTypeUID(BINDING_ID, "pigpio-remote");
 
     // List of all Thing Type UIDs
-    public static final ChannelTypeUID CHANNEL_TYPE_DIGITAL_INPUT = new ChannelTypeUID(BINDING_ID, "digital-input");
-    public static final ChannelTypeUID CHANNEL_TYPE_DIGITAL_OUTPUT = new ChannelTypeUID(BINDING_ID, "digital-output");
+    public static final ChannelTypeUID CHANNEL_TYPE_DIGITAL_INPUT = new ChannelTypeUID(BINDING_ID,
+            "pigpio-digital-input");
+    public static final ChannelTypeUID CHANNEL_TYPE_DIGITAL_OUTPUT = new ChannelTypeUID(BINDING_ID,
+            "pigpio-digital-output");
 
-    // List of all Channel ids
-    public static final String THING_TYPE_DIGITAL_INPUT_CHANNEL = "gpio-digital-input";
-    public static final String THING_TYPE_DIGITAL_OUTPUT_CHANNEL = "gpio-digital-output";
-
-    // Bridge config properties
+    // Thing config properties
     public static final String HOST = "ipAddress";
     public static final String PORT = "port";
     public static final String INVERT = "invert";

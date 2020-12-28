@@ -10,27 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gpio.internal.handler;
+package org.openhab.binding.gpio.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
-import eu.xeli.jpigpio.JPigpio;
 
 /**
- * JPigpio Bridge Handler interface
- *
- * Different bridge types (local/remote) should implement this.
+ * Is thrown when no gpio id is provided
  *
  * @author Nils Bauer - Initial contribution
  */
 @NonNullByDefault
-public interface PigpioBridgeHandler {
-
-    /**
-     * Gets the JPigpio instance
-     *
-     * @return the JPigpio instance
-     */
-    public @Nullable JPigpio getJPiGpio();
+public class NoGpioIdException extends Exception {
+    private static final long serialVersionUID = -1281107134439928767L;
 }

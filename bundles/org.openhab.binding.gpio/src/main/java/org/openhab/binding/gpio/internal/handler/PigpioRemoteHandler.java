@@ -10,9 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-/**
- *
- */
 package org.openhab.binding.gpio.internal.handler;
 
 import static org.openhab.binding.gpio.internal.GPIOBindingConstants.CHANNEL_TYPE_DIGITAL_INPUT;
@@ -22,10 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.gpio.internal.NoGpioIdException;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
 import org.openhab.binding.gpio.internal.configuration.GPIOOutputConfiguration;
-import org.openhab.binding.gpio.internal.configuration.PigpioBridgeConfiguration;
+import org.openhab.binding.gpio.internal.configuration.PigpioConfiguration;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -38,17 +35,16 @@ import eu.xeli.jpigpio.PigpioException;
 import eu.xeli.jpigpio.PigpioSocket;
 
 /**
- * Remote JPigpio Bridge Hanlder
+ * Remote pigpio Hanlder
  *
  * This bridge is used to control remote pigpio instances.
  *
  * @author Nils Bauer - Initial contribution
+ * @author Jan N. Klug - Channel redesign
  */
 @NonNullByDefault
-public class PigpioRemoteThingHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(PigpioRemoteThingHandler.class);
-    /** The JPigpio instance. */
-    private @Nullable JPigpio jPigpio;
+public class PigpioRemoteHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(PigpioRemoteHandler.class);
     private final Map<ChannelUID, ChannelHandler> channelHandlers = new HashMap<>();
 
     /**
@@ -56,7 +52,7 @@ public class PigpioRemoteThingHandler extends BaseThingHandler {
      *
      * @param thing the bridge
      */
-    public PigpioRemoteThingHandler(Thing thing) {
+    public PigpioRemoteHandler(Thing thing) {
         super(thing);
     }
 
@@ -70,12 +66,10 @@ public class PigpioRemoteThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        PigpioBridgeConfiguration config = getConfigAs(PigpioBridgeConfiguration.class);
+        PigpioConfiguration config = getConfigAs(PigpioConfiguration.class);
         String ipAddress = config.ipAddress;
         Integer port = config.port;
-
         JPigpio jPigpio;
-
         if (ipAddress == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to PiGPIO Service on remote raspberry. IP address not set.");
@@ -84,9 +78,6 @@ public class PigpioRemoteThingHandler extends BaseThingHandler {
         try {
             jPigpio = new PigpioSocket(ipAddress, port);
             updateStatus(ThingStatus.ONLINE);
-        } catch (NumberFormatException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port not numeric");
-            return;
         } catch (PigpioException e) {
             if (e.getErrorCode() == PigpioException.PI_BAD_SOCKET_PORT) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port out of range");
@@ -97,23 +88,24 @@ public class PigpioRemoteThingHandler extends BaseThingHandler {
             return;
 
         }
-        this.jPigpio = jPigpio;
         thing.getChannels().forEach(channel -> {
             ChannelUID channelUID = channel.getUID();
             ChannelTypeUID type = channel.getChannelTypeUID();
             try {
-                if (type.equals(CHANNEL_TYPE_DIGITAL_INPUT)) {
+                if (CHANNEL_TYPE_DIGITAL_INPUT.equals(type)) {
                     GPIOInputConfiguration configuration = channel.getConfiguration().as(GPIOInputConfiguration.class);
-                    channelHandlers.put(channelUID, new GPIODigitalInputHandler(configuration, jPigpio, scheduler,
+                    channelHandlers.put(channelUID, new PigpioDigitalInputHandler(configuration, jPigpio, scheduler,
                             state -> updateState(channelUID.getId(), state)));
-                } else if (type.equals(CHANNEL_TYPE_DIGITAL_OUTPUT)) {
+                } else if (CHANNEL_TYPE_DIGITAL_OUTPUT.equals(type)) {
                     GPIOOutputConfiguration configuration = channel.getConfiguration()
                             .as(GPIOOutputConfiguration.class);
-                    channelHandlers.put(channelUID, new GPIODigitalOutputHandler(configuration, jPigpio,
+                    channelHandlers.put(channelUID, new PigpioDigitalOutputHandler(configuration, jPigpio,
                             state -> updateState(channelUID.getId(), state)));
                 }
             } catch (PigpioException e) {
                 logger.warn("Failed to initialize {}: {}", channelUID, e.getMessage());
+            } catch (NoGpioIdException e) {
+                logger.warn("Failed to initialize {}: GpioId is not set", channelUID);
             }
         });
     }

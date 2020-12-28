@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.gpio.internal.handler.PigpioRemoteThingHandler;
+import org.openhab.binding.gpio.internal.handler.PigpioRemoteHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -48,7 +48,7 @@ public class GPIOHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_PIGPIO_REMOTE_THING)) {
-            return new PigpioRemoteThingHandler(thing);
+            return new PigpioRemoteHandler(thing);
         }
 
         return null;

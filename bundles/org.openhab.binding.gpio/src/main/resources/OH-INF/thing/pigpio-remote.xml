@@ -5,9 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- PiGPIO Bridge -->
-	<thing-type id="pigpio-remote-bridge" extensible="digital-input,digital-output">
-		<label>PiGPIO remote Bridge</label>
-		<description>The remote pigpio bridge represents a remote raspberry pi with pigpio installed.</description>
+	<thing-type id="pigpio-remote" extensible="pigpio-digital-input,pigpio-digital-output">
+		<label>pigpio remote</label>
+		<description>The remote pigpio thing represents a remote raspberry pi with pigpio installed. Pins are channels.</description>
 
 		<properties>
 			<property name="vendor">Raspberry Pi Foundation</property>
@@ -31,10 +31,11 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="digital-input">
+	<channel-type id="pigpio-digital-input">
 		<item-type>Switch</item-type>
 		<label>GPIO Digital Input</label>
 		<description>Get digital state of a GPIO Pin</description>
+		<state readOnly="true"/>
 
 		<config-description>
 			<parameter name="gpioId" type="integer" required="true">
@@ -57,7 +58,7 @@
 		</config-description>
 	</channel-type>
 
-	<channel-type id="digital-output">
+	<channel-type id="pigpio-digital-output">
 		<item-type>Switch</item-type>
 		<label>GPIO Digital output</label>
 		<description>Set digital state of a GPIO Pin</description>
