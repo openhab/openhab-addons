@@ -1,24 +1,16 @@
 # GPIO Binding
 
-This binding adds GPIO support via the jpigpio libary for openhab. It requires pigpio (http://abyz.me.uk/rpi/pigpio/) to be running on the pi that should be controlled.
+This binding adds GPIO support via the pigpio daemon to openhab. It requires the pigpio (http://abyz.me.uk/rpi/pigpio/) to be running on the pi that should be controlled.
 
 ## Supported Things
 
-### pigpio remote bridge
+### pigpio-remote
 
-This bridge represents a pigpio instance. (See pigpio install for install instructions)
-
-### digital input thing
-
-Get the digital input of an GPIO pin
-
-### digital output thing
-
-Set a GPIO Pin to on or off
+This thing represents a remote pigpio instance running as daemon on a raspberry pi.
 
 ## Thing Configuration
 
-### Pigpio Remote Bridge (`pigpio-remote-bridge`)
+### Pigpio Remote  (`pigpio-remote`)
 
 On a raspberry (or a compatible device) you have to install pigpio:
 
@@ -36,47 +28,49 @@ sudo systemctl start pigpiod
 
 Set `ipAddress` to the address of the pi and the `port` to the port of pigpio (default: 8888).
 
-### GPIO digital input thing
+## Channels
+
+### Pigpio Remote
+
+| channel               | type   | description                     |
+|-----------------------|--------|---------------------------------|
+| pigpio-digital-input  | Switch | Read-only value of the gpio pin |
+| pigpio-digital-output | Switch | Controls the gpio pin           |
+
+### GPIO digital input channel
 
 Set the number of the pin in `gpioId` . If you want to invert the value, set `invert` to true. To prevent incorrect change events, you can adjust the `debouncingTime`.
 
-### GPIO digital output thing
+### GPIO digital output channel
 
 Set the number of the pin in `gpioId` . If you want to invert the value, set `invert` to true. 
- 
-## Channels
-
-### GPIO digital input thing
-
-| channel             | type   | description                     |
-|---------------------|--------|---------------------------------|
-| gpio-digital-input  | Switch | Read-only value of the gpio pin |
-
-### GPIO digital output thing
-
-| channel             | type   | description           |
-|---------------------|--------|-----------------------|
-| gpio-digital-output | Switch | Controls the gpio pin |
 
 ## Full Example
 
 
-demo.Things:
+demo.things:
 
 ```
-Bridge gpio:pigpio-remote-bridge:mybridge "MyBridge" [ ipAddress="192.168.1.2", port=8888 ] {
-    gpio-digital-output myoutput "My Output Pin" [ gpioId=4 ]
-    gpio-digital-output myoutputinv "My Output Pin inverted" [ gpioId=5, invert=true ]
-    gpio-digital-input myinput "My Input Pin " [ gpioId=6, debouncingTime=10 ]
+Thing gpio:pigpio-remote:sample-pi-1 "Sample-Pi 1" [ipAddress="192.168.2.36", port=8888] {
+    Channels:
+        Type pigpio-digital-input : sample-input-1 [ gpioId=10]
+        Type pigpio-digital-input : sample-input-2 [ gpioId=14, invert=true]
+        Type pigpio-digital-output : sample-output-1 [ gpioId=3]
+}
+
+Thing gpio:pigpio-remote:sample-pi-2 "Sample-Pi 2" [ipAddress="192.168.2.37", port=8888] {
+    Channels:
+        Type pigpio-digital-input : sample-input-3 [ gpioId=16, debouncingTime=20]
+        Type pigpio-digital-input : sample-input-4 [ gpioId=17, invert=true, debouncingTime=5]
+        Type pigpio-digital-output : sample-output-2 [ gpioId=4, invert=true]
 }
 ```
 
 demo.items:
 
 ```
-Switch  MyOutput    {channel="gpio:gpio-digital-output:myoutput:gpio-digital-output"}
-Switch  MyOutputInv {channel="gpio:gpio-digital-output:myoutputinv:gpio-digital-output"}
-Switch  MyInput     {channel="gpio:gpio-digital-input:myinput:gpio-digital-input"}
+Switch SampleInput1 {channel="gpio:pigpio-remote:sample-pi-1:sample-input-1"}
+Switch SampleOutput1 {channel="gpio:pigpio-remote:sample-pi-1:sample-output-1"}
 ```
 
 demo.sitemap:
@@ -84,8 +78,7 @@ demo.sitemap:
 ```
 sitemap demo label="Main Menu"
 {
-    Switch item=MyOutput
-    Switch item=MyOutputInv
-    Switch item=MyInput
+    Switch item=SampleInput1
+    Switch item=SampleOutput1
 }
 ```
