@@ -53,28 +53,26 @@ Discovery is currently not supported.
  
 The binding has no configuration options, all configuration is done at the Thing levels.
 
- 
 
 ## Thing Configuration
 
 
-| Parameter       | Description                                                                    | Config   | Default             |
-| ----------------|--------------------------------------------------------------------------------|--------- | --------------------|
-| Name            | The Name of the state machine i.e washingMachine, Dryer etc                    | Required | -                   |
-| Idle Time       | Time max time in seconds for the appliance to be idle                          | Required | 60                  |
-| Timer Delay     | Delay before checking the state if no power value has been provided.           | Required | 10                  |
-| Active Threshold| Threshold for when the appliance is to be transitioned to state active         | Required | 100                 |
-| Cost            | Cost for 1 kWh in your favorite  currency                                      | Required | 1.0                 |
-| Date Format     | Date and time format used for started / completed                              | Required | YYYY-MM-dd HH:mm:ss |
-
+| Parameter         | Description                                                                    | Config   | Default             |
+| ------------------|--------------------------------------------------------------------------------|--------- | --------------------|
+| Name              | The Name of the state machine i.e washingMachine, Dryer etc                    | Required | -                   |
+| Power Input Item  | The name of the Input Item for getting power values                            | Required | -                   |
+| Energy Input Item | The name of the Input Item for energy values                                   | Optional | -                   |
+| Idle Time         | Time max time in seconds for the appliance to be idle                          | Required | 60                  |
+| Timer Delay       | Delay before checking the state if no power value has been provided.           | Required | 10                  |
+| Active Threshold  | Threshold for when the appliance is to be transitioned to state active         | Required | 100                 |
+| Cost              | Cost for 1 kWh in your favorite  currency                                      | Required | 1.0                 |
+| Date Format       | Date and time format used for started / completed                              | Required | YYYY-MM-dd HH:mm:ss |
 
 
 ## Channels
 
 | Channel ID         | Item Type | Description                                                          | Permissions |
 |--------------------|-----------|--------------------------------------------------------------------- | ----------- |
-| Power Input        | Number    | Power input to the state machine                                     | Write       |
-| Energy Input       | Number    | Energy input to the state machine                                    | Write       |
 | Energy(Mea)        | Number    | Current measured machine consumption in kWh                          | Read        |
 | Energy(Est)        | Number    | Current estimated machine consumption in kWh                         | Read        |
 | Cost(Mea)          | Number    | Current measured cost in relation to kWh                             | Read        |
@@ -106,10 +104,8 @@ items/omatic.items
 ```
 Group    gOMatic
 Group    OMTestMachine               "TestMachine"                       (gOMatic)
-Number   OMTestMachinePowerIn         "Power In [%.2f W]" (OMTestMachine) { channel="omatic:machine:e74a54e7:power-input" } 
-Number   OMTestMachineEnergyIn         "Energy In [%.2f kWh]" (OMTestMachine) { channel="omatic:machine:e74a54e7:energy-input" } 
 Number   OMTestMachinePower         "Power [%.2f W]" (OMTestMachine) { channel="omatic:machine:e74a54e7:power" } 
-Number   OMTestMachineEnergy1         "Energy Measured [%.2f kWh]" (OMTestMachine) { channel="omatic:machine:e74a54e7:energy1" }
+Number   OMTestMachineEnergy1         "Energy [%.2f kWh]" (OMTestMachine) { channel="omatic:machine:e74a54e7:energy1" }
 Number   OMTestMachineEnergy2         "Energy Estimated [%.2f kWh]" (OMTestMachine) { channel="omatic:machine:e74a54e7:energy2" }
 Number   OMTestMachineCost1         "Cost Measured [%.2f EUR]" (OMTestMachine) { channel="omatic:machine:e74a54e7:cost1" }
 Number   OMTestMachineCost2         "Cost Estimated [%.2f EUR]" (OMTestMachine) { channel="omatic:machine:e74a54e7:cost2" }
@@ -132,23 +128,7 @@ Switch   OMTestMachineDisable        "Disable [%s]"    (OMTestMachine) { channel
 ```
 
 rules/omatic.rules
-
 ```
-rule "BridgeOmaticPowerTest"
-when
-    Item ZwaveDevicePower received update
-then
-    OMTestMachinePowerIn.sendCommand(ZwaveDevicePower.state as DecimalType)
-end
-
-rule "BridgeOmaticEnergyTest"
-when
-    Item ZwaveReadingDeviceEnergy received update
-then
-    OMTestMachineEnergyIn.sendCommand(ZwaveDeviceEnergy.state as DecimalType)
-end
-
-
 rule "TestMachineCompleted"
 when 
     Item OMTestMachineRunning changed from ON to OFF
@@ -194,17 +174,15 @@ Take a look at tools like Grafana to see spike in power and where it is generall
 Select a good active-threshold value in watts and also select a reasonable idle time in seconds. If it's not working
 and the state machine is completed when it should, adjust the values.
 
-## Bridge Power values
-The binding is dependent on receiving power values, that is done via the power input channel. In order to create a bridge between the power plug or device measuring the power a rule needs to be created. For instance this is a ZWavePlug that will bridge all values into the binding
+Below is an example what it looks like running a washing Machine:
 
-```
-rule "BridgeOmaticPowerTest"
-when
-    Item ZwaveDevicePower received update
-then
-    OMTestMachinePowerIn.sendCommand(ZwaveDevicePower.state as DecimalType)
-end
-```
+<img src="doc/image/washingpower.png" width=400 />
+
+Configuration for this state machine is Active Threshold: 45 and idle time: 120
+
+## Power values
+The binding is dependent on receiving power values, that is done by specifying an item name in the 
+configuration for the Power values. The Item must be a Numeric item.
 
 ## Measured Energy vs Estimated Energy
 The binding can estimate the energy used by the state machine. This is an estimation that can be improved. Basically it will 

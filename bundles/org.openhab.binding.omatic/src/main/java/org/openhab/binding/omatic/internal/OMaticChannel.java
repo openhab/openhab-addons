@@ -20,9 +20,6 @@ import java.util.stream.Stream;
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
 public enum OMaticChannel {
-
-    POWER_INPUT,
-    ENERGY_INPUT,
     POWER,
     ENERGY1,
     ENERGY2,

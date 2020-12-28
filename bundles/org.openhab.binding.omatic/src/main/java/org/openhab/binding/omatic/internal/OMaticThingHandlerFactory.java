@@ -14,13 +14,17 @@ package org.openhab.binding.omatic.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.omatic.internal.event.OMaticEventSubscriber;
 import org.openhab.binding.omatic.internal.handler.OMaticMachineThingHandler;
+import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link OMaticThingHandlerFactory} is responsible for creating things and thing
@@ -28,11 +32,18 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.omatic")
+@Component(service = { ThingHandlerFactory.class }, configurationPid = "binding.omatic")
 @NonNullByDefault
 public class OMaticThingHandlerFactory extends BaseThingHandlerFactory {
 
-    public OMaticThingHandlerFactory() {
+    private final OMaticEventSubscriber eventSubscriber;
+    private final ItemRegistry itemRegistry;
+
+    @Activate
+    public OMaticThingHandlerFactory(final @Reference OMaticEventSubscriber eventSubscriber,
+            final @Reference ItemRegistry itemRegistry) {
+        this.eventSubscriber = eventSubscriber;
+        this.itemRegistry = itemRegistry;
     }
 
     @Override
@@ -44,7 +55,7 @@ public class OMaticThingHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (OMaticMachineThingHandler.supportsThingType(thingTypeUID)) {
-            return new OMaticMachineThingHandler(thing);
+            return new OMaticMachineThingHandler(thing, eventSubscriber, itemRegistry);
         }
         return null;
     }

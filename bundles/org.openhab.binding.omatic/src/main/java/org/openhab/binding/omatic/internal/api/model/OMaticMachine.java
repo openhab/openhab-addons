@@ -124,7 +124,7 @@ public class OMaticMachine {
             updatePowerValues();
             startTimer();
         }
-        propertyChangeSupport.firePropertyChange(OMaticBindingConstants.PROPERTY_POWER_INPUT, oldState, state);
+        propertyChangeSupport.firePropertyChange(OMaticBindingConstants.PROPERTY_POWER_INPUT, null, state);
     }
 
     public void setLatKnownEnergyValue(double lastKnownEnergyValue) {
@@ -136,9 +136,8 @@ public class OMaticMachine {
             logDebug("Disabled state machine");
             return;
         }
-        final double oldValue = lastKnownEnergyValue;
         lastKnownEnergyValue = inputEnergy;
-        propertyChangeSupport.firePropertyChange(OMaticBindingConstants.PROPERTY_LAST_KNOWN_ENERGY_VALUE, oldValue,
+        propertyChangeSupport.firePropertyChange(OMaticBindingConstants.PROPERTY_LAST_KNOWN_ENERGY_VALUE, null,
                 lastKnownEnergyValue);
     }
 
@@ -302,6 +301,10 @@ public class OMaticMachine {
         totalEnergyEstimated = 0D;
         totalPower = 0;
         totalTime = 0;
+        startedTimeStamp = Instant.EPOCH;
+        lastPowerTimeStamp = Instant.EPOCH;
+        completedTimeStamp = Instant.EPOCH;
+        state = OMaticMachineState.NOT_STARTED;
         power = 0D;
         energy = 0D;
         maxPower = 0D;

@@ -56,6 +56,3 @@ public class OMaticTest {
         assertEquals(OMaticMachineState.COMPLETE, machine.getState());
     }
 }
-// Log info started completed
-// Write readme
-// Write tutorial

@@ -13,6 +13,7 @@
 package org.openhab.binding.omatic.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link OMaticMachineThingConfig} encapsulates all the configuration options for an instance of the
@@ -25,8 +26,11 @@ public class OMaticMachineThingConfig {
     private static final long DEFAULT_TIMER_DELAY = 10;
     private long timerDelay = DEFAULT_TIMER_DELAY;
     private String name = "";
+    private String powerInputItem = "";
+    private String energyInputItem = "";
     private Double activeThreshold = -1.0;
     private Integer idleTime = -1;
+    private @Nullable Double staticPower = null;
     private Double cost = 1.0D;
     private String dateFormat = "YYYY-MM-dd HH:mm:ss";
     private long maxRunningTime = 60 * 60 * 24;
@@ -85,8 +89,33 @@ public class OMaticMachineThingConfig {
 
     @Override
     public String toString() {
-        return "OMaticMachineThingConfig [timerDelay=" + timerDelay + ", name=" + name + ", activeThreshold="
-                + activeThreshold + ", idleTime=" + idleTime + ", cost=" + cost + ", maxRunningTime=" + maxRunningTime
-                + "]";
+        return "OMaticMachineThingConfig [timerDelay=" + timerDelay + ", name=" + name + ", powerInputItem="
+                + powerInputItem + ", energyInputItem=" + energyInputItem + ", activeThreshold=" + activeThreshold
+                + ", idleTime=" + idleTime + ", staticPower=" + staticPower + ", cost=" + cost + ", dateFormat="
+                + dateFormat + ", maxRunningTime=" + maxRunningTime + "]";
+    }
+
+    public String getPowerInputItem() {
+        return powerInputItem;
+    }
+
+    public void setPowerInputItem(String powerInputItem) {
+        this.powerInputItem = powerInputItem;
+    }
+
+    public String getEnergyInputItem() {
+        return energyInputItem;
+    }
+
+    public void setEnergyInputItem(String energyInputItem) {
+        this.energyInputItem = energyInputItem;
+    }
+
+    public @Nullable Double getStaticPower() {
+        return staticPower;
+    }
+
+    public void setStaticPower(Double staticPower) {
+        this.staticPower = staticPower;
     }
 }
