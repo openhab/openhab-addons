@@ -65,6 +65,7 @@ The OpenTherm Gateway binding supports the following channels:
 | airpressfault            | Switch               | Air pressure fault                                       | yes       |
 | waterovtemp              | Switch               | Water over-temperature fault                             | yes       |
 | oemfaultcode             | Switch               | OEM fault code                                           | yes       |
+| diag                     | Switch               | Diagnostics indication                                   | yes       |
 | sendcommand              | Text                 | Channel to send commands to the OpenTherm Gateway device | no        |
 
 ## Full Example
@@ -109,6 +110,7 @@ Switch GasFlameFault "Gas or flame fault" <switch> { channel="openthermgateway:o
 Switch AirPressFault "Air pressure fault" <switch> { channel="openthermgateway:otgw:1:airpressfault" }
 Switch WaterOvTemp "Water over-temperature fault" <switch> { channel="openthermgateway:otgw:1:waterovtemp" }
 Number OemFaultCode "OEM fault code" { channel="openthermgateway:otgw:1:oemfaultcode" }
+Switch Diagnostics "Diagnostics indication" { channel="openthermgateway:otgw:1:diag" }
 Text SendCommand "Send command channel" { channel="openthermgateway:otgw:1:sendcommand" }
 ```
 
@@ -148,6 +150,7 @@ sitemap demo label="Main Menu" {
         Switch item="AirPressFault" icon="" label="Air pressure fault"
         Switch item="waterOvTemp" icon="" label="Water over-temperature fault"
         Text item="OemFaultCode" icon="" label="OEM fault code"
+        Switch item="Diagnostics" icon="" label="Diagnostics indication"
     }
 }
 
