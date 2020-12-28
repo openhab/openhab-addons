@@ -75,7 +75,7 @@ public enum ComfoAirCommandType {
      */
     ACTIVATE(ComfoAirBindingConstants.CG_CONTROL_PREFIX + ComfoAirBindingConstants.CHANNEL_ACTIVATE,
             DataTypeBoolean.getInstance(), new int[] { 0x03 }, Constants.REQUEST_SET_RS232, 1, 0,
-            Constants.EMPTY_TYPE_ARRAY, Constants.REPLY_SET_RS232, Constants.REPLY_SET_RS232, new int[] { 0 }, 0x03),
+            Constants.EMPTY_TYPE_ARRAY),
     MENU20_MODE(ComfoAirBindingConstants.CG_MENUP1_PREFIX + ComfoAirBindingConstants.CHANNEL_MENU20_MODE,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 6 },
             0x01),
@@ -771,7 +771,7 @@ public enum ComfoAirCommandType {
     public static @Nullable ComfoAirCommand getReadCommand(String key) {
         ComfoAirCommandType commandType = getCommandTypeByKey(key);
 
-        if (commandType != null) {
+        if (commandType != null && commandType.readCommand > 0) {
             return new ComfoAirCommand(key);
         }
         return null;
@@ -891,7 +891,6 @@ public enum ComfoAirCommandType {
         return null;
     }
 
-    @SuppressWarnings("null")
     private static void uniteCommandsMap(Map<Integer, ComfoAirCommand> commands, ComfoAirCommandType commandType) {
         if (commandType.readReplyCommand != 0) {
             int replyCmd = commandType.readReplyCommand;
