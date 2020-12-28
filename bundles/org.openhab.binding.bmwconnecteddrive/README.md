@@ -13,7 +13,7 @@ All vehicles connected to an account will be detected by the discovery with the 
 In addition properties are attached with information and services provided by this vehicle.
 The provided data depends on 
 
-1. the [Thing Type](#thing) and 
+1. the [Thing Type](#things) and 
 2. the [Properties](#properties) mentioned in Services
 
 Different channel groups are clustering all informations.
@@ -61,7 +61,7 @@ Basically 3 types of information are registered as properties
 * Vehicle properties like color, model type, drive train and construction year
 
 In the right picture can see in *Services Activated* e.g. the *DoorLock* and *DoorUnlock* services are mentioned. 
-This ensures channel group [_Remote Services_](#remote-services) is supporting door lock and unlock remote control.
+This ensures channel group [Remote Services](#remote-services) is supporting door lock and unlock remote control.
 
 In  *Services Supported* the entry *LastDestination* is mentioned.
 So it's valid to connect channel group [Last Destinations](#destinations) in order to display and select the last navigation destinations.
@@ -135,8 +135,7 @@ They differ for each vehicle type, build-in sensors and activated services.
 
 #### Vehicle Status
 
-Reflects status of the vehicle.
-See [further details for DateTime](#last-status-update-timestamp) in case of wrong timestamp values
+Reflects overall status of the vehicle.
 
 * Channel Group ID is **status**
 * Available for all vehicles
@@ -177,7 +176,7 @@ Charging Status values
 * _Charging_
 * _Error_
 * _Finished Fully Charged_
-* _Fiished Not Full_
+* _Finished Not Full_
 * _Invalid_
 * _Not Charging_
 * _Charging Goal reached_
@@ -186,7 +185,7 @@ Charging Status values
 #### Services
 
 Group for all upcoming services with description, service date and/or service mileage.
-If more than one service is scheduled in the future the String channel _name_ contains all future services as options.
+If more than one service is scheduled in the future the channel _name_ contains all future services as options.
 
 * Channel Group ID is **service**
 * Available for all vehicles
@@ -200,8 +199,8 @@ If more than one service is scheduled in the future the String channel _name_ co
 
 #### Check Control
 
-Group for all current active CheckControl Messages.
-If more than one check control message is active the String channel _name_ contains all active messages as options.
+Group for all current active CheckControl messages.
+If more than one message is active the channel _name_ contains all active messages as options.
 
 * Channel Group ID is **check**
 * Available for all vehicles
@@ -235,18 +234,18 @@ Detailed status of all doors and windows.
 | Rear Window                | win-rear                | String        |
 | Sunroof                    | sunroof                 | String        |
 
-Following String states are possible
+Possible states
 
 * _Unknown_ - no status data available
-* _Invalid_ - this item isn't applicable for this vehicle
+* _Invalid_ - this door / window isn't applicable for this vehicle
 * _Closed_ - the door / window is closed
 * _Open_ - the door / window is open
 * _Intermediate_ - window in intermediate position, not applicable for doors
 
 #### Range Data
 
-Based on vehicle type some channels are presented or not. 
-Conventional fuel vehicles don't provide *Electric Range* and Battery electric Vehicles don't show *Fuel Range*.
+Based on vehicle type some channels are present or not. 
+Conventional fuel vehicles don't provide *Electric Range* and battery electric vehicles don't show *Fuel Range*.
 Hybrid vehicles have both and in addition *Hybrid Range*.
 See description [Range vs Range Radius](#range-vs-range-radius) to get more information.
 
@@ -254,7 +253,7 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 * Availability according to table
 * Read-only values
 
-| Channel Label         | Channel ID            | Type                 | CONV | PHEV | BEV_REX | BEV |
+| Channel Label         | Channel ID            | Type                 | conv | phev | bev_rex | bev |
 |-----------------------|-----------------------|----------------------|------|------|---------|-----|
 | Mileage               | mileage               | Number:Length        |  X   |  X   |    X    |  X  |
 | Fuel Range            | range-fuel            | Number:Length        |  X   |  X   |    X    |     |
@@ -377,6 +376,7 @@ The channel _state_ shows the progress of the command execution in the following
 #### Destinations
 
 Shows the last destinations stored in the navigation system.
+If several last destinations are stored in the navigation system the channel _name_ contains all addresses as options.
 
 * Channel Group ID is **destination**
 * Available if *LastDestinations* is present in *Services Supported*. Check [Vehicle Properties](#properties) for further details
@@ -392,7 +392,7 @@ Shows the last destinations stored in the navigation system.
 
 #### Image
 
-Image representation of the Vehicle. Size and viewport are writable and can be 
+Image representation of the vehicle. Size and viewport are writable and can be 
 The possible values are the same mentioned in [Thing Configuration](#thing-configuration).
 
 * Channel Group ID is **image**
@@ -426,7 +426,7 @@ Select the wanted service and the corresponding _Service Date & Milage_ will be 
 ### TroubleShooting
 
 BMW has a high range of vehicles supported by ConnectedDrive.
-In case of any issues with this binding please help to resolve it! 
+In case of any issues with this binding help to resolve it! 
 Please perform the following steps:
 
 * Can you [log into ConnectedDrive](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) with your credentials? Please note this isn't the BMW Customer portal - it's the ConnectedDrive portal
@@ -436,7 +436,7 @@ If the access to the portal is working and the vehicle is listed some debug data
 
 #### Generate Debug Fingerprint
 
-If you checked the above pre-conditions you need to get the debug fingerprint from the debug logs.
+If you checked the above pre-conditions you need to get the debug fingerprint from the logs.
 First [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for the binding.
 
 ```
@@ -450,7 +450,7 @@ Data like
 
 * Dealer Properties
 * Vehicle Identification Number (VIN)
-* Location Latitude / Longitude 
+* Location latitude / longitude 
 
 are anonymized.
 You'll find the fingerprint in the logs with the command
@@ -459,7 +459,7 @@ You'll find the fingerprint in the logs with the command
 less openhab.log | grep "BMW ConnectedDrive Binding"
 ```
 
-After the corresponding fingerprint is generated please [follow the instructions to raise an ssue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!
+After the corresponding fingerprint is generated please [follow the instructions to raise an issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!
 Your feedback is highly appreciated!
 
 
@@ -474,16 +474,16 @@ The right picture shows the distance between Kassel and Frankfurt in Germany.
 While the air-line distance is ~145 kilometer the route distance is ~192 kilometer.
 So range value is the normal remaining range while the range radius values can be used e.g. on [Mapview](https://www.openhab.org/docs/configuration/sitemaps.html#element-type-mapview) to indicate the reachable range on map.
 Please note this is just an indicator of the effective range.
-Especially for electric vehicles it depends on many factors like driving style and electric consumers. 
+Especially for electric vehicles it depends on many factors like driving style and usage of electric consumers. 
 
 ## Full Example
 
-The example is based on a BMW i3 with Range Extender (REX). 
+The example is based on a BMW i3 with range extender (REX). 
 Exchange the three configuration parameters in the Things section
 
-* YOUR_USERNAME - with your ConnectedDrive Login Username
-* YOUR_PASSWORD - with your ConnectedDrive Password Credentials
-* VEHICLE_VIN - the Vehicle Identification Number
+* YOUR_USERNAME - with your ConnectedDrive login username
+* YOUR_PASSWORD - with your ConnectedDrive password credentials
+* VEHICLE_VIN - the vehicle identification number
 
 In addition search for all occurrences of *i3* and replace it with your Vehicle Identification like *x3* or *535d* and you're ready to go!
 
