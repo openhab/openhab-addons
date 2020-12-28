@@ -22,7 +22,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.BMWConnectedDriveOptionProvider;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.VehicleHandler;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -51,10 +53,12 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public ConnectedDriveHandlerFactory(final @Reference HttpClientFactory hcf,
-            final @Reference BMWConnectedDriveOptionProvider op, final @Reference LocaleProvider lp) {
+            final @Reference BMWConnectedDriveOptionProvider op, final @Reference LocaleProvider lp,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         httpClientFactory = hcf;
         optionProvider = op;
         imperial = IMPERIAL_COUNTRIES.contains(lp.getLocale().getCountry());
+        Converter.setTimeZoneProvider(timeZoneProvider);
     }
 
     @Override

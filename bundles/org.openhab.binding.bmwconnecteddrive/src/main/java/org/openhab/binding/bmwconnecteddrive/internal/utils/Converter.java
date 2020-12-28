@@ -17,9 +17,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.TimeZoneProvider;
 
 import com.google.gson.Gson;
 
@@ -48,6 +50,8 @@ public class Converter {
 
     private static final Gson GSON = new Gson();
     private static final double SCALE = 10;
+
+    public static Optional<TimeZoneProvider> timeZoneProvider = Optional.empty();
 
     public static double round(double value) {
         return Math.round(value * SCALE) / SCALE;
@@ -82,8 +86,18 @@ public class Converter {
             }
         }
         ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
-        ZonedDateTime zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
+        ZonedDateTime zdtLZ;
+        zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
+        if (timeZoneProvider.isPresent()) {
+            zdtLZ = zdtUTC.withZoneSameInstant(timeZoneProvider.get().getTimeZone());
+        } else {
+            zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
+        }
         return zdtLZ.format(Converter.DATE_INPUT_PATTERN);
+    }
+
+    public static void setTimeZoneProvider(TimeZoneProvider tzp) {
+        timeZoneProvider = Optional.of(tzp);
     }
 
     public static String toTitleCase(@Nullable String input) {
