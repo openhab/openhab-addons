@@ -25,6 +25,12 @@
 				<description>The timeout in ms for each request</description>
 				<default>3000</default>
 			</parameter>
+			<parameter name="delay" type="integer" unit="ms" min="0">
+				<label>Delay</label>
+				<description>Delay between to requests</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="bufferSize" type="integer" min="0">
 				<label>Buffer Size</label>
 				<description>Size of the response buffer (default 2048 kB)</description>
