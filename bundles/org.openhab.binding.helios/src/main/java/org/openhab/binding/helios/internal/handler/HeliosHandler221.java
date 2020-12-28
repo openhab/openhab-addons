@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
@@ -121,6 +122,7 @@ public class HeliosHandler221 extends BaseThingHandler {
     public static final String SWITCHSTATECHANGED = "SwitchStateChanged";
 
     // REST Client API variables
+    protected ClientBuilder clientBuilder;
     private Client heliosClient;
     private WebTarget baseTarget;
     private WebTarget systemTarget;
@@ -140,8 +142,9 @@ public class HeliosHandler221 extends BaseThingHandler {
 
     private long logSubscriptionID = 0;
 
-    public HeliosHandler221(Thing thing) {
+    public HeliosHandler221(Thing thing, ClientBuilder clientBuilder) {
         super(thing);
+        this.clientBuilder = clientBuilder;
     }
 
     @Override
@@ -170,15 +173,15 @@ public class HeliosHandler221 extends BaseThingHandler {
                 logger.error("An exception occurred while initialising the SSL context : '{}'", e1.getMessage(), e1);
             }
 
-            heliosClient = ClientBuilder.newBuilder().sslContext(sslContext).hostnameVerifier(new HostnameVerifier() {
+            heliosClient = clientBuilder.sslContext(sslContext).hostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
                     return true;
                 }
             }).build();
             heliosClient.register(new Authenticator(username, password));
-
-            baseTarget = heliosClient.target(BASE_URI);
+            baseTarget = heliosClient.target("https://" + ipAddress);
+            baseTarget = baseTarget.path("/api");
             systemTarget = baseTarget.path(SYSTEM_PATH);
             logTarget = baseTarget.path(LOG_PATH);
             switchTarget = baseTarget.path(SWITCH_PATH);
@@ -416,7 +419,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                         .request(MediaType.APPLICATION_JSON_TYPE).get();
                 logger.trace("Pulled logs in {} millseconds from {}", System.currentTimeMillis() - now,
                         getThing().getUID());
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | ProcessingException e) {
                 logger.debug("An exception occurred while pulling log entries from the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
                 this.logSubscriptionID = 0;
