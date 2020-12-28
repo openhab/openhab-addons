@@ -70,7 +70,7 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_OEM_FAULTCODE = "oemfaultcode";
     public static final String CHANNEL_DIAGNOSTICS_INDICATION = "diag";
 
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections.unmodifiableSet(Stream
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set
             .of(CHANNEL_ROOM_TEMPERATURE, CHANNEL_ROOM_SETPOINT, CHANNEL_FLOW_TEMPERATURE, CHANNEL_RETURN_TEMPERATURE,
                     CHANNEL_OUTSIDE_TEMPERATURE, CHANNEL_CENTRAL_HEATING_WATER_PRESSURE,
                     CHANNEL_CENTRAL_HEATING_ENABLED, CHANNEL_REQUESTED_CENTRAL_HEATING_ENABLED,
