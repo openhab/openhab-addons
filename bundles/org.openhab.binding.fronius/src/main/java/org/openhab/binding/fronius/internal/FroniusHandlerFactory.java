@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openhab.binding.fronius.internal.handler.FroniusBridgeHandler;
+import org.openhab.binding.fronius.internal.handler.FroniusMeterHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -42,6 +43,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
         {
             add(THING_TYPE_INVERTER);
             add(THING_TYPE_BRIDGE);
+            add(THING_TYPE_METER);
         }
     };
 
@@ -58,6 +60,8 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
             return new FroniusSymoInverterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
             return new FroniusBridgeHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(THING_TYPE_METER)) {
+            return new FroniusMeterHandler(thing);
         }
         return null;
     }
