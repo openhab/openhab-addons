@@ -74,7 +74,6 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
     @Override
     public void activate() {
         super.activate(null);
-        ThingHandlerService.super.activate();
     }
 
     @Override

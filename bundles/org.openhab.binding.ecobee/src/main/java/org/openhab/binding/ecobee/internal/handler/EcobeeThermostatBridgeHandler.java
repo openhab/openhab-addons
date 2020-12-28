@@ -163,10 +163,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         });
     }
 
-    public boolean isBackgroundDiscoveryEnabled() {
-        return ((EcobeeAccountBridgeHandler) getBridge().getHandler()).isBackgroundDiscoveryEnabled();
-    }
-
     /**
      * Called by the AccountBridgeHandler to create a Selection that
      * includes only the Ecobee objects for which there's at least one
