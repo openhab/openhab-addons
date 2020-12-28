@@ -274,7 +274,7 @@ public class TransmitterStick {
                 try {
                     // in case we have no commands that are currently due, wait for a new one
                     if (dueCommands.isEmpty()) {
-                        logger.debug("No due commands, invoking take on queue...");
+                        logger.trace("No due commands, invoking take on queue...");
                         dueCommands.add(cmdQueue.take());
                         logger.trace("take returned {}", dueCommands.first());
                     }
