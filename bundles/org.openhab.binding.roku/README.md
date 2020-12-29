@@ -35,15 +35,15 @@ The following channels are available:
 
 | Channel ID      | Item Type   | Description                                                                                                                                             |
 |-----------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| active_app      | String      | A dropdown containing a list of all apps installed on the Roku. The app currently running is automatically selected. The list updates every 10 minutes. |
+| activeApp       | String      | A dropdown containing a list of all apps installed on the Roku. The app currently running is automatically selected. The list updates every 10 minutes. |
 | button          | String      | Sends a remote control command the Roku. See list of available commands below.                                                                          |
-| play_mode       | String      | The current playback mode ie: stop, play, pause (ReadOnly).                                                                                             |
-| time_elapsed    | Number:Time | The total number of seconds of playback time elapsed for the current playing title (ReadOnly).                                                          |
-| time_total      | Number:Time | The total length of the current playing title in seconds (ReadOnly). This data is not provided by all streaming apps.                                   |
+| playMode        | String      | The current playback mode ie: stop, play, pause (ReadOnly).                                                                                             |
+| timeElapsed     | Number:Time | The total number of seconds of playback time elapsed for the current playing title (ReadOnly).                                                          |
+| timeTotal       | Number:Time | The total length of the current playing title in seconds (ReadOnly). This data is not provided by all streaming apps.                                   |
 
 Some Notes:
 
-* The values for `active_app`, `play_mode`, `time_elapsed` & `time_total` refresh automatically per the configured `refresh` interval (10 seconds minimum).
+* The values for `activeApp`, `playMode`, `timeElapsed` & `timeTotal` refresh automatically per the configured `refresh` interval (10 seconds minimum).
 
 **List of available button commands for Roku streaming devices:**  
 Home  
@@ -89,11 +89,11 @@ roku:roku_tv:myplayer1 "My Roku TV" [ hostName="192.168.10.1", refresh=10 ]
 roku.items:
 
 ```java
-String Player_ActiveApp         "Current App: [%s]"         { channel="roku:roku_player:myplayer1:active_app" }
+String Player_ActiveApp         "Current App: [%s]"         { channel="roku:roku_player:myplayer1:activeApp" }
 String Player_Button            "Send Command to Roku"      { channel="roku:roku_player:myplayer1:button" }
-String Player_Play_Mode         "Status: [%s]"              { channel="roku:roku_player:myplayer1:play_mode" }
-Number:Time Player_Time_Elapsed "Elapsed Time: [%d %unit%]" { channel="roku:roku_player:myplayer1:time_elapsed" }
-Number:Time Player_Time_Total   "Total Time: [%d %unit%]"   { channel="roku:roku_player:myplayer1:time_total" }
+String Player_Play_Mode         "Status: [%s]"              { channel="roku:roku_player:myplayer1:playMode" }
+Number:Time Player_Time_Elapsed "Elapsed Time: [%d %unit%]" { channel="roku:roku_player:myplayer1:timeElapsed" }
+Number:Time Player_Time_Total   "Total Time: [%d %unit%]"   { channel="roku:roku_player:myplayer1:timeTotal" }
 ```
 
 roku.sitemap:

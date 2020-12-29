@@ -47,11 +47,11 @@ public class RokuBindingConstants {
             THING_TYPE_ROKU_TV);
 
     // List of all Channel id's
-    public static final String ACTIVE_APP = "active_app";
+    public static final String ACTIVE_APP = "activeApp";
     public static final String BUTTON = "button";
-    public static final String PLAY_MODE = "play_mode";
-    public static final String TIME_ELAPSED = "time_elapsed";
-    public static final String TIME_TOTAL = "time_total";
+    public static final String PLAY_MODE = "playMode";
+    public static final String TIME_ELAPSED = "timeElapsed";
+    public static final String TIME_TOTAL = "timeTotal";
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;

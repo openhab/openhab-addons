@@ -12,11 +12,11 @@
 		</description>
 
 		<channels>
-			<channel id="active_app" typeId="active_app"/>
+			<channel id="activeApp" typeId="activeApp"/>
 			<channel id="button" typeId="button"/>
-			<channel id="play_mode" typeId="play_mode"/>
-			<channel id="time_elapsed" typeId="time_elapsed"/>
-			<channel id="time_total" typeId="time_total"/>
+			<channel id="playMode" typeId="playMode"/>
+			<channel id="timeElapsed" typeId="timeElapsed"/>
+			<channel id="timeTotal" typeId="timeTotal"/>
 		</channels>
 
 		<properties>
@@ -59,11 +59,11 @@
 		</description>
 
 		<channels>
-			<channel id="active_app" typeId="active_app"/>
-			<channel id="button" typeId="button_tv"/>
-			<channel id="play_mode" typeId="play_mode"/>
-			<channel id="time_elapsed" typeId="time_elapsed"/>
-			<channel id="time_total" typeId="time_total"/>
+			<channel id="activeApp" typeId="activeApp"/>
+			<channel id="button" typeId="buttonTv"/>
+			<channel id="playMode" typeId="playMode"/>
+			<channel id="timeElapsed" typeId="timeElapsed"/>
+			<channel id="timeTotal" typeId="timeTotal"/>
 		</channels>
 
 		<properties>
@@ -124,7 +124,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="button_tv">
+	<channel-type id="buttonTv">
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A Remote Button Press to Send to the Roku TV</description>
@@ -162,27 +162,27 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="active_app">
+	<channel-type id="activeApp">
 		<item-type>String</item-type>
 		<label>Active App</label>
 		<description>The Currently Running App on the Roku</description>
 	</channel-type>
 
-	<channel-type id="play_mode">
+	<channel-type id="playMode">
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The Current Playback Mode</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="time_elapsed">
+	<channel-type id="timeElapsed">
 		<item-type>Number:Time</item-type>
 		<label>Playback Time</label>
 		<description>The Current Playback Time Elapsed</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="time_total">
+	<channel-type id="timeTotal">
 		<item-type>Number:Time</item-type>
 		<label>Total Time</label>
 		<description>The Total Length of the Current Title</description>
