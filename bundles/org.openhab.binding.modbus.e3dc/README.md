@@ -172,8 +172,8 @@ String    E3DC_ModbusFirmware           "E3DC Modbus Firmware"      (e3dc)      
 Number    E3DC_SupportedRegisters       "E3DC Supported Registers"  (e3dc)      { channel="modbus:e3dc:device:powerplant:info#supported-registers" }
 String    E3DC_Manufacturer             "E3DC Manufacturer"         (e3dc)      { channel="modbus:e3dc:device:powerplant:info#manufacturer-name" }
 String    E3DC_ModelName                "E3DC Model"                (e3dc)      { channel="modbus:e3dc:device:powerplant:info#model-name" }
-String    E3DC_Firmware                 "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#firmware-release" }
-String    E3DC_SerialNumber             "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#serial-number" }
+String    E3DC_Firmware                 "E3DC Firmware"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#firmware-release" }
+String    E3DC_SerialNumber             "E3DC Serial Number"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#serial-number" }
 
 Number:Power    E3DC_PVPower                  "E3DC PV Power"             (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#pv-power-supply" }
 Number:Power    E3DC_BatteryDischarge         "E3DC Battery Discharge"    (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-power-supply" }
