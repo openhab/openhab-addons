@@ -169,11 +169,13 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
         unregisterFeedTestServlet();
 
-        // Wait for FeedHandler to be unregistered
-        waitForAssert(() -> {
-            feedHandler = (FeedHandler) feedThing.getHandler();
-            assertThat(feedHandler, is(nullValue()));
-        });
+        if (feedThing != null) {
+            // Wait for FeedHandler to be unregistered
+            waitForAssert(() -> {
+                feedHandler = (FeedHandler) feedThing.getHandler();
+                assertThat(feedHandler, is(nullValue()));
+            });
+        }
     }
 
     private synchronized void registerFeedTestServlet() {
