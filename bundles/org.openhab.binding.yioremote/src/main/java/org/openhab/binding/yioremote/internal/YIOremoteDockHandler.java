@@ -44,7 +44,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,8 +116,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     recievedJson = convertStringToJsonObject(receivedMessage);
                     if (recievedJson.size() > 0) {
                         if (decodeReceivedMessage(recievedJson)) {
-                            triggerChannel(getChannelUuid(GROUP_OUTPUT, STATUS_STRING_CHANNEL));
-                            updateChannelString(GROUP_OUTPUT, STATUS_STRING_CHANNEL, receivedStatus);
                             switch (yioRemoteDockActualStatus) {
                                 case CONNECTION_ESTABLISHED:
                                 case AUTHENTICATION_PROCESS:
@@ -126,6 +123,12 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                     break;
                                 case COMMUNICATION_ERROR:
                                     reconnectWebsocket();
+                                    break;
+                                case AUTHENTICATION_COMPLETE:
+                                case CHECK_PONG:
+                                case SEND_PING:
+                                    updateChannelString(GROUP_OUTPUT, STATUS_STRING_CHANNEL, receivedStatus);
+                                    triggerChannel(getChannelUuid(GROUP_OUTPUT, STATUS_STRING_CHANNEL));
                                     break;
                                 default:
                                     break;
@@ -196,12 +199,14 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     success = false;
                 }
             } else if (message.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
+                // sendMessage(YioRemoteMessages.IR_RECEIVER_OFF, "");
                 receivedStatus = message.get("code").toString().replace("\"", "");
                 if (receivedStatus.matches("[0-9]?[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
                     irCodeReceivedHandler.setCode(message.get("code").toString().replace("\"", ""));
                 } else {
                     irCodeReceivedHandler.setCode("");
                 }
+
                 logger.debug("ir_receive message {}", irCodeReceivedHandler.getCode());
                 heartBeat = true;
                 success = true;
@@ -266,6 +271,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         if (RECEIVER_SWITCH_CHANNEL.equals(channelUID.getIdWithoutGroup())) {
             switch (yioRemoteDockActualStatus) {
                 case AUTHENTICATION_COMPLETE:
+                case SEND_PING:
+                case CHECK_PONG:
                     if (command == OnOffType.ON) {
                         logger.debug("YIODOCKRECEIVERSWITCH ON procedure: Switching IR Receiver on");
                         sendMessage(YioRemoteMessages.IR_RECEIVER_ON, "");
@@ -320,6 +327,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 if (authenticationOk) {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE;
                     updateStatus(ThingStatus.ONLINE);
+                    updateState(STATUS_STRING_CHANNEL, StringType.EMPTY);
+                    updateState(RECEIVER_SWITCH_CHANNEL, OnOffType.OFF);
                     webSocketPollingJob = scheduler.scheduleWithFixedDelay(this::pollingWebsocketJob, 0, 60,
                             TimeUnit.SECONDS);
                 } else {
@@ -331,7 +340,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Connection lost no ping from YIO DOCK");
-                updateState(GROUP_OUTPUT, STATUS_STRING_CHANNEL, UnDefType.UNDEF);
                 break;
         }
     }
@@ -375,7 +383,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Connection lost no ping from YIO DOCK");
-                updateState(GROUP_OUTPUT, STATUS_STRING_CHANNEL, UnDefType.UNDEF);
                 break;
         }
     }
