@@ -14,10 +14,7 @@ package org.openhab.binding.http.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -163,6 +160,12 @@ public class HttpThingHandler extends BaseThingHandler {
             try {
                 URI uri = new URI(config.baseURL);
                 switch (config.authMode) {
+                    case BASIC_PREEMPTIVE:
+                        config.headers = new ArrayList<>(config.headers);
+                        config.headers.add("Authorization=Basic " + Base64.getEncoder()
+                                .encodeToString((config.username + ":" + config.password).getBytes()));
+                        logger.debug("Preemptive Basic Authentication configured for thing '{}'", thing.getUID());
+                        break;
                     case BASIC:
                         authentication = new BasicAuthentication(uri, Authentication.ANY_REALM, config.username,
                                 config.password);
