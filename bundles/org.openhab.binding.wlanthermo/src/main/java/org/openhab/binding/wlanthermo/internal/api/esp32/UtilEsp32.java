@@ -23,8 +23,8 @@ import java.util.Map;
 public class UtilEsp32 {
 
     private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
-    private static final String DEFAULT_HEX = "#ffffff";
-    private static final String DEFAULT_COLORNAME = "niagara";
+    private static final String DEFAULT_HEX = "#FFFF00";
+    private static final String DEFAULT_COLORNAME = "yellow";
 
     private UtilEsp32() {
         // hidden

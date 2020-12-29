@@ -82,12 +82,12 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                         TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "WlanThermo not found under given address.");
+                        "WlanThermo Mini not found under given address.");
             }
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Failed to connect.", e);
+            logger.debug("Failed to connect to WlanThermo Mini.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to WlanThermo at " + config.getIpAddress());
+                    "Could not connect to WlanThermo Mini at " + config.getIpAddress());
             ScheduledFuture<?> oldScheduler = pollingScheduler;
             if (oldScheduler != null) {
                 oldScheduler.cancel(false);

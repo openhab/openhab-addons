@@ -67,7 +67,7 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing WlanThermo Nano!");
+        logger.debug("Start initializing WlanThermo Nano V1!");
         config = getConfigAs(WlanThermoExtendedConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -80,11 +80,11 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
             }
             scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
 
-            logger.debug("Finished initializing WlanThermo Nano!");
+            logger.debug("Finished initializing WlanThermo Nano V1!");
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Failed to initialize WlanThermo Nano!");
-            logger.debug("Failed to initialize WlanThermo Nano!", e);
+                    "Failed to initialize WlanThermo Nano V1!");
+            logger.debug("Failed to initialize WlanThermo Nano V1!", e);
         }
     }
 
@@ -100,12 +100,12 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                         TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "WlanThermo not found under given address.");
+                        "WlanThermo Nano V1 not found under given address.");
             }
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Failed to connect.", e);
+            logger.debug("Failed to connect to WlanThermo Nano V1.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to WlanThermo at " + config.getIpAddress());
+                    "Could not connect to WlanThermo Nano V1 at " + config.getIpAddress());
             ScheduledFuture<?> oldScheduler = pollingScheduler;
             if (oldScheduler != null) {
                 oldScheduler.cancel(false);
@@ -178,17 +178,17 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                         .timeout(5, TimeUnit.SECONDS).send().getStatus();
                 if (status == 401) {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
+                            "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo Nano V1!");
                 } else if (status != 200) {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
-                            + c.getName() + " on device, Statuscode " + status + " on URI " + uri.toString());
+                            + c.getName() + " on WlanThermo Nano V1, Statuscode " + status + " on URI " + uri.toString());
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to update channel " + c.getName() + " on device!");
-                logger.debug("Failed to update channel {} on device", c.getName(), e);
+                        "Failed to update channel " + c.getName() + " on WlanThermo Nano V1!");
+                logger.debug("Failed to update channel {} on WlanThermo Nano V1", c.getName(), e);
             }
         });
     }
