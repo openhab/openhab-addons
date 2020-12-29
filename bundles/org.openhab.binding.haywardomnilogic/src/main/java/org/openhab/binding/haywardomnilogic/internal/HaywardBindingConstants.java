@@ -56,6 +56,8 @@ public class HaywardBindingConstants {
     public static final String CHANNEL_BACKYARD_AIRTEMP = "backyardAirTemp";
     public static final String CHANNEL_BACKYARD_STATUS = "backyardStatus";
     public static final String CHANNEL_BACKYARD_STATE = "backyardState";
+    public static final String PROPERTY_BOW_UNITS = "Units";
+    public static final String PROPERTY_VSP_SPEED_FORMAT = "VSP Speed Format";
 
     // List of all Channel ids (bow)
     public static final String CHANNEL_BOW_WATERTEMP = "bowWaterTemp";

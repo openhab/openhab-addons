@@ -103,8 +103,9 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             // Find Backyard
             names = bridgehandler.evaluateXPath("//Backyard/Name/text()", xmlResponse);
 
-            for (String name : names) {
-                onBackyardDiscovered(Integer.parseInt(bridgehandler.account.mspSystemID), name);
+            for (int i = 0; i < names.size(); i++) {
+                onBackyardDiscovered(Integer.parseInt(bridgehandler.account.mspSystemID), names.get(i),
+                        property1.get(i), property2.get(i));
             }
 
             // Find Bodies of Water
@@ -244,13 +245,15 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         return true;
     }
 
-    public void onBackyardDiscovered(int systemID, String label) {
+    public void onBackyardDiscovered(int systemID, String label, String units, String vspFormat) {
         logger.trace("Hayward Backyard {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_BACKYARD, bridgehandler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BACKYARD);
+        properties.put(HaywardBindingConstants.PROPERTY_BOW_UNITS, String.valueOf(units));
+        properties.put(HaywardBindingConstants.PROPERTY_VSP_SPEED_FORMAT, String.valueOf(vspFormat));
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgehandler.getThing().getUID())
                 .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
                 .withProperties(properties).build();
