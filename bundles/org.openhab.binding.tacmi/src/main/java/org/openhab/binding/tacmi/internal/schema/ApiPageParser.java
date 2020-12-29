@@ -91,6 +91,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     private Map<String, ApiPageEntry> entries;
     private Set<String> seenNames = new HashSet<>();
     private List<Channel> channels = new ArrayList<>();
+    // Time stamp when status request was started.
+    private final long statusRequestStartTS;
 
     public ApiPageParser(TACmiSchemaHandler taCmiSchemaHandler, Map<String, ApiPageEntry> entries,
             TACmiChannelTypeProvider channelTypeProvider) {
@@ -98,6 +100,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
         this.taCmiSchemaHandler = taCmiSchemaHandler;
         this.entries = entries;
         this.channelTypeProvider = channelTypeProvider;
+        this.statusRequestStartTS = System.currentTimeMillis();
     }
 
     @Override
@@ -483,8 +486,12 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             this.entries.put(shortName, e);
         }
         this.channels.add(e.channel);
-        e.setLastState(state);
-        this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
+        // only update the state when there was no state change sent to C.M.I. after we started
+        // polling the state. It might deliver the previous / old state.
+        if (e.getLastCommandTS() < this.statusRequestStartTS) {
+            e.setLastState(state);
+            this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
+        }
     }
 
     protected boolean isConfigChanged() {

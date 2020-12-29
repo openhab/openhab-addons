@@ -14,6 +14,7 @@ package org.openhab.binding.tacmi.internal.schema;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.B64Code;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -109,8 +109,8 @@ public class TACmiSchemaHandler extends BaseThingHandler {
         this.online = false;
         updateStatus(ThingStatus.UNKNOWN);
 
-        this.authHeader = "Basic "
-                + B64Code.encode(config.username + ":" + config.password, StandardCharsets.ISO_8859_1);
+        this.authHeader = "Basic " + Base64.getEncoder()
+                .encodeToString((config.username + ":" + config.password).getBytes(StandardCharsets.ISO_8859_1));
 
         final String serverBase = "http://" + config.host + "/";
         this.serverBase = serverBase;
@@ -170,9 +170,9 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             final ApiPageParser pp = parsePage(schemaApiPage,
                     new ApiPageParser(this, entries, this.channelTypeProvider));
 
-            if (pp.isConfigChanged()) {
+            final List<Channel> channels = pp.getChannels();
+            if (pp.isConfigChanged() || channels.size() != this.getThing().getChannels().size()) {
                 // we have to update our channels...
-                final List<Channel> channels = pp.getChannels();
                 final ThingBuilder thingBuilder = editThing();
                 thingBuilder.withChannels(channels);
                 updateThing(thingBuilder.build());
@@ -271,6 +271,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                 return;
         }
         try {
+            e.setLastCommandTS(System.currentTimeMillis());
             ContentResponse res = reqUpdate.send();
             if (res.getStatus() == 200) {
                 // update ok, we update the state
