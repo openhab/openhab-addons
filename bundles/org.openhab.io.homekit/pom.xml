@@ -21,7 +21,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.github.yfre</groupId>
+      <groupId>com.github.j-n-k</groupId>
       <artifactId>hap-java</artifactId>
       <version>2.1.0.OH</version>
       <scope>compile</scope>
