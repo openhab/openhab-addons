@@ -116,7 +116,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="model" >Model</property>
+			<property name="model">Model</property>
 			<property name="serial">Serial Number</property>
 			<property name="esp32_bt_enabled">Bluetooth available</property>
 			<property name="esp32_pm_enabled">Pitmaster available</property>

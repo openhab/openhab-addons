@@ -180,8 +180,9 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo Nano V1!");
                 } else if (status != 200) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
-                            + c.getName() + " on WlanThermo Nano V1, Statuscode " + status + " on URI " + uri.toString());
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Failed to update channel " + c.getName() + " on WlanThermo Nano V1, Statuscode " + status
+                                    + " on URI " + uri.toString());
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
