@@ -145,7 +145,7 @@ public class InfluxDBStateConvertUtils {
         if (object instanceof Boolean) {
             return (Boolean) object;
         } else if (object != null) {
-            if ("1".equals(object)) {
+            if ("1".equals(object) || "1.0".equals(object)) {
                 return true;
             } else {
                 return Boolean.valueOf(String.valueOf(object));
