@@ -70,8 +70,15 @@ public class HaywardRelayHandler extends HaywardThingHandler {
             return;
         }
 
-        prop.systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-        prop.poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+        if (systemID != null) {
+            prop.systemID = systemID;
+        }
+
+        String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        if (poolID != null) {
+            prop.poolID = poolID;
+        }
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();

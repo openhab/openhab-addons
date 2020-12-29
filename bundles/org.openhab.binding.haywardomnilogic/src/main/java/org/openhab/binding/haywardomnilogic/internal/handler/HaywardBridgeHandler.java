@@ -307,7 +307,10 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             if (properties.get(HaywardBindingConstants.PROPERTY_TYPE).equals("BACKYARD")) {
                 HaywardBackyardHandler handler = (HaywardBackyardHandler) thing.getHandler();
                 if (handler != null) {
-                    return handler.getAlarmList(properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    String systemID = properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+                    if (systemID != null) {
+                        return handler.getAlarmList(systemID);
+                    }
                 }
             }
         }
