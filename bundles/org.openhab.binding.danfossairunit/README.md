@@ -47,7 +47,7 @@ These are the available configuration parameters:
 
 ### Things
 
-Suppose your autodiscovered air unit is identified by the id "danfossairunit:airunit:-1062731769" (see section "Discovery").
+Suppose your autodiscovered air unit is identified by the id "danfossairunit:airunit:myairunit" (see section "Discovery").
 The channel will then be identified by `<air unit id>:<channel group>#<channel>`
 
 You can also manually configure your air unit in case you don't want to use autodiscovery
@@ -62,12 +62,12 @@ updateUnchangedValuesEveryMillis=30000]
 ### Items
 
 ```
-Dimmer Lueftung_Drehzahl_Manuell "Drehzahl Lüftung %" (All,Lueftung) {channel = "danfossairunit:airunit:-1062731769:main#manual_fan_speed"}
-Number Lueftung_Drehzahl_Supply "Drehzahl Lüftung Zuluft (rpm)" (All,Lueftung) {channel = "danfossairunit:airunit:-1062731769:main#supply_fan_speed"}
-Number Lueftung_Drehzahl_Extract "Drehzahl Lüftung Abluft (rpm)" (All,Lueftung) {channel = "danfossairunit:airunit:-1062731769:main#extract_fan_speed"}
-String Lueftung_Mode "Betriebsart Lüftung" (All,Lueftung) {channel = "danfossairunit:airunit:-1062731769:main#mode"}
-Switch Lueftung_Boost "Stoßlüftung" (All,Lueftung) {channel = "danfossairunit:airunit:-1062731769:main#boost"}
-Switch Lueftung_Bypass "Lüftung Bypass" (All,Lueftung) {channel = "danfossairunit:airunit:-1062731769:recuperator#bypass"}
+Dimmer Lueftung_Drehzahl_Manuell "Drehzahl Lüftung %" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#manual_fan_speed"}
+Number Lueftung_Drehzahl_Supply "Drehzahl Lüftung Zuluft (rpm)" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#supply_fan_speed"}
+Number Lueftung_Drehzahl_Extract "Drehzahl Lüftung Abluft (rpm)" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#extract_fan_speed"}
+String Lueftung_Mode "Betriebsart Lüftung" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#mode"}
+Switch Lueftung_Boost "Stoßlüftung" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#boost"}
+Switch Lueftung_Bypass "Lüftung Bypass" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:recuperator#bypass"}
 ```
 
 ### Sitemap
