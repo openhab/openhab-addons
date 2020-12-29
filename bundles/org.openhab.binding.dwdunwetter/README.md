@@ -78,9 +78,9 @@ dwdunwetter.things:
 dwdunwetter:dwdwarnings:cologne "Warnings Cologne" [ cellId="105315000", refresh=15, warningCount=1 ]
 ```
 
-e.g. like
+e.g.
 
-to get two warning like in the item example, set warningCount=2 in things file
+to get two warnings like in the item example, set warningCount=2 in things file
 
 ```
 dwdunwetter:dwdwarnings:cologne "Warnings Cologne" [ cellId="105315000", refresh=15, warningCount=2
