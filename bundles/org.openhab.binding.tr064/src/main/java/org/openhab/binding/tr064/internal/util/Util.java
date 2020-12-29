@@ -261,7 +261,8 @@ public class Util {
             if (parameterPattern != null) {
                 parameters.removeIf(param -> {
                     if (!param.matches(parameterPattern)) {
-                        LOGGER.warn("Removing {} while processing {}, does not match pattern {}, check config.", param, channelId, parameterPattern);
+                        LOGGER.warn("Removing {} while processing {}, does not match pattern {}, check config.", param,
+                                channelId, parameterPattern);
                         return true;
                     } else {
                         return false;

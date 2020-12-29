@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.tr064.internal.config;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
