@@ -63,7 +63,7 @@ public abstract class DeviceReadingHandler extends BaseThingHandler {
                             logger.warn("Could not read event", e);
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
-                    }, getClass(), getInstanceName());
+                    }, "events", thing);
                     thread.start();
                     worker = thread;
                 }

@@ -152,7 +152,7 @@ public class LinuxInputDiscoveryService extends AbstractDiscoveryService {
                     waitForNewDevices(watcher);
                     return null;
                 });
-                Thread t = Utils.backgroundThread(job, getClass(), null);
+                Thread t = Utils.backgroundThread(job, "discovery", null);
                 t.start();
                 discoveryJob = job;
             } else {
