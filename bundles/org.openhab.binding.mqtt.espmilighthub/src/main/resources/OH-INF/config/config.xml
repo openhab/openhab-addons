@@ -7,18 +7,13 @@
 	<config-description uri="thing-type:mqtt:rgb">
 		<parameter name="oneTriggersNightMode" type="boolean" required="true">
 			<label>1% Triggers Night Mode</label>
-			<description>Night Mode is a much lower level of light and this allows it to be auto selected when your fader/slider
-				moves to 1%. NOTE: Night mode locks out some controls of a physical remote.
-			</description>
+			<description>1% on a slider will trigger the Night Mode.</description>
 			<default>false</default>
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
 			<label>When globes are off, default to the lowest level of light if the power fails.</label>
-			<description>If lights loose power from the power switch being cycled OR a power outage, the lights will default to
-				the lowest
-				brightness to prevent waking people.
-			</description>
+			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
@@ -32,9 +27,7 @@
 
 		<parameter name="oneTriggersNightMode" type="boolean" required="true">
 			<label>1% Triggers Night Mode</label>
-			<description>Night Mode is a much lower level of light and this allows it to be auto selected when your fader/slider
-				moves to 1%. NOTE: Night mode locks out some controls of a physical remote.
-			</description>
+			<description>1% on a slider will trigger the Night Mode.</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
@@ -42,25 +35,21 @@
 	<config-description uri="thing-type:mqtt:rgbandcct">
 		<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
 			<label>White Hue</label>
-			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
-				to -1 to disable, 0 for Alexa, or 35 for Google Home.
+			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
 			</description>
 			<default>35</default>
 		</parameter>
 
 		<parameter name="whiteSat" type="integer" required="true" min="-1" max="100">
 			<label>White Saturation</label>
-			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
-				to -1 to disable, 100 for Alexa or 32 for Google Home.
+			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
 			</description>
 			<default>32</default>
 		</parameter>
 
 		<parameter name="favouriteWhite" type="integer" required="true" min="153" max="370">
 			<label>Favourite White</label>
-			<description>When one of the shortcuts triggers white mode, use this for the colour white instead of the default
-				colour.
-			</description>
+			<description>When a shortcut triggers white mode, use this for the colour white.</description>
 			<default>200</default>
 		</parameter>
 
@@ -72,18 +61,13 @@
 
 		<parameter name="oneTriggersNightMode" type="boolean" required="true">
 			<label>1% Triggers Night Mode</label>
-			<description>Night Mode is a much lower level of light and this allows it to be auto selected when your fader/slider
-				moves to 1%. NOTE: Night mode locks out some controls of a physical remote.
-			</description>
+			<description>1% on a slider will trigger the Night Mode.</description>
 			<default>false</default>
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
 			<label>When globes are off, default to the lowest level of light if the power fails.</label>
-			<description>If lights loose power from the power switch being cycled OR a power outage, the lights will default to
-				the lowest
-				brightness to prevent waking people.
-			</description>
+			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
 			<default>true</default>
 		</parameter>
 	</config-description>
@@ -91,42 +75,33 @@
 	<config-description uri="thing-type:mqtt:rgbw">
 		<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
 			<label>White Hue</label>
-			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
-				to -1 to disable, 0 for Alexa, or 35 for Google Home.
+			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
 			</description>
 			<default>35</default>
 		</parameter>
 
 		<parameter name="whiteSat" type="integer" required="true" min="-1" max="100">
 			<label>White Saturation</label>
-			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
-				to -1 to disable, 100 for Alexa or 32 for Google Home.
+			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
 			</description>
 			<default>32</default>
 		</parameter>
 
 		<parameter name="oneTriggersNightMode" type="boolean" required="true">
 			<label>1% Triggers Night Mode</label>
-			<description>Night Mode is a much lower level of light and this allows it to be auto selected when your fader/slider
-				moves to 1%. NOTE: Night mode locks out some controls of a physical remote.
-			</description>
+			<description>1% on a slider will trigger the Night Mode.</description>
 			<default>false</default>
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
 			<label>When globes are off, default to the lowest level of light if the power fails.</label>
-			<description>If lights loose power from the power switch being cycled OR a power outage, the lights will default to
-				the lowest
-				brightness to prevent waking people.
-			</description>
+			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
 			<default>false</default>
 		</parameter>
 
 		<parameter name="whiteThreshold" type="integer" required="true" min="-1" max="99">
 			<label>White Threshold</label>
-			<description>RGBW globes do not respond to saturation changes, so this feature allows you to specify a number that
-				if
-				the saturation drops below, it will trigger the white mode. -1 will disable this feature.
+			<description>RGBW saturation changes, will trigger the white mode. -1 will disable this feature.
 			</description>
 			<default>12</default>
 		</parameter>
