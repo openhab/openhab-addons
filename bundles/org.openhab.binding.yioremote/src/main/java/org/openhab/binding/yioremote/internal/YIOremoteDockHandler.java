@@ -283,12 +283,20 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     public void sendIRCode(@Nullable String irCode) {
-        if (irCode != null && yioRemoteDockActualStatus.equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)) {
-            if (irCode.matches("[0-9]?[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
-                sendMessage(YioRemoteMessages.IR_SEND, irCode);
+        if (irCode != null) {
+            if (yioRemoteDockActualStatus.equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)
+                    || yioRemoteDockActualStatus.equals(YioRemoteDockHandleStatus.SEND_PING)
+                    || yioRemoteDockActualStatus.equals(YioRemoteDockHandleStatus.CHECK_PONG)) {
+                if (irCode.matches("[0-9]?[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                    sendMessage(YioRemoteMessages.IR_SEND, irCode);
+                } else {
+                    logger.warn("Wrong ir code format {}", irCode);
+                }
             } else {
-                logger.warn("Wrong ir code format {}", irCode);
+                logger.debug("Wrong Dock Statusfor sending  {}", irCode);
             }
+        } else {
+            logger.warn("No ir code {}", irCode);
         }
     }
 
@@ -456,7 +464,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             case IR_SEND:
                 irCodeSendHandler.setCode(messagePayload);
                 yioremoteDockwebSocketClient.sendMessage(irCodeSendMessageHandler.getIRcodeSendMessageString());
-                logger.debug("sending heartBeat message: {}", irCodeSendMessageHandler.getIRcodeSendMessageString());
+                logger.debug("sending IR code: {}", irCodeSendMessageHandler.getIRcodeSendMessageString());
                 break;
         }
     }
