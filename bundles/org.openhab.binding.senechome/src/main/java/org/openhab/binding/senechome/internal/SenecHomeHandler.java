@@ -48,6 +48,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +119,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         refreshCache.getValue();
     }
 
-    private void updateChannelState(String channelConstant, org.openhab.core.types.State channelState) {
+    private void updateChannelState(String channelConstant, State channelState) {
         Channel channel = getThing().getChannel(channelConstant);
         if (channel != null) {
             updateState(channel.getUID(), channelState);
