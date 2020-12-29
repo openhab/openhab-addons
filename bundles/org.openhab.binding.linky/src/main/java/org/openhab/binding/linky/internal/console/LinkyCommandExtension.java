@@ -80,9 +80,9 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                 console.println(String.format("'%s' is not a Linky thing id", args[0]));
                 printUsage(console);
             } else if (REPORT.equals(args[1])) {
-                LocalDate now = LocalDate.now();
-                LocalDate start = now.minusDays(7);
-                LocalDate end = now.minusDays(1);
+                LocalDate yesterday = LocalDate.now().minusDays(1);
+                LocalDate start = yesterday.minusDays(6);
+                LocalDate end = yesterday;
                 String separator = " ";
                 if (args.length >= 3) {
                     try {
@@ -104,13 +104,13 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                         return;
                     }
                 }
-                if (!start.isBefore(now) || start.isAfter(end)) {
+                if (start.isAfter(yesterday) || start.isAfter(end)) {
                     console.println("Start day must be in the past and before the end day");
                     printUsage(console);
                     return;
                 }
-                if (end.isAfter(now.minusDays(1))) {
-                    end = now.minusDays(1);
+                if (end.isAfter(yesterday)) {
+                    end = yesterday;
                 }
                 if (args.length >= 5) {
                     separator = args[4];

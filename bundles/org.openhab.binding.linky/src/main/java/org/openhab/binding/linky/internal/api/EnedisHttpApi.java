@@ -256,6 +256,7 @@ public class EnedisHttpApi {
         if (data.isEmpty()) {
             throw new LinkyException(String.format("Requesting '%s' returned an empty response", url));
         }
+        logger.trace("getData returned {}", data);
         try {
             ConsumptionReport report = gson.fromJson(data, ConsumptionReport.class);
             return report.firstLevel.consumptions;
