@@ -52,7 +52,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
     private final Gson gson = new Gson();
-    private App app = new App();
+    private @Nullable App app = new App();
 
     public WlanThermoMiniHandler(Thing thing, HttpClient httpClient) {
         super(thing);

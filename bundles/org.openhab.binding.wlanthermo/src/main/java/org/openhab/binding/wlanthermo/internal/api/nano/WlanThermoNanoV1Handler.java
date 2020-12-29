@@ -57,8 +57,8 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
     private final Gson gson = new Gson();
-    private Data data = new Data();
-    private Settings settings = new Settings();
+    private @Nullable Data data = new Data();
+    private @Nullable Settings settings = new Settings();
 
     public WlanThermoNanoV1Handler(Thing thing, HttpClient httpClient) {
         super(thing);
