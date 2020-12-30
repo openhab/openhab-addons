@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ecobee.internal.api.EcobeeApi;
 import org.openhab.binding.ecobee.internal.config.EcobeeAccountConfiguration;
-import org.openhab.binding.ecobee.internal.discovery.ThermostatDiscoveryService;
+import org.openhab.binding.ecobee.internal.discovery.EcobeeDiscoveryService;
 import org.openhab.binding.ecobee.internal.dto.SelectionDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatUpdateRequestDTO;
@@ -61,8 +61,6 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     private static final int REFRESH_STARTUP_DELAY_SECONDS = 3;
     private static final int REFRESH_INTERVAL_SECONDS = 1;
-    private static final int DISCOVERY_INTERVAL_SECONDS = 300;
-    private static final int DISCOVERY_INITIAL_DELAY_SECONDS = 10;
     private static final int DEFAULT_REFRESH_INTERVAL_NORMAL_SECONDS = 20;
     private static final int DEFAULT_REFRESH_INTERVAL_QUICK_SECONDS = 5;
     private static final int DEFAULT_API_TIMEOUT_SECONDS = 20;
@@ -78,15 +76,12 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
     private int refreshIntervalQuick;
     private int apiTimeout;
     private boolean discoveryEnabled;
-    private int discoveryInterval;
 
     private final Map<String, EcobeeThermostatBridgeHandler> thermostatHandlers = new ConcurrentHashMap<>();
     private final Set<String> thermostatIds = new CopyOnWriteArraySet<>();
 
     private @Nullable Future<?> refreshThermostatsJob;
     private final AtomicInteger refreshThermostatsCounter = new AtomicInteger(REFRESH_STARTUP_DELAY_SECONDS);
-    private final AtomicInteger discoveryCounter = new AtomicInteger(DISCOVERY_INITIAL_DELAY_SECONDS);
-    private @Nullable ThermostatDiscoveryService discoveryService;
 
     private @Nullable SummaryResponseDTO previousSummary;
 
@@ -117,9 +112,6 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
         discoveryEnabled = booleanValue == null ? false : booleanValue.booleanValue();
         logger.debug("AccountBridge: Thermostat and sensor discovery is {}", discoveryEnabled ? "enabled" : "disabled");
 
-        value = config.discoveryInterval;
-        discoveryInterval = value == null ? DISCOVERY_INTERVAL_SECONDS : value;
-
         api = new EcobeeApi(this, apiKey, apiTimeout, oAuthFactory, httpClient);
 
         scheduleRefreshJob();
@@ -139,7 +131,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ThermostatDiscoveryService.class);
+        return Collections.singleton(EcobeeDiscoveryService.class);
     }
 
     @Override
@@ -161,11 +153,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
                 thermostatId);
     }
 
-    public void setDiscoveryService(ThermostatDiscoveryService discoveryService) {
-        this.discoveryService = discoveryService;
-    }
-
-    public boolean isDiscoveryEnabled() {
+    public boolean isBackgroundDiscoveryEnabled() {
         return discoveryEnabled;
     }
 
@@ -213,17 +201,13 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     /*
-     * The refresh job
-     * - updates the thermostat channels on the refresh interval set in the thermostat thing config, and
-     * - runs the thermostat discovery on the refresh interval set in the thing config
-     *
+     * The refresh job updates the thermostat channels on the refresh interval set in the thermostat thing config.
      * The thermostat update process involves first running a thermostat summary transaction to
      * determine if any thermostat data has changed since the last summary. If any change is detected,
      * a full query of the thermostats is performed.
      */
     private void refresh() {
         refreshThermostats();
-        discoverThermostats();
     }
 
     @SuppressWarnings("null")
@@ -240,19 +224,6 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
                 }
             }
             previousSummary = summary;
-        }
-    }
-
-    private void discoverThermostats() {
-        if (isDiscoveryEnabled()) {
-            if (discoveryCounter.getAndDecrement() == 0) {
-                discoveryCounter.set(discoveryInterval);
-                ThermostatDiscoveryService localDiscoveryService = discoveryService;
-                if (localDiscoveryService != null) {
-                    logger.debug("AccountBridge: Running thermostat discovery");
-                    localDiscoveryService.startBackgroundDiscovery();
-                }
-            }
         }
     }
 
