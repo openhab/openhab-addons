@@ -115,11 +115,7 @@ public class HaywardBindingConstants {
     public static final String CHANNEL_VIRTUALHEATER_CURRENTSETPOINT = "virtualHeaterCurrentSetpoint";
     public static final String CHANNEL_VIRTUALHEATER_ENABLE = "virtualHeaterEnable";
 
-    // The properties associated with the thing
-    public static final String PROPERTY_VERSION = "Property Version";
-    public static final String PROPERTY_STATUSVERSION = "Property Status Version";
-    public static final String PROPERTY_CONFIGUPDATEDTIME = "Property Configuration Last Updated Date/Time";
-    public static final String MESSAGEVERSION = "Property Message Version";
+    // The properties associated with all things
     public static final String PROPERTY_SYSTEM_ID = "Property system ID";
     public static final String PROPERTY_TYPE = "propertyType";
     public static final String PROPERTY_BOWNAME = "BOW Name";
