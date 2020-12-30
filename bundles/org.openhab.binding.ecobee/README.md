@@ -107,7 +107,6 @@ The following configuration parameters are available on the Ecobee Account:
 | refreshIntervalQuick    | Integer    | Required         | Specifies the interval in seconds with which the Ecobee data will be updated after sending an update or executing a function. |
 | apiTimeout              | Integer    | Required         | Time in seconds to allow an API request against the Ecobee servers to complete. |
 | discoveryEnabled        | Switch     | Required         | Specifies whether the binding should auto-discover thermostats and remote sensors. |
-| discoveryInterval       | Integer    | Optional         | Specifies time interval in seconds in which the binding will attempt to discover thermostats. |
 
 ### Ecobee Thermostat
 
