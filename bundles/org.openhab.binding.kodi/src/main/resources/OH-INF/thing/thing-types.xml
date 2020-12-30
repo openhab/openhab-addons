@@ -463,19 +463,19 @@
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
-		<state pattern="%d %unit%"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="currenttimepercentage" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Current Time in Percent</label>
 		<description>Current time of currently playing media</description>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="id" advanced="true">
 		<item-type>Number</item-type>
