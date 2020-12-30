@@ -72,7 +72,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollAlarmsFuture;
     private int commFailureCount;
     private @Nullable HaywardDiscoveryService haywardDiscoveryService;
-
     public HaywardConfig config = getConfig().as(HaywardConfig.class);
     public HaywardAccount account = getConfig().as(HaywardAccount.class);
 
