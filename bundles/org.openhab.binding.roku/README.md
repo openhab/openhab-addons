@@ -91,9 +91,9 @@ roku.items:
 ```java
 String Player_ActiveApp         "Current App: [%s]"         { channel="roku:roku_player:myplayer1:activeApp" }
 String Player_Button            "Send Command to Roku"      { channel="roku:roku_player:myplayer1:button" }
-String Player_Play_Mode         "Status: [%s]"              { channel="roku:roku_player:myplayer1:playMode" }
-Number:Time Player_Time_Elapsed "Elapsed Time: [%d %unit%]" { channel="roku:roku_player:myplayer1:timeElapsed" }
-Number:Time Player_Time_Total   "Total Time: [%d %unit%]"   { channel="roku:roku_player:myplayer1:timeTotal" }
+String Player_PlayMode         "Status: [%s]"              { channel="roku:roku_player:myplayer1:playMode" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="roku:roku_player:myplayer1:timeElapsed" }
+Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="roku:roku_player:myplayer1:timeTotal" }
 ```
 
 roku.sitemap:
@@ -103,9 +103,9 @@ sitemap roku label="Roku" {
     Frame label="My Roku" {
         Selection item=Player_ActiveApp icon="screen"
         Selection item=Player_Button icon="screen"
-        Text item=Player_Play_Mode
-        Text item=Player_Time_Elapsed icon="time"
-        Text item=Player_Time_Total icon="time"
+        Text item=Player_PlayMode
+        Text item=Player_TimeElapsed icon="time"
+        Text item=Player_TimeTotal icon="time"
     }
 }
 ```
