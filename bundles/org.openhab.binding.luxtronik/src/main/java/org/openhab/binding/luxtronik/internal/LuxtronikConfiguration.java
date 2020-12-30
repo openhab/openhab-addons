@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,18 +20,30 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Jan-Philipp Bolle - Initial contribution
  * @author John Cocula - made port configurable
  * @author Hilbrand Bouwkamp - Migrated to openHAB 3
+ * @author Christoph Scholz - Finished migration to openHAB 3
  */
 @NonNullByDefault
 public class LuxtronikConfiguration {
     private static final int DEFAULT_PORT = 8888;
-    private static final long DEFAULT_REFRESH_INTERVAL = 60L;
+    private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
+    private static final int DEFAULT_POLLING_INTERVAL = 60;
+    /**
+     * The host or IP address to connect to
+     */
+    public String host = "";
 
-    /* The IP address to connect to */
-    public String ip = "";
+    /**
+     * The TCP port number to connect to
+     */
+    public Integer port = DEFAULT_PORT;
 
-    /* the port to connect to. */
-    public int port = DEFAULT_PORT;
+    /**
+     * The socket connection timeout
+     */
+    public Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 
-    /** Default refresh interval (currently 1 minute) */
-    public long refreshInterval = DEFAULT_REFRESH_INTERVAL;
+    /**
+     * The polling interval in s
+     */
+    public Integer pollingInterval = DEFAULT_POLLING_INTERVAL;
 }

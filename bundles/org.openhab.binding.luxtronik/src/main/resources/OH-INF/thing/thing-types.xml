@@ -6,39 +6,841 @@
 
 	<!-- Heatpump Type -->
 	<thing-type id="heatpump">
-		<label>Luxtronik Binding Thing</label>
-		<description>Sample thing for Luxtronik Binding</description>
+		<label>Luxtronik Heatpump</label>
+		<description>Luxtronik Heatpump Thing</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="temperature_outside" typeId="system.outdoor-temperature"/>
+			<channel id="temperature_outside_avg" typeId="temperature_outside_avg"/>
+			<channel id="temperature_return" typeId="temperature_return"/>
+			<channel id="temperature_reference_return" typeId="temperature_reference_return"/>
+			<channel id="temperature_supply" typeId="temperature_supply"/>
+			<channel id="temperature_servicewater_reference" typeId="temperature_servicewater_reference"/>
+			<channel id="temperature_servicewater" typeId="temperature_servicewater"/>
+			<channel id="state" typeId="state"/>
+			<channel id="state_time" typeId="state_time"/>
+			<channel id="switchoff_error_0" typeId="switchoff_code"/>
+			<channel id="switchoff_error_1" typeId="switchoff_code"/>
+			<channel id="switchoff_error_2" typeId="switchoff_code"/>
+			<channel id="switchoff_error_3" typeId="switchoff_code"/>
+			<channel id="switchoff_error_4" typeId="switchoff_code"/>
+			<channel id="switchoff_error_timestamp_0" typeId="timestamp"/>
+			<channel id="switchoff_error_timestamp_1" typeId="timestamp"/>
+			<channel id="switchoff_error_timestamp_2" typeId="timestamp"/>
+			<channel id="switchoff_error_timestamp_3" typeId="timestamp"/>
+			<channel id="switchoff_error_timestamp_4" typeId="timestamp"/>
+			<channel id="switchoff_error_count" typeId="switchoff_error_count"/>
+			<channel id="switchoff_reason_0" typeId="switchoff_code"/>
+			<channel id="switchoff_reason_1" typeId="switchoff_code"/>
+			<channel id="switchoff_reason_2" typeId="switchoff_code"/>
+			<channel id="switchoff_reason_3" typeId="switchoff_code"/>
+			<channel id="switchoff_reason_4" typeId="switchoff_code"/>
+			<channel id="switchoff_reason_timestamp_0" typeId="timestamp"/>
+			<channel id="switchoff_reason_timestamp_1" typeId="timestamp"/>
+			<channel id="switchoff_reason_timestamp_2" typeId="timestamp"/>
+			<channel id="switchoff_reason_timestamp_3" typeId="timestamp"/>
+			<channel id="switchoff_reason_timestamp_4" typeId="timestamp"/>
+			<channel id="extended_state" typeId="extended_state"/>
+			<channel id="temperature_solar_collector" typeId="temperature_solar_collector"/>
+			<channel id="temperature_hot_gas" typeId="temperature_hot_gas"/>
+			<channel id="temperature_probe_in" typeId="temperature_probe_in"/>
+			<channel id="temperature_probe_out" typeId="temperature_probe_out"/>
+			<channel id="temperature_mk1" typeId="temperature_mk1"/>
+			<channel id="temperature_mk1_reference" typeId="temperature_mk1_reference"/>
+			<channel id="temperature_mk2" typeId="temperature_mk2"/>
+			<channel id="temperature_mk2_reference" typeId="temperature_mk2_reference"/>
+			<channel id="temperature_external_source" typeId="temperature_external_source"/>
+			<channel id="time_compressor1" typeId="time_compressor1"/>
+			<channel id="starts_compressor1" typeId="starts_compressor1"/>
+			<channel id="time_compressor2" typeId="time_compressor2"/>
+			<channel id="starts_compressor2" typeId="starts_compressor2"/>
+			<channel id="temperature_out_external" typeId="temperature_out_external"/>
+			<channel id="time_zwe1" typeId="time_zwe1"/>
+			<channel id="time_zwe2" typeId="time_zwe2"/>
+			<channel id="time_zwe3" typeId="time_zwe3"/>
+			<channel id="time_heatpump" typeId="time_heatpump"/>
+			<channel id="time_heating" typeId="time_heating"/>
+			<channel id="time_warmwater" typeId="time_warmwater"/>
+			<channel id="time_cooling" typeId="time_cooling"/>
+			<channel id="thermalenergy_heating" typeId="thermalenergy_heating"/>
+			<channel id="thermalenergy_warmwater" typeId="thermalenergy_warmwater"/>
+			<channel id="thermalenergy_pool" typeId="thermalenergy_pool"/>
+			<channel id="thermalenergy_total" typeId="thermalenergy_total"/>
+			<channel id="massflow" typeId="massflow"/>
+			<channel id="temperature_solar_storage" typeId="temperature_solar_storage"/>
+			<channel id="heating_operation_mode" typeId="heating_operation_mode"/>
+			<channel id="heating_temperature" typeId="heating_temperature"/>
+			<channel id="warmwater_operation_mode" typeId="warmwater_operation_mode"/>
+			<channel id="warmwater_temperature" typeId="warmwater_temperature"/>
+			<channel id="cooling_operation_mode" typeId="cooling_operation_mode"/>
+			<channel id="cooling_release_temperature" typeId="cooling_release_temperature"/>
+			<channel id="cooling_inlet_temperature" typeId="cooling_inlet_temperature"/>
+			<channel id="cooling_start_hours" typeId="cooling_start_hours"/>
+			<channel id="cooling_stop_hours" typeId="cooling_stop_hours"/>
+			<channel id="output_av" typeId="output_av"/>
+			<channel id="output_bup" typeId="output_bup"/>
+			<channel id="output_hup" typeId="output_hup"/>
+			<channel id="output_ma1" typeId="output_ma1"/>
+			<channel id="output_mz1" typeId="output_mz1"/>
+			<channel id="output_ven" typeId="output_ven"/>
+			<channel id="output_vbo" typeId="output_vbo"/>
+			<channel id="output_vd1" typeId="output_vd1"/>
+			<channel id="output_vd2" typeId="output_vd2"/>
+			<channel id="output_zip" typeId="output_zip"/>
+			<channel id="output_zup" typeId="output_zup"/>
+			<channel id="output_zw1" typeId="output_zw1"/>
+			<channel id="output_zw2sst" typeId="output_zw2sst"/>
+			<channel id="output_zw3sst" typeId="output_zw3sst"/>
+			<channel id="output_fp2" typeId="output_fp2"/>
+			<channel id="output_slp" typeId="output_slp"/>
+			<channel id="output_sup" typeId="output_sup"/>
+			<channel id="output_ma2" typeId="output_ma2"/>
+			<channel id="output_mz2" typeId="output_mz2"/>
+			<channel id="output_ma3" typeId="output_ma3"/>
+			<channel id="output_mz3" typeId="output_mz3"/>
+			<channel id="output_fp3" typeId="output_fp3"/>
+			<channel id="output_vsk" typeId="output_vsk"/>
+			<channel id="output_frh" typeId="output_frh"/>
+			<channel id="output_vdh" typeId="output_vdh"/>
+			<channel id="output_av2" typeId="output_av2"/>
+			<channel id="output_vbo2" typeId="output_vbo2"/>
+			<channel id="output_vd12" typeId="output_vd12"/>
+			<channel id="output_vdh2" typeId="output_vdh2"/>
 		</channels>
 
 		<config-description>
-			<parameter name="config1" type="text" required="true">
-				<label>Sample Parameter</label>
-				<description>This is a sample text configuration parameter</description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>Host name or IP address.</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>TCP port.</description>
+				<default>8888</default>
+			</parameter>
+
+			<parameter name="connectionTimeout" type="integer" unit="ms" required="false">
+				<label>Connection Timeout</label>
+				<description>TCP Socket Connection Timeout (milliseconds).</description>
+				<default>5000</default>
+			</parameter>
+
+			<parameter name="pollingInterval" type="integer" min="1" max="3600" unit="s" required="false">
+				<label>Polling Interval</label>
+				<description>The polling interval in seconds.</description>
+				<default>60</default>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
 	<!-- Channel Types -->
-	<channel-type id="cooling-operation-mode">
-		<item-type>Number</item-type>
-		<label>Cooling Operation Mode</label>
-		<description>Cooling Operation Mode</description>
-		<state>
+	<channel-type id="temperature_outside_avg">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature outside avg</label>
+		<description>temperature outside avg</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_return">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature return</label>
+		<description>temperature return</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_reference_return">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature reference return</label>
+		<description>temperature reference return</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_supply">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature supply</label>
+		<description>temperature supply</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_servicewater_reference">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature servicewater reference</label>
+		<description>temperature servicewater reference</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_servicewater">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature servicewater</label>
+		<description>temperature servicewater</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>state</label>
+		<description>state</description>
+		<state readOnly="true" pattern="%s">
 			<options>
-			  <option value="0">Off</option>
-			  <option value="1">Automatic</option>
+				<option value="-1">@text/channel-type.luxtronik.state.state.option.-1</option>
+				<option value="0">@text/channel-type.luxtronik.state.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronik.state.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronik.state.state.option.2</option>
+				<option value="4">@text/channel-type.luxtronik.state.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronik.state.state.option.5</option>
+				<option value="7">@text/channel-type.luxtronik.state.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronik.state.state.option.8</option>
 			</options>
 		</state>
 	</channel-type>
 
-    <channel-type id="sample-channel">
-        <item-type>Switch</item-type>
-        <label>Luxtronik Binding Channel</label>
-        <description>Sample channel for Luxtronik Binding</description>
-    </channel-type>
+	<channel-type id="state_time">
+		<item-type>Number:Time</item-type>
+		<label>state time</label>
+		<description>state time</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="switchoff_code">
+		<item-type>Number</item-type>
+		<label>switchoff code</label>
+		<description>switchoff code</description>
+		<state readOnly="true">
+			<options>
+				<option value="-1">@text/channel-type.luxtronik.switchoff_code.state.option.-1</option>
+				<option value="0">@text/channel-type.luxtronik.switchoff_code.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronik.switchoff_code.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronik.switchoff_code.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronik.switchoff_code.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronik.switchoff_code.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronik.switchoff_code.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronik.switchoff_code.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronik.switchoff_code.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronik.switchoff_code.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronik.switchoff_code.state.option.9</option>
+				<option value="701">@text/channel-type.luxtronik.switchoff_code.state.option.701</option>
+				<option value="702">@text/channel-type.luxtronik.switchoff_code.state.option.702</option>
+				<option value="703">@text/channel-type.luxtronik.switchoff_code.state.option.703</option>
+				<option value="704">@text/channel-type.luxtronik.switchoff_code.state.option.704</option>
+				<option value="705">@text/channel-type.luxtronik.switchoff_code.state.option.705</option>
+				<option value="706">@text/channel-type.luxtronik.switchoff_code.state.option.706</option>
+				<option value="707">@text/channel-type.luxtronik.switchoff_code.state.option.707</option>
+				<option value="708">@text/channel-type.luxtronik.switchoff_code.state.option.708</option>
+				<option value="709">@text/channel-type.luxtronik.switchoff_code.state.option.709</option>
+				<option value="710">@text/channel-type.luxtronik.switchoff_code.state.option.710</option>
+				<option value="711">@text/channel-type.luxtronik.switchoff_code.state.option.711</option>
+				<option value="712">@text/channel-type.luxtronik.switchoff_code.state.option.712</option>
+				<option value="713">@text/channel-type.luxtronik.switchoff_code.state.option.713</option>
+				<option value="714">@text/channel-type.luxtronik.switchoff_code.state.option.714</option>
+				<option value="715">@text/channel-type.luxtronik.switchoff_code.state.option.715</option>
+				<option value="716">@text/channel-type.luxtronik.switchoff_code.state.option.716</option>
+				<option value="717">@text/channel-type.luxtronik.switchoff_code.state.option.717</option>
+				<option value="718">@text/channel-type.luxtronik.switchoff_code.state.option.718</option>
+				<option value="719">@text/channel-type.luxtronik.switchoff_code.state.option.719</option>
+				<option value="720">@text/channel-type.luxtronik.switchoff_code.state.option.720</option>
+				<option value="721">@text/channel-type.luxtronik.switchoff_code.state.option.721</option>
+				<option value="722">@text/channel-type.luxtronik.switchoff_code.state.option.722</option>
+				<option value="723">@text/channel-type.luxtronik.switchoff_code.state.option.723</option>
+				<option value="724">@text/channel-type.luxtronik.switchoff_code.state.option.724</option>
+				<option value="725">@text/channel-type.luxtronik.switchoff_code.state.option.725</option>
+				<option value="726">@text/channel-type.luxtronik.switchoff_code.state.option.726</option>
+				<option value="727">@text/channel-type.luxtronik.switchoff_code.state.option.727</option>
+				<option value="728">@text/channel-type.luxtronik.switchoff_code.state.option.728</option>
+				<option value="729">@text/channel-type.luxtronik.switchoff_code.state.option.729</option>
+				<option value="730">@text/channel-type.luxtronik.switchoff_code.state.option.730</option>
+				<option value="732">@text/channel-type.luxtronik.switchoff_code.state.option.732</option>
+				<option value="733">@text/channel-type.luxtronik.switchoff_code.state.option.733</option>
+				<option value="734">@text/channel-type.luxtronik.switchoff_code.state.option.734</option>
+				<option value="735">@text/channel-type.luxtronik.switchoff_code.state.option.735</option>
+				<option value="736">@text/channel-type.luxtronik.switchoff_code.state.option.736</option>
+				<option value="737">@text/channel-type.luxtronik.switchoff_code.state.option.737</option>
+				<option value="738">@text/channel-type.luxtronik.switchoff_code.state.option.738</option>
+				<option value="750">@text/channel-type.luxtronik.switchoff_code.state.option.750</option>
+				<option value="751">@text/channel-type.luxtronik.switchoff_code.state.option.751</option>
+				<option value="752">@text/channel-type.luxtronik.switchoff_code.state.option.752</option>
+				<option value="755">@text/channel-type.luxtronik.switchoff_code.state.option.755</option>
+				<option value="756">@text/channel-type.luxtronik.switchoff_code.state.option.756</option>
+				<option value="757">@text/channel-type.luxtronik.switchoff_code.state.option.757</option>
+				<option value="758">@text/channel-type.luxtronik.switchoff_code.state.option.758</option>
+				<option value="759">@text/channel-type.luxtronik.switchoff_code.state.option.759</option>
+				<option value="760">@text/channel-type.luxtronik.switchoff_code.state.option.760</option>
+				<option value="761">@text/channel-type.luxtronik.switchoff_code.state.option.761</option>
+				<option value="762">@text/channel-type.luxtronik.switchoff_code.state.option.762</option>
+				<option value="763">@text/channel-type.luxtronik.switchoff_code.state.option.763</option>
+				<option value="764">@text/channel-type.luxtronik.switchoff_code.state.option.764</option>
+				<option value="765">@text/channel-type.luxtronik.switchoff_code.state.option.765</option>
+				<option value="766">@text/channel-type.luxtronik.switchoff_code.state.option.766</option>
+				<option value="767">@text/channel-type.luxtronik.switchoff_code.state.option.767</option>
+				<option value="770">@text/channel-type.luxtronik.switchoff_code.state.option.770</option>
+				<option value="771">@text/channel-type.luxtronik.switchoff_code.state.option.771</option>
+				<option value="776">@text/channel-type.luxtronik.switchoff_code.state.option.776</option>
+				<option value="777">@text/channel-type.luxtronik.switchoff_code.state.option.777</option>
+				<option value="778">@text/channel-type.luxtronik.switchoff_code.state.option.778</option>
+				<option value="779">@text/channel-type.luxtronik.switchoff_code.state.option.779</option>
+				<option value="780">@text/channel-type.luxtronik.switchoff_code.state.option.780</option>
+				<option value="781">@text/channel-type.luxtronik.switchoff_code.state.option.781</option>
+				<option value="782">@text/channel-type.luxtronik.switchoff_code.state.option.782</option>
+				<option value="783">@text/channel-type.luxtronik.switchoff_code.state.option.783</option>
+				<option value="784">@text/channel-type.luxtronik.switchoff_code.state.option.784</option>
+				<option value="785">@text/channel-type.luxtronik.switchoff_code.state.option.785</option>
+				<option value="786">@text/channel-type.luxtronik.switchoff_code.state.option.786</option>
+				<option value="787">@text/channel-type.luxtronik.switchoff_code.state.option.787</option>
+				<option value="788">@text/channel-type.luxtronik.switchoff_code.state.option.788</option>
+				<option value="789">@text/channel-type.luxtronik.switchoff_code.state.option.789</option>
+				<option value="790">@text/channel-type.luxtronik.switchoff_code.state.option.790</option>
+				<option value="791">@text/channel-type.luxtronik.switchoff_code.state.option.791</option>
+				<option value="792">@text/channel-type.luxtronik.switchoff_code.state.option.792</option>
+				<option value="793">@text/channel-type.luxtronik.switchoff_code.state.option.793</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="switchoff_error_count">
+		<item-type>Number</item-type>
+		<label>switchoff error count</label>
+		<description>switchoff error count</description>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="extended_state">
+		<item-type>String</item-type>
+		<label>extended state</label>
+		<description>extended state</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="-1">@text/channel-type.luxtronik.extended_state.state.option.-1</option>
+				<option value="0">@text/channel-type.luxtronik.extended_state.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronik.extended_state.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronik.extended_state.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronik.extended_state.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronik.extended_state.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronik.extended_state.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronik.extended_state.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronik.extended_state.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronik.extended_state.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronik.extended_state.state.option.9</option>
+				<option value="10">@text/channel-type.luxtronik.extended_state.state.option.10</option>
+				<option value="12">@text/channel-type.luxtronik.extended_state.state.option.12</option>
+				<option value="13">@text/channel-type.luxtronik.extended_state.state.option.13</option>
+				<option value="14">@text/channel-type.luxtronik.extended_state.state.option.14</option>
+				<option value="16">@text/channel-type.luxtronik.extended_state.state.option.16</option>
+				<option value="17">@text/channel-type.luxtronik.extended_state.state.option.17</option>
+				<option value="18">@text/channel-type.luxtronik.extended_state.state.option.18</option>
+				<option value="19">@text/channel-type.luxtronik.extended_state.state.option.19</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="temperature_solar_collector">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature solar collector</label>
+		<description>temperature solar collector</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_hot_gas">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature hot gas</label>
+		<description>temperature hot gas</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_probe_in">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature probe in</label>
+		<description>temperature probe in</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_probe_out">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature probe out</label>
+		<description>temperature probe out</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_mk1">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature mk1</label>
+		<description>temperature mk1</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_mk1_reference">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature mk1 reference</label>
+		<description>temperature mk1 reference</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_mk2">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature mk2</label>
+		<description>temperature mk2</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_mk2_reference">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature mk2 reference</label>
+		<description>temperature mk2 reference</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature_external_source">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature external source</label>
+		<description>temperature external source</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_compressor1">
+		<item-type>Number:Time</item-type>
+		<label>time compressor1</label>
+		<description>time compressor1</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="starts_compressor1">
+		<item-type>Number</item-type>
+		<label>starts compressor1</label>
+		<description>starts compressor1</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="time_compressor2">
+		<item-type>Number:Time</item-type>
+		<label>time compressor2</label>
+		<description>time compressor2</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="starts_compressor2">
+		<item-type>Number</item-type>
+		<label>starts compressor2</label>
+		<description>starts compressor2</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="temperature_out_external">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature out external</label>
+		<description>temperature out external</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_zwe1">
+		<item-type>Number:Time</item-type>
+		<label>time zwe1</label>
+		<description>time zwe1</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_zwe2">
+		<item-type>Number:Time</item-type>
+		<label>time zwe2</label>
+		<description>time zwe2</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_zwe3">
+		<item-type>Number:Time</item-type>
+		<label>time zwe3</label>
+		<description>time zwe3</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_heatpump">
+		<item-type>Number:Time</item-type>
+		<label>time heatpump</label>
+		<description>time heatpump</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_heating">
+		<item-type>Number:Time</item-type>
+		<label>time heating</label>
+		<description>time heating</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_warmwater">
+		<item-type>Number:Time</item-type>
+		<label>time warmwater</label>
+		<description>time warmwater</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_cooling">
+		<item-type>Number:Time</item-type>
+		<label>time cooling</label>
+		<description>time cooling</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="thermalenergy_heating">
+		<item-type>Number:Energy</item-type>
+		<label>thermalenergy heating</label>
+		<description>thermalenergy heating</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="thermalenergy_warmwater">
+		<item-type>Number:Energy</item-type>
+		<label>thermalenergy warmwater</label>
+		<description>thermalenergy warmwater</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="thermalenergy_pool">
+		<item-type>Number:Energy</item-type>
+		<label>thermalenergy pool</label>
+		<description>thermalenergy pool</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="thermalenergy_total">
+		<item-type>Number:Energy</item-type>
+		<label>thermalenergy total</label>
+		<description>thermalenergy total</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="massflow">
+		<item-type>Number</item-type>
+		<label>massflow</label>
+		<description>massflow</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature_solar_storage">
+		<item-type>Number:Temperature</item-type>
+		<label>temperature solar storage</label>
+		<description>temperature solar storage</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heating_operation_mode">
+		<item-type>String</item-type>
+		<label>heating operation mode</label>
+		<description>heating operation mode</description>
+		<state>
+			<options>
+				<option value="0">@text/channel-type.luxtronik.heating_operation_mode.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronik.heating_operation_mode.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronik.heating_operation_mode.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronik.heating_operation_mode.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronik.heating_operation_mode.state.option.4</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heating_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>heating temperature</label>
+		<description>heating temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="warmwater_operation_mode">
+		<item-type>String</item-type>
+		<label>warmwater operation mode</label>
+		<description>warmwater operation mode</description>
+		<state>
+			<options>
+				<option value="0">@text/channel-type.luxtronik.warmwater_operation_mode.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronik.warmwater_operation_mode.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronik.warmwater_operation_mode.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronik.warmwater_operation_mode.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronik.warmwater_operation_mode.state.option.4</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="warmwater_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>warmwater temperature</label>
+		<description>warmwater temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cooling_operation_mode">
+		<item-type>String</item-type>
+		<label>cooling operation mode</label>
+		<description>cooling operation mode</description>
+		<state>
+			<options>
+				<option value="0">@text/channel-type.luxtronik.cooling_operation_mode.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronik.cooling_operation_mode.state.option.1</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="cooling_release_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>cooling release temperature</label>
+		<description>cooling release temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cooling_inlet_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>cooling inlet temperature</label>
+		<description>cooling inlet temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cooling_start_hours">
+		<item-type>Number:Time</item-type>
+		<label>cooling start hours</label>
+		<description>cooling start hours</description>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="cooling_stop_hours">
+		<item-type>Number:Time</item-type>
+		<label>cooling stop hours</label>
+		<description>cooling stop hours</description>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="output_av">
+		<item-type>Switch</item-type>
+		<label>output av</label>
+		<description>output av</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_bup">
+		<item-type>Switch</item-type>
+		<label>output bup</label>
+		<description>output bup</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_hup">
+		<item-type>Switch</item-type>
+		<label>output hup</label>
+		<description>output hup</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_ma1">
+		<item-type>Switch</item-type>
+		<label>output ma1</label>
+		<description>output ma1</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_mz1">
+		<item-type>Switch</item-type>
+		<label>output mz1</label>
+		<description>output mz1</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_ven">
+		<item-type>Switch</item-type>
+		<label>output ven</label>
+		<description>output ven</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_vbo">
+		<item-type>Switch</item-type>
+		<label>output vbo</label>
+		<description>output vbo</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_vd1">
+		<item-type>Switch</item-type>
+		<label>output vd1</label>
+		<description>output vd1</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_vd2">
+		<item-type>Switch</item-type>
+		<label>output vd2</label>
+		<description>output vd2</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_zip">
+		<item-type>Switch</item-type>
+		<label>output zip</label>
+		<description>output zip</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_zup">
+		<item-type>Switch</item-type>
+		<label>output zup</label>
+		<description>output zup</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_zw1">
+		<item-type>Switch</item-type>
+		<label>output zw1</label>
+		<description>output zw1</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_zw2sst">
+		<item-type>Switch</item-type>
+		<label>output zw2sst</label>
+		<description>output zw2sst</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_zw3sst">
+		<item-type>Switch</item-type>
+		<label>output zw3sst</label>
+		<description>output zw3sst</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_fp2">
+		<item-type>Switch</item-type>
+		<label>output fp2</label>
+		<description>output fp2</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_slp">
+		<item-type>Switch</item-type>
+		<label>output slp</label>
+		<description>output slp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_sup">
+		<item-type>Switch</item-type>
+		<label>output sup</label>
+		<description>output sup</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_ma2">
+		<item-type>Switch</item-type>
+		<label>output ma2</label>
+		<description>output ma2</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_mz2">
+		<item-type>Switch</item-type>
+		<label>output mz2</label>
+		<description>output mz2</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_ma3">
+		<item-type>Switch</item-type>
+		<label>output ma3</label>
+		<description>output ma3</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_mz3">
+		<item-type>Switch</item-type>
+		<label>output mz3</label>
+		<description>output mz3</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_fp3">
+		<item-type>Switch</item-type>
+		<label>output fp3</label>
+		<description>output fp3</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_vsk">
+		<item-type>Switch</item-type>
+		<label>output vsk</label>
+		<description>output vsk</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_frh">
+		<item-type>Switch</item-type>
+		<label>output frh</label>
+		<description>output frh</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_vdh">
+		<item-type>Switch</item-type>
+		<label>output vdh</label>
+		<description>output vdh</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_av2">
+		<item-type>Switch</item-type>
+		<label>output av2</label>
+		<description>output av2</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_vbo2">
+		<item-type>Switch</item-type>
+		<label>output vbo2</label>
+		<description>output vbo2</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_vd12">
+		<item-type>Switch</item-type>
+		<label>output vd12</label>
+		<description>output vd12</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_vdh2">
+		<item-type>Switch</item-type>
+		<label>output vdh2</label>
+		<description>output vdh2</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>timestamp</label>
+		<description>timestamp</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+	</channel-type>
 
 </thing:thing-descriptions>
