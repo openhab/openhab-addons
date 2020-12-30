@@ -82,15 +82,16 @@ public class RokuHandler extends BaseThingHandler {
 
         final @Nullable String host = config.hostName;
 
-        if (host != null && !host.equals(EMPTY)) {
+        if (host != null && !EMPTY.equals(host)) {
             this.communicator = new RokuCommunicator(httpClient, host, config.port);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must be specified");
             return;
         }
 
-        if (config.refresh >= 10)
+        if (config.refresh >= 10) {
             refreshInterval = config.refresh;
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -116,45 +117,48 @@ public class RokuHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = () -> {
-                synchronized (sequenceLock) {
-                    try {
-                        ActiveApp activeApp = communicator.getActiveApp();
-                        updateState(ACTIVE_APP, new StringType(activeApp.getApp().getId()));
-                        updateStatus(ThingStatus.ONLINE);
-                    } catch (RokuHttpException e) {
-                        logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    }
+            this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshPlayerState, 0, refreshInterval,
+                    TimeUnit.SECONDS);
+        }
+    }
 
-                    try {
-                        Player playerInfo = communicator.getPlayerInfo();
-                        // When nothing playing, 'close' is reported, replace with 'stop'
-                        updateState(PLAY_MODE, new StringType(playerInfo.getState().replaceAll(CLOSE, STOP)));
+    /**
+     * Get a status update from the Roku and update the channels
+     */
+    private void refreshPlayerState() {
+        synchronized (sequenceLock) {
+            try {
+                ActiveApp activeApp = communicator.getActiveApp();
+                updateState(ACTIVE_APP, new StringType(activeApp.getApp().getId()));
+                updateStatus(ThingStatus.ONLINE);
+            } catch (RokuHttpException e) {
+                logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
 
-                        // Remove non-numeric from string, ie: ' ms'
-                        String position = playerInfo.getPosition().replaceAll(NON_DIGIT_PATTERN, EMPTY);
-                        if (!EMPTY.equals(position)) {
-                            updateState(TIME_ELAPSED,
-                                    new QuantityType<>(Integer.parseInt(position) / 1000, API_SECONDS_UNIT));
-                        } else {
-                            updateState(TIME_ELAPSED, UnDefType.UNDEF);
-                        }
+            try {
+                Player playerInfo = communicator.getPlayerInfo();
+                // When nothing playing, 'close' is reported, replace with 'stop'
+                updateState(PLAY_MODE, new StringType(playerInfo.getState().replaceAll(CLOSE, STOP)));
 
-                        String duration = playerInfo.getDuration().replaceAll(NON_DIGIT_PATTERN, EMPTY);
-                        if (!EMPTY.equals(duration)) {
-                            updateState(TIME_TOTAL,
-                                    new QuantityType<>(Integer.parseInt(duration) / 1000, API_SECONDS_UNIT));
-                        } else {
-                            updateState(TIME_TOTAL, UnDefType.UNDEF);
-                        }
-                    } catch (RokuHttpException | NumberFormatException e) {
-                        logger.debug("Unable to retrieve Roku media-player info. Exception: {}", e.getMessage(), e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    }
+                // Remove non-numeric from string, ie: ' ms'
+                String position = playerInfo.getPosition().replaceAll(NON_DIGIT_PATTERN, EMPTY);
+                if (!EMPTY.equals(position)) {
+                    updateState(TIME_ELAPSED, new QuantityType<>(Integer.parseInt(position) / 1000, API_SECONDS_UNIT));
+                } else {
+                    updateState(TIME_ELAPSED, UnDefType.UNDEF);
                 }
-            };
-            this.refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refreshInterval, TimeUnit.SECONDS);
+
+                String duration = playerInfo.getDuration().replaceAll(NON_DIGIT_PATTERN, EMPTY);
+                if (!EMPTY.equals(duration)) {
+                    updateState(TIME_TOTAL, new QuantityType<>(Integer.parseInt(duration) / 1000, API_SECONDS_UNIT));
+                } else {
+                    updateState(TIME_TOTAL, UnDefType.UNDEF);
+                }
+            } catch (RokuHttpException e) {
+                logger.debug("Unable to retrieve Roku media-player info. Exception: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
     }
 
@@ -164,28 +168,32 @@ public class RokuHandler extends BaseThingHandler {
     private void startAppListRefresh() {
         ScheduledFuture<?> appListJob = this.appListJob;
         if (appListJob == null || appListJob.isCancelled()) {
-            Runnable runnable = () -> {
-                synchronized (sequenceLock) {
-                    try {
-                        List<App> appList = communicator.getAppList();
+            this.appListJob = scheduler.scheduleWithFixedDelay(this::refreshAppList, 10, 600, TimeUnit.SECONDS);
+        }
+    }
 
-                        List<StateOption> appListOptions = new ArrayList<>();
-                        // Roku Home will be selected in the drop-down any time an app is not running.
-                        appListOptions.add(new StateOption(ROKU_HOME_ID, ROKU_HOME));
+    /**
+     * Update the dropdown that lists all apps intalled on the Roku
+     */
+    private void refreshAppList() {
+        synchronized (sequenceLock) {
+            try {
+                List<App> appList = communicator.getAppList();
 
-                        appList.forEach(app -> {
-                            appListOptions.add(new StateOption(app.getId(), app.getValue()));
-                        });
+                List<StateOption> appListOptions = new ArrayList<>();
+                // Roku Home will be selected in the drop-down any time an app is not running.
+                appListOptions.add(new StateOption(ROKU_HOME_ID, ROKU_HOME));
 
-                        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), ACTIVE_APP),
-                                appListOptions);
+                appList.forEach(app -> {
+                    appListOptions.add(new StateOption(app.getId(), app.getValue()));
+                });
 
-                    } catch (RokuHttpException e) {
-                        logger.debug("Unable to retrieve Roku installed app-list. Exception: {}", e.getMessage(), e);
-                    }
-                }
-            };
-            this.appListJob = scheduler.scheduleWithFixedDelay(runnable, 10, 600, TimeUnit.SECONDS);
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), ACTIVE_APP),
+                        appListOptions);
+
+            } catch (RokuHttpException e) {
+                logger.debug("Unable to retrieve Roku installed app-list. Exception: {}", e.getMessage(), e);
+            }
         }
     }
 
@@ -207,14 +215,13 @@ public class RokuHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            logger.debug("Unsupported refresh command: {}", command.toString());
+            logger.debug("Unsupported refresh command: {}", command);
         } else if (channelUID.getId().equals(BUTTON)) {
             synchronized (sequenceLock) {
                 try {
                     communicator.keyPress(command.toString());
                 } catch (RokuHttpException e) {
-                    logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command.toString(),
-                            e.getMessage());
+                    logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command, e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
@@ -229,13 +236,12 @@ public class RokuHandler extends BaseThingHandler {
                         communicator.keyPress(ROKU_HOME_BUTTON);
                     }
                 } catch (RokuHttpException e) {
-                    logger.debug("Unable to launch app on Roku, appId: {}, Exception: {}", command.toString(),
-                            e.getMessage());
+                    logger.debug("Unable to launch app on Roku, appId: {}, Exception: {}", command, e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
         } else {
-            logger.debug("Unsupported command: {}", command.toString());
+            logger.debug("Unsupported command: {}", command);
         }
     }
 }

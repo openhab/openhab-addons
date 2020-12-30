@@ -110,9 +110,10 @@ public class RokuDiscoveryService extends AbstractDiscoveryService {
             Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
             while (nets.hasMoreElements()) {
                 NetworkInterface ni = nets.nextElement();
-                DatagramSocket socket = sendDiscoveryBroacast(ni);
-                if (socket != null) {
-                    scanResposesForKeywords(socket);
+                try (DatagramSocket socket = sendDiscoveryBroacast(ni)) {
+                    if (socket != null) {
+                        scanResposesForKeywords(socket);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -170,27 +171,22 @@ public class RokuDiscoveryService extends AbstractDiscoveryService {
      * @param socket The socket where answers to the discovery broadcast arrive
      */
     private void scanResposesForKeywords(DatagramSocket socket) {
-        boolean socketTimeout = false;
+        byte[] receiveData = new byte[1024];
         do {
-            byte[] receiveData = new byte[1024];
             DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length);
             try {
                 socket.receive(packet);
             } catch (SocketTimeoutException e) {
-                socket.close();
-                socketTimeout = true;
                 return;
             } catch (IOException e) {
                 logger.debug("Got exception while trying to receive UPnP packets: {}", e.getMessage());
-                socket.close();
-                socketTimeout = true;
                 return;
             }
             String response = new String(packet.getData(), StandardCharsets.UTF_8);
             if (response.contains(ROKU_SSDP_MATCH)) {
                 parseResponseCreateThing(response);
             }
-        } while (!socketTimeout);
+        } while (true);
     }
 
     /**
@@ -205,37 +201,37 @@ public class RokuDiscoveryService extends AbstractDiscoveryService {
         String host = null;
         int port = -1;
 
-        Scanner scanner = new Scanner(response);
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] pair = line.split(":", 2);
-            if (pair.length != 2) {
-                continue;
-            }
+        try (Scanner scanner = new Scanner(response)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] pair = line.split(":", 2);
+                if (pair.length != 2) {
+                    continue;
+                }
 
-            String key = pair[0].toLowerCase();
-            String value = pair[1].trim();
-            logger.debug("key: {} value: {}.", key, value);
-            switch (key) {
-                case "location":
-                    host = value;
-                    Matcher matchIp = IP_HOST_PATTERN.matcher(value);
-                    if (matchIp.find()) {
-                        host = matchIp.group(1);
-                        port = Integer.parseInt(matchIp.group(2));
-                    }
-                    break;
-                case "usn":
-                    Matcher matchUid = USN_PATTERN.matcher(value);
-                    if (matchUid.find()) {
-                        uuid = matchUid.group(2);
-                    }
-                    break;
-                default:
-                    break;
+                String key = pair[0].toLowerCase();
+                String value = pair[1].trim();
+                logger.debug("key: {} value: {}.", key, value);
+                switch (key) {
+                    case "location":
+                        host = value;
+                        Matcher matchIp = IP_HOST_PATTERN.matcher(value);
+                        if (matchIp.find()) {
+                            host = matchIp.group(1);
+                            port = Integer.parseInt(matchIp.group(2));
+                        }
+                        break;
+                    case "usn":
+                        Matcher matchUid = USN_PATTERN.matcher(value);
+                        if (matchUid.find()) {
+                            uuid = matchUid.group(2);
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-        scanner.close();
 
         if (host == null || port == -1 || uuid == null) {
             logger.debug("Bad Format from Roku, received data was: {}", response);
@@ -253,8 +249,9 @@ public class RokuDiscoveryService extends AbstractDiscoveryService {
             RokuCommunicator communicator = new RokuCommunicator(httpClient, host, port);
             DeviceInfo device = communicator.getDeviceInfo();
             label = device.getModelName() + " " + device.getModelNumber();
-            if (device.isTv())
+            if (device.isTv()) {
                 thingUid = new ThingUID(THING_TYPE_ROKU_TV, uuid);
+            }
         } catch (RokuHttpException e) {
             logger.debug("Unable to retrieve Roku device-info. Exception: {}", e.getMessage(), e);
         }

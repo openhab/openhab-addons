@@ -30,25 +30,7 @@
 
 		<representation-property>uuid</representation-property>
 
-		<config-description>
-			<parameter name="hostName" type="text" required="true">
-				<context>network-address</context>
-				<label>Host Name/IP Address</label>
-				<description>Host Name or IP Address of the Roku device</description>
-			</parameter>
-			<parameter name="port" type="integer" min="1" max="65535" required="true">
-				<label>Port</label>
-				<description>Port for the ECP Connector of the Roku device</description>
-				<default>8060</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="refresh" type="integer" min="10" required="false" unit="s">
-				<label>Refresh Interval</label>
-				<description>Specifies the Refresh Interval in Seconds</description>
-				<default>10</default>
-				<unitLabel>s</unitLabel>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:roku:rokuconfig"/>
 	</thing-type>
 
 	<!-- Roku TV Thing -->
@@ -77,25 +59,7 @@
 
 		<representation-property>uuid</representation-property>
 
-		<config-description>
-			<parameter name="hostName" type="text" required="true">
-				<context>network-address</context>
-				<label>Host Name/IP Address</label>
-				<description>Host Name or IP Address of the Roku TV</description>
-			</parameter>
-			<parameter name="port" type="integer" min="1" max="65535" required="true">
-				<label>Port</label>
-				<description>Port for the ECP Connector of the Roku TV</description>
-				<default>8060</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="refresh" type="integer" min="10" required="false" unit="s">
-				<label>Refresh Interval</label>
-				<description>Specifies the Refresh Interval in Seconds</description>
-				<default>10</default>
-				<unitLabel>s</unitLabel>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:roku:rokuconfig"/>
 	</thing-type>
 
 	<channel-type id="button">
