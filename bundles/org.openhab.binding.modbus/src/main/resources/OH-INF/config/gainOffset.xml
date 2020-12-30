@@ -6,16 +6,16 @@
     https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="profile:modbus:gainOffset">
-		<parameter name="pre-gain-offset" type="decimal" required="true">
+		<parameter name="pre-gain-offset" type="decimal">
 			<label>Pre-gain offset</label>
 			<description>Offset to add to raw value towards the item (before the gain). The negative
 				offset will be applied in the
-				reverse direction (before inverting the gain).</description>
+				reverse direction (before inverting the gain). If omitted, zero offset is used.</description>
 		</parameter>
-		<parameter name="gain" type="text" required="true">
+		<parameter name="gain" type="text">
 			<label>Gain</label>
 			<description>Gain to apply to the state towards the item. One can also specify the unit to declare resulting unit.
-				This is used as divisor for values in the reverse direction.</description>
+				This is used as divisor for values in the reverse direction. If omitted, gain of 1 is used.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
