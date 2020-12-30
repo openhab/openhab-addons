@@ -42,7 +42,7 @@ The `image` channel-type supports `stateExtension` only.
 | `commandExtension`      | yes      |      -      | Appended to the `baseURL` for sending commands. If empty, same as `stateExtension`. |
 | `stateTransformation  ` | yes      |      -      | One or more transformation applied to received values before updating channel. |
 | `commandTransformation` | yes      |      -      | One or more transformation applied to channel value before sending to a remote. |
-| `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READ` means receive state, `WRITE` means send commands. |
+| `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
 
 Transformations need to be specified in the same format as 
 Some channels have additional parameters.
