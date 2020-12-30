@@ -71,6 +71,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
     private boolean ignoreConfigurationUpdate;
     private boolean websocketReconnect = false;
+    private boolean thingDisposing = false;
 
     private final ExpiringCacheAsync<Optional<BridgeFullState>> fullStateCache = new ExpiringCacheAsync<>(1000);
 
@@ -87,12 +88,12 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         } else if (websocketID.length() > 20) {
             websocketID = websocketID.substring(websocketID.length() - 20);
         }
-        this.websocket = new WebSocketConnection(this, webSocketFactory.createWebSocketClient(websocketID), gson);
+        this.websocket = WebSocketConnection.create(this, webSocketFactory.createWebSocketClient(websocketID), gson);
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ThingDiscoveryService.class);
+        return Set.of(ThingDiscoveryService.class);
     }
 
     @Override
@@ -127,7 +128,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Allow authentication for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
             stopTimer();
-            scheduledFuture = scheduler.schedule(() -> requestApiKey(), POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+            if (!thingDisposing) {
+                scheduledFuture = scheduler.schedule(this::requestApiKey, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+            }
         } else if (r.getResponseCode() == 200) {
             ApiKeyMessage[] response = Objects.requireNonNull(gson.fromJson(r.getBody(), ApiKeyMessage[].class));
             if (response.length == 0) {
@@ -191,6 +194,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      */
     public void initializeBridgeState() {
         getBridgeFullState().thenAccept(fullState -> fullState.ifPresentOrElse(state -> {
+            if (thingDisposing) {
+                return;
+            }
             if (state.config.name.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         "You are connected to a HUE bridge, not a deCONZ software!");
@@ -220,7 +226,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             startWebsocket();
         }, () -> {
             // initial response was empty, re-trying in POLL_FREQUENCY_SEC seconds
-            scheduledFuture = scheduler.schedule(this::initializeBridgeState, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+            if (!thingDisposing) {
+                scheduledFuture = scheduler.schedule(this::initializeBridgeState, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+            }
         })).exceptionally(e -> {
             if (e != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
@@ -237,7 +245,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * {@link #initializeBridgeState} need to be called first to obtain the websocket port.
      */
     private void startWebsocket() {
-        if (websocket.isConnected() || websocketPort == 0 || websocketReconnect == false) {
+        if (websocket.isConnected() || websocketPort == 0 || thingDisposing) {
             return;
         }
 
@@ -251,11 +259,11 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * Perform a request to the REST API for generating an API key.
      *
      */
-    private CompletableFuture<?> requestApiKey() {
+    private void requestApiKey() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
         stopTimer();
         String url = buildUrl(config.getHostWithoutPort(), config.httpPort);
-        return http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
+        http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
                 .exceptionally(e -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     logger.warn("Authorisation failed", e);
@@ -265,7 +273,8 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Start initializing bridge {}", thing.getUID());
+        thingDisposing = false;
         config = getConfigAs(DeconzBridgeConfig.class);
         if (config.apikey == null) {
             requestApiKey();
@@ -277,6 +286,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     @Override
     public void dispose() {
         websocketReconnect = false;
+        thingDisposing = true;
         stopTimer();
         websocket.close();
     }

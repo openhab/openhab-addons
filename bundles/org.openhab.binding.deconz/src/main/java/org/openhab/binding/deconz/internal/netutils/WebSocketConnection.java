@@ -16,9 +16,10 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -43,6 +44,7 @@ import com.google.gson.Gson;
 @WebSocket
 @NonNullByDefault
 public class WebSocketConnection {
+    private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
     private final WebSocketClient client;
@@ -50,16 +52,18 @@ public class WebSocketConnection {
     private final Gson gson;
 
     private final WebSocketConnectionListener connectionListener;
-    private final Map<Map.Entry<ResourceType, String>, WebSocketMessageListener> listeners = new ConcurrentHashMap<>();
+    private final Map<String, WebSocketMessageListener> listeners = new ConcurrentHashMap<>();
 
     private ConnectionState connectionState = ConnectionState.DISCONNECTED;
+    private @Nullable Session session;
 
-    public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client, Gson gson) {
+    private WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client, Gson gson,
+            String socketName) {
         this.connectionListener = listener;
         this.client = client;
         this.client.setMaxIdleTimeout(0);
         this.gson = gson;
-        this.socketName = ((QueuedThreadPool) client.getExecutor()).getName() + "$" + this.hashCode();
+        this.socketName = socketName;
     }
 
     public void start(String ip) {
@@ -68,6 +72,8 @@ public class WebSocketConnection {
         } else if (connectionState == ConnectionState.CONNECTING) {
             logger.debug("{} already connecting", socketName);
             return;
+        } else if (connectionState == ConnectionState.DISCONNECTING) {
+            logger.warn("{} trying to re-connect while still disconnecting", socketName);
         }
         try {
             URI destUri = URI.create("ws://" + ip);
@@ -90,25 +96,30 @@ public class WebSocketConnection {
     }
 
     public void registerListener(ResourceType resourceType, String sensorID, WebSocketMessageListener listener) {
-        listeners.put(Map.entry(resourceType, sensorID), listener);
+        listeners.put(getListenerId(resourceType, sensorID), listener);
     }
 
     public void unregisterListener(ResourceType resourceType, String sensorID) {
-        listeners.remove(Map.entry(resourceType, sensorID));
+        listeners.remove(getListenerId(resourceType, sensorID));
     }
 
     @SuppressWarnings("unused")
     @OnWebSocketConnect
     public void onConnect(Session session) {
         connectionState = ConnectionState.CONNECTED;
-        logger.debug("{} successfully connected to {}", socketName, session.getRemoteAddress().getAddress());
+        logger.debug("{} successfully connected to {}: {}", socketName, session.getRemoteAddress().getAddress(),
+                session.hashCode());
         connectionListener.connectionEstablished();
+        this.session = session;
     }
 
     @SuppressWarnings({ "null", "unused" })
     @OnWebSocketMessage
-    public void onMessage(String message) {
-        logger.trace("Raw data received by websocket {}: {}", socketName, message);
+    public void onMessage(Session session, String message) {
+        logger.trace("{}/{} received raw data: {}", socketName, session.hashCode(), message);
+        if (!session.equals(this.session)) {
+            logger.warn("Received message for other session.");
+        }
 
         DeconzBaseMessage changedMessage = Objects.requireNonNull(gson.fromJson(message, DeconzBaseMessage.class));
         if (changedMessage.r == ResourceType.UNKNOWN) {
@@ -116,7 +127,7 @@ public class WebSocketConnection {
             return;
         }
 
-        WebSocketMessageListener listener = listeners.get(Map.entry(changedMessage.r, changedMessage.id));
+        WebSocketMessageListener listener = listeners.get(getListenerId(changedMessage.r, changedMessage.id));
         if (listener == null) {
             logger.debug(
                     "Couldn't find listener for id {} with resource type {}. Either no thing for this id has been defined or this is a bug.",
@@ -140,14 +151,18 @@ public class WebSocketConnection {
     @SuppressWarnings("unused")
     @OnWebSocketError
     public void onError(Throwable cause) {
+        logger.trace("{} connection errored: {}", socketName, cause.getMessage());
         connectionState = ConnectionState.DISCONNECTED;
+        session = null;
         connectionListener.connectionError(cause);
     }
 
     @SuppressWarnings("unused")
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
+        logger.trace("{} closed connection: {} / {}", socketName, statusCode, reason);
         connectionState = ConnectionState.DISCONNECTED;
+        session = null;
         connectionListener.connectionLost(reason);
     }
 
@@ -161,6 +176,17 @@ public class WebSocketConnection {
     }
 
     /**
+     * create a unique identifier for a listener
+     *
+     * @param resourceType the listener resource-type (LIGHT, SENSOR, ...)
+     * @param id the listener id (same as deconz-id)
+     * @return a unique string for this listener
+     */
+    private String getListenerId(ResourceType resourceType, String id) {
+        return resourceType.name() + "$" + id;
+    }
+
+    /**
      * used internally to represent the connection state
      */
     private enum ConnectionState {
@@ -168,5 +194,10 @@ public class WebSocketConnection {
         CONNECTED,
         DISCONNECTING,
         DISCONNECTED
+    }
+
+    public static WebSocketConnection create(WebSocketConnectionListener listener, WebSocketClient client, Gson gson) {
+        return new WebSocketConnection(listener, client, gson,
+                "Websocket$" + System.currentTimeMillis() + "-" + INSTANCE_COUNTER.incrementAndGet());
     }
 }
