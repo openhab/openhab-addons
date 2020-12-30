@@ -26,6 +26,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * The Heater Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardHeaterHandler extends HaywardThingHandler {

@@ -25,6 +25,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * The Body of Water Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardBowHandler extends HaywardThingHandler {

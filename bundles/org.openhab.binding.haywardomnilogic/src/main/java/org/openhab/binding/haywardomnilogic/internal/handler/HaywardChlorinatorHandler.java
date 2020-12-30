@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Chlorinator Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardChlorinatorHandler extends HaywardThingHandler {

@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Backyard Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardBackyardHandler extends HaywardThingHandler {

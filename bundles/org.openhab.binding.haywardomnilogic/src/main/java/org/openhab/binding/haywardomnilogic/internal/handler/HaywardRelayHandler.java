@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Relay Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardRelayHandler extends HaywardThingHandler {

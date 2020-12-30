@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The ColorLogic Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardColorLogicHandler extends HaywardThingHandler {

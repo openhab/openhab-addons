@@ -21,6 +21,8 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * The {@link HaywardBindingConstants} class defines common constants, which are
  * used across the whole binding.
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardBindingConstants {

@@ -61,6 +61,8 @@ import org.xml.sax.InputSource;
 /**
  * The {@link HaywardBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
+ *
+ * @author Matt Myers - Initial contribution
  */
 
 @NonNullByDefault

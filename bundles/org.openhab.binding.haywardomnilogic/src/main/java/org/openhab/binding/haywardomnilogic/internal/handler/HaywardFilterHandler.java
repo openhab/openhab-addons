@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Filter Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardFilterHandler extends HaywardThingHandler {

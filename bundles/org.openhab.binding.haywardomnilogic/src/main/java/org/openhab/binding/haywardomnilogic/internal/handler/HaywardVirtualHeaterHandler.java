@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Virtual Heater Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardVirtualHeaterHandler extends HaywardThingHandler {

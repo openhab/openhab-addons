@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link HaywardException} is thrown during the getMspConfig, mspConfigDiscovery, getTelemetry,
  * evaluateXPath and httpXmlResponse methods
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardException extends Exception {

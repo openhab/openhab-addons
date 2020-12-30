@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Sets up the discovery results and details
+ *
+ * @author Matt Myers - Initial contribution
  */
 
 @NonNullByDefault

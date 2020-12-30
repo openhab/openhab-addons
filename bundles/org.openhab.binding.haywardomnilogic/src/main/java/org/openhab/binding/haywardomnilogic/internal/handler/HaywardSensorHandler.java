@@ -25,6 +25,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * The Sensor Handler
+ *
+ * @author Matt Myers - Initial contribution
  */
 @NonNullByDefault
 public class HaywardSensorHandler extends HaywardThingHandler {
