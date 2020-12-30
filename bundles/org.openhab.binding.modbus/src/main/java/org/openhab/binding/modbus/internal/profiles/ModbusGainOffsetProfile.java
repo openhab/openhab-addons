@@ -17,14 +17,11 @@ import java.util.Optional;
 
 import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
@@ -52,11 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ModbusGainOffsetProfile implements StateProfile {
-
-    private static final @Nullable QuantityType<Temperature> ZERO_CELSIUS_IN_KELVIN = new QuantityType<>(0,
-            SIUnits.CELSIUS).toUnit(Units.KELVIN);
-    private static final @Nullable QuantityType<Temperature> ZERO_FAHRENHEIT_IN_KELVIN = new QuantityType<>(0,
-            ImperialUnits.FAHRENHEIT).toUnit(Units.KELVIN);
 
     private final Logger logger = LoggerFactory.getLogger(ModbusGainOffsetProfile.class);
     private static final String PREGAIN_OFFSET_PARAM = "pre-gain-offset";
