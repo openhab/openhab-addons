@@ -173,7 +173,7 @@ public class RokuHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the dropdown that lists all apps intalled on the Roku
+     * Update the dropdown that lists all apps installed on the Roku
      */
     private void refreshAppList() {
         synchronized (sequenceLock) {
