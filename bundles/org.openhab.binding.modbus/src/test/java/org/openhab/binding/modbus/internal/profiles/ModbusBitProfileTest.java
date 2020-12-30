@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.modbus.internal.profiles;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,6 +21,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,6 +38,10 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
+@NonNullByDefault
 public class ModbusBitProfileTest {
 
     private static Stream<Arguments> provideArgsForSingleUpdateFromHandler() {
@@ -137,7 +154,6 @@ public class ModbusBitProfileTest {
             }
             profile.onStateUpdateFromHandler(state);
 
-            @SuppressWarnings("null")
             ArgumentCaptor<State> capture = ArgumentCaptor.forClass(State.class);
             verify(callback, times(1)).sendUpdate(capture.capture());
             actualUpdateTowardsItem = capture.getValue();
