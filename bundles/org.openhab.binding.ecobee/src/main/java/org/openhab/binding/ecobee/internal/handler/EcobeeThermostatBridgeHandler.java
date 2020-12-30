@@ -15,27 +15,20 @@ package org.openhab.binding.ecobee.internal.handler;
 import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ecobee.internal.action.EcobeeActions;
 import org.openhab.binding.ecobee.internal.api.EcobeeApi;
 import org.openhab.binding.ecobee.internal.config.EcobeeThermostatConfiguration;
-import org.openhab.binding.ecobee.internal.discovery.SensorDiscoveryService;
 import org.openhab.binding.ecobee.internal.dto.SelectionDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.AlertDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ClimateDTO;
@@ -72,7 +65,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -90,9 +82,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
 
-    private static final int SENSOR_DISCOVERY_STARTUP_DELAY_SECONDS = 30;
-    private static final int SENSOR_DISCOVERY_INTERVAL_SECONDS = 300;
-
     private final Logger logger = LoggerFactory.getLogger(EcobeeThermostatBridgeHandler.class);
 
     private TimeZoneProvider timeZoneProvider;
@@ -101,9 +90,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) String thermostatId;
 
     private final Map<String, EcobeeSensorThingHandler> sensorHandlers = new ConcurrentHashMap<>();
-
-    private @Nullable Future<?> discoverSensorsJob;
-    private @Nullable SensorDiscoveryService discoveryService;
 
     private @Nullable ThermostatDTO savedThermostat;
     private @Nullable List<RemoteSensorDTO> savedSensors;
@@ -127,13 +113,11 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         initializeWeatherMaps();
         initializeReadOnlyChannels();
         clearSavedState();
-        scheduleDiscoveryJob();
         updateStatus(EcobeeUtils.isBridgeOnline(getBridge()) ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
     }
 
     @Override
     public void dispose() {
-        cancelDiscoveryJob();
         logger.debug("ThermostatBridge: Disposing thermostat '{}'", thermostatId);
     }
 
@@ -177,10 +161,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         scheduler.execute(() -> {
             handleThermostatCommand(channelUID, command);
         });
-    }
-
-    public void setDiscoveryService(SensorDiscoveryService discoveryService) {
-        this.discoveryService = discoveryService;
     }
 
     /**
@@ -262,12 +242,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             return handler.performThermostatFunction(request);
         }
         return false;
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.unmodifiableList(
-                Stream.of(EcobeeActions.class, SensorDiscoveryService.class).collect(Collectors.toList()));
     }
 
     public void updateChannels(ThermostatDTO thermostat) {
@@ -820,32 +794,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         EcobeeAccountBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             handler.performThermostatUpdate(request);
-        }
-    }
-
-    private void scheduleDiscoveryJob() {
-        logger.debug("ThermostatBridge: Scheduling sensor discovery job");
-        cancelDiscoveryJob();
-        discoverSensorsJob = scheduler.scheduleWithFixedDelay(this::discoverSensors,
-                SENSOR_DISCOVERY_STARTUP_DELAY_SECONDS, SENSOR_DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
-    }
-
-    private void cancelDiscoveryJob() {
-        Future<?> localDiscoverSensorsJob = discoverSensorsJob;
-        if (localDiscoverSensorsJob != null) {
-            localDiscoverSensorsJob.cancel(true);
-            logger.debug("ThermostatBridge: Canceling sensor discovery job");
-        }
-    }
-
-    private void discoverSensors() {
-        EcobeeAccountBridgeHandler handler = getBridgeHandler();
-        if (handler != null && handler.isDiscoveryEnabled()) {
-            SensorDiscoveryService localDiscoveryService = discoveryService;
-            if (localDiscoveryService != null) {
-                logger.debug("ThermostatBridge: Running sensor discovery");
-                localDiscoveryService.startBackgroundDiscovery();
-            }
         }
     }
 

@@ -48,9 +48,4 @@ public class EcobeeAccountConfiguration {
      * Enable/disable automatic discovery
      */
     public @Nullable Boolean discoveryEnabled;
-
-    /**
-     * Interval with which to run the thermostat discovery process
-     */
-    public @Nullable Integer discoveryInterval;
 }
