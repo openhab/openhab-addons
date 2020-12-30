@@ -38,7 +38,7 @@ import org.openhab.core.types.State;
  */
 
 @NonNullByDefault
-public class HaywardThingHandler extends BaseThingHandler {
+public abstract class HaywardThingHandler extends BaseThingHandler {
 
     public HaywardThingHandler(Thing thing) {
         super(thing);
@@ -53,8 +53,7 @@ public class HaywardThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public void getTelemetry(String xmlResponse) throws HaywardException {
-    }
+    public abstract void getTelemetry(String xmlResponse) throws HaywardException;
 
     public State toState(String type, String channelID, String value) throws NumberFormatException {
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
