@@ -9,8 +9,10 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
+ * 
+ * @author Stefan Giehl - Initial contribution
  */
-package org.openhab.binding.novelanheatpump.internal;
+package org.openhab.binding.novelanheatpump.internal.enums;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

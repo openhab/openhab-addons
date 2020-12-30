@@ -23,6 +23,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.novelanheatpump.internal.enums.HeatpumpChannel;
+import org.openhab.binding.novelanheatpump.internal.enums.HeatpumpCoolingOperationMode;
+import org.openhab.binding.novelanheatpump.internal.enums.HeatpumpOperationMode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -61,11 +64,23 @@ public class NovelanHeatpumpHandler extends BaseThingHandler {
     }
 
     @Override
+    public void updateProperty(String name, String value) {
+        super.updateProperty(name, value);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
         if (command == RefreshType.REFRESH) {
-            // handleRefreshCommand();
+            restartJobs();
+            return;
+        }
+
+        HeatpumpChannel channel = HeatpumpChannel.fromString(channelId);
+
+        if (channel.isWritable().equals(Boolean.FALSE)) {
+            logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
             return;
         }
 
@@ -82,49 +97,42 @@ public class NovelanHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
-        HeatpumpChannel channel = HeatpumpChannel.fromString(channelId);
-
-        if (!channel.isWritable()) {
-            logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
-            return;
-        }
-
         if (!(command instanceof DecimalType)) {
-            logger.warn("Heatpump heating operation mode item {} must be from type:{}.", channel.getCommand(),
+            logger.warn("Heatpump operation for item {} must be from type: {}.", channel.getCommand(),
                     DecimalType.class.getSimpleName());
             return;
         }
 
-        int param = channel.getWriteParameter();
+        int param = channel.getChannelId();
         int value = -1;
 
         switch (channel) {
-            case CHANNEL_HEATING_OPERATION_MODE:
-            case CHANNEL_WARMWATER_OPERATION_MODE:
+            case CHANNEL_BA_HZ_AKT:
+            case CHANNEL_BA_BW_AKT:
                 value = ((DecimalType) command).intValue();
                 if (null == HeatpumpOperationMode.fromValue(value)) {
                     logger.warn("Heatpump {} mode recevieved invalid value {}.", channel.getCommand(), value);
                     return;
                 }
                 break;
-            case CHANNEL_HEATING_TEMPERATURE:
-            case CHANNEL_WARMWATER_TEMPERATURE:
-            case CHANNEL_COOLING_RELEASE_TEMPERATURE:
-            case CHANNEL_COOLING_INLET_TEMP:
+            case CHANNEL_EINST_WK_AKT:
+            case CHANNEL_EINST_BWS_AKT:
+            case CHANNEL_EINST_KUCFTL_AKT:
+            case CHANNEL_SOLLWERT_KUCFTL_AKT:
                 float temperature = ((DecimalType) command).floatValue();
-                value = (int) (temperature * 10.);
+                value = (int) (temperature * 10);
                 break;
-            case CHANNEL_COOLING_OPERATION_MODE:
+            case CHANNEL_EINST_BWSTYP_AKT:
                 value = ((DecimalType) command).intValue();
                 if (null == HeatpumpCoolingOperationMode.fromValue(value)) {
                     logger.warn("Heatpump {} mode recevieved invalid value {}.", channel.getCommand(), value);
                     return;
                 }
                 break;
-            case CHANNEL_COOLING_START_AFTER_HOURS:
-            case CHANNEL_COOLING_STOP_AFTER_HOURS:
+            case CHANNEL_EINST_KUHL_ZEIT_EIN_AKT:
+            case CHANNEL_EINST_KUHL_ZEIT_AUS_AKT:
                 float hours = ((DecimalType) command).floatValue();
-                value = (int) (hours * 10.);
+                value = (int) (hours * 10);
                 break;
 
             default:

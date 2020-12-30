@@ -138,7 +138,47 @@ public class HeatpumpConnector {
         for (int i = 0; i < arraylength; i++) {
             heatpumpValues[i] = datain.readInt();
         }
+
+        // workaround for thermal energies
+        // the thermal energies can be unreasonably high in some cases, probably due to a sign bug in the firmware
+        // trying to correct this issue here
+        if (heatpumpValues[151] >= 214748364)
+            heatpumpValues[151] -= 214748364;
+        if (heatpumpValues[152] >= 214748364)
+            heatpumpValues[152] -= 214748364;
+        if (heatpumpValues[153] >= 214748364)
+            heatpumpValues[153] -= 214748364;
+        if (heatpumpValues[154] >= 214748364)
+            heatpumpValues[154] -= 214748364;
+
         return heatpumpValues;
+    }
+
+    /**
+     * read the internal visibilities of the heatpump
+     * 
+     * @return a array with all internal visibilities of the heatpump
+     * @throws IOException indicate that no data can be read from the heatpump
+     */
+    public int[] getVisibilities() throws IOException {
+        int[] heatpumpVisibilities = null;
+        while (datain.available() > 0) {
+            datain.readByte();
+        }
+        dataout.writeInt(3005);
+        dataout.writeInt(0);
+        dataout.flush();
+        if (datain.readInt() != 3005) {
+            return new int[0];
+        }
+        datain.readInt();
+        int arraylength = datain.readInt();
+        heatpumpVisibilities = new int[arraylength];
+
+        for (int i = 0; i < arraylength; i++) {
+            heatpumpVisibilities[i] = datain.readInt();
+        }
+        return heatpumpVisibilities;
     }
 
     /**

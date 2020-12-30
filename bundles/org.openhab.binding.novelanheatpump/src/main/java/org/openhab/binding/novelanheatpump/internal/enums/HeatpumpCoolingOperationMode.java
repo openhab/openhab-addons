@@ -9,24 +9,20 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
+ * 
+ * @author Stefan Giehl - Initial contribution
  */
-package org.openhab.binding.novelanheatpump.internal;
+package org.openhab.binding.novelanheatpump.internal.enums;
 
-public enum HeatpumpOperationMode {
+public enum HeatpumpCoolingOperationMode {
     // in german Automatik
-    AUTOMATIC(0),
+    AUTOMATIC(1),
     // in german Aus
-    OFF(4),
-    // in german Party
-    PARTY(2),
-    // in german Urlaub
-    HOLIDAY(3),
-    // in german Zuzeizer
-    AUXILIARY_HEATER(1);
+    OFF(0);
 
     private int value;
 
-    private HeatpumpOperationMode(int value) {
+    private HeatpumpCoolingOperationMode(int value) {
         this.value = value;
     }
 
@@ -34,8 +30,8 @@ public enum HeatpumpOperationMode {
         return value;
     }
 
-    public static HeatpumpOperationMode fromValue(int value) {
-        for (HeatpumpOperationMode mode : HeatpumpOperationMode.values()) {
+    public static HeatpumpCoolingOperationMode fromValue(int value) {
+        for (HeatpumpCoolingOperationMode mode : HeatpumpCoolingOperationMode.values()) {
             if (mode.value == value) {
                 return mode;
             }
