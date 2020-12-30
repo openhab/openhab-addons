@@ -63,9 +63,9 @@ For the BRP072A42 and BRP072C42:
 | energyheatingcurrentyear-10| The energy consumption when heating for current year October                  |
 | energyheatingcurrentyear-11| The energy consumption when heating for current year November                 |
 | energyheatingcurrentyear-12| The energy consumption when heating for current year December                 |
-| energycoolingtoday         | The energy consumption when heating for today                                 |
-| energycoolingthisweek      | The energy consumption when heating for this week                             |
-| energycoolinglastweek      | The energy consumption when heating for last week                             |
+| energycoolingtoday         | The energy consumption when cooling for today                                 |
+| energycoolingthisweek      | The energy consumption when cooling for this week                             |
+| energycoolinglastweek      | The energy consumption when cooling for last week                             |
 | energycoolingcurrentyear-1 | The energy consumption when cooling for current year January                  |
 | energycoolingcurrentyear-2 | The energy consumption when cooling for current year February                 |
 | energycoolingcurrentyear-3 | The energy consumption when cooling for current year March                    |
