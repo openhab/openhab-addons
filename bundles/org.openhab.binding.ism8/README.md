@@ -45,6 +45,8 @@ Type:
 + Number use for any number
 + Other types may work as well.
 
+Please note that so far this binding does not support UoM item types like Number:Temperature.
+
 Name:
 
 + Put here any name you'd like. This name is used for creating the binding.
