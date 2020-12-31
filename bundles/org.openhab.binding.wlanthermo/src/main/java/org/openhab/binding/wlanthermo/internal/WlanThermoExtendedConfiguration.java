@@ -13,7 +13,6 @@
 package org.openhab.binding.wlanthermo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WlanThermoExtendedConfiguration} class contains fields mapping thing configuration parameters.
@@ -26,15 +25,14 @@ public class WlanThermoExtendedConfiguration extends WlanThermoConfiguration {
     /**
      * Username of WlanThermo user.
      */
-    private @Nullable String username;
+    private String username = "";
 
     /**
      * Password of WlanThermo user.
      */
 
-    private @Nullable String password;
+    private String password = "";
 
-    @Nullable
     public String getUsername() {
         return username;
     }
@@ -43,7 +41,6 @@ public class WlanThermoExtendedConfiguration extends WlanThermoConfiguration {
         this.username = username;
     }
 
-    @Nullable
     public String getPassword() {
         return password;
     }

@@ -60,13 +60,10 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing WlanThermo Mini!");
         config = getConfigAs(WlanThermoConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
-
-        logger.debug("Finished initializing WlanThermo Mini!");
     }
 
     private void checkConnection() {
@@ -84,9 +81,8 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                         "WlanThermo not found under given address.");
             }
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Failed to connect.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to WlanThermo at " + config.getIpAddress());
+                    "Could not connect to WlanThermo at " + config.getIpAddress() + ": " + e.getMessage());
             ScheduledFuture<?> oldScheduler = pollingScheduler;
             if (oldScheduler != null) {
                 oldScheduler.cancel(false);
@@ -127,8 +123,8 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
             }
 
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Update failed, checking connection", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Update failed, reconnecting...");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Update failed: " + e.getMessage());
             ScheduledFuture<?> oldScheduler = pollingScheduler;
             if (oldScheduler != null) {
                 oldScheduler.cancel(false);
