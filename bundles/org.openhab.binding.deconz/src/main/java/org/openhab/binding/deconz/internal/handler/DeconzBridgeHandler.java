@@ -70,7 +70,6 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private int websocketPort = 0;
     /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
     private boolean ignoreConfigurationUpdate;
-    private boolean websocketReconnect = false;
     private boolean thingDisposing = false;
 
     private final ExpiringCacheAsync<Optional<BridgeFullState>> fullStateCache = new ExpiringCacheAsync<>(1000);
@@ -222,7 +221,6 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
             // Use requested websocket port if no specific port is given
             websocketPort = config.port == 0 ? state.config.websocketport : config.port;
-            websocketReconnect = true;
             startWebsocket();
         }, () -> {
             // initial response was empty, re-trying in POLL_FREQUENCY_SEC seconds
@@ -285,22 +283,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
     @Override
     public void dispose() {
-        websocketReconnect = false;
         thingDisposing = true;
         stopTimer();
         websocket.close();
-    }
-
-    @Override
-    public void connectionError(@Nullable Throwable e) {
-        if (e != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown reason");
-        }
-        stopTimer();
-        // Wait for POLL_FREQUENCY_SEC after a connection error before trying again
-        scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
     }
 
     @Override
@@ -312,7 +297,10 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     @Override
     public void connectionLost(String reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        startWebsocket();
+
+        stopTimer();
+        // Wait for POLL_FREQUENCY_SEC after a connection was closed before trying again
+        scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
     }
 
     /**

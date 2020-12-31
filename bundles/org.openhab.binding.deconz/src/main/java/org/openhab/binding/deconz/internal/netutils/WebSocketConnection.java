@@ -81,7 +81,7 @@ public class WebSocketConnection {
             logger.debug("Trying to connect {} to {}", socketName, destUri);
             client.connect(this, destUri).get();
         } catch (Exception e) {
-            connectionListener.connectionError(e);
+            connectionListener.connectionLost("Error while connecting: " + e.getMessage());
         }
     }
 
@@ -116,54 +116,82 @@ public class WebSocketConnection {
     @SuppressWarnings({ "null", "unused" })
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
-        logger.trace("{}/{} received raw data: {}", socketName, session.hashCode(), message);
         if (!session.equals(this.session)) {
-            logger.warn("Received message for other session.");
-        }
-
-        DeconzBaseMessage changedMessage = Objects.requireNonNull(gson.fromJson(message, DeconzBaseMessage.class));
-        if (changedMessage.r == ResourceType.UNKNOWN) {
-            logger.trace("Received message has unknown resource type. Skipping message.");
+            processWrongSession(session, message);
             return;
         }
+        logger.trace("{} received raw data: {}", socketName, message);
 
-        WebSocketMessageListener listener = listeners.get(getListenerId(changedMessage.r, changedMessage.id));
-        if (listener == null) {
-            logger.debug(
-                    "Couldn't find listener for id {} with resource type {}. Either no thing for this id has been defined or this is a bug.",
-                    changedMessage.id, changedMessage.r);
-            return;
-        }
+        try {
+            DeconzBaseMessage changedMessage = Objects.requireNonNull(gson.fromJson(message, DeconzBaseMessage.class));
+            if (changedMessage.r == ResourceType.UNKNOWN) {
+                logger.trace("Received message has unknown resource type. Skipping message.");
+                return;
+            }
 
-        Class<? extends DeconzBaseMessage> expectedMessageType = changedMessage.r.getExpectedMessageType();
-        if (expectedMessageType == null) {
-            logger.warn("BUG! Could not get expected message type for resource type {}. Please report this incident.",
-                    changedMessage.r);
-            return;
-        }
+            WebSocketMessageListener listener = listeners.get(getListenerId(changedMessage.r, changedMessage.id));
+            if (listener == null) {
+                logger.debug(
+                        "Couldn't find listener for id {} with resource type {}. Either no thing for this id has been defined or this is a bug.",
+                        changedMessage.id, changedMessage.r);
+                return;
+            }
 
-        DeconzBaseMessage deconzMessage = gson.fromJson(message, expectedMessageType);
-        if (deconzMessage != null) {
-            listener.messageReceived(changedMessage.id, deconzMessage);
+            Class<? extends DeconzBaseMessage> expectedMessageType = changedMessage.r.getExpectedMessageType();
+            if (expectedMessageType == null) {
+                logger.warn(
+                        "BUG! Could not get expected message type for resource type {}. Please report this incident.",
+                        changedMessage.r);
+                return;
+            }
+
+            DeconzBaseMessage deconzMessage = gson.fromJson(message, expectedMessageType);
+            if (deconzMessage != null) {
+                listener.messageReceived(changedMessage.id, deconzMessage);
+
+            }
+        } catch (RuntimeException e) {
+            // we need to catch all processing exceptions, otherwise they could affect the connection
+            logger.warn("{} encountered an error while processing the message {}: {}", socketName, message,
+                    e.getMessage());
         }
     }
 
     @SuppressWarnings("unused")
     @OnWebSocketError
-    public void onError(Throwable cause) {
-        logger.trace("{} connection errored: {}", socketName, cause.getMessage());
-        connectionState = ConnectionState.DISCONNECTED;
-        session = null;
-        connectionListener.connectionError(cause);
+    public void onError(Session session, Throwable cause) {
+        if (!session.equals(this.session)) {
+            processWrongSession(session, "Connection error: " + cause.getMessage());
+            return;
+        }
+        logger.warn("{} connection errored: {}", socketName, cause.getMessage());
+
+        Session storedSession = this.session;
+        if (storedSession != null && storedSession.isOpen()) {
+            storedSession.close(-1, "Connection errored");
+        }
     }
 
     @SuppressWarnings("unused")
     @OnWebSocketClose
-    public void onClose(int statusCode, String reason) {
+    public void onClose(Session session, int statusCode, String reason) {
+        if (!session.equals(this.session)) {
+            processWrongSession(session, "Connection closed: " + statusCode + " / " + reason);
+            return;
+        }
         logger.trace("{} closed connection: {} / {}", socketName, statusCode, reason);
         connectionState = ConnectionState.DISCONNECTED;
-        session = null;
+        this.session = null;
         connectionListener.connectionLost(reason);
+    }
+
+    private void processWrongSession(Session session, String message) {
+        logger.warn("{}/{} received and discarded message for other session {}: {}.", socketName, session.hashCode(),
+                session.hashCode(), message);
+        if (session.isOpen()) {
+            // Close the session if it is still open. It should already be closed anyway
+            session.close();
+        }
     }
 
     /**
