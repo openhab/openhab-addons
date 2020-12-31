@@ -123,7 +123,7 @@ public class ConsumedThingImpl implements ConsumedThing {
         return Optional.empty();
     }
 
-    private URI getEventStreamUri() {
+    private URI getEventStreamUri() throws IOException {
         for (var link : this.description.links) {
             var href = link.href;
             if (href != null) {
@@ -133,8 +133,8 @@ public class ConsumedThingImpl implements ConsumedThing {
                 }
             }
         }
-        throw new IllegalStateException("WebThing " + webThingURI
-                + " does not support websocket uri. WebThing description: " + this.description);
+        throw new IOException("WebThing " + webThingURI + " does not support websocket uri. WebThing description: "
+                + this.description);
     }
 
     @Override
