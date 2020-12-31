@@ -68,7 +68,6 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing WlanThermo Nano!");
         config = getConfigAs(WlanThermoExtendedConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -84,8 +83,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
             logger.debug("Finished initializing WlanThermo Nano!");
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Failed to initialize WlanThermo Nano!");
-            logger.debug("Failed to initialize WlanThermo Nano!", e);
+                    "Failed to initialize WlanThermo Nano: " + e.getMessage());
         }
     }
 
@@ -106,7 +104,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Failed to connect.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to WlanThermo at " + config.getIpAddress());
+                    "Could not connect to WlanThermo at " + config.getIpAddress() + ": "+ e.getMessage());
             ScheduledFuture<?> oldScheduler = pollingScheduler;
             if (oldScheduler != null) {
                 oldScheduler.cancel(false);
@@ -172,8 +170,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 }
             }
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Update failed, checking connection", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Update failed, reconnecting...");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Update failed: " + e.getMessage());
             ScheduledFuture<?> oldScheduler = pollingScheduler;
             if (oldScheduler != null) {
                 oldScheduler.cancel(false);
@@ -204,8 +201,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to update channel " + c.getName() + " on device!");
-                logger.debug("Failed to update channel {} on device", c.getName(), e);
+                        "Failed to update channel " + c.getName() + " on device: " + e.getMessage());
             }
         });
     }
