@@ -85,7 +85,7 @@
 
 	<channel-type id="alarm_openhab" advanced="true">
 		<kind>trigger</kind>
-		<label>Openhab Alarm Trigger</label>
+		<label>OpenHAB Alarm Trigger</label>
 		<event>
 			<options>
 				<option value="MIN">Low Temperature Alarm</option>
