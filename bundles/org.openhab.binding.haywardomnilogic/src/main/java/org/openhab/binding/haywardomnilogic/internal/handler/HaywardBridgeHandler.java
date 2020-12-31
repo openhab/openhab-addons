@@ -150,11 +150,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
             if (config.alarmPollTime > 0) {
                 initAlarmPolling(1);
-                logger.trace("Hayward Alarm polling scheduled");
-            } else {
-                logger.trace("Hayward Alarm polling disabled");
             }
-        } catch (Exception e) {
+        } catch (HaywardException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "scheduledInitialize exception: " + e.getMessage());
             clearPolling(pollTelemetryFuture);
@@ -165,7 +162,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public synchronized boolean login() throws Exception {
+    public synchronized boolean login() throws HaywardException {
         String xmlResponse;
         String status;
 
@@ -193,7 +190,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public synchronized boolean getApiDef() throws Exception {
+    public synchronized boolean getApiDef() throws HaywardException {
         String xmlResponse;
 
         // *****getConfig from Hayward server
@@ -212,7 +209,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public synchronized boolean getSiteList() throws Exception {
+    public synchronized boolean getSiteList() throws HaywardException {
         String xmlResponse;
         String status;
 
@@ -302,7 +299,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public synchronized boolean getAlarmList() throws Exception {
+    public synchronized boolean getAlarmList() throws HaywardException {
         for (Thing thing : getThing().getThings()) {
             Map<String, String> properties = thing.getProperties();
             if ("BACKYARD".equals(properties.get(HaywardBindingConstants.PROPERTY_TYPE))) {
@@ -332,7 +329,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     commFailureCount++;
                     return;
                 }
-            } catch (Exception e) {
+            } catch (HaywardException e) {
                 logger.debug("Hayward Connection thing: Exception during poll: {}", e.getMessage());
             }
         }, initalDelay, config.telemetryPollTime, TimeUnit.SECONDS);
@@ -343,7 +340,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         pollAlarmsFuture = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 getAlarmList();
-            } catch (Exception e) {
+            } catch (HaywardException e) {
                 logger.debug("Hayward Connection thing: Exception during poll: {}", e.getMessage());
             }
         }, initalDelay, config.alarmPollTime, TimeUnit.SECONDS);
@@ -368,7 +365,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return null;
     }
 
-    public List<String> evaluateXPath(String xpathExp, String xmlResponse) throws HaywardException {
+    public List<String> evaluateXPath(String xpathExp, String xmlResponse) {
         List<String> values = new ArrayList<>();
         try {
             InputSource inputXML = new InputSource(new StringReader(xmlResponse));

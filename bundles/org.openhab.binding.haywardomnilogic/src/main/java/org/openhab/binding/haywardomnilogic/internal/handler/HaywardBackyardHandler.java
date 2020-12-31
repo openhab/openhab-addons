@@ -72,7 +72,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
         }
     }
 
-    public boolean getAlarmList(String systemID) throws Exception {
+    public boolean getAlarmList(String systemID) throws HaywardException {
         List<String> bowID = new ArrayList<>();
         List<String> parameter1 = new ArrayList<>();
         List<String> message = new ArrayList<>();

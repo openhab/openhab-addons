@@ -154,7 +154,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                         logger.debug("haywardCommand XML response: {}", xmlResponse);
                         return;
                     }
-                } catch (Exception e) {
+                } catch (HaywardException e) {
                     logger.debug("Unable to send command to Hayward's server {}:{}:{}",
                             bridgehandler.config.endpointUrl, bridgehandler.config.username, e.getMessage());
                 }
