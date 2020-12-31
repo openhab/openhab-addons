@@ -61,15 +61,18 @@ public class BoschSslUtil {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSslUtil.class);
 
-    private String keystorePath;
-    private String keystorePassword;
+    private final String keystorePath;
+    private final String keystorePassword;
 
     public static String getBoschSHCId() {
         return OSS_OPENHAB_BINDING + "_" + InstanceUUID.get();
     }
+    public static String getKeystorePath() {
+        return Paths.get(OpenHAB.getUserDataFolder(), "etc", getBoschSHCId() + ".jks").toString();
+    }
 
     public BoschSslUtil(String keystorePassword) {
-        this.keystorePath = Paths.get(OpenHAB.getUserDataFolder(), "etc", getBoschSHCId() + ".jks").toString();
+        this.keystorePath = getKeystorePath();
         this.keystorePassword = keystorePassword;
     }
 
@@ -177,7 +180,7 @@ public class BoschSslUtil {
         }
 
         logger.debug("Storing keystore to file {}", keystore);
-        try (FileOutputStream streamKeystore = new FileOutputStream(new File(keystore))) {
+        try (FileOutputStream streamKeystore = new FileOutputStream(keystore)) {
             keyStore.store(streamKeystore, keystorePassword.toCharArray());
         }
 
