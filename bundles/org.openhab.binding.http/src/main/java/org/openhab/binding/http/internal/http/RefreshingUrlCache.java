@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.http.internal.http;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -76,11 +75,10 @@ public class RefreshingUrlCache {
 
         // format URL
         try {
-            URI finalUrl = new URI(String.format(this.url, new Date()));
+            URI uri = Util.uriFromString(String.format(this.url, new Date()));
+            logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
-            logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, finalUrl, timeout);
-
-            httpClient.newRequest(finalUrl).thenAccept(request -> {
+            httpClient.newRequest(uri).thenAccept(request -> {
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
 
                 headers.forEach(header -> {
@@ -96,17 +94,16 @@ public class RefreshingUrlCache {
                 response.exceptionally(e -> {
                     if (e instanceof HttpAuthException) {
                         if (isRetry) {
-                            logger.warn("Retry after authentication  failure failed again for '{}', failing here",
-                                    finalUrl);
+                            logger.warn("Retry after authentication  failure failed again for '{}', failing here", uri);
                         } else {
                             AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                            Authentication.Result authResult = authStore.findAuthenticationResult(finalUrl);
+                            Authentication.Result authResult = authStore.findAuthenticationResult(uri);
                             if (authResult != null) {
                                 authStore.removeAuthenticationResult(authResult);
-                                logger.debug("Cleared authentication result for '{}', retrying immediately", finalUrl);
+                                logger.debug("Cleared authentication result for '{}', retrying immediately", uri);
                                 refresh(true);
                             } else {
-                                logger.warn("Could not find authentication result for '{}', failing here", finalUrl);
+                                logger.warn("Could not find authentication result for '{}', failing here", uri);
                             }
                         }
                     }
@@ -114,19 +111,19 @@ public class RefreshingUrlCache {
                 }).thenAccept(this::processResult);
 
                 if (logger.isTraceEnabled()) {
-                    logger.trace("Sending to '{}': {}", finalUrl, Util.requestToLogString(request));
+                    logger.trace("Sending to '{}': {}", uri, Util.requestToLogString(request));
                 }
 
                 request.send(new HttpResponseListener(response, fallbackEncoding, bufferSize));
             }).exceptionally(e -> {
                 if (e instanceof CancellationException) {
-                    logger.debug("Request to URL {} was cancelled by thing handler.", finalUrl);
+                    logger.debug("Request to URL {} was cancelled by thing handler.", uri);
                 } else {
-                    logger.warn("Request to URL {} failed: {}", finalUrl, e.getMessage());
+                    logger.warn("Request to URL {} failed: {}", uri, e.getMessage());
                 }
                 return null;
             });
-        } catch (IllegalArgumentException | URISyntaxException e) {
+        } catch (IllegalArgumentException | URISyntaxException | MalformedURLException e) {
             logger.warn("Creating request for '{}' failed: {}", url, e.getMessage());
         }
     }
