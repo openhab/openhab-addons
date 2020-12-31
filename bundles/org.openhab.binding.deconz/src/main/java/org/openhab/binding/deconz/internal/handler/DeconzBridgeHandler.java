@@ -87,7 +87,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         } else if (websocketID.length() > 20) {
             websocketID = websocketID.substring(websocketID.length() - 20);
         }
-        this.websocket = WebSocketConnection.create(this, webSocketFactory.createWebSocketClient(websocketID), gson);
+        this.websocket = new WebSocketConnection(this, webSocketFactory.createWebSocketClient(websocketID), gson);
     }
 
     @Override
@@ -123,13 +123,15 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * @param r The response
      */
     private void parseAPIKeyResponse(AsyncHttpClient.Result r) {
+        if (thingDisposing) {
+            // discard response if thing handler is already disposing
+            return;
+        }
         if (r.getResponseCode() == 403) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Allow authentication for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
             stopTimer();
-            if (!thingDisposing) {
-                scheduledFuture = scheduler.schedule(this::requestApiKey, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
-            }
+            scheduledFuture = scheduler.schedule(this::requestApiKey, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
         } else if (r.getResponseCode() == 200) {
             ApiKeyMessage[] response = Objects.requireNonNull(gson.fromJson(r.getBody(), ApiKeyMessage[].class));
             if (response.length == 0) {
@@ -162,7 +164,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      */
     private CompletableFuture<Optional<BridgeFullState>> refreshFullStateCache() {
         logger.trace("{} starts refreshing the fullStateCache", thing.getUID());
-        if (config.apikey == null) {
+        if (config.apikey == null || thingDisposing) {
             return CompletableFuture.completedFuture(Optional.empty());
         }
         String url = buildUrl(config.getHostWithoutPort(), config.httpPort, config.apikey);
@@ -194,6 +196,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     public void initializeBridgeState() {
         getBridgeFullState().thenAccept(fullState -> fullState.ifPresentOrElse(state -> {
             if (thingDisposing) {
+                // discard response if thing handler is already disposing
                 return;
             }
             if (state.config.name.isEmpty()) {
@@ -311,16 +314,17 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     }
 
     /**
-     * Return the http connection.
+     * Send an object to the gateway
+     *
+     * @param endPoint the endpoint (e.g. "lights/2/state")
+     * @param object the object (or null if no object)
+     * @return CompletableFuture of the result
      */
-    public AsyncHttpClient getHttp() {
-        return http;
-    }
+    public CompletableFuture<AsyncHttpClient.Result> sendObject(String endPoint, @Nullable Object object) {
+        String json = object == null ? null : gson.toJson(object);
+        String url = buildUrl(config.host, config.httpPort, config.apikey, endPoint);
+        logger.trace("Sending {} via {}", json, url);
 
-    /**
-     * Return the bridge configuration.
-     */
-    public DeconzBridgeConfig getBridgeConfig() {
-        return config;
+        return http.put(url, json, config.timeout);
     }
 }

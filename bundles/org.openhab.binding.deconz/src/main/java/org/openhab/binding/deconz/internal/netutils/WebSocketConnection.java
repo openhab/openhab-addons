@@ -57,13 +57,12 @@ public class WebSocketConnection {
     private ConnectionState connectionState = ConnectionState.DISCONNECTED;
     private @Nullable Session session;
 
-    private WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client, Gson gson,
-            String socketName) {
+    public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client, Gson gson) {
         this.connectionListener = listener;
         this.client = client;
         this.client.setMaxIdleTimeout(0);
         this.gson = gson;
-        this.socketName = socketName;
+        this.socketName = "Websocket$" + System.currentTimeMillis() + "-" + INSTANCE_COUNTER.incrementAndGet();
     }
 
     public void start(String ip) {
@@ -164,7 +163,7 @@ public class WebSocketConnection {
             handleWrongSession(session, "Connection error: " + cause.getMessage());
             return;
         }
-        logger.warn("{} connection errored: {}", socketName, cause.getMessage());
+        logger.warn("{} connection errored, closing: {}", socketName, cause.getMessage());
 
         Session storedSession = this.session;
         if (storedSession != null && storedSession.isOpen()) {
@@ -222,10 +221,5 @@ public class WebSocketConnection {
         CONNECTED,
         DISCONNECTING,
         DISCONNECTED
-    }
-
-    public static WebSocketConnection create(WebSocketConnectionListener listener, WebSocketClient client, Gson gson) {
-        return new WebSocketConnection(listener, client, gson,
-                "Websocket$" + System.currentTimeMillis() + "-" + INSTANCE_COUNTER.incrementAndGet());
     }
 }
