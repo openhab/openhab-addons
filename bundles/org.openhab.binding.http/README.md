@@ -18,14 +18,19 @@ It can be extended with different channels.
 | `delay`           | no       |    0    | Delay between two requests in ms (advanced parameter). |
 | `username`        | yes      |    -    | Username for authentication (advanced parameter). |
 | `password`        | yes      |    -    | Password for authentication (advanced parameter). |
-| `authMode`        | no       |  BASIC  | Authentication mode, `BASIC` or `DIGEST` (advanced parameter). |
+| `authMode`        | no       |  BASIC  | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE` or `DIGEST` (advanced parameter). |
 | `commandMethod`   | no       |   GET   | Method used for sending commands `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
 | `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  
 | `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value".| 
 | `ignoreSSLErrors` | no       |  false  | If set to true ignores invalid SSL certificate errors. This is potentially dangerous.|
 
-*Note:* optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
+*Note:* Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
+
+*Note:* The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
+This is dangerous and might be misused.
+The option exists to be able to authenticate when the server is not sending the proper 401/Unauthorized code.
+Authentication might fail if redirections are involved as headers are stripper prior to redirection.
 
 *Note:* If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 
