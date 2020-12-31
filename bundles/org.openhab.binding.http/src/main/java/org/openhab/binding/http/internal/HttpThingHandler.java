@@ -14,10 +14,7 @@ package org.openhab.binding.http.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -85,7 +82,6 @@ public class HttpThingHandler extends BaseThingHandler {
     private final Map<String, RefreshingUrlCache> urlHandlers = new HashMap<>();
     private final Map<ChannelUID, ItemValueConverter> channels = new HashMap<>();
     private final Map<ChannelUID, String> channelUrls = new HashMap<>();
-    private @Nullable Authentication authentication;
 
     public HttpThingHandler(Thing thing, HttpClientProvider httpClientProvider,
             ValueTransformationProvider valueTransformationProvider,
@@ -139,6 +135,7 @@ public class HttpThingHandler extends BaseThingHandler {
             return;
         }
 
+        // check SSL handling and initialize client
         if (config.ignoreSSLErrors) {
             logger.info("Using the insecure client for thing '{}'.", thing.getUID());
             httpClient = httpClientProvider.getInsecureClient();
@@ -158,28 +155,33 @@ public class HttpThingHandler extends BaseThingHandler {
                     channelCount, thing.getUID(), config.delay, config.refresh);
         }
 
-        authentication = null;
+        // remove empty headers
+        config.headers.removeIf(String::isBlank);
+
+        // configure authentication
         if (!config.username.isEmpty()) {
             try {
+                AuthenticationStore authStore = httpClient.getAuthenticationStore();
                 URI uri = new URI(config.baseURL);
                 switch (config.authMode) {
+                    case BASIC_PREEMPTIVE:
+                        config.headers.add("Authorization=Basic " + Base64.getEncoder()
+                                .encodeToString((config.username + ":" + config.password).getBytes()));
+                        logger.debug("Preemptive Basic Authentication configured for thing '{}'", thing.getUID());
+                        break;
                     case BASIC:
-                        authentication = new BasicAuthentication(uri, Authentication.ANY_REALM, config.username,
-                                config.password);
+                        authStore.addAuthentication(new BasicAuthentication(uri, Authentication.ANY_REALM,
+                                config.username, config.password));
                         logger.debug("Basic Authentication configured for thing '{}'", thing.getUID());
                         break;
                     case DIGEST:
-                        authentication = new DigestAuthentication(uri, Authentication.ANY_REALM, config.username,
-                                config.password);
+                        authStore.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM,
+                                config.username, config.password));
                         logger.debug("Digest Authentication configured for thing '{}'", thing.getUID());
                         break;
                     default:
                         logger.warn("Unknown authentication method '{}' for thing '{}'", config.authMode,
                                 thing.getUID());
-                }
-                if (authentication != null) {
-                    AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                    authStore.addAuthentication(authentication);
                 }
             } catch (URISyntaxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -189,6 +191,7 @@ public class HttpThingHandler extends BaseThingHandler {
             logger.debug("No authentication configured for thing '{}'", thing.getUID());
         }
 
+        // create channels
         thing.getChannels().forEach(this::createChannel);
 
         updateStatus(ThingStatus.ONLINE);

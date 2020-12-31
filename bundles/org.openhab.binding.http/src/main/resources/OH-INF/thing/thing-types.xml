@@ -52,6 +52,7 @@
 				<label>Authentication Mode</label>
 				<options>
 					<option value="BASIC">Basic Authentication</option>
+					<option value="BASIC_PREEMPTIVE">Preemptive Basic Authentication</option>
 					<option value="DIGEST">Digest Authentication</option>
 				</options>
 				<default>BASIC</default>
