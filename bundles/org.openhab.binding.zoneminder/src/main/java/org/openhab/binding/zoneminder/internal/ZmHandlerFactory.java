@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.zm", service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.zoneminder", service = ThingHandlerFactory.class)
 public class ZmHandlerFactory extends BaseThingHandlerFactory {
 
     private final TimeZoneProvider timeZoneProvider;

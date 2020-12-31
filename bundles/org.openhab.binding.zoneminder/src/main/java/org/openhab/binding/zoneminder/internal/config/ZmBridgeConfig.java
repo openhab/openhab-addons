@@ -51,16 +51,6 @@ public class ZmBridgeConfig {
     public @Nullable Integer refreshInterval;
 
     /**
-     * Enable/disable monitor discovery
-     */
-    public @Nullable Boolean discoveryEnabled;
-
-    /**
-     * Frequency at which the binding will try to discover monitors
-     */
-    public @Nullable Integer discoveryInterval;
-
-    /**
      * Alarm duration set on monitor things when they're discovered
      */
     public @Nullable Integer defaultAlarmDuration;
@@ -69,6 +59,11 @@ public class ZmBridgeConfig {
      * Default image refresh interval set on monitor things when they're discovered
      */
     public @Nullable Integer defaultImageRefreshInterval;
+
+    /**
+     * Enable/disable monitor discovery
+     */
+    public Boolean discoveryEnabled = Boolean.TRUE;
 
     /**
      * Zoneminder user name
