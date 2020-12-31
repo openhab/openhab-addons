@@ -22,13 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface WebSocketConnectionListener {
     /**
-     * An error occurred during connection or while connecting.
-     *
-     * @param e The error
-     */
-    void connectionError(Throwable e);
-
-    /**
      * Connection successfully established.
      */
     void connectionEstablished();
