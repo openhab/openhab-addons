@@ -1,56 +1,61 @@
 # NovelanHeatpump Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding gives the possibility to integrate any Heatpump that is based on the Luxtronic 2 contol unit of Alpha Innotec. This includes heatpumps of:
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+* Alpha InnoTec
+* Buderus (Logamatic HMC20, HMC20 Z)
+* CTA All-In-One (Aeroplus)
+* Elco
+* Nibe (AP-AW10)
+* Roth (ThermoAura®, ThermoTerra)
+* (Siemens) Novelan (WPR NET)
+* Wolf Heiztechnik (BWL/BWS)
+
+This binding is based on the [Novelan/Luxtronic Heat Pump Binding](https://v2.openhab.org/addons/bindings/novelanheatpump1/) for Open Hab 1. And some other Luxtronic tools like [Luxtronik2 for NodeJS](https://github.com/coolchip/luxtronik2) and the detailed parameter descriptions for the Java Webinterface in the [Loxwiki](https://www.loxwiki.eu/display/LOX/Java+Webinterface)
+
+This binding was tested with:
+
+* Siemens Novelan LD 7
+
+_If you have another heatpump the binding works with, let us know, so we can extend the list_
+
+Note: The whole functionality is baed on data that was reverse engineered, so use it at your own risk. 
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This binding only supports one thing type "Novelan/Luxtronic Heatpump".
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Not implemented yet.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+Each heatpump requires the following configuration parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| parameter  | required | default | description |
+|------------|----------|---------|-------------|
+| ipAddress  | yes      |         | IP address of the heatpump |
+| port       | no       | 8889    | Port number to connect to. This should be `8889` for most heatpumps. For heatpumps using a firmware version before V1.73 port `8888` needs to be used. |
+| refresh    | no       | 300 | Interval (in seconds) to refresh the channel values. |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+As the Luxtronic 2 control is able to handle multiple heat pumps with different features (like heating, hot water, cooling, solar, photovoltaics, swimming pool,...), the binding has a lot channels. Depending on the heatpump it is used with, various channels might not hold any (useful) values.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The following channels are holding read only values:
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| channel  | type   | advanced | description                  |
+|----------|--------|----------|------------------------------|
+| control  | Switch |    X     | This is the control channel  |
+
+
+The following channels are read & writable:
+
+| channel  | type   | advanced | description                  |
+|----------|--------|----------|------------------------------|
+| control  | Switch |    X     | This is the control channel  |
 
 ## Full Example
 
 _Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
