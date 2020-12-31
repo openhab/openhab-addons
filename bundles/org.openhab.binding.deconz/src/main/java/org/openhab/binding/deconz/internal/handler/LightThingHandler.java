@@ -116,6 +116,9 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 needsPropertyUpdate = true;
             }
         }
+        ThingConfig thingConfig = getConfigAs(ThingConfig.class);
+        colorMode = thingConfig.colormode;
+
         super.initialize();
     }
 
