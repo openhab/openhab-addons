@@ -159,10 +159,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             commFailureCount = 50;
             initPolling(60);
             return;
+        } catch (InterruptedException e) {
+            return;
         }
     }
 
-    public synchronized boolean login() throws HaywardException {
+    public synchronized boolean login() throws HaywardException, InterruptedException {
         String xmlResponse;
         String status;
 
@@ -190,7 +192,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public synchronized boolean getApiDef() throws HaywardException {
+    public synchronized boolean getApiDef() throws HaywardException, InterruptedException {
         String xmlResponse;
 
         // *****getConfig from Hayward server
@@ -209,7 +211,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public synchronized boolean getSiteList() throws HaywardException {
+    public synchronized boolean getSiteList() throws HaywardException, InterruptedException {
         String xmlResponse;
         String status;
 
@@ -242,7 +244,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public synchronized String getMspConfig() throws HaywardException {
+    public synchronized String getMspConfig() throws HaywardException, InterruptedException {
         // *****getMspConfig from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetMspConfigFile</Name><Parameters>"
                 + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
@@ -269,7 +271,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return xmlResponse;
     }
 
-    public synchronized boolean getTelemetryData() throws HaywardException {
+    public synchronized boolean getTelemetryData() throws HaywardException, InterruptedException {
         // *****getTelemetry from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetTelemetryData</Name><Parameters>"
                 + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
@@ -331,6 +333,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 }
             } catch (HaywardException e) {
                 logger.debug("Hayward Connection thing: Exception during poll: {}", e.getMessage());
+            } catch (InterruptedException e) {
+                return;
             }
         }, initalDelay, config.telemetryPollTime, TimeUnit.SECONDS);
         return;
@@ -389,7 +393,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
-    public synchronized String httpXmlResponse(String urlParameters) throws HaywardException {
+    public synchronized String httpXmlResponse(String urlParameters) throws HaywardException, InterruptedException {
         String urlParameterslength = Integer.toString(urlParameters.length());
         String statusMessage;
 
@@ -430,10 +434,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     "Unable to resolve host.  Check Hayward hostname and your internet connection.");
             return "";
         } catch (TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection Timeout.  Check Hayward hostname and your internet connection.");
-            return "";
-        } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Connection Timeout.  Check Hayward hostname and your internet connection.");
             return "";

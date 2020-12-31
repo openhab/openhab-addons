@@ -148,6 +148,8 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                 } catch (HaywardException e) {
                     logger.debug("Unable to send command to Hayward's server {}:{}:{}",
                             bridgehandler.config.endpointUrl, bridgehandler.config.username, e.getMessage());
+                } catch (InterruptedException e) {
+                    return;
                 }
                 this.updateStatus(ThingStatus.ONLINE);
             } else {

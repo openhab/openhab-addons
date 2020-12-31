@@ -79,6 +79,8 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             }
         } catch (HaywardException e) {
             logger.warn("Exception during discovery scan: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            return;
         }
     }
 

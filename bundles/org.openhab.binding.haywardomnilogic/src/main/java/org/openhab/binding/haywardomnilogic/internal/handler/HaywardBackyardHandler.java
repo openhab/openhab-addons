@@ -89,35 +89,40 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                         + bridgehandler.account.mspSystemID + "</Parameter>"
                         + "<Parameter name=\"CultureInfoName\" dataType=\"String\">en-us</Parameter></Parameters></Request>";
 
-                String xmlResponse = bridgehandler.httpXmlResponse(urlParameters);
+                try {
+                    String xmlResponse = bridgehandler.httpXmlResponse(urlParameters);
 
-                if (xmlResponse.isEmpty()) {
-                    logger.debug("Hayward getAlarmList XML response was empty");
-                    return false;
-                }
-
-                String status = bridgehandler
-                        .evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
-
-                if (!(status.equals("0"))) {
-                    logger.trace("Hayward getAlarm XML response: {}", xmlResponse);
-                    return false;
-                }
-
-                bowID = bridgehandler.evaluateXPath("//Property[@name='BowID']/text()", xmlResponse);
-                parameter1 = bridgehandler.evaluateXPath("//Property[@name='Parameter1']/text()", xmlResponse);
-                message = bridgehandler.evaluateXPath("//Property[@name='Message']/text()", xmlResponse);
-
-                for (int i = 0; i < 5; i++) {
-                    if (i < bowID.size()) {
-                        alarmStr = parameter1.get(i) + ": " + message.get(i);
-                    } else {
-                        alarmStr = "";
+                    if (xmlResponse.isEmpty()) {
+                        logger.debug("Hayward getAlarmList XML response was empty");
+                        return false;
                     }
-                    updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
+
+                    String status = bridgehandler
+                            .evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse)
+                            .get(0);
+
+                    if (!(status.equals("0"))) {
+                        logger.trace("Hayward getAlarm XML response: {}", xmlResponse);
+                        return false;
+                    }
+
+                    bowID = bridgehandler.evaluateXPath("//Property[@name='BowID']/text()", xmlResponse);
+                    parameter1 = bridgehandler.evaluateXPath("//Property[@name='Parameter1']/text()", xmlResponse);
+                    message = bridgehandler.evaluateXPath("//Property[@name='Message']/text()", xmlResponse);
+
+                    for (int i = 0; i < 5; i++) {
+                        if (i < bowID.size()) {
+                            alarmStr = parameter1.get(i) + ": " + message.get(i);
+                        } else {
+                            alarmStr = "";
+                        }
+                        updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
+                    }
+                    this.updateStatus(ThingStatus.ONLINE);
+                    return true;
+                } catch (InterruptedException e) {
+                    return false;
                 }
-                this.updateStatus(ThingStatus.ONLINE);
-                return true;
             } else {
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 return false;
