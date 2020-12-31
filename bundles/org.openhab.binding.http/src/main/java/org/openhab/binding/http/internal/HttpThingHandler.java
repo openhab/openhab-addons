@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.http.internal;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -302,10 +303,10 @@ public class HttpThingHandler extends BaseThingHandler {
     private void sendHttpValue(String commandUrl, String command, boolean isRetry) {
         try {
             // format URL
-            URI finalUrl = new URI(String.format(commandUrl, new Date(), command));
+            URI uri = Util.uriFromString(String.format(commandUrl, new Date(), command));
 
             // build request
-            Request request = httpClient.newRequest(finalUrl).timeout(config.timeout, TimeUnit.MILLISECONDS)
+            Request request = httpClient.newRequest(uri).timeout(config.timeout, TimeUnit.MILLISECONDS)
                     .method(config.commandMethod);
             if (config.commandMethod != HttpMethod.GET) {
                 final String contentType = config.contentType;
@@ -326,30 +327,30 @@ public class HttpThingHandler extends BaseThingHandler {
             });
 
             if (logger.isTraceEnabled()) {
-                logger.trace("Sending to '{}': {}", finalUrl, Util.requestToLogString(request));
+                logger.trace("Sending to '{}': {}", uri, Util.requestToLogString(request));
             }
 
             CompletableFuture<@Nullable Content> f = new CompletableFuture<>();
             f.exceptionally(e -> {
                 if (e instanceof HttpAuthException) {
                     if (isRetry) {
-                        logger.warn("Retry after authentication failure failed again for '{}', failing here", finalUrl);
+                        logger.warn("Retry after authentication failure failed again for '{}', failing here", uri);
                     } else {
                         AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                        Authentication.Result authResult = authStore.findAuthenticationResult(finalUrl);
+                        Authentication.Result authResult = authStore.findAuthenticationResult(uri);
                         if (authResult != null) {
                             authStore.removeAuthenticationResult(authResult);
-                            logger.debug("Cleared authentication result for '{}', retrying immediately", finalUrl);
+                            logger.debug("Cleared authentication result for '{}', retrying immediately", uri);
                             sendHttpValue(commandUrl, command, true);
                         } else {
-                            logger.warn("Could not find authentication result for '{}', failing here", finalUrl);
+                            logger.warn("Could not find authentication result for '{}', failing here", uri);
                         }
                     }
                 }
                 return null;
             });
             request.send(new HttpResponseListener(f, null, config.bufferSize));
-        } catch (IllegalArgumentException | URISyntaxException e) {
+        } catch (IllegalArgumentException | URISyntaxException | MalformedURLException e) {
             logger.warn("Creating request for '{}' failed: {}", commandUrl, e.getMessage());
         }
     }
