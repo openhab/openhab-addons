@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.*;
@@ -45,6 +46,7 @@ import com.google.gson.Gson;
  *
  * @author Gregor Roth - Initial contribution
  */
+@NonNullByDefault
 public class WebthingTest {
     private static final Gson GSON = new Gson();
 
@@ -338,8 +340,8 @@ public class WebthingTest {
                 }
 
                 @Override
-                public Future<Void> sendBytesByFuture(@Nullable ByteBuffer data) {
-                    return null;
+                public Future sendBytesByFuture(@Nullable ByteBuffer data) {
+                    throw new UnsupportedOperationException();
                 }
 
                 @Override
@@ -370,8 +372,8 @@ public class WebthingTest {
                 }
 
                 @Override
-                public Future<Void> sendStringByFuture(@Nullable String text) {
-                    return null;
+                public Future sendStringByFuture(@Nullable String text) {
+                    throw new UnsupportedOperationException();
                 }
 
                 @Override
@@ -389,7 +391,7 @@ public class WebthingTest {
 
                 @Override
                 public InetSocketAddress getInetSocketAddress() {
-                    return InetSocketAddress.createUnresolved("test", 12);
+                    throw new UnsupportedOperationException();
                 }
 
                 @Override
@@ -405,12 +407,12 @@ public class WebthingTest {
 
         @Override
         public UpgradeRequest getUpgradeRequest() {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public UpgradeResponse getUpgradeResponse() {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
