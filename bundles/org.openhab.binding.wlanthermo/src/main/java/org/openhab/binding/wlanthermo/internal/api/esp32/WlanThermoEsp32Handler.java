@@ -117,8 +117,9 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             State s = wlanThermoEsp32CommandHandler.getState(channelUID, data, settings);
-            if (s != null)
+            if (s != null) {
                 updateState(channelUID, s);
+            }
         } else {
             if (wlanThermoEsp32CommandHandler.setState(channelUID, command, data)) {
                 logger.debug("Data updated, pushing changes");
