@@ -24,7 +24,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
- * The {@link NumberItemConverter} is responsible for
+ * The {@link NumberItemConverter} implements {@link org.openhab.core.library.items.NumberItem} conversions
  *
  * @author Jan N. Klug - Initial contribution
  */
