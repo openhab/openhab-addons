@@ -51,9 +51,9 @@ import org.slf4j.LoggerFactory;
  * Handles communicating with a Daikin air conditioning unit.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Lukas Agethen - Added support for Energy Year reading, compressor frequency and powerful mode
- * @author Wouter Denayer <wouter@denayer.com> - Added to support for weekly & daily energy reading
+ * @author Wouter Denayer - Added to support for weekly & daily energy reading
  * 
  */
 @NonNullByDefault

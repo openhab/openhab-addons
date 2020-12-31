@@ -37,7 +37,8 @@ public class EnergyInfoYear {
     }
 
     public static EnergyInfoYear parse(String response) {
-        logger.debug("Parsing string: \"{}\"", response);
+
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Holds information from the get_week_power_ex call.
  *
- * @author Wouter Denayer <wouter@denayer.com> - Added to support for weekly & daily energy reading
+ * @author Wouter Denayer - Added to support for weekly & daily energy reading
  *
  */
 @NonNullByDefault
@@ -45,7 +45,7 @@ public class EnergyInfoDayAndWeek {
 
         EnergyInfoDayAndWeek info = new EnergyInfoDayAndWeek();
 
-        logger.debug("Parsing string: \"{}\"", response);
+        logger.trace("Parsing string: \"{}\"", response);
 
         // /aircon/get_week_power_ex
         // ret=OK,s_dayw=0,week_heat=1/1/1/1/1/5/2/1/1/1/1/2/1/1,week_cool=0/0/0/0/0/0/0/0/0/0/0/0/0/0
