@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum HttpAuthMode {
+    BASIC_PREEMPTIVE,
     BASIC,
     DIGEST
 }
