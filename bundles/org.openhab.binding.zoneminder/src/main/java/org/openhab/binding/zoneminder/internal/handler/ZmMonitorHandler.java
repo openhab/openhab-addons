@@ -254,6 +254,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
     }
 
     private void startImageRefreshJob() {
+        stopImageRefreshJob();
         Integer interval = imageRefreshIntervalSeconds;
         if (interval != null) {
             long delay = getRandomDelay(interval);
