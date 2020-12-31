@@ -1,0 +1,1577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="luxtronicheatpump"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="Temperatur_TVL">
+		<item-type>Number:Temperature</item-type>
+		<label>Flow temperature heating circuit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TRL">
+		<item-type>Number:Temperature</item-type>
+		<label>Return temperature heating circuit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Sollwert_TRL_HZ">
+		<item-type>Number:Temperature</item-type>
+		<label>Return setpoint heating circuit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TRL_ext" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Return temperature in buffer tank</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_THG" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot gas temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TA">
+		<item-type>Number:Temperature</item-type>
+		<label>Outside temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Mitteltemperatur">
+		<item-type>Number:Temperature</item-type>
+		<label>Average temperature outside over 24 h (heating limit function)</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TBW">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot water actual temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Einst_BWS_akt">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot water target temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TWE" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat source inlet temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TWA" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat source outlet temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TFB1" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing circuit 1 Flow temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Sollwert_TVL_MK1" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing circuit 1 Flow target temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_RFV" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Room temperature room station 1</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TFB2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing circuit 2 Flow temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Sollwert_TVL_MK2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing circuit 2 Flow target temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TSK" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar collector sensor</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TSS" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar tank sensor</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TEE" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Sensor external energy source</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ASDin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Defrost end, brine pressure, flow rate"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="BWTin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Domestic hot water thermostat"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="EVUin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "EVU lock"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HDin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "High pressure refrigerant circuit</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="MOTin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Motor protection OK"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="NDin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Low pressure"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="PEXin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Monitoring contact for potentiostat"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SWTin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Swimming pool thermostat"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AVout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Defrost valve"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="BUPout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Domestic hot water pump/changeover valve"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HUPout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Heating circulation pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="MA1out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing circuit 1 Up"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="MZ1out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing circuit 1 Closed"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="VENout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Ventilation"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="VBOout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Brine pump/fan"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="VD1out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Compressor 1"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="VD2out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Compressor 2"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ZIPout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Circulation pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ZUPout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Auxiliary circulation pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ZW1out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Control signal additional heating"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ZW2SSTout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Control signal additional heating/fault signal"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ZW3SSTout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Auxiliary heater 3"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="FP2out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Pump mixing circuit 2"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SLPout" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Solar charge pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_sup" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Swimming pool pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="MZ2out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing circuit 2 Closed"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="MA2out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing circuit 2 Up"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitVD1">
+		<item-type>Number:Time</item-type>
+		<label>Operating hours compressor 1</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitImpVD1">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pulses compressor 1</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitVD2" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operating hours compressor 2</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitImpVD2" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pulses compressor 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitZWE1" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Pulses Compressor operating hours Second heat generator 1</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitZWE2" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Pulses Compressor operating hours Second heat generator 2</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitZWE3" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Pulses Compressor operating hours Second heat generator 3</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitWP">
+		<item-type>Number:Time</item-type>
+		<label>Operating hours heat pump</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitHz">
+		<item-type>Number:Time</item-type>
+		<label>Operating hours heating</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitBW">
+		<item-type>Number:Time</item-type>
+		<label>Operating hours hot water</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitKue">
+		<item-type>Number:Time</item-type>
+		<label>Operating hours cooling</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_WPein_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Heat pump running since</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_ZWE1_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Second heat generator 1 running since</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_ZWE2_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Second heat generator 2 running since</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Timer_EinschVerz" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Mains on delay</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_SSPAUS_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Switching cycle lock off</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_SSPEIN_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Switching cycle lock on</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_VDStd_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Compressor Idle time</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_HRM_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Heating controller More time</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_HRW_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Heating controller Less time</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_LGS_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Thermal disinfection running since</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_SBW_akt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hot water lock</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="BIV_Stufe_akt" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bivalence stage</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">one compressor may run</option>
+				<option value="2">two compressors may run</option>
+				<option value="3">additional heat generator may run</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="WP_BZ_akt">
+		<item-type>Number</item-type>
+		<label>Operating status</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Heating</option>
+				<option value="1">Hot water</option>
+				<option value="2">Swimming pool / Photovoltaics</option>
+				<option value="3">EVU</option>
+				<option value="4">Defrost</option>
+				<option value="5">No requirement</option>
+				<option value="6">Heating ext. energy source</option>
+				<option value="7">Cooling mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ERROR_Time0">
+		<item-type>DateTime</item-type>
+		<label>Timestamp error 0 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ERROR_Time1" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp error 1 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ERROR_Time2" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp error 2 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ERROR_Time3" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp error 3 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ERROR_Time4" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp error 4 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ERROR_Nr0">
+		<item-type>Number</item-type>
+		<label>Error code Error 0 in memory</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ERROR_Nr1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error code Error 1 in memory</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ERROR_Nr2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error code Error 2 in memory</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ERROR_Nr3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error code Error 3 in memory</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ERROR_Nr4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error code Error 4 in memory</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AnzahlFehlerInSpeicher" advanced="true">
+		<item-type>Number</item-type>
+		<label>Number of errors in memory</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Switchoff_file_Nr0">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 0 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="Switchoff_file_Nr1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 1 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="Switchoff_file_Nr2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 2 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="Switchoff_file_Nr3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 3 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="Switchoff_file_Nr4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 4 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="Switchoff_file_Time0">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 0 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="Switchoff_file_Time1" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 1 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="Switchoff_file_Time2" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 2 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="Switchoff_file_Time3" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 3 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="Switchoff_file_Time4" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 4 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Comfort_exists" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Comfort board installed</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HauptMenuStatus_Zeile1">
+		<item-type>Number</item-type>
+		<label>Status line 1</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Heat pump runs</option>
+				<option value="1">Heat pump stopped</option>
+				<option value="2">Heat pump coming</option>
+				<option value="3">Error code memory location 0</option>
+				<option value="4">Defrost</option>
+				<option value="5">Wait for LIN connection</option>
+				<option value="6">Compressor heats up</option>
+				<option value="7">Pump flow</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="HauptMenuStatus_Zeile2">
+		<item-type>Number</item-type>
+		<label>Status line 2</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">since</option>
+				<option value="1">in</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="HauptMenuStatus_Zeile3">
+		<item-type>Number</item-type>
+		<label>Status Zeile 3</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Heating mode</option>
+				<option value="1">No requirement</option>
+				<option value="2">Mains switch-on delay</option>
+				<option value="3">Switching cycle lock</option>
+				<option value="4">Blocking time</option>
+				<option value="5">Service water</option>
+				<option value="6">Info bakeout program</option>
+				<option value="7">Defrost</option>
+				<option value="8">Pump flow</option>
+				<option value="9">Thermal disinfection</option>
+				<option value="10">Cooling mode</option>
+				<option value="12">Swimming pool / Photovoltaics</option>
+				<option value="13">Heating ext. energy source</option>
+				<option value="14">Service water ext. energy source</option>
+				<option value="16">Flow monitoring</option>
+				<option value="17">Second heat generator 1 operation</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="HauptMenuStatus_Zeit">
+		<item-type>Number:Time</item-type>
+		<label>Status Time Line 2</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HauptMenuAHP_Stufe" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stage bakeout program</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HauptMenuAHP_Temp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature bakeout program</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HauptMenuAHP_Zeit" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Runtime bakeout program</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SH_BWW" advanced="true">
+		<item-type>Switch</item-type>
+		<label>DHW active/inactive icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SH_HZ" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heater icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SH_MK1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing circuit 1 icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SH_MK2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing circuit 2 icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Einst_Kurzrpgramm" advanced="true">
+		<item-type>Number</item-type>
+		<label>Short program setting</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="StatusSlave1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 1</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="StatusSlave2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="StatusSlave3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 3</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="StatusSlave4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 4</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="StatusSlave5" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 5</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AktuelleTimeStamp" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Current time of the heat pump</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SH_MK3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing circuit 3 icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Sollwert_TVL_MK3" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing circuit 3 Flow set temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TFB3" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing circuit 3 Flow temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="MZ3out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing circuit 3 Closed"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="MA3out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing circuit 3 Up"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="FP3out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Pump mixing circuit 3</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_AbtIn" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Time until defrost</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_RFV2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Room temperature room station 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_RFV3" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Room temperature room station 3</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SH_SW" advanced="true">
+		<item-type>Number</item-type>
+		<label>Time switch swimming pool icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitSW" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Swimming pool operating hours</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="FreigabKuehl" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Release cooling</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AnalogIn" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog input signal</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SH_ZIP" advanced="true">
+		<item-type>Number</item-type>
+		<label>Circulation pumps icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="WMZ_Heizung">
+		<item-type>Number:Energy</item-type>
+		<label>Heat meter heating</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="WMZ_Brauchwasser">
+		<item-type>Number:Energy</item-type>
+		<label>Heat meter domestic water</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="WMZ_Schwimmbad">
+		<item-type>Number:Energy</item-type>
+		<label>Heat meter swimming pool</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="WMZ_Seit">
+		<item-type>Number:Energy</item-type>
+		<label>Total heat meter</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="WMZ_Durchfluss">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Heat meter flow rate</label>
+		<category>Flow</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AnalogOut1" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog output 1</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AnalogOut2" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog output 2</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time_Heissgas" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Lock second compressor hot gas</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temp_Lueftung_Zuluft" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Supply air temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temp_Lueftung_Abluft" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Exhaust air temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Zaehler_BetrZeitSolar" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operating hours solar</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AnalogOut3" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog output 3</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AnalogOut4" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog output 4</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Out_VZU" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Supply air fan (defrost function)</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Out_VAB" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Exhaust fan</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Out_VSK" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VSK</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="OUT_FRH" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output FRH</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AnalogIn2" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog input 2</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AnalogIn3" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog input 3</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SAXin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input SAX</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SPLin" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input SPL</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Compact_exists" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Ventilation board installed</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Durchfluss_WQ" advanced="true">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Flow rate heat source</label>
+		<category>Flow</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_exists" advanced="true">
+		<item-type>Switch</item-type>
+		<label>LIN BUS installed</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_ANSAUG_VERDAMPFER" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature suction evaporator</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_ANSAUG_VERDICHTER" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature suction compressor</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_VDH" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature compressor heating</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_UH" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_UH_Soll" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_HD" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>High pressure</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_ND" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Low pressure</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_VDH_out" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output compressor heating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HZIO_PWM" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Control signal circulating pump</label>
+		<category>Energy</category>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HZIO_VEN" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan speed</label>
+		<category>Frequency</category>
+		<state pattern="%.1f rpm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HZIO_STB" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Safety tempearture limiter floor heating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_Qh_Soll" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Power target value</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_Qh_Ist" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Power actual value</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_TVL_Soll" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature flow set point</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_BZ" advanced="true">
+		<item-type>Number</item-type>
+		<label>SEC Board operating status</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Cooling</option>
+				<option value="2">Heating</option>
+				<option value="3">Malfunction</option>
+				<option value="4">Transition</option>
+				<option value="5">Defrost</option>
+				<option value="6">Waiting</option>
+				<option value="7">Waiting</option>
+				<option value="8">Transition</option>
+				<option value="9">Stop</option>
+				<option value="10">Manual</option>
+				<option value="11">Simulation Start</option>
+				<option value="12">EVU lock</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="SEC_VWV" advanced="true">
+		<item-type>Number</item-type>
+		<label>Four-way valve</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_VD" advanced="true">
+		<item-type>Number</item-type>
+		<label>Compressor speed</label>
+		<state pattern="%.1f rpm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_VerdEVI" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Compressor temperature EVI (Enhanced Vapour Injection)</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_AnsEVI" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Intake temperature EVI</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_UEH_EVI" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating EVI</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_UEH_EVI_S" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating EVI target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_KondTemp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Condensation temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_FlussigEx" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Liquid temperature EEV (electronic expansion valve)</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_UK_EEV" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hypothermia EEV</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_EVI_Druck" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure EVI</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SEC_U_Inv" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage inverter</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_THG_2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot gas temperature sensor 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_TWE_2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature sensor heat source inlet 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_ANSAUG_VERDAMPFER_2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Intake temperature evaporator 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_ANSAUG_VERDICHTER_2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Intake temperature compressor 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_VDH_2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature compressor 2 heating</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_UH_2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_UH_Soll_2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating target 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_HD_2" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>High pressure 2</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_ND_2" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Low pressure 2</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HDin_2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input pressure switch high pressure 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="AVout_2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output defrost valve 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="VBOout_2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output brine pump/fan 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="VD1out_2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Compressor output 1 / 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="LIN_VDH_out_2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Compressor output heating 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Switchoff2_file_Nr0" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 0 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="Switchoff2_file_Nr1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 1 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="Switchoff2_file_Nr2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 2 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="Switchoff2_file_Nr3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 3 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="Switchoff2_file_Nr4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason shutdown 4 in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Heat pump malfunction</option>
+				<option value="2">Facility malfunction</option>
+				<option value="3">Second heat generator operating mode</option>
+				<option value="4">EVU lock</option>
+				<option value="5">Running dew (LW units only)</option>
+				<option value="6">Temperature application limit maximum</option>
+				<option value="7">Temperature application limit minimum</option>
+				<option value="8">Lower operating limit</option>
+				<option value="9">No requirement</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="Switchoff2_file_Time0" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 0 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="Switchoff2_file_Time1" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 1 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="Switchoff2_file_Time2" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 2 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="Switchoff2_file_Time3" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 3 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="Switchoff2_file_Time4" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp shutdown 4 in memory</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="RBE_RT_Ist" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Room temperature actual value</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="RBE_RT_Soll" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Room temperature set point</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Temperatur_BW_oben" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature domestic water top</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Freq_VD" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Compressor frequency</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="Einst_WK_akt">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating temperature (parallel shift)</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" min="-10" max="10" step="0.5"></state>
+	</channel-type>
+
+	<channel-type id="Einst_BWS_akt_2">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot water temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" min="10" max="65" step="1"></state>
+	</channel-type>
+
+	<channel-type id="Ba_Hz_akt">
+		<item-type>Number</item-type>
+		<label>Heating mode</label>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Auxiliary heater</option>
+				<option value="2">Party</option>
+				<option value="3">Vacation</option>
+				<option value="4">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="Ba_Bw_akt">
+		<item-type>Number</item-type>
+		<label>Hot water operating mode</label>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Auxiliary heater</option>
+				<option value="2">Party</option>
+				<option value="3">Vacation</option>
+				<option value="4">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="Einst_BWStyp_akt">
+		<item-type>Number</item-type>
+		<label>Comfort cooling mode</label>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="Einst_KuCft1_akt">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort cooling AT release</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="Sollwert_KuCft1_akt">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort cooling AT release target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="Einst_Kuhl_Zeit_Ein_akt">
+		<item-type>Number</item-type>
+		<label>AT Excess</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" step="1"></state>
+	</channel-type>
+
+	<channel-type id="Einst_Kuhl_Zeit_Aus_akt">
+		<item-type>Number</item-type>
+		<label>AT undercut</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" step="1"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

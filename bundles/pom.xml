@@ -168,6 +168,7 @@
     <module>org.openhab.binding.loxone</module>
     <module>org.openhab.binding.luftdateninfo</module>
     <module>org.openhab.binding.lutron</module>
+    <module>org.openhab.binding.luxtronicheatpump</module>
     <module>org.openhab.binding.magentatv</module>
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
@@ -208,7 +209,6 @@
     <module>org.openhab.binding.nikobus</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.novafinedust</module>
-    <module>org.openhab.binding.novelanheatpump</module>
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.nuvo</module>

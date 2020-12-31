@@ -137,6 +137,7 @@
 /bundles/org.openhab.binding.loxone/ @ppieczul
 /bundles/org.openhab.binding.luftdateninfo/ @weymann
 /bundles/org.openhab.binding.lutron/ @actong @bobadair
+/bundles/org.openhab.binding.luxtronicheatpump/ @sgiehl
 /bundles/org.openhab.binding.magentatv/ @markus7017
 /bundles/org.openhab.binding.mail/ @J-N-K
 /bundles/org.openhab.binding.max/ @marcelrv
@@ -177,7 +178,6 @@
 /bundles/org.openhab.binding.nikobus/ @crnjan
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.novafinedust/ @t2000
-/bundles/org.openhab.binding.novelanheatpump/ @sgiehl
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @mkatter
 /bundles/org.openhab.binding.nuvo/ @mlobstein
