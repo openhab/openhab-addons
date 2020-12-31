@@ -14,7 +14,7 @@ package org.openhab.binding.wlanthermo.internal.api.esp32;
 
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 
-import java.awt.*;
+import java.awt.Color;
 import java.math.BigInteger;
 import java.util.List;
 
