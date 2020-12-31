@@ -150,4 +150,4 @@ http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
 ```
 
 ### Spaces
-Replace all spaces or `%20` with the plus symbol `+` in `baseURL` and `stateExtension`.
+Replace all spaces or `%20` with the plus symbol `+` in `baseURL`, `stateExtension` and `commandExtension`.
