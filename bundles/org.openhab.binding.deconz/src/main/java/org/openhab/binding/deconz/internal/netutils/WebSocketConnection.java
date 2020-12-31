@@ -117,7 +117,7 @@ public class WebSocketConnection {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
         if (!session.equals(this.session)) {
-            processWrongSession(session, message);
+            handleWrongSession(session, message);
             return;
         }
         logger.trace("{} received raw data: {}", socketName, message);
@@ -161,14 +161,14 @@ public class WebSocketConnection {
     @OnWebSocketError
     public void onError(Session session, Throwable cause) {
         if (!session.equals(this.session)) {
-            processWrongSession(session, "Connection error: " + cause.getMessage());
+            handleWrongSession(session, "Connection error: " + cause.getMessage());
             return;
         }
         logger.warn("{} connection errored: {}", socketName, cause.getMessage());
 
         Session storedSession = this.session;
         if (storedSession != null && storedSession.isOpen()) {
-            storedSession.close(-1, "Connection errored");
+            storedSession.close(-1, "Processing error");
         }
     }
 
@@ -176,7 +176,7 @@ public class WebSocketConnection {
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
         if (!session.equals(this.session)) {
-            processWrongSession(session, "Connection closed: " + statusCode + " / " + reason);
+            handleWrongSession(session, "Connection closed: " + statusCode + " / " + reason);
             return;
         }
         logger.trace("{} closed connection: {} / {}", socketName, statusCode, reason);
@@ -185,7 +185,7 @@ public class WebSocketConnection {
         connectionListener.connectionLost(reason);
     }
 
-    private void processWrongSession(Session session, String message) {
+    private void handleWrongSession(Session session, String message) {
         logger.warn("{}/{} received and discarded message for other session {}: {}.", socketName, session.hashCode(),
                 session.hashCode(), message);
         if (session.isOpen()) {
