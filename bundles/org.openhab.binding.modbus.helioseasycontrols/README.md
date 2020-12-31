@@ -315,7 +315,7 @@ Number:Temperature KWL_Temp_Extract_Air  "Temperature extract air [%.1f °C]"   
 Number KWL_Supply_Air_RPM                "RPM supply air [%d]"                       <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#supplyAirRpm"}
 Number KWL_Extract_Air_RPM               "RPM extract air [%d]"                      <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#extractAirRpm"}
 Number KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:unitConfig#filterChange"}
-Number KWL_Filter_Change_Remaining       "Filter change [%d %unit%]"                 <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
+Number:Time KWL_Filter_Change_Remaining  "Filter change [%d %unit%]"                 <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
 
 Number KWL_Errors                        "Number errors [%d]"                        <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfErrors"}
 String KWL_Errors_String                 "Error messages [%s]"                       <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#errorsMsg"}
