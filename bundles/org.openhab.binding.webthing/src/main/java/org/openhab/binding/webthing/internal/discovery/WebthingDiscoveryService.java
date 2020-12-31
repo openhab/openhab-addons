@@ -271,7 +271,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
             }
 
             var thingUID = new ThingUID(THING_TYPE_UID, id);
-            Map<String, Object> properties = new HashMap<>(1);
+            Map<String, Object> properties = new HashMap<>(2);
             properties.put(ID, id);
             properties.put(SCHEMAS, description.contextKeyword);
             return Optional.of(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_UID)
