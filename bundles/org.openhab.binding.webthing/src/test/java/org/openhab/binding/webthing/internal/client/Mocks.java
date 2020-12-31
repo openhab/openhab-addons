@@ -20,6 +20,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -29,14 +31,15 @@ import org.eclipse.jetty.client.api.Request;
  *
  * @author Gregor Roth - Initial contribution
  */
+@NonNullByDefault
 public class Mocks {
 
-    public static Request mockRequest(String requestContent, String responseContent) throws Exception {
+    public static Request mockRequest(@Nullable String requestContent, String responseContent) throws Exception {
         return mockRequest(requestContent, responseContent, 200, 200);
     }
 
-    public static Request mockRequest(String requestContent, String responseContent, int getResponse, int postResponse)
-            throws Exception {
+    public static Request mockRequest(@Nullable String requestContent, String responseContent, int getResponse,
+            int postResponse) throws Exception {
         var request = mock(Request.class);
 
         // GET request -> request.timeout(30, TimeUnit.SECONDS).send();

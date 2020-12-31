@@ -15,6 +15,7 @@ package org.openhab.binding.webthing.internal.link;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -24,6 +25,7 @@ import org.openhab.core.types.State;
  *
  * @author Gregor Roth - Initial contribution
  */
+@NonNullByDefault
 public class TypeConverterTest {
 
     @Test

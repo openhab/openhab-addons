@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
@@ -42,6 +44,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Gregor Roth - Initial contribution
  */
+@NonNullByDefault
 public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketListener, WebSocketPingPongListener {
     private static final BiConsumer<String, Object> EMPTY_PROPERTY_CHANGED_LISTENER = (String propertyName,
             Object value) -> {
@@ -54,7 +57,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     private final ScheduledFuture<?> pingHandle;
     private final Map<String, BiConsumer<String, Object>> propertyChangedListeners = new HashMap<>();
     private final AtomicReference<Instant> lastTimeReceived = new AtomicReference<>(Instant.now());
-    private final AtomicReference<Session> sessionRef = new AtomicReference<>(null);
+    private final AtomicReference<Optional<Session>> sessionRef = new AtomicReference<>(Optional.empty());
 
     /**
      * constructor
@@ -79,10 +82,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
 
     @Override
     public void close() {
-        var session = sessionRef.getAndSet(null);
-        if (session != null) {
-            session.close();
-        }
+        sessionRef.getAndSet(Optional.empty()).ifPresent(Session::close);
         watchDogHandle.cancel(true);
         pingHandle.cancel(true);
     }
@@ -93,40 +93,42 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     }
 
     @Override
-    public void onWebSocketConnect(Session session) {
-        sessionRef.set(session); // save websocket session to be able to send ping
+    public void onWebSocketConnect(@Nullable Session session) {
+        sessionRef.set(Optional.ofNullable(session)); // save websocket session to be able to send ping
     }
 
     @Override
-    public void onWebSocketPing(ByteBuffer payload) {
+    public void onWebSocketPing(@Nullable ByteBuffer payload) {
     }
 
     @Override
-    public void onWebSocketPong(ByteBuffer payload) {
+    public void onWebSocketPong(@Nullable ByteBuffer payload) {
         lastTimeReceived.set(Instant.now());
     }
 
     @Override
-    public void onWebSocketBinary(byte[] payload, int offset, int len) {
+    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
     }
 
     @Override
-    public void onWebSocketText(String message) {
+    public void onWebSocketText(@Nullable String message) {
         try {
-            var propertyStatus = gson.fromJson(message, PropertyStatusMessage.class);
-            if ((propertyStatus != null) && (propertyStatus.messageType != null)
-                    && (propertyStatus.messageType.equals("propertyStatus"))) {
-                for (var propertyEntry : propertyStatus.data.entrySet()) {
-                    var listener = propertyChangedListeners.getOrDefault(propertyEntry.getKey(),
-                            EMPTY_PROPERTY_CHANGED_LISTENER);
-                    try {
-                        listener.accept(propertyEntry.getKey(), propertyEntry.getValue());
-                    } catch (RuntimeException re) {
-                        logger.warn("calling property change listener {} failed. {}", listener, re.getMessage());
+            if (message != null) {
+                var propertyStatus = gson.fromJson(message, PropertyStatusMessage.class);
+                if ((propertyStatus != null) && (propertyStatus.messageType != null)
+                        && (propertyStatus.messageType.equals("propertyStatus"))) {
+                    for (var propertyEntry : propertyStatus.data.entrySet()) {
+                        var listener = propertyChangedListeners.getOrDefault(propertyEntry.getKey(),
+                                EMPTY_PROPERTY_CHANGED_LISTENER);
+                        try {
+                            listener.accept(propertyEntry.getKey(), propertyEntry.getValue());
+                        } catch (RuntimeException re) {
+                            logger.warn("calling property change listener {} failed. {}", listener, re.getMessage());
+                        }
                     }
+                } else {
+                    logger.debug("Ignoring received message of unknown type: {}", message);
                 }
-            } else {
-                logger.debug("Ignoring received message of unknown type: {}", message);
             }
         } catch (JsonSyntaxException se) {
             logger.warn("received invalid message: {}", message);
@@ -134,24 +136,31 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     }
 
     @Override
-    public void onWebSocketClose(int statusCode, String reason) {
+    public void onWebSocketClose(int statusCode, @Nullable String reason) {
         onWebSocketError(new IOException("websocket closed by peer. " + Optional.ofNullable(reason).orElse("")));
     }
 
     @Override
-    public void onWebSocketError(Throwable cause) {
-        onError(cause.getMessage());
+    public void onWebSocketError(@Nullable Throwable cause) {
+        var reason = "";
+        if (cause != null) {
+            reason = cause.getMessage();
+        }
+        onError(reason);
     }
 
-    private void onError(String message) {
+    private void onError(@Nullable String message) {
+        if (message == null) {
+            message = "";
+        }
         errorHandler.accept(message);
     }
 
     private void sendPing() {
-        var session = sessionRef.get();
-        if (session != null) {
+        var optionalSession = sessionRef.get();
+        if (optionalSession.isPresent()) {
             try {
-                session.getRemote().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
+                optionalSession.get().getRemote().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
             } catch (IOException e) {
                 onError("could not send ping " + e.getMessage());
             }
@@ -163,7 +172,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
         var elapsedSinceLastReceived = Duration.between(lastTimeReceived.get(), Instant.now());
         var thresholdOverdued = pingPeriod.multipliedBy(3);
         var isOverdued = elapsedSinceLastReceived.toMillis() > thresholdOverdued.toMillis();
-        return (sessionRef.get() != null) && !isOverdued;
+        return sessionRef.get().isPresent() && !isOverdued;
     }
 
     private void checkConnection() {

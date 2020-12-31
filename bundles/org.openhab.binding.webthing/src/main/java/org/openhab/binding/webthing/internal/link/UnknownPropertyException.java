@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UnknownPropertyException} indicates addressing a WebThing property that does not exist
  *
  * @author Gregor Roth - Initial contribution
  */
+@NonNullByDefault
 public class UnknownPropertyException extends Exception {
     private static final long serialVersionUID = -5302763943749264616L;
 

@@ -92,14 +92,16 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         // perform connect in background
         scheduler.execute(() -> {
             // WebThing URI present?
-            this.webThingURI = readWebThingURI();
-            if (webThingURI != null) {
-                logger.debug("try to connect WebThing {}", webThingURI);
-                var connected = tryReconnect(webThingURI);
+            var uri = toUri(getConfigAs(WebThingConfiguration.class).webThingURI);
+            if (uri != null) {
+                logger.debug("try to connect WebThing {}", uri);
+                var connected = tryReconnect(uri);
                 if (connected) {
                     logger.debug("WebThing {} connected", getWebThingLabel());
                 }
             } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "webThing uri has not been set");
                 logger.warn("could not initialize WebThing. URI is not set or invalid. {}", this.webThingURI);
             }
         });
@@ -109,6 +111,17 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                 .getAndSet(Optional.of(scheduler.scheduleWithFixedDelay(this::checkWebThingConnection,
                         HEALTH_CHECK_PERIOD.getSeconds(), HEALTH_CHECK_PERIOD.getSeconds(), TimeUnit.SECONDS)))
                 .ifPresent(future -> future.cancel(true));
+    }
+
+    private @Nullable URI toUri(@Nullable String uri) {
+        try {
+            if (uri != null) {
+                return URI.create(uri);
+            }
+        } catch (IllegalArgumentException illegalURIException) {
+            return null;
+        }
+        return null;
     }
 
     @Override
@@ -169,22 +182,6 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             logger.debug("WebThing {} is offline {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
                     HEALTH_CHECK_PERIOD.getSeconds());
         }
-    }
-
-    private @Nullable URI readWebThingURI() {
-        var webThingConfiguration = getConfigAs(WebThingConfiguration.class);
-        var webThingUriString = webThingConfiguration.webThingURI;
-        if (webThingUriString == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "webThing uri has not been set");
-        } else {
-            try {
-                return URI.create(webThingUriString);
-            } catch (IllegalArgumentException illegalURIException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "invalid uri " + webThingUriString);
-            }
-        }
-        return null;
     }
 
     private String getWebThingLabel() {

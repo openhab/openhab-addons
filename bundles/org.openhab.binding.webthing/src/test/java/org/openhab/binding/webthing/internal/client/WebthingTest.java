@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.*;
 import org.jetbrains.annotations.NotNull;
@@ -298,11 +299,11 @@ public class WebthingTest {
         }
 
         @Override
-        public void close(CloseStatus closeStatus) {
+        public void close(@Nullable CloseStatus closeStatus) {
         }
 
         @Override
-        public void close(int statusCode, String reason) {
+        public void close(int statusCode, @Nullable String reason) {
         }
 
         @Override
@@ -316,79 +317,79 @@ public class WebthingTest {
 
         @Override
         public InetSocketAddress getLocalAddress() {
-            return null;
+            return InetSocketAddress.createUnresolved("test", 23);
         }
 
         @Override
         public WebSocketPolicy getPolicy() {
-            return null;
+            return WebSocketPolicy.newClientPolicy();
         }
 
         @Override
         public String getProtocolVersion() {
-            return null;
+            return "1";
         }
 
         @Override
         public RemoteEndpoint getRemote() {
             return new RemoteEndpoint() {
                 @Override
-                public void sendBytes(ByteBuffer data) throws IOException {
+                public void sendBytes(@Nullable ByteBuffer data) throws IOException {
                 }
 
                 @Override
-                public Future<Void> sendBytesByFuture(ByteBuffer data) {
+                public Future<Void> sendBytesByFuture(@Nullable ByteBuffer data) {
                     return null;
                 }
 
                 @Override
-                public void sendBytes(ByteBuffer data, WriteCallback callback) {
+                public void sendBytes(@Nullable ByteBuffer data, @Nullable WriteCallback callback) {
                 }
 
                 @Override
-                public void sendPartialBytes(ByteBuffer fragment, boolean isLast) throws IOException {
+                public void sendPartialBytes(@Nullable ByteBuffer fragment, boolean isLast) throws IOException {
                 }
 
                 @Override
-                public void sendPartialString(String fragment, boolean isLast) throws IOException {
+                public void sendPartialString(@Nullable String fragment, boolean isLast) throws IOException {
                 }
 
                 @Override
-                public void sendPing(ByteBuffer applicationData) throws IOException {
+                public void sendPing(@Nullable ByteBuffer applicationData) throws IOException {
                     if (!ignorePing.get()) {
                         pongListener.onWebSocketPong(applicationData);
                     }
                 }
 
                 @Override
-                public void sendPong(ByteBuffer applicationData) throws IOException {
+                public void sendPong(@Nullable ByteBuffer applicationData) throws IOException {
                 }
 
                 @Override
-                public void sendString(String text) throws IOException {
+                public void sendString(@Nullable String text) throws IOException {
                 }
 
                 @Override
-                public Future<Void> sendStringByFuture(String text) {
+                public Future<Void> sendStringByFuture(@Nullable String text) {
                     return null;
                 }
 
                 @Override
-                public void sendString(String text, WriteCallback callback) {
+                public void sendString(@Nullable String text, @Nullable WriteCallback callback) {
                 }
 
                 @Override
                 public BatchMode getBatchMode() {
-                    return null;
+                    return BatchMode.AUTO;
                 }
 
                 @Override
-                public void setBatchMode(BatchMode mode) {
+                public void setBatchMode(@Nullable BatchMode mode) {
                 }
 
                 @Override
                 public InetSocketAddress getInetSocketAddress() {
-                    return null;
+                    return InetSocketAddress.createUnresolved("test", 12);
                 }
 
                 @Override
@@ -399,7 +400,7 @@ public class WebthingTest {
 
         @Override
         public InetSocketAddress getRemoteAddress() {
-            return null;
+            return InetSocketAddress.createUnresolved("test", 12);
         }
 
         @Override
@@ -428,7 +429,12 @@ public class WebthingTest {
 
         @Override
         public SuspendToken suspend() {
-            return null;
+            return new SuspendToken() {
+
+                @Override
+                public void resume() {
+                }
+            };
         }
 
         public void sendToClient(PropertyStatusMessage message) {
@@ -445,7 +451,7 @@ public class WebthingTest {
                 var bytes = message.getBytes(StandardCharsets.UTF_8);
                 listener.onWebSocketBinary(bytes, 0, bytes.length);
             }
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
     }
 

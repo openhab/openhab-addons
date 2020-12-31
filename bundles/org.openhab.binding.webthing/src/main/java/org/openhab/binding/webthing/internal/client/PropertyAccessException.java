@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PropertyAccessException} indicates a WebThing property can not be accessed
  *
  * @author Gregor Roth - Initial contribution
  */
+@NonNullByDefault
 public class PropertyAccessException extends Exception {
     private static final long serialVersionUID = 5177277585758195790L;
 

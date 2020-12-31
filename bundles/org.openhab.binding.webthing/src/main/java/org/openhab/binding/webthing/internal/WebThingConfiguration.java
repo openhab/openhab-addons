@@ -12,15 +12,20 @@
  */
 package org.openhab.binding.webthing.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link WebThingConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Gregor Roth - Initial contribution
  */
+@NonNullByDefault
 public class WebThingConfiguration {
 
     /**
      * The webThing uri. This URI will be detected within the discovery process
      */
-    public String webThingURI;
+    @Nullable
+    public String webThingURI = null;
 }

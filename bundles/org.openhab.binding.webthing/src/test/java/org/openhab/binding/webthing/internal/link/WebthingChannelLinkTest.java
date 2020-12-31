@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.channel.Channels;
@@ -43,6 +44,7 @@ import com.google.gson.Gson;
  *
  * @author Gregor Roth - Initial contribution
  */
+@NonNullByDefault
 public class WebthingChannelLinkTest {
     private final Gson gson = new Gson();
 
