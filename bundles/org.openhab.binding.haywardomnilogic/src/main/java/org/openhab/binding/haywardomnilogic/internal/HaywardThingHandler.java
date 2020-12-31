@@ -22,6 +22,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -56,8 +57,6 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
     public abstract void getTelemetry(String xmlResponse) throws HaywardException;
 
     public State toState(String type, String channelID, String value) throws NumberFormatException {
-        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
-
         switch (type) {
             case "Number":
                 return new DecimalType(value);
@@ -76,10 +75,19 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                         return new QuantityType<>(Integer.parseInt(value), Units.PARTS_PER_MILLION);
                 }
             case "Number:Temperature":
-                if (bridgehandler.account.units.equals("Standard")) {
-                    return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
-                } else {
-                    return new QuantityType<>(Integer.parseInt(value), SIUnits.CELSIUS);
+                Bridge bridge = getBridge();
+                if (bridge != null) {
+                    HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
+                    if (bridgehandler != null) {
+                        if (bridgehandler.account.units.equals("Standard")) {
+                            return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
+                        } else {
+                            return new QuantityType<>(Integer.parseInt(value), SIUnits.CELSIUS);
+                        }
+                    } else {
+                        // default to imperial if no bridge
+                        return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
+                    }
                 }
             default:
                 return StringType.valueOf(value);

@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -40,26 +41,28 @@ public class HaywardBowHandler extends HaywardThingHandler {
         List<String> systemIDs = new ArrayList<>();
         List<String> data = new ArrayList<>();
 
-        @SuppressWarnings("null")
-        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
-        if (bridgehandler != null) {
-            systemIDs = bridgehandler.evaluateXPath("//BodyOfWater/@systemId", xmlResponse);
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
+            if (bridgehandler != null) {
+                systemIDs = bridgehandler.evaluateXPath("//BodyOfWater/@systemId", xmlResponse);
 
-            String thingSystemID = getThing().getUID().getId();
-            for (int i = 0; i < systemIDs.size(); i++) {
-                if (systemIDs.get(i).equals(thingSystemID)) {
-                    // Flow
-                    data = bridgehandler.evaluateXPath("//BodyOfWater/@flow", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_BOW_FLOW, data.get(i));
+                String thingSystemID = getThing().getUID().getId();
+                for (int i = 0; i < systemIDs.size(); i++) {
+                    if (systemIDs.get(i).equals(thingSystemID)) {
+                        // Flow
+                        data = bridgehandler.evaluateXPath("//BodyOfWater/@flow", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_BOW_FLOW, data.get(i));
 
-                    // Water Temp
-                    data = bridgehandler.evaluateXPath("//BodyOfWater/@waterTemp", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_BOW_WATERTEMP, data.get(i));
+                        // Water Temp
+                        data = bridgehandler.evaluateXPath("//BodyOfWater/@waterTemp", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_BOW_WATERTEMP, data.get(i));
+                    }
                 }
+                this.updateStatus(ThingStatus.ONLINE);
+            } else {
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
-            this.updateStatus(ThingStatus.ONLINE);
-        } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

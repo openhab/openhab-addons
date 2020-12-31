@@ -21,6 +21,7 @@ import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingProperties;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -55,43 +56,45 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         List<String> systemIDs = new ArrayList<>();
         List<String> data = new ArrayList<>();
 
-        @SuppressWarnings("null")
-        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
-        if (bridgehandler != null) {
-            systemIDs = bridgehandler.evaluateXPath("//Filter/@systemId", xmlResponse);
-            String thingSystemID = getThing().getUID().getId();
-            for (int i = 0; i < systemIDs.size(); i++) {
-                if (systemIDs.get(i).equals(thingSystemID)) {
-                    // Operating Mode
-                    data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(i));
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
+            if (bridgehandler != null) {
+                systemIDs = bridgehandler.evaluateXPath("//Filter/@systemId", xmlResponse);
+                String thingSystemID = getThing().getUID().getId();
+                for (int i = 0; i < systemIDs.size(); i++) {
+                    if (systemIDs.get(i).equals(thingSystemID)) {
+                        // Operating Mode
+                        data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(i));
 
-                    // Valve Position
-                    data = bridgehandler.evaluateXPath("//Filter/@valvePosition", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(i));
+                        // Valve Position
+                        data = bridgehandler.evaluateXPath("//Filter/@valvePosition", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(i));
 
-                    // Speed
-                    data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEED, data.get(i));
+                        // Speed
+                        data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEED, data.get(i));
 
-                    if (data.get(i).equals("0")) {
-                        updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
-                    } else {
-                        updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "1");
+                        if (data.get(i).equals("0")) {
+                            updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
+                        } else {
+                            updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "1");
+                        }
+
+                        // State
+                        data = bridgehandler.evaluateXPath("//Filter/@filterState", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_FILTER_STATE, data.get(i));
+
+                        // lastSpeed
+                        data = bridgehandler.evaluateXPath("//Filter/@lastSpeed", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i));
                     }
-
-                    // State
-                    data = bridgehandler.evaluateXPath("//Filter/@filterState", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_FILTER_STATE, data.get(i));
-
-                    // lastSpeed
-                    data = bridgehandler.evaluateXPath("//Filter/@lastSpeed", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i));
                 }
+                this.updateStatus(ThingStatus.ONLINE);
+            } else {
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
-            this.updateStatus(ThingStatus.ONLINE);
-        } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -111,51 +114,54 @@ public class HaywardFilterHandler extends HaywardThingHandler {
             prop.poolID = poolID;
         }
 
-        @SuppressWarnings("null")
-        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
-        if (bridgehandler != null) {
-            String cmdString = this.cmdToString(command);
-            try {
-                switch (channelUID.getId()) {
-                    case HaywardBindingConstants.CHANNEL_FILTER_ENABLE:
-                        if (command == OnOffType.ON) {
-                            cmdString = "100";
-                        } else {
-                            cmdString = "0";
-                        }
-                        break;
-                    case HaywardBindingConstants.CHANNEL_FILTER_SPEED:
-                        break;
-                    default:
-                        logger.warn("haywardCommand Unsupported type {}", channelUID);
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
+            if (bridgehandler != null) {
+                String cmdString = this.cmdToString(command);
+                try {
+                    switch (channelUID.getId()) {
+                        case HaywardBindingConstants.CHANNEL_FILTER_ENABLE:
+                            if (command == OnOffType.ON) {
+                                cmdString = "100";
+                            } else {
+                                cmdString = "0";
+                            }
+                            break;
+                        case HaywardBindingConstants.CHANNEL_FILTER_SPEED:
+                            break;
+                        default:
+                            logger.warn("haywardCommand Unsupported type {}", channelUID);
+                            return;
+                    }
+
+                    String cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
+                            + "<Name>SetUIEquipmentCmd</Name><Parameters>"
+                            + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
+                            + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                            + bridgehandler.account.mspSystemID + "</Parameter>"
+                            + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                            + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
+                            + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
+                            + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
+
+                    // *****Send Command to Hayward server
+                    String xmlResponse = bridgehandler.httpXmlResponse(cmdURL);
+                    String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse)
+                            .get(0);
+
+                    if (!(status.equals("0"))) {
+                        logger.debug("haywardCommand XML response: {}", xmlResponse);
                         return;
+                    }
+                } catch (Exception e) {
+                    logger.debug("Unable to send command to Hayward's server {}:{}:{}",
+                            bridgehandler.config.endpointUrl, bridgehandler.config.username, e.getMessage());
                 }
-
-                String cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
-                        + "<Name>SetUIEquipmentCmd</Name><Parameters>"
-                        + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
-                        + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
-                        + bridgehandler.account.mspSystemID + "</Parameter>"
-                        + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
-                        + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
-                        + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
-                        + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
-
-                // *****Send Command to Hayward server
-                String xmlResponse = bridgehandler.httpXmlResponse(cmdURL);
-                String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse).get(0);
-
-                if (!(status.equals("0"))) {
-                    logger.debug("haywardCommand XML response: {}", xmlResponse);
-                    return;
-                }
-            } catch (Exception e) {
-                logger.debug("Unable to send command to Hayward's server {}:{}:{}", bridgehandler.config.endpointUrl,
-                        bridgehandler.config.username, e.getMessage());
+                this.updateStatus(ThingStatus.ONLINE);
+            } else {
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
-            this.updateStatus(ThingStatus.ONLINE);
-        } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

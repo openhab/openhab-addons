@@ -305,7 +305,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     public synchronized boolean getAlarmList() throws Exception {
         for (Thing thing : getThing().getThings()) {
             Map<String, String> properties = thing.getProperties();
-            if (properties.get(HaywardBindingConstants.PROPERTY_TYPE).equals("BACKYARD")) {
+            if ("BACKYARD".equals(properties.get(HaywardBindingConstants.PROPERTY_TYPE))) {
                 HaywardBackyardHandler handler = (HaywardBackyardHandler) thing.getHandler();
                 if (handler != null) {
                     String systemID = properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
@@ -359,8 +359,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     Thing getThingForType(HaywardTypeToRequest type, int num) {
         for (Thing thing : getThing().getThings()) {
             Map<String, String> properties = thing.getProperties();
-            if (properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID).equals(Integer.toString(num))) {
-                if (properties.get(HaywardBindingConstants.PROPERTY_TYPE).equals(type.toString())) {
+            if (Integer.toString(num).equals(properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID))) {
+                if (type.toString().equals(properties.get(HaywardBindingConstants.PROPERTY_TYPE))) {
                     return thing;
                 }
             }
