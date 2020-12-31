@@ -199,7 +199,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     success = false;
                 }
             } else if (message.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
-                // sendMessage(YioRemoteMessages.IR_RECEIVER_OFF, "");
                 receivedStatus = message.get("code").toString().replace("\"", "");
                 if (receivedStatus.matches("[0-9]?[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
                     irCodeReceivedHandler.setCode(message.get("code").toString().replace("\"", ""));
