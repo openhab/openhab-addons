@@ -179,7 +179,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         } else {
             try {
                 return URI.create(webThingUriString);
-            } catch (Exception illegalURIException) {
+            } catch (IllegalArgumentException illegalURIException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "invalid uri " + webThingUriString);
             }
