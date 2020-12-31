@@ -154,9 +154,9 @@ public class ModbusGainOffsetProfile implements StateProfile {
             }
             try {
                 if (towardsItem) {
-                    result = applyGain(qtState.add((QuantityType) pregainOffsetQt), gain, false);
+                    result = applyGain(qtState.add((QuantityType) pregainOffsetQt), gain, true);
                 } else {
-                    result = applyGain(qtState, gain, true).subtract((QuantityType) pregainOffsetQt).toUnit(Units.ONE);
+                    result = applyGain(qtState, gain, false).subtract((QuantityType) pregainOffsetQt);
                 }
             } catch (UnconvertibleException | UnsupportedOperationException e) {
                 logger.warn(
@@ -175,7 +175,6 @@ public class ModbusGainOffsetProfile implements StateProfile {
                     gain, state, state.getClass().getSimpleName(), towardsItem);
             result = state;
         }
-        assert result != null; // Should not happen, unit conversions are bound to succeed
         return result;
     }
 
@@ -216,21 +215,19 @@ public class ModbusGainOffsetProfile implements StateProfile {
     /**
      * Calculate qtState * gain or qtState/gain
      *
-     * This has been optimized to work with temperatures as well, e.g. 22 K / 0.1 °C = 2.2 K,
-     *
+     * When the conversion is towards the handler (towardsItem=false), unit will be ONE
      *
      */
-    @SuppressWarnings({ "null" })
-    private QuantityType<?> applyGain(QuantityType<?> qtState, QuantityType<?> gainDelta, boolean towardsHandler) {
-        if (towardsHandler) {
+    private QuantityType<?> applyGain(QuantityType<?> qtState, QuantityType<?> gainDelta, boolean towardsItem) {
+        if (towardsItem) {
+            return qtState.multiply(gainDelta);
+        } else {
             QuantityType<?> plain = qtState.toUnit(gainDelta.getUnit());
             if (plain == null) {
                 throw new UnconvertibleException(
                         String.format("Cannot process command '%s', unit should compatible with gain", qtState));
             }
             return new QuantityType<>(plain.toBigDecimal().divide(gainDelta.toBigDecimal()), Units.ONE);
-        } else {
-            return qtState.multiply(gainDelta);
         }
     }
 
