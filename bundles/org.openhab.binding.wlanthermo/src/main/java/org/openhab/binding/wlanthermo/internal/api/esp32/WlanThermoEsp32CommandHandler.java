@@ -18,11 +18,11 @@ import java.awt.*;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.openhab.binding.wlanthermo.internal.api.esp32.data.Channel;
-import org.openhab.binding.wlanthermo.internal.api.esp32.data.Data;
-import org.openhab.binding.wlanthermo.internal.api.esp32.data.Pm;
-import org.openhab.binding.wlanthermo.internal.api.esp32.data.System;
-import org.openhab.binding.wlanthermo.internal.api.esp32.settings.Settings;
+import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Channel;
+import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Data;
+import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Pm;
+import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.System;
+import org.openhab.binding.wlanthermo.internal.api.esp32.dto.settings.Settings;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;

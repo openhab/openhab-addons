@@ -18,11 +18,11 @@ import java.awt.*;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.openhab.binding.wlanthermo.internal.api.nano.data.Channel;
-import org.openhab.binding.wlanthermo.internal.api.nano.data.Data;
-import org.openhab.binding.wlanthermo.internal.api.nano.data.Pm;
-import org.openhab.binding.wlanthermo.internal.api.nano.data.System;
-import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
+import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Channel;
+import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Data;
+import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Pm;
+import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.System;
+import org.openhab.binding.wlanthermo.internal.api.nano.dto.settings.Settings;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
