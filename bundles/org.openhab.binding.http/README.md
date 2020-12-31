@@ -51,7 +51,7 @@ The `image` channel-type supports `stateExtension` only.
 
 Transformations need to be specified in the same format as 
 Some channels have additional parameters.
-When concatenating the `baseURL` and `stateExtions` or `commandExtension` the binding checks if a proper URL part separator (`/`, `&` or `?`) is present and adds a `/` if missing.
+When concatenating the `baseURL` and `stateExtension` or `commandExtension` the binding checks if a proper URL part separator (`/`, `&` or `?`) is present and adds a `/` if missing.
 
 ### Value Transformations (`stateTransformation`, `commandTransformation`)
 
