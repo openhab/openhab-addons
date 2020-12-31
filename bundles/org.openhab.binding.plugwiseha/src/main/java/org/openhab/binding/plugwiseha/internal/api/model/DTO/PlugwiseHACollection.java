@@ -23,7 +23,7 @@ import java.util.Set;
  */
 public abstract class PlugwiseHACollection<T> implements Map<String, T> {
 
-    private Map<String, T> map = new HashMap<String, T>();
+    private final Map<String, T> map = new HashMap<String, T>();
 
     @Override
     public int size() {

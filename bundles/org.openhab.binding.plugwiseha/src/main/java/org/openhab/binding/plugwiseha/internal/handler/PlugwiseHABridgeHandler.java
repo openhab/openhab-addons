@@ -73,14 +73,10 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     // Private member variables/constants
 
-    @Nullable
-    private PlugwiseHABridgeThingConfig config;
-    @Nullable
-    private GatewayInfo gatewayInfo;
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
-    @Nullable
-    private volatile PlugwiseHAController controller;
+    private @Nullable PlugwiseHABridgeThingConfig config;
+    private @Nullable GatewayInfo gatewayInfo;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable volatile PlugwiseHAController controller;
 
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHABridgeHandler.class);
@@ -176,10 +172,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     private void run() {
         try {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Executing refresh job");
-            }
-
+            logger.trace("Executing refresh job");
             refresh();
             updateStatus(ONLINE);
         } catch (PlugwiseHAInvalidHostException e) {
@@ -190,7 +183,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
         } catch (PlugwiseHATimeoutException e) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_TIMEOUT);
-        } catch (Exception e) {
+        } catch (PlugwiseHAException e) {
             logger.debug("Unhandled exception while refreshing the Plugwise Home Automation Controller {} - {}",
                     getThing().getUID(), e.getMessage());
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
@@ -229,16 +222,16 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        if (status == ONLINE || (status == OFFLINE && statusDetail == COMMUNICATION_ERROR)) {
-            scheduleRefreshJob();
-        } else if (status == OFFLINE && statusDetail == CONFIGURATION_ERROR) {
-            cancelRefreshJob();
-        }
-
         // Only update bridge status if statusInfo has changed
         ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(status, statusDetail).withDescription(description)
                 .build();
         if (!statusInfo.equals(getThing().getStatusInfo())) {
+            if (status == ONLINE || (status == OFFLINE && statusDetail == COMMUNICATION_ERROR)) {
+                scheduleRefreshJob();
+            } else if (status == OFFLINE && statusDetail == CONFIGURATION_ERROR) {
+                cancelRefreshJob();
+            }
+
             super.updateStatus(status, statusDetail, description);
         }
     }

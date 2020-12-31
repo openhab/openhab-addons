@@ -38,7 +38,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Plugwise zone</label>
+		<label>Plugwise Zone</label>
 		<description>A Plugwise Home Automation heating zone</description>
 
 		<channels>
@@ -57,7 +57,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Plugwise radiator valve</label>
+		<label>Plugwise Radiator Valve</label>
 		<description>A Plugwise Home Automation radiator valve</description>
 
 		<channels>
@@ -76,7 +76,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Central heating pump</label>
+		<label>Central Heating Pump</label>
 		<description>A Plugwise Home Automation smart plug switch connected to a central heating pump</description>
 
 		<channels>
@@ -96,7 +96,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Plugwise room thermostat</label>
+		<label>Plugwise Room Thermostat</label>
 		<description>A Plugwise Home Automation room thermostat</description>
 
 		<channels>

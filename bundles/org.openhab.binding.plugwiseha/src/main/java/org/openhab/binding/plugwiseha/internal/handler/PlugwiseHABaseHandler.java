@@ -59,6 +59,15 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
     protected final Logger logger = LoggerFactory.getLogger(PlugwiseHABaseHandler.class);
 
+    private Class<?> clazz;
+
+    // Constructor
+
+    public PlugwiseHABaseHandler(Thing thing) {
+        super(thing);
+        clazz = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1]);
+    }
+
     // Abstract methods
 
     protected abstract void initialize(C config);
@@ -69,15 +78,6 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
     protected abstract void refreshChannel(E entity, ChannelUID channelUID);
 
     protected abstract void handleCommand(E entity, ChannelUID channelUID, Command command) throws PlugwiseHAException;
-
-    private Class<?> clazz;
-
-    // Constructor
-
-    public PlugwiseHABaseHandler(Thing thing) {
-        super(thing);
-        clazz = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1]);
-    }
 
     // Overrides
 

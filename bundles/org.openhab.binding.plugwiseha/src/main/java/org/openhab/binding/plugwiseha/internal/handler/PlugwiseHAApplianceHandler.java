@@ -20,7 +20,6 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
 
@@ -160,16 +159,16 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
         switch (channelID) {
             case APPLIANCE_LOCK_CHANNEL:
                 if (command instanceof OnOffType) {
-                    OnOffType state = (OnOffType) command;
                     try {
-                        if (state == OnOffType.ON) {
+                        if (command == OnOffType.ON) {
                             controller.switchRelayLockOn(entity);
                         } else {
                             controller.switchRelayLockOff(entity);
                         }
                         updateState(APPLIANCE_LOCK_CHANNEL, (State) command);
                     } catch (PlugwiseHAException e) {
-                        logger.warn("Unable to switch relay lock {} for appliance '{}'", state, entity.getName());
+                        logger.warn("Unable to switch relay lock {} for appliance '{}'", (State) command,
+                                entity.getName());
                     }
                 }
                 break;
@@ -187,16 +186,15 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_POWER_CHANNEL:
                 if (command instanceof OnOffType) {
-                    OnOffType state = (OnOffType) command;
                     try {
-                        if (state == OnOffType.ON) {
+                        if (command == OnOffType.ON) {
                             controller.switchRelayOn(entity);
                         } else {
                             controller.switchRelayOff(entity);
                         }
                         updateState(APPLIANCE_POWER_CHANNEL, (State) command);
                     } catch (PlugwiseHAException e) {
-                        logger.warn("Unable to switch relay {} for appliance '{}'", state, entity.getName());
+                        logger.warn("Unable to switch relay {} for appliance '{}'", (State) command, entity.getName());
                     }
                 }
                 break;
@@ -279,31 +277,18 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             }
             case APPLIANCE_CHSTATE_CHANNEL:
                 if (entity.getCHState().isPresent()) {
-                    if (entity.getCHState().get()) {
-                        state = OnOffType.ON;
-                    } else {
-                        state = OnOffType.OFF;
-                    }
+                    state = OnOffType.from(entity.getCHState().get());
                 }
                 break;
             case APPLIANCE_DHWSTATE_CHANNEL:
                 if (entity.getDHWState().isPresent()) {
-                    if (entity.getDHWState().get()) {
-                        state = OnOffType.ON;
-                    } else {
-                        state = OnOffType.OFF;
-                    }
+                    state = OnOffType.from(entity.getDHWState().get());
                 }
                 break;
             case APPLIANCE_LOCK_CHANNEL:
                 Boolean relayLockState = entity.getRelayLockState().orElse(null);
-
                 if (relayLockState != null) {
-                    if (relayLockState) {
-                        state = OnOffType.ON;
-                    } else {
-                        state = OnOffType.OFF;
-                    }
+                    state = OnOffType.from(relayLockState);
                 }
                 break;
             case APPLIANCE_OFFSET_CHANNEL:
@@ -313,11 +298,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_POWER_CHANNEL:
                 if (entity.getRelayState().isPresent()) {
-                    if (entity.getRelayState().get()) {
-                        state = OnOffType.ON;
-                    } else {
-                        state = OnOffType.OFF;
-                    }
+                    state = OnOffType.from(entity.getRelayState().get());
                 }
                 break;
             case APPLIANCE_POWER_USAGE_CHANNEL:
@@ -379,7 +360,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             ThingBuilder thingBuilder = editThing();
 
             Channel channelBatteryLevel = ChannelBuilder.create(channelUIDBatteryLevel, "Number")
-                    .withType(CHANNEL_TYPE_BATTERYLEVEL).withKind(ChannelKind.STATE).withLabel("Battery level")
+                    .withType(CHANNEL_TYPE_BATTERYLEVEL).withKind(ChannelKind.STATE).withLabel("Battery Level")
                     .withDescription("Represents the battery level as a percentage (0-100%)").build();
 
             thingBuilder.withChannel(channelBatteryLevel);
@@ -390,8 +371,8 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
         if (!channelBatteryLowExists) {
             ThingBuilder thingBuilder = editThing();
 
-            Channel channelBatteryLow = ChannelBuilder.create(channelUIDBatteryLevelLow, "Switch:Battery")
-                    .withType(CHANNEL_TYPE_BATTERYLEVELLOW).withKind(ChannelKind.STATE).withLabel("Battery low level")
+            Channel channelBatteryLow = ChannelBuilder.create(channelUIDBatteryLevelLow, "Switch")
+                    .withType(CHANNEL_TYPE_BATTERYLEVELLOW).withKind(ChannelKind.STATE).withLabel("Battery Low Level")
                     .withDescription("Switches ON when battery level gets below threshold level").build();
 
             thingBuilder.withChannel(channelBatteryLow);
@@ -406,9 +387,9 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
 
         properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_DESCRIPTION, this.appliance.getDescription());
         properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_TYPE, this.appliance.getType());
+
         properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_FUNCTIONALITIES,
-                this.appliance.getActuatorFunctionalities().keySet().stream().map(e -> e.toString())
-                        .collect(Collectors.joining(", ")));
+                String.join(", ", this.appliance.getActuatorFunctionalities().keySet()));
 
         if (this.appliance.isZigbeeDevice()) {
             properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_ZB_TYPE,

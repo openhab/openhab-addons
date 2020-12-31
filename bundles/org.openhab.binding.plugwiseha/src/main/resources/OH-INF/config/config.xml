@@ -18,13 +18,13 @@
 			<default>smile</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="smileId" type="text" required="true">
+		<parameter name="smileId" type="text" pattern="[a-zA-Z0-9]{8}" required="true">
 			<context>password</context>
 			<label>Smile ID</label>
 			<description>The Smile ID is the 8 letter code on the sticker on the back of the Adam boiler gateway</description>
 		</parameter>
 		<parameter name="refresh" type="integer" min="1" max="120" required="true" unit="s">
-			<label>Refresh interval</label>
+			<label>Refresh Interval</label>
 			<unitLabel>seconds</unitLabel>
 			<description>Refresh interval in seconds</description>
 			<default>5</default>
@@ -53,17 +53,13 @@
 			<label>ID</label>
 			<description>Appliance ID</description>
 		</parameter>
-		<parameter name="lowBatteryPercentage" type="integer" min="1" max="50" required="true" unit="s">
-			<label>Low battery threshold</label>
+		<parameter name="lowBatteryPercentage" type="integer" min="1" max="50" required="true">
+			<label>Low Battery Threshold</label>
 			<unitLabel>%</unitLabel>
 			<description>Battery charge remaining at which to trigger battery low warning</description>
 			<default>15</default>
 			<advanced>true</advanced>
 		</parameter>
-		<!-- <parameter name="name" type="text" required="true" readOnly="true">
-			<label>Name</label>
-			<description>Name of the radiator valve</description>
-			</parameter> -->
 	</config-description>
 
 	<!-- Appliance: Pump switch -->
@@ -72,10 +68,6 @@
 			<label>ID</label>
 			<description>Appliance ID</description>
 		</parameter>
-		<!-- <parameter name="name" type="text" required="true" readOnly="true">
-			<label>Name</label>
-			<description>Name of the central heating pump</description>
-			</parameter> -->
 	</config-description>
 
 	<!-- Appliance: Radiator valve -->
@@ -84,17 +76,13 @@
 			<label>ID</label>
 			<description>Appliance ID</description>
 		</parameter>
-		<parameter name="lowBatteryPercentage" type="integer" min="1" max="50" required="true" unit="s">
-			<label>Low battery threshold</label>
+		<parameter name="lowBatteryPercentage" type="integer" min="1" max="50" required="true">
+			<label>Low Battery Threshold</label>
 			<unitLabel>%</unitLabel>
 			<description>Battery charge remaining at which to trigger battery low warning</description>
 			<default>15</default>
 			<advanced>true</advanced>
 		</parameter>
-		<!-- <parameter name="name" type="text" required="true" readOnly="true">
-			<label>Name</label>
-			<description>Name of the radiator valve</description>
-			</parameter> -->
 	</config-description>
 
 </config-description:config-descriptions>

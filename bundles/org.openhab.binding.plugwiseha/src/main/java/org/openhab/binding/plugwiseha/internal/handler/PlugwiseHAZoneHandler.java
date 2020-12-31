@@ -56,7 +56,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, PlugwiseHAThingConfig> {
 
-    // private PlugwiseHAThingConfig config = new PlugwiseHAThingConfig();
     private @Nullable Location location;
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHAZoneHandler.class);
 

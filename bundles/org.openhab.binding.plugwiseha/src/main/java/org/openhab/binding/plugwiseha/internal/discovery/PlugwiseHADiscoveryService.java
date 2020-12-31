@@ -31,7 +31,6 @@ import org.openhab.binding.plugwiseha.internal.handler.PlugwiseHABridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +47,13 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHADiscoveryService.class);
     private final PlugwiseHABridgeHandler handler;
-    private static final int TIMEOUT = 5;
-    private static final int REFRESH = 600;
+    private static final int TIMEOUT_SECONDS = 5;
+    private static final int REFRESH_SECONDS = 600;
 
     private @Nullable ScheduledFuture<?> discoveryFuture;
 
     public PlugwiseHADiscoveryService(PlugwiseHABridgeHandler bridgeHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
+        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SECONDS, true);
         this.handler = bridgeHandler;
     }
 
@@ -70,26 +69,18 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Plugwise Home Automation background discovery");
-
-        if (this.discoveryFuture != null) {
-            if (this.discoveryFuture.isCancelled()) {
-                if (this.handler.getThing().getStatus() == ThingStatus.ONLINE) {
-                    logger.debug("Start Scan");
-                    this.discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH,
-                            TimeUnit.SECONDS);
-                } else {
-                    stopBackgroundDiscovery();
-                }
-            }
+        if (discoveryFuture == null || discoveryFuture.isCancelled()) {
+            discoveryFuture = scheduler.scheduleWithFixedDelay(() -> {
+                startScan();
+            }, 30, REFRESH_SECONDS, TimeUnit.SECONDS);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Plugwise Home Automation background discovery");
-        ScheduledFuture<?> localDiscoveryFuture = discoveryFuture;
-        if (localDiscoveryFuture != null && !localDiscoveryFuture.isCancelled()) {
-            localDiscoveryFuture.cancel(true);
+        if (discoveryFuture != null && !discoveryFuture.isCancelled()) {
+            discoveryFuture.cancel(true);
             discoveryFuture = null;
         }
     }
@@ -108,14 +99,6 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
     public void deactivate() {
         super.deactivate();
     }
-
-    // @Override
-    // public void accountStatusChanged(ThingStatus status) {
-    // if (status == ThingStatus.ONLINE) {
-    // discoverLocations();
-    // discoverAppliances();
-    // }
-    // }
 
     private void discoverDomainObjects() throws PlugwiseHAException {
         PlugwiseHAController controller = this.handler.getController();
@@ -192,7 +175,8 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
         configProperties.put(ZONE_CONFIG_ID, locationId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(locationName).withProperties(configProperties).build();
+                .withLabel(locationName).withRepresentationProperty(ZONE_CONFIG_ID).withProperties(configProperties)
+                .build();
 
         thingDiscovered(discoveryResult);
 
