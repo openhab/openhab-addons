@@ -329,17 +329,15 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         List<Thing> things = getThing().getThings().stream()
                 .filter(thing -> thing.getHandler() instanceof NikobusModuleHandler).collect(Collectors.toList());
 
-
         // if there are command listeners then we need an open connection even if no modules exist
         if (!commandListeners.isEmpty()) {
             NikobusConnection connection = this.connection;
             if (connection == null) {
                 return;
-            }        	
+            }
             try {
                 connectIfNeeded(connection);
             } catch (IOException e) {
-                logger.debug("refresh failed due {}", e.getMessage(), e);
                 connection.close();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
