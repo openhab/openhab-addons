@@ -28,7 +28,7 @@ public class CommandPacket {
         data = new byte[bytes.length + 1];
         System.arraycopy(bytes, 0, data, 0, bytes.length);
 
-        data[bytes.length] = checksum(data);
+        data[bytes.length] = checksum(bytes);
     }
 
     public byte[] getBytes() {
@@ -36,7 +36,7 @@ public class CommandPacket {
     }
 
     public long getResponseTimeout() {
-        if (data[2] == EASY_CHECK) {
+        if (isEasyCheck()) {
             return 1000;
         }
 
@@ -52,6 +52,10 @@ public class CommandPacket {
 
         val = val % 256;
         return (byte) (256 - val);
+    }
+
+    public boolean isEasyCheck() {
+        return data[2] == EASY_CHECK;
     }
 
     @Override
