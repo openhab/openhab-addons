@@ -46,6 +46,16 @@ public class Response {
         return status;
     }
 
+    public boolean isResponseFor(CommandPacket cmd) {
+        if (cmd == null || cmd.isEasyCheck()) {
+            return false;
+        }
+
+        byte[] cmdBytes = cmd.getBytes();
+        int[] cmdChannels = ResponseUtil.getChannelIds(cmdBytes[3], cmdBytes[4]);
+        return Arrays.equals(channels, cmdChannels);
+    }
+
     @Override
     public String toString() {
         return status + " for channels " + Arrays.toString(channels);

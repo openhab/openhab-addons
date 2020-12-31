@@ -30,7 +30,7 @@ public class ResponseUtil {
     /**
      * returns the list of channels (starting with 1)
      */
-    private static int[] getChannelIds(byte upperChannelByte, byte lowerChannelByte) {
+    public static int[] getChannelIds(byte upperChannelByte, byte lowerChannelByte) {
         int[] result = new int[16];
         int idx = 0;
 
