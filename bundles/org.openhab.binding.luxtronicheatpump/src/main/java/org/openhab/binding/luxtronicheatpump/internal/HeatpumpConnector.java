@@ -20,23 +20,25 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * With the heatpump connector the internal state of a Heatpump with Luxtronic control can be read.
+ * Reads / writes internal states of a Heat pump with Luxtronic control.
  *
- * @author Jan-Philipp Bolle
- * @author John Cocula -- made port configurable
- * @author Stefan Giehl -- port to OpenHab 3
- * @since 1.0.0
+ * Based on HeatpumpConnector class of novelanheatpump binding
+ * 
+ * @author Stefan Giehl - Initial contribution
  */
+@NonNullByDefault
 public class HeatpumpConnector {
 
     static final Logger logger = LoggerFactory.getLogger(HeatpumpConnector.class);
 
-    private DataInputStream datain = null;
-    private DataOutputStream dataout = null;
+    private @Nullable DataInputStream datain = null;
+    private @Nullable DataOutputStream dataout = null;
     private String serverIp;
     private int serverPort;
 
@@ -49,7 +51,7 @@ public class HeatpumpConnector {
      * connects to the heatpump via network
      * 
      * @throws UnknownHostException indicate that the IP address of a host could not be determined.
-     * @throws IOException indicate that no data can be read from the heatpump
+     * @throws IOException indicate that no data can be read from the heat pump
      */
     public void connect() throws IOException {
         Socket sock = new Socket(serverIp, serverPort);
@@ -61,40 +63,26 @@ public class HeatpumpConnector {
     }
 
     /**
-     * read the parameters of the heatpump
+     * read the parameters of the heat pump
      * 
-     * @return
      * @throws IOException
      */
     public int[] getParams() throws IOException {
-        int[] heatpumpValues = null;
-        while (datain.available() > 0) {
-            datain.readByte();
-        }
-        dataout.writeInt(3003);
-        dataout.writeInt(0);
-        dataout.flush();
-        if (datain.readInt() != 3003) {
-            return new int[0];
-        }
-        int arraylength = datain.readInt();
-        heatpumpValues = new int[arraylength];
-
-        for (int i = 0; i < arraylength; i++) {
-            heatpumpValues[i] = datain.readInt();
-        }
-        return heatpumpValues;
+        return readInt(3003);
     }
 
     /**
-     * set a parameter of the heatpump
+     * set a parameter of the heat pump
      * 
      * @param param
      * @param value
-     * @return
      * @throws IOException
      */
-    public boolean setParam(int param, int value) throws IOException {
+    public Boolean setParam(int param, int value) throws IOException {
+        if (datain == null || dataout == null) {
+            throw new IOException("Heat pump connection not available");
+        }
+
         while (datain.available() > 0) {
             datain.readByte();
         }
@@ -106,7 +94,7 @@ public class HeatpumpConnector {
         int cmd = datain.readInt();
         datain.readInt();
         if (cmd != 3002) {
-            logger.warn("Can't write parameter {} with value {} to heatpump.", param, value);
+            logger.warn("Can't write parameter {} with value {} to heat pump.", param, value);
             return false;
         } else {
             logger.debug("Successful parameter {} with value {} to heatpump written.", param, value);
@@ -115,29 +103,13 @@ public class HeatpumpConnector {
     }
 
     /**
-     * read the internal state of the heatpump
+     * Returns the internal states of the heat pump
      * 
-     * @return a array with all internal data of the heatpump
-     * @throws IOException indicate that no data can be read from the heatpump
+     * @return a array with all internal data of the heat pump
+     * @throws IOException
      */
     public int[] getValues() throws IOException {
-        int[] heatpumpValues = null;
-        while (datain.available() > 0) {
-            datain.readByte();
-        }
-        dataout.writeInt(3004);
-        dataout.writeInt(0);
-        dataout.flush();
-        if (datain.readInt() != 3004) {
-            return new int[0];
-        }
-        datain.readInt();
-        int arraylength = datain.readInt();
-        heatpumpValues = new int[arraylength];
-
-        for (int i = 0; i < arraylength; i++) {
-            heatpumpValues[i] = datain.readInt();
-        }
+        int[] heatpumpValues = readInt(3004);
 
         // workaround for thermal energies
         // the thermal energies can be unreasonably high in some cases, probably due to a sign bug in the firmware
@@ -155,30 +127,53 @@ public class HeatpumpConnector {
     }
 
     /**
-     * read the internal visibilities of the heatpump
-     * 
-     * @return a array with all internal visibilities of the heatpump
-     * @throws IOException indicate that no data can be read from the heatpump
+     * Returns the internal visibilities of the heat pump
+     *
+     * @return a array with all internal visibilities of the heat pump
+     * @throws IOException
      */
     public int[] getVisibilities() throws IOException {
-        int[] heatpumpVisibilities = null;
+        return readInt(3005);
+    }
+
+    /**
+     * Reads all available parameters for the given value from socket
+     *
+     * @param value int value to read from socket
+     * @return an array with all values returned from heat pump socket
+     * @throws IOException indicate that no data can be read from the heat pump
+     */
+    private int[] readInt(int value) throws IOException {
+        if (datain == null || dataout == null) {
+            throw new IOException("Heat pump connection not available");
+        }
+
+        int[] result = null;
         while (datain.available() > 0) {
             datain.readByte();
         }
-        dataout.writeInt(3005);
+        dataout.writeInt(value);
         dataout.writeInt(0);
         dataout.flush();
-        if (datain.readInt() != 3005) {
+        if (datain.readInt() != value) {
             return new int[0];
         }
-        datain.readInt();
+
+        if (value == 3004) {
+            datain.readInt();
+        }
+
         int arraylength = datain.readInt();
-        heatpumpVisibilities = new int[arraylength];
+
+        logger.info("Found {} values for {}", arraylength, value);
+
+        result = new int[arraylength];
 
         for (int i = 0; i < arraylength; i++) {
-            heatpumpVisibilities[i] = datain.readInt();
+            result[i] = datain.readInt();
         }
-        return heatpumpVisibilities;
+
+        return result;
     }
 
     /**

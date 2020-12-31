@@ -9,14 +9,17 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- * 
- * @author Stefan Giehl - Initial contribution
  */
 package org.openhab.binding.luxtronicheatpump.internal.enums;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Represents all heatpump types
+ *
+ * @author Stefan Giehl - Initial contribution
+ */
 public enum HeatpumpType {
     TYPE_ERC(0, "ERC"),
     TYPE_SW1(1, "SW1"),
@@ -94,7 +97,7 @@ public enum HeatpumpType {
 
     private final String name;
     private final Integer code;
-    private static final Logger logger = LoggerFactory.getLogger(HeatpumpState.class);
+    private static final Logger logger = LoggerFactory.getLogger(HeatpumpType.class);
 
     private HeatpumpType(Integer code, String name) {
         this.code = code;

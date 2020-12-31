@@ -194,10 +194,9 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
         try {
             stopJobs();
             if (getThing().getStatus() == ThingStatus.ONLINE) {
-                // Repeat positional job every configured seconds
-                // Use scheduleAtFixedRate to avoid time drift associated with scheduleWithFixedDelay
+                // Repeat channel update job every configured seconds
                 Runnable channelUpdaterJob = new ChannelUpdaterJob(getThing());
-                ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(channelUpdaterJob, 0, config.refresh,
+                ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(channelUpdaterJob, 0, config.refresh,
                         TimeUnit.SECONDS);
                 scheduledFutures.add(future);
                 logger.info("Scheduled {} every {} seconds", channelUpdaterJob, config.refresh);

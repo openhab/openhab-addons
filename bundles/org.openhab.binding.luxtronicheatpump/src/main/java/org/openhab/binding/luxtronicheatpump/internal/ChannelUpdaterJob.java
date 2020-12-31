@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.luxtronicheatpump.internal;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Calendar;
 
 import javax.measure.Unit;
 
@@ -39,13 +37,17 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Job to update all channel values
+ *
+ * @author Stefan Giehl - Initial contribution
+ */
 @NonNullByDefault
 public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
     private final Thing thing;
     private final LuxtronicHeatpumpConfiguration config;
     private final Logger logger = LoggerFactory.getLogger(ChannelUpdaterJob.class);
-    private final SimpleDateFormat sdateformat = new SimpleDateFormat("dd.MM.yy HH:mm"); //$NON-NLS-1$
 
     public ChannelUpdaterJob(Thing thing) {
         this.thing = thing;
@@ -67,17 +69,14 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
             // read all available values
             int[] heatpumpValues = connector.getValues();
 
-            // all temperatures are 0.2 degree Celsius exact
-            // but use int to save values
-            // example 124 is 12.4 degree Celsius
-
             // read all parameters
             int[] heatpumpParams = connector.getParams();
+            int[] heatpumpVisibilities = connector.getVisibilities();
 
             for (HeatpumpChannel channel : HeatpumpChannel.values()) {
 
                 if (channel.getChannelId() == null) {
-                    continue; // no channel id to read defined (for channels based on others)
+                    continue; // no channel id to read defined (for channels handeled separatly)
                 }
 
                 Integer rawValue = null;
@@ -102,7 +101,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
         } catch (Exception e) {
             logger.warn("Could not connect to heatpump (uuid={}, ip={}, port={}): {}", thing.getUID(), config.ipAddress,
-                    config.port, e.getStackTrace());
+                    config.port, e.getMessage());
         } finally {
             connector.disconnect();
         }
@@ -202,42 +201,5 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
             return;
         }
         handler.updateProperty(name, value);
-    }
-
-    /**
-     * generate a readable string containing the time since the heatpump is in
-     * the state.
-     *
-     * @param heatpumpValues
-     *            the internal state array of the heatpump
-     * @return a human readable time string
-     */
-    private String getStateTime(int[] heatpumpValues) {
-        String returnValue = ""; //$NON-NLS-1$
-        // for a long time create a date
-        if (heatpumpValues[118] == 2) {
-            long value = heatpumpValues[95];
-            if (value < 0) {
-                value = 0;
-            }
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(value * 1000L);
-            returnValue += sdateformat.format(cal.getTime());
-        } else {
-            // for a shorter time use the counted time (HH:mm:ss)
-            int value = heatpumpValues[120];
-            returnValue = formatHours(value);
-        }
-        return returnValue;
-    }
-
-    private String formatHours(int value) {
-        String returnValue = "";
-        returnValue += String.format("%02d:", new Object[] { Integer.valueOf(value / 3600) }); //$NON-NLS-1$
-        value %= 3600;
-        returnValue += String.format("%02d:", new Object[] { Integer.valueOf(value / 60) }); //$NON-NLS-1$
-        value %= 60;
-        returnValue += String.format("%02d", new Object[] { Integer.valueOf(value) }); //$NON-NLS-1$
-        return returnValue;
     }
 }

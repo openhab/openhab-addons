@@ -9,14 +9,17 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- * 
- * @author Stefan Giehl - Initial contribution
  */
 package org.openhab.binding.luxtronicheatpump.internal.enums;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Represents all heatpump errors
+ *
+ * @author Stefan Giehl - Initial contribution
+ */
 public enum HeatpumpError {
     ERROR_701(701, "Niederdruckstoerung - Bitte Inst. rufen"),
     ERROR_702(702, "Niederdrucksperre - RESET automatisch"),
@@ -95,7 +98,7 @@ public enum HeatpumpError {
 
     private final String name;
     private final Integer code;
-    private static final Logger logger = LoggerFactory.getLogger(HeatpumpState.class);
+    private static final Logger logger = LoggerFactory.getLogger(HeatpumpError.class);
 
     private HeatpumpError(Integer code, String name) {
         this.code = code;

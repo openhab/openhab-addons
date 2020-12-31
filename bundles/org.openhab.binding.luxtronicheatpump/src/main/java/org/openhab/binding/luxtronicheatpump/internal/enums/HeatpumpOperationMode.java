@@ -9,21 +9,19 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- * 
- * @author Stefan Giehl - Initial contribution
  */
 package org.openhab.binding.luxtronicheatpump.internal.enums;
 
+/**
+ * Represents all value heat pump operation modes
+ *
+ * @author Stefan Giehl - Initial contribution
+ */
 public enum HeatpumpOperationMode {
-    // in german Automatik
     AUTOMATIC(0),
-    // in german Aus
     OFF(4),
-    // in german Party
     PARTY(2),
-    // in german Urlaub
     HOLIDAY(3),
-    // in german Zuzeizer
     AUXILIARY_HEATER(1);
 
     private int value;
