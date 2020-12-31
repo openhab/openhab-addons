@@ -171,6 +171,11 @@ If set to true, devices are automatically unpaired from the gateway when their c
 If set to true, devices are automatically factory reset when their corresponding things are removed.
 Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
 
+- **bufferSize** 
+If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway. 
+In this case, e.g. the discovery fails. 
+With this setting the buffer size can be adjusted. The value is specified in kB.
+
 The syntax for a bridge is:
 
 ```java
@@ -663,6 +668,11 @@ Var_1.sendCommand(RefreshType.REFRESH)
 
 **Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS thing is currently not supported.
 You have to delete the thing, start a scan and add it again.
+
+**`openhab.log` contains an exception with message: `Buffering capacity 2097152 exceeded` resp. discovery detects no devices**
+
+In case of problems in the discovery or if above mentioned error message appears in `openhab.log`, the size for the transmission buffer for the communication with the gateway is too small.
+The problem can be solved by increasing the `bufferSize` value in the bridge configuration.
 
 ### Debugging and Tracing
 
