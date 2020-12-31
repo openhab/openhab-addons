@@ -133,23 +133,11 @@ Callback network address of the system runtime, default is auto-discovery
 - **bindAddress**
 The address the XML-/BINRPC server binds to, default is value of "callbackHost"
 
-- **callbackPort** (DEPRECATED, use "binCallbackPort" resp. "xmlCallbackPort")
-Callback port of the binding's server, default is 9125 and counts up for each additional bridge
-
 - **xmlCallbackPort**
 Callback port of the binding's XML-RPC server, default is 9125 and counts up for each additional bridge
 
 - **binCallbackPort**
 Callback port of the binding's BIN-RPC server, default is 9126 and counts up for each additional bridge
-
-- **aliveInterval** (DEPRECATED, not necessary anymore)
-The interval in seconds to check if the communication with the Homematic gateway is still alive. If no message receives from the Homematic gateway, the RPC server restarts (default = 300)
-
-- **reconnectInterval** (DEPRECATED, not necessary anymore)
-The interval in seconds to force a reconnect to the Homematic gateway, disables "aliveInterval"! (0 = disabled, default = disabled).
-If you have no sensors which sends messages in regular intervals and/or you have low communication, the "aliveInterval" may restart the connection to the Homematic gateway to often.
-The "reconnectInterval" disables the "aliveInterval" and reconnects after a fixed period of time.
-Think in hours when configuring (one hour = 3600)
 
 - **timeout**
 The timeout in seconds for connections to a Homematic gateway (default = 15)
