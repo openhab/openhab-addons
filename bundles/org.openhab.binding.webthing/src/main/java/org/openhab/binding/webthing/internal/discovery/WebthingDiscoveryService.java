@@ -121,7 +121,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
     }
 
     private void startScan(boolean isBackground) {
-        scheduler.schedule(() -> scan(isBackground), 0, TimeUnit.SECONDS);
+        scheduler.submit(() -> scan(isBackground));
     }
 
     @Override
