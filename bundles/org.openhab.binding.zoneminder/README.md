@@ -158,9 +158,9 @@ The API must be enabled in the ZoneMinder configuration using the **OPT_USE_API*
 ```
 Bridge zoneminder:server:server [ host="192.168.1.100", refreshInterval=5, defaultAlarmDuration=120, discoveryEnabled=true, useDefaultUrlPath=true ]
 
-Thing zoneminder:monitor:1 "Monitor 1" (zm:server:server) [ monitorId="1", imageRefreshInterval=10, alarmDuration=180 ]
+Thing zoneminder:monitor:1 "Monitor 1" (zoneminder:server:server) [ monitorId="1", imageRefreshInterval=10, alarmDuration=180 ]
 
-Thing zoneminder:monitor:2 "Monitor 2" (zm:server:server) [ monitorId="2", imageRefreshInterval=10, alarmDuration=180 ]
+Thing zoneminder:monitor:2 "Monitor 2" (zoneminder:server:server) [ monitorId="2", imageRefreshInterval=10, alarmDuration=180 ]
 ```
 
 ### Items
