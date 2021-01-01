@@ -20,10 +20,10 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
  * @author Bernd Weymann - Initial contribution
  */
 public class Doors {
-    public String doorDriverFront = Constants.UNKNOWN;// ": "CLOSED",
-    public String doorDriverRear = Constants.UNKNOWN;// ": "CLOSED",
-    public String doorPassengerFront = Constants.UNKNOWN;// ": "CLOSED",
-    public String doorPassengerRear = Constants.UNKNOWN;// ": "CLOSED",
-    public String trunk = Constants.UNKNOWN;// ": "CLOSED",
-    public String hood = Constants.UNKNOWN;// ": "CLOSED",
+    public String doorDriverFront = Constants.UNDEF;// ": "CLOSED",
+    public String doorDriverRear = Constants.UNDEF;// ": "CLOSED",
+    public String doorPassengerFront = Constants.UNDEF;// ": "CLOSED",
+    public String doorPassengerRear = Constants.UNDEF;// ": "CLOSED",
+    public String trunk = Constants.UNDEF;// ": "CLOSED",
+    public String hood = Constants.UNDEF;// ": "CLOSED",
 }

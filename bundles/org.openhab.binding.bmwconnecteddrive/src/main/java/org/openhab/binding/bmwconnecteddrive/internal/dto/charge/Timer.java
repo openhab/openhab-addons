@@ -36,7 +36,7 @@ public class Timer {
      */
     public String getDays() {
         if (weekdays == null) {
-            return Constants.UNKNOWN;
+            return Constants.UNDEF;
         }
         StringBuilder days = new StringBuilder();
         weekdays.forEach(entry -> {

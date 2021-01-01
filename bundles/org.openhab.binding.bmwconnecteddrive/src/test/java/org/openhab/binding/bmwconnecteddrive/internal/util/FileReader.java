@@ -43,6 +43,6 @@ public class FileReader {
             // fail if file cannot be read
             assertTrue(false);
         }
-        return Constants.UNKNOWN;
+        return Constants.UNDEF;
     }
 }

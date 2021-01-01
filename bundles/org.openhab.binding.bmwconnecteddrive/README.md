@@ -68,9 +68,9 @@ So it's valid to connect channel group [Last Destinations](#destinations) in ord
 
 | Property Key       | Property Value      |  Supported Channel Groups    |
 |--------------------|---------------------|------------------------------|
-| Services Supported | Statistics          | last-trip, lifetime          |
-| Services Supported | LastDestinations    | destinations                 |
-| Services Activated | _list of services_  | remote                       |
+| servicesSupported  | Statistics          | last-trip, lifetime          |
+| servicesSupported  | LastDestinations    | destinations                 |
+| servicesActivated  | _list of services_  | remote                       |
 
 
 ## Discovery
@@ -156,20 +156,20 @@ Overall Door Status values
 
 * _Closed_ - all doors closed
 * _Open_ - at least one door is open
-* _Unknown_ - no door data delivered at all
+* _Undef_ - no door data delivered at all
 
 Overall Windows Status values
 
 * _Closed_ - all windows closed
 * _Open_ - at least one window is completely open
 * _Intermediate_ - at least one window is partially open
-* _Unknown_ - no window data delivered at all
+* _Undef_ - no window data delivered at all
 
 Check Control values
 
 * _Active_ - at least one warning message is active
 * _Not Active_ - no warning message is active
-* _Unknown_ - no data for warnings delivered
+* _Undef_ - no data for warnings delivered
 
 Charging Status values
 
@@ -209,7 +209,7 @@ If more than one message is active the channel _name_ contains all active messag
 | Channel Label                   | Channel ID          | Type           | Access     |
 |---------------------------------|---------------------|----------------|------------|
 | CheckControl Description        | name                | String         | Read/Write |
-| CheckControl Mileage Occurrence | mileage             | Number:Length  | Read       |
+| Mileage Occurrence              | mileage             | Number:Length  | Read       |
 
 #### Doors Details
 
@@ -236,7 +236,7 @@ Detailed status of all doors and windows.
 
 Possible states
 
-* _Unknown_ - no status data available
+* _Undef_ - no status data available
 * _Invalid_ - this door / window isn't applicable for this vehicle
 * _Closed_ - the door / window is closed
 * _Open_ - the door / window is open
@@ -421,7 +421,7 @@ There are 3 occurrences of dynamic data delivered
 The channel id _name_ shows the first element as default. 
 All other possibilities are attached as options. 
 The picture on the right shows the _Service Name_ item and all four possible options. 
-Select the wanted service and the corresponding _Service Date & Milage_ will be shown.  
+Select the desired service and the corresponding _Service Date & Milage_ will be shown.  
 
 ### TroubleShooting
 
@@ -456,7 +456,7 @@ are anonymized.
 You'll find the fingerprint in the logs with the command
 
 ```
-less openhab.log | grep "BMW ConnectedDrive Binding"
+grep "BMW ConnectedDrive Binding" openhab.log
 ```
 
 After the corresponding fingerprint is generated please [follow the instructions to raise an issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!

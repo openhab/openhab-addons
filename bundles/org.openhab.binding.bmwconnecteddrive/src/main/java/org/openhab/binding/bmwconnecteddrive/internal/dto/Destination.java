@@ -48,7 +48,7 @@ public class Destination {
             }
         }
         if (buf.length() == 0) {
-            return UNKNOWN;
+            return UNDEF;
         } else {
             return Converter.toTitleCase(buf.toString());
         }

@@ -5,10 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="checkcontrol-name-channel">
 		<item-type>String</item-type>
-		<label>Active CheckControl Description</label>
+		<label>CheckControl Description</label>
 	</channel-type>
 	<channel-type id="checkcontrol-mileage-channel">
 		<item-type>Number:Length</item-type>
-		<label>CheckControl Mileage Occurrence</label>
+		<label>Mileage Occurrence</label>
 	</channel-type>
 </thing:thing-descriptions>

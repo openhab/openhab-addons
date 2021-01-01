@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link Constants} General Constant Definitions
@@ -33,12 +34,12 @@ public class Constants {
     public static final String INVALID = "Invalid";
     public static final String CLOSED = "Closed";
     public static final String INTERMEDIATE = "Intermediate";
-    public static final String UNKNOWN = "Unknown";
+    public static final String UNDEF = UnDefType.UNDEF.toFullString();
     public static final String UTC_APPENDIX = "-01T12:00:00";
     public static final String NULL_DATE = "1900-01-01T00:00:00";
 
     // Services to query
-    public static final String SERVICES_SUPPORTED = "Services Supported";
+    public static final String SERVICES_SUPPORTED = "servicesSupported";
     public static final String STATISTICS = "Statistics";
     public static final String LAST_DESTINATIONS = "LastDestinations";
 

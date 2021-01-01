@@ -83,7 +83,7 @@ public class VehicleStatusUtils {
 
     public static String checkControlActive(VehicleStatus vStatus) {
         if (vStatus.checkControlMessages == null) {
-            return UNKNOWN;
+            return UNDEF;
         }
         if (vStatus.checkControlMessages.isEmpty()) {
             return NOT_ACTIVE;
@@ -110,7 +110,7 @@ public class VehicleStatusUtils {
      * @return Closed if all "Closed", "Open" otherwise
      */
     public static String checkClosed(Object dto) {
-        String overallState = Constants.UNKNOWN;
+        String overallState = Constants.UNDEF;
         for (Field field : dto.getClass().getDeclaredFields()) {
             try {
                 Object d = field.get(dto);
@@ -129,14 +129,14 @@ public class VehicleStatusUtils {
                             }
                         } else if (state.equalsIgnoreCase(CLOSED)) {
                             // at least one valid object needs to be found in order to reply "CLOSED"
-                            if (overallState.equalsIgnoreCase(UNKNOWN)) {
+                            if (overallState.equalsIgnoreCase(UNDEF)) {
                                 overallState = CLOSED;
                             }
                         }
                     }
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                return UNKNOWN;
+                return UNDEF;
             }
         }
         return overallState;

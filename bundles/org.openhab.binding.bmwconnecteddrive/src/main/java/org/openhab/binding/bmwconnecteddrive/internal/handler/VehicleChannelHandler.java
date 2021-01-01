@@ -69,11 +69,11 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     // List Interfaces
     protected List<CBSMessage> serviceList = new ArrayList<CBSMessage>();
-    protected String selectedService = Constants.UNKNOWN;
+    protected String selectedService = Constants.UNDEF;
     protected List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
-    protected String selectedCC = Constants.UNKNOWN;
+    protected String selectedCC = Constants.UNDEF;
     protected List<Destination> destinationList = new ArrayList<Destination>();
-    protected String selectedDestination = Constants.UNKNOWN;
+    protected String selectedDestination = Constants.UNDEF;
 
     protected BMWConnectedDriveOptionProvider optionProvider;
 
