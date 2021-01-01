@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,48 +49,41 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.trace("Start discovery of Resol VBus-LAN Adapter");
-        scheduler.execute(searchRunnable);
+        scheduler.execute(this::searchRunnable);
     }
 
     /*
      * The runnable for the search routine.
      */
-    private Runnable searchRunnable = new Runnable() {
+    public void searchRunnable() {
+        try {
+            InetAddress broadcastAddress = InetAddress
+                    .getByAddress(new byte[] { (byte) 255, (byte) 255, (byte) 255, (byte) 255 });
 
-        @Override
-        public void run() {
-            logger.trace("Start adapter discovery...");
+            TcpDataSource[] dataSources = TcpDataSourceProvider.discoverDataSources(broadcastAddress, 3, 500, false);
 
-            try {
-                InetAddress broadcastAddress = InetAddress
-                        .getByAddress(new byte[] { (byte) 255, (byte) 255, (byte) 255, (byte) 255 });
+            HashMap<String, TcpDataSource> currentDataSourceById = new HashMap<String, TcpDataSource>();
+            for (TcpDataSource ds : dataSources) {
+                InetAddress address = ds.getAddress();
+                String addressId = address.getHostAddress();
+                TcpDataSource dsWithInfo;
+                try {
+                    dsWithInfo = TcpDataSourceProvider.fetchInformation(address, 1500);
+                    logger.trace("Discovered Resol VBus-LAN interface @{} {} ({})", addressId,
+                            dsWithInfo.getDeviceName(), dsWithInfo.getSerial());
 
-                TcpDataSource[] dataSources = TcpDataSourceProvider.discoverDataSources(broadcastAddress, 3, 500,
-                        false);
-
-                HashMap<String, TcpDataSource> currentDataSourceById = new HashMap<String, TcpDataSource>();
-                for (TcpDataSource ds : dataSources) {
-                    InetAddress address = ds.getAddress();
-                    String addressId = address.getHostAddress();
-                    TcpDataSource dsWithInfo;
-                    try {
-                        dsWithInfo = TcpDataSourceProvider.fetchInformation(address, 1500);
-                        logger.trace("Discovered Resol VBus-LAN interface @{} {} ({})", addressId,
-                                dsWithInfo.getDeviceName(), dsWithInfo.getSerial());
-
-                        currentDataSourceById.put(addressId, dsWithInfo);
-                        addAdapter(addressId, dsWithInfo);
-                        // here we can add the detection of Multi-Channel interfaces like DL3
-                    } catch (IOException ex) {
-                        /* address is no valid adapter */
-                    }
-
+                    currentDataSourceById.put(addressId, dsWithInfo);
+                    addAdapter(addressId, dsWithInfo);
+                    // here we can add the detection of Multi-Channel interfaces like DL3
+                } catch (IOException ex) {
+                    /* address is no valid adapter */
                 }
-            } catch (UnknownHostException e) {
-                logger.debug("Could not resolve IPv4 broadcast address");
+
             }
+        } catch (UnknownHostException e) {
+            logger.debug("Could not resolve IPv4 broadcast address");
         }
-    };
+    }
 
     private void addAdapter(String remoteIP, TcpDataSource dsWithInfo) {
         String adapterSerial = dsWithInfo.getSerial();

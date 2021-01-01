@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="vbuslan">
-		<label>Bridge VBusLAN adapter</label>
+		<label>Bridge VBusLAN Adapter</label>
 		<description>This bridge represents the Resol VBus-LAN adapter
 		</description>
 
@@ -15,13 +15,12 @@
 				<description>The IP address of the of the VBus-LAN adapter.</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1024" max="65535">
-				<context>network-address</context>
-				<label>VBus-LAN adapter live data port</label>
-				<description>Port for live data on the LAN gateway</description>
+				<label>Live Data Port</label>
+				<description>Port for live data on the VBUS-LAN gateway</description>
 				<default>7053</default>
 			</parameter>
 			<parameter name="adapterSerial" type="text" required="false">
-				<label>AdapterSerial</label>
+				<label>Adapter Serial Number</label>
 				<description>The serial number of the adapter (informative).</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
@@ -29,10 +28,10 @@
 				<description>The password for the VBusLAN connection.</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" min="5" max="600" unit="s">
+			<parameter name="refreshInterval" type="integer" required="false" min="5" max="1800" unit="s">
 				<context>refresh</context>
 				<label>Refresh Interval</label>
-				<description>Refreshtime in seconds for discovering devices, not relevant for data updates.</description>
+				<description>Refresh time in seconds for discovering devices, not relevant for data updates.</description>
 				<default>300</default>
 			</parameter>
 		</config-description>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.internal.ResolEmuEMConfiguration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -45,27 +45,33 @@ import de.resol.vbus.deviceemulators.EmDeviceEmulator;
  */
 @NonNullByDefault
 public class ResolEmuEMThingHandler extends BaseThingHandler implements PropertyChangeListener {
-    public static final String CHANNEL_RELAY = "relay";
-    public static final String CHANNEL_TEMP = "temperature";
-    public static final String CHANNEL_RESIST = "resitor";
+    public static final String CHANNEL_RELAY = "relay_";
+    public static final String CHANNEL_TEMP = "temperature_";
+    public static final String CHANNEL_RESIST = "resistor_";
+    public static final String CHANNEL_SWITCH = "switch_";
+    public static final String CHANNEL_TEMP_ADJUST = "bas_temp_adjust_";
+    public static final String CHANNEL_MODE = "bas_mode_";
 
     private final Logger logger = LoggerFactory.getLogger(ResolEmuEMThingHandler.class);
 
     private int vbusAddress = 0x6650;
-
     private int deviceId = 1;
+    private @Nullable EmDeviceEmulator device;
 
-    @Nullable
-    ResolBridgeHandler bridgeHandler;
+    private @Nullable ResolBridgeHandler bridgeHandler;
 
-    @Nullable
-    private EmDeviceEmulator device;
+    private class BasSetting {
+        float temperatureOffset = 0.0f;
+        int mode = 4;
+    }
 
-    // Background Runables
+    private BasSetting[] basValues = { new BasSetting(), new BasSetting(), new BasSetting(), new BasSetting(),
+            new BasSetting(), new BasSetting() };
+    private long lastTime = System.currentTimeMillis();
+
+    // Background Runnable
     @Nullable
     private ScheduledFuture<?> updateJob;
-
-    Pattern relayPattern = Pattern.compile("Pump speed relay (\\d*).1");
 
     public ResolEmuEMThingHandler(Thing thing) {
         super(thing);
@@ -91,27 +97,21 @@ public class ResolEmuEMThingHandler extends BaseThingHandler implements Property
         unregisterResolThingListener(bridgeHandler);
     }
 
-    private Runnable updateRunnable = new Runnable() {
+    private void updateRunnable() {
+        EmDeviceEmulator d = device;
+        if (d != null) {
+            long now = System.currentTimeMillis();
+            int diff = (int) (now - lastTime);
+            lastTime = now;
 
-        private long lastTime = System.currentTimeMillis();
-
-        @Override
-        public void run() {
-            EmDeviceEmulator d = device;
-            if (d != null) {
-                long now = System.currentTimeMillis();
-                int diff = (int) (now - lastTime);
-                lastTime = now;
-
-                d.update(diff);
-            }
+            d.update(diff);
         }
-    };
+    }
 
     private void startAutomaticUpdate() {
         ScheduledFuture<?> job = updateJob;
         if (job == null || job.isCancelled()) {
-            updateJob = scheduler.scheduleWithFixedDelay(updateRunnable, 0, 1, TimeUnit.SECONDS);
+            updateJob = scheduler.scheduleWithFixedDelay(this::updateRunnable, 0, 1, TimeUnit.SECONDS);
         }
     }
 
@@ -194,18 +194,24 @@ public class ResolEmuEMThingHandler extends BaseThingHandler implements Property
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         String chID = channelUID.getId();
         boolean update = false;
         int channel = chID.charAt(chID.length() - 1) - '0';
         float value = 0;
+        int intValue = 0;
 
         if (command instanceof QuantityType<?>) {
             value = ((QuantityType<?>) command).floatValue();
             update = true;
-        } else if (command instanceof DecimalType) {
-            value = ((DecimalType) command).floatValue();
+        } else if (command instanceof OnOffType) {
+            intValue = ((OnOffType) command).equals(OnOffType.ON) ? 1 : 0;
             update = true;
+        } else if (command instanceof DecimalType) {
+            intValue = ((DecimalType) command).intValue();
+            value = intValue;
+            update = true;
+        } else {
+            update = false;
         }
 
         if (update) {
@@ -214,11 +220,62 @@ public class ResolEmuEMThingHandler extends BaseThingHandler implements Property
                 if (chID.startsWith(CHANNEL_TEMP)) {
                     dev.setResistorValueByNrAndPt1000Temperatur(channel, value);
                     updateState(channelUID, new DecimalType(value));
-                } else {
+                } else if (chID.startsWith(CHANNEL_SWITCH)) {
+                    if (intValue == 0) {
+                        /* switch is open => 1 megaohm */
+                        dev.setResistorValueByNr(channel, 1000000000);
+                        updateState(channelUID, OnOffType.OFF);
+                    } else {
+                        /* switch is closed */
+                        dev.setResistorValueByNr(channel, 0);
+                        updateState(channelUID, OnOffType.ON);
+                    }
+                } else if (chID.startsWith(CHANNEL_RESIST)) {
                     dev.setResistorValueByNr(channel, (int) (value * 1000.0));
-                    updateState(channelUID, new QuantityType<>(value, Units.OHM));
+                    updateState(channelUID, new QuantityType<>(intValue, Units.OHM));
+                } else if (chID.startsWith(CHANNEL_TEMP_ADJUST)) {
+                    basValues[channel - 1].temperatureOffset = value;
+                    updateBas(channel);
+                    updateState(channelUID, new DecimalType(value));
+                } else if (chID.startsWith(CHANNEL_MODE)) {
+                    basValues[channel - 1].mode = intValue;
+                    updateBas(channel);
+                    updateState(channelUID, new DecimalType(intValue));
+                } else {
+                    /* set resistor value for Open Connection, 1 megaohm */
+                    dev.setResistorValueByNr(channel, 1000000000);
+                    updateState(channelUID, new QuantityType<>(1000000, Units.OHM));
                 }
             }
+        }
+    }
+
+    private void updateBas(int channel) {
+        int resistor = 0; /* in milliohm */
+        int delta = (int) ((basValues[channel - 1].temperatureOffset * 210.0f / 15.0f) * 1000.0f);
+        switch (basValues[channel - 1].mode) {
+            case 4: /* Automatic range 76 - 496 ohm */
+                resistor = 286 * 1000 + delta;
+                break;
+            case 0: /* OFF range 1840 - 2260 ohm */
+                resistor = 2050 * 1000 + delta;
+                break;
+            case 2: /* Night range 660 - 1080 ohm */
+                resistor = 870 * 1000 + delta;
+                break;
+            case 3: /* Party is automatic mode with +15K */
+                resistor = 286 * 1000 + 210 * 1000;
+                break;
+            case 1: /* Summer range 1240 - 1660 ohm */
+                resistor = 1450 * 1000 + delta;
+                break;
+            default:
+                /* signal a shortcut as error */
+                resistor = 0;
+                break;
+        }
+        if (device != null) {
+            device.setResistorValueByNr(channel, resistor);
         }
     }
 

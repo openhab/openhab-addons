@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.internal.ResolBindingConstants;
@@ -75,19 +74,18 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private boolean isConnected = false;
     private String unconnectedReason = "";
 
-    // Background Runables
+    // Background Runable
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    @Nullable
-    private ScheduledFuture<?> pollingJob;
-
-    @Nullable
-    private Connection tcpConnection;
+    private @Nullable Connection tcpConnection;
     private Specification spec;
-    private Set<String> availableDevices = new HashSet<String>();
+    private Set<String> availableDevices = new HashSet<>();
 
-    private Map<String, ResolThingHandler> thingHandlerMap = new HashMap<String, ResolThingHandler>();
+    private Map<String, @Nullable ResolThingHandler> thingHandlerMap = new HashMap<>();
+    private Map<Integer, ResolEmuEMThingHandler> emThingHandlerMap = new HashMap<>();
 
-    private Map<Integer, @NonNull ResolEmuEMThingHandler> emThingHandlerMap = new HashMap<Integer, @NonNull ResolEmuEMThingHandler>();
+    // Managing Thing Discovery Service
+    private @Nullable ResolDiscoveryService discoveryService = null;
 
     public ResolBridgeHandler(Bridge bridge, @Nullable LocaleProvider localeProvider) {
         super(bridge);
@@ -109,11 +107,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, unconnectedReason);
         }
     }
-
-    // Managing Thing Discovery Service
-
-    @Nullable
-    private ResolDiscoveryService discoveryService = null;
 
     public void registerDiscoveryService(ResolDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
@@ -156,15 +149,11 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     }
 
     public void registerResolThingListener(ResolEmuEMThingHandler resolEmuEMThingHandler) {
-
         emThingHandlerMap.put(resolEmuEMThingHandler.getVbusAddress(), resolEmuEMThingHandler);
         synchronized (this) {
             Connection con = tcpConnection;
-            if (isConnected && con != null) {
+            if (con != null) {
                 resolEmuEMThingHandler.useConnection(con);
-                updateStatus();
-            } else {
-                resolEmuEMThingHandler.updateStatus(ThingStatus.OFFLINE);
             }
         }
     }
@@ -173,7 +162,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         if (!emThingHandlerMap.containsKey(resolEmuEMThingHandler.getVbusAddress())) {
             logger.warn("thingHandler for vbus address {} not registered", resolEmuEMThingHandler.getVbusAddress());
         } else {
-            resolEmuEMThingHandler.updateStatus(ThingStatus.OFFLINE);
             emThingHandlerMap.remove(resolEmuEMThingHandler.getVbusAddress());
         }
     }
@@ -182,103 +170,84 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         thingHandler.updateStatus(status);
     }
 
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (!isConnected) {
-                synchronized (ResolBridgeHandler.this) {
-                    Connection connection = tcpConnection;
-                    /* first cleanup in case there is an old but failed TCP connection around */
-                    try {
-                        if (connection != null) {
-                            connection.disconnect();
-                            for (int x : emThingHandlerMap.keySet()) {
-                                ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
-                                if (emu != null) {
-                                    emu.stop();
-                                }
+    private void pollingRunnable() {
+        if (!isConnected) {
+            synchronized (ResolBridgeHandler.this) {
+                Connection connection = tcpConnection;
+                /* first cleanup in case there is an old but failed TCP connection around */
+                try {
+                    if (connection != null) {
+                        connection.disconnect();
+                        for (int x : emThingHandlerMap.keySet()) {
+                            ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
+                            if (emu != null) {
+                                emu.stop();
                             }
+                        }
 
-                            connection = null;
-                            tcpConnection = null;
-                        }
-                    } catch (IOException e) {
-                        logger.warn("TCP disconnect failed", e);
+                        connection = null;
+                        tcpConnection = null;
                     }
-                    TcpDataSource source = null;
-                    /* now try to establish a new TCP connection */
+                } catch (IOException e) {
+                    logger.warn("TCP disconnect failed: {}", e.getMessage());
+                }
+                TcpDataSource source = null;
+                /* now try to establish a new TCP connection */
+                try {
+                    source = TcpDataSourceProvider.fetchInformation(InetAddress.getByName(ipAddress), 500);
+                    if (source != null) {
+                        source.setLivePassword(password);
+                    }
+                } catch (IOException e) {
+                    isConnected = false;
+                    unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
+                }
+                if (source != null) {
                     try {
-                        source = TcpDataSourceProvider.fetchInformation(InetAddress.getByName(ipAddress), 500);
-                        if (source != null) {
-                            source.setLivePassword(password);
-                        }
-                    } catch (IOException e) {
+                        logger.debug("Opening a new connection to {} {} @{}", source.getProduct(),
+                                source.getDeviceName(), source.getAddress());
+                        connection = source.connectLive(0, 0x0020);
+                        tcpConnection = connection;
+                    } catch (Exception e) {
+                        // this generic Exception catch is required, as TcpDataSource.connectLive throws this
+                        // generic type
                         isConnected = false;
                         unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
                     }
-                    if (source != null) {
-                        try {
-                            logger.debug("Opening a new connection...");
-                            connection = source.connectLive(0, 0x0020);
-                            tcpConnection = connection;
-                        } catch (Exception e) {
-                            // this generic Exception catch is required, as TcpDataSource.connectLive throws this
-                            // generic
-                            // type
-                            logger.debug("... failed.");
-                            isConnected = false;
-                            unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
-                        }
-                        logger.debug("... succeeded.");
 
-                        if (connection != null) {
-                            try {
-                                Thread.sleep(3000); // Wait for connection...
-                            } catch (InterruptedException e) {
-                                isConnected = (connection.getConnectionState()
-                                        .equals(Connection.ConnectionState.CONNECTED));
-                            }
-
-                            // Add a listener to the Connection to monitor state changes and
-                            // read incoming frames
-                            connection.addListener(new ResolConnectorAdapter());
-                        }
-                    }
-                    // Establish the connection
                     if (connection != null) {
-                        try {
-                            connection.connect();
-                            for (int x : emThingHandlerMap.keySet()) {
-                                ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
-                                if (emu != null) {
-                                    emu.useConnection(connection);
-                                }
+                        // Add a listener to the Connection to monitor state changes and
+                        // read incoming frames
+                        connection.addListener(new ResolConnectorAdapter());
+                    }
+                }
+                // Establish the connection
+                if (connection != null) {
+                    try {
+                        connection.connect();
+                        // now set the connection the thing handlers for the emulated EMs
+                        for (int x : emThingHandlerMap.keySet()) {
+                            ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
+                            if (emu != null) {
+                                emu.useConnection(connection);
                             }
-                        } catch (IOException e) {
-                            logger.warn("Connection failed: {}", e.getMessage());
-                            unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
-                            isConnected = false;
                         }
-
-                        try {
-                            Thread.sleep(3000); // after a reconnect wait 3 sec
-                        } catch (InterruptedException e) {
-                            /* ignore interruptions */
-                        }
-                        isConnected = connection.getConnectionState().equals(Connection.ConnectionState.CONNECTED);
-                    } else {
+                    } catch (IOException e) {
+                        unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
                         isConnected = false;
                     }
-                    if (!isConnected) {
-                        logger.debug("Cannot establish connection to {} ({})", ipAddress, unconnectedReason);
-                    } else {
-                        unconnectedReason = "";
-                    }
-                    updateStatus();
+                } else {
+                    isConnected = false;
                 }
+                if (!isConnected) {
+                    logger.debug("Cannot establish connection to {} ({})", ipAddress, unconnectedReason);
+                } else {
+                    unconnectedReason = "";
+                }
+                updateStatus();
             }
         }
-    };
+    }
 
     /* check if the given value is a special one like 888.8 or 999.9 for shortcut or open load on a sensor wire */
     private boolean isSpecialValue(Double dd) {
@@ -296,7 +265,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private synchronized void startAutomaticRefresh() {
         ScheduledFuture<?> job = pollingJob;
         if (job == null || job.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -351,7 +320,12 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                     isConnected = false;
                 } else {
                     ConnectionState connState = connection.getConnectionState();
-                    isConnected = ConnectionState.CONNECTED.equals(connState);
+                    if (ConnectionState.CONNECTED.equals(connState)) {
+                        isConnected = true;
+                    } else if (ConnectionState.DISCONNECTED.equals(connState)
+                            || ConnectionState.INTERRUPTED.equals(connState)) {
+                        isConnected = false;
+                    }
                     logger.info("Connection state changed to: {}", connState.toString());
 
                     if (isConnected) {
@@ -407,6 +381,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                 for (PacketFieldValue pfv : pfvs) {
                     logger.trace("Id: {}, Name: {}, Raw: {}, Text: {}", pfv.getPacketFieldId(), pfv.getName(lang),
                             pfv.getRawValueDouble(), pfv.formatTextValue(null, Locale.getDefault()));
+
                     ResolThingHandler thingHandler = thingHandlerMap.get(thingType);
                     if (thingHandler != null) {
                         String channelId = pfv.getName(); // use English here
@@ -416,6 +391,8 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                         channelId = channelId.replace(")", "");
                         channelId = channelId.replace(" #", "-");
                         channelId = channelId.replaceAll("[^A-Za-z0-9_-]+", "_");
+
+                        channelId = channelId.toLowerCase(Locale.ENGLISH);
 
                         ChannelTypeUID channelTypeUID;
 
@@ -463,17 +440,17 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                                     .withType(channelTypeUID).withLabel(pfv.getName(lang)).build();
 
                             thingBuilder.withChannel(channel).withLabel(thing.getLabel());
-
                             thingHandler.updateThing(thingBuilder.build());
+
+                            logger.debug("Creating channel: {}", channelUID);
                         }
 
                         switch (pfv.getPacketFieldSpec().getType()) {
                             case Number:
                                 Double dd = pfv.getRawValueDouble();
                                 if (dd != null) {
-                                    if (isSpecialValue(dd)) {
-                                        /* some error occurred in the measurement - ignore the value */
-                                    } else {
+                                    if (!isSpecialValue(dd)) {
+                                        /* only set the value if no error occured */
                                         thingHandler.setChannelValue(channelId, dd.doubleValue());
                                     }
                                 } else {
@@ -513,7 +490,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                             thingHandler.setChannelValue(enumChannelId, pfv.getEnumVariant().getText(lang));
                         }
                     } else {
-                        logger.info("ThingHandler for {} not registered.", thingType);
+                        // logger.debug("ThingHandler for {} not registered.", thingType);
                     }
                 }
             }

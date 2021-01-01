@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,6 @@ public class ResolChannelTypeProvider implements ChannelTypeProvider {
             // maybe we could use pfv.getPacketFieldSpec().getPrecision() here
             int precision = 1;
             if (u.getUnitId() >= 0) {
-
                 ChannelType ctype = ChannelTypeBuilder
                         .state(channelTypeUID, u.getUnitFamily().toString(), itemTypeForUnit(u))
                         .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create()

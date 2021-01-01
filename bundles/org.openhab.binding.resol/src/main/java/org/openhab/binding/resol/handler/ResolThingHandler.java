@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,8 +48,11 @@ public class ResolThingHandler extends BaseThingHandler {
     @Nullable
     ResolBridgeHandler bridgeHandler;
 
+    private SimpleDateFormat dateFormat = new SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
+
     public ResolThingHandler(Thing thing) {
         super(thing);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @Override
@@ -84,7 +87,6 @@ public class ResolThingHandler extends BaseThingHandler {
     }
 
     private synchronized @Nullable ResolBridgeHandler getBridgeHandler() {
-
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Required bridge not defined for device.");
@@ -95,7 +97,6 @@ public class ResolThingHandler extends BaseThingHandler {
     }
 
     private synchronized @Nullable ResolBridgeHandler getBridgeHandler(Bridge bridge) {
-
         ResolBridgeHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
@@ -143,11 +144,7 @@ public class ResolThingHandler extends BaseThingHandler {
             logger.trace("Channel '{}:{}' expected to have a DateTime type for parameters '{}'",
                     getThing().getUID().getId(), channelId, value.toString());
         } else {
-            SimpleDateFormat s = new SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
-            s.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String str = s.format(value);
-
-            this.updateState(channelId, new DateTimeType(str));
+            this.updateState(channelId, new DateTimeType(dateFormat.format(value)));
         }
     }
 
