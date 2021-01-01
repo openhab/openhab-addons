@@ -119,7 +119,6 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                         triggerChannel(channel.getUID(), trigger);
                     }
                 }
-
             }
 
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
