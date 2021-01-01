@@ -166,7 +166,7 @@ public class PlugwiseHAController {
             this.logger.debug("Plugwise Home Automation Appliance with id {} is not known", id);
             return null;
         } else {
-            return this.domainObjects.getAppliances().get(id);
+            return appliances.get(id);
         }
     }
 
@@ -202,7 +202,7 @@ public class PlugwiseHAController {
             this.logger.debug("Plugwise Home Automation Location with {id} is not known");
             return null;
         } else {
-            return this.domainObjects.getLocations().get(id);
+            return locations.get(id);
         }
     }
 
