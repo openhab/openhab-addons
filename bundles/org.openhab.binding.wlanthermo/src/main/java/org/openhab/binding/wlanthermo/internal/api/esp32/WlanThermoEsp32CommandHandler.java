@@ -18,12 +18,18 @@ import java.awt.Color;
 import java.math.BigInteger;
 import java.util.List;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
+
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Channel;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Data;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Pm;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.System;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.settings.Settings;
 import org.openhab.core.library.types.*;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -39,13 +45,24 @@ public class WlanThermoEsp32CommandHandler {
 
     public State getState(ChannelUID channelUID, Data data, Settings settings) {
         State state = null;
+
         String groupId = channelUID.getGroupId();
         if (groupId == null || data == null || settings == null) {
             return null;
         }
+
         System system = data.getSystem();
+
+        Unit<Temperature> unit;
+        if (system.getUnit().equals("F")) {
+            unit = ImperialUnits.FAHRENHEIT;
+        } else {
+            // Default to Celsius
+            unit = SIUnits.CELSIUS;
+        }
+
         List<Channel> channel = data.getChannel();
-        if ("system".equals(groupId) && system != null) {
+        if ("system".equals(groupId)) {
             switch (channelUID.getIdWithoutGroup()) {
                 case SYSTEM_SOC:
                     if (system.getSoc() != null) {
@@ -74,7 +91,7 @@ public class WlanThermoEsp32CommandHandler {
                     }
                     break;
                 case SYSTEM_RSSI:
-                    state = new DecimalType(system.getRssi());
+                    state = new QuantityType<>(system.getRssi(), Units.DECIBEL_MILLIWATTS);
                     break;
             }
         } else if (channelUID.getId().startsWith("channel")) {
@@ -91,14 +108,14 @@ public class WlanThermoEsp32CommandHandler {
                         if (channel.get(channelId).getTemp() == 999.0) {
                             state = UnDefType.UNDEF;
                         } else {
-                            state = new DecimalType(channel.get(channelId).getTemp());
+                            state = new QuantityType<>(channel.get(channelId).getTemp(), unit);
                         }
                         break;
                     case CHANNEL_MIN:
-                        state = new DecimalType(channel.get(channelId).getMin());
+                        state = new QuantityType<>(channel.get(channelId).getMin(), unit);
                         break;
                     case CHANNEL_MAX:
-                        state = new DecimalType(channel.get(channelId).getMax());
+                        state = new QuantityType<>(channel.get(channelId).getMax(), unit);
                         break;
                     case CHANNEL_ALARM_DEVICE:
                         state = OnOffType.from(BigInteger.valueOf(channel.get(channelId).getAlarm()).testBit(1));
@@ -152,7 +169,7 @@ public class WlanThermoEsp32CommandHandler {
                         state = new DecimalType(pm.getValue());
                         break;
                     case CHANNEL_PITMASTER_SETPOINT:
-                        state = new DecimalType(pm.getSet());
+                        state = new QuantityType<>(pm.getSet(), unit);
                         break;
                     case CHANNEL_PITMASTER_STATE:
                         state = new StringType(pm.getTyp());

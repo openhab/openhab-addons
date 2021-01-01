@@ -11,20 +11,20 @@
 
 	<channel-type id="name" advanced="false">
 		<item-type>String</item-type>
-		<label>Probe Name</label>
+		<label>Name</label>
 		<category>Text</category>
 	</channel-type>
 
 	<channel-type id="name_ro" advanced="false">
 		<item-type>String</item-type>
-		<label>Probe Name</label>
+		<label>Name</label>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="typ" advanced="true">
 		<item-type>String</item-type>
-		<label>Probe Type</label>
+		<label>Type</label>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -115,7 +115,7 @@
 
 	<channel-type id="color_name_nano" advanced="true">
 		<item-type>String</item-type>
-		<label>Probe Color</label>
+		<label>Color</label>
 		<category>Colorpicker</category>
 		<state>
 			<options>
@@ -135,7 +135,7 @@
 
 	<channel-type id="color_name_esp32" advanced="true">
 		<item-type>String</item-type>
-		<label>Probe Color</label>
+		<label>Color</label>
 		<category>Colorpicker</category>
 		<state>
 			<options>
@@ -164,65 +164,64 @@
 
 	<channel-type id="color_ro" advanced="true">
 		<item-type>Color</item-type>
-		<label>Probe Color</label>
+		<label>Color</label>
 		<category>Colorpicker</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="color_name_mini_ro" advanced="true">
 		<item-type>String</item-type>
-		<label>Probe Color Name</label>
+		<label>Color Name</label>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="enabled" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Pitmaster Enabled</label>
+		<label>Enabled</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature_setpoint_ro" advanced="false">
 		<item-type>Number:Temperature</item-type>
-		<label>Pitmaster Setpoint Temperature</label>
+		<label>Setpoint Temperature</label>
 		<category>Temperature</category>
 		<state min="0" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="duty_cycle_ro" advanced="false">
 		<item-type>Number</item-type>
-		<label>Pitmaster Duty Cycle / Control Out</label>
+		<label>Duty Cycle / Control Out</label>
 		<state min="0" max="100" pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lid_open" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Pitmaster Lid Open</label>
+		<label>Lid Open</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="channel_id_ro" advanced="false">
 		<item-type>Number</item-type>
-		<label>Pitmaster Channel ID</label>
+		<label>Channel ID</label>
 		<state min="0" max="9" pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pitmaster_type" advanced="false">
 		<item-type>String</item-type>
-		<label>Pitmaster State</label>
+		<label>State</label>
 		<state>
 			<options>
 				<option value="off">Off</option>
 				<option value="manual">Manual</option>
 				<option value="auto">Auto</option>
-				<!--<option value="autotune">Autotune</option> Not clear if still supported -->
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="duty_cycle" advanced="false">
 		<item-type>Number</item-type>
-		<label>Pitmaster Duty Cycle / Control Out</label>
+		<label>Duty Cycle / Control Out</label>
 		<state min="0" max="100" pattern="%d"/>
 	</channel-type>
 
@@ -234,15 +233,15 @@
 
 	<channel-type id="temperature_setpoint" advanced="false">
 		<item-type>Number:Temperature</item-type>
-		<label>Pitmaster Setpoint Temperature</label>
+		<label>Setpoint Temperature</label>
 		<category>Temperature</category>
 		<state min="0" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="channel_id" advanced="false">
 		<item-type>Number</item-type>
-		<label>Pitmaster Channel ID</label>
-		<state min="1" max="8" pattern="%d"/>
+		<label>Temperature Channel ID</label>
+		<state min="1" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="charging" advanced="true">
@@ -253,7 +252,7 @@
 	</channel-type>
 
 	<channel-type id="rssi" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>RSSI in dBm</label>
 		<category>Text</category>
 		<state readOnly="true"/>

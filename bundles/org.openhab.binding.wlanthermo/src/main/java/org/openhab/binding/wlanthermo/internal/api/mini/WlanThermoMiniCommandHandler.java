@@ -14,12 +14,14 @@ package org.openhab.binding.wlanthermo.internal.api.mini;
 
 import java.awt.*;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
+
 import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
 import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.*;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.*;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -34,10 +36,20 @@ public class WlanThermoMiniCommandHandler {
 
     public State getState(ChannelUID channelUID, App app) {
         State state = null;
+
         String groupId = channelUID.getGroupId();
         if (groupId == null || app == null) {
             return null;
         }
+
+        Unit<Temperature> unit;
+        if (app.getTempUnit().equals("fahrenheit")) {
+            unit = ImperialUnits.FAHRENHEIT;
+        } else {
+            // Default to Celsius
+            unit = SIUnits.CELSIUS;
+        }
+
         if ("system".equals(groupId)) {
             switch (channelUID.getIdWithoutGroup()) {
                 case WlanThermoBindingConstants.SYSTEM_CPU_TEMP:
@@ -71,14 +83,14 @@ public class WlanThermoMiniCommandHandler {
                         if (data.getState().equals("er")) {
                             state = UnDefType.UNDEF;
                         } else {
-                            state = new DecimalType(data.getTemp());
+                            state = new QuantityType<>(data.getTemp(), unit);
                         }
                         break;
                     case WlanThermoBindingConstants.CHANNEL_MIN:
-                        state = new DecimalType(data.getTempMin());
+                        state = new QuantityType<>(data.getTempMin(), unit);
                         break;
                     case WlanThermoBindingConstants.CHANNEL_MAX:
-                        state = new DecimalType(data.getTempMax());
+                        state = new QuantityType<>(data.getTempMax(), unit);
                         break;
                     case WlanThermoBindingConstants.CHANNEL_ALARM_DEVICE:
                         state = OnOffType.from(data.getAlert());
@@ -126,7 +138,7 @@ public class WlanThermoMiniCommandHandler {
                     state = new DecimalType(pit.getCurrent());
                     break;
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_SETPOINT:
-                    state = new DecimalType(pit.getSetpoint());
+                    state = new QuantityType<>(pit.getSetpoint(), unit);
                     break;
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_DUTY_CYCLE:
                     state = new DecimalType(pit.getControlOut());

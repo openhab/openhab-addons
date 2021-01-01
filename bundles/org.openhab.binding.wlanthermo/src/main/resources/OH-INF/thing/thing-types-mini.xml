@@ -6,8 +6,8 @@
 
 
 	<thing-type id="mini">
-		<label>WlanThermo Mini V1/V2 (Raspberry Pi)</label>
-		<description>WlanThermo Mini with Raspberry Pi processor, such as Mini V1/V2</description>
+		<label>WlanThermo Mini V1/V2</label>
+		<description><![CDATA[ WlanThermo Mini with <b>Raspberry Pi processor</b>, such as Mini V1/V2 ]]></description>
 
 		<channel-groups>
 			<channel-group id="system" typeId="cg_system_mini"/>

@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="esp32">
-		<label>WlanThermo Mini V2 (ESP32), Nano V3, Link V1</label>
-		<description>WlanThermo device with ESP32 processor, such as Mini V2 (ESP32), Nano V3, Link V1</description>
+		<label>WlanThermo Mini V2, Nano V3, Link V1</label>
+		<description><![CDATA[ WlanThermo device with <b>ESP32 processor</b>, such as Mini V2 (ESP32), Nano V3, Link V1 ]]></description>
 
 		<channel-groups>
 			<channel-group id="system" typeId="cg_system_esp32"/>
