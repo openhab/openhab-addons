@@ -110,6 +110,9 @@ public class PlugwiseHABindingConstants {
     public static final String APPLIANCE_TYPE_HEATERCENTRAL = "heater_central";
     public static final String APPLIANCE_TYPE_THERMOSTATICRADIATORVALUE = "thermostatic_radiator_valve";
 
+    // List of Plugwise Maesure Units
+    public static final String UNIT_CELSIUS = "S";
+
     // Supported things
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(THING_TYPE_ZONE, THING_TYPE_APPLIANCE_VALVE, THING_TYPE_APPLIANCE_PUMP, THING_TYPE_APPLIANCE_BOILER)
