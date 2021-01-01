@@ -66,20 +66,21 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
         this.id = getConfigAs(TradfriDeviceConfig.class).id;
         TradfriGatewayHandler handler = (TradfriGatewayHandler) tradfriGateway.getHandler();
 
-        String uriString = handler.getGatewayURI() + "/" + id;
-        try {
-            URI uri = new URI(uriString);
-            coapClient = new TradfriCoapClient(uri);
-            coapClient.setEndpoint(handler.getEndpoint());
-        } catch (URISyntaxException e) {
-            logger.debug("Illegal device URI `{}`: {}", uriString, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
-        }
         active = true;
         updateStatus(ThingStatus.UNKNOWN);
         switch (tradfriGateway.getStatus()) {
             case ONLINE:
+                String uriString = handler.getGatewayURI() + "/" + id;
+                try {
+                    URI uri = new URI(uriString);
+                    coapClient = new TradfriCoapClient(uri);
+                    coapClient.setEndpoint(handler.getEndpoint());
+                } catch (URISyntaxException e) {
+                    logger.debug("Illegal device URI `{}`: {}", uriString, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                    return;
+                }
+
                 scheduler.schedule(() -> {
                     observeRelation = coapClient.startObserve(this);
                 }, 3, TimeUnit.SECONDS);
