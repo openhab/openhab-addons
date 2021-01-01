@@ -14,6 +14,7 @@
 package org.openhab.binding.plugwiseha.internal.handler;
 
 import static org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants.*;
+import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
@@ -21,6 +22,10 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import java.util.List;
 import java.util.Map;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,9 +35,11 @@ import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Appliance;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -165,7 +172,6 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                         } else {
                             controller.switchRelayLockOff(entity);
                         }
-                        updateState(APPLIANCE_LOCK_CHANNEL, (State) command);
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to switch relay lock {} for appliance '{}'", (State) command,
                                 entity.getName());
@@ -176,8 +182,9 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 if (command instanceof QuantityType) {
                     QuantityType<Temperature> state = (QuantityType<Temperature>) command;
                     try {
-                        controller.setOffsetTemperature(entity, state.doubleValue());
-                        updateState(APPLIANCE_OFFSET_CHANNEL, (State) command);
+                        Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse("S") == "S" ? SIUnits.CELSIUS
+                                : ImperialUnits.FAHRENHEIT;
+                        controller.setOffsetTemperature(entity, state.toUnit(unit).doubleValue());
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
                                 entity.getSetpointTemperature().orElse(null), state.doubleValue());
@@ -192,7 +199,6 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                         } else {
                             controller.switchRelayOff(entity);
                         }
-                        updateState(APPLIANCE_POWER_CHANNEL, (State) command);
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to switch relay {} for appliance '{}'", (State) command, entity.getName());
                     }
@@ -202,8 +208,10 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 if (command instanceof QuantityType) {
                     QuantityType<Temperature> state = (QuantityType<Temperature>) command;
                     try {
-                        controller.setThermostat(entity, state.doubleValue());
-                        updateState(APPLIANCE_SETPOINT_CHANNEL, (State) command);
+                        Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse("S") == "S"
+                                ? SIUnits.CELSIUS
+                                : ImperialUnits.FAHRENHEIT;
+                        controller.setThermostat(entity, state.toUnit(unit).doubleValue());
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to update setpoint for appliance '{}': {} -> {}", entity.getName(),
                                 entity.getSetpointTemperature().orElse(null), state.doubleValue());
@@ -253,7 +261,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
 
                 if (batteryLevel != null) {
                     batteryLevel = batteryLevel * 100;
-                    state = new DecimalType(batteryLevel.intValue());
+                    state = new QuantityType<Dimensionless>(batteryLevel.intValue(), Units.PERCENT);
                     if (batteryLevel <= config.getLowBatteryPercentage()) {
                         updateState(APPLIANCE_BATTERYLEVELLOW_CHANNEL, OnOffType.ON);
                     } else {
@@ -293,7 +301,9 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_OFFSET_CHANNEL:
                 if (entity.getOffsetTemperature().isPresent()) {
-                    state = new DecimalType(entity.getOffsetTemperature().get());
+                    Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse("S") == "S" ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getOffsetTemperature().get(), unit);
                 }
                 break;
             case APPLIANCE_POWER_CHANNEL:
@@ -303,27 +313,32 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_POWER_USAGE_CHANNEL:
                 if (entity.getPowerUsage().isPresent()) {
-                    state = new DecimalType(entity.getPowerUsage().get());
+                    state = new QuantityType<Power>(entity.getPowerUsage().get(), Units.WATT);
                 }
                 break;
             case APPLIANCE_SETPOINT_CHANNEL:
                 if (entity.getSetpointTemperature().isPresent()) {
-                    state = new DecimalType(entity.getSetpointTemperature().get());
+                    Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse("S") == "S" ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getSetpointTemperature().get(), unit);
                 }
                 break;
             case APPLIANCE_TEMPERATURE_CHANNEL:
                 if (entity.getTemperature().isPresent()) {
-                    state = new DecimalType(entity.getTemperature().get());
+                    Unit<Temperature> unit = entity.getTemperatureUnit().orElse("S") == "S" ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getTemperature().get(), unit);
                 }
                 break;
             case APPLIANCE_VALVEPOSITION_CHANNEL:
                 if (entity.getValvePosition().isPresent()) {
-                    state = new DecimalType(entity.getValvePosition().get());
+                    state = new QuantityType<Dimensionless>(entity.getValvePosition().get(), Units.PERCENT);
                 }
                 break;
             case APPLIANCE_WATERPRESSURE_CHANNEL:
                 if (entity.getWaterPressure().isPresent()) {
-                    state = new DecimalType(entity.getWaterPressure().get());
+                    Unit<Pressure> unit = HECTO(SIUnits.PASCAL);
+                    state = new QuantityType<Pressure>(entity.getWaterPressure().get(), unit);
                 }
                 break;
             default:

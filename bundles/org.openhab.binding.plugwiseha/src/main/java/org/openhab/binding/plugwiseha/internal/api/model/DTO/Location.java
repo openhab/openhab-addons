@@ -84,8 +84,16 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
         return this.pointLogs.getTemperature();
     }
 
+    public Optional<String> getTemperatureUnit() {
+        return this.pointLogs.getTemperatureUnit();
+    }
+
     public Optional<Double> getSetpointTemperature() {
         return this.pointLogs.getThermostatTemperature();
+    }
+
+    public Optional<String> getSetpointTemperatureUnit() {
+        return this.pointLogs.getThermostatTemperatureUnit();
     }
 
     public int applianceCount() {

@@ -75,6 +75,14 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
         }
     }
 
+    public Optional<String> getMeasurementUnit() {
+        if (unit != null) {
+            return Optional.of(unit);
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public ZonedDateTime getMeasurementDate() {
         return measurementDate;
     }

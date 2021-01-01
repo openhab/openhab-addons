@@ -41,13 +41,25 @@ public class Logs extends PlugwiseHACollection<Log> {
         return this.getLogTemperature().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
+    public Optional<String> getTemperatureUnit() {
+        return this.getLogTemperature().map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+    }
+
     public Optional<Double> getThermostatTemperature() {
         return this.getLogThermostat().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<String> getThermostatTemperatureUnit() {
+        return this.getLogThermostat().map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
     }
 
     public Optional<Double> getOffsetTemperature() {
         return this.getLogOffsetTemperature().map(logEntry -> logEntry.getMeasurementAsDouble())
                 .orElse(Optional.empty());
+    }
+
+    public Optional<String> getOffsetTemperatureUnit() {
+        return this.getLogOffsetTemperature().map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
     }
 
     public Optional<Boolean> getRelayState() {

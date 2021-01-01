@@ -95,12 +95,24 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
         return this.pointLogs.getTemperature();
     }
 
+    public Optional<String> getTemperatureUnit() {
+        return this.pointLogs.getTemperatureUnit();
+    }
+
     public Optional<Double> getSetpointTemperature() {
         return this.pointLogs.getThermostatTemperature();
     }
 
+    public Optional<String> getSetpointTemperatureUnit() {
+        return this.pointLogs.getThermostatTemperatureUnit();
+    }
+
     public Optional<Double> getOffsetTemperature() {
         return this.pointLogs.getOffsetTemperature();
+    }
+
+    public Optional<String> getOffsetTemperatureUnit() {
+        return this.pointLogs.getOffsetTemperatureUnit();
     }
 
     public Optional<Boolean> getRelayState() {

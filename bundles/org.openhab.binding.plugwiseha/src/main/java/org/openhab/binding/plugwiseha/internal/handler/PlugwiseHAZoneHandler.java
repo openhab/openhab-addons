@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,9 +32,10 @@ import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Location;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -122,8 +124,10 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                         PlugwiseHAController controller = bridge.getController();
                         if (controller != null) {
                             try {
-                                controller.setLocationThermostat(entity, state.doubleValue());
-                                updateState(ZONE_SETPOINT_CHANNEL, (State) command);
+                                Unit<Temperature> unit = location.getSetpointTemperatureUnit().orElse("S") == "S"
+                                        ? SIUnits.CELSIUS
+                                        : ImperialUnits.FAHRENHEIT;
+                                controller.setLocationThermostat(entity, state.toUnit(unit).doubleValue());
                             } catch (PlugwiseHAException e) {
                                 logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
                                         entity.getSetpointTemperature().orElse(null), state.doubleValue());
@@ -163,12 +167,16 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                 break;
             case ZONE_SETPOINT_CHANNEL:
                 if (entity.getSetpointTemperature().isPresent()) {
-                    state = new DecimalType(entity.getSetpointTemperature().get());
+                    Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse("S") == "S" ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getSetpointTemperature().get(), unit);
                 }
                 break;
             case ZONE_TEMPERATURE_CHANNEL:
                 if (entity.getTemperature().isPresent()) {
-                    state = new DecimalType(entity.getTemperature().get());
+                    Unit<Temperature> unit = entity.getTemperatureUnit().orElse("S") == "S" ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getTemperature().get(), unit);
                 }
                 break;
             default:
