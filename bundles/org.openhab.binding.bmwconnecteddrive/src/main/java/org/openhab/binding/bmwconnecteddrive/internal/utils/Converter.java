@@ -102,7 +102,7 @@ public class Converter {
 
     public static String toTitleCase(@Nullable String input) {
         if (input == null) {
-            return Converter.toTitleCase(Constants.UNKNOWN);
+            return Converter.toTitleCase(Constants.UNDEF);
         } else {
             String lower = input.replaceAll(Constants.UNDERLINE, Constants.SPACE).toLowerCase();
             String[] arr = lower.split(Constants.SPACE);

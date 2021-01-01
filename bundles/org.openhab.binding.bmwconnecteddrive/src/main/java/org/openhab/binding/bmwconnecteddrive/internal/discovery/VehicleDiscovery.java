@@ -70,14 +70,14 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         Map<String, String> properties = new HashMap<>();
                         // Dealer
                         if (vehicle.dealer != null) {
-                            properties.put("Dealer", vehicle.dealer.name);
-                            properties.put("DealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
+                            properties.put("dealer", vehicle.dealer.name);
+                            properties.put("dealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
                                     + vehicle.dealer.postalCode + " " + vehicle.dealer.city);
-                            properties.put("DealerPhone", vehicle.dealer.phone);
+                            properties.put("dealerPhone", vehicle.dealer.phone);
                         }
 
                         // Services & Support
-                        properties.put("ServicesActivated", getObject(vehicle, Constants.ACTIVATED));
+                        properties.put("servicesActivated", getObject(vehicle, Constants.ACTIVATED));
                         String servicesSupported = getObject(vehicle, Constants.SUPPORTED);
                         String servicesNotSupported = getObject(vehicle, Constants.NOT_SUPPORTED);
                         if (vehicle.statisticsAvailable) {
@@ -86,8 +86,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                             servicesNotSupported += Constants.STATISTICS;
                         }
                         properties.put(Constants.SERVICES_SUPPORTED, servicesSupported);
-                        properties.put("ServicesNotSupported", servicesNotSupported);
-                        properties.put("SupportBreakdownNumber", vehicle.breakdownNumber);
+                        properties.put("servicesNotSupported", servicesNotSupported);
+                        properties.put("supportBreakdownNumber", vehicle.breakdownNumber);
 
                         // Vehicle Properties
                         if (vehicle.supportedChargingModes != null) {
@@ -95,21 +95,21 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                             vehicle.supportedChargingModes.forEach(e -> {
                                 chargingModes.append(e).append(Constants.SPACE);
                             });
-                            properties.put("VehicleChargeModes", chargingModes.toString());
+                            properties.put("vehicleChargeModes", chargingModes.toString());
                         }
                         if (vehicle.hasAlarmSystem) {
-                            properties.put("VehicleAlarmSystem", "Available");
+                            properties.put("vehicleAlarmSystem", "Available");
                         } else {
-                            properties.put("VehicleAlarmSystem", "Not Available");
+                            properties.put("vehicleAlarmSystem", "Not Available");
                         }
-                        properties.put("VehicleBrand", vehicle.brand);
-                        properties.put("VehicleBodytype", vehicle.bodytype);
-                        properties.put("VehicleColor", vehicle.color);
-                        properties.put("VehicleConstructionYear", Short.toString(vehicle.yearOfConstruction));
-                        properties.put("VehicleDriveTrain", vehicle.driveTrain);
-                        properties.put("VehicleModel", vehicle.model);
+                        properties.put("vehicleBrand", vehicle.brand);
+                        properties.put("vehicleBodytype", vehicle.bodytype);
+                        properties.put("vehicleColor", vehicle.color);
+                        properties.put("vehicleConstructionYear", Short.toString(vehicle.yearOfConstruction));
+                        properties.put("vehicleDriveTrain", vehicle.driveTrain);
+                        properties.put("vehicleModel", vehicle.model);
                         if (vehicle.chargingControl != null) {
-                            properties.put("VehicleChargeControl", Converter.toTitleCase(vehicle.model));
+                            properties.put("vehicleChargeControl", Converter.toTitleCase(vehicle.model));
                         }
 
                         // Check now if a thing with the same VIN exists

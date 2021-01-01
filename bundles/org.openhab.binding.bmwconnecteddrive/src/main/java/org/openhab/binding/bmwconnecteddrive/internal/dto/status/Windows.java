@@ -20,10 +20,10 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
  * @author Bernd Weymann - Initial contribution
  */
 public class Windows {
-    public String windowDriverFront = Constants.UNKNOWN;// ": "CLOSED",
-    public String windowDriverRear = Constants.UNKNOWN;// ": "CLOSED",
-    public String windowPassengerFront = Constants.UNKNOWN;// ": "CLOSED",
-    public String windowPassengerRear = Constants.UNKNOWN;// ": "CLOSED",
-    public String sunroof = Constants.UNKNOWN;// ": "CLOSED",
-    public String rearWindow = Constants.UNKNOWN;// ": "INVALID",
+    public String windowDriverFront = Constants.UNDEF;// ": "CLOSED",
+    public String windowDriverRear = Constants.UNDEF;// ": "CLOSED",
+    public String windowPassengerFront = Constants.UNDEF;// ": "CLOSED",
+    public String windowPassengerRear = Constants.UNDEF;// ": "CLOSED",
+    public String sunroof = Constants.UNDEF;// ": "CLOSED",
+    public String rearWindow = Constants.UNDEF;// ": "INVALID",
 }
