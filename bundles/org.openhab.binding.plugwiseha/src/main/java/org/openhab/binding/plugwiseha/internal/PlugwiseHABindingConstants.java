@@ -111,7 +111,7 @@ public class PlugwiseHABindingConstants {
     public static final String APPLIANCE_TYPE_THERMOSTATICRADIATORVALUE = "thermostatic_radiator_valve";
 
     // List of Plugwise Maesure Units
-    public static final String UNIT_CELSIUS = "S";
+    public static final String UNIT_CELSIUS = "C";
 
     // Supported things
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
