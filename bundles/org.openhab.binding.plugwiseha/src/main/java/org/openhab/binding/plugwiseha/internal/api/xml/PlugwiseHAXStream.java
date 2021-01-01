@@ -92,15 +92,4 @@ public class PlugwiseHAXStream extends XStream {
         // Register custom converters
         this.registerConverter(new DateTimeConverter());
     }
-
-    // Public methods
-
-    public void prettyPrint(Object object) {
-        BufferedOutputStream stdout = new BufferedOutputStream(System.out);
-        prettyPrint(object, new OutputStreamWriter(stdout));
-    }
-
-    public void prettyPrint(Object object, OutputStreamWriter outputStreamWriter) {
-        this.marshal(object, new PrettyPrintWriter(outputStreamWriter, PlugwiseHAXStream.customCoder));
-    }
 }
