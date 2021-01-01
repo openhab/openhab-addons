@@ -163,6 +163,9 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
     }
 
     private void push() {
+        if (data == null) {
+            return;
+        }
         data.getChannel().forEach(c -> {
             try {
                 String json = gson.toJson(c);

@@ -39,9 +39,13 @@ public class WlanThermoNanoV1CommandHandler {
 
     public State getState(ChannelUID channelUID, Data data, Settings settings) {
         State state = null;
+        String groupId = channelUID.getGroupId();
+        if (groupId == null || data == null || settings == null) {
+            return null;
+        }
         System system = data.getSystem();
         List<Channel> channel = data.getChannel();
-        if ("system".equals(channelUID.getGroupId()) && system != null) {
+        if ("system".equals(groupId) && system != null) {
             switch (channelUID.getIdWithoutGroup()) {
                 case SYSTEM_SOC:
                     state = new DecimalType(system.getSoc());
@@ -66,7 +70,7 @@ public class WlanThermoNanoV1CommandHandler {
                     break;
             }
         } else if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
+            int channelId = Integer.parseInt(groupId.substring("channel".length())) - 1;
             if (channel.size() > 0 && channelId <= channel.size()) {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -154,9 +158,13 @@ public class WlanThermoNanoV1CommandHandler {
 
     public boolean setState(ChannelUID channelUID, Command command, Data data) {
         boolean success = false;
+        String groupId = channelUID.getGroupId();
+        if (groupId == null || data == null) {
+            return false;
+        }
         List<Channel> channel = data.getChannel();
         if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
+            int channelId = Integer.parseInt(groupId.substring("channel".length())) - 1;
             if (channel.size() > 0 && channelId <= channel.size()) {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -167,13 +175,13 @@ public class WlanThermoNanoV1CommandHandler {
                         break;
                     case CHANNEL_MIN:
                         if (command instanceof QuantityType) {
-                            channel.get(channelId).setMin(((QuantityType) command).doubleValue());
+                            channel.get(channelId).setMin(((QuantityType<?>) command).doubleValue());
                             success = true;
                         }
                         break;
                     case CHANNEL_MAX:
                         if (command instanceof QuantityType) {
-                            channel.get(channelId).setMax(((QuantityType) command).doubleValue());
+                            channel.get(channelId).setMax(((QuantityType<?>) command).doubleValue());
                             success = true;
                         }
                         break;
@@ -215,15 +223,15 @@ public class WlanThermoNanoV1CommandHandler {
                 Pm pm = data.getPitmaster().getPm().get(0);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PITMASTER_CHANNEL_ID:
-                        pm.setChannel(((QuantityType) command).intValue());
+                        pm.setChannel(((QuantityType<?>) command).intValue());
                         success = true;
                         break;
                     case CHANNEL_PITMASTER_PIDPROFILE:
-                        pm.setPid(((QuantityType) command).intValue());
+                        pm.setPid(((QuantityType<?>) command).intValue());
                         success = true;
                         break;
                     case CHANNEL_PITMASTER_SETPOINT:
-                        pm.setSet(((QuantityType) command).doubleValue());
+                        pm.setSet(((QuantityType<?>) command).doubleValue());
                         success = true;
                         break;
                     case CHANNEL_PITMASTER_STATE:
@@ -241,9 +249,13 @@ public class WlanThermoNanoV1CommandHandler {
 
     public String getTrigger(ChannelUID channelUID, Data data) {
         String trigger = null;
+        String groupId = channelUID.getGroupId();
+        if (groupId == null || data == null) {
+            return null;
+        }
         List<Channel> channel = data.getChannel();
         if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
+            int channelId = Integer.parseInt(groupId.substring("channel".length())) - 1;
             if (channel.size() > 0 && channelId <= channel.size()) {
                 if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
                     if (channel.get(channelId).getTemp() != 999) {

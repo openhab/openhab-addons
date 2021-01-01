@@ -34,7 +34,11 @@ public class WlanThermoMiniCommandHandler {
 
     public State getState(ChannelUID channelUID, App app) {
         State state = null;
-        if ("system".equals(channelUID.getGroupId())) {
+        String groupId = channelUID.getGroupId();
+        if (groupId == null || app == null) {
+            return null;
+        }
+        if ("system".equals(groupId)) {
             switch (channelUID.getIdWithoutGroup()) {
                 case WlanThermoBindingConstants.SYSTEM_CPU_TEMP:
                     if (app.getCpuTemp() == null) {
@@ -52,7 +56,7 @@ public class WlanThermoMiniCommandHandler {
                     break;
             }
         } else if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length()));
+            int channelId = Integer.parseInt(groupId.substring("channel".length()));
             if (channelId >= 0 && channelId <= 9) {
                 Channel channel = app.getChannel();
                 if (channel == null) {
@@ -104,9 +108,9 @@ public class WlanThermoMiniCommandHandler {
             }
         } else if (channelUID.getId().startsWith("pit")) {
             Pit pit;
-            if (channelUID.getGroupId().equals("pit1")) {
+            if (groupId.equals("pit1")) {
                 pit = app.getPit();
-            } else if (channelUID.getGroupId().equals("pit2")) {
+            } else if (groupId.equals("pit2")) {
                 pit = app.getPit2();
             } else {
                 return UnDefType.UNDEF;
@@ -140,8 +144,12 @@ public class WlanThermoMiniCommandHandler {
 
     public String getTrigger(ChannelUID channelUID, App app) {
         String trigger = null;
+        String groupId = channelUID.getGroupId();
+        if (groupId == null || app == null) {
+            return null;
+        }
         if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
+            int channelId = Integer.parseInt(groupId.substring("channel".length())) - 1;
             if (channelId >= 0 && channelId <= 9) {
                 Channel channel = app.getChannel();
                 if (channel == null) {

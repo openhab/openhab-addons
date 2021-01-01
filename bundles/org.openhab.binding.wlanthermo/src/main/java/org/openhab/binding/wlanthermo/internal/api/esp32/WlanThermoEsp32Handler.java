@@ -137,6 +137,12 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
             settings = gson.fromJson(json, Settings.class);
             logger.debug("Received at /settings: {}", json);
 
+            if (data == null || settings == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to parse Data and/or Settings values!");
+                return;
+            }
+
             // Update Channels if required
             Map<String, String> properties = editProperties();
             Boolean pmEnabled = settings.getFeatures().getBluetooth();
@@ -181,6 +187,9 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
     }
 
     private void push() {
+        if (data == null) {
+            return;
+        }
         data.getChannel().forEach(c -> {
             try {
                 String json = gson.toJson(c);
