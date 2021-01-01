@@ -169,6 +169,14 @@ public class HeatpumpConnector {
 
         result = new int[arraylength];
 
+        if (value == 3005) {
+            byte[] data = datain.readNBytes(arraylength);
+            for (int i = 0; i < data.length; i++) {
+                result[i] = (int) data[i];
+            }
+            return result;
+        }
+
         for (int i = 0; i < arraylength; i++) {
             result[i] = datain.readInt();
         }

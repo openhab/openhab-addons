@@ -71,7 +71,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
             // read all parameters
             int[] heatpumpParams = connector.getParams();
-            int[] heatpumpVisibilities = connector.getVisibilities();
+            // int[] heatpumpVisibilities = connector.getVisibilities();
 
             for (HeatpumpChannel channel : HeatpumpChannel.values()) {
 
@@ -101,7 +101,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
         } catch (Exception e) {
             logger.warn("Could not connect to heatpump (uuid={}, ip={}, port={}): {}", thing.getUID(), config.ipAddress,
-                    config.port, e.getMessage());
+                    config.port, e.getStackTrace());
         } finally {
             connector.disconnect();
         }
