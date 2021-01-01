@@ -252,9 +252,6 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
         State state = getDefaultState(channelID);
         PlugwiseHAThingConfig config = getPlugwiseThingConfig();
 
-        // TODO Fetch appliance from API to force refresh - use synchronized block to
-        // prevent multiple threads from calling
-
         switch (channelID) {
             case APPLIANCE_BATTERYLEVEL_CHANNEL: {
                 Double batteryLevel = entity.getBatteryLevel().orElse(null);
@@ -402,28 +399,28 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
     protected void setApplianceProperties() {
         Map<String, String> properties = editProperties();
         logger.debug("Setting thing properties");
+        Appliance localAppliance = this.appliance;
+        if (localAppliance != null) {
+            properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_DESCRIPTION, localAppliance.getDescription());
+            properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_TYPE, localAppliance.getType());
+            properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_FUNCTIONALITIES,
+                    String.join(", ", localAppliance.getActuatorFunctionalities().keySet()));
 
-        properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_DESCRIPTION, this.appliance.getDescription());
-        properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_TYPE, this.appliance.getType());
+            if (localAppliance.isZigbeeDevice()) {
+                properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_ZB_TYPE,
+                        localAppliance.getZigbeeNode().getType());
+                properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_ZB_REACHABLE,
+                        localAppliance.getZigbeeNode().getReachable());
+                properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_ZB_POWERSOURCE,
+                        localAppliance.getZigbeeNode().getPowerSource());
+                properties.put(Thing.PROPERTY_MAC_ADDRESS, localAppliance.getZigbeeNode().getMacAddress());
+            }
 
-        properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_FUNCTIONALITIES,
-                String.join(", ", this.appliance.getActuatorFunctionalities().keySet()));
-
-        if (this.appliance.isZigbeeDevice()) {
-            properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_ZB_TYPE,
-                    this.appliance.getZigbeeNode().getType());
-            properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_ZB_REACHABLE,
-                    this.appliance.getZigbeeNode().getReachable());
-            properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_ZB_POWERSOURCE,
-                    this.appliance.getZigbeeNode().getPowerSource());
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, this.appliance.getZigbeeNode().getMacAddress());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, localAppliance.getModule().getFirmwareVersion());
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, localAppliance.getModule().getHardwareVersion());
+            properties.put(Thing.PROPERTY_VENDOR, localAppliance.getModule().getVendorName());
+            properties.put(Thing.PROPERTY_MODEL_ID, localAppliance.getModule().getVendorModel());
         }
-
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, this.appliance.getModule().getFirmwareVersion());
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, this.appliance.getModule().getHardwareVersion());
-        properties.put(Thing.PROPERTY_VENDOR, this.appliance.getModule().getVendorName());
-        properties.put(Thing.PROPERTY_MODEL_ID, this.appliance.getModule().getVendorModel());
-
         updateProperties(properties);
     }
 }

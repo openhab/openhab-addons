@@ -19,8 +19,6 @@ import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -158,9 +156,6 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
         String channelID = channelUID.getIdWithoutGroup();
         State state = getDefaultState(channelID);
 
-        // TODO Fetch location from API to force refresh - use synchronized block to prevent multiple threads from
-        // calling
-
         switch (channelID) {
             case ZONE_PRESETSCENE_CHANNEL:
                 state = new StringType(entity.getPreset());
@@ -194,14 +189,14 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
         if (this.location != null) {
             Map<String, String> properties = editProperties();
 
-            Optional.ofNullable(this.location.getActuatorFunctionalities()).ifPresent(actuatorFunctionalities -> {
-                properties.put("functionalities", actuatorFunctionalities.keySet().stream().map(e -> e.toString())
-                        .collect(Collectors.joining(", ")));
-
-            });
-
-            properties.put("description", Optional.ofNullable(this.location.getDescription()).orElse(""));
-            properties.put("type", Optional.ofNullable(this.location.getType()).orElse(""));
+            Location localLocation = this.location;
+            if (localLocation != null) {
+                properties.put(PlugwiseHABindingConstants.LOCATION_PROPERTY_DESCRIPTION,
+                        localLocation.getDescription());
+                properties.put(PlugwiseHABindingConstants.LOCATION_PROPERTY_TYPE, localLocation.getType());
+                properties.put(PlugwiseHABindingConstants.LOCATION_PROPERTY_FUNCTIONALITIES,
+                        String.join(", ", localLocation.getActuatorFunctionalities().keySet()));
+            }
 
             updateProperties(properties);
         }

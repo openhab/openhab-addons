@@ -75,13 +75,18 @@ public class PlugwiseHABindingConstants {
     public static final String APPLIANCE_CONFIG_NAME = "applianceName";
     public static final String APPLIANCE_CONFIG_LOWBATTERY = "lowBatteryPercentage";
 
-    // List of all Appliance propertiesCONFIG_ID
+    // List of all Appliance properties
     public static final String APPLIANCE_PROPERTY_DESCRIPTION = "description";
     public static final String APPLIANCE_PROPERTY_TYPE = "type";
     public static final String APPLIANCE_PROPERTY_FUNCTIONALITIES = "functionalities";
     public static final String APPLIANCE_PROPERTY_ZB_TYPE = "zigbee type";
     public static final String APPLIANCE_PROPERTY_ZB_REACHABLE = "zigbee reachable";
     public static final String APPLIANCE_PROPERTY_ZB_POWERSOURCE = "zigboo power source";
+
+    // List of all Location properties
+    public static final String LOCATION_PROPERTY_DESCRIPTION = "description";
+    public static final String LOCATION_PROPERTY_TYPE = "type";
+    public static final String LOCATION_PROPERTY_FUNCTIONALITIES = "functionalities";
 
     // List of all Channel IDs
     public static final String ZONE_SETPOINT_CHANNEL = "setpointTemperature";
