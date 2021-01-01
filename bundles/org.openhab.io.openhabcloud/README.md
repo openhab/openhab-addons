@@ -11,6 +11,12 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 * It serves as a connector to Google Cloud Messaging (GCM) and Apple Push Notifications (APN) for pushing notifications to mobile phone apps.
 * It brings integration possibilities with services that require an OAuth2 authentication against a web server, such as IFTTT or Amazon Alexa Skills.
 
+## Installation via UI
+
+* Open the openHAB web portal and login as an administrator.
+* Click on Settings, followed by Misc (in the Add-ons section)
+* Using the + button on the bottom right you can install the openHAB Cloud Add-on
+
 ## UUID and Secret
 
 To authenticate with the openHAB Cloud service the add-on generates two values when the add-on is installed.
@@ -26,12 +32,12 @@ Location of UUID and Secret:
 
 | File   | Regular Installation         | APT Installation                      |
 |--------|------------------------------|---------------------------------------|
-| UUID   | userdata/uuid                | /var/lib/openhab2/uuid                |
-| Secret | userdata/openhabcloud/secret | /var/lib/openhab2/openhabcloud/secret |
+| UUID   | userdata/uuid                | /var/lib/openhab/uuid                 |
+| Secret | userdata/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret  |
 
 ## Configuration
 
-After installing this add-on, you will find configuration options in the Paper UI under _Configuration->Services->IO->openHAB Cloud_:
+After installing this add-on, you will find configuration options in the openHAB portal under _Settings -> Other Services -> openHAB Cloud_:
 
 ![Configuration](contrib/doc/cfg.png)
 
