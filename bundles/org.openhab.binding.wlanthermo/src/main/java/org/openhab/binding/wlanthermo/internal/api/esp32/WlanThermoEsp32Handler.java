@@ -184,7 +184,6 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
         data.getChannel().forEach(c -> {
             try {
                 String json = gson.toJson(c);
-                logger.debug("Pushing: {}", json);
                 URI uri = config.getUri("/setchannels");
                 int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
                         .timeout(5, TimeUnit.SECONDS).send().getStatus();
@@ -194,6 +193,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 } else if (status != 200) {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
                             + c.getName() + " on device, Statuscode " + status + " on URI " + uri.toString());
+                    logger.debug("Payload sent: {}", json);
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
