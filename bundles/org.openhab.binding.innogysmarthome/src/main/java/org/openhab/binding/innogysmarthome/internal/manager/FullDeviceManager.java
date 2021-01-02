@@ -62,7 +62,9 @@ public class FullDeviceManager {
 
         final List<Device> deviceList = client.getDevices(deviceStateMap.keySet());
         for (final Device device : deviceList) {
-            initializeDevice(device, deviceStateMap.get(device.getId()), locationMap, capabilityMap, messageMap);
+            final String deviceId = device.getId();
+            initializeDevice(device, deviceStateMap.get(deviceId), locationMap, capabilityMap,
+                    messageMap.get(deviceId));
         }
         return deviceList;
     }
@@ -74,7 +76,7 @@ public class FullDeviceManager {
     public Device getFullDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         final Map<String, Location> locationMap = createLocationMap(client);
         final Map<String, Capability> capabilityMap = createCapabilityMap(deviceId, client);
-        final Map<String, List<Message>> messageMap = createMessageMap(deviceId, client);
+        final List<Message> messageMap = createMessageMap(deviceId, client);
 
         final DeviceState deviceState = new DeviceState();
         deviceState.setId(deviceId);
@@ -86,7 +88,7 @@ public class FullDeviceManager {
     }
 
     private void initializeDevice(Device device, @Nullable DeviceState deviceState, Map<String, Location> locationMap,
-            Map<String, Capability> capabilityMap, Map<String, List<Message>> messageMap)
+            Map<String, Capability> capabilityMap, @Nullable List<Message> messageList)
             throws ApiException, IOException, AuthenticationException {
         final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
 
@@ -100,7 +102,7 @@ public class FullDeviceManager {
 
         device.setCapabilityMap(createDeviceCapabilityMap(device, capabilityMap, capabilityStateMap));
 
-        device.setMessageList(messageMap.get(device.getId()));
+        device.setMessageList(messageList);
     }
 
     private static boolean isBatteryPowered(Device device) {
@@ -171,7 +173,7 @@ public class FullDeviceManager {
         return deviceStateMap;
     }
 
-    private Map<String, List<Message>> createMessageMap(String deviceId, InnogyClient client)
+    private List<Message> createMessageMap(String deviceId, InnogyClient client)
             throws IOException, ApiException, AuthenticationException {
         final List<Message> messages = client.getMessages();
         final List<Message> messageList = new ArrayList<>();
@@ -187,10 +189,7 @@ public class FullDeviceManager {
                 }
             }
         }
-
-        Map<String, List<Message>> messageMap = new HashMap<>(1);
-        messageMap.put(deviceId, messageList);
-        return messageMap;
+        return messageList;
     }
 
     private static Map<String, List<Message>> createMessageMap(InnogyClient client)
