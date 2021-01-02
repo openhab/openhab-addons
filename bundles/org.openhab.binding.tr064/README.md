@@ -77,7 +77,8 @@ by examining the SCPD of the root device, the simplest way to obtain it is throu
 
 Auto discovery may find several sub-devices, each one holding channels as described in the following.
 
-The LAN sub-device, in particular, is also used for presence detection. It therefore optionally contains
+The LAN sub-device, in particular, is also used for presence detection.
+It therefore optionally contains
 a channel for each MAC address (in a format 11:11:11:11:11:11, different than the old v1 version of this binding),
 defined by the parameter `macOnline`.
 This is an optional parameter and multiple values are allowed:  add one value per line in the Main User Interface.
