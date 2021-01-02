@@ -548,15 +548,15 @@
 		<label>Reason shutdown 0 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -565,15 +565,15 @@
 		<label>Reason shutdown 1 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -582,15 +582,15 @@
 		<label>Reason shutdown 2 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -599,15 +599,15 @@
 		<label>Reason shutdown 3 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -616,15 +616,15 @@
 		<label>Reason shutdown 4 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -1353,15 +1353,15 @@
 		<label>Reason shutdown 0 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -1370,15 +1370,15 @@
 		<label>Reason shutdown 1 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -1387,15 +1387,15 @@
 		<label>Reason shutdown 2 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -1404,15 +1404,15 @@
 		<label>Reason shutdown 3 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>
@@ -1421,15 +1421,15 @@
 		<label>Reason shutdown 4 in memory</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Heat pump malfunction</option>
-				<option value="2">Facility malfunction</option>
-				<option value="3">Second heat generator operating mode</option>
-				<option value="4">EVU lock</option>
-				<option value="5">Running dew (LW units only)</option>
-				<option value="6">Temperature application limit maximum</option>
-				<option value="7">Temperature application limit minimum</option>
-				<option value="8">Lower operating limit</option>
-				<option value="9">No requirement</option>
+				<option value="1">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronicheatpump.SwitchoffX_file_NrX.state.option.9</option>
 			</options>
 		</state>
 	</channel-type>

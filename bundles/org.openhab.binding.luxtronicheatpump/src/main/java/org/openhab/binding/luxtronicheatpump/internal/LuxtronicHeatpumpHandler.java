@@ -22,7 +22,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxtronicheatpump.internal.enums.HeatpumpChannel;
 import org.openhab.binding.luxtronicheatpump.internal.enums.HeatpumpCoolingOperationMode;
 import org.openhab.binding.luxtronicheatpump.internal.enums.HeatpumpOperationMode;
@@ -50,9 +49,6 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LuxtronicHeatpumpHandler.class);
     private final Lock monitor = new ReentrantLock();
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
-
-    private @Nullable LuxtronicHeatpumpConfiguration config;
-    private @Nullable ScheduledFuture<?> connectFuture;
 
     public LuxtronicHeatpumpHandler(Thing thing) {
         super(thing);
@@ -84,34 +80,25 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
-        config = getConfigAs(LuxtronicHeatpumpConfiguration.class);
-        HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
-
-        try {
-            connector.connect();
-        } catch (UnknownHostException e) {
-            logger.warn("the given hostname '{}' of the Luxtronic heatpump is unknown", config.ipAddress);
-            return;
-        } catch (IOException e) {
-            logger.warn("couldn't establish network connection [host '{}']", config.ipAddress);
-            return;
-        }
-
         if (!(command instanceof DecimalType)) {
             logger.warn("Heatpump operation for item {} must be from type: {}.", channel.getCommand(),
                     DecimalType.class.getSimpleName());
             return;
         }
 
-        int param = channel.getChannelId();
-        int value = -1;
+        Integer param = channel.getChannelId();
+        Integer value = -1;
 
         switch (channel) {
             case CHANNEL_BA_HZ_AKT:
             case CHANNEL_BA_BW_AKT:
                 value = ((DecimalType) command).intValue();
-                if (null == HeatpumpOperationMode.fromValue(value)) {
-                    logger.warn("Heatpump {} mode recevieved invalid value {}.", channel.getCommand(), value);
+                try {
+                    // validate the value is valid
+                    HeatpumpOperationMode.fromValue(value);
+                } catch (Exception e) {
+                    logger.warn("Heatpump {} mode recevieved invalid value {}: {}", channel.getCommand(), value,
+                            e.getMessage());
                     return;
                 }
                 break;
@@ -124,8 +111,12 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
                 break;
             case CHANNEL_EINST_BWSTYP_AKT:
                 value = ((DecimalType) command).intValue();
-                if (null == HeatpumpCoolingOperationMode.fromValue(value)) {
-                    logger.warn("Heatpump {} mode recevieved invalid value {}.", channel.getCommand(), value);
+                try {
+                    // validate the value is valid
+                    HeatpumpCoolingOperationMode.fromValue(value);
+                } catch (Exception e) {
+                    logger.warn("Heatpump {} mode recevieved invalid value {}: {}", channel.getCommand(), value,
+                            e.getMessage());
                     return;
                 }
                 break;
@@ -140,7 +131,7 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
                 break;
         }
 
-        if (value > -1) {
+        if (param != null && value > -1) {
             if (sendParamToHeatpump(param, value)) {
                 logger.info("Heatpump {} mode set to {}.", channel.getCommand(), value);
             }
@@ -151,7 +142,7 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(LuxtronicHeatpumpConfiguration.class);
+        LuxtronicHeatpumpConfiguration config = getConfigAs(LuxtronicHeatpumpConfiguration.class);
 
         if (!config.isValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -165,7 +156,7 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
         HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
 
         try {
-            connector.connect();
+            connector.getValues();
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "the given hostname ''" + config.ipAddress + "' of the heatpump is unknown");
@@ -177,7 +168,6 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        connector.disconnect();
         restartJobs();
     }
 
@@ -189,6 +179,8 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
     }
 
     private void restartJobs() {
+        LuxtronicHeatpumpConfiguration config = getConfigAs(LuxtronicHeatpumpConfiguration.class);
+
         logger.debug("Restarting jobs for thing {}", getThing().getUID());
         monitor.lock();
         try {
@@ -230,9 +222,10 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
      * @param value
      */
     private boolean sendParamToHeatpump(int param, int value) {
+        LuxtronicHeatpumpConfiguration config = getConfigAs(LuxtronicHeatpumpConfiguration.class);
         HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
+
         try {
-            connector.connect();
             return connector.setParam(param, value);
         } catch (UnknownHostException e) {
             logger.warn("the given hostname / ip '{}' of the heatpump is unknown", config.ipAddress);

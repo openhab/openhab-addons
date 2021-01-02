@@ -14,10 +14,11 @@ package org.openhab.binding.luxtronicheatpump.internal.enums;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -27,6 +28,7 @@ import org.openhab.core.library.unit.Units;
  *
  * @author Stefan Giehl - Initial contribution
  */
+@NonNullByDefault
 public enum HeatpumpChannel {
 
     // for possible values see https://www.loxwiki.eu/display/LOX/Java+Webinterface
@@ -592,13 +594,10 @@ public enum HeatpumpChannel {
     // Temperatur Brauchwasser Oben
     CHANNEL_TEMPERATUR_BW_OBEN(229, "Temperatur_BW_oben", NumberItem.class, SIUnits.CELSIUS, false),
 
-    // Channel 230 (Code_WP_akt_2) represent the heatpump type 2, will be handeled as property
+    // Channel 230 (Code_WP_akt_2) represent the heatpump type 2
 
     // Verdichterfrequenz
     CHANNEL_CODE_FREQ_VD(231, "Freq_VD", NumberItem.class, Units.HERTZ, false),
-
-    // Vollständiger Status (combined values)
-    CHANNEL_STATUS_KOMPLETT(null, "Status_komplett", StringItem.class, null, false),
 
     // Changeable Parameters
     // https://www.loxwiki.eu/display/LOX/Java+Webinterface?preview=/13306044/13307658/3003.txt
@@ -630,14 +629,14 @@ public enum HeatpumpChannel {
     // AT-Unterschreitung
     CHANNEL_EINST_KUHL_ZEIT_AUS_AKT(851, "Einst_Kuhl_Zeit_Aus_akt", NumberItem.class, null, true);
 
-    Integer channelId;
-    String command;
-    Class<? extends Item> itemClass;
-    Unit unit;
-    Boolean isParameter;
+    private @Nullable Integer channelId;
+    private String command;
+    private Class<? extends Item> itemClass;
+    private @Nullable Unit<?> unit;
+    private Boolean isParameter;
 
-    private HeatpumpChannel(Integer channelId, String command, Class<? extends Item> itemClass, Unit unit,
-            Boolean isParameter) {
+    private HeatpumpChannel(@Nullable Integer channelId, String command, Class<? extends Item> itemClass,
+            @Nullable Unit<?> unit, Boolean isParameter) {
         this.channelId = channelId;
         this.command = command;
         this.itemClass = itemClass;
@@ -645,7 +644,7 @@ public enum HeatpumpChannel {
         this.isParameter = isParameter;
     }
 
-    public Integer getChannelId() {
+    public @Nullable Integer getChannelId() {
         return channelId;
     }
 
@@ -657,19 +656,16 @@ public enum HeatpumpChannel {
         return itemClass;
     }
 
-    public Unit getUnit() {
+    public @Nullable Unit<?> getUnit() {
         return unit;
     }
 
     public Boolean isWritable() {
-        return isParameter == true;
+        return isParameter == Boolean.TRUE;
     }
 
     public static HeatpumpChannel fromString(String heatpumpCommand) {
 
-        if ("".equals(heatpumpCommand)) {
-            return null;
-        }
         for (HeatpumpChannel c : HeatpumpChannel.values()) {
 
             if (c.getCommand().equals(heatpumpCommand)) {
@@ -677,7 +673,7 @@ public enum HeatpumpChannel {
             }
         }
 
-        throw new IllegalArgumentException("cannot find luxtronicHeatpumpCommand for '" + heatpumpCommand + "'");
+        throw new IllegalArgumentException("cannot find LuxtronicHeatpump channel for '" + heatpumpCommand + "'");
     }
 
     @Override

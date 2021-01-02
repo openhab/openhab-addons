@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Job to update all channel values
+ * The {@link ChannelUpdaterJob} updates all channel values
  *
  * @author Stefan Giehl - Initial contribution
  */
@@ -64,30 +64,32 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
 
         try {
-            connector.connect();
+            connector.read();
 
             // read all available values
-            int[] heatpumpValues = connector.getValues();
+            Integer[] heatpumpValues = connector.getValues();
 
             // read all parameters
-            int[] heatpumpParams = connector.getParams();
-            // int[] heatpumpVisibilities = connector.getVisibilities();
+            Integer[] heatpumpParams = connector.getParams();
+            // Integer[] heatpumpVisibilities = connector.getVisibilities();
 
             for (HeatpumpChannel channel : HeatpumpChannel.values()) {
 
-                if (channel.getChannelId() == null) {
+                Integer channelId = channel.getChannelId();
+
+                if (channelId == null) {
                     continue; // no channel id to read defined (for channels handeled separatly)
                 }
 
                 Integer rawValue = null;
 
                 if (channel.isWritable().equals(Boolean.TRUE)) {
-                    rawValue = heatpumpParams[channel.getChannelId()];
+                    rawValue = heatpumpParams[channelId];
                 } else {
-                    if (heatpumpValues.length < channel.getChannelId()) {
+                    if (heatpumpValues.length < channelId) {
                         continue; // channel not available
                     }
-                    rawValue = heatpumpValues[channel.getChannelId()];
+                    rawValue = heatpumpValues[channelId];
                 }
 
                 State value = convertValueToState(rawValue, channel.getItemClass(), channel.getUnit());
@@ -102,12 +104,11 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         } catch (Exception e) {
             logger.warn("Could not connect to heatpump (uuid={}, ip={}, port={}): {}", thing.getUID(), config.ipAddress,
                     config.port, e.getStackTrace());
-        } finally {
-            connector.disconnect();
         }
     }
 
-    private @Nullable State convertValueToState(int rawValue, Class<? extends Item> itemClass, Unit unit) {
+    private @Nullable State convertValueToState(Integer rawValue, Class<? extends Item> itemClass,
+            @Nullable Unit<?> unit) {
 
         if (itemClass == SwitchItem.class) {
             return (rawValue == 0) ? OnOffType.OFF : OnOffType.ON;
@@ -153,7 +154,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         return null;
     }
 
-    private String getSoftwareVersion(int[] heatpumpValues) {
+    private String getSoftwareVersion(Integer[] heatpumpValues) {
         String softwareVersion = "";
 
         for (int i = 81; i <= 90; i++) {
@@ -178,7 +179,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         handler.updateState(heatpumpCommandType.getCommand(), state);
     }
 
-    private void updateProperties(int[] heatpumpValues) {
+    private void updateProperties(Integer[] heatpumpValues) {
         String heatpumpType = HeatpumpType.fromCode(heatpumpValues[78]).getName();
 
         setProperty("Heatpump type", heatpumpType);

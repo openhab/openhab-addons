@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.luxtronicheatpump.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * Represents all value heat pump cooling operation modes
+ * Represents all heat pump cooling operation modes
  *
  * @author Stefan Giehl - Initial contribution
  */
+@NonNullByDefault
 public enum HeatpumpCoolingOperationMode {
     AUTOMATIC(1),
     OFF(0);
@@ -37,6 +40,7 @@ public enum HeatpumpCoolingOperationMode {
                 return mode;
             }
         }
-        return null;
+
+        throw new IllegalArgumentException("Invalid heat pump cooling operation mode: '" + value + "'");
     }
 }

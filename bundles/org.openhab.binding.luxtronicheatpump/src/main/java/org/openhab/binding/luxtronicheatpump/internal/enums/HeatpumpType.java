@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.luxtronicheatpump.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents all heatpump types
+ * Represents all heat pump types
  *
  * @author Stefan Giehl - Initial contribution
  */
+@NonNullByDefault
 public enum HeatpumpType {
     TYPE_ERC(0, "ERC"),
     TYPE_SW1(1, "SW1"),

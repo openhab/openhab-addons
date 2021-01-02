@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.luxtronicheatpump.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents all heatpump errors
+ * Represents all possible heatpump errors
  *
  * @author Stefan Giehl - Initial contribution
  */
+@NonNullByDefault
 public enum HeatpumpError {
     ERROR_701(701, "Niederdruckstoerung - Bitte Inst. rufen"),
     ERROR_702(702, "Niederdrucksperre - RESET automatisch"),
