@@ -191,7 +191,7 @@ than the configuration through Main User Interface.
 
 If an advanced user is really motivated to define a textual configuration, it is suggested to perform
 an automatic scan through the user interface first in order to extract the required parameters (namely the different `uuid` of the
-need subdevices).
+needed subdevices).
 
 The definition of the bridge and of the subdevices things is the following
 ```
