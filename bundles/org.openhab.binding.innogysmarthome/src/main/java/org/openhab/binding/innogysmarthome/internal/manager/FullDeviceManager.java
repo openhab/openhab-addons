@@ -71,7 +71,7 @@ public class FullDeviceManager {
 
             device.setLocation(locationMap.get(device.getLocationId()));
 
-            HashMap<String, Capability> deviceCapabilityMap = createDeviceCapabilityMap(device, capabilityMap,
+            Map<String, Capability> deviceCapabilityMap = createDeviceCapabilityMap(device, capabilityMap,
                     capabilityStateMap);
             device.setCapabilityMap(deviceCapabilityMap);
 
@@ -81,10 +81,10 @@ public class FullDeviceManager {
             // messages
             if (messageMap.containsKey(device.getId())) {
                 device.setMessageList(messageMap.get(device.getId()));
-                for (final Message m : device.getMessageList()) {
-                    if (Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType())) {
+                for (final Message message : device.getMessageList()) {
+                    if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType())) {
                         device.setLowBattery(true);
-                        device.setLowBatteryMessageId(m.getId());
+                        device.setLowBatteryMessageId(message.getId());
                     }
                 }
             }
@@ -118,14 +118,8 @@ public class FullDeviceManager {
         device.setLocation(locationMap.get(device.getLocationId()));
 
         // capabilities and their states
-        final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
-        for (final String cl : device.getCapabilities()) {
-
-            final Capability c = capabilityMap.get(Link.getId(cl));
-            c.setCapabilityState(capabilityStateMap.get(c.getId()));
-            deviceCapabilityMap.put(c.getId(), c);
-
-        }
+        final Map<String, Capability> deviceCapabilityMap = createDeviceCapabilityMap(device, capabilityMap,
+                capabilityStateMap);
         device.setCapabilityMap(deviceCapabilityMap);
 
         device.setDeviceState(deviceState);
@@ -187,14 +181,12 @@ public class FullDeviceManager {
     private static HashMap<String, Capability> createDeviceCapabilityMap(Device device,
             Map<String, Capability> capabilityMap, Map<String, CapabilityState> capabilityStateMap) {
         final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
-
-        // capabilities and their states
-        for (final String cl : device.getCapabilities()) {
-            final Capability c = capabilityMap.get(Link.getId(cl));
-            final String capabilityId = c.getId();
+        for (final String capabilityValue : device.getCapabilities()) {
+            final Capability capability = capabilityMap.get(Link.getId(capabilityValue));
+            final String capabilityId = capability.getId();
             final CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
-            c.setCapabilityState(capabilityState);
-            deviceCapabilityMap.put(capabilityId, c);
+            capability.setCapabilityState(capabilityState);
+            deviceCapabilityMap.put(capabilityId, capability);
         }
         return deviceCapabilityMap;
     }
