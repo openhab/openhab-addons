@@ -38,9 +38,7 @@ public class PowermaxSettingsMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
-        super.handleMessage(commManager);
-
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
@@ -51,6 +49,9 @@ public class PowermaxSettingsMessage extends PowermaxBaseMessage {
         int index = message[2] & 0x000000FF;
         int page = message[3] & 0x000000FF;
         int length = 0;
+
+        debug("Page", page, Integer.toString(page));
+        debug("Index", index, Integer.toString(index));
 
         if (getReceiveType() == PowermaxReceiveType.SETTINGS) {
             length = message.length - 6;
@@ -73,19 +74,5 @@ public class PowermaxSettingsMessage extends PowermaxBaseMessage {
         }
 
         return updatedState;
-    }
-
-    @Override
-    public String toString() {
-        String str = super.toString();
-
-        byte[] message = getRawData();
-        int index = message[2] & 0x000000FF;
-        int page = message[3] & 0x000000FF;
-
-        str += "\n - page = " + String.format("%02X (%d)", page, page);
-        str += "\n - index = " + String.format("%02X (%d)", index, index);
-
-        return str;
     }
 }

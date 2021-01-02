@@ -239,7 +239,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         PowermaxBaseMessage message = messageEvent.getMessage();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("onNewMessageReceived(): received message {}",
+            logger.debug("onNewMessageReceived(): received message 0x{} ({})",
+                    HexUtils.bytesToHex(message.getRawData()),
                     (message.getReceiveType() != null) ? message.getReceiveType()
                             : String.format("%02X", message.getCode()));
         }

@@ -32,9 +32,7 @@ public class PowermaxTimeoutMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
-        super.handleMessage(commManager);
-
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         if (commManager != null) {
             commManager.sendMessage(PowermaxSendType.EXIT);
         }

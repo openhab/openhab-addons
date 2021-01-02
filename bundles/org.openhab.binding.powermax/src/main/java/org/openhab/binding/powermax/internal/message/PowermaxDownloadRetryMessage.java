@@ -32,9 +32,7 @@ public class PowermaxDownloadRetryMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
-        super.handleMessage(commManager);
-
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
@@ -42,20 +40,10 @@ public class PowermaxDownloadRetryMessage extends PowermaxBaseMessage {
         byte[] message = getRawData();
         int waitTime = message[4] & 0x000000FF;
 
+        debug("Wait time", waitTime + " seconds");
+
         commManager.sendMessageLater(PowermaxSendType.DOWNLOAD, waitTime);
 
         return null;
-    }
-
-    @Override
-    public String toString() {
-        String str = super.toString();
-
-        byte[] message = getRawData();
-        int waitTime = message[4] & 0x000000FF;
-
-        str += "\n - wait time = " + waitTime + " seconds";
-
-        return str;
     }
 }
