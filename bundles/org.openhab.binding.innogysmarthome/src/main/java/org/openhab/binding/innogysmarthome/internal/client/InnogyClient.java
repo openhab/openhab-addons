@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client;
 
-import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 import static org.openhab.binding.innogysmarthome.internal.client.Constants.*;
 
 import java.io.IOException;
@@ -33,7 +32,6 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
@@ -45,7 +43,6 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceS
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Gateway;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.State;
 import org.openhab.binding.innogysmarthome.internal.client.entity.error.ErrorResponse;
-import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
 import org.openhab.binding.innogysmarthome.internal.client.entity.location.Location;
 import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
 import org.openhab.binding.innogysmarthome.internal.client.exception.ApiException;
@@ -323,7 +320,7 @@ public class InnogyClient {
      * @param deviceIds Ids of the devices to return
      * @return List of Devices
      */
-    private List<Device> getDevices(Collection<String> deviceIds)
+    public List<Device> getDevices(Collection<String> deviceIds)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading innogy devices...");
         List<Device> devices = executeGetList(API_URL_DEVICE, Device[].class);
@@ -333,184 +330,9 @@ public class InnogyClient {
     /**
      * Loads the {@link Device} with the given deviceId.
      */
-    private Device getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
+    public Device getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device with id {}...", deviceId);
         return executeGet(API_URL_DEVICE_ID.replace("{id}", deviceId), Device.class);
-    }
-
-    /**
-     * Returns a {@link List} of all {@link Device}s with the full configuration details, {@link Capability}s and
-     * states. Calling this may take a while...
-     */
-    public List<Device> getFullDevices() throws IOException, ApiException, AuthenticationException {
-        // LOCATIONS
-        final List<Location> locationList = getLocations();
-        final Map<String, Location> locationMap = new HashMap<>();
-        for (final Location l : locationList) {
-            locationMap.put(l.getId(), l);
-        }
-
-        // CAPABILITIES
-        final List<Capability> capabilityList = getCapabilities();
-        final Map<String, Capability> capabilityMap = new HashMap<>();
-        for (final Capability c : capabilityList) {
-            capabilityMap.put(c.getId(), c);
-        }
-
-        // CAPABILITY STATES
-        final List<CapabilityState> capabilityStateList = getCapabilityStates();
-        final Map<String, CapabilityState> capabilityStateMap = new HashMap<>();
-        for (final CapabilityState cs : capabilityStateList) {
-            capabilityStateMap.put(cs.getId(), cs);
-        }
-
-        // DEVICE STATES
-        final List<DeviceState> deviceStateList = getDeviceStates();
-        final Map<String, DeviceState> deviceStateMap = new HashMap<>();
-        for (final DeviceState es : deviceStateList) {
-            deviceStateMap.put(es.getId(), es);
-        }
-
-        // MESSAGES
-        final List<Message> messageList = getMessages();
-        final Map<String, List<Message>> deviceMessageMap = new HashMap<>();
-        for (final Message m : messageList) {
-            if (m.getDevices() != null && !m.getDevices().isEmpty()) {
-                final String deviceId = m.getDevices().get(0).replace("/device/", "");
-                List<Message> ml;
-                if (deviceMessageMap.containsKey(deviceId)) {
-                    ml = deviceMessageMap.get(deviceId);
-                } else {
-                    ml = new ArrayList<>();
-                }
-                ml.add(m);
-                deviceMessageMap.put(deviceId, ml);
-            }
-        }
-
-        // DEVICES
-        final List<Device> deviceList = getDevices(deviceStateMap.keySet());
-        for (final Device d : deviceList) {
-            if (InnogyBindingConstants.BATTERY_POWERED_DEVICES.contains(d.getType())) {
-                d.setIsBatteryPowered(true);
-            }
-
-            // location
-            d.setLocation(locationMap.get(d.getLocationId()));
-            final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
-
-            // capabilities and their states
-            for (final String cl : d.getCapabilityLinkList()) {
-                final Capability c = capabilityMap.get(Link.getId(cl));
-                final String capabilityId = c.getId();
-                final CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
-                c.setCapabilityState(capabilityState);
-                deviceCapabilityMap.put(capabilityId, c);
-            }
-            d.setCapabilityMap(deviceCapabilityMap);
-
-            // device states
-            d.setDeviceState(deviceStateMap.get(d.getId()));
-
-            // messages
-            if (deviceMessageMap.containsKey(d.getId())) {
-                d.setMessageList(deviceMessageMap.get(d.getId()));
-                for (final Message m : d.getMessageList()) {
-                    if (Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType())) {
-                        d.setLowBattery(true);
-                        d.setLowBatteryMessageId(m.getId());
-                    }
-                }
-            }
-        }
-
-        return deviceList;
-    }
-
-    /**
-     * Returns the {@link Device} with the given deviceId with full configuration details, {@link Capability}s and
-     * states. Calling this may take a little bit longer...
-     */
-    public Device getFullDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
-        // LOCATIONS
-        final List<Location> locationList = getLocations();
-        final Map<String, Location> locationMap = new HashMap<>();
-        for (final Location l : locationList) {
-            locationMap.put(l.getId(), l);
-        }
-
-        // CAPABILITIES FOR DEVICE
-        final List<Capability> capabilityList = getCapabilitiesForDevice(deviceId);
-        final Map<String, Capability> capabilityMap = new HashMap<>();
-        for (final Capability c : capabilityList) {
-            capabilityMap.put(c.getId(), c);
-        }
-
-        // CAPABILITY STATES
-        final List<CapabilityState> capabilityStateList = getCapabilityStates();
-        final Map<String, CapabilityState> capabilityStateMap = new HashMap<>();
-        for (final CapabilityState cs : capabilityStateList) {
-            capabilityStateMap.put(cs.getId(), cs);
-        }
-
-        // DEVICE STATE
-        final State state = getDeviceStateByDeviceId(deviceId);
-        final DeviceState deviceState = new DeviceState();
-        deviceState.setId(deviceId);
-        deviceState.setState(state);
-
-        // MESSAGES
-        final List<Message> messageList = getMessages();
-        final List<Message> ml = new ArrayList<>();
-        final String deviceIdPath = "/device/" + deviceId;
-
-        for (final Message m : messageList) {
-            logger.trace("Message Type {} with ID {}", m.getType(), m.getId());
-            if (m.getDevices() != null && !m.getDevices().isEmpty()) {
-                for (final String li : m.getDevices()) {
-                    if (deviceIdPath.equals(li)) {
-                        ml.add(m);
-                    }
-                }
-            }
-        }
-
-        // DEVICE
-        final Device d = getDeviceById(deviceId);
-        if (BATTERY_POWERED_DEVICES.contains(d.getType())) {
-            d.setIsBatteryPowered(true);
-            d.setLowBattery(false);
-        }
-
-        // location
-        d.setLocation(locationMap.get(d.getLocationId()));
-
-        // capabilities and their states
-        final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
-        for (final String cl : d.getCapabilityLinkList()) {
-
-            final Capability c = capabilityMap.get(Link.getId(cl));
-            c.setCapabilityState(capabilityStateMap.get(c.getId()));
-            deviceCapabilityMap.put(c.getId(), c);
-
-        }
-        d.setCapabilityMap(deviceCapabilityMap);
-
-        // device states
-        d.setDeviceState(deviceState);
-
-        // messages
-        if (!ml.isEmpty()) {
-            d.setMessageList(ml);
-            for (final Message m : d.getMessageList()) {
-                if (Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType())) {
-                    d.setLowBattery(true);
-                    d.setLowBatteryMessageId(m.getId());
-                }
-            }
-        }
-
-        return d;
     }
 
     /**
@@ -524,7 +346,7 @@ public class InnogyClient {
     /**
      * Loads the device state for the given deviceId.
      */
-    private State getDeviceStateByDeviceId(final String deviceId)
+    public State getDeviceStateByDeviceId(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states for device id {}...", deviceId);
         return executeGet(API_URL_DEVICE_ID_STATE.replace("{id}", deviceId), State.class);
@@ -535,7 +357,7 @@ public class InnogyClient {
      *
      * @return a List of Devices
      */
-    private List<Location> getLocations() throws IOException, ApiException, AuthenticationException {
+    public List<Location> getLocations() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading locations...");
         return executeGetList(API_URL_LOCATION, Location[].class);
     }
@@ -546,7 +368,7 @@ public class InnogyClient {
      * @param deviceId the id of the {@link Device}
      * @return capabilities of the device
      */
-    private List<Capability> getCapabilitiesForDevice(final String deviceId)
+    public List<Capability> getCapabilitiesForDevice(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities for device {}...", deviceId);
         return executeGetList(API_URL_DEVICE_CAPABILITIES.replace("{id}", deviceId), Capability[].class);
@@ -555,7 +377,7 @@ public class InnogyClient {
     /**
      * Loads and returns a {@link List} of all {@link Capability}s.
      */
-    private List<Capability> getCapabilities() throws IOException, ApiException, AuthenticationException {
+    public List<Capability> getCapabilities() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities...");
         return executeGetList(API_URL_CAPABILITY, Capability[].class);
     }
@@ -563,7 +385,7 @@ public class InnogyClient {
     /**
      * Loads and returns a {@link List} of all {@link Capability}States.
      */
-    private List<CapabilityState> getCapabilityStates() throws IOException, ApiException, AuthenticationException {
+    public List<CapabilityState> getCapabilityStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capability states...");
         return executeGetList(API_URL_CAPABILITY_STATES, CapabilityState[].class);
     }
@@ -571,7 +393,7 @@ public class InnogyClient {
     /**
      * Returns a {@link List} of all {@link Message}s.
      */
-    private List<Message> getMessages() throws IOException, ApiException, AuthenticationException {
+    public List<Message> getMessages() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading messages...");
         return executeGetList(API_URL_MESSAGE, Message[].class);
     }
