@@ -54,7 +54,7 @@ public class DeviceTest {
     }
 
     @Test
-    public void testSetMessageListReset() {
+    public void testSetMessageListResetByEmpty() {
         Device device = createDevice();
 
         assertNull(device.getMessageList());
@@ -72,6 +72,53 @@ public class DeviceTest {
         device.setMessageList(Collections.emptyList());
 
         assertEquals(Collections.emptyList(), device.getMessageList());
+        assertTrue(device.isReachable());
+        assertFalse(device.hasLowBattery());
+    }
+
+    @Test
+    public void testSetMessageListResetByNULL() {
+        Device device = createDevice();
+
+        assertNull(device.getMessageList());
+        assertTrue(device.isReachable());
+        assertFalse(device.hasLowBattery());
+
+        List<Message> messages = Arrays.asList(createMessage(Message.TYPE_DEVICE_LOW_BATTERY),
+                createMessage(Message.TYPE_DEVICE_UNREACHABLE));
+        device.setMessageList(messages);
+
+        assertEquals(messages, device.getMessageList());
+        assertFalse(device.isReachable());
+        assertTrue(device.hasLowBattery());
+
+        device.setMessageList(null);
+
+        assertNull(device.getMessageList());
+        assertTrue(device.isReachable());
+        assertFalse(device.hasLowBattery());
+    }
+
+    @Test
+    public void testSetMessageListResetByUnimportantMessage() {
+        Device device = createDevice();
+
+        assertNull(device.getMessageList());
+        assertTrue(device.isReachable());
+        assertFalse(device.hasLowBattery());
+
+        List<Message> messages = Arrays.asList(createMessage(Message.TYPE_DEVICE_LOW_BATTERY),
+                createMessage(Message.TYPE_DEVICE_UNREACHABLE));
+        device.setMessageList(messages);
+
+        assertEquals(messages, device.getMessageList());
+        assertFalse(device.isReachable());
+        assertTrue(device.hasLowBattery());
+
+        messages = Collections.singletonList(createMessage("UNKNOWN"));
+        device.setMessageList(messages);
+
+        assertEquals(messages, device.getMessageList());
         assertTrue(device.isReachable());
         assertFalse(device.hasLowBattery());
     }
