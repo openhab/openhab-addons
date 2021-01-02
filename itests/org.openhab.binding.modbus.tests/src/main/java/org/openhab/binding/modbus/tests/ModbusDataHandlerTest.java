@@ -34,6 +34,7 @@ import java.util.function.Function;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
@@ -766,6 +767,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
+    @Disabled("See: https://github.com/openhab/openhab-addons/issues/9617")
     public void testRefreshOnData() throws InterruptedException {
         ModbusReadFunctionCode functionCode = ModbusReadFunctionCode.READ_COILS;
 
