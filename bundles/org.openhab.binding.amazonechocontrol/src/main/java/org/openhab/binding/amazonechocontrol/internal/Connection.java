@@ -1053,12 +1053,31 @@ public class Connection {
         return json;
     }
 
-    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<String> applianceIds)
+    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<SmartHomeBaseDevice> devices)
             throws IOException, URISyntaxException, InterruptedException {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
-        for (String applianceId : applianceIds) {
+        Map<String, String> mergedApplianceMap = new HashMap<>();
+        for (var device : devices) {
+            String applianceId = device.findId();
+            if (applianceId == null)
+                continue;
             JsonObject stateRequest = new JsonObject();
+            if (device instanceof SmartHomeDevice) {
+                var mergedApplianceIds = ((SmartHomeDevice) device).mergedApplianceIds;
+                if (mergedApplianceIds != null && mergedApplianceIds.length > 1) {
+                    for (String idToMerge : mergedApplianceIds) {
+                        if (idToMerge != null) {
+                            mergedApplianceMap.put(idToMerge, applianceId);
+                            stateRequest = new JsonObject();
+                            stateRequest.addProperty("entityId", idToMerge);
+                            stateRequest.addProperty("entityType", "APPLIANCE");
+                            stateRequests.add(stateRequest);
+                        }
+                    }
+                    continue;
+                }
+            }
             stateRequest.addProperty("entityId", applianceId);
             stateRequest.addProperty("entityType", "APPLIANCE");
             stateRequests.add(stateRequest);
@@ -1074,10 +1093,21 @@ public class Connection {
         for (JsonElement deviceState : deviceStates) {
             JsonObject deviceStateObject = deviceState.getAsJsonObject();
             JsonObject entity = deviceStateObject.get("entity").getAsJsonObject();
-            String applicanceId = entity.get("entityId").getAsString();
+            String applianceId = entity.get("entityId").getAsString();
             JsonElement capabilityState = deviceStateObject.get("capabilityStates");
             if (capabilityState != null && capabilityState.isJsonArray()) {
-                result.put(applicanceId, capabilityState.getAsJsonArray());
+                String realApplianceId = mergedApplianceMap.get(applianceId);
+                if (realApplianceId != null) {
+                    var capabilityArray = result.get(realApplianceId);
+                    if (capabilityArray != null) {
+                        capabilityArray.addAll(capabilityState.getAsJsonArray());
+                        result.put(realApplianceId, capabilityArray);
+                    } else {
+                        result.put(realApplianceId, capabilityState.getAsJsonArray());
+                    }
+                } else {
+                    result.put(applianceId, capabilityState.getAsJsonArray());
+                }
             }
         }
         return result;

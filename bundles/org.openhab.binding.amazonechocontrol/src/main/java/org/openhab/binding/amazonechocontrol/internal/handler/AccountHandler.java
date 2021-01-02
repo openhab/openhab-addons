@@ -220,7 +220,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     public void addEchoHandler(EchoHandler echoHandler) {
         if (echoHandlers.add(echoHandler)) {
-
             forceCheckData();
         }
     }
@@ -909,9 +908,11 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 return;
             }
             List<SmartHomeBaseDevice> allDevices = getLastKnownSmartHomeDevices();
-            Set<String> applianceIds = new HashSet<>();
+            Set<SmartHomeBaseDevice> targetDevices = new HashSet<>();
             if (deviceFilterId != null) {
-                applianceIds.add(deviceFilterId);
+                var optionalDevice = allDevices.stream().filter(d -> d.findId() == deviceFilterId).findFirst();
+                if (optionalDevice.isPresent())
+                    targetDevices.add(optionalDevice.get());
             } else {
                 SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator = this.smartHomeDeviceStateGroupUpdateCalculator;
                 if (smartHomeDeviceStateGroupUpdateCalculator == null) {
@@ -928,18 +929,18 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             .forEach(devicesToUpdate::add);
                 }
                 smartHomeDeviceStateGroupUpdateCalculator.removeDevicesWithNoUpdate(devicesToUpdate);
-                devicesToUpdate.stream().map(shd -> shd.applianceId).forEach(applianceId -> {
-                    if (applianceId != null) {
-                        applianceIds.add(applianceId);
+                devicesToUpdate.stream().forEach(d -> {
+                    if (d != null) {
+                        targetDevices.add(d);
                     }
                 });
-                if (applianceIds.isEmpty()) {
+                if (targetDevices.isEmpty()) {
                     return;
                 }
 
             }
             Map<String, JsonArray> applianceIdToCapabilityStates = connection
-                    .getSmartHomeDeviceStatesJson(applianceIds);
+                    .getSmartHomeDeviceStatesJson(targetDevices);
 
             for (SmartHomeDeviceHandler smartHomeDeviceHandler : smartHomeDeviceHandlers) {
                 String id = smartHomeDeviceHandler.getId();

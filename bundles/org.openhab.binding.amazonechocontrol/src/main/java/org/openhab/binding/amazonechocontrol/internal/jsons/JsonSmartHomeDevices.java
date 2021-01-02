@@ -53,6 +53,7 @@ public class JsonSmartHomeDevices {
         public @Nullable SmartHomeDevice @Nullable [] groupDevices;
         public @Nullable String connectedVia;
         public @Nullable DriverIdentity driverIdentity;
+        public @Nullable String @Nullable [] mergedApplianceIds;
 
         @Override
         public String toString() {
@@ -64,7 +65,7 @@ public class JsonSmartHomeDevices {
                     + Arrays.toString(capabilities) + ", tags=" + tags + ", applianceTypes="
                     + Arrays.toString(applianceTypes) + ", aliases=" + Arrays.toString(aliases) + ", groupDevices="
                     + Arrays.toString(groupDevices) + ", connectedVia='" + connectedVia + '\'' + ", driverIdentity="
-                    + driverIdentity + '}';
+                    + driverIdentity + ", mergedApplianceIds=" + Arrays.toString(mergedApplianceIds) + '}';
         }
     }
 
