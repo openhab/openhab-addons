@@ -86,6 +86,7 @@ public class BRC1HUartProcessor {
     }
 
     public void chunkReceived(byte[] byteValue) {
+        byte[] fullReceivedMessage = null;
         stateLock.lock();
         try {
             this.uartMessages.add(byteValue);
@@ -102,11 +103,14 @@ public class BRC1HUartProcessor {
                 }
 
                 this.uartMessages.clear();
-
-                this.responseListener.receivedResponse(bos.toByteArray());
+                fullReceivedMessage = bos.toByteArray();
             }
         } finally {
             stateLock.unlock();
+        }
+
+        if (fullReceivedMessage != null) {
+            this.responseListener.receivedResponse(fullReceivedMessage);
         }
     }
 

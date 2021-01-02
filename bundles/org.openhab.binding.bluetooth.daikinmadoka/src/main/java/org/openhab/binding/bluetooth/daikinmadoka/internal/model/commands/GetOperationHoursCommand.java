@@ -23,6 +23,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,10 +80,9 @@ public class GetOperationHoursCommand extends BRC1HCommand {
             Integer iIndoorFanHours = (int) (mm.getValues().get(0x41).getComputedValue(ByteOrder.LITTLE_ENDIAN));
             Integer iIndoorPowerHours = (int) (mm.getValues().get(0x42).getComputedValue(ByteOrder.LITTLE_ENDIAN));
 
-            this.indoorOperationHours = new QuantityType<Time>(iIndoorOperationHours,
-                    org.openhab.core.library.unit.Units.HOUR);
-            this.indoorFanHours = new QuantityType<Time>(iIndoorFanHours, org.openhab.core.library.unit.Units.HOUR);
-            this.indoorPowerHours = new QuantityType<Time>(iIndoorPowerHours, org.openhab.core.library.unit.Units.HOUR);
+            this.indoorOperationHours = new QuantityType<Time>(iIndoorOperationHours, Units.HOUR);
+            this.indoorFanHours = new QuantityType<Time>(iIndoorFanHours, Units.HOUR);
+            this.indoorPowerHours = new QuantityType<Time>(iIndoorPowerHours, Units.HOUR);
 
             logger.debug("indoorOperationHours: {}", indoorOperationHours);
             logger.debug("indoorFanHours: {}", indoorFanHours);

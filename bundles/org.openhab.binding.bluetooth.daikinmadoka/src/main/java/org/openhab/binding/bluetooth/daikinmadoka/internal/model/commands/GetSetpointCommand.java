@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,10 +51,8 @@ public class GetSetpointCommand extends BRC1HCommand {
             Integer iHeatingSetpoint = (int) (mm.getValues().get(0x21).getComputedValue() / 128.);
             Integer iCoolingSetpoint = (int) (mm.getValues().get(0x20).getComputedValue() / 128.);
 
-            this.heatingSetpoint = new QuantityType<Temperature>(iHeatingSetpoint,
-                    org.openhab.core.library.unit.SIUnits.CELSIUS);
-            this.coolingSetpoint = new QuantityType<Temperature>(iCoolingSetpoint,
-                    org.openhab.core.library.unit.SIUnits.CELSIUS);
+            this.heatingSetpoint = new QuantityType<Temperature>(iHeatingSetpoint, SIUnits.CELSIUS);
+            this.coolingSetpoint = new QuantityType<Temperature>(iCoolingSetpoint, SIUnits.CELSIUS);
 
             logger.debug("heatingSetpoint: {}", heatingSetpoint);
             logger.debug("coolingSetpoint: {}", coolingSetpoint);

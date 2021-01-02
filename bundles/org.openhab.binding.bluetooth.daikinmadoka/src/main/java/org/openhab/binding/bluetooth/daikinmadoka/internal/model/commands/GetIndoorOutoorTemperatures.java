@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,13 +67,11 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
         }
 
         if (iIndoorTemperature != null) {
-            indoorTemperature = new QuantityType<Temperature>(iIndoorTemperature,
-                    org.openhab.core.library.unit.SIUnits.CELSIUS);
+            indoorTemperature = new QuantityType<Temperature>(iIndoorTemperature, SIUnits.CELSIUS);
         }
 
         if (iOutdoorTemperature != null) {
-            outdoorTemperature = new QuantityType<Temperature>(iOutdoorTemperature,
-                    org.openhab.core.library.unit.SIUnits.CELSIUS);
+            outdoorTemperature = new QuantityType<Temperature>(iOutdoorTemperature, SIUnits.CELSIUS);
         }
 
         logger.debug("Indoor Temp: {}", indoorTemperature);
