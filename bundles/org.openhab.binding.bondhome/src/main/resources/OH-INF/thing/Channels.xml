@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bondhome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Individual Channels -->
+
+	<channel-type id="powerChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Device power</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="lastUpdateType">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp of last status update</description>
+		<category>Time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fanSpeedChannelType" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Fan Speed</label>
+		<description>Sets fan speed</description>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="breezeStateChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Breeze Mode</label>
+		<description>Enables or disables breeze mode</description>
+	</channel-type>
+
+	<channel-type id="breezeMeanChannelType" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Mean Breeze Speed</label>
+		<description>Sets the average speed in breeze mode. 0 = minimum average speed (calm), 100 = maximum average speed
+			(storm)</description>
+	</channel-type>
+
+	<channel-type id="breezeVariabilityChannelType" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Mean Breeze Speed</label>
+		<description>Sets the variability of the speed in breeze mode. 0 = minimum variation (steady), 100 = maximum variation
+			(gusty)</description>
+	</channel-type>
+
+	<channel-type id="directionChannelType" advanced="false">
+		<item-type>String</item-type>
+		<label>Fan Direction</label>
+		<description>Sets the fan direction; forward or reverse. The forward and reverse modes are sometimes called Summer and
+			Winter</description>
+		<state readOnly="false">
+			<options>
+				<option value="summer">Summer</option>
+				<option value="winter">Winter</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="timerChannelType" advanced="false">
+		<item-type>Number</item-type>
+		<label>Timer</label>
+		<description>Starts a timer for s seconds. If power if off, device is implicitly turned on</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="lightChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Light</label>
+		<description>Turns the light on the ceiling fan on or off</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="brightnessChannelType" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Adjusts the brightness of the fan light</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="dimmerStartStopChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Dimming</label>
+		<description>Starts or stops changing the brightness of the ceiling fan light. The direction of dimming cannot be
+			controlled.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="dimmerIncrChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Increasing Brightness</label>
+		<description>Starts or stops increasing the brightness of the ceiling fan light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="dimmerDcrChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Decreasing Brightness</label>
+		<description>Starts or stops decreasing the brightness of the ceiling fan light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="upLightChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Up Light</label>
+		<description>Turns on the up light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="upLightEnableChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Enable Up Light</label>
+		<description>Enables or disables the up light of the ceiling fan. The light must also be on to turn on the up light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="upLightBrightnessChannelType" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Up Light Brightness</label>
+		<description>Adjusts the brightness of the fan up light</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="upLightDimmerStartStopChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Dimming Up Light</label>
+		<description>Starts or stops changing the brightness of the ceiling fan up light. The direction of dimming cannot be
+			controlled.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="upLightDimmerIncrChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Increasing Up Light Brightness</label>
+		<description>Starts or stops increasing the brightness of the ceiling fan up light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="upLightDimmerDcrChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Decreasing Up Light Brightness</label>
+		<description>Starts or stops decreasing the brightness of the ceiling fan up light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="downLightChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Down Light</label>
+		<description>Turns on the down light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="downLightEnableChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Enable Down Light</label>
+		<description>Enables or disables the down light of the ceiling fan. The light must also be on to turn on the down
+			light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="downLightBrightnessChannelType" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Down Light Brightness</label>
+		<description>Adjusts the brightness of the fan down light</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="downLightDimmerStartStopChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Dimming Down Light</label>
+		<description>Starts or stops changing the brightness of the ceiling fan down light. The direction of dimming cannot be
+			controlled.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="downLightDimmerIncrChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Increasing Down Light Brightness</label>
+		<description>Starts or stops increasing the brightness of the ceiling fan down light.</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="downLightDimmerDcrChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Start Decreasing Down Light Brightness</label>
+		<description>Starts or stops decreasing the brightness of the ceiling fan down light.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="stopChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stops any ongoing change actions</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="flameChannelType" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Flame Level</label>
+		<description>Turns on or adjust the flame level</description>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="fpFanPowerChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Fireplace Fan State</label>
+		<description>Turns the fireplace fan on or off</description>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="fpFanSpeedChannelType" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Fireplace Fan Speed</label>
+		<description>Adjusts the speed of the fireplace fan</description>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="openShadeChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Open</label>
+		<description>Opens or closes motorize shades</description>
+		<category>Rollershutter</category>
+	</channel-type>
+
+	<channel-type id="holdChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Hold</label>
+		<description>Tells a shade to stop moving</description>
+		<category>Rollershutter</category>
+	</channel-type>
+
+	<channel-type id="presetChannelType" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Preset</label>
+		<description>Tells a shade to go to a set preset level</description>
+		<category>Rollershutter</category>
+	</channel-type>
+
+</thing:thing-descriptions>
