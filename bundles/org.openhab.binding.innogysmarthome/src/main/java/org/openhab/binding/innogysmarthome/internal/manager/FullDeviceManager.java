@@ -55,33 +55,11 @@ public class FullDeviceManager {
      * states. Calling this may take a while...
      */
     public List<Device> getFullDevices() throws IOException, ApiException, AuthenticationException {
-        // LOCATIONS
-        final List<Location> locationList = client.getLocations();
-        final Map<String, Location> locationMap = new HashMap<>();
-        for (final Location l : locationList) {
-            locationMap.put(l.getId(), l);
-        }
 
-        // CAPABILITIES
-        final List<Capability> capabilityList = client.getCapabilities();
-        final Map<String, Capability> capabilityMap = new HashMap<>();
-        for (final Capability c : capabilityList) {
-            capabilityMap.put(c.getId(), c);
-        }
-
-        // CAPABILITY STATES
-        final List<CapabilityState> capabilityStateList = client.getCapabilityStates();
-        final Map<String, CapabilityState> capabilityStateMap = new HashMap<>();
-        for (final CapabilityState cs : capabilityStateList) {
-            capabilityStateMap.put(cs.getId(), cs);
-        }
-
-        // DEVICE STATES
-        final List<DeviceState> deviceStateList = client.getDeviceStates();
-        final Map<String, DeviceState> deviceStateMap = new HashMap<>();
-        for (final DeviceState es : deviceStateList) {
-            deviceStateMap.put(es.getId(), es);
-        }
+        final Map<String, Location> locationMap = createLocationMap(client);
+        final Map<String, Capability> capabilityMap = createCapabilityMap(client);
+        final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
+        final Map<String, DeviceState> deviceStateMap = createDeviceStateMap(client);
 
         // MESSAGES
         final List<Message> messageList = client.getMessages();
@@ -144,25 +122,9 @@ public class FullDeviceManager {
      */
     public Device getFullDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         // LOCATIONS
-        final List<Location> locationList = client.getLocations();
-        final Map<String, Location> locationMap = new HashMap<>();
-        for (final Location l : locationList) {
-            locationMap.put(l.getId(), l);
-        }
-
-        // CAPABILITIES FOR DEVICE
-        final List<Capability> capabilityList = client.getCapabilitiesForDevice(deviceId);
-        final Map<String, Capability> capabilityMap = new HashMap<>();
-        for (final Capability c : capabilityList) {
-            capabilityMap.put(c.getId(), c);
-        }
-
-        // CAPABILITY STATES
-        final List<CapabilityState> capabilityStateList = client.getCapabilityStates();
-        final Map<String, CapabilityState> capabilityStateMap = new HashMap<>();
-        for (final CapabilityState cs : capabilityStateList) {
-            capabilityStateMap.put(cs.getId(), cs);
-        }
+        final Map<String, Location> locationMap = createLocationMap(client);
+        final Map<String, Capability> capabilityMap = createCapabilityMap(deviceId, client);
+        final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
 
         // DEVICE STATE
         final State state = client.getDeviceStateByDeviceId(deviceId);
@@ -207,7 +169,6 @@ public class FullDeviceManager {
         }
         device.setCapabilityMap(deviceCapabilityMap);
 
-        // device states
         device.setDeviceState(deviceState);
 
         // messages
@@ -221,5 +182,55 @@ public class FullDeviceManager {
             }
         }
         return device;
+    }
+
+    private static Map<String, Location> createLocationMap(InnogyClient client)
+            throws IOException, ApiException, AuthenticationException {
+        final List<Location> locationList = client.getLocations();
+        final Map<String, Location> locationMap = new HashMap<>(locationList.size());
+        for (final Location location : locationList) {
+            locationMap.put(location.getId(), location);
+        }
+        return locationMap;
+    }
+
+    private static Map<String, CapabilityState> createCapabilityStateMap(InnogyClient client)
+            throws IOException, ApiException, AuthenticationException {
+        final List<CapabilityState> capabilityStateList = client.getCapabilityStates();
+        final Map<String, CapabilityState> capabilityStateMap = new HashMap<>(capabilityStateList.size());
+        for (final CapabilityState capabilityState : capabilityStateList) {
+            capabilityStateMap.put(capabilityState.getId(), capabilityState);
+        }
+        return capabilityStateMap;
+    }
+
+    private static Map<String, Capability> createCapabilityMap(InnogyClient client)
+            throws IOException, ApiException, AuthenticationException {
+        final List<Capability> capabilityList = client.getCapabilities();
+        final Map<String, Capability> capabilityMap = new HashMap<>(capabilityList.size());
+        for (final Capability capability : capabilityList) {
+            capabilityMap.put(capability.getId(), capability);
+        }
+        return capabilityMap;
+    }
+
+    private static Map<String, Capability> createCapabilityMap(String deviceId, InnogyClient client)
+            throws IOException, ApiException, AuthenticationException {
+        final List<Capability> capabilityList = client.getCapabilitiesForDevice(deviceId);
+        final Map<String, Capability> capabilityMap = new HashMap<>(capabilityList.size());
+        for (final Capability capability : capabilityList) {
+            capabilityMap.put(capability.getId(), capability);
+        }
+        return capabilityMap;
+    }
+
+    private static Map<String, DeviceState> createDeviceStateMap(InnogyClient client)
+            throws IOException, ApiException, AuthenticationException {
+        final List<DeviceState> deviceStateList = client.getDeviceStates();
+        final Map<String, DeviceState> deviceStateMap = new HashMap<>(deviceStateList.size());
+        for (final DeviceState deviceState : deviceStateList) {
+            deviceStateMap.put(deviceState.getId(), deviceState);
+        }
+        return deviceStateMap;
     }
 }
