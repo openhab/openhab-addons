@@ -14,10 +14,7 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
 import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.location.Location;
@@ -354,11 +351,22 @@ public class Device {
      * @param messageList the messageList to set
      */
     public void setMessageList(List<Message> messageList) {
-        this.messageList = messageList;
+        if (messageList != null) {
+            this.messageList = messageList;
 
-        for (final Message m : messageList) {
-            setLowBattery(Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType()));
-            setReachable(!Message.TYPE_DEVICE_UNREACHABLE.equals(m.getType()));
+            boolean isReachable = true;
+            for (final Message message : messageList) {
+                switch (message.getType()) {
+                    case Message.TYPE_DEVICE_LOW_BATTERY:
+                        setLowBattery(true);
+                        setLowBatteryMessageId(message.getId());
+                        break;
+                    case Message.TYPE_DEVICE_UNREACHABLE:
+                        isReachable = false;
+                        break;
+                }
+            }
+            setReachable(isReachable);
         }
     }
 
