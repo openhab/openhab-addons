@@ -134,7 +134,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 // Delay the startup in case the handler is restarted immediately
                 globalJob = scheduler.scheduleWithFixedDelay(() -> {
                     try {
-                        logger.debug("Powermax job...");
+                        logger.trace("Powermax job...");
                         updateMotionSensorState();
                         if (isConnected()) {
                             checkKeepAlive();
