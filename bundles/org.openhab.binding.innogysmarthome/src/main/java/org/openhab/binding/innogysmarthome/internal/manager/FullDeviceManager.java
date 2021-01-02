@@ -69,18 +69,10 @@ public class FullDeviceManager {
                 device.setIsBatteryPowered(true);
             }
 
-            // location
             device.setLocation(locationMap.get(device.getLocationId()));
-            final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
 
-            // capabilities and their states
-            for (final String cl : device.getCapabilityLinkList()) {
-                final Capability c = capabilityMap.get(Link.getId(cl));
-                final String capabilityId = c.getId();
-                final CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
-                c.setCapabilityState(capabilityState);
-                deviceCapabilityMap.put(capabilityId, c);
-            }
+            HashMap<String, Capability> deviceCapabilityMap = createDeviceCapabilityMap(device, capabilityMap,
+                    capabilityStateMap);
             device.setCapabilityMap(deviceCapabilityMap);
 
             // device states
@@ -127,7 +119,7 @@ public class FullDeviceManager {
 
         // capabilities and their states
         final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
-        for (final String cl : device.getCapabilityLinkList()) {
+        for (final String cl : device.getCapabilities()) {
 
             final Capability c = capabilityMap.get(Link.getId(cl));
             c.setCapabilityState(capabilityStateMap.get(c.getId()));
@@ -190,6 +182,21 @@ public class FullDeviceManager {
             capabilityMap.put(capability.getId(), capability);
         }
         return capabilityMap;
+    }
+
+    private static HashMap<String, Capability> createDeviceCapabilityMap(Device device,
+            Map<String, Capability> capabilityMap, Map<String, CapabilityState> capabilityStateMap) {
+        final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
+
+        // capabilities and their states
+        for (final String cl : device.getCapabilities()) {
+            final Capability c = capabilityMap.get(Link.getId(cl));
+            final String capabilityId = c.getId();
+            final CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
+            c.setCapabilityState(capabilityState);
+            deviceCapabilityMap.put(capabilityId, c);
+        }
+        return deviceCapabilityMap;
     }
 
     private static Map<String, DeviceState> createDeviceStateMap(InnogyClient client)
