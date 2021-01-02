@@ -6,7 +6,7 @@
 
 	<!-- PiGPIO Thing -->
 	<thing-type id="pigpio-remote" extensible="pigpio-digital-input,pigpio-digital-output">
-		<label>pigpio remote</label>
+		<label>Pigpio Remote</label>
 		<description>The remote pigpio thing represents a remote raspberry pi with pigpio installed. Pins are channels.</description>
 
 		<properties>
@@ -37,8 +37,7 @@
 		<config-description>
 			<parameter name="gpioId" type="integer" required="true">
 				<label>GPIO Pin</label>
-				<description>GPIO pin to use as input
-				</description>
+				<description>GPIO pin to use as input</description>
 			</parameter>
 			<parameter name="invert" type="boolean">
 				<default>false</default>
@@ -46,7 +45,7 @@
 			</parameter>
 			<parameter name="debouncingTime" type="integer" min="0">
 				<context>time</context>
-				<label>Delay time</label>
+				<label>Delay Time</label>
 				<description>Time in ms to double check if value hasn't changed</description>
 				<default>10</default>
 				<advanced>true</advanced>
@@ -56,13 +55,12 @@
 
 	<channel-type id="pigpio-digital-output">
 		<item-type>Switch</item-type>
-		<label>GPIO Digital output</label>
+		<label>GPIO Digital Output</label>
 		<description>Set digital state of a GPIO Pin</description>
 		<config-description>
 			<parameter name="gpioId" type="integer" required="true">
 				<label>GPIO Pin</label>
-				<description>GPIO pin to use as output
-				</description>
+				<description>GPIO pin to use as output</description>
 			</parameter>
 			<parameter name="invert" type="boolean">
 				<default>false</default>

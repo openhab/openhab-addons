@@ -1,6 +1,7 @@
 # GPIO Binding
 
-This binding adds GPIO support via the pigpio daemon to openhab. It requires the pigpio (http://abyz.me.uk/rpi/pigpio/) to be running on the pi that should be controlled.
+This binding adds GPIO support via the pigpio daemon to openhab.
+It requires the pigpio (http://abyz.me.uk/rpi/pigpio/) to be running on the pi that should be controlled.
 
 ## Supported Things
 
@@ -39,11 +40,14 @@ Set `host` to the address of the pi and the `port` to the port of pigpio (defaul
 
 ### GPIO digital input channel
 
-Set the number of the pin in `gpioId` . If you want to invert the value, set `invert` to true. To prevent incorrect change events, you can adjust the `debouncingTime`.
+Set the number of the pin in `gpioId`.
+If you want to invert the value, set `invert` to true.
+To prevent incorrect change events, you can adjust the `debouncingTime`.
 
 ### GPIO digital output channel
 
-Set the number of the pin in `gpioId` . If you want to invert the value, set `invert` to true. 
+Set the number of the pin in `gpioId`.
+If you want to invert the value, set `invert` to true.
 
 ## Full Example
 
