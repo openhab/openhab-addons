@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.CapabilityState;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceState;
-import org.openhab.binding.innogysmarthome.internal.client.entity.device.State;
 import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
 import org.openhab.binding.innogysmarthome.internal.client.entity.location.Location;
 import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
@@ -57,24 +57,12 @@ public class FullDeviceManager {
 
         final Map<String, Location> locationMap = createLocationMap(client);
         final Map<String, Capability> capabilityMap = createCapabilityMap(client);
-        final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
         final Map<String, DeviceState> deviceStateMap = createDeviceStateMap(client);
         final Map<String, List<Message>> messageMap = createMessageMap(client);
 
-        // DEVICES
         final List<Device> deviceList = client.getDevices(deviceStateMap.keySet());
         for (final Device device : deviceList) {
-            if (isBatteryPowered(device)) {
-                device.setIsBatteryPowered(true);
-            }
-
-            device.setLocation(locationMap.get(device.getLocationId()));
-
-            device.setCapabilityMap(createDeviceCapabilityMap(device, capabilityMap, capabilityStateMap));
-
-            device.setDeviceState(deviceStateMap.get(device.getId()));
-
-            device.setMessageList(messageMap.get(device.getId()));
+            initializeDevice(device, deviceStateMap.get(device.getId()), locationMap, capabilityMap, messageMap);
         }
         return deviceList;
     }
@@ -86,16 +74,24 @@ public class FullDeviceManager {
     public Device getFullDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         final Map<String, Location> locationMap = createLocationMap(client);
         final Map<String, Capability> capabilityMap = createCapabilityMap(deviceId, client);
-        final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
+        final Map<String, List<Message>> messageMap = createMessageMap(deviceId, client);
 
-        // DEVICE STATE
-        final State state = client.getDeviceStateByDeviceId(deviceId);
         final DeviceState deviceState = new DeviceState();
         deviceState.setId(deviceId);
-        deviceState.setState(state);
+        deviceState.setState(client.getDeviceStateByDeviceId(deviceId));
 
-        // DEVICE
         final Device device = client.getDeviceById(deviceId);
+        initializeDevice(device, deviceState, locationMap, capabilityMap, messageMap);
+        return device;
+    }
+
+    private void initializeDevice(Device device, @Nullable DeviceState deviceState, Map<String, Location> locationMap,
+            Map<String, Capability> capabilityMap, Map<String, List<Message>> messageMap)
+            throws ApiException, IOException, AuthenticationException {
+        final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
+
+        device.setDeviceState(deviceState);
+
         if (isBatteryPowered(device)) {
             device.setIsBatteryPowered(true);
         }
@@ -104,11 +100,7 @@ public class FullDeviceManager {
 
         device.setCapabilityMap(createDeviceCapabilityMap(device, capabilityMap, capabilityStateMap));
 
-        device.setDeviceState(deviceState);
-
-        device.setMessageList(createMessageList(deviceId, client));
-
-        return device;
+        device.setMessageList(messageMap.get(device.getId()));
     }
 
     private static boolean isBatteryPowered(Device device) {
@@ -179,7 +171,7 @@ public class FullDeviceManager {
         return deviceStateMap;
     }
 
-    private List<Message> createMessageList(String deviceId, InnogyClient client)
+    private Map<String, List<Message>> createMessageMap(String deviceId, InnogyClient client)
             throws IOException, ApiException, AuthenticationException {
         final List<Message> messages = client.getMessages();
         final List<Message> messageList = new ArrayList<>();
@@ -195,7 +187,10 @@ public class FullDeviceManager {
                 }
             }
         }
-        return messageList;
+
+        Map<String, List<Message>> messageMap = new HashMap<>(1);
+        messageMap.put(deviceId, messageList);
+        return messageMap;
     }
 
     private static Map<String, List<Message>> createMessageMap(InnogyClient client)
