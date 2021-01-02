@@ -152,8 +152,8 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             responseString = response.getContentAsString();
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Response body was: {} ", responseString);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Response body was: {} ", responseString);
         }
 
         final ISimpleMarkupParser parser = new SimpleMarkupParser(this.noRestrictions);

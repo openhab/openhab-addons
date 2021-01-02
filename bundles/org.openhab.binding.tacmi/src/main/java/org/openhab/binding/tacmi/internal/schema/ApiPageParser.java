@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -93,6 +94,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     private List<Channel> channels = new ArrayList<>();
     // Time stamp when status request was started.
     private final long statusRequestStartTS;
+    private static @Nullable URI configDescriptionUriAPISchemaDefaults;
 
     public ApiPageParser(TACmiSchemaHandler taCmiSchemaHandler, Map<String, ApiPageEntry> entries,
             TACmiChannelTypeProvider channelTypeProvider) {
@@ -101,6 +103,15 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
         this.entries = entries;
         this.channelTypeProvider = channelTypeProvider;
         this.statusRequestStartTS = System.currentTimeMillis();
+        if (configDescriptionUriAPISchemaDefaults == null) {
+            try {
+                configDescriptionUriAPISchemaDefaults = new URI(
+                        TACmiBindingConstants.CONFIG_DESCRIPTION_API_SCHEMA_DEFAULTS);
+            } catch (Exception ex) {
+                logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
+                        TACmiBindingConstants.CONFIG_DESCRIPTION_API_SCHEMA_DEFAULTS);
+            }
+        }
     }
 
     @Override
@@ -294,8 +305,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
 
     private void getApiPageEntry(@Nullable String id2, int line, int col, String shortName, String description,
             Object value) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Found parameter {}:{}:{} [{}] : {} \"{}\" = {}", id, line, col, this.fieldType, shortName,
+        if (logger.isTraceEnabled()) {
+            logger.trace("Found parameter {}:{}:{} [{}] : {} \"{}\" = {}", id, line, col, this.fieldType, shortName,
                     description, value);
         }
         if (!this.seenNames.add(shortName)) {
@@ -414,6 +425,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 return;
         }
         ApiPageEntry e = this.entries.get(shortName);
+        boolean isNewEntry;
         if (e == null || e.type != type || !channelType.equals(e.channel.getAcceptedItemType())) {
             @Nullable
             Channel channel = this.taCmiSchemaHandler.getThing().getChannel(shortName);
@@ -430,7 +442,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     logger.warn("Error loading API Scheme: {} ", ex.getMessage());
                 }
             }
-            if (channel == null) {
+            if (channel == null || !Objects.equals(ctuid, channel.getChannelTypeUID())) {
                 logger.debug("Creating / updating channel {} of type {} for '{}'", shortName, channelType, description);
                 this.configChanged = true;
                 ChannelUID channelUID = new ChannelUID(this.taCmiSchemaHandler.getThing().getUID(), shortName);
@@ -459,13 +471,49 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             this.configChanged = true;
             e = new ApiPageEntry(type, channel, address, cx2e, state);
             this.entries.put(shortName, e);
+            isNewEntry = true;
+        } else {
+            isNewEntry = false;
         }
         this.channels.add(e.channel);
         // only update the state when there was no state change sent to C.M.I. after we started
         // polling the state. It might deliver the previous / old state.
         if (e.getLastCommandTS() < this.statusRequestStartTS) {
-            e.setLastState(state);
-            this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
+            Number updatePolicyI = (Number) e.channel.getConfiguration().get("updatePolicy");
+            int updatePolicy = updatePolicyI == null ? 0 : updatePolicyI.intValue();
+            switch (updatePolicy) {
+                case 0: // 'default'
+                default:
+                    // we do 'On-Fetch' update when channel is changeable, otherwise 'On-Change'
+                    switch (e.type) {
+                        case NUMERIC_FORM:
+                        case STATE_FORM:
+                        case SWITCH_BUTTON:
+                        case SWITCH_FORM:
+                            if (isNewEntry || !state.equals(e.getLastState())) {
+                                e.setLastState(state);
+                                this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
+                            }
+                            break;
+                        case READ_ONLY_NUMERIC:
+                        case READ_ONLY_STATE:
+                        case READ_ONLY_SWITCH:
+                            e.setLastState(state);
+                            this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
+                            break;
+                    }
+                    break;
+                case 1: // On-Fetch
+                    e.setLastState(state);
+                    this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
+                    break;
+                case 2: // On-Change
+                    if (isNewEntry || !state.equals(e.getLastState())) {
+                        e.setLastState(state);
+                        this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
+                    }
+                    break;
+            }
         }
     }
 
@@ -500,9 +548,17 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             default:
                 throw new IllegalStateException();
         }
-        ChannelType ct = ChannelTypeBuilder
+        ChannelTypeBuilder<?> ctb = ChannelTypeBuilder
                 .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)
-                .withDescription("Auto-created for " + shortName).withStateDescriptionFragment(sdb.build()).build();
+                .withDescription("Auto-created for " + shortName).withStateDescriptionFragment(sdb.build());
+
+        // add config description URI
+        URI cdu = configDescriptionUriAPISchemaDefaults;
+        if (cdu != null) {
+            ctb = ctb.withConfigDescriptionURI(cdu);
+        }
+
+        ChannelType ct = ctb.build();
         channelTypeProvider.addChannelType(ct);
         return ct;
     }
