@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,15 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.smhi.internal;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A class containing a forecast for a specific point in time.
@@ -43,8 +42,8 @@ public class Forecast implements Comparable<Forecast> {
         return parameters;
     }
 
-    public @Nullable BigDecimal getParameter(String parameter) {
-        return parameters.get(parameter);
+    public Optional<BigDecimal> getParameter(String parameter) {
+        return Optional.ofNullable(parameters.get(parameter));
     }
 
     @Override

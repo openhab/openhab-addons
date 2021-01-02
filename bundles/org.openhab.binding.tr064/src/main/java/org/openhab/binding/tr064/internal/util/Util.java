@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -259,7 +259,15 @@ public class Util {
             // validate parameter against pattern
             String parameterPattern = parameter.getPattern();
             if (parameterPattern != null) {
-                parameters.removeIf(param -> !param.matches(parameterPattern));
+                parameters.removeIf(param -> {
+                    if (!param.matches(parameterPattern)) {
+                        LOGGER.warn("Removing {} while processing {}, does not match pattern {}, check config.", param,
+                                channelId, parameterPattern);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
             }
 
             // validate parameter against SCPD (if not internal only)

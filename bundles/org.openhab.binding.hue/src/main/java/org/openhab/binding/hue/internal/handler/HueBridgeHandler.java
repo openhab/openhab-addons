@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -140,7 +140,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 }
             } catch (ApiException | IOException e) {
                 if (hueBridge != null && lastBridgeConnectionState) {
-                    logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
+                    logger.debug("Connection to Hue Bridge {} lost: {}", hueBridge.getIPAddress(), e.getMessage(), e);
                     lastBridgeConnectionState = false;
                     onConnectionLost();
                 }
@@ -734,6 +734,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             if (config != null) {
                 Map<String, String> properties = editProperties();
                 String serialNumber = config.getBridgeId().substring(0, 6) + config.getBridgeId().substring(10);
+                serialNumber = serialNumber.toLowerCase();
                 properties.put(PROPERTY_SERIAL_NUMBER, serialNumber);
                 properties.put(PROPERTY_MODEL_ID, config.getModelId());
                 properties.put(PROPERTY_MAC_ADDRESS, config.getMACAddress());

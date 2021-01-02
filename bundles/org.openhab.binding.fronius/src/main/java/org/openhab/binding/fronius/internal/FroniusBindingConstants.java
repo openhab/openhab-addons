@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ public class FroniusBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "powerinverter");
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_METER = new ThingTypeUID(BINDING_ID, "meter");
 
     // List of all Channel ids
     public static final String InverterDataChannelDayEnergy = "inverterdatachanneldayenergy";
@@ -46,8 +47,27 @@ public class FroniusBindingConstants {
     public static final String PowerFlowpGrid = "powerflowchannelpgrid";
     public static final String PowerFlowpLoad = "powerflowchannelpload";
     public static final String PowerFlowpAkku = "powerflowchannelpakku";
+    public static final String MeterModel = "model";
+    public static final String MeterSerial = "serial";
+    public static final String MeterEnable = "enable";
+    public static final String MeterLocation = "location";
+    public static final String MeterCurrentAcPhase1 = "currentacphase1";
+    public static final String MeterCurrentAcPhase2 = "currentacphase2";
+    public static final String MeterCurrentAcPhase3 = "currentacphase3";
+    public static final String MeterVoltageAcPhase1 = "voltageacphase1";
+    public static final String MeterVoltageAcPhase2 = "voltageacphase2";
+    public static final String MeterVoltageAcPhase3 = "voltageacphase3";
+    public static final String MeterPowerPhase1 = "powerrealphase1";
+    public static final String MeterPowerPhase2 = "powerrealphase2";
+    public static final String MeterPowerPhase3 = "powerrealphase3";
+    public static final String MeterPowerFactorPhase1 = "powerfactorphase1";
+    public static final String MeterPowerFactorPhase2 = "powerfactorphase2";
+    public static final String MeterPowerFactorPhase3 = "powerfactorphase3";
+    public static final String MeterEnergyRealSumConsumed = "energyrealsumconsumed";
+    public static final String MeterEnergyRealSumProduced = "energyrealsumproduced";
 
     // List of all Urls
     public static final String INVERTER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
     public static final String POWERFLOW_REALTIME_DATA = "http://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
+    public static final String METER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetMeterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=MeterRealtimeData";
 }

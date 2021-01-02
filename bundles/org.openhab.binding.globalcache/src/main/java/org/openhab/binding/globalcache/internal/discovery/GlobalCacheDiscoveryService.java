@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -163,6 +163,7 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService {
                     logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
                             gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
                     thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                            .withRepresentationProperty(THING_PROPERTY_MAC)
                             .withLabel(gcMulticastListener.getVendor() + " " + gcMulticastListener.getModel()).build());
                 }
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory
 
     @Override
     public ValueTransformation getValueTransformation(@Nullable String pattern) {
-        if (pattern == null) {
+        if (pattern == null || pattern.isEmpty()) {
             return NoOpValueTransformation.getInstance();
         }
         return new CascadedValueTransformationImpl(pattern,

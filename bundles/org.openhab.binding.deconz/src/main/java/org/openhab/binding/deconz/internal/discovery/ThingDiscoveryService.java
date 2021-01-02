@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -237,6 +237,14 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             return;
         }
         ThingTypeUID thingTypeUID;
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(CONFIG_ID, sensorID);
+        properties.put(UNIQUE_ID, sensor.uniqueid);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensor.swversion);
+        properties.put(Thing.PROPERTY_VENDOR, sensor.manufacturername);
+        properties.put(Thing.PROPERTY_MODEL_ID, sensor.modelid);
+
         if (sensor.type.contains("Daylight")) { // deCONZ specific: Software simulated daylight sensor
             thingTypeUID = THING_TYPE_DAYLIGHT_SENSOR;
         } else if (sensor.type.contains("Power")) { // ZHAPower, CLIPPower
@@ -281,8 +289,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, sensor.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty(CONFIG_ID, sensorID)
-                .withProperty(UNIQUE_ID, sensor.uniqueid).withRepresentationProperty(UNIQUE_ID).build();
+                .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperties(properties)
+                .withRepresentationProperty(UNIQUE_ID).build();
         thingDiscovered(discoveryResult);
     }
 

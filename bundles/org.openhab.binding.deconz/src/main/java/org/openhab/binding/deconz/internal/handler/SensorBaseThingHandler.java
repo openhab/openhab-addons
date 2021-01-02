@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -111,10 +112,8 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
         }
 
         SensorMessage sensorMessage = (SensorMessage) stateResponse;
-        SensorConfig newSensorConfig = sensorMessage.config;
-        sensorConfig = newSensorConfig != null ? newSensorConfig : new SensorConfig();
-        SensorState newSensorState = sensorMessage.state;
-        sensorState = newSensorState != null ? newSensorState : new SensorState();
+        sensorConfig = Objects.requireNonNullElse(sensorMessage.config, new SensorConfig());
+        sensorState = Objects.requireNonNullElse(sensorMessage.state, new SensorState());
 
         // Add some information about the sensor
         if (!sensorConfig.reachable) {
@@ -128,9 +127,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
         }
 
         Map<String, String> editProperties = editProperties();
-        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensorMessage.swversion);
-        editProperties.put(Thing.PROPERTY_MODEL_ID, sensorMessage.modelid);
         editProperties.put(UNIQUE_ID, sensorMessage.uniqueid);
+        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensorMessage.swversion);
+        editProperties.put(Thing.PROPERTY_VENDOR, sensorMessage.manufacturername);
+        editProperties.put(Thing.PROPERTY_MODEL_ID, sensorMessage.modelid);
         ignoreConfigurationUpdate = true;
         updateProperties(editProperties);
 
@@ -145,10 +145,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
         createTypeSpecificChannels(sensorConfig, sensorState);
 
         ignoreConfigurationUpdate = false;
-
-        // Initial data
-        updateChannels(sensorConfig);
-        updateChannels(sensorState, true);
 
         // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
         // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
@@ -165,6 +161,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                     config.lastSeenPolling);
         }
 
+        // Initial data
+        updateChannels(sensorConfig);
+        updateChannels(sensorState, true);
+
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -176,6 +176,11 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
     }
 
     protected void createChannel(String channelId, ChannelKind kind) {
+        if (thing.getChannel(channelId) != null) {
+            // channel already exists, no update necessary
+            return;
+        }
+
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
@@ -192,7 +197,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                     break;
             }
             Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withKind(kind).build();
-            updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
+            updateThing(editThing().withChannel(channel).build());
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,6 +104,7 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_DEVICE_LOCKED = "deviceLocked";
     public static final String CHANNEL_SMARTPLUG_OUTPUT_STATE = "plugOutputState";
     public static final String CHANNEL_SMARTPLUG_AWAY_ACTION = "plugAwayAction";
+    public static final String CHANNEL_COMFORT_MODE_STATE = "comfortModeState";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_CONTROLLER, THING_TYPE_ROOM, THING_TYPE_ROOMSTAT,

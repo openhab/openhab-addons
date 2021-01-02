@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -485,13 +485,6 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     @Override
     public void connectionError(@Nullable Throwable error) {
         logger.debug("Connection error: {}", error != null ? error.getMessage() : "");
-        try {
-            if (remoteController != null) {
-                remoteController.close();
-            }
-        } catch (RemoteControllerException e) {
-            logger.debug("Error in connection close: {}", e.getMessage());
-        }
         remoteController = null;
     }
 

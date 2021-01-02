@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -180,7 +180,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
             cs.ds.groups.put(hueID, group);
         } else {
-            HueLightEntry device = new HueLightEntry(element, cs.ds.config.uuid + "-" + hueID.toString(), deviceType);
+            HueLightEntry device = new HueLightEntry(element, cs.getHueUniqueId(hueID), deviceType);
             device.item = element;
             cs.ds.lights.put(hueID, device);
             updateGroup0();

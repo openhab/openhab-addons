@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jythonscripting</artifactId>
 
-  <name>openHAB Add-ons :: Automation :: Jython Scripting</name>
+  <name>openHAB Add-ons :: Bundles :: Automation :: Jython Scripting</name>
 
   <properties>
     <bnd.fixupmessages><![CDATA["Classes found in the wrong directory","The default package '.' is not permitted by the Import-Package syntax"; restrict:=error; is:=warning]]></bnd.fixupmessages>

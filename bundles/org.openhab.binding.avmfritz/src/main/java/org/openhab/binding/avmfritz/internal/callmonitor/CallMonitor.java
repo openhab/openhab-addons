@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,10 +45,10 @@ public class CallMonitor {
     private final int MONITOR_PORT = 1012;
 
     private @Nullable CallMonitorThread monitorThread;
-    private ScheduledFuture<?> reconnectJob;
+    private final ScheduledFuture<?> reconnectJob;
 
-    private String ip;
-    private BoxHandler handler;
+    private final String ip;
+    private final BoxHandler handler;
 
     public CallMonitor(String ip, BoxHandler handler, ScheduledExecutorService scheduler) {
         this.ip = ip;

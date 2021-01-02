@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -60,7 +61,9 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     private final ItemRegistry itemRegistry;
 
     @Activate
-    public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry) {
+    public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        super(timeZoneProvider);
         this.itemRegistry = itemRegistry;
     }
 
