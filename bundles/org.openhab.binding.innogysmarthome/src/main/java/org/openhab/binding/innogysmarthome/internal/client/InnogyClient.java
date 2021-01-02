@@ -17,14 +17,11 @@ import static org.openhab.binding.innogysmarthome.internal.client.Constants.*;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -392,6 +389,18 @@ public class InnogyClient {
      * @throws IOException
      * @throws ApiException
      */
+    private List<Device> getDevices(Collection<String> deviceIds)
+            throws IOException, ApiException, AuthenticationException {
+        return getDevices().stream().filter(d -> deviceIds.contains(d.getId())).collect(Collectors.toList());
+    }
+
+    /**
+     * Load the device and returns a {@link List} of {@link Device}s..
+     *
+     * @return List of Devices
+     * @throws IOException
+     * @throws ApiException
+     */
     public List<Device> getDevices() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading innogy devices...");
         return executeGetList(API_URL_DEVICE, Device[].class);
@@ -465,7 +474,7 @@ public class InnogyClient {
         }
 
         // DEVICES
-        final List<Device> deviceList = getDevices();
+        final List<Device> deviceList = getDevices(deviceStateMap.keySet());
         for (final Device d : deviceList) {
             if (InnogyBindingConstants.BATTERY_POWERED_DEVICES.contains(d.getType())) {
                 d.setIsBatteryPowered(true);
