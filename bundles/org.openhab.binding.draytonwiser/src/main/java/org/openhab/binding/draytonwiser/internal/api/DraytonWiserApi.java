@@ -171,6 +171,11 @@ public class DraytonWiserApi {
         sendMessageToHeatHub(SMARTPLUG_ENDPOINT + id, "PATCH", payload);
     }
 
+    public void setComfortMode(final boolean comfortMode) throws DraytonWiserApiException {
+        final String payload = "{\"ComfortModeEnabled\":" + comfortMode + "}";
+        sendMessageToHeatHub(SYSTEM_ENDPOINT, "PATCH", payload);
+    }
+
     private synchronized @Nullable ContentResponse sendMessageToHeatHub(final String path, final HttpMethod method)
             throws DraytonWiserApiException {
         return sendMessageToHeatHub(path, method.asString(), "");
