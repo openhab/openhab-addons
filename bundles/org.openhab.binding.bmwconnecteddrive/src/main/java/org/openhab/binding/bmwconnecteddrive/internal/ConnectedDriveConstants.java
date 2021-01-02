@@ -156,7 +156,7 @@ public class ConnectedDriveConstants {
     public static final String AVG_RECUPERATION = "avg-recuperation";
 
     // Lifetime + Average Consumptions
-    public static final String CUMULATED_DRIVEN_DISTANCE = "cumulated-driven-distance";
+    public static final String TOTAL_DRIVEN_DISTANCE = "total-driven-distance";
     public static final String SINGLE_LONGEST_DISTANCE = "single-longest-distance";
 
     // Image

@@ -129,16 +129,17 @@ public class LifetimeWrapper {
                     assertEquals(allTrips.chargecycleRange.userHigh, qt.floatValue(), 0.1, "Longest Distance");
                 }
                 break;
-            case CUMULATED_DRIVEN_DISTANCE:
+            case TOTAL_DRIVEN_DISTANCE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 if (imperial) {
                     assertEquals(MILES, qt.getUnit(), "Miles");
                     assertEquals(allTrips.totalElectricDistance.userTotal / Constants.MILES_TO_KM_RATIO,
-                            qt.floatValue(), 0.1, "Cumulated Distance");
+                            qt.floatValue(), 0.1, "Total Electric Distance");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(allTrips.totalElectricDistance.userTotal, qt.floatValue(), 0.1, "Cumulated Distance");
+                    assertEquals(allTrips.totalElectricDistance.userTotal, qt.floatValue(), 0.1,
+                            "Total Electric Distance");
                 }
                 break;
             case AVG_CONSUMPTION:

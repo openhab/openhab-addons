@@ -10,7 +10,7 @@
 			<channel id="avg-consumption" typeId="average-consumption-channel"/>
 			<channel id="avg-combined-consumption" typeId="average-combined-consumption-channel"/>
 			<channel id="avg-recuperation" typeId="average-recuperation-channel"/>
-			<channel id="cumulated-driven-distance" typeId="cumulated-driven-distance-channel"/>
+			<channel id="total-driven-distance" typeId="total-driven-distance-channel"/>
 			<channel id="single-longest-distance" typeId="single-longest-distance-channel"/>
 		</channels>
 	</channel-group-type>

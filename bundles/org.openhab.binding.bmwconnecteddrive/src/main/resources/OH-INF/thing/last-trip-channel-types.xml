@@ -22,17 +22,17 @@
 	</channel-type>
 	<channel-type id="average-consumption-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Average Power Consumption</label>
+		<label>Avg. Power Consumption</label>
 		<description>Average electric power consumption per 100 km/mi</description>
 	</channel-type>
 	<channel-type id="average-combined-consumption-channel">
 		<item-type>Number:Volume</item-type>
-		<label>Average Combined Consumption</label>
+		<label>Avg. Combined Consumption</label>
 		<description>Average combined consumption in liter per 100 km/mi</description>
 	</channel-type>
 	<channel-type id="average-recuperation-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Average Recuperation</label>
+		<label>Avg. Recuperation</label>
 		<description>Average electric recuperation per 100 km/mi</description>
 	</channel-type>
 </thing:thing-descriptions>

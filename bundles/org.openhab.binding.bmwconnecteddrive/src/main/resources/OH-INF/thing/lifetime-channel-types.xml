@@ -3,27 +3,27 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="average-consumption-channel">
-		<item-type>Number:Energy</item-type>
-		<label>Average Power Consumption</label>
-		<description>Average electric power consumption per 100 km/mi</description>
-	</channel-type>
-	<channel-type id="average-recuperation-channel">
-		<item-type>Number:Energy</item-type>
-		<label>Average Recuperation</label>
-		<description>Average electric recuperation per 100 km/mi</description>
-	</channel-type>
-	<channel-type id="cumulated-driven-distance-channel">
+	<channel-type id="total-driven-distance-channel">
 		<item-type>Number:Length</item-type>
-		<label>Cumulated Electric Driven Distance</label>
-	</channel-type>
-	<channel-type id="average-combined-consumption-channel">
-		<item-type>Number:Volume</item-type>
-		<label>Average Combined Consumption</label>
-		<description>Average combined consumption in liter per 100 km/mi</description>
+		<label>Total Electric Distance</label>
 	</channel-type>
 	<channel-type id="single-longest-distance-channel">
 		<item-type>Number:Length</item-type>
-		<label>Longest Distance with one Charge</label>
+		<label>Longest 1-Charge Distance</label>
+	</channel-type>
+	<channel-type id="average-consumption-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Avg. Power Consumption</label>
+		<description>Average Combined Consumption electric power consumption per 100 km/mi</description>
+	</channel-type>
+	<channel-type id="average-recuperation-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Avg. Combined Consumption Recuperation</label>
+		<description>Average electric recuperation per 100 km/mi</description>
+	</channel-type>
+	<channel-type id="average-combined-consumption-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Avg. Combined Consumption</label>
+		<description>Average combined consumption in liter per 100 km/mi</description>
 	</channel-type>
 </thing:thing-descriptions>

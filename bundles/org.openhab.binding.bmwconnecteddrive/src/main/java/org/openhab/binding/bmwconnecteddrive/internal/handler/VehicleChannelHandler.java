@@ -125,7 +125,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID lifeTimeAverageConsumption;
     protected ChannelUID lifetimeAvgCombinedConsumption;
     protected ChannelUID lifeTimeAverageRecuperation;
-    protected ChannelUID lifeTimeCumulatedDrivenDistance;
+    protected ChannelUID lifeTimeTotalDrivenDistance;
     protected ChannelUID lifeTimeSingleLongestDistance;
 
     // Last Trip Channels
@@ -246,8 +246,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         lifetimeAvgCombinedConsumption = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME,
                 AVG_COMBINED_CONSUMPTION);
         lifeTimeAverageRecuperation = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, AVG_RECUPERATION);
-        lifeTimeCumulatedDrivenDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME,
-                CUMULATED_DRIVEN_DISTANCE);
+        lifeTimeTotalDrivenDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, TOTAL_DRIVEN_DISTANCE);
         lifeTimeSingleLongestDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, SINGLE_LONGEST_DISTANCE);
 
         // Location Channels
@@ -440,7 +439,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
             avgCombinedConsumption *= Constants.MILES_TO_KM_RATIO;
             avgRecuperation *= Constants.MILES_TO_KM_RATIO;
         }
-        updateState(lifeTimeCumulatedDrivenDistance,
+        updateState(lifeTimeTotalDrivenDistance,
                 QuantityType.valueOf(Converter.round(totalElectricDistance), lengthUnit));
         updateState(lifeTimeSingleLongestDistance,
                 QuantityType.valueOf(Converter.round(longestElectricTrip), lengthUnit));
