@@ -100,7 +100,6 @@ public class FullDeviceManager {
             device.setIsBatteryPowered(true);
         }
 
-        // location
         device.setLocation(locationMap.get(device.getLocationId()));
 
         device.setCapabilityMap(createDeviceCapabilityMap(device, capabilityMap, capabilityStateMap));
