@@ -345,24 +345,21 @@ public class Device {
      * @param messageList the messageList to set
      */
     public void setMessageList(List<Message> messageList) {
-        if (messageList != null) {
-            this.messageList = messageList;
+        List<Message> messageListLocal = Objects.requireNonNullElse(messageList, Collections.emptyList());
+        this.messageList = messageListLocal;
 
-            boolean isReachable = true;
-            for (final Message message : messageList) {
-                switch (message.getType()) {
-                    case Message.TYPE_DEVICE_LOW_BATTERY:
-                        setLowBattery(true);
-                        break;
-                    case Message.TYPE_DEVICE_UNREACHABLE:
-                        isReachable = false;
-                        break;
-                }
+        boolean isReachable = true;
+        for (final Message message : messageListLocal) {
+            switch (message.getType()) {
+                case Message.TYPE_DEVICE_LOW_BATTERY:
+                    setLowBattery(true);
+                    break;
+                case Message.TYPE_DEVICE_UNREACHABLE:
+                    isReachable = false;
+                    break;
             }
-            setReachable(isReachable);
-        } else {
-            setReachable(true);
         }
+        setReachable(isReachable);
     }
 
     /**
