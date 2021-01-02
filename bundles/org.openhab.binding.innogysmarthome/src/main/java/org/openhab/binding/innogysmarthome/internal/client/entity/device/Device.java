@@ -346,23 +346,25 @@ public class Device {
      */
     public void setMessageList(List<Message> messageList) {
         this.messageList = messageList;
-        if (messageList != null && !messageList.isEmpty()) {
-            boolean isReachable = true;
-            for (final Message message : messageList) {
-                switch (message.getType()) {
-                    case Message.TYPE_DEVICE_LOW_BATTERY:
-                        setLowBattery(true);
-                        break;
-                    case Message.TYPE_DEVICE_UNREACHABLE:
-                        isReachable = false;
-                        break;
-                }
+        applyMessageList(messageList);
+    }
+
+    private void applyMessageList(List<Message> messageList) {
+        final List<Message> messages = Objects.requireNonNullElse(messageList, Collections.emptyList());
+        boolean isReachable = true;
+        boolean isLowBattery = false;
+        for (final Message message : messages) {
+            switch (message.getType()) {
+                case Message.TYPE_DEVICE_UNREACHABLE:
+                    isReachable = false;
+                    break;
+                case Message.TYPE_DEVICE_LOW_BATTERY:
+                    isLowBattery = true;
+                    break;
             }
-            setReachable(isReachable);
-        } else {
-            setLowBattery(false);
-            setReachable(true);
         }
+        setReachable(isReachable);
+        setLowBattery(isLowBattery);
     }
 
     /**
