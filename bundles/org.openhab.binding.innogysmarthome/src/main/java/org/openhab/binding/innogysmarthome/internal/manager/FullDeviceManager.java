@@ -60,23 +60,7 @@ public class FullDeviceManager {
         final Map<String, Capability> capabilityMap = createCapabilityMap(client);
         final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
         final Map<String, DeviceState> deviceStateMap = createDeviceStateMap(client);
-
-        // MESSAGES
-        final List<Message> messageList = client.getMessages();
-        final Map<String, List<Message>> deviceMessageMap = new HashMap<>();
-        for (final Message message : messageList) {
-            if (message.getDevices() != null && !message.getDevices().isEmpty()) {
-                final String deviceId = message.getDevices().get(0).replace("/device/", "");
-                List<Message> ml;
-                if (deviceMessageMap.containsKey(deviceId)) {
-                    ml = deviceMessageMap.get(deviceId);
-                } else {
-                    ml = new ArrayList<>();
-                }
-                ml.add(message);
-                deviceMessageMap.put(deviceId, ml);
-            }
-        }
+        final Map<String, List<Message>> messageMap = createMessageMap(client);
 
         // DEVICES
         final List<Device> deviceList = client.getDevices(deviceStateMap.keySet());
@@ -103,8 +87,8 @@ public class FullDeviceManager {
             device.setDeviceState(deviceStateMap.get(device.getId()));
 
             // messages
-            if (deviceMessageMap.containsKey(device.getId())) {
-                device.setMessageList(deviceMessageMap.get(device.getId()));
+            if (messageMap.containsKey(device.getId())) {
+                device.setMessageList(messageMap.get(device.getId()));
                 for (final Message m : device.getMessageList()) {
                     if (Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType())) {
                         device.setLowBattery(true);
@@ -121,7 +105,6 @@ public class FullDeviceManager {
      * states. Calling this may take a little bit longer...
      */
     public Device getFullDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
-        // LOCATIONS
         final Map<String, Location> locationMap = createLocationMap(client);
         final Map<String, Capability> capabilityMap = createCapabilityMap(deviceId, client);
         final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
@@ -131,22 +114,6 @@ public class FullDeviceManager {
         final DeviceState deviceState = new DeviceState();
         deviceState.setId(deviceId);
         deviceState.setState(state);
-
-        // MESSAGES
-        final List<Message> messageList = client.getMessages();
-        final List<Message> ml = new ArrayList<>();
-        final String deviceIdPath = "/device/" + deviceId;
-
-        for (final Message message : messageList) {
-            logger.trace("Message Type {} with ID {}", message.getType(), message.getId());
-            if (message.getDevices() != null && !message.getDevices().isEmpty()) {
-                for (final String li : message.getDevices()) {
-                    if (deviceIdPath.equals(li)) {
-                        ml.add(message);
-                    }
-                }
-            }
-        }
 
         // DEVICE
         final Device device = client.getDeviceById(deviceId);
@@ -172,12 +139,13 @@ public class FullDeviceManager {
         device.setDeviceState(deviceState);
 
         // messages
-        if (!ml.isEmpty()) {
-            device.setMessageList(ml);
-            for (final Message m : device.getMessageList()) {
-                if (Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType())) {
+        final List<Message> messageList = createMessageList(deviceId, client);
+        if (!messageList.isEmpty()) {
+            device.setMessageList(messageList);
+            for (final Message message : device.getMessageList()) {
+                if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType())) {
                     device.setLowBattery(true);
-                    device.setLowBatteryMessageId(m.getId());
+                    device.setLowBatteryMessageId(message.getId());
                 }
             }
         }
@@ -232,5 +200,44 @@ public class FullDeviceManager {
             deviceStateMap.put(deviceState.getId(), deviceState);
         }
         return deviceStateMap;
+    }
+
+    private List<Message> createMessageList(String deviceId, InnogyClient client)
+            throws IOException, ApiException, AuthenticationException {
+        final List<Message> messageList = client.getMessages();
+        final List<Message> ml = new ArrayList<>();
+        final String deviceIdPath = "/device/" + deviceId;
+
+        for (final Message message : messageList) {
+            logger.trace("Message Type {} with ID {}", message.getType(), message.getId());
+            if (message.getDevices() != null && !message.getDevices().isEmpty()) {
+                for (final String li : message.getDevices()) {
+                    if (deviceIdPath.equals(li)) {
+                        ml.add(message);
+                    }
+                }
+            }
+        }
+        return ml;
+    }
+
+    private static Map<String, List<Message>> createMessageMap(InnogyClient client)
+            throws IOException, ApiException, AuthenticationException {
+        final List<Message> messageList = client.getMessages();
+        final Map<String, List<Message>> deviceMessageMap = new HashMap<>();
+        for (final Message message : messageList) {
+            if (message.getDevices() != null && !message.getDevices().isEmpty()) {
+                final String deviceId = message.getDevices().get(0).replace("/device/", "");
+                List<Message> ml;
+                if (deviceMessageMap.containsKey(deviceId)) {
+                    ml = deviceMessageMap.get(deviceId);
+                } else {
+                    ml = new ArrayList<>();
+                }
+                ml.add(message);
+                deviceMessageMap.put(deviceId, ml);
+            }
+        }
+        return deviceMessageMap;
     }
 }
