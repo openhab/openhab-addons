@@ -1,7 +1,6 @@
 # TR-064 Binding
 
-This binding brings support for internet gateway devices that support the TR-064 protocol. In particular, it supports
-the AVM FritzBox family of routers. 
+This binding brings support for internet gateway devices that support the TR-064 protocol (e.g. the AVM FritzBox family of routers). 
 It can be used to gather information from the device and/or re-configure it.
 Even though textual configuration is possible, it is strongly recommended to use the Main User Interface for configuration.
 
