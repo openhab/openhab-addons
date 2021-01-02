@@ -45,9 +45,14 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
     private final Consumer<State> updateStatus;
 
     /**
-     * @throws NoGpioIdException
-     * @throws GpioIdNotSetException
+     * Constructor for PigpioDigitalOutputHandler
      * 
+     * @param configuration The channel configuration
+     * @param jPigpio The jPigpio instance
+     * @param updateStatus Is called when the state should be changed
+     * 
+     * @throws PigpioException Can be thrown by Pigpio
+     * @throws NoGpioIdException Is thrown when no gpioId is defined
      */
     public PigpioDigitalOutputHandler(GPIOOutputConfiguration configuration, JPigpio jPigpio,
             Consumer<State> updateStatus) throws PigpioException, NoGpioIdException {

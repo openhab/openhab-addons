@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- PiGPIO Bridge -->
+	<!-- PiGPIO Thing -->
 	<thing-type id="pigpio-remote" extensible="pigpio-digital-input,pigpio-digital-output">
 		<label>pigpio remote</label>
 		<description>The remote pigpio thing represents a remote raspberry pi with pigpio installed. Pins are channels.</description>
@@ -14,15 +14,15 @@
 		</properties>
 
 		<config-description>
-			<parameter name="ipAddress" type="text">
+			<parameter name="host" type="text">
 				<context>network_address</context>
 				<label>Network Address</label>
-				<description>Network address of the raspberry pi.</description>
+				<description>Network address of the Raspberry Pi.</description>
 			</parameter>
 			<parameter name="port" type="integer" min="0" max="65535">
 				<context>port</context>
 				<label>Port</label>
-				<description>Port of pigpio on the remote raspberry pi.</description>
+				<description>Port of pigpio on the remote Raspberry Pi.</description>
 				<default>8888</default>
 			</parameter>
 		</config-description>

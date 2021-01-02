@@ -26,7 +26,7 @@ sudo systemctl enable pigpiod
 sudo systemctl start pigpiod
 ```
 
-Set `ipAddress` to the address of the pi and the `port` to the port of pigpio (default: 8888).
+Set `host` to the address of the pi and the `port` to the port of pigpio (default: 8888).
 
 ## Channels
 
@@ -51,14 +51,14 @@ Set the number of the pin in `gpioId` . If you want to invert the value, set `in
 demo.things:
 
 ```
-Thing gpio:pigpio-remote:sample-pi-1 "Sample-Pi 1" [ipAddress="192.168.2.36", port=8888] {
+Thing gpio:pigpio-remote:sample-pi-1 "Sample-Pi 1" [host="192.168.2.36", port=8888] {
     Channels:
         Type pigpio-digital-input : sample-input-1 [ gpioId=10]
         Type pigpio-digital-input : sample-input-2 [ gpioId=14, invert=true]
         Type pigpio-digital-output : sample-output-1 [ gpioId=3]
 }
 
-Thing gpio:pigpio-remote:sample-pi-2 "Sample-Pi 2" [ipAddress="192.168.2.37", port=8888] {
+Thing gpio:pigpio-remote:sample-pi-2 "Sample-Pi 2" [host="192.168.2.37", port=8888] {
     Channels:
         Type pigpio-digital-input : sample-input-3 [ gpioId=16, debouncingTime=20]
         Type pigpio-digital-input : sample-input-4 [ gpioId=17, invert=true, debouncingTime=5]

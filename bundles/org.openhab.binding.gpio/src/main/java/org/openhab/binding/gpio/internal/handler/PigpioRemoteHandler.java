@@ -50,7 +50,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     /**
      * Instantiates a new pigpio remote bridge handler.
      *
-     * @param thing the bridge
+     * @param thing the thing
      */
     public PigpioRemoteHandler(Thing thing) {
         super(thing);
@@ -67,16 +67,16 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         PigpioConfiguration config = getConfigAs(PigpioConfiguration.class);
-        String ipAddress = config.ipAddress;
+        String host = config.host;
         int port = config.port;
         JPigpio jPigpio;
-        if (ipAddress == null) {
+        if (host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to PiGPIO Service on remote raspberry. IP address not set.");
             return;
         }
         try {
-            jPigpio = new PigpioSocket(ipAddress, port);
+            jPigpio = new PigpioSocket(host, port);
             updateStatus(ThingStatus.ONLINE);
         } catch (PigpioException e) {
             if (e.getErrorCode() == PigpioException.PI_BAD_SOCKET_PORT) {
@@ -86,7 +86,6 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                         e.getLocalizedMessage());
             }
             return;
-
         }
         thing.getChannels().forEach(channel -> {
             ChannelUID channelUID = channel.getUID();

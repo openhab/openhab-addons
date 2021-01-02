@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.Command;
 
 /**
- * The {@link ChannelHandler} is responsible for
+ * The {@link ChannelHandler} provides an interface for different pin
+ * configuration handlers
  *
  * @author Jan N. Klug - Initial contribution
  */

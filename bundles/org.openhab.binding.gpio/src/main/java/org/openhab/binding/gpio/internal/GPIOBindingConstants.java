@@ -36,7 +36,7 @@ public class GPIOBindingConstants {
             "pigpio-digital-output");
 
     // Thing config properties
-    public static final String HOST = "ipAddress";
+    public static final String HOST = "host";
     public static final String PORT = "port";
     public static final String INVERT = "invert";
     public static final String DEBOUNCING_TIME = "debouncing_time";

@@ -26,7 +26,7 @@ public class PigpioConfiguration {
     /**
      * Network address of the raspberry pi
      */
-    public @Nullable String ipAddress;
+    public @Nullable String host;
 
     /**
      * Port of pigpio on the remote raspberry pi
