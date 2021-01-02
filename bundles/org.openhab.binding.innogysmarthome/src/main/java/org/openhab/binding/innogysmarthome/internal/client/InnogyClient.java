@@ -101,21 +101,12 @@ public class InnogyClient {
     }
 
     /**
-     * @return the bridgeInfo
-     */
-    public @Nullable Gateway getBridgeDetails() {
-        return bridgeDetails;
-    }
-
-    /**
      * Gets the status
      *
      * As the API returns the details of the SmartHome controller (SHC), the data is saved in {@link #bridgeDetails} and
      * the {@link #configVersion} is set.
      *
      * @throws SessionExistsException thrown, if a session already exists
-     * @throws IOException
-     * @throws ApiException
      */
     public void refreshStatus() throws IOException, ApiException, AuthenticationException {
         logger.debug("Get innogy SmartHome status...");
@@ -130,12 +121,9 @@ public class InnogyClient {
     /**
      * Executes a HTTP GET request with default headers and returns data as object of type T.
      *
-     * @param url
+     * @param url request URL
      * @param clazz type of data to return
-     * @return
-     * @throws IOException
-     * @throws AuthenticationException
-     * @throws ApiException
+     * @return response content
      */
     private <T> T executeGet(final String url, final Class<T> clazz)
             throws IOException, AuthenticationException, ApiException {
@@ -147,11 +135,9 @@ public class InnogyClient {
     /**
      * Executes a HTTP GET request with default headers and returns data as List of type T.
      *
-     * @param url
+     * @param url request URL
      * @param clazz array type of data to return as list
-     * @throws IOException
-     * @throws AuthenticationException
-     * @throws ApiException
+     * @return response content (as a List)
      */
     private <T> List<T> executeGetList(final String url, final Class<T[]> clazz)
             throws IOException, AuthenticationException, ApiException {
@@ -161,19 +147,15 @@ public class InnogyClient {
     /**
      * Executes a HTTP POST request with the given {@link Action} as content.
      *
-     * @param url
-     * @param action
-     * @return
-     * @throws IOException
-     * @throws AuthenticationException
-     * @throws ApiException
+     * @param url request URL
+     * @param action action to execute
      */
-    private ContentResponse executePost(final String url, final Action action)
+    private void executePost(final String url, final Action action)
             throws IOException, AuthenticationException, ApiException {
         final String json = gson.toJson(action);
         logger.debug("Action {} JSON: {}", action.getType(), json);
 
-        return request(httpClient.newRequest(url).method(HttpMethod.POST)
+        request(httpClient.newRequest(url).method(HttpMethod.POST)
                 .content(new StringContentProvider(json), CONTENT_TYPE).accept(CONTENT_TYPE));
     }
 
@@ -194,6 +176,7 @@ public class InnogyClient {
     }
 
     public AccessTokenResponse getAccessTokenResponse() throws AuthenticationException, IOException {
+        @Nullable
         final AccessTokenResponse accessTokenResponse;
         try {
             accessTokenResponse = oAuthService.getAccessTokenResponse();
@@ -209,17 +192,11 @@ public class InnogyClient {
     /**
      * Handles errors from the {@link ContentResponse} and throws the following errors:
      *
-     * @param response
+     * @param response response
      * @param uri uri of api call made
-     * @throws SessionExistsException
-     * @throws SessionNotFoundException
      * @throws ControllerOfflineException thrown, if the innogy SmartHome controller (SHC) is offline.
-     * @throws IOException
-     * @throws ApiException
-     * @throws AuthenticationException
      */
-    private void handleResponseErrors(final ContentResponse response, final URI uri)
-            throws IOException, ApiException, AuthenticationException {
+    private void handleResponseErrors(final ContentResponse response, final URI uri) throws IOException, ApiException {
         String content = "";
 
         switch (response.getStatus()) {
@@ -272,11 +249,6 @@ public class InnogyClient {
 
     /**
      * Sets a new state of a SwitchActuator.
-     *
-     * @param capabilityId
-     * @param state
-     * @throws IOException
-     * @throws ApiException
      */
     public void setSwitchActuatorState(final String capabilityId, final boolean state)
             throws IOException, ApiException, AuthenticationException {
@@ -285,11 +257,6 @@ public class InnogyClient {
 
     /**
      * Sets the dimmer level of a DimmerActuator.
-     *
-     * @param capabilityId
-     * @param dimLevel
-     * @throws IOException
-     * @throws ApiException
      */
     public void setDimmerActuatorState(final String capabilityId, final int dimLevel)
             throws IOException, ApiException, AuthenticationException {
@@ -298,12 +265,6 @@ public class InnogyClient {
 
     /**
      * Sets the roller shutter level of a RollerShutterActuator.
-     *
-     * @param capabilityId
-     * @param rollerShutterLevel
-     * @throws IOException
-     * @throws ApiException
-     * @throws AuthenticationException
      */
     public void setRollerShutterActuatorState(final String capabilityId, final int rollerShutterLevel)
             throws IOException, ApiException, AuthenticationException {
@@ -313,12 +274,6 @@ public class InnogyClient {
 
     /**
      * Starts or stops moving a RollerShutterActuator
-     *
-     * @param capabilityId
-     * @param rollerShutterAction
-     * @throws IOException
-     * @throws ApiException
-     * @throws AuthenticationException
      */
     public void setRollerShutterAction(final String capabilityId,
             final ShutterAction.ShutterActions rollerShutterAction)
@@ -328,11 +283,6 @@ public class InnogyClient {
 
     /**
      * Sets a new state of a VariableActuator.
-     *
-     * @param capabilityId
-     * @param state
-     * @throws IOException
-     * @throws ApiException
      */
     public void setVariableActuatorState(final String capabilityId, final boolean state)
             throws IOException, ApiException, AuthenticationException {
@@ -341,11 +291,6 @@ public class InnogyClient {
 
     /**
      * Sets the point temperature.
-     *
-     * @param capabilityId
-     * @param pointTemperature
-     * @throws IOException
-     * @throws ApiException
      */
     public void setPointTemperatureState(final String capabilityId, final double pointTemperature)
             throws IOException, ApiException, AuthenticationException {
@@ -355,11 +300,6 @@ public class InnogyClient {
 
     /**
      * Sets the operation mode to "Auto" or "Manu".
-     *
-     * @param capabilityId
-     * @param autoMode
-     * @throws IOException
-     * @throws ApiException
      */
     public void setOperationMode(final String capabilityId, final boolean autoMode)
             throws IOException, ApiException, AuthenticationException {
@@ -371,11 +311,6 @@ public class InnogyClient {
 
     /**
      * Sets the alarm state.
-     *
-     * @param capabilityId
-     * @param alarmState
-     * @throws IOException
-     * @throws ApiException
      */
     public void setAlarmActuatorState(final String capabilityId, final boolean alarmState)
             throws IOException, ApiException, AuthenticationException {
@@ -387,35 +322,18 @@ public class InnogyClient {
      *
      * @param deviceIds Ids of the devices to return
      * @return List of Devices
-     * @throws IOException
-     * @throws ApiException
      */
     private List<Device> getDevices(Collection<String> deviceIds)
             throws IOException, ApiException, AuthenticationException {
-        return getDevices().stream().filter(d -> deviceIds.contains(d.getId())).collect(Collectors.toList());
-    }
-
-    /**
-     * Load the device and returns a {@link List} of {@link Device}s..
-     *
-     * @return List of Devices
-     * @throws IOException
-     * @throws ApiException
-     */
-    public List<Device> getDevices() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading innogy devices...");
-        return executeGetList(API_URL_DEVICE, Device[].class);
+        List<Device> devices = executeGetList(API_URL_DEVICE, Device[].class);
+        return devices.stream().filter(d -> deviceIds.contains(d.getId())).collect(Collectors.toList());
     }
 
     /**
      * Loads the {@link Device} with the given deviceId.
-     *
-     * @param deviceId
-     * @return
-     * @throws IOException
-     * @throws ApiException
      */
-    public Device getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
+    private Device getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device with id {}...", deviceId);
         return executeGet(API_URL_DEVICE_ID.replace("{id}", deviceId), Device.class);
     }
@@ -423,10 +341,6 @@ public class InnogyClient {
     /**
      * Returns a {@link List} of all {@link Device}s with the full configuration details, {@link Capability}s and
      * states. Calling this may take a while...
-     *
-     * @return
-     * @throws IOException
-     * @throws ApiException
      */
     public List<Device> getFullDevices() throws IOException, ApiException, AuthenticationException {
         // LOCATIONS
@@ -502,11 +416,9 @@ public class InnogyClient {
             if (deviceMessageMap.containsKey(d.getId())) {
                 d.setMessageList(deviceMessageMap.get(d.getId()));
                 for (final Message m : d.getMessageList()) {
-                    switch (m.getType()) {
-                        case Message.TYPE_DEVICE_LOW_BATTERY:
-                            d.setLowBattery(true);
-                            d.setLowBatteryMessageId(m.getId());
-                            break;
+                    if (Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType())) {
+                        d.setLowBattery(true);
+                        d.setLowBatteryMessageId(m.getId());
                     }
                 }
             }
@@ -518,11 +430,6 @@ public class InnogyClient {
     /**
      * Returns the {@link Device} with the given deviceId with full configuration details, {@link Capability}s and
      * states. Calling this may take a little bit longer...
-     *
-     * @param deviceId
-     * @return
-     * @throws IOException
-     * @throws ApiException
      */
     public Device getFullDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         // LOCATIONS
@@ -596,11 +503,9 @@ public class InnogyClient {
         if (!ml.isEmpty()) {
             d.setMessageList(ml);
             for (final Message m : d.getMessageList()) {
-                switch (m.getType()) {
-                    case Message.TYPE_DEVICE_LOW_BATTERY:
-                        d.setLowBattery(true);
-                        d.setLowBatteryMessageId(m.getId());
-                        break;
+                if (Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType())) {
+                    d.setLowBattery(true);
+                    d.setLowBatteryMessageId(m.getId());
                 }
             }
         }
@@ -610,10 +515,6 @@ public class InnogyClient {
 
     /**
      * Loads the states for all {@link Device}s.
-     *
-     * @return
-     * @throws IOException
-     * @throws ApiException
      */
     public List<DeviceState> getDeviceStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states...");
@@ -622,13 +523,8 @@ public class InnogyClient {
 
     /**
      * Loads the device state for the given deviceId.
-     *
-     * @param deviceId
-     * @return
-     * @throws IOException
-     * @throws ApiException
      */
-    public State getDeviceStateByDeviceId(final String deviceId)
+    private State getDeviceStateByDeviceId(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states for device id {}...", deviceId);
         return executeGet(API_URL_DEVICE_ID_STATE.replace("{id}", deviceId), State.class);
@@ -638,10 +534,8 @@ public class InnogyClient {
      * Loads the locations and returns a {@link List} of {@link Location}s.
      *
      * @return a List of Devices
-     * @throws IOException
-     * @throws ApiException
      */
-    public List<Location> getLocations() throws IOException, ApiException, AuthenticationException {
+    private List<Location> getLocations() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading locations...");
         return executeGetList(API_URL_LOCATION, Location[].class);
     }
@@ -650,11 +544,9 @@ public class InnogyClient {
      * Loads and returns a {@link List} of {@link Capability}s for the given deviceId.
      *
      * @param deviceId the id of the {@link Device}
-     * @return
-     * @throws IOException
-     * @throws ApiException
+     * @return capabilities of the device
      */
-    public List<Capability> getCapabilitiesForDevice(final String deviceId)
+    private List<Capability> getCapabilitiesForDevice(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities for device {}...", deviceId);
         return executeGetList(API_URL_DEVICE_CAPABILITIES.replace("{id}", deviceId), Capability[].class);
@@ -662,36 +554,24 @@ public class InnogyClient {
 
     /**
      * Loads and returns a {@link List} of all {@link Capability}s.
-     *
-     * @return
-     * @throws IOException
-     * @throws ApiException
      */
-    public List<Capability> getCapabilities() throws IOException, ApiException, AuthenticationException {
+    private List<Capability> getCapabilities() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities...");
         return executeGetList(API_URL_CAPABILITY, Capability[].class);
     }
 
     /**
      * Loads and returns a {@link List} of all {@link Capability}States.
-     *
-     * @return
-     * @throws IOException
-     * @throws ApiException
      */
-    public List<CapabilityState> getCapabilityStates() throws IOException, ApiException, AuthenticationException {
+    private List<CapabilityState> getCapabilityStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capability states...");
         return executeGetList(API_URL_CAPABILITY_STATES, CapabilityState[].class);
     }
 
     /**
      * Returns a {@link List} of all {@link Message}s.
-     *
-     * @return
-     * @throws IOException
-     * @throws ApiException
      */
-    public List<Message> getMessages() throws IOException, ApiException, AuthenticationException {
+    private List<Message> getMessages() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading messages...");
         return executeGetList(API_URL_MESSAGE, Message[].class);
     }
@@ -701,12 +581,5 @@ public class InnogyClient {
      */
     public String getConfigVersion() {
         return configVersion;
-    }
-
-    /**
-     * @param configVersion the configVersion to set
-     */
-    public void setConfigVersion(final String configVersion) {
-        this.configVersion = configVersion;
     }
 }
