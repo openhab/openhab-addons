@@ -53,7 +53,7 @@ when
     Item Xi_Leak changed
 then
     if(Xi_Leak.state == ON) {
-        val actions = getActions("xmpp","xmppclient:xmppBridge:xmpp")
+        val actions = getActions("xmppclient","xmppclient:xmppBridge:xmpp")
         actions.publishXMPP("pavel@example.com","Warning! Leak detected!")
     }
 end
@@ -66,7 +66,7 @@ rule "Turn off all lights without separator"
 when
     Channel "xmppclient:xmppBridge:xmpp:xmpp_command" triggered
 then
-    var actionName = receivedEvent.getEvent()
+    var actionName = receivedEvent
     if(actionName.toLowerCase() == "turn off lights") {
         Group_Light_Home_All.sendCommand(OFF)
     }
@@ -76,11 +76,11 @@ rule "Turn off all lights with separator and reply"
 when
     Channel "xmppclient:xmppBridge:xmpp:xmpp_command" triggered
 then
-    var actionName = receivedEvent.getEvent().split("##")
+    var actionName = receivedEvent.split("##")
     if(actionName.get(1).toLowerCase() == "turn off lights") {
         Group_Light_Home_All.sendCommand(OFF)
 
-        val actions = getActions("xmpp","xmppclient:xmppBridge:xmpp")
+        val actions = getActions("xmppclient","xmppclient:xmppBridge:xmpp")
         actions.publishXMPP(actionName.get(0),"All lights was turned off")
     }
 end
