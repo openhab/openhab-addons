@@ -910,9 +910,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             List<SmartHomeBaseDevice> allDevices = getLastKnownSmartHomeDevices();
             Set<SmartHomeBaseDevice> targetDevices = new HashSet<>();
             if (deviceFilterId != null) {
-                var optionalDevice = allDevices.stream().filter(d -> d.findId() == deviceFilterId).findFirst();
-                if (optionalDevice.isPresent())
-                    targetDevices.add(optionalDevice.get());
+                allDevices.stream().filter(d -> deviceFilterId.equals(d.findId())).findFirst()
+                        .ifPresent(targetDevices::add);
             } else {
                 SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator = this.smartHomeDeviceStateGroupUpdateCalculator;
                 if (smartHomeDeviceStateGroupUpdateCalculator == null) {
@@ -929,15 +928,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             .forEach(devicesToUpdate::add);
                 }
                 smartHomeDeviceStateGroupUpdateCalculator.removeDevicesWithNoUpdate(devicesToUpdate);
-                devicesToUpdate.stream().forEach(d -> {
-                    if (d != null) {
-                        targetDevices.add(d);
-                    }
-                });
+                devicesToUpdate.stream().filter(Objects::nonNull).forEach(targetDevices::add);
                 if (targetDevices.isEmpty()) {
                     return;
                 }
-
             }
             Map<String, JsonArray> applianceIdToCapabilityStates = connection
                     .getSmartHomeDeviceStatesJson(targetDevices);

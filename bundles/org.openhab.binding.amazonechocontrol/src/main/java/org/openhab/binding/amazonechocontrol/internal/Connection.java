@@ -1058,29 +1058,25 @@ public class Connection {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
         Map<String, String> mergedApplianceMap = new HashMap<>();
-        for (var device : devices) {
+        for (SmartHomeBaseDevice device : devices) {
             String applianceId = device.findId();
-            if (applianceId == null)
-                continue;
-            JsonObject stateRequest = new JsonObject();
-            if (device instanceof SmartHomeDevice) {
-                var mergedApplianceIds = ((SmartHomeDevice) device).mergedApplianceIds;
-                if (mergedApplianceIds != null && mergedApplianceIds.length > 1) {
-                    for (String idToMerge : mergedApplianceIds) {
-                        if (idToMerge != null) {
-                            mergedApplianceMap.put(idToMerge, applianceId);
-                            stateRequest = new JsonObject();
-                            stateRequest.addProperty("entityId", idToMerge);
-                            stateRequest.addProperty("entityType", "APPLIANCE");
-                            stateRequests.add(stateRequest);
-                        }
+            if (applianceId != null) {
+                JsonObject stateRequest;
+                if (device instanceof SmartHomeDevice && !((SmartHomeDevice) device).mergedApplianceIds.isEmpty()) {
+                    for (String idToMerge : ((SmartHomeDevice) device).mergedApplianceIds) {
+                        mergedApplianceMap.put(idToMerge, applianceId);
+                        stateRequest = new JsonObject();
+                        stateRequest.addProperty("entityId", idToMerge);
+                        stateRequest.addProperty("entityType", "APPLIANCE");
+                        stateRequests.add(stateRequest);
                     }
-                    continue;
+                } else {
+                    stateRequest = new JsonObject();
+                    stateRequest.addProperty("entityId", applianceId);
+                    stateRequest.addProperty("entityType", "APPLIANCE");
+                    stateRequests.add(stateRequest);
                 }
             }
-            stateRequest.addProperty("entityId", applianceId);
-            stateRequest.addProperty("entityType", "APPLIANCE");
-            stateRequests.add(stateRequest);
         }
         requestObject.add("stateRequests", stateRequests);
         String requestBody = requestObject.toString();
