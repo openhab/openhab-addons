@@ -439,47 +439,22 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 if (ctuid != null) {
                     channelBuilder.withType(ctuid);
                 } else if (cx2e != null) {
-                    StateDescriptionFragmentBuilder sdb = StateDescriptionFragmentBuilder.create()
-                            .withReadOnly(type.readOnly);
-                    String itemType;
-                    switch (cx2e.optionType) {
-                        case NUMBER:
-                            itemType = "Number";
-                            String min = cx2e.options.get(ChangerX2Entry.NUMBER_MIN);
-                            if (min != null && !min.trim().isEmpty()) {
-                                sdb.withMinimum(new BigDecimal(min));
-                            }
-                            String max = cx2e.options.get(ChangerX2Entry.NUMBER_MAX);
-                            if (max != null && !max.trim().isEmpty()) {
-                                sdb.withMaximum(new BigDecimal(max));
-                            }
-                            String step = cx2e.options.get(ChangerX2Entry.NUMBER_STEP);
-                            if (step != null && !step.trim().isEmpty()) {
-                                sdb.withStep(new BigDecimal(step));
-                            }
-                            break;
-                        case SELECT:
-                            itemType = "String";
-                            for (Entry<String, @Nullable String> entry : cx2e.options.entrySet()) {
-                                String val = entry.getValue();
-                                if (val != null) {
-                                    sdb.withOption(new StateOption(val, entry.getKey()));
-                                }
-                            }
-                            break;
-                        default:
-                            throw new IllegalStateException();
-                    }
-                    ChannelType ct = ChannelTypeBuilder
-                            .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)
-                            .withDescription("Auto-created for " + shortName).withStateDescriptionFragment(sdb.build())
-                            .build();
-                    channelTypeProvider.addChannelType(ct);
+                    ChannelType ct = buildAndRegisterChannelType(shortName, type, cx2e);
+
                     channelBuilder.withType(ct.getUID());
                 } else {
                     logger.warn("Error configurating channel for {}: channeltype cannot be determined!", shortName);
                 }
                 channel = channelBuilder.build(); // add configuration property...
+            } else if (ctuid == null && cx2e != null) {
+                // custom channel type - check if it already exists and recreate when needed...
+                ChannelTypeUID curCtuid = channel.getChannelTypeUID();
+                if (curCtuid != null) {
+                    ChannelType ct = channelTypeProvider.getChannelType(curCtuid, null);
+                    if (ct == null) {
+                        buildAndRegisterChannelType(shortName, type, cx2e);
+                    }
+                }
             }
             this.configChanged = true;
             e = new ApiPageEntry(type, channel, address, cx2e, state);
@@ -492,6 +467,44 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             e.setLastState(state);
             this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
         }
+    }
+
+    private ChannelType buildAndRegisterChannelType(String shortName, Type type, ChangerX2Entry cx2e) {
+        StateDescriptionFragmentBuilder sdb = StateDescriptionFragmentBuilder.create().withReadOnly(type.readOnly);
+        String itemType;
+        switch (cx2e.optionType) {
+            case NUMBER:
+                itemType = "Number";
+                String min = cx2e.options.get(ChangerX2Entry.NUMBER_MIN);
+                if (min != null && !min.trim().isEmpty()) {
+                    sdb.withMinimum(new BigDecimal(min));
+                }
+                String max = cx2e.options.get(ChangerX2Entry.NUMBER_MAX);
+                if (max != null && !max.trim().isEmpty()) {
+                    sdb.withMaximum(new BigDecimal(max));
+                }
+                String step = cx2e.options.get(ChangerX2Entry.NUMBER_STEP);
+                if (step != null && !step.trim().isEmpty()) {
+                    sdb.withStep(new BigDecimal(step));
+                }
+                break;
+            case SELECT:
+                itemType = "String";
+                for (Entry<String, @Nullable String> entry : cx2e.options.entrySet()) {
+                    String val = entry.getValue();
+                    if (val != null) {
+                        sdb.withOption(new StateOption(val, entry.getKey()));
+                    }
+                }
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+        ChannelType ct = ChannelTypeBuilder
+                .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)
+                .withDescription("Auto-created for " + shortName).withStateDescriptionFragment(sdb.build()).build();
+        channelTypeProvider.addChannelType(ct);
+        return ct;
     }
 
     protected boolean isConfigChanged() {
