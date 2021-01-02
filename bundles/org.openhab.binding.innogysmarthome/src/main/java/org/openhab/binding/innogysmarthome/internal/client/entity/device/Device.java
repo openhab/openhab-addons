@@ -345,21 +345,24 @@ public class Device {
      * @param messageList the messageList to set
      */
     public void setMessageList(List<Message> messageList) {
-        List<Message> messageListLocal = Objects.requireNonNullElse(messageList, Collections.emptyList());
-        this.messageList = messageListLocal;
-
-        boolean isReachable = true;
-        for (final Message message : messageListLocal) {
-            switch (message.getType()) {
-                case Message.TYPE_DEVICE_LOW_BATTERY:
-                    setLowBattery(true);
-                    break;
-                case Message.TYPE_DEVICE_UNREACHABLE:
-                    isReachable = false;
-                    break;
+        this.messageList = messageList;
+        if (messageList != null && !messageList.isEmpty()) {
+            boolean isReachable = true;
+            for (final Message message : messageList) {
+                switch (message.getType()) {
+                    case Message.TYPE_DEVICE_LOW_BATTERY:
+                        setLowBattery(true);
+                        break;
+                    case Message.TYPE_DEVICE_UNREACHABLE:
+                        isReachable = false;
+                        break;
+                }
             }
+            setReachable(isReachable);
+        } else {
+            setLowBattery(false);
+            setReachable(true);
         }
-        setReachable(isReachable);
     }
 
     /**
@@ -367,7 +370,7 @@ public class Device {
      *
      * @param isReachable
      */
-    public void setReachable(boolean isReachable) {
+    private void setReachable(boolean isReachable) {
         if (getDeviceState().hasIsReachableState()) {
             getDeviceState().setReachable(isReachable);
         }
@@ -387,7 +390,7 @@ public class Device {
      *
      * @param hasLowBattery
      */
-    public void setLowBattery(boolean hasLowBattery) {
+    private void setLowBattery(boolean hasLowBattery) {
         this.lowBattery = hasLowBattery;
     }
 
