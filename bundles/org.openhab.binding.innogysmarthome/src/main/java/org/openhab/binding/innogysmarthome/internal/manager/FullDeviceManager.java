@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.CapabilityState;
@@ -65,7 +64,7 @@ public class FullDeviceManager {
         // DEVICES
         final List<Device> deviceList = client.getDevices(deviceStateMap.keySet());
         for (final Device device : deviceList) {
-            if (InnogyBindingConstants.BATTERY_POWERED_DEVICES.contains(device.getType())) {
+            if (isBatteryPowered(device)) {
                 device.setIsBatteryPowered(true);
             }
 
@@ -97,9 +96,8 @@ public class FullDeviceManager {
 
         // DEVICE
         final Device device = client.getDeviceById(deviceId);
-        if (BATTERY_POWERED_DEVICES.contains(device.getType())) {
+        if (isBatteryPowered(device)) {
             device.setIsBatteryPowered(true);
-            device.setLowBattery(false);
         }
 
         // location
@@ -112,6 +110,10 @@ public class FullDeviceManager {
         device.setMessageList(createMessageList(deviceId, client));
 
         return device;
+    }
+
+    private static boolean isBatteryPowered(Device device) {
+        return BATTERY_POWERED_DEVICES.contains(device.getType());
     }
 
     private static Map<String, Location> createLocationMap(InnogyClient client)
