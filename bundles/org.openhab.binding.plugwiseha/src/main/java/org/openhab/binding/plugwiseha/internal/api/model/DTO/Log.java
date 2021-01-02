@@ -92,7 +92,18 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
     }
 
     public int compareDateWith(Log hasMeasurementDate) {
-        return this.measurementDate.compareTo(hasMeasurementDate.getMeasurementDate());
+        if (hasMeasurementDate == null) {
+            return -1;
+        }
+        ZonedDateTime compareToDate = hasMeasurementDate.getMeasurementDate();
+        ZonedDateTime localcompareFromDate = this.measurementDate;
+        if (localcompareFromDate == null) {
+            return -1;
+        } else if (compareToDate == null) {
+            return 1;
+        } else {
+            return this.measurementDate.compareTo(hasMeasurementDate.getMeasurementDate());
+        }
     }
 
     public boolean isOlderThan(Log hasMeasurementDate) {

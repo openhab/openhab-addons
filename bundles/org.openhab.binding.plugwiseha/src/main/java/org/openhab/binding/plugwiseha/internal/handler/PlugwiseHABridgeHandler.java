@@ -246,20 +246,35 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
     }
 
     protected void setBridgeProperties() {
+        logger.debug("Setting bridge properties");
         try {
             PlugwiseHAController controller = this.getController();
+            GatewayInfo localGatewayInfo = null;
             if (controller != null) {
                 this.gatewayInfo = controller.getGatewayInfo();
+                localGatewayInfo = this.gatewayInfo;
             }
 
-            Map<String, String> properties = editProperties();
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, this.gatewayInfo.getFirmwareVersion());
-            properties.put(Thing.PROPERTY_HARDWARE_VERSION, this.gatewayInfo.getHardwareVersion());
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, this.gatewayInfo.getMacAddress());
-            properties.put(Thing.PROPERTY_VENDOR, this.gatewayInfo.getVendorName());
-            properties.put(Thing.PROPERTY_MODEL_ID, this.gatewayInfo.getVendorModel());
+            if (localGatewayInfo != null) {
+                Map<String, String> properties = editProperties();
+                if (localGatewayInfo.getFirmwareVersion() != null) {
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, localGatewayInfo.getFirmwareVersion());
+                }
+                if (localGatewayInfo.getHardwareVersion() != null) {
+                    properties.put(Thing.PROPERTY_HARDWARE_VERSION, localGatewayInfo.getHardwareVersion());
+                }
+                if (localGatewayInfo.getMacAddress() != null) {
+                    properties.put(Thing.PROPERTY_MAC_ADDRESS, localGatewayInfo.getMacAddress());
+                }
+                if (localGatewayInfo.getVendorName() != null) {
+                    properties.put(Thing.PROPERTY_VENDOR, localGatewayInfo.getVendorName());
+                }
+                if (localGatewayInfo.getVendorModel() != null) {
+                    properties.put(Thing.PROPERTY_MODEL_ID, localGatewayInfo.getVendorModel());
+                }
 
-            updateProperties(properties);
+                updateProperties(properties);
+            }
         } catch (PlugwiseHAException e) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
         }
