@@ -30,6 +30,7 @@ import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
+import org.openhab.binding.innogysmarthome.internal.manager.FullDeviceManager;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
@@ -188,7 +189,8 @@ public class InnogyBridgeHandlerTest {
             bridgeDevice.setConfig(new DeviceConfig());
 
             innogyClientMock = mock(InnogyClient.class);
-            when(innogyClientMock.getFullDevices()).thenReturn(Collections.singletonList(bridgeDevice));
+            when(new FullDeviceManager(innogyClientMock).getFullDevices())
+                    .thenReturn(Collections.singletonList(bridgeDevice));
 
             schedulerMock = mock(ScheduledExecutorService.class);
 
