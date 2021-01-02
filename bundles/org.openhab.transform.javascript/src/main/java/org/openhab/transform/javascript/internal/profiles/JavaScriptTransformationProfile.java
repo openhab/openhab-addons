@@ -30,16 +30,15 @@ import org.slf4j.LoggerFactory;
 /**
  * Profile to offer the JavascriptTransformationservice on a ItemChannelLink
  *
- * @author Stefan Triller - initial contribution
- *
+ * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
-public class JavascriptTransformationProfile implements StateProfile {
+public class JavaScriptTransformationProfile implements StateProfile {
 
     public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID(
             TransformationService.TRANSFORM_PROFILE_SCOPE, "JS");
 
-    private final Logger logger = LoggerFactory.getLogger(JavascriptTransformationProfile.class);
+    private final Logger logger = LoggerFactory.getLogger(JavaScriptTransformationProfile.class);
 
     private final TransformationService service;
     private final ProfileCallback callback;
@@ -52,7 +51,7 @@ public class JavascriptTransformationProfile implements StateProfile {
     @NonNullByDefault({})
     private final String sourceFormat;
 
-    public JavascriptTransformationProfile(ProfileCallback callback, ProfileContext context,
+    public JavaScriptTransformationProfile(ProfileCallback callback, ProfileContext context,
             TransformationService service) {
         this.service = service;
         this.callback = callback;
