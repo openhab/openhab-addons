@@ -32,9 +32,7 @@ public class PowermaxZonesTypeMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
-        super.handleMessage(commManager);
-
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }

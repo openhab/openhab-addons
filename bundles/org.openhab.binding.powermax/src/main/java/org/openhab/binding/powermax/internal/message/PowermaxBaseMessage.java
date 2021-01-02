@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ public class PowermaxBaseMessage {
     private int code;
     private PowermaxSendType sendType;
     private PowermaxReceiveType receiveType;
+    private Object messageType;
 
     /**
      * Constructor.
@@ -38,6 +40,7 @@ public class PowermaxBaseMessage {
      */
     public PowermaxBaseMessage(byte[] message) {
         this.sendType = null;
+        this.messageType = "UNKNOWN";
         decodeMessage(message);
     }
 
@@ -58,6 +61,7 @@ public class PowermaxBaseMessage {
      */
     public PowermaxBaseMessage(PowermaxSendType sendType, byte[] param) {
         this.sendType = sendType;
+        this.messageType = "UNKNOWN";
         byte[] message = new byte[sendType.getMessage().length + 3];
         int index = 0;
         message[index++] = 0x0D;
@@ -87,6 +91,8 @@ public class PowermaxBaseMessage {
         } catch (IllegalArgumentException e) {
             receiveType = null;
         }
+
+        messageType = sendType != null ? sendType : receiveType != null ? receiveType : "UNKNOWN";
     }
 
     /**
@@ -94,17 +100,26 @@ public class PowermaxBaseMessage {
      *
      * @return a new state containing all changes driven by the message
      */
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+    public final PowermaxState handleMessage(PowermaxCommManager commManager) {
         // Send an ACK if needed
         if (isAckRequired() && commManager != null) {
             commManager.sendAck(this, (byte) 0x02);
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("{}message handled by class {}: {}", (receiveType == null) ? "Unsupported " : "",
-                    this.getClass().getSimpleName(), this);
+            logger.debug("{}message will be handled by class {}:", (receiveType == null) ? "Unsupported " : "",
+                    this.getClass().getSimpleName());
+
+            debug("Raw data", rawData);
+            debug("Message type", code, messageType.toString());
         }
 
+        PowermaxState newState = handleMessageInternal(commManager);
+
+        return newState;
+    }
+
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         return null;
     }
 
@@ -147,17 +162,42 @@ public class PowermaxBaseMessage {
         return receiveType == null || receiveType.isAckRequired();
     }
 
-    @Override
-    public String toString() {
-        String str = "\n - Raw data = " + HexUtils.bytesToHex(rawData);
-        str += "\n - type = " + String.format("%02X", code);
-        if (sendType != null) {
-            str += " ( " + sendType.toString() + " )";
-        } else if (receiveType != null) {
-            str += " ( " + receiveType.toString() + " )";
+    // Debugging helpers
+
+    public void debug(String name, String info, @Nullable String decoded) {
+        if (!logger.isDebugEnabled()) {
+            return;
         }
 
-        return str;
+        String decodedStr = "";
+
+        if (decoded != null && !decoded.isBlank()) {
+            decodedStr = " - " + decoded;
+        }
+
+        logger.debug("| {} = {}{}", name, info, decodedStr);
+    }
+
+    public void debug(String name, String info) {
+        debug(name, info, null);
+    }
+
+    public void debug(String name, byte[] data, @Nullable String decoded) {
+        String hex = "0x" + HexUtils.bytesToHex(data);
+        debug(name, hex, decoded);
+    }
+
+    public void debug(String name, byte[] data) {
+        debug(name, data, null);
+    }
+
+    public void debug(String name, int data, @Nullable String decoded) {
+        String hex = String.format("0x%02X", data);
+        debug(name, hex, decoded);
+    }
+
+    public void debug(String name, int data) {
+        debug(name, data, null);
     }
 
     /**
