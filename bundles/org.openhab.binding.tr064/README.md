@@ -6,11 +6,12 @@ Even though textual configuration is possible, it is strongly recommended to use
 
 ## Supported Things
 
-Four thing types are supported:
-
+Two Bridge things are supported:
 - `generic`: the internet gateway device itself (generic device)
-- `fritzbox`: similar to `generic` with extensions for AVM FritzBox devices. This is also a `rootDevice`
-- `subDevice`: a sub-device of a `rootDevice` (e.g. a WAN interface) 
+- `fritzbox`: similar to `generic` with extensions for AVM FritzBox devices.
+
+Two kind of Things are supported:
+- `subDevice`: a sub-device of the Bridge thing (e.g. a WAN interface) 
 - `subDeviceLan`: a special type of sub-device that supports MAC-detection
 
 ## Discovery
@@ -36,12 +37,13 @@ For security reasons it is highly recommended to set both, username and password
 
 ### `fritzbox`
 
-The `fritzbox` devices can give additional informations in dedicated channels, controlled  by additional parameters, w.r.t. to `generic` devices.
-These parameters are advanced parameters, i.e. they appear in the Main User Interface only if the `Show Advanced` option is selected.
+The `fritzbox` devices can give additional informations in dedicated channels, controlled 
+ by additional parameters (visible if Show Advanced is selected), w.r.t. to `generic` devices.
 If the parameters are specified, the corresponding channels will be added to the device. 
 
-One or more TAM (telephone answering machines) are supported by most fritzbox devices (namely the ones with DECT support).
-By setting the `tamIndices` parameter you can instruct the binding to add channels for these devices to the thing.
+One or more TAM (telephone answering machines) are supported by most fritzbox devices.
+By setting the `tamIndices` parameter you can instruct the binding to add channels for these
+ devices to the thing.
 Values start with `0`.
 This is an optional parameter and multiple values are allowed: add one value per line in the Main User Interface.
 
@@ -52,8 +54,9 @@ This is an optional parameter and multiple values are allowed:  add one value pe
 
 Most devices support call lists.
 The binding can retrieve these call lists and provide channels for the number of missed calls, inbound calls, outbound calls and rejected (blocked) calls,
-for a given number of days. A channel is added to the device if such a number is set through the corresponding parameter
-in the Main User Interface. The parameters are: `missedCallDays`, `rejectedCallDays`, `inboundCallDays`, `outboundCallDays` and `callListDays`.
+for a given number of days. A channel is added to the Thing if such a number is set through the corresponding parameter
+in the Main User Interface. 
+The parameters are: `missedCallDays`, `rejectedCallDays`, `inboundCallDays`, `outboundCallDays` and `callListDays`.
 
 Since FritzOS! 7.20 WAN access of local devices can be controlled by their IPs.
 If the `wanBlockIPs` parameter is set, a channel for each IP is created to block/unblock WAN access for this IP.
@@ -67,24 +70,23 @@ and it can be set to 0 if phoneooks are not to be used.
 
 ### `subdevice`, `subdeviceLan`
 
-Additional informations (i.e. channels) are available in subdevices of the rootdevice, which is therefore a bridge.
+Additional informations (i.e. channels) are available in subdevices of the bridge.
 Each subdevice is characterized by a unique `uuid` parameter: this is the UUID/UDN of the device. 
 This is a mandatory parameter to be set in order to add the subdevice. Since the parameter value can only be determined
 by examining the SCPD of the root device, the simplest way to obtain it is through auto-discovery.
 
-For FritzBox 7590 and for FritzBox 7360v1 (but likely many others) three subdevices are available (and found through auto-discovery):
-a LAN Device (of type `subdeviceLan`), a WAN Device (of type `subdevice`) and a WANConnection Device (of type `subdevice`).
+Auto discovery may find several sub-devices, each one holding channels as described in the following.
 
-The LAN Device, inparticular, is used for presence detection. It therefore optionally contains
+The LAN sub-device, in particular, is also used for presence detection. It therefore optionally contains
 a channel for each MAC address (in a format 11:11:11:11:11:11, different than the old v1 version of this binding),
 defined by the parameter `macOnline`.
 This is an optional parameter and multiple values are allowed:  add one value per line in the Main User Interface.
 
 ## Channels
 
-Channels are grouped to the different subdevices. 
+Channels are grouped according to the subdevice they belong to. 
 
-### rootDevice
+### fritzbox Bridge channels
 
 Advanced channels appear only if the corresponding parameters are set in the Thing definition.
 
@@ -103,7 +105,7 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | `tamNewMessages`           | `Number`                  |     x    | The number of new messages of the given answering machine.     |
 | `uptime`                   | `Number:Time`             |          | Uptime of the device                                           |
 
-### LAN subdeviceLan
+### LAN subdeviceLan channels
 
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
@@ -112,7 +114,7 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | `wifiGuestEnable`          | `Switch`                  |          | Enable/Disable the guest WiFi.                                 |
 | `macOnline`                | `Switch`                  |     x    | Online status of the device with the given MAC                 |
 
-### WANConnection subdevice
+### WANConnection subdevice channels
 
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
@@ -123,7 +125,7 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | `wanIpAddress`             | `String`                  |     x    | WAN IP Address                                                 |
 | `wanPppIpAddress`          | `String`                  |     x    | WAN IP Address (if using PPP)                                  |
 
-### WAN subdevice
+### WAN subdevice channels
 
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
