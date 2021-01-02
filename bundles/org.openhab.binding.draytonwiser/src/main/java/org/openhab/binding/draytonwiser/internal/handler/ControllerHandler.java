@@ -60,6 +60,8 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
                 setAwayMode(onOffState);
             } else if (CHANNEL_ECO_MODE_STATE.equals(channelId)) {
                 setEcoMode(onOffState);
+            } else if (CHANNEL_COMFORT_MODE_STATE.equals(channelId)) {
+                setComfortMode(onOffState);
             }
         }
     }
@@ -76,6 +78,7 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
         updateState(CHANNEL_HEATCHANNEL_2_DEMAND_STATE, this::getHeatChannel2DemandState);
         updateState(CHANNEL_AWAY_MODE_STATE, this::getAwayModeState);
         updateState(CHANNEL_ECO_MODE_STATE, this::getEcoModeState);
+        updateState(CHANNEL_COMFORT_MODE_STATE, this::getComfortModeState);
     }
 
     @Override
@@ -139,12 +142,21 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
         return OnOffType.from(getData().system.getEcoModeEnabled() != null && getData().system.getEcoModeEnabled());
     }
 
+    private State getComfortModeState() {
+        return OnOffType
+                .from(getData().system.getComfortModeEnabled() != null && getData().system.getComfortModeEnabled());
+    }
+
     private void setAwayMode(final Boolean awayMode) throws DraytonWiserApiException {
         getApi().setAwayMode(awayMode);
     }
 
     private void setEcoMode(final Boolean ecoMode) throws DraytonWiserApiException {
         getApi().setEcoMode(ecoMode);
+    }
+
+    private void setComfortMode(final Boolean comfortMode) throws DraytonWiserApiException {
+        getApi().setComfortMode(comfortMode);
     }
 
     static class ControllerData {
