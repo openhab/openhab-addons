@@ -105,12 +105,6 @@ public class Device {
     private List<Message> messageList;
 
     private boolean lowBattery;
-    /**
-     * Stores the message id, that contains the low battery state. This is needed to identify the device, when the
-     * message
-     * with that id is deleted (thus low battery state is false again).
-     */
-    private String lowBatteryMessageId;
 
     /**
      * Stores, if the {@link Device} is battery powered.
@@ -359,7 +353,6 @@ public class Device {
                 switch (message.getType()) {
                     case Message.TYPE_DEVICE_LOW_BATTERY:
                         setLowBattery(true);
-                        setLowBatteryMessageId(message.getId());
                         break;
                     case Message.TYPE_DEVICE_UNREACHABLE:
                         isReachable = false;
@@ -406,14 +399,6 @@ public class Device {
      */
     public boolean hasLowBattery() {
         return lowBattery;
-    }
-
-    public String getLowBatteryMessageId() {
-        return this.lowBatteryMessageId;
-    }
-
-    public void setLowBatteryMessageId(String messageId) {
-        this.lowBatteryMessageId = messageId;
     }
 
     /**
