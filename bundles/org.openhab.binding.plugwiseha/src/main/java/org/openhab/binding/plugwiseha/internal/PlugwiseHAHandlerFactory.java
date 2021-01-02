@@ -13,18 +13,15 @@
 package org.openhab.binding.plugwiseha.internal;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.plugwiseha.internal.discovery.PlugwiseHADiscoveryService;
 import org.openhab.binding.plugwiseha.internal.handler.PlugwiseHAApplianceHandler;
 import org.openhab.binding.plugwiseha.internal.handler.PlugwiseHABridgeHandler;
 import org.openhab.binding.plugwiseha.internal.handler.PlugwiseHAZoneHandler;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -117,9 +114,7 @@ public class PlugwiseHAHandlerFactory extends BaseThingHandlerFactory {
 
         if (PlugwiseHABridgeHandler.supportsThingType(thingTypeUID)) {
             this.logger.debug("Creating new Plugwise Home Automation Bridge");
-            PlugwiseHABridgeHandler bridge = new PlugwiseHABridgeHandler((Bridge) thing, this.httpClient);
-            registerPlugwiseHADiscoveryService(bridge);
-            return bridge;
+            return new PlugwiseHABridgeHandler((Bridge) thing, this.httpClient);
         } else if (PlugwiseHAZoneHandler.supportsThingType(thingTypeUID)) {
             logger.debug("Creating new Plugwise Home Automation Zone");
             return new PlugwiseHAZoneHandler(thing);
@@ -128,34 +123,5 @@ public class PlugwiseHAHandlerFactory extends BaseThingHandlerFactory {
             return new PlugwiseHAApplianceHandler(thing);
         }
         return null;
-    }
-
-    private synchronized void registerPlugwiseHADiscoveryService(PlugwiseHABridgeHandler bridgeHandler) {
-        Hashtable<String, Object> properties = new Hashtable<String, Object>();
-        PlugwiseHADiscoveryService discoveryService = new PlugwiseHADiscoveryService(bridgeHandler);
-
-        ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, properties);
-
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), serviceRegistration);
-
-        discoveryService.activate();
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof PlugwiseHABridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                PlugwiseHADiscoveryService service = (PlugwiseHADiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-
-                if (service != null) {
-                    service.deactivate();
-                }
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
-        }
     }
 }

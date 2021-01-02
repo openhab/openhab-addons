@@ -18,6 +18,8 @@ import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +38,7 @@ import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAModel;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.GatewayInfo;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHABridgeThingConfig;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
+import org.openhab.binding.plugwiseha.internal.discovery.PlugwiseHADiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,6 +48,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -118,6 +122,11 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         } else {
             logger.warn("Invalid config for the Plugwise Home Automation bridge handler with config = {}", this.config);
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(PlugwiseHADiscoveryService.class);
     }
 
     @Override

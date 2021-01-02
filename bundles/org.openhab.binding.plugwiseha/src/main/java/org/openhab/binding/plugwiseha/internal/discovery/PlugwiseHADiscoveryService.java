@@ -31,7 +31,10 @@ import org.openhab.binding.plugwiseha.internal.handler.PlugwiseHABridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,18 +46,17 @@ import org.slf4j.LoggerFactory;
  * @author Leo Siepel - finish initial contribution
  */
 @NonNullByDefault
-public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
+public class PlugwiseHADiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHADiscoveryService.class);
-    private final PlugwiseHABridgeHandler handler;
     private static final int TIMEOUT_SECONDS = 5;
     private static final int REFRESH_SECONDS = 600;
-
+    private @Nullable PlugwiseHABridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> discoveryFuture;
 
-    public PlugwiseHADiscoveryService(PlugwiseHABridgeHandler bridgeHandler) {
+    public PlugwiseHADiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SECONDS, true);
-        this.handler = bridgeHandler;
     }
 
     @Override
@@ -64,6 +66,12 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
         } catch (PlugwiseHAException e) {
             // Ignore silently
         }
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
     }
 
     @Override
@@ -86,11 +94,6 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected synchronized void stopScan() {
-        super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
-    }
-
     public void activate() {
         super.activate(null);
     }
@@ -100,8 +103,20 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
         super.deactivate();
     }
 
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof PlugwiseHABridgeHandler) {
+            bridgeHandler = (PlugwiseHABridgeHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
     private void discoverDomainObjects() throws PlugwiseHAException {
-        PlugwiseHAController controller = this.handler.getController();
+        PlugwiseHAController controller = this.bridgeHandler.getController();
 
         if (controller != null) {
             DomainObjects domainObjects = controller.getDomainObjects();
@@ -129,7 +144,7 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
         String applianceId = appliance.getId();
         String applianceName = appliance.getName();
         String applianceType = appliance.getType();
-        ThingUID bridgeUID = this.handler.getThing().getUID();
+        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
         ThingUID uid;
 
         Map<String, Object> configProperties = new HashMap<>();
@@ -167,7 +182,7 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
     private void locationDiscovery(Location location) {
         String locationId = location.getId();
         String locationName = location.getName();
-        ThingUID bridgeUID = this.handler.getThing().getUID();
+        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
         ThingUID uid = new ThingUID(PlugwiseHABindingConstants.THING_TYPE_ZONE, bridgeUID, locationId);
 
         Map<String, Object> configProperties = new HashMap<>();
