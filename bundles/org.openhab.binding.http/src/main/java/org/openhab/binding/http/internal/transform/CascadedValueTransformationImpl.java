@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.transform.TransformationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link CascadedValueTransformationImpl} implements {@link ValueTransformation for a cascaded set of
@@ -30,13 +32,21 @@ import org.openhab.core.transform.TransformationService;
  */
 @NonNullByDefault
 public class CascadedValueTransformationImpl implements ValueTransformation {
+    private final Logger logger = LoggerFactory.getLogger(CascadedValueTransformationImpl.class);
     private final List<ValueTransformation> transformations;
 
     public CascadedValueTransformationImpl(String transformationString,
             Function<String, @Nullable TransformationService> transformationServiceSupplier) {
-        transformations = Arrays.stream(transformationString.split("∩")).filter(s -> !s.isEmpty())
-                .map(transformation -> new SingleValueTransformation(transformation, transformationServiceSupplier))
-                .collect(Collectors.toList());
+        List<ValueTransformation> transformations;
+        try {
+            transformations = Arrays.stream(transformationString.split("∩")).filter(s -> !s.isEmpty())
+                    .map(transformation -> new SingleValueTransformation(transformation, transformationServiceSupplier))
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            transformations = List.of(NoOpValueTransformation.getInstance());
+            logger.warn("Transformation ignore, failed to parse {}: {}", transformationString, e.getMessage());
+        }
+        this.transformations = transformations;
     }
 
     @Override

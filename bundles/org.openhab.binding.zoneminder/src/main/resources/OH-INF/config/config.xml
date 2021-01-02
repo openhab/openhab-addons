@@ -14,31 +14,8 @@
 		<parameter-group name="auth-info">
 			<label>Authentication Information</label>
 		</parameter-group>
-		<parameter name="refreshInterval" type="integer" min="2" unit="s" required="true" groupName="config-info">
-			<label>Refresh Interval</label>
-			<description>Interval in seconds at which monitor status is updated</description>
-			<default>5</default>
-		</parameter>
-		<parameter name="discoveryEnabled" type="boolean" required="true" groupName="config-info">
-			<label>Discovery Enabled</label>
-			<description>Enable/disable automatic discovery</description>
-			<default>true</default>
-		</parameter>
-		<parameter name="discoveryInterval" type="integer" min="60" unit="s" required="true" groupName="config-info">
-			<label>Monitor Discovery Interval</label>
-			<description>Specifies time in seconds in which the binding will attempt to discover monitors</description>
-			<default>300</default>
-		</parameter>
-		<parameter name="defaultAlarmDuration" type="integer" unit="s" required="false" groupName="config-info">
-			<label>Default Alarm Duration</label>
-			<description>Duration in seconds after which the alarm will be turned off</description>
-			<default>60</default>
-		</parameter>
-		<parameter name="defaultImageRefreshInterval" type="integer" unit="s" required="false"
-			groupName="config-info">
-			<label>Default Image Refresh Interval</label>
-			<description>Interval in seconds at which monitor image snapshot will be updated</description>
-		</parameter>
+
+		<!-- Parameter Group url-info -->
 		<parameter name="host" type="text" required="true" groupName="url-info">
 			<label>Server</label>
 			<description>ZoneMinder server name or IP address</description>
@@ -58,6 +35,30 @@
 			<description>URL path (Default is /zm. Use / if Zoneminder installed under the root directory)</description>
 			<default>/zm</default>
 		</parameter>
+
+		<!-- Parameter Group config-info -->
+		<parameter name="refreshInterval" type="integer" min="2" unit="s" required="true" groupName="config-info">
+			<label>Refresh Interval</label>
+			<description>Interval in seconds at which monitor status is updated</description>
+			<default>5</default>
+		</parameter>
+		<parameter name="defaultAlarmDuration" type="integer" unit="s" required="false" groupName="config-info">
+			<label>Default Alarm Duration</label>
+			<description>Duration in seconds after which the alarm will be turned off</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="defaultImageRefreshInterval" type="integer" unit="s" required="false"
+			groupName="config-info">
+			<label>Default Image Refresh Interval</label>
+			<description>Interval in seconds at which monitor image snapshot will be updated</description>
+		</parameter>
+		<parameter name="discoveryEnabled" type="boolean" required="true" groupName="config-info">
+			<label>Background Discovery Enabled</label>
+			<description>Enable/disable background discovery of monitors</description>
+			<default>true</default>
+		</parameter>
+
+		<!-- Parameter Group auth-info -->
 		<parameter name="user" type="text" required="false" groupName="auth-info">
 			<label>User Name</label>
 			<description>User name (if authentication enabled in ZoneMinder)</description>

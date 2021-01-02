@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.http.internal.config;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,6 +28,7 @@ public class HttpThingConfig {
     public String baseURL = "";
     public int refresh = 30;
     public int timeout = 3000;
+    public int delay = 0;
 
     public String username = "";
     public String password = "";
@@ -42,5 +42,6 @@ public class HttpThingConfig {
 
     public boolean ignoreSSLErrors = false;
 
-    public List<String> headers = Collections.emptyList();
+    // ArrayList is required as implementation because list may be modified later
+    public ArrayList<String> headers = new ArrayList<>();
 }
