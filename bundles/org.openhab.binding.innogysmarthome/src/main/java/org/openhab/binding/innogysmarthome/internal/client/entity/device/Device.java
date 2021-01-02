@@ -360,6 +360,8 @@ public class Device {
                 }
             }
             setReachable(isReachable);
+        } else {
+            setReachable(true);
         }
     }
 
