@@ -29,19 +29,19 @@
 	</channel-type>
 	<channel-type id="window-driver-front-channel">
 		<item-type>String</item-type>
-		<label>Driver Door Window</label>
+		<label>Driver Window</label>
 	</channel-type>
 	<channel-type id="window-driver-rear-channel">
 		<item-type>String</item-type>
-		<label>Driver Rear Door Window</label>
+		<label>Driver Rear Window</label>
 	</channel-type>
 	<channel-type id="window-passenger-front-channel">
 		<item-type>String</item-type>
-		<label>Passenger Door Window</label>
+		<label>Passenger Window</label>
 	</channel-type>
 	<channel-type id="window-passenger-rear-channel">
 		<item-type>String</item-type>
-		<label>Passenger Rear Door Window</label>
+		<label>Passenger Rear Window</label>
 	</channel-type>
 	<channel-type id="window-rear-channel">
 		<item-type>String</item-type>

@@ -227,10 +227,10 @@ Detailed status of all doors and windows.
 | Passenger Door Rear        | passenger-rear          | String        |
 | Trunk                      | trunk                   | String        |
 | Hood                       | hood                    | String        |
-| Driver Door Window         | win-driver-front        | String        |
-| Driver Door Rear Window    | win-driver-rear         | String        |
-| Passenger Door Window      | win-passenger-front     | String        |
-| Passenger Door Rear Window | win-passenger-rear      | String        |
+| Driver Window              | win-driver-front        | String        |
+| Driver Rear Window         | win-driver-rear         | String        |
+| Passenger Window           | win-passenger-front     | String        |
+| Passenger Rear Window      | win-passenger-rear      | String        |
 | Rear Window                | win-rear                | String        |
 | Sunroof                    | sunroof                 | String        |
 
@@ -276,10 +276,10 @@ Charging options with date and time for preferred time windows and charging mode
 
 | Channel Label                      | Channel ID          | Type   | 
 |------------------------------------|---------------------|--------|
-| Air Conditioning at Departure Time | profile-climate     | Switch | 
-| Charging Mode for Profile          | profile-mode        | String | 
-| Charging Window Start Time         | window-start        | String | 
-| Charging Window End Time           | window-end          | String | 
+| A/C at Departure Time              | profile-climate     | Switch | 
+| Charge Mode for Profile            | profile-mode        | String | 
+| Charge Window Start Time           | window-start        | String | 
+| Charge Window End Time             | window-end          | String | 
 | Timer 1: Departure Time            | timer1-departure    | String | 
 | Timer 1: Scheduled Days            | timer1-days         | String | 
 | Timer 1: Enabled                   | timer1-enabled      | Switch | 
@@ -318,10 +318,10 @@ Statistic values of duration, distance and consumption of the last trip.
 | Last Trip Date                          | date                         | DateTime      |
 | Last Trip Duration                      | duration                     | Number:Time   |
 | Last Trip Distance                      | distance                     | Number:Length |
-| Distance since Last Charge              | distance-since-charging      | Number:Length |
-| Average Power Consumption               | avg-consumption              | Number:Power  |
-| Average Power Recuperation              | avg-recuperation             | Number:Power  |
-| Average Combined Consumption            | avg-combined-consumption     | Number:Volume |
+| Distance since Charge                   | distance-since-charging      | Number:Length |
+| Avg. Power Consumption                  | avg-consumption              | Number:Power  |
+| Avg. Power Recuperation                 | avg-recuperation             | Number:Power  |
+| Avg. Combined Consumption               | avg-combined-consumption     | Number:Volume |
 
 
 #### Lifetime Statistics
@@ -335,11 +335,11 @@ Providing lifetime consumption values.
 
 | Channel Label                           | Channel ID                   | Type          | 
 |-----------------------------------------|------------------------------|---------------|
-| Cumulated Electric Driven Distance      | cumulated-driven-distance    | Number:Length |
-| Longest Distance with one Charge        | single-longest-distance      | Number:Length |
-| Average Power Consumption               | avg-consumption              | Number:Power  |
-| Average Power Recuperation              | avg-recuperation             | Number:Power  |
-| Average Combined Consumption            | avg-combined-consumption     | Number:Volume |
+| Total Electric Distance                 | total-driven-distance        | Number:Length |
+| Longest 1-Charge Distance               | single-longest-distance      | Number:Length |
+| Avg. Power Consumption                  | avg-consumption              | Number:Power  |
+| Avg. Power Recuperation                 | avg-recuperation             | Number:Power  |
+| Avg. Combined Consumption               | avg-combined-consumption     | Number:Volume |
 
 
 #### Remote Services
@@ -385,10 +385,10 @@ If several last destinations are stored in the navigation system the channel _na
 * Read/Write access
 
 
-| Channel Label                    | Channel ID          | Type      | Access      |
-|----------------------------------|---------------------|-----------|-------------|
-| Destination Name                 | name                | String    | Read/Write  |
-| Destination GPS Coordinates      | gps                 | Location  | Read        |
+| Channel Label        | Channel ID    | Type      | Access      |
+|----------------------|---------------|-----------|-------------|
+| Name                 | name          | String    | Read/Write  |
+| GPS Coordinates      | gps           | Location  | Read        |
 
 
 
@@ -401,11 +401,11 @@ The possible values are the same mentioned in [Thing Configuration](#thing-confi
 * Available for all vehicles
 * Read/Write access
 
-| Channel Label                 | Channel ID          | Type   |  Access  |
-|-------------------------------|---------------------|--------|----------|
-| Rendered Image of the Vehicle | png                 | Image  | Read     |
-| Image Viewport                | view                | String | Write    |
-| Image Picture Size            | size                | Number | Write    |
+| Channel Label              | Channel ID          | Type   |  Access  |
+|----------------------------|---------------------|--------|----------|
+| Rendered Vehicle Image     | png                 | Image  | Read     |
+| Image Viewport             | view                | String | Write    |
+| Image Picture Size         | size                | Number | Write    |
 
 
 ## Further Descriptions
@@ -526,7 +526,7 @@ Number:Energy           i3AvgTripConsumption      "Average Consumption [%.1f %un
 Number:Volume           i3AvgTripCombined         "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#avg-combined-consumption" }                                                                           
 Number:Energy           i3AvgTripRecuperation     "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#avg-recuperation" }                                                                           
 
-Number:Length           i3CumulatedElectric       "Electric Distance Driven [%d %unit%]"        <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#cumulated-driven-distance" }                                                                           
+Number:Length           i3TotalElectric           "Electric Distance Driven [%d %unit%]"        <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#total-driven-distance" }                                                                           
 Number:Length           i3LongestEVTrip           "Longest Electric Trip [%d %unit%]"           <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#single-longest-distance" }                                                                           
 Number:Energy           i3AvgConsumption          "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#avg-consumption" }                                                                           
 Number:Volume           i3AvgCombined             "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#avg-combined-consumption" }                                                                           
@@ -622,7 +622,7 @@ sitemap BMW label="BMW" {
     Text    item=i3AvgTripCombined     
   }
   Frame label="Lifetime" {
-    Text    item=i3CumulatedElectric  
+    Text    item=i3TotalElectric  
     Text    item=i3LongestEVTrip      
     Text    item=i3AvgConsumption     
     Text    item=i3AvgRecuperation          

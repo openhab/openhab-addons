@@ -5,19 +5,19 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="profile-climate-channel">
 		<item-type>Switch</item-type>
-		<label>Air Conditioning at Departure Time</label>
+		<label>A/C at Departure Time</label>
 	</channel-type>
 	<channel-type id="profile-mode-channel">
 		<item-type>String</item-type>
-		<label>Charging Mode for Profile</label>
+		<label>Charge Mode for Profile</label>
 	</channel-type>
 	<channel-type id="window-start-channel">
 		<item-type>String</item-type>
-		<label>Charging Window Start Time</label>
+		<label>Charge Window Start Time</label>
 	</channel-type>
 	<channel-type id="window-end-channel">
 		<item-type>String</item-type>
-		<label>Charging Window End Time</label>
+		<label>Charge Window End Time</label>
 	</channel-type>
 	<channel-type id="timer1-departure-channel">
 		<item-type>String</item-type>
