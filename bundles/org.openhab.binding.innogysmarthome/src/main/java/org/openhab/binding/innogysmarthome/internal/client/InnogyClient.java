@@ -385,6 +385,7 @@ public class InnogyClient {
     /**
      * Load the device and returns a {@link List} of {@link Device}s..
      *
+     * @param deviceIds Ids of the devices to return
      * @return List of Devices
      * @throws IOException
      * @throws ApiException
