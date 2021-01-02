@@ -54,7 +54,6 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class SOAPValueConverter {
-    private static final int REQUEST_TIMEOUT = 5000; // in ms
     private final Logger logger = LoggerFactory.getLogger(SOAPValueConverter.class);
     private final HttpClient httpClient;
 
