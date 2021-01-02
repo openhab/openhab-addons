@@ -26,6 +26,7 @@ public class SystemDTO {
     private Boolean fotaEnabled;
     private Boolean valveProtectionEnabled;
     private Boolean ecoModeEnabled;
+    private Boolean comfortModeEnabled;
     private BoilerSettingsDTO boilerSettings;
     private Long unixTime;
     private String cloudConnectionStatus;
@@ -161,5 +162,13 @@ public class SystemDTO {
 
     public void setHotWaterButtonOverrideState(final String hotWaterButtonOverrideState) {
         this.hotWaterButtonOverrideState = hotWaterButtonOverrideState;
+    }
+
+    public Boolean getComfortModeEnabled() {
+        return comfortModeEnabled;
+    }
+
+    public void setComfortModeEnabled(final Boolean comfortModeEnabled) {
+        this.comfortModeEnabled = comfortModeEnabled;
     }
 }
