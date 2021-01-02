@@ -71,23 +71,11 @@ public class FullDeviceManager {
 
             device.setLocation(locationMap.get(device.getLocationId()));
 
-            Map<String, Capability> deviceCapabilityMap = createDeviceCapabilityMap(device, capabilityMap,
-                    capabilityStateMap);
-            device.setCapabilityMap(deviceCapabilityMap);
+            device.setCapabilityMap(createDeviceCapabilityMap(device, capabilityMap, capabilityStateMap));
 
-            // device states
             device.setDeviceState(deviceStateMap.get(device.getId()));
 
-            // messages
-            if (messageMap.containsKey(device.getId())) {
-                device.setMessageList(messageMap.get(device.getId()));
-                for (final Message message : device.getMessageList()) {
-                    if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType())) {
-                        device.setLowBattery(true);
-                        device.setLowBatteryMessageId(message.getId());
-                    }
-                }
-            }
+            device.setMessageList(messageMap.get(device.getId()));
         }
         return deviceList;
     }
@@ -117,24 +105,12 @@ public class FullDeviceManager {
         // location
         device.setLocation(locationMap.get(device.getLocationId()));
 
-        // capabilities and their states
-        final Map<String, Capability> deviceCapabilityMap = createDeviceCapabilityMap(device, capabilityMap,
-                capabilityStateMap);
-        device.setCapabilityMap(deviceCapabilityMap);
+        device.setCapabilityMap(createDeviceCapabilityMap(device, capabilityMap, capabilityStateMap));
 
         device.setDeviceState(deviceState);
 
-        // messages
-        final List<Message> messageList = createMessageList(deviceId, client);
-        if (!messageList.isEmpty()) {
-            device.setMessageList(messageList);
-            for (final Message message : device.getMessageList()) {
-                if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType())) {
-                    device.setLowBattery(true);
-                    device.setLowBatteryMessageId(message.getId());
-                }
-            }
-        }
+        device.setMessageList(createMessageList(deviceId, client));
+
         return device;
     }
 
@@ -178,14 +154,15 @@ public class FullDeviceManager {
         return capabilityMap;
     }
 
-    private static HashMap<String, Capability> createDeviceCapabilityMap(Device device,
+    private static Map<String, Capability> createDeviceCapabilityMap(Device device,
             Map<String, Capability> capabilityMap, Map<String, CapabilityState> capabilityStateMap) {
         final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
         for (final String capabilityValue : device.getCapabilities()) {
             final Capability capability = capabilityMap.get(Link.getId(capabilityValue));
             final String capabilityId = capability.getId();
             final CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
-            capability.setCapabilityState(capabilityState);
+            capability.setCapabilityState(capabilityState); // TODO dangerous to change a state in a method called
+                                                            // "create...". This should get avoided!
             deviceCapabilityMap.put(capabilityId, capability);
         }
         return deviceCapabilityMap;
@@ -203,21 +180,21 @@ public class FullDeviceManager {
 
     private List<Message> createMessageList(String deviceId, InnogyClient client)
             throws IOException, ApiException, AuthenticationException {
-        final List<Message> messageList = client.getMessages();
-        final List<Message> ml = new ArrayList<>();
+        final List<Message> messages = client.getMessages();
+        final List<Message> messageList = new ArrayList<>();
         final String deviceIdPath = "/device/" + deviceId;
 
-        for (final Message message : messageList) {
+        for (final Message message : messages) {
             logger.trace("Message Type {} with ID {}", message.getType(), message.getId());
             if (message.getDevices() != null && !message.getDevices().isEmpty()) {
                 for (final String li : message.getDevices()) {
                     if (deviceIdPath.equals(li)) {
-                        ml.add(message);
+                        messageList.add(message);
                     }
                 }
             }
         }
-        return ml;
+        return messageList;
     }
 
     private static Map<String, List<Message>> createMessageMap(InnogyClient client)
