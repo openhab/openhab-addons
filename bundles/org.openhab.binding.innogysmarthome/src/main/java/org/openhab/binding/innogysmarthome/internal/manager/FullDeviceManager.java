@@ -15,10 +15,7 @@ package org.openhab.binding.innogysmarthome.internal.manager;
 import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.BATTERY_POWERED_DEVICES;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,7 +61,7 @@ public class FullDeviceManager {
         for (final Device device : deviceList) {
             final String deviceId = device.getId();
             initializeDevice(device, deviceStateMap.get(deviceId), locationMap, capabilityMap,
-                    messageMap.get(deviceId));
+                    getMessageList(device, messageMap));
         }
         return deviceList;
     }
@@ -88,7 +85,7 @@ public class FullDeviceManager {
     }
 
     private void initializeDevice(Device device, @Nullable DeviceState deviceState, Map<String, Location> locationMap,
-            Map<String, Capability> capabilityMap, @Nullable List<Message> messageList)
+            Map<String, Capability> capabilityMap, List<Message> messageList)
             throws ApiException, IOException, AuthenticationException {
         final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
 
@@ -107,6 +104,10 @@ public class FullDeviceManager {
 
     private static boolean isBatteryPowered(Device device) {
         return BATTERY_POWERED_DEVICES.contains(device.getType());
+    }
+
+    private List<Message> getMessageList(Device device, Map<String, List<Message>> messageMap) {
+        return Objects.requireNonNullElse(messageMap.get(device.getId()), Collections.emptyList());
     }
 
     private static Map<String, Location> createLocationMap(InnogyClient client)
@@ -157,7 +158,7 @@ public class FullDeviceManager {
             final String capabilityId = capability.getId();
             final CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
             capability.setCapabilityState(capabilityState); // TODO dangerous to change a state in a method called
-                                                            // "create...". This should get avoided!
+            // "create...". This should get avoided!
             deviceCapabilityMap.put(capabilityId, capability);
         }
         return deviceCapabilityMap;

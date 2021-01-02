@@ -46,7 +46,6 @@ public class DeviceStructureManager {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceStructureManager.class);
 
-    private final InnogyClient client;
     private final FullDeviceManager deviceManager;
     private final Map<String, Device> deviceMap;
     private final Map<String, Device> capabilityIdToDeviceMap;
@@ -55,11 +54,10 @@ public class DeviceStructureManager {
     /**
      * Constructs the {@link DeviceStructureManager}.
      *
-     * @param client the {@link InnogyClient}
+     * @param deviceManager the {@link FullDeviceManager}
      */
-    public DeviceStructureManager(InnogyClient client) {
-        this.client = client;
-        this.deviceManager = new FullDeviceManager(client);
+    public DeviceStructureManager(FullDeviceManager deviceManager) {
+        this.deviceManager = deviceManager;
         deviceMap = Collections.synchronizedMap(new HashMap<>());
         capabilityIdToDeviceMap = new ConcurrentHashMap<>();
     }

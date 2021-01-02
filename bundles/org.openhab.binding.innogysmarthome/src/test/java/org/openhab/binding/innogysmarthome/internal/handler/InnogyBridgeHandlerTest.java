@@ -175,6 +175,7 @@ public class InnogyBridgeHandlerTest {
     private class InnogyBridgeHandlerAccessible extends InnogyBridgeHandler {
 
         private final InnogyClient innogyClientMock;
+        private final FullDeviceManager fullDeviceManagerMock;
         private final ScheduledExecutorService schedulerMock;
         private int executionCount;
         private int directExecutionCount;
@@ -189,8 +190,8 @@ public class InnogyBridgeHandlerTest {
             bridgeDevice.setConfig(new DeviceConfig());
 
             innogyClientMock = mock(InnogyClient.class);
-            when(new FullDeviceManager(innogyClientMock).getFullDevices())
-                    .thenReturn(Collections.singletonList(bridgeDevice));
+            fullDeviceManagerMock = mock(FullDeviceManager.class);
+            when(fullDeviceManagerMock.getFullDevices()).thenReturn(Collections.singletonList(bridgeDevice));
 
             schedulerMock = mock(ScheduledExecutorService.class);
 
@@ -218,6 +219,12 @@ public class InnogyBridgeHandlerTest {
 
         public int getDirectExecutionCount() {
             return directExecutionCount;
+        }
+
+        @Override
+        @NonNull
+        FullDeviceManager createFullDeviceManager(@NonNull InnogyClient client) {
+            return fullDeviceManagerMock;
         }
 
         @Override
