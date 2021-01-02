@@ -311,7 +311,7 @@ Statistic values of duration, distance and consumption of the last trip.
 * Channel Group ID is **last-trip**
 * Available if *Statistics* is present in *Services Supported*. See [Vehicle Properties](#properties) for further details
 * Read-only values
-* Depending on units configuration in [Thing Configuration](#thing_configuration) average values are given for 100 kilometers or miles
+* Depending on units configuration in [Thing Configuration](#thing-configuration) average values are given for 100 kilometers or miles
 
 | Channel Label                           | Channel ID                   | Type          |
 |-----------------------------------------|------------------------------|---------------|
@@ -331,7 +331,7 @@ Providing lifetime consumption values.
 * Channel Group ID is **lifetime**
 * Available if *Statistics* is present in *Services Supported*. See [Vehicle Properties](#properties) for further details
 * Read-only values
-* Depending on units configuration in [Thing Configuration](#thing_configuration) average values are given for 100 kilometers or miles
+* Depending on units configuration in [Thing Configuration](#thing-configuration) average values are given for 100 kilometers or miles
 
 | Channel Label                           | Channel ID                   | Type          | 
 |-----------------------------------------|------------------------------|---------------|
