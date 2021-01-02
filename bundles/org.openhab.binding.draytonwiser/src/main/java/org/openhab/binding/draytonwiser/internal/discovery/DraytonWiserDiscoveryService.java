@@ -79,7 +79,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onRefresh(final DraytonWiserDTO domainDTOProxy) {
-        logger.debug("Received data from Drayton Wise device. Parsing to discover devices.");
+        logger.debug("Received data from Drayton Wiser device. Parsing to discover devices.");
         onControllerAdded(domainDTOProxy);
         domainDTOProxy.getRooms().forEach(this::onRoomAdded);
         domainDTOProxy.getRoomStats().forEach(r -> onRoomStatAdded(domainDTOProxy, r));

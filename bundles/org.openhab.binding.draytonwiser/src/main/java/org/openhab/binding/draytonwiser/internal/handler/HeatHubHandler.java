@@ -115,10 +115,10 @@ public class HeatHubHandler extends BaseBridgeHandler {
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
                     }
-                    final DraytonWiserDTO draytonWiseDTO = new DraytonWiserDTO(domain);
+                    final DraytonWiserDTO draytonWiserDTO = new DraytonWiserDTO(domain);
 
-                    updateProperties(draytonWiseDTO);
-                    notifyListeners(draytonWiseDTO);
+                    updateProperties(draytonWiserDTO);
+                    notifyListeners(draytonWiserDTO);
                 }
                 logger.debug("Finished refreshing devices");
             }

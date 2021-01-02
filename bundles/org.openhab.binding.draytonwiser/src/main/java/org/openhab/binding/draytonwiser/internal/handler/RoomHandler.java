@@ -118,7 +118,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
 
     private State getHumidity() {
         if (getData().getId() != null && getData().getRoomStatId() != null) {
-            final RoomStatDTO roomStat = getDraytonWiseDTO().getRoomStat(getData().getRoomStatId());
+            final RoomStatDTO roomStat = getDraytonWiserDTO().getRoomStat(getData().getRoomStatId());
 
             if (roomStat != null) {
                 final Integer humidity = roomStat.getMeasuredHumidity();

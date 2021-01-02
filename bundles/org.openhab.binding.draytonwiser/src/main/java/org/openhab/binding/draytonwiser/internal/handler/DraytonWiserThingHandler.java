@@ -51,7 +51,7 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
 
     private @Nullable DraytonWiserApi api;
     private @Nullable T data;
-    private @Nullable DraytonWiserDTO draytonWiseDTO;
+    private @Nullable DraytonWiserDTO draytonWiserDTO;
     private @Nullable ScheduledFuture<?> handleCommandRefreshFuture;
 
     protected DraytonWiserThingHandler(final Thing thing) {
@@ -120,11 +120,11 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
     protected abstract void handleCommand(String channelId, Command command) throws DraytonWiserApiException;
 
     @Override
-    public final void onRefresh(final DraytonWiserDTO draytonWiseDTO) {
-        this.draytonWiseDTO = draytonWiseDTO;
+    public final void onRefresh(final DraytonWiserDTO draytonWiserDTO) {
+        this.draytonWiserDTO = draytonWiserDTO;
         try {
             if (ThingHandlerHelper.isHandlerInitialized(this)) {
-                data = api == null ? null : collectData(draytonWiseDTO);
+                data = api == null ? null : collectData(draytonWiserDTO);
                 refresh();
                 if (data == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -162,11 +162,11 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
      * Returns the handler specific data object only if all data is available.
      * If not all data is available it should return null.
      *
-     * @param draytonWiseDTO data object with domain data as received from the hub
+     * @param draytonWiserDTO data object with domain data as received from the hub
      * @return handler data object if available else null
      * @throws DraytonWiserApiException
      */
-    protected abstract @Nullable T collectData(DraytonWiserDTO draytonWiseDTO) throws DraytonWiserApiException;
+    protected abstract @Nullable T collectData(DraytonWiserDTO draytonWiserDTO) throws DraytonWiserApiException;
 
     protected DraytonWiserApi getApi() {
         final DraytonWiserApi api = this.api;
@@ -186,13 +186,13 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
         return data;
     }
 
-    protected DraytonWiserDTO getDraytonWiseDTO() {
-        final DraytonWiserDTO draytonWiseDTO = this.draytonWiseDTO;
+    protected DraytonWiserDTO getDraytonWiserDTO() {
+        final DraytonWiserDTO draytonWiserDTO = this.draytonWiserDTO;
 
-        if (draytonWiseDTO == null) {
-            throw new IllegalStateException("DraytonWiseDTO not set");
+        if (draytonWiserDTO == null) {
+            throw new IllegalStateException("DraytonWiserDTO not set");
         }
-        return draytonWiseDTO;
+        return draytonWiserDTO;
     }
 
     @Override
