@@ -51,7 +51,7 @@ For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
  
 #### Properties
 
-<img align="right" src="./doc/properties.png" width="500" height="600"/>
+<img align="right" src="./doc/properties.png" width="500" height="225"/>
 
 For each vehicle properties are available. 
 Basically 3 types of information are registered as properties
@@ -311,16 +311,17 @@ Statistic values of duration, distance and consumption of the last trip.
 * Channel Group ID is **last-trip**
 * Available if *Statistics* is present in *Services Supported*. See [Vehicle Properties](#properties) for further details
 * Read-only values
+* Depending on units configuration in [Thing Configuration](#thing_configuration) average values are given for 100 kilometers or miles
 
 | Channel Label                           | Channel ID                   | Type          |
 |-----------------------------------------|------------------------------|---------------|
 | Last Trip Date                          | date                         | DateTime      |
 | Last Trip Duration                      | duration                     | Number:Time   |
-| Average Power Consumption per 100 km    | avg-consumption              | Number:Power  |
-| Average Combined Consumption per 100 km | avg-combined-consumption     | Number:Volume |
-| Average Power Recuperation per 100 km   | avg-recuperation             | Number:Power  |
 | Last Trip Distance                      | distance                     | Number:Length |
 | Distance since Last Charge              | distance-since-charging      | Number:Length |
+| Average Power Consumption               | avg-consumption              | Number:Power  |
+| Average Power Recuperation              | avg-recuperation             | Number:Power  |
+| Average Combined Consumption            | avg-combined-consumption     | Number:Volume |
 
 
 #### Lifetime Statistics
@@ -330,14 +331,15 @@ Providing lifetime consumption values.
 * Channel Group ID is **lifetime**
 * Available if *Statistics* is present in *Services Supported*. See [Vehicle Properties](#properties) for further details
 * Read-only values
+* Depending on units configuration in [Thing Configuration](#thing_configuration) average values are given for 100 kilometers or miles
 
 | Channel Label                           | Channel ID                   | Type          | 
 |-----------------------------------------|------------------------------|---------------|
-| Average Power Consumption per 100 km    | avg-consumption              | Number:Power  |
-| Average Power Recuperation per 100 km   | avg-recuperation             | Number:Power  |
 | Cumulated Electric Driven Distance      | cumulated-driven-distance    | Number:Length |
-| Average Combined Consumption per 100 km | avg-combined-consumption     | Number:Volume |
 | Longest Distance with one Charge        | single-longest-distance      | Number:Length |
+| Average Power Consumption               | avg-consumption              | Number:Power  |
+| Average Power Recuperation              | avg-recuperation             | Number:Power  |
+| Average Combined Consumption            | avg-combined-consumption     | Number:Volume |
 
 
 #### Remote Services

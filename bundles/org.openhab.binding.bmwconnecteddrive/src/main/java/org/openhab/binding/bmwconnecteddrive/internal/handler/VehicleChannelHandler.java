@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
@@ -421,31 +424,59 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateAllTrips(AllTrips allTrips) {
-        updateState(lifeTimeCumulatedDrivenDistance, QuantityType
-                .valueOf(Converter.round(allTrips.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE)));
-        updateState(lifeTimeSingleLongestDistance, QuantityType
-                .valueOf(Converter.round(allTrips.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE)));
-        updateState(lifeTimeAverageConsumption, QuantityType
-                .valueOf(Converter.round(allTrips.avgElectricConsumption.userAverage), Units.KILOWATT_HOUR));
+        Unit<Length> lengthUnit = MetricPrefix.KILO(SIUnits.METRE);
+        double totalElectricDistance = allTrips.totalElectricDistance.userTotal;
+        double longestElectricTrip = allTrips.chargecycleRange.userHigh;
+        double distanceSinceCharging = allTrips.chargecycleRange.userCurrentChargeCycle;
+        double avgConsumotion = allTrips.avgElectricConsumption.userAverage;
+        double avgCombinedConsumption = allTrips.avgCombinedConsumption.userAverage;
+        double avgRecuperation = allTrips.avgRecuperation.userAverage;
+        if (imperial) {
+            lengthUnit = ImperialUnits.MILE;
+            totalElectricDistance /= Constants.MILES_TO_KM_RATIO;
+            longestElectricTrip /= Constants.MILES_TO_KM_RATIO;
+            distanceSinceCharging /= Constants.MILES_TO_KM_RATIO;
+            avgConsumotion *= Constants.MILES_TO_KM_RATIO;
+            avgCombinedConsumption *= Constants.MILES_TO_KM_RATIO;
+            avgRecuperation *= Constants.MILES_TO_KM_RATIO;
+        }
+        updateState(lifeTimeCumulatedDrivenDistance,
+                QuantityType.valueOf(Converter.round(totalElectricDistance), lengthUnit));
+        updateState(lifeTimeSingleLongestDistance,
+                QuantityType.valueOf(Converter.round(longestElectricTrip), lengthUnit));
+        updateState(tripDistanceSinceCharging,
+                QuantityType.valueOf(Converter.round(distanceSinceCharging), lengthUnit));
+        updateState(lifeTimeAverageConsumption,
+                QuantityType.valueOf(Converter.round(avgConsumotion), Units.KILOWATT_HOUR));
         updateState(lifetimeAvgCombinedConsumption,
-                QuantityType.valueOf(allTrips.avgCombinedConsumption.userAverage, Units.LITRE));
+                QuantityType.valueOf(Converter.round(avgCombinedConsumption), Units.LITRE));
         updateState(lifeTimeAverageRecuperation,
-                QuantityType.valueOf(Converter.round(allTrips.avgRecuperation.userAverage), Units.KILOWATT_HOUR));
-        updateState(tripDistanceSinceCharging, QuantityType.valueOf(
-                Converter.round(allTrips.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE)));
+                QuantityType.valueOf(Converter.round(avgRecuperation), Units.KILOWATT_HOUR));
     }
 
     protected void updateLastTrip(LastTrip trip) {
         // Whyever the Last Trip DateTime is delivered without offest - so LocalTime
         updateState(tripDateTime, DateTimeType.valueOf(Converter.getLocalDateTimeWithoutOffest(trip.date)));
         updateState(tripDuration, QuantityType.valueOf(trip.duration, Units.MINUTE));
-        updateState(tripDistance,
-                QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));
-        updateState(tripAvgConsumption,
-                QuantityType.valueOf(Converter.round(trip.avgElectricConsumption), Units.KILOWATT_HOUR));
-        updateState(tripAvgCombinedConsumption, QuantityType.valueOf(trip.avgCombinedConsumption, Units.LITRE));
-        updateState(tripAvgRecuperation,
-                QuantityType.valueOf(Converter.round(trip.avgRecuperation), Units.KILOWATT_HOUR));
+
+        double distance = trip.totalDistance;
+        double avgConsumtption = trip.avgElectricConsumption;
+        double avgCombinedConsumption = trip.avgCombinedConsumption;
+        double avgRecuperation = trip.avgRecuperation;
+        Unit<Length> lengthUnit = MetricPrefix.KILO(SIUnits.METRE);
+
+        if (imperial) {
+            distance /= Constants.MILES_TO_KM_RATIO;
+            avgConsumtption *= Constants.MILES_TO_KM_RATIO;
+            avgCombinedConsumption *= Constants.MILES_TO_KM_RATIO;
+            avgRecuperation *= Constants.MILES_TO_KM_RATIO;
+            lengthUnit = ImperialUnits.MILE;
+        }
+        updateState(tripDistance, QuantityType.valueOf(Converter.round(distance), lengthUnit));
+        updateState(tripAvgConsumption, QuantityType.valueOf(Converter.round(avgConsumtption), Units.KILOWATT_HOUR));
+        updateState(tripAvgCombinedConsumption,
+                QuantityType.valueOf(Converter.round(avgCombinedConsumption), Units.LITRE));
+        updateState(tripAvgRecuperation, QuantityType.valueOf(Converter.round(avgRecuperation), Units.KILOWATT_HOUR));
     }
 
     protected void updateChargeProfile(ChargeProfile cp) {
