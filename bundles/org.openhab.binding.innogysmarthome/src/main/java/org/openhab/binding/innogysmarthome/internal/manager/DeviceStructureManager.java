@@ -157,7 +157,7 @@ public class DeviceStructureManager {
             getDeviceMap().put(device.getId(), device);
         }
 
-        for (String cl : device.getCapabilityLinkList()) {
+        for (String cl : device.getCapabilities()) {
             capabilityIdToDeviceMap.put(Link.getId(cl), device);
         }
     }

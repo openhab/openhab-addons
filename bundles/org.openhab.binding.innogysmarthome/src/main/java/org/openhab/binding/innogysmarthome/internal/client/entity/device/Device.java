@@ -14,9 +14,10 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
 import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.location.Location;
@@ -37,8 +38,6 @@ public class Device {
     protected static final String PROTOCOL_ID_COSIP = "Cosip";
     protected static final String PROTOCOL_ID_VIRTUAL = "Virtual";
     protected static final String PROTOCOL_ID_WMBUS = "wMBus";
-
-    public static final List<String> EMPTY_CAPABILITY_LINK_LIST = new ArrayList<>();
 
     /**
      * Unique id for the device, always available in model.
@@ -82,15 +81,9 @@ public class Device {
 
     private DeviceConfig config;
 
-    /**
-     * Contains a list of the device capabilities.
-     *
-     * Optional.
-     */
-    @SerializedName("capabilities")
-    private List<String> capabilityLinkList;
+    private List<String> capabilities;
 
-    private HashMap<String, Capability> capabilityMap;
+    private Map<String, Capability> capabilityMap;
 
     private DeviceState deviceState;
 
@@ -263,32 +256,28 @@ public class Device {
     /**
      * @return the capabilityList
      */
-    public List<String> getCapabilityLinkList() {
-        if (capabilityLinkList != null) {
-            return capabilityLinkList;
-        } else {
-            return EMPTY_CAPABILITY_LINK_LIST;
-        }
+    public List<String> getCapabilities() {
+        return Objects.requireNonNullElse(capabilities, Collections.emptyList());
     }
 
     /**
      * @param capabilityList the capabilityList to set
      */
-    public void setCapabilityList(List<String> capabilityList) {
-        this.capabilityLinkList = capabilityList;
+    public void setCapabilities(List<String> capabilityList) {
+        this.capabilities = capabilityList;
     }
 
     /**
      * @param capabilityMap the capabilityMap to set
      */
-    public void setCapabilityMap(HashMap<String, Capability> capabilityMap) {
+    public void setCapabilityMap(Map<String, Capability> capabilityMap) {
         this.capabilityMap = capabilityMap;
     }
 
     /**
      * @return the capabilityMap
      */
-    public HashMap<String, Capability> getCapabilityMap() {
+    public Map<String, Capability> getCapabilityMap() {
         return this.capabilityMap;
     }
 
@@ -310,7 +299,7 @@ public class Device {
     }
 
     /**
-     * @param locationList the locationList to set
+     * @param locationLink the locationList to set
      */
     public void setLocation(String locationLink) {
         this.locationLink = locationLink;
