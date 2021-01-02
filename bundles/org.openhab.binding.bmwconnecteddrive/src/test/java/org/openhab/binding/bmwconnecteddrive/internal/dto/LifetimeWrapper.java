@@ -27,7 +27,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -45,9 +47,11 @@ import com.google.gson.Gson;
 @SuppressWarnings("null")
 public class LifetimeWrapper {
     private static final Gson GSON = new Gson();
+    private static final Unit<Length> MILES = ImperialUnits.MILE;
     private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
 
     private AllTrips allTrips;
+    private boolean imperial;
     private boolean isElectric;
     private boolean hasFuel;
     private boolean isHybrid;
@@ -55,6 +59,7 @@ public class LifetimeWrapper {
     private Map<String, State> specialHandlingMap = new HashMap<String, State>();
 
     public LifetimeWrapper(String type, boolean imperial, String statusJson) {
+        this.imperial = imperial;
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
                 || type.equals(VehicleType.ELECTRIC_REX.toString());
         isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
@@ -102,43 +107,76 @@ public class LifetimeWrapper {
             case DISTANCE_SINCE_CHARGING:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                assertEquals(allTrips.chargecycleRange.userCurrentChargeCycle, qt.floatValue(), 0.1,
-                        "Distance since charging");
+                if (imperial) {
+                    assertEquals(MILES, qt.getUnit(), "Miles");
+                    assertEquals(allTrips.chargecycleRange.userCurrentChargeCycle / Constants.MILES_TO_KM_RATIO,
+                            qt.floatValue(), 0.1, "Distance since charging");
+                } else {
+                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(allTrips.chargecycleRange.userCurrentChargeCycle, qt.floatValue(), 0.1,
+                            "Distance since charging");
+                }
                 break;
             case SINGLE_LONGEST_DISTANCE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                assertEquals(allTrips.chargecycleRange.userHigh, qt.floatValue(), 0.1, "Longest Distance");
+                if (imperial) {
+                    assertEquals(MILES, qt.getUnit(), "Miles");
+                    assertEquals(allTrips.chargecycleRange.userHigh / Constants.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
+                            "Longest Distance");
+                } else {
+                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(allTrips.chargecycleRange.userHigh, qt.floatValue(), 0.1, "Longest Distance");
+                }
                 break;
             case CUMULATED_DRIVEN_DISTANCE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                assertEquals(allTrips.totalElectricDistance.userTotal, qt.floatValue(), 0.1, "Cumulated Distance");
+                if (imperial) {
+                    assertEquals(MILES, qt.getUnit(), "Miles");
+                    assertEquals(allTrips.totalElectricDistance.userTotal / Constants.MILES_TO_KM_RATIO,
+                            qt.floatValue(), 0.1, "Cumulated Distance");
+                } else {
+                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(allTrips.totalElectricDistance.userTotal, qt.floatValue(), 0.1, "Cumulated Distance");
+                }
                 break;
             case AVG_CONSUMPTION:
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw");
-                assertEquals(allTrips.avgElectricConsumption.userAverage, qt.floatValue(), 0.1, "Avg Consumption");
+                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw/h");
+                if (imperial) {
+                    assertEquals(allTrips.avgElectricConsumption.userAverage * Constants.MILES_TO_KM_RATIO,
+                            qt.floatValue(), 0.1, "Avg Consumption");
+                } else {
+                    assertEquals(allTrips.avgElectricConsumption.userAverage, qt.floatValue(), 0.1, "Avg Consumption");
+                }
                 break;
             case AVG_RECUPERATION:
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw");
-                assertEquals(allTrips.avgRecuperation.userAverage, qt.floatValue(), 0.1, "Avg Recuperation");
+                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw/h");
+                if (imperial) {
+                    assertEquals(allTrips.avgRecuperation.userAverage * Constants.MILES_TO_KM_RATIO, qt.floatValue(),
+                            0.1, "Avg Recuperation");
+                } else {
+                    assertEquals(allTrips.avgRecuperation.userAverage, qt.floatValue(), 0.1, "Avg Recuperation");
+                }
                 break;
             case AVG_COMBINED_CONSUMPTION:
                 assertTrue(isHybrid, "Is Hybrid");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 assertEquals(Units.LITRE, qt.getUnit(), "Liter");
-                assertEquals(allTrips.avgCombinedConsumption.userAverage, qt.floatValue(), 0.01,
-                        "Avg Combined Consumption");
+                if (imperial) {
+                    assertEquals(allTrips.avgCombinedConsumption.userAverage * Constants.MILES_TO_KM_RATIO,
+                            qt.floatValue(), 0.1, "Avg Combined Consumption");
+                } else {
+                    assertEquals(allTrips.avgCombinedConsumption.userAverage, qt.floatValue(), 0.1,
+                            "Avg Combined Consumption");
+                }
                 break;
             default:
                 // fail in case of unknown update

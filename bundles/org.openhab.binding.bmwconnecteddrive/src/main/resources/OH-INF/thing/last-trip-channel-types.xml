@@ -9,7 +9,7 @@
 	</channel-type>
 	<channel-type id="trip-duration-channel">
 		<item-type>Number:Time</item-type>
-		<label>Last Trip Distance</label>
+		<label>Last Trip Duration</label>
 	</channel-type>
 	<channel-type id="distance-channel">
 		<item-type>Number:Length</item-type>
@@ -17,18 +17,22 @@
 	</channel-type>
 	<channel-type id="distance-since-charging-channel">
 		<item-type>Number:Length</item-type>
-		<label>Distance Driven since Last Charge</label>
+		<label>Distance since Charge</label>
+		<description>Total distance driven since last charging</description>
 	</channel-type>
 	<channel-type id="average-consumption-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Average Power Consumption per 100 km</label>
+		<label>Average Power Consumption</label>
+		<description>Average electric power consumption per 100 km/mi</description>
 	</channel-type>
 	<channel-type id="average-combined-consumption-channel">
 		<item-type>Number:Volume</item-type>
-		<label>Combined Consumption in Liter per 100 km</label>
+		<label>Average Combined Consumption</label>
+		<description>Average combined consumption in liter per 100 km/mi</description>
 	</channel-type>
 	<channel-type id="average-recuperation-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Average Power Recuperation for 100 km</label>
+		<label>Average Recuperation</label>
+		<description>Average electric recuperation per 100 km/mi</description>
 	</channel-type>
 </thing:thing-descriptions>

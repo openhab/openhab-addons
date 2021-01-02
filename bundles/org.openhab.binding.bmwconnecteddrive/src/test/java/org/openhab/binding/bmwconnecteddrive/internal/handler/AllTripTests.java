@@ -117,4 +117,20 @@ public class AllTripTests {
         String content = FileReader.readFileInString("src/test/resources/responses/530E/all-trips.json");
         assertTrue(testTrip(content, HYBRID_CALL_TIMES, Optional.empty()));
     }
+
+    @Test
+    public void testi3RexImperial() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC_REX.toString(), true);
+        String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/all-trips.json");
+        assertTrue(testTrip(content, HYBRID_CALL_TIMES, Optional.empty()));
+    }
+
+    @Test
+    public void test530EImperial() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.PLUGIN_HYBRID.toString(), true);
+        String content = FileReader.readFileInString("src/test/resources/responses/530E/all-trips.json");
+        assertTrue(testTrip(content, HYBRID_CALL_TIMES, Optional.empty()));
+    }
 }

@@ -60,6 +60,7 @@ public class Constants {
 
     public static final String ANONYMOUS = "Anonymous";
     public static final int MILES_TO_FEET_FACTOR = 5280;
+    public static final double MILES_TO_KM_RATIO = 1.60934;
     public static final String EMPTY_VEHICLES = "{}";
 
     @SuppressWarnings("serial")
