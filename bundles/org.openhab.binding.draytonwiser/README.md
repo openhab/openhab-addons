@@ -121,10 +121,11 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 
 #### Boiler Controller
 
-| Channel         | Item Type | Description                |
-|-----------------|-----------|----------------------------|
-| `awayModeState` | Switch    | Has away mode been enabled |
-| `ecoModeState`  | Switch    | Has eco mode been enabled  |
+| Channel            | Item Type | Description                   |
+|--------------------|-----------|-------------------------------|
+| `awayModeState`    | Switch    | Has away mode been enabled    |
+| `ecoModeState`     | Switch    | Has eco mode been enabled     |
+| `comfortModeState` | Switch    | Has comfort mode been enabled |
 
 #### Hot Water
 
