@@ -44,12 +44,15 @@ public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar;
     private AbstractPresentableCalendar calendar2;
     private AbstractPresentableCalendar calendar3;
+    private AbstractPresentableCalendar calendar_issue9647;
 
     @BeforeEach
     public void setUp() throws IOException, CalendarException {
         calendar = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test.ics"));
         calendar2 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test2.ics"));
         calendar3 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test3.ics"));
+        calendar_issue9647 = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issue9647.ics"));
     }
 
     /**
@@ -585,5 +588,18 @@ public class BiweeklyPresentableCalendarTest {
         List<Event> realFilteredEvents6 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-15T06:00:00Z"),
                 Instant.parse("2019-12-31T00:00:00Z"), null, 3);
         assertEquals(0, realFilteredEvents6.size());
+
+        List<Event> realFilteredEvents7 = calendar_issue9647.getFilteredEventsBetween(
+                Instant.parse("2020-12-31T23:00:00Z"), Instant.parse("2021-01-01T23:00:00Z"), null, 3);
+        assertEquals(0, realFilteredEvents7.size());
+
+        Event[] expectedFilteredEvents8 = new Event[] {
+                new Event("Restabfall", Instant.parse("2021-01-03T23:00:00Z"), Instant.parse("2021-01-04T23:00:00Z"),
+                        ""),
+                new Event("Gelbe Tonne", Instant.parse("2021-01-03T23:00:00Z"), Instant.parse("2021-01-04T23:00:00Z"),
+                        "") };
+        List<Event> realFilteredEvents8 = calendar_issue9647.getFilteredEventsBetween(
+                Instant.parse("2021-01-03T23:00:00Z"), Instant.parse("2021-01-04T23:00:00Z"), null, 3);
+        assertArrayEquals(expectedFilteredEvents8, realFilteredEvents8.toArray(new Event[] {}));
     }
 }
