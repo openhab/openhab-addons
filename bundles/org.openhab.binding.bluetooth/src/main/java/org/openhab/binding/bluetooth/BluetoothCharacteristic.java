@@ -143,6 +143,12 @@ public class BluetoothCharacteristic {
         return instance;
     }
 
+    /**
+     * Set the raw properties. The individual properties are represented as bits inside
+     * of this int value.
+     *
+     * @param properties of this Characteristic
+     */
     public void setProperties(int properties) {
         this.properties = properties;
     }
