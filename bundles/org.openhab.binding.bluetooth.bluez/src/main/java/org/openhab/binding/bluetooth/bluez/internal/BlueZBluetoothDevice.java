@@ -459,7 +459,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                 characteristic.setValue(value);
                 notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
                         BluetoothCompletionStatus.SUCCESS);
-            } catch (DBusException e) {
+            } catch (DBusException | DBusExecutionException e) {
+                // DBusExecutionException is thrown if the value cannot be read
                 logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
                         e.getMessage());
                 notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
