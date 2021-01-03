@@ -86,11 +86,8 @@ public class RemoteopenhabChannelTypeProvider implements ChannelTypeProvider {
 
     public void addChannelType(String itemType, ChannelType channelType) {
         channelTypes.add(channelType);
-        List<ChannelType> channelTypesForItemType = channelTypesForItemTypes.get(itemType);
-        if (channelTypesForItemType == null) {
-            channelTypesForItemTypes.put(itemType, new CopyOnWriteArrayList<>());
-            channelTypesForItemType = channelTypesForItemTypes.get(itemType);
-        }
+        List<ChannelType> channelTypesForItemType = channelTypesForItemTypes.computeIfAbsent(itemType,
+                type -> new CopyOnWriteArrayList<>());
         if (channelTypesForItemType != null) {
             channelTypesForItemType.add(channelType);
         }
