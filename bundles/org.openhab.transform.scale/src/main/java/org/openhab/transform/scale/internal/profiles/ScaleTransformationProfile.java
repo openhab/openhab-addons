@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Profile to offer the ScaleTransformationservice on a ItemChannelLink
  *
- * @author Stefan Triller - initial contribution
- *
+ * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
 public class ScaleTransformationProfile implements StateProfile {
