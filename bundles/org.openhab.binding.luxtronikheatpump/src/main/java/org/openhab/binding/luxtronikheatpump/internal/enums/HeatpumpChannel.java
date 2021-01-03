@@ -660,10 +660,10 @@ public enum HeatpumpChannel {
     // https://www.loxwiki.eu/display/LOX/Java+Webinterface?preview=/13306044/13307658/3003.txt
 
     // Heizung Temperatur (Parallelverschiebung)
-    CHANNEL_EINST_WK_AKT(1, "Einst_WK_akt", NumberItem.class, SIUnits.CELSIUS, true, null),
+    CHANNEL_EINST_WK_AKT(1, "Einst_WK_akt", NumberItem.class, SIUnits.CELSIUS, true, HeatpumpVisibility.HEIZUNG),
 
     // Warmwasser Soll Temperatur
-    CHANNEL_EINST_BWS_AKT(2, "Einst_BWS_akt", NumberItem.class, SIUnits.CELSIUS, true, null),
+    CHANNEL_EINST_BWS_AKT(2, "Einst_BWS_akt", NumberItem.class, SIUnits.CELSIUS, true, HeatpumpVisibility.BRAUWASSER),
 
     // Heizung Betriebsart
     CHANNEL_BA_HZ_AKT(3, "Ba_Hz_akt", NumberItem.class, null, true, HeatpumpVisibility.HEIZUNG),

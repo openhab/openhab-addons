@@ -172,13 +172,15 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         Integer[] visibilityValues = connector.getVisibilities();
         Integer[] heatpumpValues = connector.getValues();
+        Integer[] heatpumpParams = connector.getParams();
 
         ThingBuilder thingBuilder = editThing();
 
         // Hide all channel that are actually not available
         for (HeatpumpChannel channel : HeatpumpChannel.values()) {
             Integer channelId = channel.getChannelId();
-            if ((channelId != null && heatpumpValues.length < channelId)
+            int length = channel.isWritable() == Boolean.TRUE ? heatpumpParams.length : heatpumpValues.length;
+            if ((channelId != null && length < channelId)
                     || channel.isVisible(visibilityValues).equals(Boolean.FALSE)) {
                 logger.debug("Hiding channel {}", channel.getCommand());
                 ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());
