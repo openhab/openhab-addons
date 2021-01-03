@@ -54,14 +54,18 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.LIGHTING_SUPPORTED_THING_TYPES;
 
-    private static final int BRIGHTNESS_CHANGE_DELAY_MSEC = 1500; // delay before sending another brightness status
-                                                                  // request
-    private static final int BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC = 900; // we must wait some time to be sure dimmer has
-                                                                         // reached final level before requesting its
-                                                                         // status
+    // interval to interpret ON as response to requestStatus
+    private static final int BRIGHTNESS_STATUS_REQUEST_INTERVAL_MSEC = 250;
+
+    // time to wait before sending a statusRequest, to avoid repeated requests and ensure dimmer has reached its final
+    // level
+    private static final int BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC = 900;
+
     private static final int UNKNOWN_STATE = 1000;
 
     private long lastBrightnessChangeSentTS = 0; // timestamp when last brightness change was sent to the device
+
+    private long lastStatusRequestSentTS = 0; // timestamp when last status request was sent to the device
 
     private int brightness = UNKNOWN_STATE; // current brightness percent value for this device
 
@@ -84,6 +88,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         if (w != null) {
             try {
+                lastStatusRequestSentTS = System.currentTimeMillis();
                 Response res = send(Lighting.requestStatus(toWhere(channelId)));
                 if (res != null && res.isSuccess()) {
                     // set thing online if not already
@@ -231,47 +236,54 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      * @param msg the Lighting message received
      */
     private synchronized void updateBrightness(Lighting msg) {
-        long now = System.currentTimeMillis();
         logger.debug("  $BRI updateBrightness({})       || bri={} briBeforeOff={}", msg, brightness,
                 brightnessBeforeOff);
+        long now = System.currentTimeMillis();
         long delta = now - lastBrightnessChangeSentTS;
-        boolean belowThresh = delta < BRIGHTNESS_CHANGE_DELAY_MSEC;
+        boolean belowThresh = delta < BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC;
         logger.debug("  $BRI delta={}ms {}", delta, (belowThresh ? "< DELAY" : ""));
         if (belowThresh) {
             // we just sent a command from OH, so we can ignore this message from network
-            logger.debug("  $BRI a request was sent {} < {} ms --> no action needed", delta,
-                    BRIGHTNESS_CHANGE_DELAY_MSEC);
+            logger.debug("  $BRI a command was sent {} < {} ms --> no action needed", delta,
+                    BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC);
         } else {
             if (msg.isOn()) {
-                logger.debug("  $BRI \"ON\" notification from network, scheduling requestStatus...");
-                // we must wait BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC to be sure dimmer has reached final level
-                scheduler.schedule(() -> {
-                    requestStatus(CHANNEL_BRIGHTNESS);
-                }, BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC, TimeUnit.MILLISECONDS);
-            } else {
-                logger.debug("  $BRI update from network");
-                if (msg.getWhat() != null) {
-                    updateBrightnessState(msg);
-                } else { // dimension notification
-                    if (msg.getDim() == Lighting.DIM.DIMMER_LEVEL_100) {
-                        int newBrightness;
-                        try {
-                            newBrightness = msg.parseDimmerLevel100();
-                        } catch (FrameException fe) {
-                            logger.warn("updateBrightness() Wrong value for dimmerLevel100 in message: {}", msg);
-                            return;
-                        }
-                        logger.debug("  $BRI DIMMER_LEVEL_100 newBrightness={}", newBrightness);
-                        updateState(CHANNEL_BRIGHTNESS, new PercentType(newBrightness));
-                        if (newBrightness == 0) {
-                            brightnessBeforeOff = brightness;
-                        }
-                        brightness = newBrightness;
-                    } else {
-                        logger.warn("updateBrightness() Cannot handle message {} for thing {}", msg,
-                                getThing().getUID());
+                // if we have not just sent a requestStatus, on ON event we send requestStatus to know current level
+                long deltaStatusReq = now - lastStatusRequestSentTS;
+                if (deltaStatusReq > BRIGHTNESS_STATUS_REQUEST_INTERVAL_MSEC) {
+                    logger.debug("  $BRI 'ON' is new notification from network, scheduling requestStatus...");
+                    // we must wait BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC to be sure dimmer has reached its final level
+                    scheduler.schedule(() -> {
+                        requestStatus(CHANNEL_BRIGHTNESS);
+                    }, BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC, TimeUnit.MILLISECONDS);
+                    return;
+                } else {
+                    // otherwise we interpret this ON event as the requestStatus response event with level=1
+                    // so we proceed to call updateBrightnessState()
+                    logger.debug("  $BRI 'ON' is the requestStatus response level");
+                }
+            }
+            logger.debug("  $BRI update from network");
+            if (msg.getWhat() != null) {
+                updateBrightnessState(msg);
+            } else { // dimension notification
+                if (msg.getDim() == Lighting.DIM.DIMMER_LEVEL_100) {
+                    int newBrightness;
+                    try {
+                        newBrightness = msg.parseDimmerLevel100();
+                    } catch (FrameException fe) {
+                        logger.warn("updateBrightness() Wrong value for dimmerLevel100 in message: {}", msg);
                         return;
                     }
+                    logger.debug("  $BRI DIMMER_LEVEL_100 newBrightness={}", newBrightness);
+                    updateState(CHANNEL_BRIGHTNESS, new PercentType(newBrightness));
+                    if (newBrightness == 0) {
+                        brightnessBeforeOff = brightness;
+                    }
+                    brightness = newBrightness;
+                } else {
+                    logger.warn("updateBrightness() Cannot handle message {} for thing {}", msg, getThing().getUID());
+                    return;
                 }
             }
         }
@@ -285,8 +297,12 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      * @param msg the Lighting message received
      */
     private void updateBrightnessState(Lighting msg) {
-        if (msg.getWhat() != null) {
-            int newBrightnessWhat = msg.getWhat().value();
+        What w = msg.getWhat();
+        if (w != null) {
+            if (Lighting.WHAT.ON.equals(w)) {
+                w = Lighting.WHAT.DIMMER_LEVEL_2; // levels start at 2
+            }
+            int newBrightnessWhat = w.value();
             int brightnessWhat = UNKNOWN_STATE;
             if (brightness != UNKNOWN_STATE) {
                 brightnessWhat = Lighting.percentToWhat(brightness).value();
