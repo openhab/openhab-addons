@@ -11,44 +11,57 @@
 			############################ Amazon DynamoDB Persistence Service ##################################
 			#
 			# The following parameters are used to configure Amazon DynamoDB Persistence.
+			# 
+			# Further details at https://www.openhab.org/addons/persistence/dynamodb/
 			#
-			# Further details at https://docs.openhab.org/addons/persistence/dynamodb/readme.html
+			
+			# PID SETTING
 			#
-
+			# When configuring the persistence using file (instead PaperUI),
+			# make sure the first line in the configuration file is the 
+			# pid definition (remove the comment prefix #)
+			
+			#pid:pid:org.openhab.dynamodb
+			
 			#
 			# CONNECTION SETTINGS (follow OPTION 1 or OPTION 2)
 			#
-
+			
 			# OPTION 1 (using accessKey and secretKey)
 			#accessKey=AKIAIOSFODNN7EXAMPLE
 			#secretKey=3+AAAAABBBbbbCCCCCCdddddd+7mnbIOLH
 			#region=eu-west-1
-
+			
 			# OPTION 2 (using profilesConfigFile and profile)
-			# where profilesConfigFile points to AWS credentials file
+			# where profilesConfigFile points to AWS credentials file 
+			# Please note that the user that runs openHAB must have approriate read rights to the credential file.
+			# See below for an example how the credentials file should look like
 			#profilesConfigFile=/etc/openhab2/aws_creds
 			#profile=fooprofile
 			#region=eu-west-1
-
+			
+			# UNCOMMENT THE BELOW ALWAYS (otherwise legacy table schema with 'tablePrefix' is used)
+			#table=openhab
+			
 			# Credentials file example:
 			#
 			# [fooprofile]
 			# aws_access_key_id=AKIAIOSFODNN7EXAMPLE
 			# aws_secret_access_key=3+AAAAABBBbbbCCCCCCdddddd+7mnbIOLH
-
-
+			
 			#
 			# ADVANCED CONFIGURATION (OPTIONAL)
 			#
-
+			
 			# read capacity for the created tables
 			#readCapacityUnits=1
-
+			
 			# write capacity for the created tables
 			#writeCapacityUnits=1
-
-			# table prefix used in the name of created tables
+			
+			# LEGACY SCHEMA: table prefix used in the name of created tables
 			#tablePrefix=openhab-
+
 		-->
 
 		<parameter name="region" type="text" required="true">
@@ -93,6 +106,13 @@
 			]]></description>
 		</parameter>
 
+		<parameter name="table" type="text" required="false">
+			<label>Table</label>
+			<description>Table name of the created table. Specify this to use new optimized table format.</description>
+			<default>openhab</default> <!-- set by default, preferring new schema format -->
+		</parameter>
+
+
 
 
 		<parameter name="readCapacityUnits" type="integer" required="false" min="1">
@@ -109,9 +129,11 @@
 
 		<parameter name="tablePrefix" type="text" required="false">
 			<label>Table prefix</label>
-			<description>Table prefix used in the name of created tables. Default is openhab-</description>
+			<description>Legacy: Table prefix used in the name of created tables. Default is openhab-</description>
 			<advanced>true</advanced>
+			<default></default> <!-- empty by default, giving preference to new table schema -->
 		</parameter>
+
 
 	</config-description>
 

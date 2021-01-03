@@ -30,6 +30,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class LocationItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "location";
     // values are encoded as lat,lon[,alt] , ordering goes wrt strings
     private static final PointType STATE1 = new PointType(

@@ -31,6 +31,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class CallItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
+
     private static final String NAME = "call";
     // values are encoded as part1,part2 - ordering goes wrt strings
     private static final StringListType STATE1 = new StringListType("part1", "foo");

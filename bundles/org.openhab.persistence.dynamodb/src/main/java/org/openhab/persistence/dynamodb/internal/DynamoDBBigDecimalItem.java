@@ -16,19 +16,34 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.ZonedDateTime;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticTableSchema;
 
 /**
  * DynamoDBItem for items that can be serialized as DynamoDB number
  *
  * @author Sami Salonen - Initial contribution
  */
-@DynamoDBDocument
+@NonNullByDefault
 public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
+
+    private static Class<@Nullable BigDecimal> NULLABLE_BIGDECIMAL = (Class<@Nullable BigDecimal>) BigDecimal.class;
+
+    @SuppressWarnings("unchecked")
+    public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_LEGACY = ((StaticTableSchema.Builder<DynamoDBBigDecimalItem>) TABLE_SCHEMA_BUILDER_BASE_LEGACY
+            .get()).newItemSupplier(DynamoDBBigDecimalItem::new)
+                    .addAttribute(NULLABLE_BIGDECIMAL, a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_LEGACY)
+                            .getter(DynamoDBBigDecimalItem::getState).setter(DynamoDBBigDecimalItem::setState))
+                    .build();
+
+    @SuppressWarnings("unchecked")
+    public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_NEW = ((StaticTableSchema.Builder<DynamoDBBigDecimalItem>) TABLE_SCHEMA_BUILDER_BASE_NEW
+            .get()).newItemSupplier(DynamoDBBigDecimalItem::new)
+                    .addAttribute(NULLABLE_BIGDECIMAL, a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_NUMBER)
+                            .getter(DynamoDBBigDecimalItem::getState).setter(DynamoDBBigDecimalItem::setState))
+                    .build();
 
     /**
      * We get the following error if the BigDecimal has too many digits
@@ -40,47 +55,27 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
     private static final int MAX_DIGITS_SUPPORTED_BY_AMAZON = 38;
 
     public DynamoDBBigDecimalItem() {
-        this(null, null, null);
+        this("", null, ZonedDateTime.now());
     }
 
-    public DynamoDBBigDecimalItem(String name, BigDecimal state, ZonedDateTime time) {
+    public DynamoDBBigDecimalItem(String name, @Nullable BigDecimal state, ZonedDateTime time) {
         super(name, state, time);
     }
 
-    @DynamoDBAttribute(attributeName = DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE)
     @Override
-    public BigDecimal getState() {
+    public @Nullable BigDecimal getState() {
         // When serializing this to the wire, we round the number in order to ensure
         // that it is within the dynamodb limits
-        return loseDigits(state);
-    }
-
-    @DynamoDBHashKey(attributeName = DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME)
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    @DynamoDBRangeKey(attributeName = ATTRIBUTE_NAME_TIMEUTC)
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
-    public ZonedDateTime getTime() {
-        return time;
+        BigDecimal localState = state;
+        if (localState == null) {
+            return null;
+        }
+        return loseDigits(localState);
     }
 
     @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void setState(BigDecimal state) {
+    public void setState(@Nullable BigDecimal state) {
         this.state = state;
-    }
-
-    @Override
-    public void setTime(ZonedDateTime time) {
-        this.time = time;
     }
 
     @Override

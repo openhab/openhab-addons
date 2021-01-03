@@ -32,6 +32,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class ColorItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
+
     private static HSBType color(double hue, int saturation, int brightness) {
         return new HSBType(new DecimalType(hue), new PercentType(saturation), new PercentType(brightness));
     }

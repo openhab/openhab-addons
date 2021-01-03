@@ -13,19 +13,24 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
 import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.PlayerItem;
@@ -43,14 +48,19 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+import software.amazon.awssdk.enhanced.dynamodb.AttributeConverter;
+import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
+import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticTableSchema;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /**
  * Base class for all DynamoDBItem. Represents openHAB Item serialized in a suitable format for the database
@@ -59,33 +69,80 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
+    private static final BigDecimal REWIND_BIGDECIMAL = new BigDecimal("-1");
+    private static final BigDecimal PAUSE_BIGDECIMAL = new BigDecimal("0");
+    private static final BigDecimal PLAY_BIGDECIMAL = new BigDecimal("1");
+    private static final BigDecimal FAST_FORWARD_BIGDECIMAL = new BigDecimal("2");
+
     private static final ZoneId UTC = ZoneId.of("UTC");
+    public static final ZonedDateTimeStringConverter ZONED_DATE_TIME_CONVERTER_STRING = new ZonedDateTimeStringConverter();
+    public static final ZonedDateTimeMilliEpochConverter ZONED_DATE_TIME_CONVERTER_MILLIEPOCH = new ZonedDateTimeMilliEpochConverter();
     public static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT).withZone(UTC);
 
-    private static final String UNDEFINED_PLACEHOLDER = "<org.openhab.core.types.UnDefType.UNDEF>";
-
-    private static final Map<Class<? extends Item>, Class<? extends DynamoDBItem<?>>> ITEM_CLASS_MAP = new HashMap<>();
-
-    static {
-        ITEM_CLASS_MAP.put(CallItem.class, DynamoDBStringItem.class);
-        ITEM_CLASS_MAP.put(ContactItem.class, DynamoDBBigDecimalItem.class);
-        ITEM_CLASS_MAP.put(DateTimeItem.class, DynamoDBStringItem.class);
-        ITEM_CLASS_MAP.put(LocationItem.class, DynamoDBStringItem.class);
-        ITEM_CLASS_MAP.put(NumberItem.class, DynamoDBBigDecimalItem.class);
-        ITEM_CLASS_MAP.put(RollershutterItem.class, DynamoDBBigDecimalItem.class);
-        ITEM_CLASS_MAP.put(StringItem.class, DynamoDBStringItem.class);
-        ITEM_CLASS_MAP.put(SwitchItem.class, DynamoDBBigDecimalItem.class);
-        ITEM_CLASS_MAP.put(DimmerItem.class, DynamoDBBigDecimalItem.class); // inherited from SwitchItem (!)
-        ITEM_CLASS_MAP.put(ColorItem.class, DynamoDBStringItem.class); // inherited from DimmerItem
-        ITEM_CLASS_MAP.put(PlayerItem.class, DynamoDBStringItem.class);
+    public static AttributeConverter<ZonedDateTime> getTimestampConverter(boolean legacy) {
+        return legacy ? ZONED_DATE_TIME_CONVERTER_STRING : ZONED_DATE_TIME_CONVERTER_MILLIEPOCH;
     }
 
-    public static final Class<DynamoDBItem<?>> getDynamoItemClass(Class<? extends Item> itemClass)
+    @SuppressWarnings({ "rawtypes" })
+    private static Supplier<StaticTableSchema.Builder<? extends AbstractDynamoDBItem>> getBaseSchemaBuilder(
+            boolean legacy) {
+        return () -> TableSchema.builder(AbstractDynamoDBItem.class).addAttribute(String.class,
+                a -> a.name(legacy ? DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME_LEGACY : DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME)
+                        .getter(AbstractDynamoDBItem::getName).setter(AbstractDynamoDBItem::setName)
+                        .tags(StaticAttributeTags.primaryPartitionKey()))
+                .addAttribute(ZonedDateTime.class, a -> a
+                        .name(legacy ? DynamoDBItem.ATTRIBUTE_NAME_TIMEUTC_LEGACY : DynamoDBItem.ATTRIBUTE_NAME_TIMEUTC)
+                        .getter(AbstractDynamoDBItem::getTime).setter(AbstractDynamoDBItem::setTime)
+                        .tags(StaticAttributeTags.primarySortKey()).attributeConverter(getTimestampConverter(legacy)));
+    }
+
+    @SuppressWarnings({ "rawtypes" })
+    protected static Supplier<StaticTableSchema.Builder<? extends AbstractDynamoDBItem>> TABLE_SCHEMA_BUILDER_BASE_LEGACY = getBaseSchemaBuilder(
+            true);
+    @SuppressWarnings({ "rawtypes" })
+    protected static Supplier<StaticTableSchema.Builder<? extends AbstractDynamoDBItem>> TABLE_SCHEMA_BUILDER_BASE_NEW = getBaseSchemaBuilder(
+            false);
+
+    private static final Map<Class<? extends Item>, Class<? extends DynamoDBItem<?>>> ITEM_CLASS_MAP_LEGACY = new HashMap<>();
+
+    static {
+        ITEM_CLASS_MAP_LEGACY.put(CallItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(ContactItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(DateTimeItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(LocationItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(NumberItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(RollershutterItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(StringItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(SwitchItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(DimmerItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(ColorItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_LEGACY.put(PlayerItem.class, DynamoDBStringItem.class);
+    }
+
+    private static final Map<Class<? extends Item>, Class<? extends DynamoDBItem<?>>> ITEM_CLASS_MAP_NEW = new HashMap<>();
+
+    static {
+        ITEM_CLASS_MAP_NEW.put(CallItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_NEW.put(ContactItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_NEW.put(DateTimeItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_NEW.put(LocationItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_NEW.put(NumberItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_NEW.put(RollershutterItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_NEW.put(StringItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_NEW.put(SwitchItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_NEW.put(DimmerItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP_NEW.put(ColorItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP_NEW.put(PlayerItem.class, DynamoDBBigDecimalItem.class); // Different from LEGACY
+    }
+
+    public static final Class<DynamoDBItem<?>> getDynamoItemClass(Class<? extends Item> itemClass, boolean legacy)
             throws NullPointerException {
         @SuppressWarnings("unchecked")
-        Class<DynamoDBItem<?>> dtoclass = (Class<DynamoDBItem<?>>) ITEM_CLASS_MAP.get(itemClass);
+        Class<DynamoDBItem<?>> dtoclass = (Class<DynamoDBItem<?>>) (legacy ? ITEM_CLASS_MAP_LEGACY : ITEM_CLASS_MAP_NEW)
+                .get(itemClass);
         if (dtoclass == null) {
             throw new IllegalArgumentException(String.format("Unknown item class %s", itemClass));
         }
@@ -101,123 +158,299 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
      * @author Sami Salonen - Initial contribution
      *
      */
-    public static final class ZonedDateTimeConverter implements DynamoDBTypeConverter<String, ZonedDateTime> {
+    public static final class ZonedDateTimeStringConverter implements AttributeConverter<ZonedDateTime> {
 
         @Override
-        public String convert(ZonedDateTime time) {
-            return DATEFORMATTER.format(time.withZoneSameInstant(UTC));
+        public AttributeValue transformFrom(ZonedDateTime time) {
+            return AttributeValue.builder().s(toString(time)).build();
         }
 
         @Override
-        public ZonedDateTime unconvert(String serialized) {
+        public ZonedDateTime transformTo(@NonNullByDefault({}) AttributeValue serialized) {
+            return transformTo(serialized.s());
+        }
+
+        @Override
+        public EnhancedType<ZonedDateTime> type() {
+            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
+        }
+
+        @Override
+        public AttributeValueType attributeValueType() {
+            return AttributeValueType.S;
+        }
+
+        public String toString(ZonedDateTime time) {
+            return DATEFORMATTER.format(time.withZoneSameInstant(UTC));
+        }
+
+        public ZonedDateTime transformTo(String serialized) {
             return ZonedDateTime.parse(serialized, DATEFORMATTER);
         }
     }
 
-    private static final ZonedDateTimeConverter zonedDateTimeConverter = new ZonedDateTimeConverter();
+    /**
+     * Custom converter for serialization/deserialization of ZonedDateTime.
+     *
+     * Serialization: ZonedDateTime is first converted to UTC and then stored as milliepochs
+     *
+     * @author Sami Salonen - Initial contribution
+     *
+     */
+    public static final class ZonedDateTimeMilliEpochConverter implements AttributeConverter<ZonedDateTime> {
+
+        @Override
+        public AttributeValue transformFrom(ZonedDateTime time) {
+            return AttributeValue.builder().n(toEpochMilliString(time)).build();
+        }
+
+        @Override
+        public ZonedDateTime transformTo(@NonNullByDefault({}) AttributeValue serialized) {
+            return transformTo(serialized.n());
+        }
+
+        @Override
+        public EnhancedType<ZonedDateTime> type() {
+            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
+        }
+
+        @Override
+        public AttributeValueType attributeValueType() {
+            return AttributeValueType.N;
+        }
+
+        public static String toEpochMilliString(ZonedDateTime time) {
+            return String.valueOf(time.toInstant().toEpochMilli());
+        }
+
+        public static BigDecimal toBigDecimal(ZonedDateTime time) {
+            return new BigDecimal(toEpochMilliString(time));
+        }
+
+        public ZonedDateTime transformTo(String serialized) {
+            return transformTo(Long.valueOf(serialized));
+        }
+
+        public ZonedDateTime transformTo(Long epochMillis) {
+            return Instant.ofEpochMilli(epochMillis).atZone(UTC);
+        }
+    }
+
     private final Logger logger = LoggerFactory.getLogger(AbstractDynamoDBItem.class);
 
     protected String name;
-    protected T state;
+    protected @Nullable T state;
     protected ZonedDateTime time;
 
-    public AbstractDynamoDBItem(String name, T state, ZonedDateTime time) {
+    public AbstractDynamoDBItem(String name, @Nullable T state, ZonedDateTime time) {
         this.name = name;
         this.state = state;
         this.time = time;
     }
 
-    public static DynamoDBItem<?> fromState(String name, State state, ZonedDateTime time) {
-        if (state instanceof DecimalType && !(state instanceof HSBType)) {
-            // also covers PercentType which is inherited from DecimalType
-            return new DynamoDBBigDecimalItem(name, ((DecimalType) state).toBigDecimal(), time);
-        } else if (state instanceof OnOffType) {
-            return new DynamoDBBigDecimalItem(name,
-                    ((OnOffType) state) == OnOffType.ON ? BigDecimal.ONE : BigDecimal.ZERO, time);
-        } else if (state instanceof OpenClosedType) {
-            return new DynamoDBBigDecimalItem(name,
-                    ((OpenClosedType) state) == OpenClosedType.OPEN ? BigDecimal.ONE : BigDecimal.ZERO, time);
-        } else if (state instanceof UpDownType) {
-            return new DynamoDBBigDecimalItem(name,
-                    ((UpDownType) state) == UpDownType.UP ? BigDecimal.ONE : BigDecimal.ZERO, time);
-        } else if (state instanceof DateTimeType) {
-            return new DynamoDBStringItem(name,
-                    zonedDateTimeConverter.convert(((DateTimeType) state).getZonedDateTime()), time);
-        } else if (state instanceof UnDefType) {
-            return new DynamoDBStringItem(name, UNDEFINED_PLACEHOLDER, time);
-        } else if (state instanceof StringListType) {
+    /**
+     * Convert given state to target state.
+     *
+     * If conversion fails, IllegalStateException is raised.
+     * Use this method you do not expect conversion to fail.
+     *
+     * @param <T> state type to convert to
+     * @param state state to convert
+     * @param clz class of the resulting state
+     * @return state as type T
+     * @throws IllegalStateException on failing conversion
+     */
+    private static <T extends State> T convert(State state, Class<T> clz) {
+        @Nullable
+        T converted = state.as(clz);
+        if (converted == null) {
+            throw new IllegalStateException(String.format("Could not convert %s '%s' into %s",
+                    state.getClass().getSimpleName(), state, clz.getClass().getSimpleName()));
+        }
+        return converted;
+    }
+
+    public static DynamoDBItem<?> fromStateLegacy(Item item, ZonedDateTime time) {
+        String name = item.getName();
+        State state = item.getState();
+        if (item instanceof PlayerItem) {
             return new DynamoDBStringItem(name, state.toFullString(), time);
         } else {
-            // HSBType, PointType, PlayPauseType and StringType
-            return new DynamoDBStringItem(name, state.toFullString(), time);
+            // Apart from PlayerItem, the values are serialized to dynamodb number/strings in the same way in legacy
+            // delegate to fromStateNew
+            return fromStateNew(item, time);
         }
     }
 
+    public static DynamoDBItem<?> fromStateNew(Item item, ZonedDateTime time) {
+        String name = item.getName();
+        State state = item.getState();
+        if (item instanceof CallItem) {
+            return new DynamoDBStringItem(name, convert(state, StringListType.class).toFullString(), time);
+        } else if (item instanceof ContactItem) {
+            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time);
+        } else if (item instanceof DateTimeItem) {
+            return new DynamoDBStringItem(name,
+                    ZONED_DATE_TIME_CONVERTER_STRING.toString(((DateTimeType) state).getZonedDateTime()), time);
+        } else if (item instanceof ImageItem) {
+            throw new IllegalArgumentException("Unsupported item " + item.getClass().getSimpleName());
+        } else if (item instanceof LocationItem) {
+            return new DynamoDBStringItem(name, state.toFullString(), time);
+        } else if (item instanceof NumberItem) {
+            // XXX: quantitytype
+            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time);
+        } else if (item instanceof PlayerItem) {
+            if (state instanceof PlayPauseType) {
+                switch ((PlayPauseType) state) {
+                    case PLAY:
+                        return new DynamoDBBigDecimalItem(name, PLAY_BIGDECIMAL, time);
+                    case PAUSE:
+                        return new DynamoDBBigDecimalItem(name, PAUSE_BIGDECIMAL, time);
+                    default:
+                        throw new IllegalArgumentException("Unexpected enum with PlayPauseType: " + state.toString());
+                }
+            } else if (state instanceof RewindFastforwardType) {
+                switch ((RewindFastforwardType) state) {
+                    case FASTFORWARD:
+                        return new DynamoDBBigDecimalItem(name, FAST_FORWARD_BIGDECIMAL, time);
+                    case REWIND:
+                        return new DynamoDBBigDecimalItem(name, REWIND_BIGDECIMAL, time);
+                    default:
+                        throw new IllegalArgumentException(
+                                "Unexpected enum with RewindFastforwardType: " + state.toString());
+                }
+            } else {
+                throw new IllegalStateException(
+                        String.format("Unexpected state type %s with PlayerItem", state.getClass().getSimpleName()));
+            }
+        } else if (item instanceof RollershutterItem) {
+            // Normalize UP/DOWN to %
+            return new DynamoDBBigDecimalItem(name, convert(state, PercentType.class).toBigDecimal(), time);
+        } else if (item instanceof StringItem) {
+            if (state instanceof StringType) {
+                return new DynamoDBStringItem(name, ((StringType) state).toString(), time);
+            } else if (state instanceof DateTimeType) {
+                return new DynamoDBStringItem(name,
+                        ZONED_DATE_TIME_CONVERTER_STRING.toString(((DateTimeType) state).getZonedDateTime()), time);
+            } else {
+                throw new IllegalStateException(
+                        String.format("Unexpected state type %s with StringItem", state.getClass().getSimpleName()));
+            }
+        } else if (item instanceof ColorItem) { // Note: needs to be before parent class DimmerItem
+            return new DynamoDBStringItem(name, convert(state, HSBType.class).toFullString(), time);
+        } else if (item instanceof DimmerItem) {// Note: needs to be before parent class SwitchItem
+            // Normalize ON/OFF to %
+            return new DynamoDBBigDecimalItem(name, convert(state, PercentType.class).toBigDecimal(), time);
+        } else if (item instanceof SwitchItem) {
+            // Normalize ON/OFF to 1/0
+            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time);
+        } else {
+            throw new IllegalArgumentException("Unsupported item " + item.getClass().getSimpleName());
+        }
+    }
+
+    /**
+     * Convert this AbstractDynamoItem as HistoricItem.
+     *
+     * Returns null when this instance has null state.
+     * The implementation can deal with legacy schema as well.
+     *
+     * @param item Item representing this item. Used to determine item type.
+     * @return HistoricItem representing this DynamoDBItem.
+     */
     @Override
-    public HistoricItem asHistoricItem(final Item item) {
-        final State[] state = new State[1];
-        accept(new DynamoDBItemVisitor() {
+    public @Nullable HistoricItem asHistoricItem(final Item item) {
+        final State[] deserializedState = new State[1];
+        if (this.getState() == null) {
+            return null;
+        }
+        try {
+            accept(new DynamoDBItemVisitor() {
 
-            @Override
-            public void visit(DynamoDBStringItem dynamoStringItem) {
-                if (item instanceof ColorItem) {
-                    state[0] = new HSBType(dynamoStringItem.getState());
-                } else if (item instanceof LocationItem) {
-                    state[0] = new PointType(dynamoStringItem.getState());
-                } else if (item instanceof PlayerItem) {
-                    String value = dynamoStringItem.getState();
-                    try {
-                        state[0] = PlayPauseType.valueOf(value);
-                    } catch (IllegalArgumentException e) {
-                        state[0] = RewindFastforwardType.valueOf(value);
+                @Override
+                public void visit(DynamoDBStringItem dynamoStringItem) {
+                    String stringState = dynamoStringItem.getState();
+                    assert stringState != null;
+                    if (item instanceof ColorItem) {
+                        deserializedState[0] = new HSBType(stringState);
+                    } else if (item instanceof LocationItem) {
+                        deserializedState[0] = new PointType(stringState);
+                    } else if (item instanceof PlayerItem) {
+                        // Backwards-compatibility with legacy schema. New schema uses DynamoDBBigDecimalItem
+                        try {
+                            deserializedState[0] = PlayPauseType.valueOf(stringState);
+                        } catch (IllegalArgumentException e) {
+                            deserializedState[0] = RewindFastforwardType.valueOf(stringState);
+                        }
+                    } else if (item instanceof DateTimeItem) {
+                        try {
+                            // Parse ZoneDateTime from string. DATEFORMATTER assumes UTC in case it is not clear
+                            // from the string (should be).
+                            // We convert to default/local timezone for user convenience (e.g. display)
+                            deserializedState[0] = new DateTimeType(ZONED_DATE_TIME_CONVERTER_STRING
+                                    .transformTo(stringState).withZoneSameInstant(ZoneId.systemDefault()));
+                        } catch (DateTimeParseException e) {
+                            logger.warn("Failed to parse {} as date. Outputting UNDEF instead", stringState);
+                            deserializedState[0] = UnDefType.UNDEF;
+                        }
+                    } else if (item instanceof CallItem) {
+                        String parts = stringState;
+                        String[] strings = parts.split(",");
+                        String orig = strings[0];
+                        String dest = strings[1];
+                        deserializedState[0] = new StringListType(orig, dest);
+                    } else {
+                        deserializedState[0] = new StringType(dynamoStringItem.getState());
                     }
-                } else if (item instanceof DateTimeItem) {
-                    try {
-                        // Parse ZoneDateTime from string. DATEFORMATTER assumes UTC in case it is not clear
-                        // from the string (should be).
-                        // We convert to default/local timezone for user convenience (e.g. display)
-                        state[0] = new DateTimeType(zonedDateTimeConverter.unconvert(dynamoStringItem.getState())
-                                .withZoneSameInstant(ZoneId.systemDefault()));
-                    } catch (DateTimeParseException e) {
-                        logger.warn("Failed to parse {} as date. Outputting UNDEF instead",
-                                dynamoStringItem.getState());
-                        state[0] = UnDefType.UNDEF;
-                    }
-                } else if (dynamoStringItem.getState().equals(UNDEFINED_PLACEHOLDER)) {
-                    state[0] = UnDefType.UNDEF;
-                } else if (item instanceof CallItem) {
-                    String parts = dynamoStringItem.getState();
-                    String[] strings = parts.split(",");
-                    String orig = strings[0];
-                    String dest = strings[1];
-                    state[0] = new StringListType(orig, dest);
-                } else {
-                    state[0] = new StringType(dynamoStringItem.getState());
                 }
-            }
 
-            @Override
-            public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
-                if (item instanceof NumberItem) {
-                    state[0] = new DecimalType(dynamoBigDecimalItem.getState());
-                } else if (item instanceof DimmerItem) {
-                    state[0] = new PercentType(dynamoBigDecimalItem.getState());
-                } else if (item instanceof SwitchItem) {
-                    state[0] = dynamoBigDecimalItem.getState().compareTo(BigDecimal.ONE) == 0 ? OnOffType.ON
-                            : OnOffType.OFF;
-                } else if (item instanceof ContactItem) {
-                    state[0] = dynamoBigDecimalItem.getState().compareTo(BigDecimal.ONE) == 0 ? OpenClosedType.OPEN
-                            : OpenClosedType.CLOSED;
-                } else if (item instanceof RollershutterItem) {
-                    state[0] = new PercentType(dynamoBigDecimalItem.getState());
-                } else {
-                    logger.warn("Not sure how to convert big decimal item {} to type {}. Using StringType as fallback",
-                            dynamoBigDecimalItem.getName(), item.getClass());
-                    state[0] = new StringType(dynamoBigDecimalItem.getState().toString());
+                @Override
+                public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
+                    BigDecimal numberState = dynamoBigDecimalItem.getState();
+                    assert numberState != null;
+                    if (item instanceof NumberItem) {
+                        deserializedState[0] = new DecimalType(numberState);
+                    } else if (item instanceof DimmerItem) {
+                        // % values have been stored as-is
+                        deserializedState[0] = new PercentType(numberState);
+                    } else if (item instanceof SwitchItem) {
+                        deserializedState[0] = numberState.compareTo(BigDecimal.ZERO) != 0 ? OnOffType.ON
+                                : OnOffType.OFF;
+                    } else if (item instanceof ContactItem) {
+                        deserializedState[0] = numberState.compareTo(BigDecimal.ZERO) != 0 ? OpenClosedType.OPEN
+                                : OpenClosedType.CLOSED;
+                    } else if (item instanceof RollershutterItem) {
+                        // Percents and UP/DOWN have been stored % values (not fractional)
+                        deserializedState[0] = new PercentType(numberState);
+                    } else if (item instanceof PlayerItem) {
+                        if (numberState.equals(PLAY_BIGDECIMAL)) {
+                            deserializedState[0] = PlayPauseType.PLAY;
+                        } else if (numberState.equals(PAUSE_BIGDECIMAL)) {
+                            deserializedState[0] = PlayPauseType.PAUSE;
+                        } else if (numberState.equals(FAST_FORWARD_BIGDECIMAL)) {
+                            deserializedState[0] = RewindFastforwardType.FASTFORWARD;
+                        } else if (numberState.equals(REWIND_BIGDECIMAL)) {
+                            deserializedState[0] = RewindFastforwardType.REWIND;
+                        } else {
+                            throw new IllegalArgumentException("Unknown serialized value");
+                        }
+                    } else {
+                        logger.warn(
+                                "Not sure how to convert big decimal item {} to type {}. Using StringType as fallback",
+                                dynamoBigDecimalItem.getName(), item.getClass());
+                        deserializedState[0] = new StringType(numberState.toString());
+                    }
                 }
-            }
-        });
-        return new DynamoDBHistoricItem(getName(), state[0], getTime());
+            });
+            return new DynamoDBHistoricItem(getName(), deserializedState[0], getTime());
+        } catch (
+
+        Exception e) {
+            logger.trace("Failed to convert state '{}' to item {} {}: {} {}. Data persisted with incompatible item.",
+                    this.state, item.getClass().getSimpleName(), item.getName(), e.getClass().getSimpleName(),
+                    e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -236,6 +469,29 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
     @Override
     public String toString() {
-        return DATEFORMATTER.format(time) + ": " + name + " -> " + state.toString();
+        @Nullable
+        T localState = state;
+        return DATEFORMATTER.format(time) + ": " + name + " -> "
+                + (localState == null ? "<null>" : localState.toString());
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public ZonedDateTime getTime() {
+        return time;
+    }
+
+    @Override
+    public void setTime(ZonedDateTime time) {
+        this.time = time;
     }
 }

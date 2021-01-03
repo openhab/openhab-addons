@@ -29,6 +29,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class DimmerItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "dimmer";
     private static final PercentType STATE1 = new PercentType(66);
     private static final PercentType STATE2 = new PercentType(68);
@@ -49,7 +50,6 @@ public class DimmerItemIntegrationTest extends AbstractTwoItemIntegrationTest {
         service.store(item);
         Thread.sleep(10);
         afterStore2 = ZonedDateTime.now();
-
         LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));
     }

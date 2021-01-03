@@ -12,62 +12,65 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper.FailedBatch;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.PaginationLoadingStrategy;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import com.amazonaws.services.dynamodbv2.document.BatchWriteItemOutcome;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
-import com.amazonaws.services.dynamodbv2.model.TableDescription;
-import com.amazonaws.services.dynamodbv2.model.TableStatus;
-import com.amazonaws.services.dynamodbv2.model.WriteRequest;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.awscore.AwsRequestOverrideConfiguration;
+import software.amazon.awssdk.core.async.SdkPublisher;
+import software.amazon.awssdk.core.client.config.ClientAsyncConfiguration;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.core.client.config.SdkAdvancedAsyncClientOption;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClientBuilder;
+import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 /**
  * This is the implementation of the DynamoDB {@link PersistenceService}. It persists item values
@@ -83,96 +86,58 @@ import com.amazonaws.services.dynamodbv2.model.WriteRequest;
  *
  */
 @NonNullByDefault
-@Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.dynamodb", //
+@Component(service = { PersistenceService.class, QueryablePersistenceService.class,
+        ModifiablePersistenceService.class }, configurationPid = "org.openhab.dynamodb", //
         property = Constants.SERVICE_PID + "=org.openhab.dynamodb")
 @ConfigurableService(category = "persistence", label = "DynamoDB Persistence Service", description_uri = DynamoDBPersistenceService.CONFIG_URI)
-public class DynamoDBPersistenceService extends AbstractBufferedPersistenceService<DynamoDBItem<?>>
-        implements QueryablePersistenceService {
+public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
     protected static final String CONFIG_URI = "persistence:dynamodb";
 
-    private class ExponentialBackoffRetry implements Runnable {
-        private int retry;
-        private Map<String, List<WriteRequest>> unprocessedItems;
-        private @Nullable Exception lastException;
-
-        public ExponentialBackoffRetry(Map<String, List<WriteRequest>> unprocessedItems) {
-            this.unprocessedItems = unprocessedItems;
-        }
+    private class CredentialsProvider implements AwsCredentialsProvider {
 
         @Override
-        public void run() {
-            logger.debug("Error storing object to dynamo, unprocessed items: {}. Retrying with exponential back-off",
-                    unprocessedItems);
-            lastException = null;
-            while (!unprocessedItems.isEmpty() && retry < WAIT_MILLIS_IN_RETRIES.length) {
-                if (!sleep()) {
-                    // Interrupted
-                    return;
-                }
-                retry++;
-                try {
-                    BatchWriteItemOutcome outcome = DynamoDBPersistenceService.this.db.getDynamoDB()
-                            .batchWriteItemUnprocessed(unprocessedItems);
-                    unprocessedItems = outcome.getUnprocessedItems();
-                    lastException = null;
-                } catch (AmazonServiceException e) {
-                    if (e instanceof ResourceNotFoundException) {
-                        logger.debug(
-                                "DynamoDB query raised unexpected exception: {}. This might happen if table was recently created",
-                                e.getMessage());
-                    } else {
-                        logger.debug("DynamoDB query raised unexpected exception: {}.", e.getMessage());
-                    }
-                    lastException = e;
-                    continue;
-                }
+        public AwsCredentials resolveCredentials() {
+            if (dbConfig == null) {
+                logger.error("Dynamodb config is not ready, should not happen!");
+                throw new IllegalStateException();
             }
-            if (unprocessedItems.isEmpty()) {
-                logger.debug("After {} retries successfully wrote all unprocessed items", retry);
-            } else {
-                logger.warn(
-                        "Even after retries failed to write some items. Last exception: {} {}, unprocessed items: {}",
-                        lastException == null ? "null" : lastException.getClass().getName(),
-                        lastException == null ? "null" : lastException.getMessage(), unprocessedItems);
-            }
-        }
-
-        private boolean sleep() {
-            try {
-                long sleepTime;
-                if (retry == 1 && lastException != null && lastException instanceof ResourceNotFoundException) {
-                    sleepTime = WAIT_ON_FIRST_RESOURCE_NOT_FOUND_MILLIS;
-                } else {
-                    sleepTime = WAIT_MILLIS_IN_RETRIES[retry];
-                }
-                Thread.sleep(sleepTime);
-                return true;
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while writing data!");
-                return false;
-            }
-        }
-
-        public Map<String, List<WriteRequest>> getUnprocessedItems() {
-            return unprocessedItems;
+            return dbConfig.getCredentials();
         }
     }
 
-    private static final int WAIT_ON_FIRST_RESOURCE_NOT_FOUND_MILLIS = 5000;
-    private static final int[] WAIT_MILLIS_IN_RETRIES = new int[] { 100, 100, 200, 300, 500 };
     private static final String DYNAMODB_THREADPOOL_NAME = "dynamodbPersistenceService";
 
-    private final ItemRegistry itemRegistry;
-    private @Nullable DynamoDBClient db;
+    private @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private @NonNullByDefault({}) DynamoDbEnhancedAsyncClient client;
+    @NonNullByDefault({})
+    DynamoDbAsyncClient lowLevelClient;
     private final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
     private boolean isProperlyConfigured;
-    private @NonNullByDefault({}) DynamoDBConfig dbConfig;
-    private @NonNullByDefault({}) DynamoDBTableNameResolver tableNameResolver;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
-            new NamedThreadFactory(DYNAMODB_THREADPOOL_NAME));
-    private @Nullable ScheduledFuture<?> writeBufferedDataFuture;
+    @NonNullByDefault({})
+    DynamoDBConfig dbConfig;
+    @NonNullByDefault({})
+    DynamoDBTableNameResolver tableNameResolver;
+    final ExecutorService executor = ThreadPoolManager.getPool(DYNAMODB_THREADPOOL_NAME);
+    private static final Duration TIMEOUT_API_CALL = Duration.ofSeconds(60);
+    private static final Duration TIMEOUT_API_CALL_ATTEMPT = Duration.ofSeconds(5);
+    @SuppressWarnings("rawtypes")
+    private Map<Class<? extends DynamoDBItem>, DynamoDbAsyncTable<DynamoDBItem>> tableCache = new ConcurrentHashMap<>(
+            2);
+    private AwsCredentialsProvider credentialsProvider = new CredentialsProvider();
+
+    @Nullable
+    URI endpointOverride;
+
+    void overrideConfig(AwsRequestOverrideConfiguration.Builder config) {
+        config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL)
+                .credentialsProvider(credentialsProvider);
+    }
+
+    void overrideConfig(ClientOverrideConfiguration.Builder config) {
+        config.apiCallAttemptTimeout(TIMEOUT_API_CALL_ATTEMPT).apiCallTimeout(TIMEOUT_API_CALL)
+                .retryPolicy(dbConfig.getRetryPolicy());
+    }
 
     @Activate
     public DynamoDBPersistenceService(final @Reference ItemRegistry itemRegistry) {
@@ -180,26 +145,40 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     }
 
     /**
-     * For testing. Allows access to underlying DynamoDBClient.
-     *
-     * @return DynamoDBClient connected to AWS Dyanamo DB.
+     * For tests
      */
-    @Nullable
-    DynamoDBClient getDb() {
-        return db;
+    DynamoDBPersistenceService(final @Reference ItemRegistry itemRegistry, @Nullable URI endpointOverride) {
+        this.itemRegistry = itemRegistry;
+        this.endpointOverride = endpointOverride;
+    }
+
+    /**
+     * For testing. Allows access to underlying DynamoDbEnhancedAsyncClient.
+     *
+     */
+    DynamoDbEnhancedAsyncClient getClient() {
+        return client;
+    }
+
+    /**
+     * For testing. Allows access to underlying DynamoDbAsyncClient.
+     *
+     */
+    DynamoDbAsyncClient getLowLevelClient() {
+        return lowLevelClient;
     }
 
     @Activate
     public void activate(final @Nullable BundleContext bundleContext, final Map<String, Object> config) {
-        resetClient();
+        disconnect();
         dbConfig = DynamoDBConfig.fromConfig(config);
         if (dbConfig == null) {
             // Configuration was invalid. Abort service activation.
             // Error is already logger in fromConfig.
             return;
         }
-
-        tableNameResolver = new DynamoDBTableNameResolver(dbConfig.getTablePrefix());
+        tableNameResolver = new DynamoDBTableNameResolver(dbConfig.getTableRevision(), dbConfig.getTable(),
+                dbConfig.getTablePrefixLegacy());
         try {
             if (!ensureClient()) {
                 logger.error("Error creating dynamodb database client. Aborting service activation.");
@@ -210,27 +189,6 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
             return;
         }
 
-        writeBufferedDataFuture = null;
-        resetWithBufferSize(dbConfig.getBufferSize());
-        long commitIntervalMillis = dbConfig.getBufferCommitIntervalMillis();
-        if (commitIntervalMillis > 0) {
-            writeBufferedDataFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        DynamoDBPersistenceService.this.flushBufferedData();
-                    } catch (RuntimeException e) {
-                        // We want to catch all unexpected exceptions since all unhandled exceptions make
-                        // ScheduledExecutorService halt the regular running of the task.
-                        // It is better to print out the exception, and try again
-                        // (on next cycle)
-                        logger.warn(
-                                "Execution of scheduled flushing of buffered data failed unexpectedly. Ignoring exception, trying again according to configured commit interval of {} ms.",
-                                commitIntervalMillis, e);
-                    }
-                }
-            }, 0, commitIntervalMillis, TimeUnit.MILLISECONDS);
-        }
         isProperlyConfigured = true;
         logger.debug("dynamodb persistence service activated");
     }
@@ -238,24 +196,41 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     @Deactivate
     public void deactivate() {
         logger.debug("dynamodb persistence service deactivated");
-        if (writeBufferedDataFuture != null) {
-            writeBufferedDataFuture.cancel(false);
-            writeBufferedDataFuture = null;
-        }
-        resetClient();
+        logIfManyQueuedTasks();
+        disconnect();
     }
 
     /**
-     * Initializes DynamoDBClient (db field)
+     * Initializes Dynamo DB client and determines schema
      *
-     * If DynamoDBClient constructor throws an exception, error is logged and false is returned.
+     * If construction fails, error is logged and false is returned.
      *
      * @return whether initialization was successful.
      */
     private boolean ensureClient() {
-        if (db == null) {
+        if (dbConfig == null) {
+            return false;
+        }
+        if (client == null) {
             try {
-                db = new DynamoDBClient(dbConfig);
+                synchronized (this) {
+                    if (this.client != null) {
+                        return true;
+                    }
+                    DynamoDbAsyncClientBuilder lowlevelClientBuilder = DynamoDbAsyncClient.builder()
+                            .credentialsProvider(StaticCredentialsProvider.create(dbConfig.getCredentials()))
+                            .asyncConfiguration(ClientAsyncConfiguration.builder()
+                                    .advancedOption(SdkAdvancedAsyncClientOption.FUTURE_COMPLETION_EXECUTOR, executor)
+                                    .build())
+                            .overrideConfiguration(this::overrideConfig).region(dbConfig.getRegion());
+                    if (endpointOverride != null) {
+                        logger.info("DynamoDB has been overriden to {}", endpointOverride);
+                        lowlevelClientBuilder.endpointOverride(endpointOverride);
+                    }
+                    DynamoDbAsyncClient lowlevelClient = lowlevelClientBuilder.build();
+                    client = DynamoDbEnhancedAsyncClient.builder().dynamoDbClient(lowlevelClient).build();
+                    this.lowLevelClient = lowlevelClient;
+                }
             } catch (Exception e) {
                 logger.error("Error constructing dynamodb client", e);
                 return false;
@@ -264,111 +239,73 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
         return true;
     }
 
-    @Override
-    public DynamoDBItem<?> persistenceItemFromState(String name, State state, ZonedDateTime time) {
-        return AbstractDynamoDBItem.fromState(name, state, time);
-    }
-
-    /**
-     * Create table (if not present) and wait for table to become active.
-     *
-     * Synchronized in order to ensure that at most single thread is creating the table at a time
-     *
-     * @param mapper
-     * @param dtoClass
-     * @return whether table creation succeeded.
-     */
-    private synchronized boolean createTable(DynamoDBMapper mapper, Class<?> dtoClass) {
-        if (db == null) {
-            return false;
-        }
-        String tableName;
-        try {
-            ProvisionedThroughput provisionedThroughput = new ProvisionedThroughput(dbConfig.getReadCapacityUnits(),
-                    dbConfig.getWriteCapacityUnits());
-            CreateTableRequest request = mapper.generateCreateTableRequest(dtoClass);
-            request.setProvisionedThroughput(provisionedThroughput);
-            if (request.getGlobalSecondaryIndexes() != null) {
-                for (GlobalSecondaryIndex index : request.getGlobalSecondaryIndexes()) {
-                    index.setProvisionedThroughput(provisionedThroughput);
+    private CompletableFuture<Boolean> resolveTableSchema() {
+        if (tableNameResolver.isFullyResolved()) {
+            return CompletableFuture.completedFuture(true);
+        } else {
+            synchronized (tableNameResolver) {
+                if (tableNameResolver.isFullyResolved()) {
+                    return CompletableFuture.completedFuture(true);
                 }
+                return tableNameResolver
+                        .resolveSchema(lowLevelClient, b -> b.overrideConfiguration(this::overrideConfig), executor)
+                        .thenApplyAsync(resolved -> {
+                            if (resolved && tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY) {
+                                logger.warn(
+                                        "Using legacy table format. Is it recommended to migrate to the new table format: specify the 'table' parameter and unset the old 'tablePrefix' parameter.");
+                            }
+                            return resolved;
+                        }, executor);
             }
-            tableName = request.getTableName();
-            try {
-                db.getDynamoClient().describeTable(tableName);
-            } catch (ResourceNotFoundException e) {
-                // No table present, continue with creation
-                db.getDynamoClient().createTable(request);
-            } catch (AmazonClientException e) {
-                logger.error("Table creation failed due to error in describeTable operation", e);
-                return false;
-            }
-
-            // table found or just created, wait
-            return waitForTableToBecomeActive(tableName);
-        } catch (AmazonClientException e) {
-            logger.error("Exception when creating table", e);
-            return false;
         }
     }
 
-    private boolean waitForTableToBecomeActive(String tableName) {
-        try {
-            logger.debug("Checking if table '{}' is created...", tableName);
-            final TableDescription tableDescription;
-            try {
-                tableDescription = db.getDynamoDB().getTable(tableName).waitForActive();
-            } catch (IllegalArgumentException e) {
-                logger.warn("Table '{}' is being deleted: {} {}", tableName, e.getClass().getSimpleName(),
-                        e.getMessage());
-                return false;
-            } catch (ResourceNotFoundException e) {
-                logger.warn("Table '{}' was deleted unexpectedly: {} {}", tableName, e.getClass().getSimpleName(),
-                        e.getMessage());
-                return false;
-            }
-            boolean success = TableStatus.ACTIVE.equals(TableStatus.fromValue(tableDescription.getTableStatus()));
-            if (success) {
-                logger.debug("Creation of table '{}' successful, table status is now {}", tableName,
-                        tableDescription.getTableStatus());
-            } else {
-                logger.warn("Creation of table '{}' unsuccessful, table status is now {}", tableName,
-                        tableDescription.getTableStatus());
-            }
-            return success;
-        } catch (AmazonClientException e) {
-            logger.error("Exception when checking table status (describe): {}", e.getMessage());
-            return false;
-        } catch (InterruptedException e) {
-            logger.error("Interrupted while trying to check table status: {}", e.getMessage());
-            return false;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private DynamoDbAsyncTable<DynamoDBItem> getTable(Class<? extends DynamoDBItem> dtoClass) {
+        DynamoDbEnhancedAsyncClient localClient = client;
+        if (!ensureClient() || localClient == null) {
+            throw new IllegalStateException();
         }
+        ExpectedTableSchema expectedTableSchemaRevision = tableNameResolver.getTableSchema();
+        String tableName = tableNameResolver.fromClass(dtoClass);
+        final TableSchema<? extends DynamoDBItem> schema = getDynamoDBTableSchema(dtoClass,
+                expectedTableSchemaRevision);
+        DynamoDbAsyncTable<DynamoDBItem> table = tableCache.computeIfAbsent(dtoClass, clz -> {
+            return (DynamoDbAsyncTable<DynamoDBItem>) localClient.table(tableName, schema);
+        });
+        assert table != null; // Invariant
+        return table;
     }
 
-    private void resetClient() {
-        if (db == null) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    static TableSchema<DynamoDBItem> getDynamoDBTableSchema(Class<? extends DynamoDBItem> dtoClass,
+            ExpectedTableSchema expectedTableSchemaRevision) {
+        final TableSchema<? extends DynamoDBItem> schema;
+        if (dtoClass.equals(DynamoDBBigDecimalItem.class)) {
+            schema = expectedTableSchemaRevision == ExpectedTableSchema.NEW ? DynamoDBBigDecimalItem.TABLE_SCHEMA_NEW
+                    : DynamoDBBigDecimalItem.TABLE_SCHEMA_LEGACY;
+        } else if (dtoClass.equals(DynamoDBStringItem.class)) {
+            schema = expectedTableSchemaRevision == ExpectedTableSchema.NEW ? DynamoDBStringItem.TABLE_SCHEMA_NEW
+                    : DynamoDBStringItem.TABLE_SCHEMA_LEGACY;
+        } else {
+            throw new IllegalStateException("Unknown DTO class. Bug");
+        }
+        return (TableSchema<DynamoDBItem>) schema;
+    }
+
+    private void disconnect() {
+        if (client == null || lowLevelClient == null) {
             return;
         }
-        db.shutdown();
-        db = null;
+        lowLevelClient.close();
+        lowLevelClient = null;
+        client = null;
         dbConfig = null;
         tableNameResolver = null;
         isProperlyConfigured = false;
+        tableCache.clear();
     }
 
-    private DynamoDBMapper getDBMapper(String tableName) {
-        try {
-            DynamoDBMapperConfig mapperConfig = new DynamoDBMapperConfig.Builder()
-                    .withTableNameOverride(new DynamoDBMapperConfig.TableNameOverride(tableName))
-                    .withPaginationLoadingStrategy(PaginationLoadingStrategy.LAZY_LOADING).build();
-            return new DynamoDBMapper(db.getDynamoClient(), mapperConfig);
-        } catch (AmazonClientException e) {
-            logger.error("Error getting db mapper: {}", e.getMessage());
-            throw e;
-        }
-    }
-
-    @Override
     protected boolean isReadyToStore() {
         return isProperlyConfigured && ensureClient();
     }
@@ -388,160 +325,96 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
         return Collections.emptySet();
     }
 
-    @Override
-    protected void flushBufferedData() {
-        if (buffer != null && buffer.isEmpty()) {
-            return;
-        }
-        logger.debug("Writing buffered data. Buffer size: {}", buffer.size());
-
-        for (;;) {
-            Map<String, Deque<DynamoDBItem<?>>> itemsByTable = readBuffer();
-            // Write batch of data, one table at a time
-            for (Entry<String, Deque<DynamoDBItem<?>>> entry : itemsByTable.entrySet()) {
-                String tableName = entry.getKey();
-                Deque<DynamoDBItem<?>> batch = entry.getValue();
-                if (!batch.isEmpty()) {
-                    flushBatch(getDBMapper(tableName), batch);
-                }
-            }
-            if (buffer != null && buffer.isEmpty()) {
-                break;
-            }
-        }
-    }
-
-    private Map<String, Deque<DynamoDBItem<?>>> readBuffer() {
-        Map<String, Deque<DynamoDBItem<?>>> batchesByTable = new HashMap<>(2);
-        // Get batch of data
-        while (!buffer.isEmpty()) {
-            DynamoDBItem<?> dynamoItem = buffer.poll();
-            if (dynamoItem == null) {
-                break;
-            }
-            String tableName = tableNameResolver.fromItem(dynamoItem);
-            Deque<DynamoDBItem<?>> batch = batchesByTable.computeIfAbsent(tableName, new Function<>() {
-                @Override
-                public @Nullable Deque<DynamoDBItem<?>> apply(@Nullable String t) {
-                    return new ArrayDeque<>();
-                }
-            });
-            batch.add(dynamoItem);
-        }
-        return batchesByTable;
-    }
-
-    /**
-     * Flush batch of data to DynamoDB
-     *
-     * @param mapper mapper associated with the batch
-     * @param batch batch of data to write to DynamoDB
-     */
-    private void flushBatch(DynamoDBMapper mapper, Deque<DynamoDBItem<?>> batch) {
-        long currentTimeMillis = System.currentTimeMillis();
-        List<FailedBatch> failed = mapper.batchSave(batch);
-        for (FailedBatch failedBatch : failed) {
-            if (failedBatch.getException() instanceof ResourceNotFoundException) {
-                // Table did not exist. Try again after creating table
-                retryFlushAfterCreatingTable(mapper, batch, failedBatch);
-            } else {
-                logger.debug("Batch failed with {}. Retrying next with exponential back-off",
-                        failedBatch.getException().getMessage());
-                new ExponentialBackoffRetry(failedBatch.getUnprocessedItems()).run();
-            }
-        }
-        if (failed.isEmpty()) {
-            logger.debug("flushBatch ended with {} items in {} ms: {}", batch.size(),
-                    System.currentTimeMillis() - currentTimeMillis, batch);
-        } else {
-            logger.warn(
-                    "flushBatch ended with {} items in {} ms: {}. There were some failed batches that were retried -- check logs for ERRORs to see if writes were successful",
-                    batch.size(), System.currentTimeMillis() - currentTimeMillis, batch);
-        }
-    }
-
-    /**
-     * Retry flushing data after creating table associated with mapper
-     *
-     * @param mapper mapper associated with the batch
-     * @param batch original batch of data. Used for logging and to determine table name
-     * @param failedBatch failed batch that should be retried
-     */
-    private void retryFlushAfterCreatingTable(DynamoDBMapper mapper, Deque<DynamoDBItem<?>> batch,
-            FailedBatch failedBatch) {
-        logger.debug("Table was not found. Trying to create table and try saving again");
-        if (createTable(mapper, batch.peek().getClass())) {
-            logger.debug("Table creation successful, trying to save again");
-            if (!failedBatch.getUnprocessedItems().isEmpty()) {
-                ExponentialBackoffRetry retry = new ExponentialBackoffRetry(failedBatch.getUnprocessedItems());
-                retry.run();
-                if (retry.getUnprocessedItems().isEmpty()) {
-                    logger.debug("Successfully saved items after table creation");
-                }
-            }
-        } else {
-            logger.warn("Table creation failed. Not storing some parts of batch: {}. Unprocessed items: {}", batch,
-                    failedBatch.getUnprocessedItems());
-        }
-    }
-
+    @SuppressWarnings("rawtypes")
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
-        logger.debug("got a query");
+        logIfManyQueuedTasks();
+        try {
+            Boolean resolved = resolveTableSchema().get();
+            if (!resolved) {
+                logger.warn("Table schema not resolved, cannot query data.");
+                return Collections.<HistoricItem>emptyList();
+            }
+        } catch (InterruptedException e) {
+            logger.warn("Table schema resolution interrupted, cannot query data");
+            return Collections.<HistoricItem>emptyList();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            logger.warn("Table schema resolution errored, cannot query data: {} {}",
+                    cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
+                    cause == null ? e.getMessage() : cause.getMessage());
+            return Collections.<HistoricItem>emptyList();
+        }
+
+        Instant start = Instant.now();
+        String filterDescription = filterToString(filter);
+        logger.trace("Got a query with filter {}", filterDescription);
+        DynamoDbEnhancedAsyncClient localClient = client;
         if (!isProperlyConfigured) {
             logger.debug("Configuration for dynamodb not yet loaded or broken. Not storing item.");
-            return Collections.emptyList();
+            return Collections.<HistoricItem>emptyList();
         }
-        if (!ensureClient()) {
+        if (!ensureClient() || localClient == null) {
             logger.warn("DynamoDB not connected. Not storing item.");
-            return Collections.emptyList();
+            return Collections.<HistoricItem>emptyList();
         }
 
         String itemName = filter.getItemName();
         Item item = getItemFromRegistry(itemName);
         if (item == null) {
             logger.warn("Could not get item {} from registry!", itemName);
-            return Collections.emptyList();
+            return Collections.<HistoricItem>emptyList();
         }
-
-        Class<DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass());
+        boolean legacy = tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
+        Class<DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass(), legacy);
         String tableName = tableNameResolver.fromClass(dtoClass);
-        DynamoDBMapper mapper = getDBMapper(tableName);
-        logger.debug("item {} (class {}) will be tried to query using dto class {} from table {}", itemName,
-                item.getClass(), dtoClass, tableName);
+        DynamoDbAsyncTable<DynamoDBItem> table = getTable(dtoClass);
+        logger.debug("Item {} (of type {}) will be tried to query using DTO class {} from table {}", itemName,
+                item.getClass().getSimpleName(), dtoClass.getSimpleName(), tableName);
 
-        List<HistoricItem> historicItems = new ArrayList<>();
+        QueryEnhancedRequest queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
+                tableNameResolver.getTableSchema(), item, filter);
 
-        DynamoDBQueryExpression<DynamoDBItem<?>> queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
-                filter);
-        @SuppressWarnings("rawtypes")
-        final PaginatedQueryList<? extends DynamoDBItem> paginatedList;
+        CompletableFuture<List<DynamoDBItem>> itemsFuture = new CompletableFuture<>();
+        final SdkPublisher<DynamoDBItem> itemPublisher = table.query(queryExpression).items();
+        Subscriber<DynamoDBItem> pageSubscriber = new PageOfInterestSubscriber<DynamoDBItem>(itemsFuture,
+                filter.getPageNumber(), filter.getPageSize());
+        itemPublisher.subscribe(pageSubscriber);
+
         try {
-            paginatedList = mapper.query(dtoClass, queryExpression);
-        } catch (AmazonServiceException e) {
-            logger.error(
-                    "DynamoDB query raised unexpected exception: {}. Returning empty collection. "
-                            + "Status code 400 (resource not found) might occur if table was just created.",
-                    e.getMessage());
-            return Collections.emptyList();
-        }
-        for (int itemIndexOnPage = 0; itemIndexOnPage < filter.getPageSize(); itemIndexOnPage++) {
-            int itemIndex = filter.getPageNumber() * filter.getPageSize() + itemIndexOnPage;
-            DynamoDBItem<?> dynamoItem;
-            try {
-                dynamoItem = paginatedList.get(itemIndex);
-            } catch (IndexOutOfBoundsException e) {
-                logger.debug("Index {} is out-of-bounds", itemIndex);
-                break;
-            }
-            if (dynamoItem != null) {
+            @SuppressWarnings("null")
+            List<HistoricItem> results = itemsFuture.get().stream().map(dynamoItem -> {
                 HistoricItem historicItem = dynamoItem.asHistoricItem(item);
+                if (historicItem == null) {
+                    logger.warn(
+                            "Dynamo item {} serialized state '{}' cannot be converted to item {} {}. Item type changed since persistence. Ignoring",
+                            dynamoItem.getClass().getSimpleName(), dynamoItem.getState(),
+                            item.getClass().getSimpleName(), item.getName());
+                    return null;
+                }
                 logger.trace("Dynamo item {} converted to historic item: {}", item, historicItem);
-                historicItems.add(historicItem);
+                return historicItem;
+            }).filter(value -> value != null).collect(Collectors.toList());
+            logger.debug("Query completed in {} ms. Filter was {}", Duration.between(start, Instant.now()).toMillis(),
+                    filterDescription);
+            return results;
+        } catch (InterruptedException e) {
+            logger.warn("Query interrupted. Filter was {}", filterDescription);
+            return Collections.<HistoricItem>emptyList();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof ResourceNotFoundException) {
+                logger.trace("Query failed since the DynamoDB table '{}' does not exist. Filter was {}", tableName,
+                        filterDescription);
+            } else if (logger.isTraceEnabled()) {
+                logger.trace("Query failed. Filter was {}", filterDescription, e);
+            } else {
+                logger.warn("Query failed {} {}. Filter was {}",
+                        cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
+                        cause == null ? e.getMessage() : cause.getMessage(), filterDescription);
             }
-
+            return Collections.<HistoricItem>emptyList();
         }
-        return historicItems;
     }
 
     /**
@@ -551,11 +424,12 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
      * @return item with the given name, or null if no such item exists in item registry.
      */
     private @Nullable Item getItemFromRegistry(String itemName) {
+        if (itemRegistry == null) {
+            return null;
+        }
         Item item = null;
         try {
-            if (itemRegistry != null) {
-                item = itemRegistry.getItem(itemName);
-            }
+            item = itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
             logger.error("Unable to get item {} from registry", itemName);
         }
@@ -565,5 +439,107 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE);
+    }
+
+    @Override
+    public void store(Item item) {
+        store(item, null);
+    }
+
+    @Override
+    public void store(Item item, @Nullable String alias) {
+        // Timestamp and capture state immediately as rest of the store is asynchronous (state might change in between)
+        ZonedDateTime time = ZonedDateTime.now();
+
+        logIfManyQueuedTasks();
+        if (!(item instanceof GenericItem)) {
+            return;
+        }
+        if (item.getState() instanceof UnDefType) {
+            logger.debug("Undefined item state received. Not storing item {}.", item.getName());
+            return;
+        }
+        if (!isReadyToStore()) {
+            logger.warn("Not ready to store (config error?), not storing item {}.", item.getName());
+            return;
+        }
+
+        String effectiveName = (alias != null) ? alias : item.getName();
+
+        // item.state is not reliable in async context below since item state can change. We 'copy' the item.
+        final GenericItem copiedItem = copyItem(item, effectiveName, null);
+
+        resolveTableSchema().thenAcceptAsync(resolved -> {
+            if (!resolved) {
+                logger.warn("Table schema not resolved, not storing item {}.", copiedItem.getName());
+                return;
+            }
+
+            DynamoDbEnhancedAsyncClient localClient = client;
+            DynamoDbAsyncClient localLowlevelClient = lowLevelClient;
+            if (localClient == null || localLowlevelClient == null) {
+                return;
+            }
+
+            final DynamoDBItem<?> dto;
+            switch (tableNameResolver.getTableSchema()) {
+                case NEW:
+                    dto = AbstractDynamoDBItem.fromStateNew(copiedItem, time);
+                    break;
+                case LEGACY:
+                    dto = AbstractDynamoDBItem.fromStateLegacy(copiedItem, time);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected. Bug");
+            }
+            logger.trace("store() called with item {} {} '{}', which was converted to DTO {}",
+                    copiedItem.getClass().getSimpleName(), effectiveName, copiedItem.getState(), dto);
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            Class<DynamoDBItem> dtoClass = (Class<DynamoDBItem>) dto.getClass();
+
+            @SuppressWarnings("rawtypes")
+            DynamoDbAsyncTable<DynamoDBItem> table = getTable(dtoClass);
+            new TableCreatingPutItem(this, dto, table).putItemAsync();
+        }, executor).exceptionally(e -> {
+            logger.error("Unexcepted error", e);
+            return null;
+        });
+    }
+
+    static GenericItem copyItem(Item item, @Nullable String nameOverride, @Nullable State stateOverride) {
+        GenericItem copiedItem;
+        try {
+            copiedItem = (GenericItem) item.getClass().getDeclaredConstructor(String.class)
+                    .newInstance(nameOverride == null ? item.getName() : nameOverride);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            LoggerFactory.getLogger(DynamoDBPersistenceService.class).error("Could not copy item of type {}. Bug",
+                    item.getClass().getSimpleName());
+            throw new IllegalArgumentException();
+        }
+        copiedItem.setState(stateOverride == null ? item.getState() : stateOverride);
+        return copiedItem;
+    }
+
+    private void logIfManyQueuedTasks() {
+        if (executor instanceof ThreadPoolExecutor) {
+            ThreadPoolExecutor localExecutor = (ThreadPoolExecutor) executor;
+            logger.trace("executor queue size: {}, remaining space {}. Active threads {}",
+                    localExecutor.getQueue().size(), localExecutor.getQueue().remainingCapacity(),
+                    localExecutor.getActiveCount());
+            if (localExecutor.getQueue().size() >= 50) {
+                logger.warn(
+                        "Many ({}) tasks queued in executor! This might be sign of bad design or bug in the addon code.",
+                        localExecutor.getQueue().size());
+            }
+        }
+    }
+
+    private String filterToString(FilterCriteria filter) {
+        return String.format(
+                "FilterCriteria@%s(item=%s, pageNumber=%d, pageSize=%d, time=[%s, %s, %s], state=[%s, %s of %s] )",
+                System.identityHashCode(filter), filter.getItemName(), filter.getPageNumber(), filter.getPageSize(),
+                filter.getBeginDate(), filter.getEndDate(), filter.getOrdering(), filter.getOperator(),
+                filter.getState(), filter.getState() == null ? "null" : filter.getState().getClass().getSimpleName());
     }
 }

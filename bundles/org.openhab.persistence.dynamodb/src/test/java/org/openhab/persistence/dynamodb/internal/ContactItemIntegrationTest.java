@@ -28,6 +28,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class ContactItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
+
     private static final String NAME = "contact";
     private static final OpenClosedType STATE1 = OpenClosedType.CLOSED;
     private static final OpenClosedType STATE2 = OpenClosedType.OPEN;

@@ -30,6 +30,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest {
+    public static final boolean LEGACY_MODE = false;
 
     private static final String NAME = "datetime";
     private static final ZonedDateTime ZDT1 = ZonedDateTime.parse("2016-06-15T10:00:00Z");
@@ -57,7 +58,6 @@ public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest 
         service.store(item);
         Thread.sleep(10);
         afterStore2 = ZonedDateTime.now();
-
         LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));
     }

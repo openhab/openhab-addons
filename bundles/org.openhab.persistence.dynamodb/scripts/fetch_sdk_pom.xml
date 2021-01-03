@@ -8,9 +8,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.11.213</version>
+		    <groupId>software.amazon.awssdk</groupId>
+		    <artifactId>dynamodb-enhanced</artifactId>
+            <version>2.15.56</version>
         </dependency>
     </dependencies>
 
