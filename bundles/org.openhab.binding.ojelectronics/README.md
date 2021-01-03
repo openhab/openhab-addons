@@ -61,7 +61,7 @@ This example shows how to configure the OJElecttronics binding.
 ### demo.things
 
 ```
-Binding ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName" password="MyPassword" apiKey="The Key" ] {
+Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName", password="MyPassword", apiKey="The Key" ] {
     Thing owd5 myThermostat [ serialNumber="123" ]
 }
 ```
@@ -69,8 +69,8 @@ Binding ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserN
 ### demo.items
 
 ```
-Number Bath_Floor_Temperature "Bathroom: Floor Temperature" {channel="ojelectronics:owd5:myThermostat:floorTemperature"}
-String Bath_Mode "Bathroom: Mode" {channel="ojelectronics:owd5:myThermostat:regulationMode"}
+Number Bath_Floor_Temperature "Bathroom: Floor Temperature" {channel="ojelectronics:owd5:myCloud:myThermostat:floorTemperature"}
+String Bath_Mode "Bathroom: Mode" {channel="ojelectronics:owd5:myCloud:myThermostat:regulationMode"}
 ```
 
 ### demo.sitemap

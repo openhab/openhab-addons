@@ -46,6 +46,9 @@
 						"command": "set_mode",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{

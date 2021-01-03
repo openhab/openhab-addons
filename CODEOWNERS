@@ -7,6 +7,7 @@
 # Add-on maintainers:
 /bundles/org.openhab.automation.groovyscripting/ @wborn
 /bundles/org.openhab.automation.jythonscripting/ @openhab/add-ons-maintainers
+/bundles/org.openhab.automation.pidcontroller/ @fwolter
 /bundles/org.openhab.binding.adorne/ @theiding
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
@@ -80,8 +81,10 @@
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
 /bundles/org.openhab.binding.gardena/ @gerrieg
 /bundles/org.openhab.binding.gce/ @clinique
+/bundles/org.openhab.binding.generacmobilelink/ @digitaldan
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.goecharger/ @SamuelBrucksch
+/bundles/org.openhab.binding.gpio/ @nils-bauer
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.gree/ @markus7017
 /bundles/org.openhab.binding.groheondus/ @FlorianSW
@@ -254,6 +257,7 @@
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.tibber/ @kjoglum
+/bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tr064/ @J-N-K

@@ -115,6 +115,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Status"
 				],
@@ -363,6 +364,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "alarm",
 				"tags": [
 					"Alarm"
 				]

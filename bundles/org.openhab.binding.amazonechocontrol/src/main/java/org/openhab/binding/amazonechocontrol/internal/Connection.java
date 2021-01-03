@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1053,15 +1053,30 @@ public class Connection {
         return json;
     }
 
-    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<String> applianceIds)
+    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<SmartHomeBaseDevice> devices)
             throws IOException, URISyntaxException, InterruptedException {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
-        for (String applianceId : applianceIds) {
-            JsonObject stateRequest = new JsonObject();
-            stateRequest.addProperty("entityId", applianceId);
-            stateRequest.addProperty("entityType", "APPLIANCE");
-            stateRequests.add(stateRequest);
+        Map<String, String> mergedApplianceMap = new HashMap<>();
+        for (SmartHomeBaseDevice device : devices) {
+            String applianceId = device.findId();
+            if (applianceId != null) {
+                JsonObject stateRequest;
+                if (device instanceof SmartHomeDevice && !((SmartHomeDevice) device).mergedApplianceIds.isEmpty()) {
+                    for (String idToMerge : ((SmartHomeDevice) device).mergedApplianceIds) {
+                        mergedApplianceMap.put(idToMerge, applianceId);
+                        stateRequest = new JsonObject();
+                        stateRequest.addProperty("entityId", idToMerge);
+                        stateRequest.addProperty("entityType", "APPLIANCE");
+                        stateRequests.add(stateRequest);
+                    }
+                } else {
+                    stateRequest = new JsonObject();
+                    stateRequest.addProperty("entityId", applianceId);
+                    stateRequest.addProperty("entityType", "APPLIANCE");
+                    stateRequests.add(stateRequest);
+                }
+            }
         }
         requestObject.add("stateRequests", stateRequests);
         String requestBody = requestObject.toString();
@@ -1074,10 +1089,21 @@ public class Connection {
         for (JsonElement deviceState : deviceStates) {
             JsonObject deviceStateObject = deviceState.getAsJsonObject();
             JsonObject entity = deviceStateObject.get("entity").getAsJsonObject();
-            String applicanceId = entity.get("entityId").getAsString();
+            String applianceId = entity.get("entityId").getAsString();
             JsonElement capabilityState = deviceStateObject.get("capabilityStates");
             if (capabilityState != null && capabilityState.isJsonArray()) {
-                result.put(applicanceId, capabilityState.getAsJsonArray());
+                String realApplianceId = mergedApplianceMap.get(applianceId);
+                if (realApplianceId != null) {
+                    var capabilityArray = result.get(realApplianceId);
+                    if (capabilityArray != null) {
+                        capabilityArray.addAll(capabilityState.getAsJsonArray());
+                        result.put(realApplianceId, capabilityArray);
+                    } else {
+                        result.put(realApplianceId, capabilityState.getAsJsonArray());
+                    }
+                } else {
+                    result.put(applianceId, capabilityState.getAsJsonArray());
+                }
             }
         }
         return result;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,6 +87,7 @@ public class AVMFritzBindingConstants {
     // List of all Properties
     public static final String PROPERTY_MASTER = "master";
     public static final String PROPERTY_MEMBERS = "members";
+    public static final String PRODUCT_NAME = "productName";
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_SENSORS = "sensors";

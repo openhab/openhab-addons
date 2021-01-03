@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * used across the whole binding.
  *
  * @author Michael Wodniok - Initial contribution
+ * @author Michael Wodniok - Added last_update related constants
  */
 @NonNullByDefault
 public class ICalendarBindingConstants {
@@ -41,6 +42,7 @@ public class ICalendarBindingConstants {
     public static final String CHANNEL_NEXT_EVENT_START = "next_start";
     public static final String CHANNEL_NEXT_EVENT_END = "next_end";
     public static final String CHANNEL_LAST_UPDATE = "last_update";
+    public static final ChannelTypeUID LAST_UPDATE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "last_update");
 
     // additional constants
     public static final int HTTP_TIMEOUT_SECS = 60;

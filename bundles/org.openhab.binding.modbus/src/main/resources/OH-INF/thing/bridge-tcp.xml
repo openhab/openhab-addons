@@ -32,6 +32,12 @@
 				<default>false</default>
 			</parameter>
 
+			<parameter name="rtuEncoded" type="boolean">
+				<label>RTU Encoding</label>
+				<description>Use RTU Encoding over IP</description>
+				<default>false</default>
+			</parameter>
+
 			<!-- connection handling -->
 			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0" unit="ms">
 				<label>Time Between Transactions</label>

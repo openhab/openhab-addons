@@ -20,6 +20,7 @@
     <!-- automation -->
     <module>org.openhab.automation.groovyscripting</module>
     <module>org.openhab.automation.jythonscripting</module>
+    <module>org.openhab.automation.pidcontroller</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
@@ -111,7 +112,9 @@
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
     <module>org.openhab.binding.gce</module>
+    <module>org.openhab.binding.generacmobilelink</module>
     <module>org.openhab.binding.goecharger</module>
+    <module>org.openhab.binding.gpio</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
@@ -285,6 +288,7 @@
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.tibber</module>
+    <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
