@@ -57,6 +57,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
  *
  * @author Kai Kreuzer - Initial contribution and API
  * @author Benjamin Lafois - Replaced tinyB with bluezDbus
+ * @author Peter Rosenberg - Improve notifications
  *
  */
 @NonNullByDefault
@@ -436,6 +437,18 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             }
         });
         return true;
+    }
+
+    @Override
+    public boolean isNotifying(BluetoothCharacteristic characteristic) {
+        BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
+        if (c != null) {
+            Boolean isNotifying = c.isNotifying();
+            return Objects.requireNonNullElse(isNotifying, false);
+        } else {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return false;
+        }
     }
 
     @Override
