@@ -329,7 +329,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         List<Thing> things = getThing().getThings().stream()
                 .filter(thing -> thing.getHandler() instanceof NikobusModuleHandler).collect(Collectors.toList());
 
-        // if there are command listeners then we need an open connection even if no modules exist
+        // if there are command listeners (buttons) then we need an open connection even if no modules exist
         if (!commandListeners.isEmpty()) {
             NikobusConnection connection = this.connection;
             if (connection == null) {
@@ -340,6 +340,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
             } catch (IOException e) {
                 connection.close();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                return;
             }
         }
 
