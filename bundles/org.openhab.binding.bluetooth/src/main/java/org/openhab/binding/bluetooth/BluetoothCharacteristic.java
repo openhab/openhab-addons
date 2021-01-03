@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Cleaned up code
+ * @author Peter Rosenberg - Improve properties support
  */
 public class BluetoothCharacteristic {
     public static final int FORMAT_UINT8 = 0x11;
@@ -142,6 +143,10 @@ public class BluetoothCharacteristic {
         return instance;
     }
 
+    public void setProperties(int properties) {
+        this.properties = properties;
+    }
+
     /**
      * Returns the properties of this characteristic.
      *
@@ -150,6 +155,17 @@ public class BluetoothCharacteristic {
      */
     public int getProperties() {
         return properties;
+    }
+
+    /**
+     * Returns if the given characteristics property is enabled or not.
+     *
+     * @param property one of the Constants BluetoothCharacteristic.PROPERTY_XX
+     * @return true if this characteristic has the given property enabled, false if properties not set or
+     *         the given property is not enabled.
+     */
+    public boolean hasPropertyEnabled(int property) {
+        return (properties & property) != 0;
     }
 
     /**
