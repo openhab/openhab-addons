@@ -128,7 +128,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
      */
     @Override
     public void store(Item item, @Nullable String alias) {
-        // Don not store undefined/uninitialised data
+        // Do not store undefined/uninitialized data
         if (item.getState() instanceof UnDefType) {
             logger.debug("JDBC::store: ignore Item '{}' because it is UnDefType", item.getName());
             return;
@@ -141,8 +141,8 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         }
         long timerStart = System.currentTimeMillis();
         storeItemValue(item);
-        logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(),
-                item.getState().toString(), (new java.util.Date()).toString(), System.currentTimeMillis() - timerStart);
+        logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), item.getState(),
+                new java.util.Date(), System.currentTimeMillis() - timerStart);
     }
 
     @Override
@@ -204,7 +204,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         long timerStart = System.currentTimeMillis();
         List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
 
-        logger.debug("JDBC::query: query for {} returned {} rows in {} ms", item.getName(), items.size(),
+        logger.debug("JDBC::query: query for {} returned {} rows in {} ms", itemName, items.size(),
                 System.currentTimeMillis() - timerStart);
 
         // Success
