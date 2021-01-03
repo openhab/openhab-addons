@@ -51,34 +51,84 @@ public class BoschHttpClient extends HttpClient {
 
     private final Logger logger = LoggerFactory.getLogger(BoschHttpClient.class);
 
-    private String ipAddress;
-    private String systempassword;
+    private final String ipAddress;
+    private final String systemPassword;
 
-    public BoschHttpClient(String ipAddress, String systempassword, SslContextFactory sslContextFactory) {
+    public BoschHttpClient(String ipAddress, String systemPassword, SslContextFactory sslContextFactory) {
         super(sslContextFactory);
         this.ipAddress = ipAddress;
-        this.systempassword = systempassword;
+        this.systemPassword = systemPassword;
     }
 
-    private String getCertFromSslContextFactory() throws KeyStoreException, CertificateEncodingException {
-        Certificate cert = this.getSslContextFactory().getKeyStore().getCertificate(BoschSslUtil.getBoschSHCId());
-        return Base64.getEncoder().encodeToString(cert.getEncoded());
+    /**
+     * Returns the pairing URL for the Bosch SHC clients, using port 8443.
+     * See https://github.com/BoschSmartHome/bosch-shc-api-docs/blob/master/postman/README.md
+     * 
+     * @return URL for pairing
+     */
+    public String getPairingUrl() {
+        return String.format("https://%s:8443/smarthome/clients", this.ipAddress);
     }
 
+    /**
+     * Returns a Bosch SHC URL for the endpoint, using port 8444.
+     * 
+     * @param endpoint a endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
+     * @return Bosch SHC URL for passed endpoint
+     */
+    public String getBoschShcUrl(String endpoint) {
+        return String.format("https://%s:8444/%s", this.ipAddress, endpoint);
+    }
+
+    /**
+     * Returns a SmartHome URL for the endpoint - shortcut of {@link BoschSslUtil::getBoschShcUrl()}
+     * 
+     * @param endpoint a endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
+     * @return SmartHome URL for passed endpoint
+     */
+    public String getBoschSmartHomeUrl(String endpoint) {
+        return this.getBoschShcUrl(String.format("smarthome/%s", endpoint));
+    }
+
+    /**
+     * Returns a device & service URL.
+     * see https://apidocs.bosch-smarthome.com/local/index.html
+     * 
+     * @param serviceName the name of the service
+     * @param deviceId the device identifier
+     * @return SmartHome URL for passed endpoint
+     */
+    public String getServiceUrl(String serviceName, String deviceId) {
+        return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
+    }
+
+    /**
+     * Checks if the Bosch SHC can be accessed.
+     * 
+     * @return true if HTTP access was successful
+     * @throws InterruptedException in case of an interrupt
+     */
     public boolean isAccessPossible() throws InterruptedException {
         try {
-            String url = this.createSmartHomeUrl("devices");
+            String url = this.getBoschSmartHomeUrl("devices");
             Request request = this.createRequest(url, GET);
             ContentResponse contentResponse = request.send();
             String content = contentResponse.getContentAsString();
             logger.debug("Access check response complete: {} - return code: {}", content, contentResponse.getStatus());
             return true;
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException | NullPointerException e) {
             logger.debug("Access check response failed because of {}!", e.getMessage());
             return false;
         }
     }
 
+    /**
+     * Pairs this client with the Bosch SHC.
+     * Press pairing button on the Bosch Smart Home Controller!
+     * 
+     * @return true if pairing was successful, otherwise false
+     * @throws InterruptedException in case of an interrupt
+     */
     public boolean doPairing() throws InterruptedException {
         logger.trace("Starting pairing openHAB Client with Bosch SmartHomeController!");
         logger.trace("Please press the Bosch SHC button until LED starts blinking");
@@ -97,9 +147,9 @@ public class BoschHttpClient extends HttpClient {
             items.put("primaryRole", "ROLE_RESTRICTED_CLIENT");
             items.put("certificate", "-----BEGIN CERTIFICATE-----\r" + publicCert + "\r-----END CERTIFICATE-----");
 
-            String url = this.createPairingUrl();
+            String url = this.getPairingUrl();
             Request request = this.createRequest(url, HttpMethod.POST, items).header("Systempassword",
-                    Base64.getEncoder().encodeToString(systempassword.getBytes(StandardCharsets.UTF_8)));
+                    Base64.getEncoder().encodeToString(this.systemPassword.getBytes(StandardCharsets.UTF_8)));
 
             contentResponse = request.send();
 
@@ -112,7 +162,7 @@ public class BoschHttpClient extends HttpClient {
                 logger.info("Pairing failed with response status {}.", contentResponse.getStatus());
                 return false;
             }
-        } catch (TimeoutException | CertificateEncodingException | KeyStoreException e) {
+        } catch (TimeoutException | CertificateEncodingException | KeyStoreException | NullPointerException e) {
             logger.warn("Pairing failed with exception {}", e.getMessage());
             return false;
         } catch (ExecutionException e) {
@@ -124,26 +174,25 @@ public class BoschHttpClient extends HttpClient {
         }
     }
 
-    public String createPairingUrl() {
-        return String.format("https://%s:8443/smarthome/clients", this.ipAddress);
-    }
-
-    public String createUrl(String endpoint) {
-        return String.format("https://%s:8444/%s", this.ipAddress, endpoint);
-    }
-
-    public String createSmartHomeUrl(String endpoint) {
-        return this.createUrl(String.format("smarthome/%s", endpoint));
-    }
-
-    public String createServiceUrl(String serviceName, String deviceId) {
-        return this.createSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
-    }
-
+    /**
+     * Creates a HTTP request.
+     * 
+     * @param url for the HTTP request
+     * @param method for the HTTP request
+     * @return created HTTP request instance
+     */
     public Request createRequest(String url, HttpMethod method) {
         return this.createRequest(url, method, null);
     }
 
+    /**
+     * Creates a HTTP request.
+     * 
+     * @param url for the HTTP request
+     * @param method for the HTTP request
+     * @param content for the HTTP request
+     * @return created HTTP request instance
+     */
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
         if (content != null) {
@@ -165,9 +214,9 @@ public class BoschHttpClient extends HttpClient {
      * 
      * @param request Request to send
      * @param responseContentClass Type of expected response
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
+     * @throws ExecutionException in case of invalid HTTP request result
+     * @throws TimeoutException in case of an HTTP request timeout
+     * @throws InterruptedException in case of an interrupt
      */
     public <TContent> TContent sendRequest(Request request, Class<TContent> responseContentClass)
             throws InterruptedException, TimeoutException, ExecutionException {
@@ -188,5 +237,10 @@ public class BoschHttpClient extends HttpClient {
             throw new ExecutionException(String.format("Received invalid content in response, expected type %s: %s",
                     responseContentClass.getName(), e.getMessage()), e);
         }
+    }
+
+    private String getCertFromSslContextFactory() throws KeyStoreException, CertificateEncodingException {
+        Certificate cert = this.getSslContextFactory().getKeyStore().getCertificate(BoschSslUtil.getBoschSHCId());
+        return Base64.getEncoder().encodeToString(cert.getEncoded());
     }
 }

@@ -106,7 +106,7 @@ public class LongPolling {
      */
     private String subscribe(BoschHttpClient httpClient) throws LongPollingFailedException {
         try {
-            String url = httpClient.createUrl("remote/json-rpc");
+            String url = httpClient.getBoschShcUrl("remote/json-rpc");
             JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe",
                     new String[] { "com/bosch/sh/remote/*", null });
             logger.debug("Subscribe: Sending request: {} - using httpClient {}", gson.toJson(request), httpClient);
@@ -132,7 +132,7 @@ public class LongPolling {
         logger.debug("Sending long poll request");
 
         JsonRpcRequest requestContent = new JsonRpcRequest("2.0", "RE/longPoll", new String[] { subscriptionId, "20" });
-        String url = httpClient.createUrl("remote/json-rpc");
+        String url = httpClient.getBoschShcUrl("remote/json-rpc");
         Request request = httpClient.createRequest(url, POST, requestContent);
 
         // Long polling responds after 20 seconds with an empty response if no update has happened.

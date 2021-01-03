@@ -1,16 +1,28 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
+import java.nio.file.Paths;
+import java.security.KeyStore;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
-
-import java.io.File;
-import java.nio.file.Paths;
-import java.security.KeyStore;
 
 /**
  * Tests cases for {@link BoschSslUtil}.
@@ -21,21 +33,21 @@ import java.security.KeyStore;
 class BoschSslUtilTest {
 
     @BeforeAll
-    static void before() {
-        // Use temp folder for userdata folder
-        String tmpDir = System.getProperty("java.io.tmpdir");
-        System.setProperty("openhab.userdata", tmpDir != null ? tmpDir : "/tmp");
+    static void beforeAll() {
+        prepareTempFolderForKeyStore();
     }
 
-    private void prepareTempDir() {
+    public static void prepareTempFolderForKeyStore() {
+        // Use temp folder for userdata folder
         String tmpDir = System.getProperty("java.io.tmpdir");
         tmpDir = tmpDir != null ? tmpDir : "/tmp";
+        System.setProperty("openhab.userdata", tmpDir);
+        // prepare temp folder on local drive
         File tempDir = Paths.get(tmpDir, "etc").toFile();
-        if (!tempDir.exists()){
+        if (!tempDir.exists()) {
             assertTrue(tempDir.mkdirs());
         }
     }
-
 
     @Test
     void getBoschSHCId() {
@@ -53,12 +65,11 @@ class BoschSslUtilTest {
      */
     @Test
     void keyStoreAndFactory() throws PairingFailedException {
-        prepareTempDir();
 
         // remote old, existing jks
         File keyStoreFile = new File(BoschSslUtil.getKeystorePath());
         keyStoreFile.deleteOnExit();
-        if(keyStoreFile.exists()) {
+        if (keyStoreFile.exists()) {
             assertTrue(keyStoreFile.delete());
         }
 
@@ -79,5 +90,4 @@ class BoschSslUtilTest {
         SslContextFactory factory = sslUtil.getSslContextFactory();
         assertNotNull(factory);
     }
-
 }

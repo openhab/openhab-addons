@@ -67,6 +67,7 @@ public class BoschSslUtil {
     public static String getBoschSHCId() {
         return OSS_OPENHAB_BINDING + "_" + InstanceUUID.get();
     }
+
     public static String getKeystorePath() {
         return Paths.get(OpenHAB.getUserDataFolder(), "etc", getBoschSHCId() + ".jks").toString();
     }
@@ -107,7 +108,9 @@ public class BoschSslUtil {
             } else {
                 // load keystore as a first check
                 KeyStore keyStore = KeyStore.getInstance("JKS");
-                keyStore.load(new FileInputStream(file), keystorePassword.toCharArray());
+                try (FileInputStream streamKeystore = new FileInputStream(file)) {
+                    keyStore.load(streamKeystore, keystorePassword.toCharArray());
+                }
                 logger.debug("Using existing keystore {}", keystorePath);
                 return keyStore;
             }
