@@ -57,7 +57,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
  *
  * @author Kai Kreuzer - Initial contribution and API
  * @author Benjamin Lafois - Replaced tinyB with bluezDbus
- * @author Peter Rosenberg - Improve notifications
+ * @author Peter Rosenberg - Improve notifications and properties support
  *
  */
 @NonNullByDefault
@@ -400,6 +400,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                 for (BluetoothGattCharacteristic dBusBlueZCharacteristic : dBusBlueZService.getGattCharacteristics()) {
                     BluetoothCharacteristic characteristic = new BluetoothCharacteristic(
                             UUID.fromString(dBusBlueZCharacteristic.getUuid()), 0);
+                    convertCharacteristicProperties(dBusBlueZCharacteristic, characteristic);
 
                     for (BluetoothGattDescriptor dBusBlueZDescriptor : dBusBlueZCharacteristic.getGattDescriptors()) {
                         BluetoothDescriptor descriptor = new BluetoothDescriptor(characteristic,
@@ -413,6 +414,35 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
         return true;
+    }
+
+    private void convertCharacteristicProperties(BluetoothGattCharacteristic dBusBlueZCharacteristic, BluetoothCharacteristic characteristic) {
+        int properties = 0;
+
+        for (String property : dBusBlueZCharacteristic.getFlags()) {
+            switch (property) {
+                case "broadcast":
+                    properties |= BluetoothCharacteristic.PROPERTY_BROADCAST;
+                    break;
+                case "read":
+                    properties |= BluetoothCharacteristic.PROPERTY_READ;
+                    break;
+                case "write-without-response":
+                    properties |= BluetoothCharacteristic.PROPERTY_WRITE_NO_RESPONSE;
+                    break;
+                case "write":
+                    properties |= BluetoothCharacteristic.PROPERTY_WRITE;
+                    break;
+                case "notify":
+                    properties |= BluetoothCharacteristic.PROPERTY_NOTIFY;
+                    break;
+                case "indicate":
+                    properties |= BluetoothCharacteristic.PROPERTY_INDICATE;
+                    break;
+            }
+        }
+
+        characteristic.setProperties(properties);
     }
 
     @Override
