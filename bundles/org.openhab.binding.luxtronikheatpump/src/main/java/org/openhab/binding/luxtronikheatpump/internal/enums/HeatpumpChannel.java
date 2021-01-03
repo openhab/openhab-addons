@@ -433,7 +433,7 @@ public enum HeatpumpChannel {
     CHANNEL_WMZ_SCHWIMMBAD(153, "WMZ_Schwimmbad", NumberItem.class, Units.KILOWATT_HOUR, false,
             HeatpumpVisibility.SCHWIMMBAD),
 
-    // Wärmemengenzähler Gesamt
+    // Wärmemengenzähler seit Reset
     CHANNEL_WMZ_SEIT(154, "WMZ_Seit", NumberItem.class, Units.KILOWATT_HOUR, false, null),
 
     // Wärmemengenzähler Durchfluss
