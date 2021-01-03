@@ -151,6 +151,10 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | `wanTotalBytesSent`        | `Number:DataAmount`       |     x    | Total Bytes Sent                                               |
 
 
+Parameters that accept lists (e.g. `macOnline`, `wanBlockIPs`) can contain comments.
+Comments are separated from the value with a '#' (e.g. `192.168.0.77 # Daughter's iPhone`).
+The full string is used for the channel label.
+
 ### Channel `callList`
 
 Call lists are provided for one or more days (as configured) as JSON.

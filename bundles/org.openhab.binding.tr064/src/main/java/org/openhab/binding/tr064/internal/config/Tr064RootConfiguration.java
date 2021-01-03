@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.tr064.internal.config;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,14 +28,15 @@ public class Tr064RootConfiguration extends Tr064BaseThingConfiguration {
     public String password = "";
 
     /* following parameters only available in fritzbox thing */
-    public List<String> tamIndices = Collections.emptyList();
-    public List<String> callDeflectionIndices = Collections.emptyList();
-    public List<String> missedCallDays = Collections.emptyList();
-    public List<String> rejectedCallDays = Collections.emptyList();
-    public List<String> inboundCallDays = Collections.emptyList();
-    public List<String> outboundCallDays = Collections.emptyList();
-    public List<String> callListDays = Collections.emptyList();
-    public int phonebookInterval = 0;
+    public List<String> tamIndices = List.of();
+    public List<String> callDeflectionIndices = List.of();
+    public List<String> missedCallDays = List.of();
+    public List<String> rejectedCallDays = List.of();
+    public List<String> inboundCallDays = List.of();
+    public List<String> outboundCallDays = List.of();
+    public List<String> callListDays = List.of();
+    public List<String> wanBlockIPs = List.of();
+    public int phonebookInterval = 600;
 
     public boolean isValid() {
         return !host.isEmpty() && !user.isEmpty() && !password.isEmpty();
