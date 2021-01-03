@@ -71,9 +71,12 @@ public class DeviceTest {
 
         device.setMessageList(Collections.emptyList());
 
+        // Nothing should get changed.
+        // New messages are only set in real-life when the device is refreshed with new data of the API.
+        // Therefore the data of the API should be kept / not overwritten when no corresponding messages are available.
         assertEquals(Collections.emptyList(), device.getMessageList());
-        assertTrue(device.isReachable());
-        assertFalse(device.hasLowBattery());
+        assertFalse(device.isReachable());
+        assertTrue(device.hasLowBattery());
     }
 
     @Test
@@ -94,9 +97,12 @@ public class DeviceTest {
 
         device.setMessageList(null);
 
+        // Nothing should get changed.
+        // New messages are only set in real-life when the device is refreshed with new data of the API.
+        // Therefore the data of the API should be kept / not overwritten when no corresponding messages are available.
         assertNull(device.getMessageList());
-        assertTrue(device.isReachable());
-        assertFalse(device.hasLowBattery());
+        assertFalse(device.isReachable());
+        assertTrue(device.hasLowBattery());
     }
 
     @Test
@@ -118,9 +124,12 @@ public class DeviceTest {
         messages = Collections.singletonList(createMessage("UNKNOWN"));
         device.setMessageList(messages);
 
+        // Nothing should get changed.
+        // New messages are only set in real-life when the device is refreshed with new data of the API.
+        // Therefore the data of the API should be kept / not overwritten when no corresponding messages are available.
         assertEquals(messages, device.getMessageList());
-        assertTrue(device.isReachable());
-        assertFalse(device.hasLowBattery());
+        assertFalse(device.isReachable());
+        assertTrue(device.hasLowBattery());
     }
 
     @Test

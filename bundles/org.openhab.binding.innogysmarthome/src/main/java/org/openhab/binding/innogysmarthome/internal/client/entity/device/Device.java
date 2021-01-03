@@ -350,21 +350,28 @@ public class Device {
     }
 
     private void applyMessageList(List<Message> messageList) {
-        final List<Message> messages = Objects.requireNonNullElse(messageList, Collections.emptyList());
-        boolean isReachable = true;
-        boolean isLowBattery = false;
-        for (final Message message : messages) {
-            switch (message.getType()) {
-                case Message.TYPE_DEVICE_UNREACHABLE:
-                    isReachable = false;
-                    break;
-                case Message.TYPE_DEVICE_LOW_BATTERY:
-                    isLowBattery = true;
-                    break;
+        if (messageList != null && !messageList.isEmpty()) {
+            boolean isUnreachableMessageFound = false;
+            boolean isLowBatteryMessageFound = false;
+            for (final Message message : messageList) {
+                switch (message.getType()) {
+                    case Message.TYPE_DEVICE_UNREACHABLE:
+                        isUnreachableMessageFound = true;
+                        break;
+                    case Message.TYPE_DEVICE_LOW_BATTERY:
+                        isLowBatteryMessageFound = true;
+                        break;
+                }
+            }
+            if (isUnreachableMessageFound) {
+                setReachable(false); // overwrite only when there is a corresponding message (to keep the state of the
+                                     // API in other cases)
+            }
+            if (isLowBatteryMessageFound) {
+                setLowBattery(true); // overwrite only when there is a corresponding message (to keep the state of the
+                                     // API in other cases)
             }
         }
-        setReachable(isReachable);
-        setLowBattery(isLowBattery);
     }
 
     /**
