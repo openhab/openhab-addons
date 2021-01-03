@@ -25,19 +25,15 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BroadlinkThermostatHandlerFactory} is responsible for creating things and thing handlers.
  *
- * @author Gerhard Riegler - Initial contribution
+ * @author Florian Mueller - Initial contribution
  */
 @Component(configurationPid = "binding.broadlinkthermostat", service = ThingHandlerFactory.class)
 @NonNullByDefault
 public class BroadlinkThermostatHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkThermostatHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
             HYSEN_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);

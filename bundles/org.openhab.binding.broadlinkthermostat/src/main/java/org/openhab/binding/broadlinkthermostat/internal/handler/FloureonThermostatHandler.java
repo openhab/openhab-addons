@@ -66,16 +66,17 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     @Override
     public void initialize() {
         super.initialize();
-        try {
-            blDevice = new FloureonDevice(host, new Mac(mac));
-            this.floureonDevice = (FloureonDevice) blDevice;
-        } catch (IOException e) {
-            logger.error("Could not find broadlinkthermostat device at Host {} with MAC {} ", host, mac, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not find broadlinkthermostat device at host" + host + "with MAC+" + mac + ": "
-                            + e.getMessage());
+        if (host != null && macAddress != null) {
+            try {
+                blDevice = new FloureonDevice(host, new Mac(macAddress));
+                this.floureonDevice = (FloureonDevice) blDevice;
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not find broadlinkthermostat device at host" + host + "with MAC+" + macAddress + ": "
+                                + e.getMessage());
+            }
+            authenticate();
         }
-        authenticate();
     }
 
     @Override
@@ -112,7 +113,9 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handlePowerCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof OnOffType) {
+        @Nullable
+        FloureonDevice floureonDevice = this.floureonDevice;
+        if (command instanceof OnOffType && floureonDevice != null) {
             try {
                 floureonDevice.setPower(command == OnOffType.ON);
             } catch (Exception e) {
@@ -124,7 +127,9 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleModeCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof StringType) {
+        @Nullable
+        FloureonDevice floureonDevice = this.floureonDevice;
+        if (command instanceof StringType && floureonDevice != null) {
             try {
                 if (MODE_AUTO.equals(command.toFullString())) {
                     floureonDevice.switchToAuto();
@@ -132,7 +137,7 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
                     floureonDevice.switchToManual();
                 }
             } catch (Exception e) {
-                logger.error("Error while setting power of {} to {}", thing.getUID(), command, e);
+                logger.warn("Error while setting power off {} to {}: {}", thing.getUID(), command, e.getMessage());
             }
         } else {
             logger.warn("Channel {} does not support command {}", channelUID, command);
@@ -140,24 +145,32 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleSetpointCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof QuantityType) {
+        @Nullable
+        FloureonDevice floureonDevice = this.floureonDevice;
+        if (command instanceof QuantityType && floureonDevice != null) {
             try {
-                QuantityType<Temperature> temperatureQuantityType = ((QuantityType) command).toUnit(SIUnits.CELSIUS);
+                @Nullable
+                @SuppressWarnings("unchecked")
+                QuantityType<Temperature> temperatureQuantityType = ((QuantityType<Temperature>) command)
+                        .toUnit(SIUnits.CELSIUS);
                 if (temperatureQuantityType != null) {
                     floureonDevice.setThermostatTemp(temperatureQuantityType.doubleValue());
                 } else {
                     logger.warn("Could not convert {} to °C", command);
                 }
             } catch (Exception e) {
-                logger.error("Error while setting setpoint of {} to {}", thing.getUID(), command, e);
+                logger.warn("Error while setting setpoint of {} to {}: {}", thing.getUID(), command, e.getMessage());
             }
+
         } else {
             logger.warn("Channel {} does not support command {}", channelUID, command);
         }
     }
 
     private void handleSensorCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof StringType) {
+        @Nullable
+        FloureonDevice floureonDevice = this.floureonDevice;
+        if (command instanceof StringType && floureonDevice != null) {
             try {
                 BaseStatusInfo statusInfo = floureonDevice.getBasicStatus();
                 if (SENSOR_INTERNAL.equals(command.toFullString())) {
@@ -169,7 +182,7 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
                             SensorControl.INTERNAL_TEMP_EXTERNAL_LIMIT);
                 }
             } catch (Exception e) {
-                logger.error("Error while trying to set sensor mode {}: ", command, e);
+                logger.warn("Error while trying to set sensor mode {}: {}", command, e.getMessage());
             }
         } else {
             logger.warn("Channel {} does not support command {}", channelUID, command);
@@ -177,11 +190,13 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleRemoteLockCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof OnOffType) {
+        @Nullable
+        FloureonDevice floureonDevice = this.floureonDevice;
+        if (command instanceof OnOffType && floureonDevice != null) {
             try {
                 floureonDevice.setLock(command == OnOffType.ON);
             } catch (Exception e) {
-                logger.error("Error while setting remote lock of {} to {}", thing.getUID(), command, e);
+                logger.warn("Error while setting remote lock of {} to {}: {}", thing.getUID(), command, e.getMessage());
             }
         } else {
             logger.warn("Channel {} does not support command {}", channelUID, command);
@@ -196,7 +211,7 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
                         tob(zonedDateTime.getSecond()), tob(zonedDateTime.getDayOfWeek().getValue()))
                                 .execute(floureonDevice);
             } catch (Exception e) {
-                logger.error("Error while setting time of {} to {}", thing.getUID(), command, e);
+                logger.warn("Error while setting time of {} to {}: {}", thing.getUID(), command, e.getMessage());
             }
         } else {
             logger.warn("Channel {} does not support command {}", channelUID, command);
@@ -208,37 +223,36 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
         if (ThingStatus.ONLINE != thing.getStatus()) {
             return;
         }
-        try {
-            AdvancedStatusInfo advancedStatusInfo = floureonDevice.getAdvancedStatus();
-            if (advancedStatusInfo == null) {
-                logger.warn("Device {} did not return any data. Trying to reauthenticate...", thing.getUID());
-                authenticate();
-                advancedStatusInfo = floureonDevice.getAdvancedStatus();
+
+        @Nullable
+        FloureonDevice floureonDevice = this.floureonDevice;
+        if (floureonDevice != null) {
+            try {
+                AdvancedStatusInfo advancedStatusInfo = floureonDevice.getAdvancedStatus();
+                if (advancedStatusInfo == null) {
+                    logger.warn("Device {} did not return any data. Trying to reauthenticate...", thing.getUID());
+                    authenticate();
+                    advancedStatusInfo = floureonDevice.getAdvancedStatus();
+                }
+                if (advancedStatusInfo == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
+                    return;
+                }
+                logger.trace("Retrieved data from device {}: {}", thing.getUID(), advancedStatusInfo);
+                updateState(ROOM_TEMPERATURE, new QuantityType<>(advancedStatusInfo.getRoomTemp(), SIUnits.CELSIUS));
+                updateState(ROOM_TEMPERATURE_EXTERNAL_SENSOR,
+                        new QuantityType<>(advancedStatusInfo.getExternalTemp(), SIUnits.CELSIUS));
+                updateState(SETPOINT, new QuantityType<>(advancedStatusInfo.getThermostatTemp(), SIUnits.CELSIUS));
+                updateState(POWER, OnOffType.from(advancedStatusInfo.getPower()));
+                updateState(MODE, StringType.valueOf(advancedStatusInfo.getAutoMode() ? "auto" : "manual"));
+                updateState(SENSOR, StringType.valueOf(advancedStatusInfo.getSensorControl().name()));
+                updateState(TEMPERATURE_OFFSET, new QuantityType<>(advancedStatusInfo.getDif(), SIUnits.CELSIUS));
+                updateState(ACTIVE, OnOffType.from(advancedStatusInfo.getActive()));
+                updateState(REMOTE_LOCK, OnOffType.from(advancedStatusInfo.getRemoteLock()));
+                updateState(TIME, new DateTimeType(getTimestamp(advancedStatusInfo)));
+            } catch (Exception e) {
+                logger.warn("Error while retrieving data for {}: {}", thing.getUID(), e.getMessage());
             }
-            if (advancedStatusInfo == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
-                return;
-            }
-            logger.debug("Retrieved data from device {}: {}", thing.getUID(), advancedStatusInfo);
-            logger.debug("Updating channel {} with value {}", ROOM_TEMPERATURE,
-                    new DecimalType(advancedStatusInfo.getRoomTemp()));
-            logger.debug("Mode {}", StringType.valueOf(advancedStatusInfo.getAutoMode() ? "auto" : "manual"));
-            updateState(ROOM_TEMPERATURE, new DecimalType(advancedStatusInfo.getRoomTemp()));
-            logger.debug("Updating channel {} with value {}", ROOM_TEMPERATURE_EXTERNAL_SENSOR,
-                    new DecimalType(advancedStatusInfo.getExternalTemp()));
-            updateState(ROOM_TEMPERATURE_EXTERNAL_SENSOR, new DecimalType(advancedStatusInfo.getExternalTemp()));
-            updateState(SETPOINT, new DecimalType(advancedStatusInfo.getThermostatTemp()));
-            updateState(POWER, OnOffType.from(advancedStatusInfo.getPower()));
-            updateState(MODE, StringType.valueOf(advancedStatusInfo.getAutoMode() ? "auto" : "manual"));
-            updateState(SENSOR, StringType.valueOf(advancedStatusInfo.getSensorControl().name()));
-            logger.debug("Updating channel {} with value {}", SENSOR,
-                    new StringType(advancedStatusInfo.getSensorControl().name()));
-            updateState(TEMPERATURE_OFFSET, new DecimalType(advancedStatusInfo.getDif()));
-            updateState(ACTIVE, OnOffType.from(advancedStatusInfo.getActive()));
-            updateState(REMOTE_LOCK, OnOffType.from(advancedStatusInfo.getRemoteLock()));
-            updateState(TIME, new DateTimeType(getTimestamp(advancedStatusInfo)));
-        } catch (Exception e) {
-            logger.error("Error while retrieving data for {}", thing.getUID(), e);
         }
     }
 

@@ -11,7 +11,7 @@
 			<description>The hostname/IP address the device is bound to, e.g. 192.168.0.2</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="mac" type="text" required="true">
+		<parameter name="macAddress" type="text" required="true">
 			<label>MAC Address</label>
 			<description>The unique MAC address of the device, e.g. 00:10:FA:6E:38:4A</description>
 		</parameter>

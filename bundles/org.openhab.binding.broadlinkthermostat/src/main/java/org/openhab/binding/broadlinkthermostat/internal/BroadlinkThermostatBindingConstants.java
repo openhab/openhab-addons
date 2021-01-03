@@ -50,8 +50,6 @@ public class BroadlinkThermostatBindingConstants {
     public static final String DESCRIPTION = "description";
 
     public static final String MODE_AUTO = "auto";
-    public static final String MODE_MANUAL = "manual";
     public static final String SENSOR_INTERNAL = "internal";
     public static final String SENSOR_EXTERNAL = "external";
-    public static final String SENSOR_INTERNAL_TEMP_EXTERNAL_LIMIT = "internal_temp_external_limit";
 }

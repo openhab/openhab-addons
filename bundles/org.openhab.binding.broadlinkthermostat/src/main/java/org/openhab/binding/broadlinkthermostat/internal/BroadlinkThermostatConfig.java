@@ -23,11 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BroadlinkThermostatConfig {
     private String host;
-    private String mac;
+    private String macAddress;
 
     public BroadlinkThermostatConfig() {
         this.host = "0.0.0.0";
-        this.mac = "00:00:00:00";
+        this.macAddress = "00:00:00:00";
     }
 
     public String getHost() {
@@ -38,11 +38,11 @@ public class BroadlinkThermostatConfig {
         this.host = host;
     }
 
-    public String getMac() {
-        return mac;
+    public String getMacAddress() {
+        return macAddress;
     }
 
-    public void setMac(String mac) {
-        this.mac = mac;
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 }

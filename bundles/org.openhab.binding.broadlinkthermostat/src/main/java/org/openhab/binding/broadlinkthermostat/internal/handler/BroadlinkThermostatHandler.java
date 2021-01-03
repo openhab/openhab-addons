@@ -41,9 +41,10 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
     @Nullable
     BLDevice blDevice;
     private @Nullable ScheduledFuture<?> scanJob;
-    protected @Nullable String host;
     @Nullable
-    String mac;
+    String host;
+    @Nullable
+    String macAddress;
 
     /**
      * Creates a new instance of this class for the {@link Thing}.
@@ -57,7 +58,9 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
     void authenticate() {
         logger.debug("Authenticating with broadlinkthermostat device {}...", thing.getLabel());
         try {
-            if (blDevice.auth()) {
+            @Nullable
+            BLDevice blDevice = this.blDevice;
+            if (blDevice != null && blDevice.auth()) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
@@ -70,7 +73,7 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
     public void initialize() {
         BroadlinkThermostatConfig config = getConfigAs(BroadlinkThermostatConfig.class);
         host = config.getHost();
-        mac = config.getMac();
+        macAddress = config.getMacAddress();
 
         // schedule a new scan every minute
         scanJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, 1, TimeUnit.MINUTES);
@@ -80,8 +83,10 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (scanJob != null) {
-            scanJob.cancel(true);
+        @Nullable
+        ScheduledFuture<?> currentScanJob = scanJob;
+        if (currentScanJob != null) {
+            currentScanJob.cancel(true);
         }
     }
 }
