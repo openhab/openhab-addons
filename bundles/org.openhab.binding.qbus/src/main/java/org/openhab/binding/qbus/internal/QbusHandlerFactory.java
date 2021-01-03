@@ -14,6 +14,8 @@ package org.openhab.binding.qbus.internal;
 
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusBistabielHandler;
 import org.openhab.binding.qbus.internal.handler.QbusCO2Handler;
 import org.openhab.binding.qbus.internal.handler.QbusDimmerHandler;
@@ -36,6 +38,8 @@ import org.osgi.service.component.annotations.Component;
  */
 
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.qbus")
+
+@NonNullByDefault
 public class QbusHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
@@ -44,7 +48,7 @@ public class QbusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         if (BRIDGE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             QbusBridgeHandler handler = new QbusBridgeHandler((Bridge) thing);
             return handler;

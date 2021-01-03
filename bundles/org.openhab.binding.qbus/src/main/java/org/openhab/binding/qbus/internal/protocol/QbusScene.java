@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Koen Schockaert - Initial Contribution
  */
+
 @NonNullByDefault
 public final class QbusScene {
 
@@ -31,13 +32,13 @@ public final class QbusScene {
     @Nullable
     private QbusCommunication QComm;
 
-    private int id = 0;
+    private String id = "";
     private Integer state = 0;
 
     @Nullable
     private QbusSceneHandler thingHandler;
 
-    QbusScene(int id) {
+    QbusScene(String id) {
         this.id = id;
     }
 
@@ -81,7 +82,7 @@ public final class QbusScene {
         this.state = state;
         QbusSceneHandler handler = thingHandler;
         if (handler != null) {
-            logger.debug("Qbus: update channel state for {} with {}", id, state);
+            logger.info("Update channel state for {} with {}", id, state);
             handler.handleStateUpdate(this);
         }
     }
@@ -89,11 +90,10 @@ public final class QbusScene {
     /**
      * Sends action to Qbus.
      */
-    public void execute(int val, String sn) {
-        logger.debug("Qbus: execute scene for {} on CTD {}", this.id, sn);
+    public void execute(int value, String sn) {
+        logger.info("Execute scene for {} ", this.id);
 
-        QMessageCmd QCmd = new QMessageCmd("executescene", this.id, val).withSn(sn);
-        ;
+        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeScene").withId(this.id).withState(value);
 
         QbusCommunication comm = QComm;
         if (comm != null) {

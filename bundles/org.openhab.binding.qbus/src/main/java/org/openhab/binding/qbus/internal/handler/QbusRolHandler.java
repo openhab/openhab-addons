@@ -16,18 +16,16 @@ import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
 import org.openhab.binding.qbus.internal.protocol.QbusRol;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +36,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Koen Schockaert - Initial Contribution
  */
+
 @NonNullByDefault
-public class QbusRolHandler extends BaseThingHandler {
+public class QbusRolHandler extends QbusGlobalHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QbusRolHandler.class);
 
@@ -47,89 +46,102 @@ public class QbusRolHandler extends BaseThingHandler {
         super(thing);
     }
 
+    protected @Nullable QbusThingsConfig config;
+
+    int rolId = 0;
+
+    String sn = "";
+
+    /**
+     * Main initialization
+     */
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        Integer RolId = ((Number) this.getConfig().get(CONFIG_ROLLERSHUTTER_ID)).intValue();
+    public void initialize() {
 
-        Bridge QBridge = getBridge();
-        if (QBridge == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Qbus: no bridge initialized when trying to execute Slats " + RolId);
-            return;
-        }
-        QbusBridgeHandler QBridgeHandler = (QbusBridgeHandler) QBridge.getHandler();
-        if (QBridgeHandler == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Qbus: no bridge initialized when trying to execute Slats " + RolId);
-            return;
-        }
-        QbusCommunication QComm = QBridgeHandler.getCommunication();
+        setConfig();
+        rolId = getId();
 
+        QbusCommunication QComm = getCommunication("Screen/Store", rolId);
         if (QComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Qbus: bridge communication not initialized when trying to execute Slats " + RolId);
+                    "No communication with Qbus Bridge!");
             return;
         }
 
-        QbusRol QRol = QComm.getRol().get(RolId);
+        QbusBridgeHandler QBridgeHandler = getBridgeHandler("Screen/Store", rolId);
+        if (QBridgeHandler == null) {
+            return;
+        }
+
+        QbusRol QRol = QComm.getRol().get(rolId);
+
+        sn = QBridgeHandler.getSn();
 
         if (QRol != null) {
-            if (QComm.communicationActive()) {
-                handleCommandSelection(QRol, channelUID, command);
-            } else {
-                // We lost connection but the connection object is there, so was correctly started.
-                // Try to restart communication.
-                // This can be expensive, therefore do it in a job.
-                scheduler.submit(() -> {
-                    QComm.restartCommunication();
-                    // If still not active, take thing offline and return.
-                    if (!QComm.communicationActive()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Qbus: communication socket error");
-                        return;
-                    }
-                    // Also put the bridge back online
-                    QBridgeHandler.bridgeOnline();
-
-                    // And finally handle the command
-                    handleCommandSelection(QRol, channelUID, command);
-                });
-            }
+            QRol.setThingHandler(this);
+            handleStateUpdate(QRol);
+            logger.info("Screen/Store intialized {}", rolId);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Qbus: RolId " + RolId + " does not match a ROL in the controller");
-            return;
+            logger.warn("Screen/Store not intialized {}", rolId);
         }
     }
 
-    private void handleCommandSelection(QbusRol qRol, ChannelUID channelUID, Command command) {
-        logger.debug("Qbus: handle command {} for {}", command, channelUID);
+    /**
+     * Handle the status update from the thing
+     */
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        QbusCommunication QComm = getCommunication("Screen/Store", rolId);
 
-        if (command == REFRESH) {
-            handleStateUpdate(qRol);
+        if (QComm == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Bridge communication not initialized when trying to execute command for Screen/Store " + rolId);
             return;
         }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_ROLLERSHUTTER:
-                handleBrightnessCommand(qRol, command);
-                updateStatus(ThingStatus.ONLINE);
-                break;
+        QbusRol QRol = QComm.getRol().get(rolId);
 
-            case CHANNEL_SLATS:
-                handleSlatsCommand(qRol, command);
-                updateStatus(ThingStatus.ONLINE);
-                break;
-
-            default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Qbus: channel unknown " + channelUID.getId());
+        if (QRol == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Bridge communication not initialized when trying to execute command for ROL " + rolId);
+            return;
         }
+
+        scheduler.submit(() -> {
+            if (!QComm.communicationActive()) {
+                restartCommunication(QComm, "Screen/Store", rolId);
+            }
+
+            if (QComm.communicationActive()) {
+
+                if (command == REFRESH) {
+                    handleStateUpdate(QRol);
+                    return;
+                }
+
+                switch (channelUID.getId()) {
+                    case CHANNEL_ROLLERSHUTTER:
+                        handleScreenposCommand(QRol, command);
+                        updateStatus(ThingStatus.ONLINE);
+                        break;
+
+                    case CHANNEL_SLATS:
+                        handleSlatsposCommand(QRol, command);
+                        updateStatus(ThingStatus.ONLINE);
+                        break;
+
+                    default:
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Channel unknown " + channelUID.getId());
+                }
+            }
+        });
     }
 
-    private void handleBrightnessCommand(QbusRol QRol, Command command) {
-        @SuppressWarnings("null")
-        String sn = getBridge().getConfiguration().get(CONFIG_SN).toString();
+    /**
+     * Executes the command for screen up/down position
+     */
+    private void handleScreenposCommand(QbusRol QRol, Command command) {
 
         if (command instanceof org.openhab.core.library.types.UpDownType) {
             org.openhab.core.library.types.UpDownType s = (org.openhab.core.library.types.UpDownType) command;
@@ -164,9 +176,10 @@ public class QbusRolHandler extends BaseThingHandler {
         }
     }
 
-    private void handleSlatsCommand(QbusRol QRol, Command command) {
-        @SuppressWarnings("null")
-        String sn = getBridge().getConfiguration().get(CONFIG_SN).toString();
+    /**
+     * Executes the command for screen slats position
+     */
+    private void handleSlatsposCommand(QbusRol QRol, Command command) {
 
         if (command instanceof org.openhab.core.library.types.UpDownType) {
             org.openhab.core.library.types.UpDownType s = (org.openhab.core.library.types.UpDownType) command;
@@ -201,48 +214,8 @@ public class QbusRolHandler extends BaseThingHandler {
         }
     }
 
-    @Override
-    public void initialize() {
-        Configuration config = this.getConfig();
-
-        Integer RolId = ((Number) config.get(CONFIG_ROLLERSHUTTER_ID)).intValue();
-
-        Bridge QBridge = getBridge();
-        if (QBridge == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Qbus: no bridge initialized for Slats " + RolId);
-            return;
-        }
-        QbusBridgeHandler QBridgeHandler = (QbusBridgeHandler) QBridge.getHandler();
-        if (QBridgeHandler == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Qbus: no bridge initialized for Slats " + RolId);
-            return;
-        }
-        QbusCommunication QComm = QBridgeHandler.getCommunication();
-        if (QComm == null || !QComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Qbus: no connection with Qbus server, could not initialize Slats " + RolId);
-            return;
-        }
-
-        QbusRol QRol = QComm.getRol().get(RolId);
-
-        // Map<String, String> properties = new HashMap<>();
-
-        // thing.setProperties(properties);
-
-        if (QRol != null) {
-            QRol.setThingHandler(this);
-            handleStateUpdate(QRol);
-            logger.info("Qbus: Dimmer intialized {}", RolId);
-        } else {
-            logger.info("Qbus: Dimmer not intialized {} - null", RolId);
-        }
-    }
-
     /**
-     * Method to update state of channel, called from Qbus Slats.
+     * Method to update state of channel, called from Qbus Screen/Store.
      */
     public void handleStateUpdate(QbusRol qRol) {
 
@@ -251,6 +224,24 @@ public class QbusRolHandler extends BaseThingHandler {
 
         updateState(CHANNEL_ROLLERSHUTTER, new PercentType(rolState));
         updateState(CHANNEL_SLATS, new PercentType(slatState));
+
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
+     * Read the configuration
+     */
+    protected synchronized void setConfig() {
+        config = getConfig().as(QbusThingsConfig.class);
+    }
+
+    /**
+     * Returns the Id from the configuration
+     *
+     * @return rolId
+     */
+    @SuppressWarnings("null")
+    public int getId() {
+        return config.rolId;
     }
 }

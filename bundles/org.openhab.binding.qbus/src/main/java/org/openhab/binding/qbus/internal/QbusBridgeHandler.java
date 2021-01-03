@@ -13,8 +13,6 @@
 
 package org.openhab.binding.qbus.internal;
 
-import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -22,6 +20,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -38,38 +38,49 @@ import org.slf4j.LoggerFactory;
  *
  * @author Koen Schockaert - Initial Contribution
  */
+
+@NonNullByDefault
 public class QbusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QbusBridgeHandler.class);
 
-    private QbusCommunication qbusComm;
+    private @Nullable QbusCommunication qbusComm;
 
-    private ScheduledFuture<?> refreshTimer;
+    protected @Nullable QbusConfiguration config;
+
+    private @Nullable ScheduledFuture<?> refreshTimer;
 
     public QbusBridgeHandler(Bridge Bridge) {
         super(Bridge);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // There is nothing to handle in the bridge handler
-    }
-
+    /**
+     * Initialize the bridge
+     */
     @Override
     public void initialize() {
-        logger.debug("QBUS: initializing bridge handler");
+        logger.info("Initializing bridge handler");
 
-        Configuration config = this.getConfig();
+        setConfig();
         InetAddress addr = getAddr();
         int port = getPort();
-
-        logger.debug("Qbus: bridge handler host {}, port {}", addr, port);
 
         if (addr != null) {
             createCommunicationObject(addr, port);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Qbus: cannot resolve bridge IP with hostname " + config.get(CONFIG_HOST_NAME));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Cannot connect to QbusServer with hostname " + addr);
+        }
+        int refreshInterval = getRefresh();
+        this.setupRefreshTimer(refreshInterval);
+    }
+
+    /**
+     * Sets the Bridge call back
+     */
+    private void setBridgeCallBack() {
+        if (qbusComm != null) {
+            qbusComm.setBridgeCallBack(this);
         }
     }
 
@@ -78,83 +89,46 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      *
      * @param addr : IP address of Qbus server
      * @param port : Communication port of QbusServer
-     * @param sn : Serial number of Controller
      */
     private void createCommunicationObject(InetAddress addr, int port) {
-        Configuration config = this.getConfig();
         scheduler.submit(() -> {
+
             qbusComm = new QbusCommunication();
 
-            // Set callback from Qbus object to this bridge to be able to take bridge
-            // offline when non-resolvable communication error occurs.
             setBridgeCallBack();
 
-            qbusComm.startCommunication();
-            if (!qbusComm.communicationActive()) {
-                qbusComm = null;
-                bridgeOffline();
-                return;
+            if (qbusComm != null) {
+                qbusComm.startCommunication();
+            }
+
+            if (qbusComm != null) {
+                if (!qbusComm.communicationActive()) {
+                    qbusComm = null;
+                    bridgeOffline("No communication with Qbus Server");
+                    return;
+                }
+            }
+
+            if (qbusComm != null) {
+                if (!qbusComm.clientConnected()) {
+
+                    qbusComm = null;
+                    bridgeOffline("No communication with Qbus Client");
+                    return;
+                }
             }
 
             updateStatus(ThingStatus.ONLINE);
 
-            Integer refreshInterval = ((Number) config.get(CONFIG_REFRESH)).intValue();
-            setupRefreshTimer(refreshInterval);
-
         });
-    }
-
-    private void setBridgeCallBack() {
-        this.qbusComm.setBridgeCallBack(this);
-    }
-
-    /**
-     * Schedule future communication refresh.
-     *
-     * @param interval_config Time before refresh in minutes.
-     */
-    private void setupRefreshTimer(Integer refreshInterval) {
-        if (this.refreshTimer != null) {
-            this.refreshTimer.cancel(true);
-            this.refreshTimer = null;
-        }
-
-        if ((refreshInterval == null) || (refreshInterval == 0)) {
-            return;
-        }
-
-        // This timer will restart the bridge connection periodically
-        logger.debug("Qbus: Checking for Client communication every {} min", refreshInterval);
-        this.refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
-            logger.debug("Qbus: check communication after timerinterval");
-
-            if (!qbusComm.communicationActive()) {
-                logger.debug("Qbus: Restarting communication");
-                qbusComm.restartCommunication();
-
-                if (!qbusComm.communicationActive()) {
-                    qbusComm = null;
-                    bridgeOffline();
-                    updateStatus(ThingStatus.OFFLINE);
-                    return;
-                }
-
-                // updateStatus(ThingStatus.ONLINE);
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                logger.debug("Qbus: Communication still active");
-            }
-
-        }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
     }
 
     /**
      * Take bridge offline when error in communication with Qbus server. This method can also be
      * called directly from {@link QbusCommunication} object.
      */
-    public void bridgeOffline() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Qbus: error starting bridge connection");
+    public void bridgeOffline(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
     }
 
     /**
@@ -164,19 +138,83 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    @Override
-    public boolean isInitialized() {
-        return true;
+    /**
+     * Schedule future communication refresh.
+     *
+     * @param interval_config Time before refresh in minutes.
+     */
+
+    private void setupRefreshTimer(int refreshInterval) {
+        ScheduledFuture<?> timer = refreshTimer;
+        if (timer != null) {
+            timer.cancel(true);
+            refreshTimer = null;
+        }
+
+        if (refreshInterval == 0) {
+            return;
+        }
+
+        // This timer will check connection with server and client periodically
+        logger.info("Check communication with Server and Client every {} min", refreshInterval);
+        refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
+            logger.info("Checking connection with Qbus Server & Client.");
+
+            QbusCommunication comm = getCommunication();
+
+            if (comm != null) {
+                if (!comm.communicationActive()) {
+                    // Disconnected from Qbus Server, try to reconnect
+                    logger.info("No connection with Qbus Server. Try to restart.");
+                    comm.restartCommunication();
+                    if (!comm.communicationActive()) {
+                        bridgeOffline("No connection with Qbus Server");
+                        return;
+                    }
+
+                } else {
+
+                    // Controller disconnected from Qbus client, try to reconnect controller
+                    if (!comm.clientConnected()) {
+                        logger.info("No connection with Qbus Client. Try to restart.");
+                        comm.restartCommunication();
+                        if (!comm.clientConnected()) {
+                            bridgeOffline("No connection with Qbus Client");
+                            return;
+                        }
+                    }
+                }
+            }
+
+            logger.info("Connection with Qbus Server & Client is still active.");
+            updateStatus(ThingStatus.ONLINE);
+
+        }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
     }
 
+    /**
+     * Disposes the Bridge and stops communication with the Qbus server
+     */
     @Override
     public void dispose() {
-        if (this.refreshTimer != null) {
-            this.refreshTimer.cancel(true);
+        ScheduledFuture<?> timer = refreshTimer;
+        if (timer != null) {
+            timer.cancel(true);
         }
-        this.refreshTimer = null;
+
+        refreshTimer = null;
+
+        QbusCommunication comm = getCommunication();
+        if (comm != null) {
+            comm.stopCommunication();
+        }
+
+        comm = null;
     }
 
+    /**
+     * Update the configuration parameters
+     */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         Configuration configuration = editConfiguration();
@@ -184,14 +222,14 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
             configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());
         }
         updateConfiguration(configuration);
+        updateStatus(ThingStatus.ONLINE);
+    }
 
-        scheduler.submit(() -> {
-
-            updateStatus(ThingStatus.ONLINE);
-
-            Integer refreshInterval = ((Number) configuration.get(CONFIG_REFRESH)).intValue();
-            setupRefreshTimer(refreshInterval);
-        });
+    /**
+     * Sets the configuration prameters
+     */
+    protected synchronized void setConfig() {
+        config = getConfig().as(QbusConfiguration.class);
     }
 
     /**
@@ -199,7 +237,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      *
      * @return Qbus communication object
      */
-    public QbusCommunication getCommunication() {
+    public @Nullable QbusCommunication getCommunication() {
         return this.qbusComm;
     }
 
@@ -208,13 +246,14 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      *
      * @return the addr
      */
-    public InetAddress getAddr() {
-        Configuration config = this.getConfig();
+
+    @SuppressWarnings("null")
+    public @Nullable InetAddress getAddr() {
         InetAddress addr = null;
         try {
-            addr = InetAddress.getByName((String) config.get(CONFIG_HOST_NAME));
+            addr = InetAddress.getByName(config.addr);
         } catch (UnknownHostException e) {
-            logger.debug("Qbus: Cannot resolve hostname {} to IP adress", config.get(CONFIG_HOST_NAME));
+            logger.debug("Cannot resolve hostname {} to IP adress", config.addr);
         }
         return addr;
     }
@@ -224,18 +263,33 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      *
      * @return the port
      */
+    @SuppressWarnings("null")
     public int getPort() {
-        Configuration config = this.getConfig();
-        return ((Number) config.get(CONFIG_PORT)).intValue();
+        return config.port;
     }
 
     /**
      * Get the serial nr of the Qbus server.
      *
-     * @return the sn
+     * @return the serial nr of the controller
      */
+    @SuppressWarnings("null")
     public String getSn() {
-        Configuration config = this.getConfig();
-        return ((String) config.get(CONFIG_SN));
+        return config.sn;
+    }
+
+    /**
+     * Get the refresh interval.
+     *
+     * @return the refresh interval
+     */
+    @SuppressWarnings("null")
+    public int getRefresh() {
+        return config.refresh;
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // TODO Auto-generated method stub
     }
 }

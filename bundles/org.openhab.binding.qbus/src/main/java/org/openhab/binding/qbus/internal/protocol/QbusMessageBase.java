@@ -24,9 +24,21 @@ package org.openhab.binding.qbus.internal.protocol;
 
 abstract class QbusMessageBase {
 
-    private String cmd = "";
-    private String event1 = "";
-    private String sn = "";
+    private String CTD;
+    protected String cmd;
+    protected String id;
+    protected Integer state;
+    protected Integer mode;
+    protected Double setpoint;
+    protected Integer slatState;
+
+    String getSn() {
+        return this.CTD;
+    }
+
+    void setSn(String CTD) {
+        this.CTD = CTD;
+    }
 
     String getCmd() {
         return this.cmd;
@@ -36,19 +48,43 @@ abstract class QbusMessageBase {
         this.cmd = cmd;
     }
 
-    void setSn(String sn) {
-        this.sn = sn;
+    public String getId() {
+        return id;
     }
 
-    String getEvent() {
-        return this.event1;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    void setEvent(String event) {
-        this.event1 = event;
+    public int getState() {
+        return state;
     }
 
-    String getSn() {
-        return this.sn;
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    public Double getSetPoint() {
+        return setpoint;
+    }
+
+    public void setSetPoint(Double setpoint) {
+        this.setpoint = setpoint;
+    }
+
+    public int getSlatState() {
+        return slatState;
+    }
+
+    public void setSlatState(int slatState) {
+        this.slatState = slatState;
     }
 }

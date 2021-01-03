@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Koen Schockaert - Initial Contribution
  */
+
 @NonNullByDefault
 public final class QbusRol {
 
@@ -31,14 +32,14 @@ public final class QbusRol {
     @Nullable
     private QbusCommunication QComm;
 
-    private int id;
+    private String id = "";
     private Integer state = 0;
     private Integer slats = 0;
 
     @Nullable
     private QbusRolHandler thingHandler;
 
-    QbusRol(int id) {
+    QbusRol(String id) {
         this.id = id;
     }
 
@@ -92,7 +93,7 @@ public final class QbusRol {
         this.state = Slats;
         QbusRolHandler handler = thingHandler;
         if (handler != null) {
-            logger.debug("Qbus: update channel shutter for {} with {}", id, state);
+            logger.info("Update channel shutter for {} with {}", id, state);
             handler.handleStateUpdate(this);
         }
     }
@@ -106,7 +107,7 @@ public final class QbusRol {
         this.slats = Slats;
         QbusRolHandler handler = thingHandler;
         if (handler != null) {
-            logger.debug("Qbus: update channel slats for {} with {}", id, slats);
+            logger.info("Update channel slats for {} with {}", id, slats);
             handler.handleStateUpdate(this);
         }
     }
@@ -114,10 +115,10 @@ public final class QbusRol {
     /**
      * Sends shutter to Qbus.
      */
-    public void execute(int percent, String sn) {
-        logger.debug("Qbus: execute position for {} {}", this.id, sn);
+    public void execute(int value, String sn) {
+        logger.info("Execute position for {}", this.id);
 
-        QMessageCmd QCmd = new QMessageCmd("executestore", this.id, percent).withSn(sn);
+        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeStore").withId(this.id).withState(value);
 
         QbusCommunication comm = QComm;
         if (comm != null) {
@@ -128,10 +129,10 @@ public final class QbusRol {
     /**
      * Sends slats to Qbus.
      */
-    public void executeSlats(int percent, String sn) {
-        logger.debug("Qbus: execute slats for {} {}", this.id, sn);
+    public void executeSlats(int value, String sn) {
+        logger.info("Execute slats for {}", this.id);
 
-        QMessageCmd QCmd = new QMessageCmd("executeslats", this.id, percent).withSn(sn);
+        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeStore").withId(this.id).withSlatState(value);
 
         QbusCommunication comm = QComm;
         if (comm != null) {

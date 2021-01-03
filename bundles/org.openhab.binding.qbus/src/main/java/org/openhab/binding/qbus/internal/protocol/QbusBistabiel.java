@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Koen Schockaert - Initial Contribution
  */
+
 @NonNullByDefault
 public final class QbusBistabiel {
 
@@ -31,13 +32,13 @@ public final class QbusBistabiel {
     @Nullable
     private QbusCommunication QComm;
 
-    private int id;
+    private String id = "";
     private Integer state = 0;
 
     @Nullable
     private QbusBistabielHandler thingHandler;
 
-    QbusBistabiel(int id) {
+    QbusBistabiel(String id) {
         this.id = id;
     }
 
@@ -79,9 +80,9 @@ public final class QbusBistabiel {
      */
     void setState(int state) {
         this.state = state;
-        QbusBistabielHandler handler = thingHandler;
+        QbusBistabielHandler handler = this.thingHandler;
         if (handler != null) {
-            logger.debug("Qbus: update bistabiel channel state for {} with {}", id, state);
+            logger.info("Update bistabiel channel state for {} with {}", id, state);
             handler.handleStateUpdate(this);
         }
     }
@@ -91,9 +92,9 @@ public final class QbusBistabiel {
      */
     public void execute(int value, String sn) {
 
-        logger.debug("Qbus: execute bistabiel for {} on CTD {}", this.id, sn);
+        logger.info("Execute bistabiel for {}", this.id);
 
-        QMessageCmd QCmd = new QMessageCmd("executebistabiel", this.id, value).withSn(sn);
+        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeBistabiel").withId(this.id).withState(value);
 
         QbusCommunication comm = QComm;
         if (comm != null) {

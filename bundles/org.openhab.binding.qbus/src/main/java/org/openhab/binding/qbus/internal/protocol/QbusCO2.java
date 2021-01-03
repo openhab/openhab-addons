@@ -24,19 +24,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author Koen Schockaert - Initial Contribution
  */
+
 @NonNullByDefault
 public final class QbusCO2 {
 
     private final Logger logger = LoggerFactory.getLogger(QbusCO2.class);
 
-    private int id;
-    private Integer state = 0;
+    private String co2Id;
+    private Integer co2State = 0;
 
     @Nullable
     private QbusCO2Handler thingHandler;
 
-    QbusCO2(int id) {
-        this.id = id;
+    QbusCO2(String co2Id) {
+        this.co2Id = co2Id;
     }
 
     /**
@@ -56,7 +57,7 @@ public final class QbusCO2 {
      * @return CO2 state
      */
     public Integer getState() {
-        return this.state;
+        return this.co2State;
     }
 
     /**
@@ -65,10 +66,10 @@ public final class QbusCO2 {
      * @param CO2 state
      */
     public void setState(Integer co2) {
-        this.state = co2;
+        this.co2State = co2;
         QbusCO2Handler handler = thingHandler;
         if (handler != null) {
-            logger.debug("Qbus: update channel state for {} with {}", id, state);
+            logger.info("Update channel state for {} with {}", co2Id, co2State);
             handler.handleStateUpdate(this);
         }
     }
