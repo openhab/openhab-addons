@@ -104,7 +104,6 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                                         if (message != null && message.contains("rejected by remote peer")) {
                                             retries++;
                                             logger.debug("retrying - pending {}", MAX_RETRIES - retries);
-                                            Thread.sleep(5000);
                                             continue;
                                         }
                                         throw e;

@@ -189,7 +189,6 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 if (thing.getStatus() != ThingStatus.ONLINE)
                     updateStatus(ThingStatus.ONLINE);
                 refreshStatus();
-
             } else {
                 if (thing.getStatus() != ThingStatus.OFFLINE) {
                     updateStatus(ThingStatus.OFFLINE);

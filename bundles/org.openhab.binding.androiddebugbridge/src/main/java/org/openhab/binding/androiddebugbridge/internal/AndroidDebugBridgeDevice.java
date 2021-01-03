@@ -83,7 +83,7 @@ public class AndroidDebugBridgeDevice {
 
     public void startPackage(String packageName) throws IOException, AndroidDebugBridgeDeviceException,
             InterruptedException, AndroidDebugBridgeDeviceException {
-        var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1", "&&", "sleep", "0.3");
+        var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1");
         if (out.contains("monkey aborted"))
             throw new AndroidDebugBridgeDeviceException("Unable to open package");
     }
@@ -95,7 +95,7 @@ public class AndroidDebugBridgeDevice {
 
     public String getCurrentPackage() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException {
-        var out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp", "&&", "sleep", "0.3");
+        var out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp");
         var targetLine = Arrays.stream(out.split("\n")).findFirst().orElse("");
         var lineParts = targetLine.split(" ");
         if (lineParts.length >= 2) {
@@ -108,7 +108,7 @@ public class AndroidDebugBridgeDevice {
 
     public boolean isPlayingMedia() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException {
         // Try to get players info from audio dump
-        String audioDump = runAdbShell("dumpsys", "audio", "|", "grep", "ID:", "&&", "sleep", "0.3");
+        String audioDump = runAdbShell("dumpsys", "audio", "|", "grep", "ID:");
         if (audioDump.length() == 0) {
             // Fallback to media session dump
             String devicesResp = runAdbShell("dumpsys", "media_session", "|", "grep", "PlaybackState");
@@ -163,7 +163,7 @@ public class AndroidDebugBridgeDevice {
     private VolumeInfo getVolume(int stream) throws IOException, AndroidDebugBridgeDeviceException,
             InterruptedException, AndroidDebugBridgeDeviceReadException {
         String volumeResp = runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--get", "|",
-                "grep", "volume", "&&", "sleep", "0.3");
+                "grep", "volume");
         Matcher matcher = VOLUME_PATTERN.matcher(volumeResp);
         if (!matcher.find())
             throw new AndroidDebugBridgeDeviceReadException("Unable to get volume info");
