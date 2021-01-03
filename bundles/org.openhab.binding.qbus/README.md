@@ -2,33 +2,29 @@
 
 ![Qbus Logo](doc/Logo.JPG)
 
-This binding for Qbus communicates for all controllers of the Qbus home automation system.
+This binding for [Qbus](https://qbus.be) communicates with all controllers of the Qbus home automation system.
 
-More information about Qbus can be found here:
-[Qbus](https://qbus.be)
+We also host a site which contains a [manual](https://manualoh.schockaert.tk/) where you can find lot's of information to set up openHAB with Qbus client and server (for the moment only in Dutch).
 
-This is the link to the [Qbus forum](https://qbusforum.be). This forum is mainly in dutch and you can find a lot of information about the pre testings af this binding and offers a way to communicate with other users.
-
-We also host a site which contains a [manual](https://manualoh.schockaert.tk/) where you can find lot's of information.
-
-The controllers can not communicate directly with openHAB, therefore we developed a Client/Server application which you must install prior to enable this binding.
+The controllers can not communicate directly with openHAB, therefore we developed a client/server application which you must install prior to enable this binding.
 More information can be found here:
-[Qbus Client/Server](https://github.com/QbusKoen/QbusClientServer)
+[Qbus Client/Server]( https://github.com/QbusKoen/QbusClientServer-Installer)
 
 With this binding you can control and read almost every output from the Qbus system.
 
 ## Supported Things
 
-The following things are supported by the Qbus Binding:
+The following things are supported by the Qbus binding:
 
-- Dimmer 1 button, 2 button and clc as _dimmer_
-- Bistabiel, Timer1-3, Interval as _onOff_
-- Thermostats - normal and PID as _thermosats_
-- Scenes as _scene_
-- CO2 as _co2_
-- Rollershutter and rollerhutter with slats as _rollershutter_
+- `dimmer`: Dimmer 1 button, 2 button and clc
+- `onOff`: Bistabiel, Timer1-3, Interval
+- `thermostats`: Thermostats - normal and PID
+- `scene`: Scenes
+- `co2`: CO2 
+- `rollershutter`: Rollershutter 
+- `rollershutter_slats`: Rollerhutter with slats
 
-For now the folowing Qbus things are not yet supported but will come:
+For now the following Qbus things are not yet supported but will come:
 
 - DMX
 - Timer 4 & 5
@@ -60,26 +56,33 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh
     rollershutter_slats      121   "Roller2"          [ rolId=264 ]
 }
 ```
-The Bridge connects to the QbusServer, so if the Client/Server application is installed on the same machine then localhost can be used as address. sn is the serial nr of your controller, port should allways be 8447, except in special installations as it is the communication port of the Server application. refresh is a time in minutes which will check the status of the server and reconnects if connection is broken after this time.
+
+
+| Property   | Default  | Required | Description    |
+|------------|----------|----------|----------------|
+| `addr`    | localhost | YES      | The ip address of the machine where the Qbus Server runs |
+| `sn`      |           | YES      | The serial number of your controller |
+| `port`    | 8447      | YES      | The communication port of the client/server |
+| `refresh` | 5         | NO       | Refresh time - After x minutes there will be a check if server is still running and if client is still connected. If not - reconnect |
 
 ## Channels
 
-| channel             | type          | description                                             |
+| Thing Type ID  | Channel Name         | Read only  | description                                             |
 |---------------------|---------------|---------------------------------------------------------|
-| onOff               | switch        | This is the channel for Bistable, Timers and Intervals  |
-| dimmer              | brightness    | This is the channel for Dimmers 1&2 buttons and CLC     |
-| scene               | Switch        | This is the channel for scenes                          |
-| co2                 | co2           | This is the channel for CO2 sensors                     |
-| rollershutter       | rollershutter | This is the channel for rollershutters                  | 
-| rollershutter_slats | rollershutter | This is the channel for rollershutters with slats       |
-| thermostat          | setpoint      | This is the channel for thermostats setpoint            |
-| thermostat          | measured      | This is the channel for thermostats currenttemp         |
-| thermostat          | mode          | This is the channel for thermostats mode                |
+| `onOff`               | switch        | No | This is the channel for Bistable, Timers and Intervals  |
+| `dimmer`              | brightness    | No | This is the channel for Dimmers 1&2 buttons and CLC     |
+| `scene`               | Switch        | No | This is the channel for scenes                          |
+| `co2`                 | co2           | Yes | This is the channel for CO2 sensors                     |
+| `rollershutter`       | rollershutter | No | This is the channel for rollershutters                  | 
+| `rollershutter_slats` | rollershutter | No | This is the channel for rollershutters with slats       |
+| `thermostat`          | setpoint      | No | This is the channel for thermostats setpoint            |
+| `thermostat`          | measured      | Yes | This is the channel for thermostats currenttemp         |
+| `thermostat`          | mode          | No | This is the channel for thermostats mode                |
 
 
 ## Full Example
 
-### Things:
+### Things
 
 ```
 Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh=10 ] {
@@ -93,13 +96,13 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh
 }
 ```
 
-### Items:
+### Items
 
 ```
 Dimmer              ToonzaalLED          <light>    [ "Lighting" ]      {channel="qbus:dimmer:CTD007841:1:brightness"}
 Switch              Toonzaal230V         <light>                        {channel="qbus:onOff:CTD007841:30:switch"}
-Number:Temperature  ServiceSP"[%.1f °C]" (GroepThermostaten)            {channel="qbus:thermostat:CTD007841:50:setpoint"}
-Number:Temperature  ServiceCT"[%.1f °C]" (GroepThermostaten)            {channel="qbus:thermostat:CTD007841:50:measured"}
+Number:Temperature  ServiceSP"[%.1f %unit%]" (GroepThermostaten)            {channel="qbus:thermostat:CTD007841:50:setpoint"}
+Number:Temperature  ServiceCT"[%.1f %unit%]" (GroepThermostaten)            {channel="qbus:thermostat:CTD007841:50:measured"}
 Number              ServiceMode          (GroepThermostaten)            {channel="qbus:thermostat:CTD007841:50:mode",ihc="0x33c311" , autoupdate="true"}
 Switch              Disco                <light>                        {channel="qbus:scene:CTD007841:36:scene"}
 Number              ProductieCO2                                        {channel="qbus:co2:CTD007841:100:co2"}
@@ -108,3 +111,4 @@ Rollershutter       Roller2                                             {channel
 Dimmer              Roller2_slats                                       {channel="qbus:rollershutter_slats:CTD007841:121:slats"}
 ```
 
+This is the link to the [Qbus forum](https://qbusforum.be). This forum is mainly in dutch and you can find a lot of information about the pre testings af this binding and offers a way to communicate with other users.

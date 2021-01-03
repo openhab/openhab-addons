@@ -12,34 +12,31 @@
  */
 package org.openhab.binding.qbus.internal.handler;
 
-import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
+import static org.openhab.binding.qbus.internal.QbusBindingConstants.CHANNEL_SWITCH;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusBistabiel;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link QbusBistabielHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link QbusBistabielHandler} is responsible for handling the Bistable outputs of Qbus
  *
  * @author Koen Schockaert - Initial Contribution
  */
 
 @NonNullByDefault
-public class QbusBistabielHandler extends BaseThingHandler {
+public class QbusBistabielHandler extends QbusGlobalHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QbusBistabielHandler.class);
 
@@ -47,125 +44,96 @@ public class QbusBistabielHandler extends BaseThingHandler {
         super(thing);
     }
 
+    protected @Nullable QbusThingsConfig config;
+
+    int bistabielId = 0;
+
+    String sn = "";
+
+    /**
+     * Main initialization
+     */
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        Integer BistabielId = ((Number) this.getConfig().get(CONFIG_BISTABIEL_ID)).intValue();
+    public void initialize() {
 
-        Bridge QBridge = getBridge();
-        if (QBridge == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Qbus: no bridge initialized when trying to execute bistabiel " + BistabielId);
-            return;
-        }
-        QbusBridgeHandler QBridgeHandler = (QbusBridgeHandler) QBridge.getHandler();
-        if (QBridgeHandler == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Qbus: no bridge initialized when trying to execute bistabiel " + BistabielId);
-            return;
-        }
-        QbusCommunication QComm = QBridgeHandler.getCommunication();
+        setConfig();
+        bistabielId = getId();
 
+        QbusCommunication QComm = getCommunication("Bistabiel", bistabielId);
         if (QComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Qbus: bridge communication not initialized when trying to execute bistabiel " + BistabielId);
+                    "No communication with Qbus Bridge!");
             return;
         }
 
-        QbusBistabiel QBistabiel = QComm.getBistabiel().get(BistabielId);
+        QbusBridgeHandler QBridgeHandler = getBridgeHandler("Bistabiel", bistabielId);
+        if (QBridgeHandler == null) {
+            return;
+        }
+
+        QbusBistabiel QBistabiel = QComm.getBistabiel().get(bistabielId);
+
+        sn = QBridgeHandler.getSn();
 
         if (QBistabiel != null) {
-            if (QComm.communicationActive()) {
-                handleCommandSelection(QBistabiel, channelUID, command);
-            } else {
-                // We lost connection but the connection object is there, so was correctly started.
-                // Try to restart communication.
-                // This can be expensive, therefore do it in a job.
-                scheduler.submit(() -> {
-                    QComm.restartCommunication();
-                    // If still not active, take thing offline and return.
-                    if (!QComm.communicationActive()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Qbus: communication socket error");
-                        return;
-                    }
-                    // Also put the bridge back online
-                    QBridgeHandler.bridgeOnline();
-
-                    // And finally handle the command
-                    handleCommandSelection(QBistabiel, channelUID, command);
-                });
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Qbus: BistabielId " + BistabielId + " does not match a BISTABIEL in the controller");
-            return;
-        }
-    }
-
-    private void handleCommandSelection(QbusBistabiel QBistabiel, ChannelUID channelUID, Command command) {
-        logger.debug("Qbus: handle command {} for {}", command, channelUID);
-
-        if (command == REFRESH) {
+            QBistabiel.setThingHandler(this);
             handleStateUpdate(QBistabiel);
+            logger.info("Bistabiel intialized {}", bistabielId);
+        } else {
+
+            logger.warn("Bistabiel not intialized {}", bistabielId);
+        }
+    }
+
+    /**
+     * Handle the status update from the thing
+     */
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        QbusCommunication QComm = getCommunication("Bistabiel", bistabielId);
+        if (QComm == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Bridge communication not initialized when trying to execute command for bistabiel " + bistabielId);
+            return;
+        }
+        QbusBistabiel QBistabiel = QComm.getBistabiel().get(bistabielId);
+
+        if (QBistabiel == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Bridge communication not initialized when trying to execute command for dimmer " + bistabielId);
             return;
         }
 
-        handleSwitchCommand(QBistabiel, command);
-        updateStatus(ThingStatus.ONLINE);
+        scheduler.submit(() -> {
+            if (!QComm.communicationActive()) {
+                restartCommunication(QComm, "Bistabiel", bistabielId);
+            }
+
+            if (QComm.communicationActive()) {
+
+                if (command == REFRESH) {
+                    handleStateUpdate(QBistabiel);
+                    return;
+                }
+
+                handleSwitchCommand(QBistabiel, channelUID, command);
+            }
+
+        });
     }
 
-    private void handleSwitchCommand(QbusBistabiel QBistabiel, Command command) {
+    /**
+     * Executes the switch command
+     */
+    private void handleSwitchCommand(QbusBistabiel QBistabiel, ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
-
-            @SuppressWarnings("null")
-            String sn = getBridge().getConfiguration().get(CONFIG_SN).toString();
 
             if (s == OnOffType.OFF) {
                 QBistabiel.execute(0, sn);
             } else {
                 QBistabiel.execute(100, sn);
             }
-        }
-    }
-
-    @Override
-    public void initialize() {
-        Configuration config = this.getConfig();
-
-        Integer BistabielId = ((Number) config.get(CONFIG_BISTABIEL_ID)).intValue();
-
-        Bridge QBridge = getBridge();
-        if (QBridge == null) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Qbus: no bridge initialized for bistabiel " + BistabielId);
-            return;
-        }
-        QbusBridgeHandler QBridgeHandler = (QbusBridgeHandler) QBridge.getHandler();
-        if (QBridgeHandler == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Qbus: no bridge initialized for bistabiel " + BistabielId);
-            return;
-        }
-        QbusCommunication QComm = QBridgeHandler.getCommunication();
-        if (QComm == null || !QComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Qbus: no connection with Qbus server, could not initialize bistabiel " + BistabielId);
-            return;
-        }
-
-        QbusBistabiel QBistabiel = QComm.getBistabiel().get(BistabielId);
-
-        // Map<String, String> properties = new HashMap<>();
-
-        // thing.setProperties(properties);
-
-        if (QBistabiel != null) {
-            QBistabiel.setThingHandler(this);
-            handleStateUpdate(QBistabiel);
-            logger.info("Qbus: Bistabiel intialized {}", BistabielId);
-        } else {
-            logger.info("Qbus: Bistabiel not intialized {} - null", BistabielId);
         }
     }
 
@@ -178,5 +146,22 @@ public class QbusBistabielHandler extends BaseThingHandler {
 
         updateState(CHANNEL_SWITCH, (bistabielState == 0) ? OnOffType.OFF : OnOffType.ON);
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
+     * Read the configuration
+     */
+    protected synchronized void setConfig() {
+        config = getConfig().as(QbusThingsConfig.class);
+    }
+
+    /**
+     * Returns the Id from the configuration
+     *
+     * @return bistabielId
+     */
+    @SuppressWarnings("null")
+    public int getId() {
+        return config.bistabielId;
     }
 }

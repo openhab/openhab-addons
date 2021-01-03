@@ -15,6 +15,8 @@ package org.openhab.binding.qbus.internal.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Class {@link QbusMessageMap} used as output from gson for cmd or event feedback from Qbus where the
  * data part is a simple json string. Extends {@link QbusMessageBase}.
@@ -22,15 +24,17 @@ import java.util.Map;
  *
  * @author Koen Schockaert - Initial Contribution
  */
-class QMessageMap extends QbusMessageBase {
 
-    private Map<String, String> data = new HashMap<>();
+@NonNullByDefault
+class QbusMessageMap extends QbusMessageBase {
+
+    private Map<String, String> outputs = new HashMap<>();
 
     Map<String, String> getData() {
-        return this.data;
+        return this.outputs;
     }
 
-    void setData(Map<String, String> data) {
-        this.data = data;
+    void setOutputs(Map<String, String> outputs) {
+        this.outputs = outputs;
     }
 }

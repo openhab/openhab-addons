@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonArray;
@@ -36,6 +37,7 @@ import com.google.gson.JsonParseException;
  *
  */
 
+@NonNullByDefault
 class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
 
     @Override
@@ -46,59 +48,56 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
         try {
 
             String cmd = null;
-            String event1 = null;
-            String sn = null;
+            String CTD = null;
 
             if (jsonObject.has("cmd")) {
                 cmd = jsonObject.get("cmd").getAsString();
             }
-            if (jsonObject.has("event1")) {
-                event1 = jsonObject.get("event1").getAsString();
-            }
-            if (jsonObject.has("ctdsn")) {
-                sn = jsonObject.get("ctdsn").getAsString();
+
+            if (jsonObject.has("CTD")) {
+                CTD = jsonObject.get("CTD").getAsString();
             }
 
-            JsonElement jsonData = null;
-            if (jsonObject.has("data")) {
-                jsonData = jsonObject.get("data");
+            JsonElement jsonOutputs = null;
+
+            if (jsonObject.has("outputs")) {
+                jsonOutputs = jsonObject.get("outputs");
             }
 
             QbusMessageBase message = null;
 
-            if (jsonData != null) {
-                if (jsonData.isJsonObject()) {
-                    message = new QMessageMap();
+            if (jsonOutputs != null) {
+                if (jsonOutputs.isJsonObject()) {
+                    message = new QbusMessageMap();
 
-                    Map<String, String> data = new HashMap<>();
-                    for (Entry<String, JsonElement> entry : jsonData.getAsJsonObject().entrySet()) {
-                        data.put(entry.getKey(), entry.getValue().getAsString());
+                    Map<String, String> outputs = new HashMap<>();
+                    for (Entry<String, JsonElement> entry : jsonOutputs.getAsJsonObject().entrySet()) {
+                        outputs.put(entry.getKey(), entry.getValue().getAsString());
                     }
-                    ((QMessageMap) message).setData(data);
+                    ((QbusMessageMap) message).setOutputs(outputs);
 
-                } else if (jsonData.isJsonArray()) {
-                    JsonArray jsonDataArray = jsonData.getAsJsonArray();
+                } else if (jsonOutputs.isJsonArray()) {
+                    JsonArray jsonOutputsArray = jsonOutputs.getAsJsonArray();
 
-                    message = new QMessageListMap();
+                    message = new QbusMessageListMap();
 
-                    List<Map<String, String>> dataList = new ArrayList<>();
-                    for (int i = 0; i < jsonDataArray.size(); i++) {
-                        JsonObject jsonDataObject = jsonDataArray.get(i).getAsJsonObject();
+                    List<Map<String, String>> outputsList = new ArrayList<>();
+                    for (int i = 0; i < jsonOutputsArray.size(); i++) {
+                        JsonObject jsonOutputsObject = jsonOutputsArray.get(i).getAsJsonObject();
 
-                        Map<String, String> data = new HashMap<>();
-                        for (Entry<String, JsonElement> entry : jsonDataObject.entrySet()) {
-                            data.put(entry.getKey(), entry.getValue().getAsString());
+                        Map<String, String> outputs = new HashMap<>();
+                        for (Entry<String, JsonElement> entry : jsonOutputsObject.entrySet()) {
+                            outputs.put(entry.getKey(), entry.getValue().getAsString());
                         }
-                        dataList.add(data);
+                        outputsList.add(outputs);
                     }
-                    ((QMessageListMap) message).setData(dataList);
+                    ((QbusMessageListMap) message).setOutputs(outputsList);
                 }
             }
 
-            if (message != null) {
+            if (message != null && cmd != null && CTD != null) {
                 message.setCmd(cmd);
-                message.setEvent(event1);
-                message.setSn(sn);
+                message.setSn(CTD);
             } else {
                 throw new JsonParseException("Unexpected Json type");
             }

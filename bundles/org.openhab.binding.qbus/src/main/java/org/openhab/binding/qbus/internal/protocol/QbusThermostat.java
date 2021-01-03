@@ -19,21 +19,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link QThermostat} class represents the thermostat Qbus communication object. It contains all
+ * The {@link QbusThermostat} class represents the thermostat Qbus communication object. It contains all
  * fields representing a Qbus thermostat and has methods to set the thermostat mode and setpoint in Qbus and
  * receive thermostat updates.
  *
  * @author Koen Schockaert - Initial Contribution
  */
-@NonNullByDefault
-public final class QThermostat {
 
-    private final Logger logger = LoggerFactory.getLogger(QThermostat.class);
+@NonNullByDefault
+public final class QbusThermostat {
+
+    private final Logger logger = LoggerFactory.getLogger(QbusThermostat.class);
 
     @Nullable
     private QbusCommunication qComm;
 
-    private int id;
+    private String id;
     private Double measured = 0.0;
     private Double setpoint = 0.0;
     private Integer mode = 0;
@@ -41,7 +42,7 @@ public final class QThermostat {
     @Nullable
     private QbusThermostatHandler thingHandler;
 
-    QThermostat(int id) {
+    QbusThermostat(String id) {
         this.id = id;
     }
 
@@ -59,7 +60,7 @@ public final class QThermostat {
 
         QbusThermostatHandler handler = thingHandler;
         if (handler != null) {
-            logger.debug("Qbus: update channels for {}", id);
+            logger.info("Update channels for {}", id);
             handler.handleStateUpdate(this);
         }
     }
@@ -107,7 +108,7 @@ public final class QThermostat {
     /**
      * Get setpoint
      *
-     * @return the setpoint temperature in 1°C multiples
+     * @return the setpoint temperature in 0.5°C multiples
      */
     public double getSetpoint() {
         return this.setpoint;
@@ -147,9 +148,9 @@ public final class QThermostat {
      * @param sn
      */
     public void executeMode(int mode, String sn) {
-        logger.debug("Qbus: execute thermostat mode {} for {} on {}", mode, this.id, sn);
+        logger.info("Execute thermostat mode {} for {}", mode, id);
 
-        QMessageCmd qCmd = new QMessageCmd("executethermostat", this.id).withMode(mode).withSn(sn);
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withMode(mode);
 
         QbusCommunication comm = qComm;
         if (comm != null) {
@@ -163,9 +164,9 @@ public final class QThermostat {
      * @param d
      */
     public void executeSetpoint(double d, String sn) {
-        logger.debug("Qbus: execute thermostat setpoint {} for {} on {}", d, this.id, sn);
+        logger.info("Execute thermostat setpoint {} for {} ", d, id);
 
-        QMessageCmd qCmd = new QMessageCmd("executethermostat", this.id).withSetpoint(d).withSn(sn);
+        QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withSetPoint(setpoint);
 
         QbusCommunication comm = qComm;
         if (comm != null) {

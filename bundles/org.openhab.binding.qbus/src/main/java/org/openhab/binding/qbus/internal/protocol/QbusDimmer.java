@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Koen Schockaert - Initial Contribution
  */
+
 @NonNullByDefault
 public final class QbusDimmer {
 
@@ -31,13 +32,13 @@ public final class QbusDimmer {
     @Nullable
     private QbusCommunication QComm;
 
-    private int id;
+    private String id = "";
     private Integer state = 0;
 
     @Nullable
     private QbusDimmerHandler thingHandler;
 
-    QbusDimmer(int id) {
+    QbusDimmer(String id) {
         this.id = id;
     }
 
@@ -51,7 +52,7 @@ public final class QbusDimmer {
 
         QbusDimmerHandler handler = thingHandler;
         if (handler != null) {
-            logger.debug("Qbus: update channels for {}", id);
+            logger.info("Qbus: update channels for {}", id);
             handler.handleStateUpdate(this);
         }
     }
@@ -96,7 +97,7 @@ public final class QbusDimmer {
         this.state = state;
         QbusDimmerHandler handler = thingHandler;
         if (handler != null) {
-            logger.debug("Qbus: update channel state for {} with {}", id, state);
+            logger.info("Update channel state for {} with {}", id, state);
             handler.handleStateUpdate(this);
         }
     }
@@ -105,9 +106,9 @@ public final class QbusDimmer {
      * Sends Dimmer state to Qbus.
      */
     public void execute(int percent, String sn) {
-        logger.debug("Qbus: execute dimmer for {} on CTD {}", this.id, sn);
+        logger.info("Execute dimmer for {} ", this.id);
 
-        QMessageCmd QCmd = new QMessageCmd("executedimmer", this.id, percent).withSn(sn);
+        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeDimmer").withId(this.id).withState(percent);
 
         QbusCommunication comm = QComm;
         if (comm != null) {

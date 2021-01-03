@@ -14,8 +14,6 @@ package org.openhab.binding.qbus.internal;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -37,45 +35,31 @@ public class QbusBindingConstants {
     // Bridge config properties
     public static final String CONFIG_HOST_NAME = "addr";
     public static final String CONFIG_PORT = "port";
-    public static final String CONFIG_REFRESH = "refresh";
     public static final String CONFIG_SN = "sn";
 
     // generic thing types
     public static final ThingTypeUID THING_TYPE_CO2 = new ThingTypeUID(BINDING_ID, "co2");
     public static final ThingTypeUID THING_TYPE_SCENE = new ThingTypeUID(BINDING_ID, "scene");
-    public static final ThingTypeUID THING_TYPE_TIMER_LIGHT = new ThingTypeUID(BINDING_ID, "onOff");
     public static final ThingTypeUID THING_TYPE_ON_OFF_LIGHT = new ThingTypeUID(BINDING_ID, "onOff");
     public static final ThingTypeUID THING_TYPE_DIMMABLE_LIGHT = new ThingTypeUID(BINDING_ID, "dimmer");
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_SLATS = new ThingTypeUID(BINDING_ID,
             "rollershutter_slats");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+
     // List of all Thing Type UIDs
-    public static final Set<ThingTypeUID> SCENE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_SCENE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SCENE_THING_TYPES_UIDS = Set.of(THING_TYPE_SCENE);
+    public static final Set<ThingTypeUID> CO2_THING_TYPES_UIDS = Set.of(THING_TYPE_CO2);
+    public static final Set<ThingTypeUID> ROLLERSHUTTER_THING_TYPES_UIDS = Set.of(THING_TYPE_ROLLERSHUTTER);
+    public static final Set<ThingTypeUID> ROLLERSHUTTER_SLATS_THING_TYPES_UIDS = Set.of(THING_TYPE_ROLLERSHUTTER_SLATS);
+    public static final Set<ThingTypeUID> BISTABIEL_THING_TYPES_UIDS = Set.of(THING_TYPE_ON_OFF_LIGHT);
+    public static final Set<ThingTypeUID> THERMOSTAT_THING_TYPES_UIDS = Set.of(THING_TYPE_THERMOSTAT);
+    public static final Set<ThingTypeUID> DIMMER_THING_TYPES_UIDS = Set.of(THING_TYPE_ON_OFF_LIGHT,
+            THING_TYPE_DIMMABLE_LIGHT);
 
-    public static final Set<ThingTypeUID> CO2_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_CO2).collect(Collectors.toSet()));
-
-    public static final Set<ThingTypeUID> ROLLERSHUTTER_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_ROLLERSHUTTER).collect(Collectors.toSet()));
-
-    public static final Set<ThingTypeUID> ROLLERSHUTTER_SLATS_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_ROLLERSHUTTER_SLATS).collect(Collectors.toSet()));
-
-    public static final Set<ThingTypeUID> BISTABIEL_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_ON_OFF_LIGHT, THING_TYPE_TIMER_LIGHT).collect(Collectors.toSet()));
-
-    public static final Set<ThingTypeUID> THERMOSTAT_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_THERMOSTAT).collect(Collectors.toSet()));
-
-    public static final Set<ThingTypeUID> DIMMER_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT).collect(Collectors.toSet()));
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_TIMER_LIGHT, THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_THERMOSTAT,
-                    THING_TYPE_SCENE, THING_TYPE_CO2, THING_TYPE_ROLLERSHUTTER, THING_TYPE_ROLLERSHUTTER_SLATS)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ON_OFF_LIGHT,
+            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_THERMOSTAT, THING_TYPE_SCENE, THING_TYPE_CO2,
+            THING_TYPE_ROLLERSHUTTER, THING_TYPE_ROLLERSHUTTER_SLATS);
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";

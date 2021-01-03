@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Class {@link QbusMessageListMap} used as output from gson for cmd or event feedback from Qbus where the
  * data part is enclosed by [] and contains a list of json strings. Extends {@link QbusMessageBase}.
@@ -24,15 +26,16 @@ import java.util.Map;
  * @author Koen Schockaert - Initial Contribution
  */
 
-class QMessageListMap extends QbusMessageBase {
+@NonNullByDefault
+class QbusMessageListMap extends QbusMessageBase {
 
-    private List<Map<String, String>> data = new ArrayList<>();
+    private List<Map<String, String>> outputs = new ArrayList<>();
 
-    List<Map<String, String>> getData() {
-        return this.data;
+    List<Map<String, String>> getOutputs() {
+        return this.outputs;
     }
 
-    void setData(List<Map<String, String>> data) {
-        this.data = data;
+    void setOutputs(List<Map<String, String>> outputs) {
+        this.outputs = outputs;
     }
 }
