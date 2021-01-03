@@ -58,6 +58,7 @@ import org.sputnikdev.bluetooth.gattparser.spec.Field;
  * channels based off of a bluetooth device's GATT characteristics.
  *
  * @author Connor Petty - Initial contribution
+ * @author Peter Rosenberg - Use notifications
  *
  */
 @NonNullByDefault
@@ -84,20 +85,51 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         readCharacteristicJob = scheduler.scheduleWithFixedDelay(() -> {
             if (device.getConnectionState() == ConnectionState.CONNECTED) {
                 if (resolved) {
-                    for (CharacteristicHandler charHandler : charHandlers.values()) {
-                        if (charHandler.canRead()) {
-                            device.readCharacteristic(charHandler.characteristic);
-                            try {
-                                // TODO the ideal solution would be to use locks/conditions and timeouts
-                                // between this code and `onCharacteristicReadComplete` but
-                                // that would overcomplicate the code a bit and I plan
-                                // on implementing a better more generalized solution later
-                                Thread.sleep(50);
-                            } catch (InterruptedException e) {
-                                return;
+                    // go through all characteristics of all services
+                    this.device.getServices().forEach((service) -> {
+                        service.getCharacteristics().forEach((characteristic) -> {
+                            CharacteristicHandler charHandler;
+                            if (device.canNotify(characteristic)) {
+                                // If notifications can be enabled, we create the CharacteristicHandler
+                                // if it not exists so that we can register notifications.
+                                charHandler = charHandlers.computeIfAbsent(characteristic, CharacteristicHandler::new);
+                            } else {
+                                // Otherwise we let it being created by getCharacteristicHandler() and do
+                                // nothing here if it is not created yet.
+                                charHandler = charHandlers.get(characteristic);
                             }
-                        }
-                    }
+
+                            if (charHandler != null) {
+                                // Only read the value manually if notification is not on.
+                                // Also read it the first time before we activate notifications below.
+                                if (!device.isNotifying(characteristic) && charHandler.canRead()) {
+                                    device.readCharacteristic(characteristic);
+                                    try {
+                                        // TODO the ideal solution would be to use locks/conditions and timeouts
+                                        // between this code and `onCharacteristicReadComplete` but
+                                        // that would overcomplicate the code a bit and I plan
+                                        // on implementing a better more generalized solution later
+                                        Thread.sleep(50);
+                                    } catch (InterruptedException e) {
+                                        return;
+                                    }
+                                }
+                                if (device.canNotify(characteristic)) {
+                                    ChannelUID channelUID = charHandler.getChannelUID(null);
+                                    // Enabled/Disable notifications dependent on if the channel is linked.
+                                    if (isLinked(channelUID)) {
+                                        if (!device.isNotifying(characteristic)) {
+                                            device.enableNotifications(characteristic);
+                                        }
+                                    } else {
+                                        if (device.isNotifying(characteristic)) {
+                                            device.disableNotifications(characteristic);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
                 } else {
                     // if we are connected and still haven't been able to resolve the services, try disconnecting and
                     // then connecting again

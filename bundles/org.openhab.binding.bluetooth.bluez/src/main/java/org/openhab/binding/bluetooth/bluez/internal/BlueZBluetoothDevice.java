@@ -416,7 +416,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return true;
     }
 
-    private void convertCharacteristicProperties(BluetoothGattCharacteristic dBusBlueZCharacteristic, BluetoothCharacteristic characteristic) {
+    private void convertCharacteristicProperties(BluetoothGattCharacteristic dBusBlueZCharacteristic,
+            BluetoothCharacteristic characteristic) {
         int properties = 0;
 
         for (String property : dBusBlueZCharacteristic.getFlags()) {
