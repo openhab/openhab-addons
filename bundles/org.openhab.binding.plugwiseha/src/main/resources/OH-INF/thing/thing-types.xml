@@ -44,6 +44,7 @@
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="presetScene" typeId="presetScene"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -63,6 +64,7 @@
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="valvePosition" typeId="valvePosition"/>
 		</channels>
 
 		<representation-property>id</representation-property>

@@ -93,7 +93,7 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | dhwState            | Switch             | Yes        | This channel is used to read the current domestic hot water state of the boiler                                                                                                                                              |
 | waterPressure       | Number:Pressure    | Yes        | This channel is used to read the current water pressure of the boiler                                                                                                                                                        |
 | presetScene         | String             | Yes        | This channel is used to read the current active scene for the zone                                                                                                                                                           |
-
+| valvePosition       | String             | Yes        | This channel is used to read the current active scene for the zone                                                                                                                                                           |
 
 
 ## Full Example

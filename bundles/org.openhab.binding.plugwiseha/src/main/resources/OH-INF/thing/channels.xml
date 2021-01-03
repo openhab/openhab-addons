@@ -64,4 +64,20 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="presetScene">
+		<item-type>String</item-type>
+		<label>Preset Scene</label>
+		<description>Gets the preset scene of the zone</description>
+		<category>heating</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="valvePosition">
+		<item-type>Number</item-type>
+		<label>Valve Position</label>
+		<description>Gets the position of the valve (0% closed, 100% open)</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
 </thing:thing-descriptions>
