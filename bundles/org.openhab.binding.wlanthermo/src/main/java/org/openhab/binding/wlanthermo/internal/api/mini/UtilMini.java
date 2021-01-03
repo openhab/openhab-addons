@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin;
+package org.openhab.binding.wlanthermo.internal.api.mini;
 
 import java.util.HashMap;
 import java.util.Map;

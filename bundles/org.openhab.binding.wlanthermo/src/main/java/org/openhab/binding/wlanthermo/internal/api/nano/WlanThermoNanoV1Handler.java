@@ -23,11 +23,9 @@ import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
 import org.openhab.binding.wlanthermo.internal.WlanThermoExtendedConfiguration;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Data;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.settings.Settings;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
@@ -54,8 +52,6 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
     private WlanThermoNanoV1CommandHandler wlanThermoNanoV1CommandHandler = new WlanThermoNanoV1CommandHandler();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> pollingScheduler;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
     private final Gson gson = new Gson();
     private @Nullable Data data = new Data();
     private @Nullable Settings settings = new Settings();
@@ -76,7 +72,7 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                 authStore.addAuthentication(new DigestAuthentication(config.getUri(), Authentication.ANY_REALM,
                         config.getUsername(), config.getPassword()));
             }
-            scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
+            pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to initialize WlanThermo Nano: " + e.getMessage());

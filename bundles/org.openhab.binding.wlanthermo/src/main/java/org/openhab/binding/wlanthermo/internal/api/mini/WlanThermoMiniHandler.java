@@ -18,10 +18,8 @@ import java.util.concurrent.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
 import org.openhab.binding.wlanthermo.internal.WlanThermoConfiguration;
 import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.App;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
@@ -48,8 +46,6 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     private WlanThermoConfiguration config = new WlanThermoConfiguration();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> pollingScheduler;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
     private final Gson gson = new Gson();
     private @Nullable App app = new App();
 
@@ -63,7 +59,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
         config = getConfigAs(WlanThermoConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
+        pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
     }
 
     private void checkConnection() {
