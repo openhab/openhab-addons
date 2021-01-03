@@ -219,7 +219,8 @@ public class Util {
                             parameters.forEach(parameter -> {
                                 // remove comment: split parameter at '#', discard everything after that and remove
                                 // trailing spaces
-                                String normalizedParameter = UIDUtils.encode(parameter.split("#")[0].trim());
+                                String rawParameter = parameter.split("#")[0].trim();
+                                String normalizedParameter = UIDUtils.encode(rawParameter);
                                 ChannelUID channelUID = new ChannelUID(thing.getUID(),
                                         channelId + "_" + normalizedParameter);
                                 ChannelBuilder channelBuilder = ChannelBuilder
@@ -228,7 +229,7 @@ public class Util {
                                         .withLabel(channelTypeDescription.getLabel() + " " + parameter);
                                 thingBuilder.withChannel(channelBuilder.build());
                                 Tr064ChannelConfig channelConfig1 = new Tr064ChannelConfig(channelConfig);
-                                channelConfig1.setParameter(parameter);
+                                channelConfig1.setParameter(rawParameter);
                                 channels.put(channelUID, channelConfig1);
                             });
                         }
