@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Profile to offer the MapTransformationservice on a ItemChannelLink
  *
- * @author Stefan Triller - initial contribution
- *
+ * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
 public class MapTransformationProfile implements StateProfile {
