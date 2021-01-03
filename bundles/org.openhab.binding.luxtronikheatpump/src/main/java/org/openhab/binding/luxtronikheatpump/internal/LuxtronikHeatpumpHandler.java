@@ -26,6 +26,7 @@ import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpChannel;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpCoolingOperationMode;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpOperationMode;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -81,14 +82,18 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
+        if (command instanceof QuantityType) {
+            command = new DecimalType(((QuantityType<?>) command).floatValue());
+        }
+
         if (!(command instanceof DecimalType)) {
-            logger.warn("Heatpump operation for item {} must be from type: {}.", channel.getCommand(),
-                    DecimalType.class.getSimpleName());
+            logger.warn("Heatpump operation for item {} must be from type: {}. Received {}", channel.getCommand(),
+                    DecimalType.class.getSimpleName(), command.getClass());
             return;
         }
 
         Integer param = channel.getChannelId();
-        Integer value = -1;
+        Integer value = null;
 
         switch (channel) {
             case CHANNEL_BA_HZ_AKT:
@@ -132,7 +137,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 break;
         }
 
-        if (param != null && value > -1) {
+        if (param != null && value != null) {
             if (sendParamToHeatpump(param, value)) {
                 logger.info("Heatpump {} mode set to {}.", channel.getCommand(), value);
             }

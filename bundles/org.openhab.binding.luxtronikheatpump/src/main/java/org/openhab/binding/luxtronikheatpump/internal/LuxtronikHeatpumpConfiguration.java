@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class LuxtronikHeatpumpConfiguration {
 
     public String ipAddress = "";
-    public int port = 8888;
+    public int port = 8889;
     public int refresh = 60000;
     public boolean hideChannels = false;
 
