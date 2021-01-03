@@ -236,7 +236,7 @@
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewDownstreamAttenuation"/>
 	</channel>
-	<channel name="dslUpstreamAttentuation" label="DSL Upstream Attenuation">
+	<channel name="dslUpstreamAttenuation" label="DSL Upstream Attenuation">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
