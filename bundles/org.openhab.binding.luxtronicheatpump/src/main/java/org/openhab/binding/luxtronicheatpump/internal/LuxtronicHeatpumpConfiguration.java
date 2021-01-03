@@ -25,6 +25,7 @@ public class LuxtronicHeatpumpConfiguration {
     public String ipAddress = "";
     public int port = 8888;
     public int refresh = 60000;
+    public boolean hideChannels = false;
 
     public boolean isValid() {
         return !ipAddress.isEmpty() && port > 0 && refresh > 0;
@@ -33,6 +34,6 @@ public class LuxtronicHeatpumpConfiguration {
     @Override
     public String toString() {
         return new StringBuilder().append("[IP=").append(ipAddress).append(",port=").append(port).append(",refresh=")
-                .append(refresh).append("]").toString();
+                .append(refresh).append(",hideChannels=").append(hideChannels).append("]").toString();
     }
 }

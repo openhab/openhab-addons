@@ -236,6 +236,11 @@
 				<default>300</default>
 				<description>Refresh inverval in seconds. Defaults to 300</description>
 			</parameter>
+			<parameter name="hideChannles" type="boolean" required="false">
+				<label>Hide unavailable channels</label>
+				<default>true</default>
+				<description>Try to hide channels that are not available.</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>

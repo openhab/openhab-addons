@@ -31,6 +31,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -156,7 +157,7 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
         HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
 
         try {
-            connector.getValues();
+            connector.read();
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "the given hostname ''" + config.ipAddress + "' of the heatpump is unknown");
@@ -168,6 +169,22 @@ public class LuxtronicHeatpumpHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+
+        Integer[] visibilityValues = connector.getVisibilities();
+
+        ThingBuilder thingBuilder = editThing();
+
+        // Hide all channel that are actually not available
+        for (HeatpumpChannel channel : HeatpumpChannel.values()) {
+            if (channel.isVisible(visibilityValues).equals(Boolean.FALSE)) {
+                logger.info("Hiding channel {}", channel.getCommand());
+                ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());
+                thingBuilder.withoutChannel(channelUID);
+            }
+        }
+
+        updateThing(thingBuilder.build());
+
         restartJobs();
     }
 

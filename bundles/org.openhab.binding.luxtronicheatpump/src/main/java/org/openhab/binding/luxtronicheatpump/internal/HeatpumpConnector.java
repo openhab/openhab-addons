@@ -131,9 +131,8 @@ public class HeatpumpConnector {
      * Returns the internal states of the heat pump
      * 
      * @return a array with all internal data of the heat pump
-     * @throws IOException
      */
-    public Integer[] getValues() throws IOException {
+    public Integer[] getValues() {
         return heatpumpValues;
     }
 
@@ -141,9 +140,8 @@ public class HeatpumpConnector {
      * Returns the internal visibilities of the heat pump
      *
      * @return a array with all internal visibilities of the heat pump
-     * @throws IOException
      */
-    public Integer[] getVisibilities() throws IOException {
+    public Integer[] getVisibilities() {
         return heatpumpVisibilities;
     }
 

@@ -71,7 +71,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
             // read all parameters
             Integer[] heatpumpParams = connector.getParams();
-            // Integer[] heatpumpVisibilities = connector.getVisibilities();
+            Integer[] heatpumpVisibilities = connector.getVisibilities();
 
             for (HeatpumpChannel channel : HeatpumpChannel.values()) {
 
@@ -79,6 +79,11 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
                 if (channelId == null) {
                     continue; // no channel id to read defined (for channels handeled separatly)
+                }
+
+                if (channel.isVisible(heatpumpVisibilities).equals(Boolean.FALSE) && config.hideChannels) {
+                    logger.info("Channel {} is not availabe. Skipped updating it", channel.getCommand());
+                    continue; // channel not available for heat pump
                 }
 
                 Integer rawValue = null;
