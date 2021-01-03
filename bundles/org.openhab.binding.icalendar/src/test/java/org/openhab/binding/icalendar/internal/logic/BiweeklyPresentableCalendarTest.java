@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -590,16 +592,18 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(0, realFilteredEvents6.size());
 
         List<Event> realFilteredEvents7 = calendar_issue9647.getFilteredEventsBetween(
-                Instant.parse("2020-12-31T23:00:00Z"), Instant.parse("2021-01-01T23:00:00Z"), null, 3);
+                LocalDate.parse("2021-01-01").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.parse("2021-01-02").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
         assertEquals(0, realFilteredEvents7.size());
 
         Event[] expectedFilteredEvents8 = new Event[] {
-                new Event("Restabfall", Instant.parse("2021-01-03T23:00:00Z"), Instant.parse("2021-01-04T23:00:00Z"),
-                        ""),
-                new Event("Gelbe Tonne", Instant.parse("2021-01-03T23:00:00Z"), Instant.parse("2021-01-04T23:00:00Z"),
-                        "") };
+                new Event("Restabfall", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), ""),
+                new Event("Gelbe Tonne", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "") };
         List<Event> realFilteredEvents8 = calendar_issue9647.getFilteredEventsBetween(
-                Instant.parse("2021-01-03T23:00:00Z"), Instant.parse("2021-01-04T23:00:00Z"), null, 3);
+                LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
         assertArrayEquals(expectedFilteredEvents8, realFilteredEvents8.toArray(new Event[] {}));
     }
 }
