@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gpio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- PiGPIO Thing -->
+	<thing-type id="pigpio-remote" extensible="pigpio-digital-input,pigpio-digital-output">
+		<label>Pigpio Remote</label>
+		<description>The remote pigpio thing represents a remote raspberry pi with pigpio installed. Pins are channels.</description>
+
+		<properties>
+			<property name="vendor">Raspberry Pi Foundation</property>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text">
+				<context>network_address</context>
+				<label>Network Address</label>
+				<description>Network address of the Raspberry Pi.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535">
+				<context>port</context>
+				<label>Port</label>
+				<description>Port of pigpio on the remote Raspberry Pi.</description>
+				<default>8888</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="pigpio-digital-input">
+		<item-type>Switch</item-type>
+		<label>GPIO Digital Input</label>
+		<description>Get digital state of a GPIO Pin</description>
+		<state readOnly="true"/>
+
+		<config-description>
+			<parameter name="gpioId" type="integer" required="true">
+				<label>GPIO Pin</label>
+				<description>GPIO pin to use as input</description>
+			</parameter>
+			<parameter name="invert" type="boolean">
+				<default>false</default>
+				<label>Invert</label>
+			</parameter>
+			<parameter name="debouncingTime" type="integer" min="0">
+				<context>time</context>
+				<label>Delay Time</label>
+				<description>Time in ms to double check if value hasn't changed</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="pigpio-digital-output">
+		<item-type>Switch</item-type>
+		<label>GPIO Digital Output</label>
+		<description>Set digital state of a GPIO Pin</description>
+		<config-description>
+			<parameter name="gpioId" type="integer" required="true">
+				<label>GPIO Pin</label>
+				<description>GPIO pin to use as output</description>
+			</parameter>
+			<parameter name="invert" type="boolean">
+				<default>false</default>
+				<label>Invert</label>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
