@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -323,7 +323,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                             break;
                         case AtlonaPro3Constants.CHANNEL_VOLUME:
                             if (command instanceof DecimalType) {
-                                final double level = ((DecimalType) command).doubleValue();
+                                final int level = ((DecimalType) command).intValue();
                                 atlonaHandler.setVolume(portNbr, level);
                             } else {
                                 logger.debug("Received a VOLUME channel command with a non DecimalType: {}", command);
