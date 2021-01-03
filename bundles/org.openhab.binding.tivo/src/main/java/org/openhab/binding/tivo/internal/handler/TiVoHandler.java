@@ -285,11 +285,8 @@ public class TiVoHandler extends BaseThingHandler {
                         tmpStatus.setSubChannelNum(subChannel);
                         return tmpStatus;
                     case "CH_FAILED RECORDING":
-                        return tmpStatus;
                     case "CH_FAILED MISSING_CHANNEL":
-                        return tmpStatus;
                     case "CH_FAILED MALFORMED_CHANNEL":
-                        return tmpStatus;
                     case "CH_FAILED INVALID_CHANNEL":
                         return tmpStatus;
                     case "NO_STATUS_DATA_RETURNED":

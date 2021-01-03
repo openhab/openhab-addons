@@ -155,17 +155,10 @@ public class TivoStatusProvider {
                     return new TivoStatusData(false, -1, -1, false, "CH_FAILED NO_LIVE", true,
                             ConnectionStatus.STANDBY);
                 case "CH_FAILED RECORDING":
-                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED RECORDING", true,
-                            ConnectionStatus.ONLINE);
                 case "CH_FAILED MISSING_CHANNEL":
-                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED MISSING_CHANNEL", true,
-                            ConnectionStatus.ONLINE);
                 case "CH_FAILED MALFORMED_CHANNEL":
-                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED MALFORMED_CHANNEL", true,
-                            ConnectionStatus.ONLINE);
                 case "CH_FAILED INVALID_CHANNEL":
-                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED INVALID_CHANNEL", true,
-                            ConnectionStatus.ONLINE);
+                    return new TivoStatusData(false, -1, -1, false, rawStatus, true, ConnectionStatus.ONLINE);
                 case "INVALID_COMMAND":
                     return new TivoStatusData(false, -1, -1, false, "INVALID_COMMAND", false, ConnectionStatus.ONLINE);
                 case "CONNECTION_RETRIES_EXHAUSTED":
@@ -451,9 +444,23 @@ public class TivoStatusProvider {
                 }
 
             } catch (IOException e) {
+                closeBufferedReader();
                 logger.debug("TiVo {} is disconnected. ", tivoConfigData.getCfgIdentifier(), e);
             }
+            closeBufferedReader();
             logger.debug("streamReader {} is stopped. ", tivoConfigData.getCfgIdentifier());
+        }
+
+        private void closeBufferedReader() {
+            BufferedReader reader = bufferedReader;
+            if (reader != null) {
+                try {
+                    reader.close();
+                    this.bufferedReader = null;
+                } catch (IOException e) {
+                    logger.debug("Error closing bufferedReader: {}", e.getMessage(), e);
+                }
+            }
         }
     }
 }
