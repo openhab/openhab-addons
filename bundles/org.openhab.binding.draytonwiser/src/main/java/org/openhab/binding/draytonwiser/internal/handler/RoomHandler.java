@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,7 +118,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
 
     private State getHumidity() {
         if (getData().getId() != null && getData().getRoomStatId() != null) {
-            final RoomStatDTO roomStat = getDraytonWiseDTO().getRoomStat(getData().getRoomStatId());
+            final RoomStatDTO roomStat = getDraytonWiserDTO().getRoomStat(getData().getRoomStatId());
 
             if (roomStat != null) {
                 final Integer humidity = roomStat.getMeasuredHumidity();

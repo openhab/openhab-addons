@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,6 +54,7 @@ public class JsonSmartHomeDevices {
         public @Nullable SmartHomeDevice @Nullable [] groupDevices;
         public @Nullable String connectedVia;
         public @Nullable DriverIdentity driverIdentity;
+        public List<String> mergedApplianceIds = List.of();
 
         @Override
         public String toString() {
@@ -64,7 +66,7 @@ public class JsonSmartHomeDevices {
                     + Arrays.toString(capabilities) + ", tags=" + tags + ", applianceTypes="
                     + Arrays.toString(applianceTypes) + ", aliases=" + Arrays.toString(aliases) + ", groupDevices="
                     + Arrays.toString(groupDevices) + ", connectedVia='" + connectedVia + '\'' + ", driverIdentity="
-                    + driverIdentity + '}';
+                    + driverIdentity + ", mergedApplianceIds=" + mergedApplianceIds + '}';
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -211,91 +211,99 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void createChannels(List<RemoteopenhabItem> items, boolean replace) {
+    private boolean createChannels(List<RemoteopenhabItem> items, boolean replace) {
         synchronized (updateThingLock) {
-            int nbGroups = 0;
-            int nbChannelTypesCreated = 0;
-            List<Channel> channels = new ArrayList<>();
-            for (RemoteopenhabItem item : items) {
-                String itemType = item.type;
-                boolean readOnly = false;
-                if ("Group".equals(itemType)) {
-                    if (item.groupType.isEmpty()) {
-                        // Standard groups are ignored
-                        nbGroups++;
-                        continue;
+            try {
+                int nbGroups = 0;
+                int nbChannelTypesCreated = 0;
+                List<Channel> channels = new ArrayList<>();
+                for (RemoteopenhabItem item : items) {
+                    String itemType = item.type;
+                    boolean readOnly = false;
+                    if ("Group".equals(itemType)) {
+                        if (item.groupType.isEmpty()) {
+                            // Standard groups are ignored
+                            nbGroups++;
+                            continue;
+                        } else {
+                            itemType = item.groupType;
+                        }
                     } else {
-                        itemType = item.groupType;
+                        if (item.stateDescription != null && item.stateDescription.readOnly) {
+                            readOnly = true;
+                        }
                     }
-                } else {
-                    if (item.stateDescription != null && item.stateDescription.readOnly) {
-                        readOnly = true;
+                    // Ignore pattern containing a transformation (detected by a parenthesis in the pattern)
+                    RemoteopenhabStateDescription stateDescription = item.stateDescription;
+                    String pattern = (stateDescription == null || stateDescription.pattern.contains("(")) ? ""
+                            : stateDescription.pattern;
+                    ChannelTypeUID channelTypeUID;
+                    ChannelType channelType = channelTypeProvider.getChannelType(itemType, readOnly, pattern);
+                    String label;
+                    String description;
+                    if (channelType == null) {
+                        channelTypeUID = channelTypeProvider.buildNewChannelTypeUID(itemType);
+                        logger.trace("Create the channel type {} for item type {} ({} and with pattern {})",
+                                channelTypeUID, itemType, readOnly ? "read only" : "read write", pattern);
+                        label = String.format("Remote %s Item", itemType);
+                        description = String.format("An item of type %s from the remote server.", itemType);
+                        StateDescriptionFragmentBuilder stateDescriptionBuilder = StateDescriptionFragmentBuilder
+                                .create().withReadOnly(readOnly);
+                        if (!pattern.isEmpty()) {
+                            stateDescriptionBuilder = stateDescriptionBuilder.withPattern(pattern);
+                        }
+                        channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
+                                .withDescription(description)
+                                .withStateDescriptionFragment(stateDescriptionBuilder.build())
+                                .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+                        channelTypeProvider.addChannelType(itemType, channelType);
+                        nbChannelTypesCreated++;
+                    } else {
+                        channelTypeUID = channelType.getUID();
+                    }
+                    ChannelUID channelUID = new ChannelUID(getThing().getUID(), item.name);
+                    logger.trace("Create the channel {} of type {}", channelUID, channelTypeUID);
+                    label = "Item " + item.name;
+                    description = String.format("Item %s from the remote server.", item.name);
+                    channels.add(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID)
+                            .withKind(ChannelKind.STATE).withLabel(label).withDescription(description).build());
+                }
+                ThingBuilder thingBuilder = editThing();
+                if (replace) {
+                    thingBuilder.withChannels(channels);
+                    updateThing(thingBuilder.build());
+                    logger.debug(
+                            "{} channels defined (with {} different channel types) for the thing {} (from {} items including {} groups)",
+                            channels.size(), nbChannelTypesCreated, getThing().getUID(), items.size(), nbGroups);
+                } else if (channels.size() > 0) {
+                    int nbRemoved = 0;
+                    for (Channel channel : channels) {
+                        if (getThing().getChannel(channel.getUID()) != null) {
+                            thingBuilder.withoutChannel(channel.getUID());
+                            nbRemoved++;
+                        }
+                    }
+                    if (nbRemoved > 0) {
+                        logger.debug("{} channels removed for the thing {} (from {} items)", nbRemoved,
+                                getThing().getUID(), items.size());
+                    }
+                    for (Channel channel : channels) {
+                        thingBuilder.withChannel(channel);
+                    }
+                    updateThing(thingBuilder.build());
+                    if (nbGroups > 0) {
+                        logger.debug("{} channels added for the thing {} (from {} items including {} groups)",
+                                channels.size(), getThing().getUID(), items.size(), nbGroups);
+                    } else {
+                        logger.debug("{} channels added for the thing {} (from {} items)", channels.size(),
+                                getThing().getUID(), items.size());
                     }
                 }
-                // Ignore pattern containing a transformation (detected by a parenthesis in the pattern)
-                RemoteopenhabStateDescription stateDescription = item.stateDescription;
-                String pattern = (stateDescription == null || stateDescription.pattern.contains("(")) ? ""
-                        : stateDescription.pattern;
-                ChannelTypeUID channelTypeUID;
-                ChannelType channelType = channelTypeProvider.getChannelType(itemType, readOnly, pattern);
-                String label;
-                String description;
-                if (channelType == null) {
-                    channelTypeUID = channelTypeProvider.buildNewChannelTypeUID(itemType);
-                    logger.trace("Create the channel type {} for item type {} ({} and with pattern {})", channelTypeUID,
-                            itemType, readOnly ? "read only" : "read write", pattern);
-                    label = String.format("Remote %s Item", itemType);
-                    description = String.format("An item of type %s from the remote server.", itemType);
-                    StateDescriptionFragmentBuilder stateDescriptionBuilder = StateDescriptionFragmentBuilder.create()
-                            .withReadOnly(readOnly);
-                    if (!pattern.isEmpty()) {
-                        stateDescriptionBuilder = stateDescriptionBuilder.withPattern(pattern);
-                    }
-                    channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType).withDescription(description)
-                            .withStateDescriptionFragment(stateDescriptionBuilder.build())
-                            .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-                    channelTypeProvider.addChannelType(itemType, channelType);
-                    nbChannelTypesCreated++;
-                } else {
-                    channelTypeUID = channelType.getUID();
-                }
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), item.name);
-                logger.trace("Create the channel {} of type {}", channelUID, channelTypeUID);
-                label = "Item " + item.name;
-                description = String.format("Item %s from the remote server.", item.name);
-                channels.add(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID)
-                        .withKind(ChannelKind.STATE).withLabel(label).withDescription(description).build());
-            }
-            ThingBuilder thingBuilder = editThing();
-            if (replace) {
-                thingBuilder.withChannels(channels);
-                updateThing(thingBuilder.build());
-                logger.debug(
-                        "{} channels defined (with {} different channel types) for the thing {} (from {} items including {} groups)",
-                        channels.size(), nbChannelTypesCreated, getThing().getUID(), items.size(), nbGroups);
-            } else if (channels.size() > 0) {
-                int nbRemoved = 0;
-                for (Channel channel : channels) {
-                    if (getThing().getChannel(channel.getUID()) != null) {
-                        thingBuilder.withoutChannel(channel.getUID());
-                        nbRemoved++;
-                    }
-                }
-                if (nbRemoved > 0) {
-                    logger.debug("{} channels removed for the thing {} (from {} items)", nbRemoved, getThing().getUID(),
-                            items.size());
-                }
-                for (Channel channel : channels) {
-                    thingBuilder.withChannel(channel);
-                }
-                updateThing(thingBuilder.build());
-                if (nbGroups > 0) {
-                    logger.debug("{} channels added for the thing {} (from {} items including {} groups)",
-                            channels.size(), getThing().getUID(), items.size(), nbGroups);
-                } else {
-                    logger.debug("{} channels added for the thing {} (from {} items)", channels.size(),
-                            getThing().getUID(), items.size());
-                }
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.warn("An error occurred while creating the channels for the server {}: {}", getThing().getUID(),
+                        e.getMessage());
+                return false;
             }
         }
     }
@@ -345,15 +353,20 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 List<RemoteopenhabItem> items = restClient.getRemoteItems("name,type,groupType,state,stateDescription");
 
-                createChannels(items, true);
-                setStateOptions(items);
-                for (RemoteopenhabItem item : items) {
-                    updateChannelState(item.name, null, item.state, false);
+                if (createChannels(items, true)) {
+                    setStateOptions(items);
+                    for (RemoteopenhabItem item : items) {
+                        updateChannelState(item.name, null, item.state, false);
+                    }
+
+                    updateStatus(ThingStatus.ONLINE);
+
+                    restartStreamingUpdates();
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                            "Dynamic creation of the channels for the remote server items failed");
+                    stopStreamingUpdates();
                 }
-
-                updateStatus(ThingStatus.ONLINE);
-
-                restartStreamingUpdates();
             }
         } catch (RemoteopenhabException e) {
             logger.debug("{}", e.getMessage());

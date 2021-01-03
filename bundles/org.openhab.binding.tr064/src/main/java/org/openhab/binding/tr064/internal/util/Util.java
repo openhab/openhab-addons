@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -217,7 +217,9 @@ public class Util {
                         } else {
                             // create a channel for each parameter
                             parameters.forEach(parameter -> {
-                                String normalizedParameter = UIDUtils.encode(parameter);
+                                // remove comment: split parameter at '#', discard everything after that and remove
+                                // trailing spaces
+                                String normalizedParameter = UIDUtils.encode(parameter.split("#")[0].trim());
                                 ChannelUID channelUID = new ChannelUID(thing.getUID(),
                                         channelId + "_" + normalizedParameter);
                                 ChannelBuilder channelBuilder = ChannelBuilder

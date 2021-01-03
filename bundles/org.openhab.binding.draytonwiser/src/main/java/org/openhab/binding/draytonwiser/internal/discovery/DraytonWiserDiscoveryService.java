@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onRefresh(final DraytonWiserDTO domainDTOProxy) {
-        logger.debug("Received data from Drayton Wise device. Parsing to discover devices.");
+        logger.debug("Received data from Drayton Wiser device. Parsing to discover devices.");
         onControllerAdded(domainDTOProxy);
         domainDTOProxy.getRooms().forEach(this::onRoomAdded);
         domainDTOProxy.getRoomStats().forEach(r -> onRoomStatAdded(domainDTOProxy, r));
