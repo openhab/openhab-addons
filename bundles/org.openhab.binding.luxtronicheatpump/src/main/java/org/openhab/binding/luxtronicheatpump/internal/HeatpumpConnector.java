@@ -170,7 +170,7 @@ public class HeatpumpConnector {
 
         int arraylength = datain.readInt();
 
-        logger.info("Found {} values for {}", arraylength, value);
+        logger.debug("Found {} values for {}", arraylength, value);
 
         result = new Integer[arraylength];
 

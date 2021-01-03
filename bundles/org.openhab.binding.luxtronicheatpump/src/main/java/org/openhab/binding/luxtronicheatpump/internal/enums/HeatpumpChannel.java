@@ -727,13 +727,20 @@ public enum HeatpumpChannel {
         return isParameter == Boolean.TRUE;
     }
 
+    protected @Nullable HeatpumpVisibility getVisibility() {
+        return requiredVisibility;
+    }
+
     public Boolean isVisible(Integer[] visibilityValues) {
-        if (requiredVisibility == null) {
+        HeatpumpVisibility visiblity = getVisibility();
+
+        if (visiblity == null) {
             return Boolean.TRUE;
         }
 
-        if (visibilityValues.length < requiredVisibility.getCode()
-                || visibilityValues[requiredVisibility.getCode()] == 1) {
+        int code = visiblity.getCode();
+
+        if (visibilityValues.length < code || visibilityValues[code].equals(1)) {
             return Boolean.TRUE;
         }
 

@@ -82,7 +82,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
                 }
 
                 if (channel.isVisible(heatpumpVisibilities).equals(Boolean.FALSE) && config.hideChannels) {
-                    logger.info("Channel {} is not availabe. Skipped updating it", channel.getCommand());
+                    logger.debug("Channel {} is not availabe. Skipped updating it", channel.getCommand());
                     continue; // channel not available for heat pump
                 }
 
