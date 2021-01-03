@@ -99,15 +99,15 @@ rule "LogReader"
     end
 ```
 
-Use the rules with your Telegram Bot (need openHAB Telegram Action installed and configured)
+Use the rules with your Telegram Bot (need openHAB Telegram Binding installed and configured)
 
 ```xtend
 rule "LogReader"
     when
         Channel 'logreader:reader:openhablog:newErrorEvent' triggered
     then
-        // do something
-	sendTelegram("bot3", "*ERROR* LogReader Event!\n%s Errors are in the log! Here is the last row of it:\n`%s`", logreaderErrors.state.toString, logreaderLastError.state.toString)
+        val telegramAction = getActions("telegram","telegram:telegramBot:myBot")
+        telegramAction.sendTelegram("*ERROR* LogReader Event!\n%s Errors are in the log! Here is the last row of it:\n`%s`", logreaderErrors.state.toString, logreaderLastError.state.toString)
     end
 ```
 
