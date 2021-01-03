@@ -191,7 +191,7 @@ public class Monitor {
         this.videoUrl = videoUrl;
     }
 
-    public @Nullable Event getLastEvent() {
+    public @Nullable Event getMostRecentCompletedEvent() {
         return lastEvent;
     }
 
