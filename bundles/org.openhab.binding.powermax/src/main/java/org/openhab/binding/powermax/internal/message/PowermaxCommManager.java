@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -239,7 +239,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         PowermaxBaseMessage message = messageEvent.getMessage();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("onNewMessageReceived(): received message {}",
+            logger.debug("onNewMessageReceived(): received message 0x{} ({})",
+                    HexUtils.bytesToHex(message.getRawData()),
                     (message.getReceiveType() != null) ? message.getReceiveType()
                             : String.format("%02X", message.getCode()));
         }

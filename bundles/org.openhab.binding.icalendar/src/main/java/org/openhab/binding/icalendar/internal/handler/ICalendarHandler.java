@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -61,6 +63,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
+ * @author Michael Wodniok - Added last_update-channel and additional needed handling of it
  */
 @NonNullByDefault
 public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdateListener {
@@ -110,6 +113,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             case CHANNEL_NEXT_EVENT_TITLE:
             case CHANNEL_NEXT_EVENT_START:
             case CHANNEL_NEXT_EVENT_END:
+            case CHANNEL_LAST_UPDATE:
                 if (command instanceof RefreshType) {
                     updateStates();
                 }
@@ -121,6 +125,8 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
 
     @Override
     public void initialize() {
+        migrateLastUpdateChannel();
+
         final ICalendarConfiguration currentConfiguration = getConfigAs(ICalendarConfiguration.class);
         configuration = currentConfiguration;
 
@@ -256,6 +262,20 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                     logger.debug("Exception occured while pushing to item!", e);
                 }
             }
+        }
+    }
+
+    /**
+     * Migration for last_update-channel as this change is compatible to previous instances.
+     */
+    private void migrateLastUpdateChannel() {
+        Thing thing = getThing();
+        if (thing.getChannel(CHANNEL_LAST_UPDATE) == null) {
+            logger.debug("last_update channel is missing in this Thing. Adding it.");
+            ThingBuilder thingBuilder = editThing();
+            ChannelBuilder channelBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), CHANNEL_LAST_UPDATE));
+            thingBuilder.withChannel(channelBuilder.withType(LAST_UPDATE_TYPE_UID).build());
+            updateThing(thingBuilder.build());
         }
     }
 

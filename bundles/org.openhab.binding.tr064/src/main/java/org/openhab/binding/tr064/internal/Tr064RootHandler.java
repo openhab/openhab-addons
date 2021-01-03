@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDDeviceType;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDServiceType;
 import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDActionType;
 import org.openhab.binding.tr064.internal.phonebook.Phonebook;
+import org.openhab.binding.tr064.internal.phonebook.PhonebookActions;
 import org.openhab.binding.tr064.internal.phonebook.PhonebookProvider;
 import org.openhab.binding.tr064.internal.phonebook.Tr064PhonebookImpl;
 import org.openhab.binding.tr064.internal.soap.SOAPConnector;
@@ -391,6 +392,6 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(Tr064DiscoveryService.class);
+        return Set.of(Tr064DiscoveryService.class, PhonebookActions.class);
     }
 }

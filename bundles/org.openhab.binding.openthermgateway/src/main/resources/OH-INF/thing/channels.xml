@@ -233,6 +233,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="diag">
+		<item-type>Switch</item-type>
+		<label>Diagnostics Indication</label>
+		<description>Diagnostics indication</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="sendcommand">
 		<item-type>String</item-type>
 		<label>Send Command</label>

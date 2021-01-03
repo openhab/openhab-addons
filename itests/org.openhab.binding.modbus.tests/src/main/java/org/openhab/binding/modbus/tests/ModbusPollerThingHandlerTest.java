@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -276,7 +276,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
     @SuppressWarnings("null")
     private boolean checkEndpoint(ModbusSlaveEndpoint endpointParam) {
-        return endpointParam.equals(new ModbusTCPSlaveEndpoint(HOST, PORT));
+        return endpointParam.equals(new ModbusTCPSlaveEndpoint(HOST, PORT, false));
     }
 
     private boolean checkRequest(ModbusReadRequestBlueprint request, ModbusReadFunctionCode functionCode) {

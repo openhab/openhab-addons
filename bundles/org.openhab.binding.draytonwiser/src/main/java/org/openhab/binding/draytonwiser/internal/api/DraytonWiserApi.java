@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -169,6 +169,11 @@ public class DraytonWiserApi {
     public void setSmartPlugAwayAction(final int id, final boolean awayAction) throws DraytonWiserApiException {
         final String payload = "{\"AwayAction\":\"" + (awayAction ? "Off" : "NoChange") + "\"}";
         sendMessageToHeatHub(SMARTPLUG_ENDPOINT + id, "PATCH", payload);
+    }
+
+    public void setComfortMode(final boolean comfortMode) throws DraytonWiserApiException {
+        final String payload = "{\"ComfortModeEnabled\":" + comfortMode + "}";
+        sendMessageToHeatHub(SYSTEM_ENDPOINT, "PATCH", payload);
     }
 
     private synchronized @Nullable ContentResponse sendMessageToHeatHub(final String path, final HttpMethod method)

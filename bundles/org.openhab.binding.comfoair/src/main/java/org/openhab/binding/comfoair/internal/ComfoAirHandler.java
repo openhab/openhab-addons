@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.datatypes.ComfoAirDataType;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -55,6 +56,8 @@ public class ComfoAirHandler extends BaseThingHandler {
     private @Nullable ComfoAirSerialConnector comfoAirConnector;
 
     public static final int BAUDRATE = 9600;
+    public static final String ACTIVATE_CHANNEL_ID = ComfoAirBindingConstants.CG_CONTROL_PREFIX
+            + ComfoAirBindingConstants.CHANNEL_ACTIVATE;
 
     public ComfoAirHandler(Thing thing, final SerialPortManager serialPortManager) {
         super(thing);
@@ -64,29 +67,36 @@ public class ComfoAirHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
+        if (comfoAirConnector != null) {
+            boolean isActive = !comfoAirConnector.getIsSuspended();
 
-        if (command instanceof RefreshType) {
-            Channel channel = this.thing.getChannel(channelUID);
-            if (channel != null) {
-                updateChannelState(channel);
-            }
-        } else {
-            ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, command);
+            if (isActive || channelId.equals(ACTIVATE_CHANNEL_ID)) {
+                if (command instanceof RefreshType) {
+                    Channel channel = this.thing.getChannel(channelUID);
+                    if (channel != null) {
+                        updateChannelState(channel);
+                    }
+                } else {
+                    ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, command);
 
-            if (changeCommand != null) {
-                Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked)
-                        .map(ChannelUID::getId).collect(Collectors.toSet());
-                sendCommand(changeCommand, channelId);
+                    if (changeCommand != null) {
+                        Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID)
+                                .filter(this::isLinked).map(ChannelUID::getId).collect(Collectors.toSet());
+                        sendCommand(changeCommand, channelId);
 
-                Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
-                        .getAffectedReadCommands(channelId, keysToUpdate);
+                        Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
+                                .getAffectedReadCommands(channelId, keysToUpdate);
 
-                if (affectedReadCommands.size() > 0) {
-                    Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
-                    affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
+                        if (affectedReadCommands.size() > 0) {
+                            Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
+                            affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
+                        }
+                    } else {
+                        logger.warn("Unhandled command type: {}, channelId: {}", command.toString(), channelId);
+                    }
                 }
             } else {
-                logger.warn("Unhandled command type: {}, channelId: {}", command.toString(), channelId);
+                logger.debug("Binding control is currently not active.");
             }
         }
     }
@@ -114,6 +124,8 @@ public class ComfoAirHandler extends BaseThingHandler {
                 if (comfoAirConnector != null) {
                     updateStatus(ThingStatus.ONLINE);
                     pullDeviceProperties();
+
+                    updateState(ACTIVATE_CHANNEL_ID, OnOffType.ON);
 
                     List<Channel> channels = this.thing.getChannels();
 
@@ -159,14 +171,38 @@ public class ComfoAirHandler extends BaseThingHandler {
         if (!isLinked(channel.getUID())) {
             return;
         }
-        String commandKey = channel.getUID().getId();
 
-        ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
-        if (readCommand != null) {
-            scheduler.submit(() -> {
-                State state = sendCommand(readCommand, commandKey);
+        if (comfoAirConnector != null) {
+            boolean isActive = !comfoAirConnector.getIsSuspended();
+
+            String commandKey = channel.getUID().getId();
+            if (commandKey.equals(ACTIVATE_CHANNEL_ID)) {
+                State state = OnOffType.from(isActive);
                 updateState(channel.getUID(), state);
-            });
+                return;
+            }
+
+            if (!isActive) {
+                logger.debug("Binding control is currently not active.");
+                return;
+            }
+
+            ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
+            if (readCommand != null && readCommand.getRequestCmd() != null) {
+                scheduler.submit(() -> {
+                    State state = sendCommand(readCommand, commandKey);
+                    updateState(channel.getUID(), state);
+                });
+            }
+        }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        Channel channel = this.thing.getChannel(channelUID);
+        if (channel != null) {
+            updateChannelState(channel);
         }
     }
 

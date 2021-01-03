@@ -27,7 +27,7 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
 * Set up authentication:
   * Go to the "APIs & Services" -> "Credentials" page in the GCP Console and your project. [link](https://console.cloud.google.com/apis/credentials)
   * From the "Create credentials" drop-down list, select "OAuth client ID.
-  * Select application type "Other" and enter a name into the "Name" field.
+  * Select application type "TV and Limited Input" and enter a name into the "Name" field.
   * Click Create. A pop-up appears, showing your "client ID" and "client secret".
 
 ## Service Configuration
