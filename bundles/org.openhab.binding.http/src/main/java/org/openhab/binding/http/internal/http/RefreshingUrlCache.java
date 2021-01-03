@@ -59,11 +59,7 @@ public class RefreshingUrlCache {
         this.headers = thingConfig.headers;
         fallbackEncoding = thingConfig.encoding;
 
-        // do initial refresh
-        refresh();
-
-        // schedule next refreshes
-        future = executor.scheduleWithFixedDelay(this::refresh, 0, thingConfig.refresh, TimeUnit.SECONDS);
+        future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);
         logger.trace("Started refresh task for URL '{}' with interval {}s", url, thingConfig.refresh);
     }
 
