@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.remoteopenhab.internal.handler;
 
-import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.BINDING_ID;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
@@ -217,6 +215,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         synchronized (updateThingLock) {
             try {
                 int nbGroups = 0;
+                int nbChannelTypesCreated = 0;
                 List<Channel> channels = new ArrayList<>();
                 for (RemoteopenhabItem item : items) {
                     String itemType = item.type;
@@ -234,21 +233,33 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                             readOnly = true;
                         }
                     }
-                    String channelTypeId = String.format("item%s%s", itemType.replace(":", ""), readOnly ? "RO" : "");
-                    ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelTypeId);
-                    ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID, null);
+                    // Ignore pattern containing a transformation (detected by a parenthesis in the pattern)
+                    RemoteopenhabStateDescription stateDescription = item.stateDescription;
+                    String pattern = (stateDescription == null || stateDescription.pattern.contains("(")) ? ""
+                            : stateDescription.pattern;
+                    ChannelTypeUID channelTypeUID;
+                    ChannelType channelType = channelTypeProvider.getChannelType(itemType, readOnly, pattern);
                     String label;
                     String description;
                     if (channelType == null) {
-                        logger.trace("Create the channel type {} for item type {}", channelTypeUID, itemType);
+                        channelTypeUID = channelTypeProvider.buildNewChannelTypeUID(itemType);
+                        logger.trace("Create the channel type {} for item type {} ({} and with pattern {})",
+                                channelTypeUID, itemType, readOnly ? "read only" : "read write", pattern);
                         label = String.format("Remote %s Item", itemType);
                         description = String.format("An item of type %s from the remote server.", itemType);
+                        StateDescriptionFragmentBuilder stateDescriptionBuilder = StateDescriptionFragmentBuilder
+                                .create().withReadOnly(readOnly);
+                        if (!pattern.isEmpty()) {
+                            stateDescriptionBuilder = stateDescriptionBuilder.withPattern(pattern);
+                        }
                         channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
                                 .withDescription(description)
-                                .withStateDescriptionFragment(
-                                        StateDescriptionFragmentBuilder.create().withReadOnly(readOnly).build())
+                                .withStateDescriptionFragment(stateDescriptionBuilder.build())
                                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-                        channelTypeProvider.addChannelType(channelType);
+                        channelTypeProvider.addChannelType(itemType, channelType);
+                        nbChannelTypesCreated++;
+                    } else {
+                        channelTypeUID = channelType.getUID();
                     }
                     ChannelUID channelUID = new ChannelUID(getThing().getUID(), item.name);
                     logger.trace("Create the channel {} of type {}", channelUID, channelTypeUID);
@@ -261,8 +272,9 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                 if (replace) {
                     thingBuilder.withChannels(channels);
                     updateThing(thingBuilder.build());
-                    logger.debug("{} channels defined for the thing {} (from {} items including {} groups)",
-                            channels.size(), getThing().getUID(), items.size(), nbGroups);
+                    logger.debug(
+                            "{} channels defined (with {} different channel types) for the thing {} (from {} items including {} groups)",
+                            channels.size(), nbChannelTypesCreated, getThing().getUID(), items.size(), nbGroups);
                 } else if (channels.size() > 0) {
                     int nbRemoved = 0;
                     for (Channel channel : channels) {
