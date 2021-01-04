@@ -83,7 +83,6 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
                 } else {
                     blDevices = BLDevice.discoverDevices(DISCOVERY_TIMEOUT * 1000);
                 }
-
             } catch (IOException e) {
                 logger.debug("Error while trying to discover broadlinkthermostat devices: {}", e.getMessage());
             }
