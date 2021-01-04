@@ -671,6 +671,24 @@ public enum HeatpumpChannel {
     // Warmwasser Betriebsart
     CHANNEL_BA_BW_AKT(4, "Ba_Bw_akt", NumberItem.class, null, true, HeatpumpVisibility.BRAUWASSER),
 
+    // Thermische Desinfektion (Montag - Freitag + Dauerbetrieb)
+    CHANNEL_EINST_BWTDI_AKT_MO(20, "Einst_BwTDI_akt_MO", SwitchItem.class, null, true,
+            HeatpumpVisibility.THERMDESINFEKT),
+    CHANNEL_EINST_BWTDI_AKT_DI(21, "Einst_BwTDI_akt_DI", SwitchItem.class, null, true,
+            HeatpumpVisibility.THERMDESINFEKT),
+    CHANNEL_EINST_BWTDI_AKT_MI(22, "Einst_BwTDI_akt_MI", SwitchItem.class, null, true,
+            HeatpumpVisibility.THERMDESINFEKT),
+    CHANNEL_EINST_BWTDI_AKT_DO(23, "Einst_BwTDI_akt_DO", SwitchItem.class, null, true,
+            HeatpumpVisibility.THERMDESINFEKT),
+    CHANNEL_EINST_BWTDI_AKT_FR(24, "Einst_BwTDI_akt_FR", SwitchItem.class, null, true,
+            HeatpumpVisibility.THERMDESINFEKT),
+    CHANNEL_EINST_BWTDI_AKT_SA(25, "Einst_BwTDI_akt_SA", SwitchItem.class, null, true,
+            HeatpumpVisibility.THERMDESINFEKT),
+    CHANNEL_EINST_BWTDI_AKT_SO(26, "Einst_BwTDI_akt_SO", SwitchItem.class, null, true,
+            HeatpumpVisibility.THERMDESINFEKT),
+    CHANNEL_EINST_BWTDI_AKT_AL(27, "Einst_BwTDI_akt_AL", SwitchItem.class, null, true,
+            HeatpumpVisibility.THERMDESINFEKT),
+
     // Comfort Kühlung Betriebsart
     CHANNEL_EINST_BWSTYP_AKT(100, "Einst_BWStyp_akt", NumberItem.class, null, true, HeatpumpVisibility.KUHLUNG),
 

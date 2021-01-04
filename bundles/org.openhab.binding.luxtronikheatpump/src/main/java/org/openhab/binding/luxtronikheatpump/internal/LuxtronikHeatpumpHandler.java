@@ -26,6 +26,7 @@ import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpChannel;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpCoolingOperationMode;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpOperationMode;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -86,6 +87,10 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             command = new DecimalType(((QuantityType<?>) command).floatValue());
         }
 
+        if (command instanceof OnOffType) {
+            command = ((OnOffType) command) == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
+        }
+
         if (!(command instanceof DecimalType)) {
             logger.warn("Heatpump operation for item {} must be from type: {}. Received {}", channel.getCommand(),
                     DecimalType.class.getSimpleName(), command.getClass());
@@ -96,6 +101,16 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         Integer value = null;
 
         switch (channel) {
+            case CHANNEL_EINST_BWTDI_AKT_MO:
+            case CHANNEL_EINST_BWTDI_AKT_DI:
+            case CHANNEL_EINST_BWTDI_AKT_MI:
+            case CHANNEL_EINST_BWTDI_AKT_DO:
+            case CHANNEL_EINST_BWTDI_AKT_FR:
+            case CHANNEL_EINST_BWTDI_AKT_SA:
+            case CHANNEL_EINST_BWTDI_AKT_SO:
+            case CHANNEL_EINST_BWTDI_AKT_AL:
+                value = ((DecimalType) command).intValue();
+                break;
             case CHANNEL_BA_HZ_AKT:
             case CHANNEL_BA_BW_AKT:
                 value = ((DecimalType) command).intValue();

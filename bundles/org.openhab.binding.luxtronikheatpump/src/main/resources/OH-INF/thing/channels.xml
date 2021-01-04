@@ -1915,6 +1915,46 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="Einst_BwTDI_akt_MO" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal disinfection (Monday)</label>
+	</channel-type>
+
+	<channel-type id="Einst_BwTDI_akt_DI" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal disinfection (Tuesday)</label>
+	</channel-type>
+
+	<channel-type id="Einst_BwTDI_akt_MI" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal disinfection (Wednesday)</label>
+	</channel-type>
+
+	<channel-type id="Einst_BwTDI_akt_DO" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal disinfection (Thursday)</label>
+	</channel-type>
+
+	<channel-type id="Einst_BwTDI_akt_FR" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal disinfection (Firday)</label>
+	</channel-type>
+
+	<channel-type id="Einst_BwTDI_akt_SA" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal disinfection (Saturday)</label>
+	</channel-type>
+
+	<channel-type id="Einst_BwTDI_akt_SO" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal disinfection (Sunday)</label>
+	</channel-type>
+
+	<channel-type id="Einst_BwTDI_akt_AL" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal disinfection (Permanent)</label>
+	</channel-type>
+
 	<channel-type id="Einst_BWStyp_akt">
 		<item-type>Number</item-type>
 		<label>Comfort cooling mode</label>

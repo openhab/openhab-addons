@@ -214,6 +214,14 @@
 			<channel id="Ba_Hz_akt" typeId="Ba_Hz_akt"/>
 			<channel id="Ba_Bw_akt" typeId="Ba_Bw_akt"/>
 			<channel id="Einst_BWStyp_akt" typeId="Einst_BWStyp_akt"/>
+			<channel id="Einst_BwTDI_akt_MO" typeId="Einst_BwTDI_akt_MO"/>
+			<channel id="Einst_BwTDI_akt_DI" typeId="Einst_BwTDI_akt_DI"/>
+			<channel id="Einst_BwTDI_akt_MI" typeId="Einst_BwTDI_akt_MI"/>
+			<channel id="Einst_BwTDI_akt_DO" typeId="Einst_BwTDI_akt_DO"/>
+			<channel id="Einst_BwTDI_akt_FR" typeId="Einst_BwTDI_akt_FR"/>
+			<channel id="Einst_BwTDI_akt_SA" typeId="Einst_BwTDI_akt_SA"/>
+			<channel id="Einst_BwTDI_akt_SO" typeId="Einst_BwTDI_akt_SO"/>
+			<channel id="Einst_BwTDI_akt_AL" typeId="Einst_BwTDI_akt_AL"/>
 			<channel id="Einst_KuCft1_akt" typeId="Einst_KuCft1_akt"/>
 			<channel id="Sollwert_KuCft1_akt" typeId="Sollwert_KuCft1_akt"/>
 			<channel id="Einst_Kuhl_Zeit_Ein_akt" typeId="Einst_Kuhl_Zeit_Ein_akt"/>

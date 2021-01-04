@@ -258,6 +258,14 @@ The following channels are read & writable:
 | Einst_BWS_akt_2 | Number:Temperature |   | Hot water temperature | 
 | Ba_Hz_akt | Number |   | Heating mode | 
 | Ba_Bw_akt | Number |   | Hot water operating mode | 
+| Einst_BwTDI_akt_MO | Switch |  x  | Thermal disinfection (Monday) |
+| Einst_BwTDI_akt_DI | Switch |  x  | Thermal disinfection (Tuesday) |
+| Einst_BwTDI_akt_MI | Switch |  x  | Thermal disinfection (Wednesday) |
+| Einst_BwTDI_akt_DO | Switch |  x  | Thermal disinfection (Thursday) |
+| Einst_BwTDI_akt_FR | Switch |  x  | Thermal disinfection (Firday) |
+| Einst_BwTDI_akt_SA | Switch |  x  | Thermal disinfection (Saturday) |
+| Einst_BwTDI_akt_SO | Switch |  x  | Thermal disinfection (Sunday) |
+| Einst_BwTDI_akt_AL | Switch |  x  | Thermal disinfection (Permanent) |
 | Einst_BWStyp_akt | Number |   | Comfort cooling mode | 
 | Einst_KuCft1_akt | Number:Temperature |   | Comfort cooling AT release | 
 | Sollwert_KuCft1_akt | Number:Temperature |   | Comfort cooling AT release target | 
