@@ -50,8 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NikobusPcLinkHandler} is responsible for handling commands, which are
- * sent or received from the PC-Link Nikobus component.
+ * The {@link NikobusPcLinkHandler} is responsible for handling commands, which
+ * are sent or received from the PC-Link Nikobus component.
  *
  * @author Boris Krivonog - Initial contribution
  */
@@ -329,6 +329,21 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         List<Thing> things = getThing().getThings().stream()
                 .filter(thing -> thing.getHandler() instanceof NikobusModuleHandler).collect(Collectors.toList());
 
+        // if there are command listeners (buttons) then we need an open connection even if no modules exist
+        if (!commandListeners.isEmpty()) {
+            NikobusConnection connection = this.connection;
+            if (connection == null) {
+                return;
+            }
+            try {
+                connectIfNeeded(connection);
+            } catch (IOException e) {
+                connection.close();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                return;
+            }
+        }
+
         if (things.isEmpty()) {
             logger.debug("Nothing to refresh");
             return;
@@ -349,8 +364,8 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         if (!connection.isConnected()) {
             connection.connect();
 
-            // Send connection sequence, mimicking the Nikobus software. If this is not send, PC-Link
-            // sometimes does not forward button presses via serial interface.
+            // Send connection sequence, mimicking the Nikobus software. If this is not
+            // sent, PC-Link sometimes does not forward button presses via serial interface.
             Stream.of(new String[] { "++++", "ATH0", "ATZ", "$10110000B8CF9D", "#L0", "#E0", "#L0", "#E1" })
                     .map(NikobusCommand::new).forEach(this::sendCommand);
 
