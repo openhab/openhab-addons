@@ -91,7 +91,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
      * Called by the zone discovery service to let this handler have a reference.
      */
     public void setHaywardDiscoveryService(HaywardDiscoveryService s) {
-        this.haywardDiscoveryService = s;
+        haywardDiscoveryService = s;
     }
 
     @Override
