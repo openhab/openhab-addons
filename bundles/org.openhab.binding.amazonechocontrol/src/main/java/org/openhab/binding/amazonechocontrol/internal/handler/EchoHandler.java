@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
@@ -68,7 +69,7 @@ import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -113,6 +114,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
     private boolean updateTextToSpeech = true;
+    private boolean updateTextCommand = true;
     private boolean updateAlarm = true;
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
@@ -330,7 +332,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (command instanceof QuantityType<?>) {
                     QuantityType<?> value = (QuantityType<?>) command;
                     @Nullable
-                    QuantityType<?> seconds = value.toUnit(SmartHomeUnits.SECOND);
+                    QuantityType<?> seconds = value.toUnit(Units.SECOND);
                     if (seconds != null) {
                         mediaPosition = seconds.longValue();
                     }
@@ -588,6 +590,16 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
                 this.updateState(channelId, new PercentType(textToSpeechVolume));
             }
+            if (channelId.equals(CHANNEL_TEXT_COMMAND)) {
+                if (command instanceof StringType) {
+                    String text = command.toFullString();
+                    if (!text.isEmpty()) {
+                        waitForUpdate = 1000;
+                        updateTextCommand = true;
+                        startTextCommand(connection, device, text);
+                    }
+                }
+            }
             if (channelId.equals(CHANNEL_LAST_VOICE_COMMAND)) {
                 if (command instanceof StringType) {
                     String text = command.toFullString();
@@ -712,8 +724,17 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         connection.textToSpeech(device, text, volume, lastKnownVolume);
     }
 
+    private void startTextCommand(Connection connection, Device device, String text)
+            throws IOException, URISyntaxException {
+        Integer volume = null;
+        if (textToSpeechVolume != 0) {
+            volume = textToSpeechVolume;
+        }
+        connection.textCommand(device, text, volume, lastKnownVolume);
+    }
+
     @Override
-    public void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+    public void startAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer volume) throws IOException, URISyntaxException {
         Connection connection = this.findConnection();
         if (connection == null) {
@@ -769,11 +790,11 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 String type = currentNotification.type;
                 if (type != null) {
                     if (type.equals("Reminder")) {
-                        updateState(CHANNEL_REMIND, new StringType(""));
+                        updateState(CHANNEL_REMIND, StringType.EMPTY);
                         updateRemind = false;
                     }
                     if (type.equals("Alarm")) {
-                        updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
+                        updateState(CHANNEL_PLAY_ALARM_SOUND, StringType.EMPTY);
                         updateAlarm = false;
                     }
                 }
@@ -918,7 +939,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             } catch (HttpException e) {
                 if (e.getCode() == 400) {
-                    updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
+                    updateState(CHANNEL_RADIO_STATION_ID, StringType.EMPTY);
                 } else {
                     logger.info("getMediaState fails", e);
                 }
@@ -1068,27 +1089,31 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Update states
             if (updateRemind && currentNotifcationUpdateTimer == null) {
                 updateRemind = false;
-                updateState(CHANNEL_REMIND, new StringType(""));
+                updateState(CHANNEL_REMIND, StringType.EMPTY);
             }
             if (updateAlarm && currentNotifcationUpdateTimer == null) {
                 updateAlarm = false;
-                updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
+                updateState(CHANNEL_PLAY_ALARM_SOUND, StringType.EMPTY);
             }
             if (updateRoutine) {
                 updateRoutine = false;
-                updateState(CHANNEL_START_ROUTINE, new StringType(""));
+                updateState(CHANNEL_START_ROUTINE, StringType.EMPTY);
             }
             if (updateTextToSpeech) {
                 updateTextToSpeech = false;
-                updateState(CHANNEL_TEXT_TO_SPEECH, new StringType(""));
+                updateState(CHANNEL_TEXT_TO_SPEECH, StringType.EMPTY);
+            }
+            if (updateTextCommand) {
+                updateTextCommand = false;
+                updateState(CHANNEL_TEXT_COMMAND, StringType.EMPTY);
             }
             if (updatePlayMusicVoiceCommand) {
                 updatePlayMusicVoiceCommand = false;
-                updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, new StringType(""));
+                updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, StringType.EMPTY);
             }
             if (updateStartCommand) {
                 updateStartCommand = false;
-                updateState(CHANNEL_START_COMMAND, new StringType(""));
+                updateState(CHANNEL_START_COMMAND, StringType.EMPTY);
             }
 
             updateState(CHANNEL_MUSIC_PROVIDER_ID, new StringType(musicProviderId));
@@ -1183,10 +1208,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 } else {
                     updateState(CHANNEL_MEDIA_PROGRESS, UnDefType.UNDEF);
                 }
-                updateState(CHANNEL_MEDIA_PROGRESS_TIME,
-                        new QuantityType<>(currentPlayTimeMs / 1000, SmartHomeUnits.SECOND));
+                updateState(CHANNEL_MEDIA_PROGRESS_TIME, new QuantityType<>(currentPlayTimeMs / 1000, Units.SECOND));
                 if (updateMediaLength) {
-                    updateState(CHANNEL_MEDIA_LENGTH, new QuantityType<>(mediaLengthMs / 1000, SmartHomeUnits.SECOND));
+                    updateState(CHANNEL_MEDIA_LENGTH, new QuantityType<>(mediaLengthMs / 1000, Units.SECOND));
                 }
             } else {
                 updateState(CHANNEL_MEDIA_PROGRESS, UnDefType.UNDEF);
@@ -1225,7 +1249,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
 
             if (lastSpokenText.isEmpty() || lastSpokenText.equals(spokenText)) {
-                updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(""));
+                updateState(CHANNEL_LAST_VOICE_COMMAND, StringType.EMPTY);
             }
             lastSpokenText = spokenText;
             updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(spokenText));
@@ -1279,8 +1303,11 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if ("ON".equals(notification.status)) {
                     if ("Reminder".equals(notification.type)) {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
-                        ZonedDateTime alarmTime = ZonedDateTime
-                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        String date = notification.originalDate != null ? notification.originalDate
+                                : ZonedDateTime.now().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        String time = notification.originalTime != null ? notification.originalTime : "00:00:00";
+                        ZonedDateTime alarmTime = ZonedDateTime.parse(date + "T" + time + offset,
+                                DateTimeFormatter.ISO_DATE_TIME);
                         String recurringPattern = notification.recurringPattern;
                         if (recurringPattern != null && !recurringPattern.isBlank() && alarmTime.isBefore(now)) {
                             continue; // Ignore recurring entry if alarm time is before now

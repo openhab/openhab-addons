@@ -20,7 +20,7 @@
 			<channel id="limitMinimum" typeId="limitMinimum"/>
 			<channel id="limitMaximum" typeId="limitMaximum"/>
 		</channels>
-		<representation-property>serialNumber</representation-property>
+		<representation-property>serial</representation-property>
 		<config-description-ref uri="thing-type:velux:actuator"/>
 	</thing-type>
 </thing:thing-descriptions>

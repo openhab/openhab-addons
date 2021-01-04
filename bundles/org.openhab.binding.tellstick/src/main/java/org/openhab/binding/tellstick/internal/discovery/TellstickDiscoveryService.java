@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,8 +80,8 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void onDeviceAdded(Bridge bridge, Device device) {
-        logger.debug("Adding new TellstickDevice! '{}' with id '{}' and type '{}' to smarthome inbox", device,
-                device.getId(), device.getDeviceType());
+        logger.debug("Adding new TellstickDevice! '{}' with id '{}' and type '{}' to inbox", device, device.getId(),
+                device.getDeviceType());
         ThingUID thingUID = getThingUID(bridge, device);
         logger.debug("Detected thingUID: {}", thingUID);
         if (thingUID != null) {

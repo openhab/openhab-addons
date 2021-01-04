@@ -37,8 +37,8 @@ The binding can also *write* data to Modbus slaves using FC05 (Write single coil
 
 Please note the following caveats or limitations
 
-* the binding does *not* act as Modbus slave (e.g. as Modbus TCP server).
-* the binding does *not* support Modbus RTU over Modbus TCP, also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP", although normal "Modbus TCP" is supported. However, there is a workaround: you can use a Virtual Serial Port Server, to emulate a COM Port and Bind it with openHAB using Modbus Serial.
+* The binding does *not* act as Modbus slave (e.g. as Modbus TCP server).
+* The binding *does* support Modbus RTU over Modbus TCP, (also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP"), as well as normal "Modbus TCP".
 
 
 ## Background Material
@@ -86,8 +86,8 @@ See [general documentation about serial port configuration](/docs/administration
 
 In the tables below the thing configuration parameters are grouped by thing type.
 
-Things can be configured using Paper UI, or using a `.things` file.
-The configuration in this documentation explains the `.things` file, although you can find the same parameters from the Paper UI.
+Things can be configured using the UI, or using a `.things` file.
+The configuration in this documentation explains the `.things` file, although you can find the same parameters in the UI.
 
 Note that parameter type is very critical when writing `.things` file yourself, since it affects how the parameter value is encoded in the text file.
 
@@ -108,11 +108,12 @@ When optional parameters are not specified, they default to the values shown in 
 
 Basic parameters
 
-| Parameter | Type    | Required | Default if omitted | Description                                                 |
-| --------- | ------- | -------- | ------------------ | ----------------------------------------------------------- |
-| `host`    | text    |          | `"localhost"`      | IP Address or hostname                                      |
-| `port`    | integer |          | `502`              | Port number                                                 |
-| `id`      | integer |          | `1`                | Slave id. Also known as station address or unit identifier. |
+| Parameter    | Type    | Required | Default if omitted | Description                                                 |
+| ------------ | ------- | -------- | ------------------ | ----------------------------------------------------------- |
+| `host`       | text    |          | `"localhost"`      | IP Address or hostname                                      |
+| `port`       | integer |          | `502`              | Port number                                                 |
+| `id`         | integer |          | `1`                | Slave id. Also known as station address or unit identifier. |
+| `rtuEncoded` | boolean |          | `false`            | Use RTU encoding instead of regular TCP encoding.           |
 
 Advanced parameters
 
@@ -619,7 +620,7 @@ In this case, boolean input is considered to be either number `0`/`1`, `ON`/`OFF
 
 ## Full Examples
 
-Things can be configured via the Paper UI, or using a `things` file like here.
+Things can be configured in the UI, or using a `things` file like here.
 
 ### Basic Example
 
@@ -1015,14 +1016,14 @@ In extreme cases you might even need more than a poller for a single register so
 
 ## Changes From Modbus 1.x Binding
 
-The openHAB 1 Modbus binding is quite different from the openHAB 2 binding.
-The biggest difference is that the openHAB 2 binding uses things which can be configured using Paper UI.
+The openHAB 1 Modbus binding is quite different from this binding.
+The biggest difference is that this binding uses things.
 
 Unfortunately there is no conversion tool to convert old configurations to new thing structure.
 
 Due to the introduction of things, the configuration was bound to be backwards incompatible.
 This offered opportunity to simplify some aspects of configuration.
-The major differences are configuration logic are:
+The major differences in configuration logic are:
 
 ### Absolute Addresses Instead Of Relative
 
@@ -1070,7 +1071,6 @@ The new binding supports 32 and 64 bit values types when writing.
 
 Here is a step by step example for a migration from a 1.x configuration to an equivalent 2.x configuration. 
 It does not cover all features the 1.x configuration offers, but it should serve as an example on how to get it done.
-Please note that although you can do all this stuff also using PaperUI, the file based approach is strongly recommended if you need to migrate more than only a handful of Items.
 
 The 1.x modbus configuration to be updated defined 4 slaves:
 
@@ -1202,7 +1202,7 @@ Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
 }
 ```
 
-Save this in the `things` subdirectory of your openHAB 2 config. 
+Save this in the `things` folder. 
 Watch the file `events.log` as it lists your new added `data` `Things`. 
 Given that there are no config errors, they quickly change from `INITIALIZING` to `ONLINE`. 
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -141,7 +141,7 @@ public class SacnPacket extends DmxOverEthernetPacket {
         rawPacket[114] = (byte) (this.universeId % 256);
 
         /* set sender name in packet */
-        String senderName = new String("ESH DMX binding (sACN) <" + String.format("%05d", this.universeId) + ">");
+        String senderName = new String("openHAB DMX binding (sACN) <" + String.format("%05d", this.universeId) + ">");
         byte[] senderNameBytes = senderName.getBytes(StandardCharsets.UTF_8);
         System.arraycopy(senderNameBytes, 0, rawPacket, 44, senderName.length());
 

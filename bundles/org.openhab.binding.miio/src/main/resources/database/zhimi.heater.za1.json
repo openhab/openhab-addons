@@ -18,34 +18,48 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "target_temperature",
 				"friendlyName": "Target Temperature",
 				"channel": "target_temperature",
-				"type": "Number:Temperature",
 				"channelType": "temperatureC",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_target_temperature",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
 				]
 			},
 			{
 				"property": "brightness",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"channelType": "brightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_brightness",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -66,9 +80,14 @@
 				"property": "relative_humidity",
 				"friendlyName": "Relative Humidity",
 				"channel": "relative_humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "child_lock",
@@ -103,18 +122,26 @@
 				"channel": "temperature",
 				"channelType": "temperatureC",
 				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
 				"channelType": "usedhours",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			}
 		],
 		"experimental": true

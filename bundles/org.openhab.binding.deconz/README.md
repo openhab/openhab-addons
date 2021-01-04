@@ -89,6 +89,10 @@ The transition time is the time to move between two states and is configured in 
 The resolution provided is 1/10s.
 If no value is provided, the default value of the device is used.
 
+`extendedcolorlight` and `colorlight` have different modes for setting the color.
+Some devices accept only XY, others HSB, others both modes and the binding tries to autodetect the correct mode.
+If this fails, the advanced `colormode` parameter can be set to `xy` or `hs`.
+
 ### Textual Thing Configuration - Retrieving an API Key
 
 If you use the textual configuration, the thing file without an API key will look like this, for example:
@@ -146,6 +150,7 @@ The sensor devices support some of the following channels:
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
 | carbonmonoxide  | Switch                   |      R      | `ON` = carbon monoxide detected                                                           | carbonmonoxide                               |
 | color           | Color                    |      R      | Color set by remote                                                                       | colorcontrol                                 |
+| windowopen      | Contact                  |      R      | `windowopen` status is reported by some thermostats                                       | thermostat                                   |
 
 **NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
 The specification of your sensor depends on the deCONZ capabilities.
@@ -160,16 +165,19 @@ Other devices support
 | brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`        |                                 
 | switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                    |
 | color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`, `lightgroup`|
-| color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light     | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
+| color_temperature | Number                   |     R/W     | Color temperature in Kelvin. The value range is determined by each individual light     | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
+| effect            | String                   |     R/W     | Effect selection. Allowed commands are set dynamically                                  | `colorlight`                                    |
+| effectSpeed       | Number                   |     W       | Effect Speed                          | `colorlight`                                    |
 | lock              | Switch                   |     R/W     | Lock (ON) or unlock (OFF) the doorlock| `doorlock`                                      |                 
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                                |
 | heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                    |
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                    |
 | mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                    |
 | offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                    |
-| alert             | Switch                   |     R/W     | Turn alerts on/off                    | `warningdevice`, `lightgroup`                   |
+| alert             | String                   |     W       | Turn alerts on. Allowed commands are `none`, `select` (short blinking), `lselect` (long blinking) | `warningdevice`, `lightgroup`, `dimmablelight`, `colorlight`, `extendedcolorlight`, `colortemperaturelight` |
 | all_on            | Switch                   |     R       | All lights in group are on            | `lightgroup`                                    |
 | any_on            | Switch                   |     R       | Any light in group is on              | `lightgroup`                                    |
+| scene             | String                   |     W       | Recall a scene. Allowed commands are set dynamically                                    | `lightgroup`                                    |                  
 
 **NOTE:** For groups `color` and `color_temperature`  are used for sending commands to the group.
 Their state represents the last command send to the group, not necessarily the actual state of the group.

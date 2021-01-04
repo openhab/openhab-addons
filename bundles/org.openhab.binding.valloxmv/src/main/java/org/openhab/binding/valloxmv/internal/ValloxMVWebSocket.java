@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -489,8 +489,7 @@ public class ValloxMVWebSocket {
                 // Update channels with read values
                 updateChannel(ValloxMVBindingConstants.CHANNEL_ONOFF, ooOnOff);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_STATE, new DecimalType(bdState));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED,
-                        new QuantityType<>(iFanspeed, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED, new QuantityType<>(iFanspeed, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_EXTRACT, new DecimalType(iFanspeedExtract));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_SUPPLY, new DecimalType(iFanspeedSupply));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_INSIDE,
@@ -503,8 +502,7 @@ public class ValloxMVWebSocket {
                         new QuantityType<>(bdTempIncomingBeforeHeating, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_INCOMING,
                         new QuantityType<>(bdTempIncoming, SIUnits.CELSIUS));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_HUMIDITY,
-                        new QuantityType<>(iHumidity, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_HUMIDITY, new QuantityType<>(iHumidity, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_CELLSTATE, new DecimalType(iCellstate));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_YEARS, new DecimalType(iUptimeYears));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(iUptimeHours));
@@ -513,17 +511,17 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FILTER_CHANGED_DATE, new DateTimeType(
                         ZonedDateTime.ofInstant(cFilterChangedDate.toInstant(), TimeZone.getDefault().toZoneId())));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_REMAINING_FILTER_DAYS,
-                        new QuantityType<>(iRemainingTimeForFilter, SmartHomeUnits.DAY));
+                        new QuantityType<>(iRemainingTimeForFilter, Units.DAY));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE,
-                        new QuantityType<>(iExtrFanBalanceBase, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iExtrFanBalanceBase, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE,
-                        new QuantityType<>(iSuppFanBalanceBase, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iSuppFanBalanceBase, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING,
-                        new QuantityType<>(iHomeSpeedSetting, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iHomeSpeedSetting, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_AWAY_SPEED_SETTING,
-                        new QuantityType<>(iAwaySpeedSetting, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iAwaySpeedSetting, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_SPEED_SETTING,
-                        new QuantityType<>(iBoostSpeedSetting, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iBoostSpeedSetting, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET,
                         new QuantityType<>(bdHomeAirTempTarget, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_AWAY_AIR_TEMP_TARGET,
@@ -533,17 +531,17 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIME, new DecimalType(iBoostTime));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED, ooBoostTimerEnabled);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN,
-                        new QuantityType<>(iFireplaceExtrFan, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iFireplaceExtrFan, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_SUPP_FAN,
-                        new QuantityType<>(iFireplaceSuppFan, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iFireplaceSuppFan, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME, new DecimalType(iFireplaceTime));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED, ooFireplaceTimerEnabled);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET,
                         new QuantityType<>(bdExtraAirTempTarget, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_EXTR_FAN,
-                        new QuantityType<>(iExtraExtrFan, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iExtraExtrFan, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_SUPP_FAN,
-                        new QuantityType<>(iExtraSuppFan, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iExtraSuppFan, Units.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_TIME, new DecimalType(iExtraTime));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_TIMER_ENABLED, ooExtraTimerEnabled);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_WEEKLY_TIMER_ENABLED, ooWeeklyTimerEnabled);
@@ -573,7 +571,7 @@ public class ValloxMVWebSocket {
             // Fetch 2 byte number out of bytearray representing the temperature in centiKelvin
             BigDecimal bdTemperatureCentiKelvin = new BigDecimal(getNumberBE(bytes, pos));
             // Return number converted to degree celsius (= (centiKelvin - 27315) / 100 )
-            return (new QuantityType<>(bdTemperatureCentiKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
+            return (new QuantityType<>(bdTemperatureCentiKelvin, MetricPrefix.CENTI(Units.KELVIN))
                     .toUnit(SIUnits.CELSIUS)).toBigDecimal();
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,10 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
@@ -35,7 +31,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecobee.internal.action.EcobeeActions;
 import org.openhab.binding.ecobee.internal.api.EcobeeApi;
 import org.openhab.binding.ecobee.internal.config.EcobeeThermostatConfiguration;
-import org.openhab.binding.ecobee.internal.discovery.SensorDiscoveryService;
 import org.openhab.binding.ecobee.internal.dto.SelectionDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.AlertDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ClimateDTO;
@@ -62,7 +57,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -90,9 +85,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
 
-    private static final int SENSOR_DISCOVERY_STARTUP_DELAY_SECONDS = 30;
-    private static final int SENSOR_DISCOVERY_INTERVAL_SECONDS = 300;
-
     private final Logger logger = LoggerFactory.getLogger(EcobeeThermostatBridgeHandler.class);
 
     private TimeZoneProvider timeZoneProvider;
@@ -101,9 +93,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) String thermostatId;
 
     private final Map<String, EcobeeSensorThingHandler> sensorHandlers = new ConcurrentHashMap<>();
-
-    private @Nullable Future<?> discoverSensorsJob;
-    private @Nullable SensorDiscoveryService discoveryService;
 
     private @Nullable ThermostatDTO savedThermostat;
     private @Nullable List<RemoteSensorDTO> savedSensors;
@@ -127,13 +116,11 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         initializeWeatherMaps();
         initializeReadOnlyChannels();
         clearSavedState();
-        scheduleDiscoveryJob();
         updateStatus(EcobeeUtils.isBridgeOnline(getBridge()) ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
     }
 
     @Override
     public void dispose() {
-        cancelDiscoveryJob();
         logger.debug("ThermostatBridge: Disposing thermostat '{}'", thermostatId);
     }
 
@@ -177,10 +164,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         scheduler.execute(() -> {
             handleThermostatCommand(channelUID, command);
         });
-    }
-
-    public void setDiscoveryService(SensorDiscoveryService discoveryService) {
-        this.discoveryService = discoveryService;
     }
 
     /**
@@ -266,8 +249,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.unmodifiableList(
-                Stream.of(EcobeeActions.class, SensorDiscoveryService.class).collect(Collectors.toList()));
+        return Collections.singletonList(EcobeeActions.class);
     }
 
     public void updateChannels(ThermostatDTO thermostat) {
@@ -414,16 +396,14 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         updateChannel(grp + CH_RUNTIME_DATE, EcobeeUtils.undefOrString(runtime.runtimeDate));
         updateChannel(grp + CH_RUNTIME_INTERVAL, EcobeeUtils.undefOrDecimal(runtime.runtimeInterval));
         updateChannel(grp + CH_ACTUAL_TEMPERATURE, EcobeeUtils.undefOrTemperature(runtime.actualTemperature));
-        updateChannel(grp + CH_ACTUAL_HUMIDITY,
-                EcobeeUtils.undefOrQuantity(runtime.actualHumidity, SmartHomeUnits.PERCENT));
+        updateChannel(grp + CH_ACTUAL_HUMIDITY, EcobeeUtils.undefOrQuantity(runtime.actualHumidity, Units.PERCENT));
         updateChannel(grp + CH_RAW_TEMPERATURE, EcobeeUtils.undefOrTemperature(runtime.rawTemperature));
         updateChannel(grp + CH_SHOW_ICON_MODE, EcobeeUtils.undefOrDecimal(runtime.showIconMode));
         updateChannel(grp + CH_DESIRED_HEAT, EcobeeUtils.undefOrTemperature(runtime.desiredHeat));
         updateChannel(grp + CH_DESIRED_COOL, EcobeeUtils.undefOrTemperature(runtime.desiredCool));
-        updateChannel(grp + CH_DESIRED_HUMIDITY,
-                EcobeeUtils.undefOrQuantity(runtime.desiredHumidity, SmartHomeUnits.PERCENT));
+        updateChannel(grp + CH_DESIRED_HUMIDITY, EcobeeUtils.undefOrQuantity(runtime.desiredHumidity, Units.PERCENT));
         updateChannel(grp + CH_DESIRED_DEHUMIDITY,
-                EcobeeUtils.undefOrQuantity(runtime.desiredDehumidity, SmartHomeUnits.PERCENT));
+                EcobeeUtils.undefOrQuantity(runtime.desiredDehumidity, Units.PERCENT));
         updateChannel(grp + CH_DESIRED_FAN_MODE, EcobeeUtils.undefOrString(runtime.desiredFanMode));
         if (runtime.desiredHeatRange != null && runtime.desiredHeatRange.size() == 2) {
             updateChannel(grp + CH_DESIRED_HEAT_RANGE_LOW,
@@ -538,9 +518,9 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         updateChannel(grp + CH_RANDOM_START_DELAY_COOL, EcobeeUtils.undefOrDecimal(settings.randomStartDelayCool));
         updateChannel(grp + CH_RANDOM_START_DELAY_HEAT, EcobeeUtils.undefOrDecimal(settings.randomStartDelayHeat));
         updateChannel(grp + CH_HUMIDITY_HIGH_ALERT,
-                EcobeeUtils.undefOrQuantity(settings.humidityHighAlert, SmartHomeUnits.PERCENT));
+                EcobeeUtils.undefOrQuantity(settings.humidityHighAlert, Units.PERCENT));
         updateChannel(grp + CH_HUMIDITY_LOW_ALERT,
-                EcobeeUtils.undefOrQuantity(settings.humidityLowAlert, SmartHomeUnits.PERCENT));
+                EcobeeUtils.undefOrQuantity(settings.humidityLowAlert, Units.PERCENT));
         updateChannel(grp + CH_DISABLE_HEAT_PUMP_ALERTS, EcobeeUtils.undefOrOnOff(settings.disableHeatPumpAlerts));
         updateChannel(grp + CH_DISABLE_ALERTS_ON_IDT, EcobeeUtils.undefOrOnOff(settings.disableAlertsOnIdt));
         updateChannel(grp + CH_HUMIDITY_ALERT_NOTIFY, EcobeeUtils.undefOrOnOff(settings.humidityAlertNotify));
@@ -693,9 +673,9 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                 updateChannel(grp + CH_FORECAST_CONDITION, EcobeeUtils.undefOrString(forecast.condition));
                 updateChannel(grp + CH_FORECAST_TEMPERATURE, EcobeeUtils.undefOrTemperature(forecast.temperature));
                 updateChannel(grp + CH_FORECAST_PRESSURE,
-                        EcobeeUtils.undefOrQuantity(forecast.pressure, ImperialUnits.INCH_OF_MERCURY));
+                        EcobeeUtils.undefOrQuantity(forecast.pressure, Units.MILLIBAR));
                 updateChannel(grp + CH_FORECAST_RELATIVE_HUMIDITY,
-                        EcobeeUtils.undefOrQuantity(forecast.relativeHumidity, SmartHomeUnits.PERCENT));
+                        EcobeeUtils.undefOrQuantity(forecast.relativeHumidity, Units.PERCENT));
                 updateChannel(grp + CH_FORECAST_DEWPOINT, EcobeeUtils.undefOrTemperature(forecast.dewpoint));
                 updateChannel(grp + CH_FORECAST_VISIBILITY,
                         EcobeeUtils.undefOrQuantity(forecast.visibility, SIUnits.METRE));
@@ -705,8 +685,8 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                         EcobeeUtils.undefOrQuantity(forecast.windGust, ImperialUnits.MILES_PER_HOUR));
                 updateChannel(grp + CH_FORECAST_WIND_DIRECTION, EcobeeUtils.undefOrString(forecast.windDirection));
                 updateChannel(grp + CH_FORECAST_WIND_BEARING,
-                        EcobeeUtils.undefOrQuantity(forecast.windBearing, SmartHomeUnits.DEGREE_ANGLE));
-                updateChannel(grp + CH_FORECAST_POP, EcobeeUtils.undefOrQuantity(forecast.pop, SmartHomeUnits.PERCENT));
+                        EcobeeUtils.undefOrQuantity(forecast.windBearing, Units.DEGREE_ANGLE));
+                updateChannel(grp + CH_FORECAST_POP, EcobeeUtils.undefOrQuantity(forecast.pop, Units.PERCENT));
                 updateChannel(grp + CH_FORECAST_TEMP_HIGH, EcobeeUtils.undefOrTemperature(forecast.tempHigh));
                 updateChannel(grp + CH_FORECAST_TEMP_LOW, EcobeeUtils.undefOrTemperature(forecast.tempLow));
                 updateChannel(grp + CH_FORECAST_SKY, EcobeeUtils.undefOrDecimal(forecast.sky));
@@ -822,32 +802,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         EcobeeAccountBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             handler.performThermostatUpdate(request);
-        }
-    }
-
-    private void scheduleDiscoveryJob() {
-        logger.debug("ThermostatBridge: Scheduling sensor discovery job");
-        cancelDiscoveryJob();
-        discoverSensorsJob = scheduler.scheduleWithFixedDelay(this::discoverSensors,
-                SENSOR_DISCOVERY_STARTUP_DELAY_SECONDS, SENSOR_DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
-    }
-
-    private void cancelDiscoveryJob() {
-        Future<?> localDiscoverSensorsJob = discoverSensorsJob;
-        if (localDiscoverSensorsJob != null) {
-            localDiscoverSensorsJob.cancel(true);
-            logger.debug("ThermostatBridge: Canceling sensor discovery job");
-        }
-    }
-
-    private void discoverSensors() {
-        EcobeeAccountBridgeHandler handler = getBridgeHandler();
-        if (handler != null && handler.isDiscoveryEnabled()) {
-            SensorDiscoveryService localDiscoveryService = discoveryService;
-            if (localDiscoveryService != null) {
-                logger.debug("ThermostatBridge: Running sensor discovery");
-                localDiscoveryService.startBackgroundDiscovery();
-            }
         }
     }
 

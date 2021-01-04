@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -139,7 +139,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         OpenWebNetZigBeeBridgeConfig zbBridgeConfig = getConfigAs(OpenWebNetZigBeeBridgeConfig.class);
         String serialPort = zbBridgeConfig.getSerialPort();
         if (serialPort == null || serialPort.isEmpty()) {
-            logger.info("Cannot connect ZigBee USB Gateway. No serial port has been provided in Bridge configuration.");
+            logger.warn("Cannot connect ZigBee USB Gateway. No serial port has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-serial-port");
             return null;
@@ -156,7 +156,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         OpenWebNetBusBridgeConfig busBridgeConfig = getConfigAs(OpenWebNetBusBridgeConfig.class);
         String host = busBridgeConfig.getHost();
         if (host == null || host.isEmpty()) {
-            logger.info("Cannot connect to BUS Gateway. No host/IP has been provided in Bridge configuration.");
+            logger.warn("Cannot connect to BUS Gateway. No host/IP has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ip-address");
             return null;
@@ -181,7 +181,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.debug("handleCommand (command={} - channel={})", command, channelUID);
         OpenGateway gw = gateway;
         if (gw != null && !gw.isConnected()) {
-            logger.info("Gateway is NOT connected, skipping command");
+            logger.warn("Gateway is NOT connected, skipping command");
             return;
         } else {
             logger.warn("Channel not supported: channel={}", channelUID);

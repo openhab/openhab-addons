@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -431,8 +431,8 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
                 mostRecentEnergy.setInterval(configuration.getMeasurementInterval());
                 energy = mostRecentEnergy;
                 logger.trace("Updating {} ({}) energy with: {}", deviceType, macAddress, mostRecentEnergy);
-                updateState(CHANNEL_ENERGY, new QuantityType<>(correctSign(mostRecentEnergy.tokWh(localCalibration)),
-                        SmartHomeUnits.KILOWATT_HOUR));
+                updateState(CHANNEL_ENERGY,
+                        new QuantityType<>(correctSign(mostRecentEnergy.tokWh(localCalibration)), Units.KILOWATT_HOUR));
                 LocalDateTime start = mostRecentEnergy.getStart();
                 updateState(CHANNEL_ENERGY_STAMP,
                         start != null ? PlugwiseUtils.newDateTimeType(start) : UnDefType.NULL);
@@ -460,7 +460,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
             return;
         }
 
-        updateState(CHANNEL_POWER, new QuantityType<>(correctSign(watt), SmartHomeUnits.WATT));
+        updateState(CHANNEL_POWER, new QuantityType<>(correctSign(watt), Units.WATT));
     }
 
     private void handleRealTimeClockGetResponse(RealTimeClockGetResponseMessage message) {

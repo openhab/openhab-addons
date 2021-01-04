@@ -35,7 +35,7 @@
 			<parameter name="callbackHost" type="text">
 				<context>network-address</context>
 				<label>Callback Network Address</label>
-				<description>Callback network address of the ESH runtime, default is auto-discovery</description>
+				<description>Callback network address of the runtime, default is auto-discovery</description>
 			</parameter>
 			<parameter name="bindAddress" type="text">
 				<context>network-address</context>

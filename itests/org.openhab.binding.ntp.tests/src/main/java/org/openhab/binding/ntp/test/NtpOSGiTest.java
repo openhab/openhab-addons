@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,7 +100,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     private static final String TEST_ITEM_NAME = "testItem";
     private static final String TEST_THING_ID = "testThingId";
 
-    // No bundle in ESH is exporting a package from which we can use item types
+    // No bundle is exporting a package from which we can use item types
     // as constants, so we will use String.
     private static final String ACCEPTED_ITEM_TYPE_STRING = "String";
     private static final String ACCEPTED_ITEM_TYPE_DATE_TIME = "DateTime";

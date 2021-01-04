@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link ConditionHandlerTest} Test Condition Handler updates
@@ -49,7 +49,7 @@ public class ConditionHandlerTest {
             UpdateStatus result = condHandler.updateChannels(pmJson);
             assertEquals(UpdateStatus.OK, result, "Valid update");
             assertEquals(QuantityType.valueOf(22.7, SIUnits.CELSIUS), condHandler.getTemperature(), "Temperature");
-            assertEquals(QuantityType.valueOf(61.0, SmartHomeUnits.PERCENT), condHandler.getHumidity(), "Humidity");
+            assertEquals(QuantityType.valueOf(61.0, Units.PERCENT), condHandler.getHumidity(), "Humidity");
             assertEquals(QuantityType.valueOf(-1, SIUnits.PASCAL), condHandler.getPressure(), "Pressure");
             assertEquals(QuantityType.valueOf(-1, SIUnits.PASCAL), condHandler.getPressureSea(), "Pressure Sea");
         } else {
@@ -72,7 +72,7 @@ public class ConditionHandlerTest {
             UpdateStatus result = condHandler.updateChannels(pmJson);
             assertEquals(UpdateStatus.OK, result, "Valid update");
             assertEquals(QuantityType.valueOf(21.5, SIUnits.CELSIUS), condHandler.getTemperature(), "Temperature");
-            assertEquals(QuantityType.valueOf(58.5, SmartHomeUnits.PERCENT), condHandler.getHumidity(), "Humidity");
+            assertEquals(QuantityType.valueOf(58.5, Units.PERCENT), condHandler.getHumidity(), "Humidity");
             assertEquals(QuantityType.valueOf(100200.0, SIUnits.PASCAL), condHandler.getPressure(), "Pressure");
             assertEquals(QuantityType.valueOf(101968.7, SIUnits.PASCAL), condHandler.getPressureSea(), "Pressure Sea");
         } else {

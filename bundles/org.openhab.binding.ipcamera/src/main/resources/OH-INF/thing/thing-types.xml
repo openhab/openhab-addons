@@ -2665,7 +2665,7 @@
 		<category>Light</category>
 	</channel-type>
 
-	<channel-type id="enablePrivacyMode">
+	<channel-type id="enablePrivacyMode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Privacy Mode</label>
 		<description>Turn the Privacy Mode on and off.</description>

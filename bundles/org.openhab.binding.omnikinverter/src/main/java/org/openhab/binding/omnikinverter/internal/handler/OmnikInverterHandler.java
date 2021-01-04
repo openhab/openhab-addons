@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.openhab.binding.omnikinverter.internal.OmnikInverterBindingConstants;
 import org.openhab.binding.omnikinverter.internal.OmnikInverterConfiguration;
 import org.openhab.binding.omnikinverter.internal.OmnikInverterMessage;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -91,14 +91,14 @@ public class OmnikInverterHandler extends BaseThingHandler {
 
                 updateStatus(ThingStatus.ONLINE);
 
-                QuantityType<Power> powerQuantity = new QuantityType<>(message.getPower(), SmartHomeUnits.WATT);
+                QuantityType<Power> powerQuantity = new QuantityType<>(message.getPower(), Units.WATT);
                 updateState(OmnikInverterBindingConstants.CHANNEL_POWER, powerQuantity);
 
                 updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TODAY,
-                        new QuantityType<>(message.getEnergyToday(), SmartHomeUnits.KILOWATT_HOUR));
+                        new QuantityType<>(message.getEnergyToday(), Units.KILOWATT_HOUR));
 
                 updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TOTAL,
-                        new QuantityType<>(message.getTotalEnergy(), SmartHomeUnits.KILOWATT_HOUR));
+                        new QuantityType<>(message.getTotalEnergy(), Units.KILOWATT_HOUR));
             }
         } catch (UnknownHostException | NoRouteToHostException | ConnectException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

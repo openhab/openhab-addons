@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -225,8 +225,7 @@ public class MeterHandler extends BaseThingHandler {
             ThingTypeUID thingtype = getThing().getThingTypeUID();
 
             if (THING_TYPE_ENERGYMETER.equals(thingtype)) {
-                QuantityType<Energy> state = new QuantityType<>(meterState.getReadingValue(),
-                        SmartHomeUnits.KILOWATT_HOUR);
+                QuantityType<Energy> state = new QuantityType<>(meterState.getReadingValue(), Units.KILOWATT_HOUR);
                 updateState(CHANNEL_LAST_READING_VALUE, state);
             }
 

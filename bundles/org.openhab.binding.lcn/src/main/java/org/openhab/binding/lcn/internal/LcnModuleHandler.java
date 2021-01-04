@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,7 +157,6 @@ public class LcnModuleHandler extends BaseThingHandler {
      *
      * @throws LcnException when the handler is not initialized
      */
-    @SuppressWarnings("null")
     protected void requestFirmwareVersionAndSerialNumberIfNotSet() throws LcnException {
         String serialNumber = getThing().getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
         if (serialNumber == null || serialNumber.isEmpty()) {
@@ -241,7 +240,6 @@ public class LcnModuleHandler extends BaseThingHandler {
      *
      * @param pck the message without line termination
      */
-    @SuppressWarnings("null")
     public void handleStatusMessage(String pck) {
         for (AbstractLcnModuleSubHandler handler : subHandlers.values()) {
             if (handler.tryParse(pck)) {

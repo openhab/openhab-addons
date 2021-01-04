@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="phonebooks" type="phonebooksType"/>
+    <xs:complexType name="personType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="realName"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="numberType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="type" use="optional"/>
+                <xs:attribute type="xs:string" name="vanity" use="optional"/>
+                <xs:attribute type="xs:string" name="prio" use="optional"/>
+                <xs:attribute type="xs:byte" name="quickdial" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="telephonyType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="services"/>
+            <xs:element type="numberType" name="number" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="contactType">
+        <xs:sequence>
+            <xs:element name="category">
+                <xs:simpleType>
+                    <xs:restriction base="xs:byte">
+                        <xs:enumeration value="0"/>
+                        <xs:enumeration value="1"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element type="personType" name="person"/>
+            <xs:element type="xs:byte" name="uniqueid"/>
+            <xs:element type="telephonyType" name="telephony"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="phonebookType">
+        <xs:sequence>
+            <xs:element type="xs:int" name="timestamp"/>
+            <xs:element type="contactType" name="contact" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute type="xs:byte" name="owner"/>
+        <xs:attribute type="xs:string" name="name"/>
+    </xs:complexType>
+    <xs:complexType name="phonebooksType">
+        <xs:sequence>
+            <xs:element type="phonebookType" name="phonebook"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="root">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="timestamp"/>
+                <xs:element maxOccurs="unbounded" ref="Call"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="timestamp" type="xs:integer"/>
+    <xs:element name="Call">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Id"/>
+                <xs:element ref="Type"/>
+                <xs:element ref="Called"/>
+                <xs:element ref="Caller"/>
+                <xs:element ref="CalledNumber"/>
+                <xs:element ref="CallerNumber"/>
+                <xs:element ref="Name"/>
+                <xs:element ref="Numbertype"/>
+                <xs:element ref="Device"/>
+                <xs:element ref="Port"/>
+                <xs:element ref="Date"/>
+                <xs:element ref="Duration"/>
+                <xs:element ref="Count"/>
+                <xs:element ref="Path"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Id" type="xs:integer"/>
+    <xs:element name="Type" type="xs:string"/>
+    <xs:element name="Called" type="xs:string"/>
+    <xs:element name="Caller" type="xs:string"/>
+    <xs:element name="CalledNumber" type="xs:string"/>
+    <xs:element name="CallerNumber" type="xs:string"/>
+    <xs:element name="Name" type="xs:string" />
+    <xs:element name="Numbertype" type="xs:string"/>
+    <xs:element name="Device" type="xs:string"/>
+    <xs:element name="Port" type="xs:string"/>
+    <xs:element name="Date" type="xs:string"/>
+    <xs:element name="Duration" type="xs:string"/>
+    <xs:element name="Count" type="xs:string"/>
+    <xs:element name="Path" type = "xs:string"/>
+</xs:schema>

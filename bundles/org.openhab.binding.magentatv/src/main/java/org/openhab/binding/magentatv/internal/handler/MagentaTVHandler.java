@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,7 @@ import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -488,7 +488,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                                     dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                                     Date date = dateFormat.parse(ps.duration);
                                     long minutes = date.getTime() / 1000L / 60l;
-                                    updateState(CHANNEL_PROG_DURATION, toQuantityType(minutes, SmartHomeUnits.MINUTE));
+                                    updateState(CHANNEL_PROG_DURATION, toQuantityType(minutes, Units.MINUTE));
                                 } catch (ParseException e) {
                                     logger.debug("{}: Unable to parse programDuration: {}", thingId, ps.duration);
                                 }
@@ -526,7 +526,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 updateState(CHANNEL_PROG_DURATION, new StringType(event.duration.toString()));
             }
             if (event.playPostion != -1) {
-                updateState(CHANNEL_PROG_POS, toQuantityType(event.playPostion / 6, SmartHomeUnits.MINUTE));
+                updateState(CHANNEL_PROG_POS, toQuantityType(event.playPostion / 6, Units.MINUTE));
             }
         } else {
             logger.debug("{}: Unknown MR event, JSON={}", thingId, jsonEvent);

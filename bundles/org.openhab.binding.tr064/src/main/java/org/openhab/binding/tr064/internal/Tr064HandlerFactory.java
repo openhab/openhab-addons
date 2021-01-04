@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,8 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tr064.internal.phonebook.PhonebookProfileFactory;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -31,7 +31,10 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Tr064HandlerFactory} is responsible for creating things and thing
@@ -46,6 +49,7 @@ public class Tr064HandlerFactory extends BaseThingHandlerFactory {
             .of(Tr064RootHandler.SUPPORTED_THING_TYPES, Tr064SubHandler.SUPPORTED_THING_TYPES).flatMap(Set::stream)
             .collect(Collectors.toSet());
 
+    private final Logger logger = LoggerFactory.getLogger(Tr064HandlerFactory.class);
     private final HttpClient httpClient;
     private final PhonebookProfileFactory phonebookProfileFactory;
 
@@ -56,12 +60,29 @@ public class Tr064HandlerFactory extends BaseThingHandlerFactory {
     private final Tr064ChannelTypeProvider channelTypeProvider;
 
     @Activate
-    public Tr064HandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference Tr064ChannelTypeProvider channelTypeProvider,
+    public Tr064HandlerFactory(@Reference Tr064ChannelTypeProvider channelTypeProvider,
             @Reference PhonebookProfileFactory phonebookProfileFactory) {
-        httpClient = httpClientFactory.getCommonHttpClient();
         this.channelTypeProvider = channelTypeProvider;
         this.phonebookProfileFactory = phonebookProfileFactory;
+        // use an insecure client (i.e. without verifying the certificate)
+        this.httpClient = new HttpClient(new SslContextFactory.Client(true));
+        try {
+            this.httpClient.start();
+        } catch (Exception e) {
+            // catching exception is necessary due to the signature of HttpClient.start()
+            logger.warn("Failed to start http client: {}", e.getMessage());
+            throw new IllegalStateException("Could not create HttpClient instance.", e);
+        }
+    }
+
+    @Deactivate
+    public void deactivate() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            // catching exception is necessary due to the signature of HttpClient.stop()
+            logger.warn("Failed to stop http client: {}", e.getMessage());
+        }
     }
 
     @Override

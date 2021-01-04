@@ -158,15 +158,26 @@ You must either
   ```
   server {
     listen 80;
-    proxy_pass                              http://localhost:8080/;
-    proxy_set_header Host                   $http_host;
-    proxy_set_header X-Real-IP              $remote_addr;
-    proxy_set_header X-Forwarded-For        $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto      $scheme;
+    location / {
+      proxy_pass                              http://localhost:8080/;
+      proxy_set_header Host                   $http_host;
+      proxy_set_header X-Real-IP              $remote_addr;
+      proxy_set_header X-Forwarded-For        $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto      $scheme;
+    }
   }
   ```
 * or let openHAB run on port 80 (the entire java process requires elevated privileges).
 
+* For Amazon Echo the pairing process may fail due to a 302 response from openHAB, this can be resolved by using a reverse proxy to change the request url from `/api` to `/api/`, for example nginx with the following configuration:
+```
+  server {
+    listen 80;
+    location /api {
+      proxy_pass http://localhost:8080/api/;
+    }
+  }
+  ```
 Please open port 80 tcp and port 1900 udp in your firewall installation.
 
 You can test if the hue emulation does its job by enabling pairing mode including the option "Amazon Echo device discovery fix".

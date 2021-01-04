@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,7 @@ public enum EventResponseEnum {
     }
 
     /**
-     * Returns true, if the given property exists at the ESH event properties, otherwise false.
+     * Returns true, if the given property exists at the event properties, otherwise false.
      *
      * @param property to check
      * @return contains property (true = yes | false = no)

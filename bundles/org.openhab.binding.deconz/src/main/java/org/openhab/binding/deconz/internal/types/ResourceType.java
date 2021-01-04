@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
+import org.openhab.binding.deconz.internal.dto.GroupMessage;
+import org.openhab.binding.deconz.internal.dto.LightMessage;
+import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,10 +32,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public enum ResourceType {
-    GROUPS("groups", "action"),
-    LIGHTS("lights", "state"),
-    SENSORS("sensors", ""),
-    UNKNOWN("", "");
+    GROUPS("groups", "action", GroupMessage.class),
+    LIGHTS("lights", "state", LightMessage.class),
+    SENSORS("sensors", "config", SensorMessage.class),
+    UNKNOWN("", "", null);
 
     private static final Map<String, ResourceType> MAPPING = Arrays.stream(ResourceType.values())
             .collect(Collectors.toMap(v -> v.identifier, v -> v));
@@ -38,10 +43,13 @@ public enum ResourceType {
 
     private String identifier;
     private String commandUrl;
+    private @Nullable Class<? extends DeconzBaseMessage> expectedMessageType;
 
-    ResourceType(String identifier, String commandUrl) {
+    ResourceType(String identifier, String commandUrl,
+            @Nullable Class<? extends DeconzBaseMessage> expectedMessageType) {
         this.identifier = identifier;
         this.commandUrl = commandUrl;
+        this.expectedMessageType = expectedMessageType;
     }
 
     /**
@@ -60,6 +68,15 @@ public enum ResourceType {
      */
     public String getCommandUrl() {
         return commandUrl;
+    }
+
+    /**
+     * get the expected message type for this resource type
+     *
+     * @return
+     */
+    public @Nullable Class<? extends DeconzBaseMessage> getExpectedMessageType() {
+        return expectedMessageType;
     }
 
     /**

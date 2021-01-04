@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal.onvif;
 
 import java.io.BufferedReader;
@@ -28,6 +27,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -42,19 +42,21 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFactory;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
 /**
- * The {@link OnvifDiscovery} is responsible for finding cameras that are Onvif using UDP multicast.
+ * The {@link OnvifDiscovery} is responsible for finding cameras that are ONVIF using UDP multicast.
  *
  * @author Matthew Skinner - Initial contribution
  */
@@ -69,7 +71,8 @@ public class OnvifDiscovery {
         this.ipCameraDiscoveryService = ipCameraDiscoveryService;
     }
 
-    public @Nullable NetworkInterface getLocalNIF() {
+    public @Nullable List<NetworkInterface> getLocalNICs() {
+        List<NetworkInterface> results = new ArrayList<>(2);
         try {
             for (Enumeration<NetworkInterface> enumNetworks = NetworkInterface.getNetworkInterfaces(); enumNetworks
                     .hasMoreElements();) {
@@ -79,13 +82,13 @@ public class OnvifDiscovery {
                     InetAddress inetAddress = enumIpAddr.nextElement();
                     if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().toString().length() < 18
                             && inetAddress.isSiteLocalAddress()) {
-                        return networkInterface;
+                        results.add(networkInterface);
                     }
                 }
             }
         } catch (SocketException ex) {
         }
-        return null;
+        return results;
     }
 
     void searchReply(String url, String xml) {
@@ -180,23 +183,21 @@ public class OnvifDiscovery {
         return brand;
     }
 
-    public void discoverCameras(int port) throws UnknownHostException, InterruptedException {
-        String uuid = UUID.randomUUID().toString();
-        String xml = "";
-
-        if (port == 3702) {
-            xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><e:Envelope xmlns:e=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:w=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:d=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\" xmlns:dn=\"http://www.onvif.org/ver10/network/wsdl\"><e:Header><w:MessageID>uuid:"
-                    + uuid
-                    + "</w:MessageID><w:To e:mustUnderstand=\"true\">urn:schemas-xmlsoap-org:ws:2005:04:discovery</w:To><w:Action a:mustUnderstand=\"true\">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</w:Action></e:Header><e:Body><d:Probe><d:Types xmlns:dp0=\"http://www.onvif.org/ver10/network/wsdl\">dp0:NetworkVideoTransmitter</d:Types></d:Probe></e:Body></e:Envelope>";
-        }
+    private DatagramPacket wsDiscovery() throws UnknownHostException {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><e:Envelope xmlns:e=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:w=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:d=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\" xmlns:dn=\"http://www.onvif.org/ver10/network/wsdl\"><e:Header><w:MessageID>uuid:"
+                + UUID.randomUUID()
+                + "</w:MessageID><w:To e:mustUnderstand=\"true\">urn:schemas-xmlsoap-org:ws:2005:04:discovery</w:To><w:Action a:mustUnderstand=\"true\">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</w:Action></e:Header><e:Body><d:Probe><d:Types xmlns:d=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\" xmlns:dp0=\"http://www.onvif.org/ver10/network/wsdl\">dp0:NetworkVideoTransmitter</d:Types></d:Probe></e:Body></e:Envelope>";
         ByteBuf discoveryProbeMessage = Unpooled.copiedBuffer(xml, 0, xml.length(), StandardCharsets.UTF_8);
-        InetSocketAddress localNetworkAddress = new InetSocketAddress(0);// Listen for replies on all connections.
-        InetSocketAddress multiCastAddress = new InetSocketAddress(InetAddress.getByName("239.255.255.250"), port);
-        DatagramPacket datagramPacket = new DatagramPacket(discoveryProbeMessage, multiCastAddress,
-                localNetworkAddress);
-        NetworkInterface networkInterface = getLocalNIF();
-        DatagramChannel datagramChannel;
+        return new DatagramPacket(discoveryProbeMessage,
+                new InetSocketAddress(InetAddress.getByName("239.255.255.250"), 3702), new InetSocketAddress(0));
+    }
 
+    public void discoverCameras() throws UnknownHostException, InterruptedException {
+        List<NetworkInterface> nics = getLocalNICs();
+        if (nics == null || nics.isEmpty()) {
+            return;
+        }
+        NetworkInterface networkInterface = nics.get(0);
         Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup())
                 .channelFactory(new ChannelFactory<NioDatagramChannel>() {
                     @Override
@@ -213,26 +214,21 @@ public class OnvifDiscovery {
                 }).option(ChannelOption.SO_BROADCAST, true).option(ChannelOption.SO_REUSEADDR, true)
                 .option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false).option(ChannelOption.SO_RCVBUF, 2048)
                 .option(ChannelOption.IP_MULTICAST_TTL, 255).option(ChannelOption.IP_MULTICAST_IF, networkInterface);
-
-        datagramChannel = (DatagramChannel) bootstrap.bind(localNetworkAddress).sync().channel();
-        datagramChannel.joinGroup(multiCastAddress, networkInterface).sync();
-        ChannelFuture chFuture;
-        if (port == 1900) {
-            String ssdp = "M-SEARCH * HTTP/1.1\n" + "HOST: 239.255.255.250:1900\n" + "MAN: \"ssdp:discover\"\n"
-                    + "MX: 1\n" + "ST: urn:dial-multiscreen-org:service:dial:1\n"
-                    + "USER-AGENT: Microsoft Edge/83.0.478.61 Windows\n" + "\n" + "";
-            ByteBuf ssdpProbeMessage = Unpooled.copiedBuffer(ssdp, 0, ssdp.length(), StandardCharsets.UTF_8);
-            datagramPacket = new DatagramPacket(ssdpProbeMessage, multiCastAddress, localNetworkAddress);
-            chFuture = datagramChannel.writeAndFlush(datagramPacket);
-        } else {
-            chFuture = datagramChannel.writeAndFlush(datagramPacket);
+        ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+        for (NetworkInterface nic : nics) {
+            DatagramChannel datagramChannel = (DatagramChannel) bootstrap.option(ChannelOption.IP_MULTICAST_IF, nic)
+                    .bind(new InetSocketAddress(0)).sync().channel();
+            datagramChannel
+                    .joinGroup(new InetSocketAddress(InetAddress.getByName("239.255.255.250"), 3702), networkInterface)
+                    .sync();
+            openChannels.add(datagramChannel);
         }
-        chFuture.awaitUninterruptibly(2000);
-        chFuture = datagramChannel.closeFuture();
-        TimeUnit.SECONDS.sleep(5);
-        datagramChannel.close();
-        chFuture.awaitUninterruptibly(6000);
-        processCameraReplys();
-        bootstrap.config().group().shutdownGracefully();
+        if (!openChannels.isEmpty()) {
+            openChannels.writeAndFlush(wsDiscovery());
+            TimeUnit.SECONDS.sleep(6);
+            openChannels.close();
+            processCameraReplys();
+            bootstrap.config().group().shutdownGracefully();
+        }
     }
 }

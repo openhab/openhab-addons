@@ -59,14 +59,15 @@ Thing Type ID: `pckGateway`
 | `mode`      | Dimmer resolution: `native50` or `native200` See below.                                                    | String  | Yes      |
 | `timeoutMs` | Period after which an LCN command is resent, when no acknowledge has been received (in ms) (default: 3500) | Integer | Yes      |
 
-> **IMPORTANT:** You need to configure the dimmer output resolution. This setting is valid for the **whole** LCN bus.<br />
-The setting is either 0-50 steps or 0-200 steps.
-It **has to be the same** as in the parameterizing software **LCN-PRO** under Options/Settings/Expert Settings.
-See the following screenshot.
+> **ATTENTION:** You must set the correct dimmer output resolution in the PCK Gateway Thing (`mode`)!
+This setting is crucial, and valid for the **whole** LCN bus.<br />
+It is either 0-50 steps or 0-200 steps.
+It has to be the same as in the parameterizing software LCN-PRO under Options/Settings/Expert Settings.<br />
+**When using a wrong dimmer output setting, dimming the outputs will result in unintended behavior!**
+
+Please see the following LCN-PRO screenshot to determine the dimmer output resolution for the LCN bus:
 
 ![LCN-PRO screenshot, showing the 50 or 200 steps for the dimmer outputs](doc/LCN-PRO_output_steps.png)
-
-When using a wrong dimmer output setting, dimming the outputs will result in unintended behavior.
 
 ### Thing: LCN Group
 
@@ -130,7 +131,7 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 |---------------------------------|----------------------------------|------------------------|------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | Dimmer Output Control Single    | Ausgang                          | output                 | 1-4  | Dimmer, Switch                 | Sets the dimming value of an output with a given ramp.                                                                        |
 | Relay                           | Relais                           | relay                  | 1-8  | Switch                         | Controls a relay and visualizes its state.                                                                                    |
-| Visualize Binary Sensor         | Binärsensor anzeigen             | binarysensor           | 1-8  | Contact                        | Visualizes the state of a binary sensor.                                                                                      |
+| Visualize Binary Sensor         | Binärsensor anzeigen             | binarysensor           | 1-8  | Contact                        | Visualizes the state of a binary sensor (special channel mapping for some devices).                                                                                      |
 | LED Control                     | LED-Steuerung                    | led                    | 1-12 | Text (ON, OFF, BLINK, FLICKER) | Controls an LED and visualizes its current state.                                                                             |
 | Visualize Logic Operations      | Logik Funktion anzeigen          | logic                  | 1-4  | Text (NOT, OR, AND)            | Visualizes the result of the logic operation.                                                                                 |
 | Motor/Shutter on Dimmer Outputs | Motor/Rollladen an Ausgängen     | rollershutteroutput    | 1-4  | Rollershutter                  | Control roller shutters on dimmer outputs                                                                                     |
@@ -477,7 +478,7 @@ String M10_Logic2 {channel="lcn:module:b827ebfea4bb:S000M010:logic#2"[profile="t
 // OR=Some windows are open
 // AND=All windows are open
 
-// Binary Sensors
+// Binary Sensors (Channels 1-3 of LCN-B3I are mapped to BinarySensor6, BinarySensor7, BinarySensor8)
 Contact M10_BinarySensor1 {channel="lcn:module:b827ebfea4bb:S000M010:binarysensor#1"}
 
 // Variables
@@ -549,7 +550,7 @@ sitemap lcn label="My home automation" {
         Default item=M10_Logic1 label="Logic Operation 1"
         Default item=M10_Logic2 label="Logic Operation 2"
         
-        // Binary Sensors
+        // Binary Sensors (Channels 1-3 of LCN-B3I are mapped to BinarySensor6, BinarySensor7, BinarySensor8)
         Default item=M10_BinarySensor1 label="Binary Sensor 1" 
         
         // Variables

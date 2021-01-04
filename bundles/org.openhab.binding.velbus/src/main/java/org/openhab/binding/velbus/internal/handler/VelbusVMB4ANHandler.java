@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -167,24 +167,24 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
                         double voltageResolution = 0.25;
                         double voltageSensorValueState = sensorValue * voltageResolution;
                         updateState(channelUID,
-                                new QuantityType<>(voltageSensorValueState, MetricPrefix.MILLI(SmartHomeUnits.VOLT)));
+                                new QuantityType<>(voltageSensorValueState, MetricPrefix.MILLI(Units.VOLT)));
                         break;
                     case CURRENT_SENSOR_TYPE:
                         double currentResolution = 5;
                         double currentSensorValueState = sensorValue * currentResolution;
                         updateState(channelUID,
-                                new QuantityType<>(currentSensorValueState, MetricPrefix.MICRO(SmartHomeUnits.AMPERE)));
+                                new QuantityType<>(currentSensorValueState, MetricPrefix.MICRO(Units.AMPERE)));
                         break;
                     case RESISTANCE_SENSOR_TYPE:
                         double resistanceResolution = 0.25;
                         double resistanceSensorValueState = sensorValue * resistanceResolution;
-                        updateState(channelUID, new QuantityType<>(resistanceSensorValueState, SmartHomeUnits.OHM));
+                        updateState(channelUID, new QuantityType<>(resistanceSensorValueState, Units.OHM));
                         break;
                     case PERIOD_MEASUREMENT_SENSOR_TYPE:
                         double periodResolution = 0.5;
                         double periodSensorValueState = sensorValue * periodResolution;
                         updateState(channelUID,
-                                new QuantityType<>(periodSensorValueState, MetricPrefix.MICRO(SmartHomeUnits.SECOND)));
+                                new QuantityType<>(periodSensorValueState, MetricPrefix.MICRO(Units.SECOND)));
                         break;
                 }
             } else if (command == COMMAND_TEXT) {

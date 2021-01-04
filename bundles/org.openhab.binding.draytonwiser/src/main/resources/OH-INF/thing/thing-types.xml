@@ -62,6 +62,7 @@
 			<channel id="currentSignalRSSI" typeId="signalRSSI-channel"/>
 			<channel id="currentSignalStrength" typeId="system.signal-strength"/>
 			<channel id="currentWiserSignalStrength" typeId="wiserSignalStrength-channel"/>
+			<channel id="comfortModeState" typeId="comfortModeState-channel"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -420,6 +421,12 @@
 		<item-type>Switch</item-type>
 		<label>Plug Off in Away Mode</label>
 		<description>Should the smart plug switch off when in away mode</description>
+	</channel-type>
+
+	<channel-type id="comfortModeState-channel">
+		<item-type>Switch</item-type>
+		<label>Comfort Mode Active</label>
+		<description>Should the room pre-heat to achieve the desired temperature</description>
 	</channel-type>
 
 </thing:thing-descriptions>

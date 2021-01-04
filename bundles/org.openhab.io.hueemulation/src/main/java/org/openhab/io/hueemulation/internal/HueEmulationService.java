@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,7 +126,7 @@ public class HueEmulationService implements EventHandler {
         @Override
         public Set<Object> getSingletons() {
             return Set.of(userManagement, configurationAccess, lightItems, sensors, scenes, schedules, rules,
-                    statusResource, accessInterceptor);
+                    statusResource, accessInterceptor, requestCleaner);
         }
 
         Dictionary<String, String> serviceProperties() {

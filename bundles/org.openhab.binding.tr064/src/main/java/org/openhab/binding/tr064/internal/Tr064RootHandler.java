@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,8 +38,11 @@ import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDDeviceType;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDServiceType;
 import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDActionType;
 import org.openhab.binding.tr064.internal.phonebook.Phonebook;
+import org.openhab.binding.tr064.internal.phonebook.PhonebookActions;
 import org.openhab.binding.tr064.internal.phonebook.PhonebookProvider;
 import org.openhab.binding.tr064.internal.phonebook.Tr064PhonebookImpl;
+import org.openhab.binding.tr064.internal.soap.SOAPConnector;
+import org.openhab.binding.tr064.internal.soap.SOAPValueConverter;
 import org.openhab.binding.tr064.internal.util.SCPDUtil;
 import org.openhab.binding.tr064.internal.util.Util;
 import org.openhab.core.cache.ExpiringCacheMap;
@@ -74,7 +77,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
     private @Nullable SCPDUtil scpdUtil;
     private SOAPConnector soapConnector;
-    private String endpointBaseURL = "http://fritz.box:49000";
+    private String endpointBaseURL = "";
 
     private final Map<ChannelUID, Tr064ChannelConfig> channels = new HashMap<>();
     // caching is used to prevent excessive calls to the same action
@@ -85,14 +88,19 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> phonebookFuture;
 
+    private boolean communicationEstablished = false;
+
     Tr064RootHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
-        soapConnector = new SOAPConnector(httpClient, endpointBaseURL);
+        this.soapConnector = new SOAPConnector(httpClient, endpointBaseURL);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!communicationEstablished) {
+            logger.debug("Tried to process command, but thing is not yet ready: {} to {}", channelUID, command);
+        }
         Tr064ChannelConfig channelConfig = channels.get(channelUID);
         if (channelConfig == null) {
             logger.trace("Channel {} not supported.", channelUID);
@@ -126,6 +134,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
         }
 
         endpointBaseURL = "http://" + config.host + ":49000";
+        soapConnector = new SOAPConnector(httpClient, endpointBaseURL);
         updateStatus(ThingStatus.UNKNOWN);
 
         connectFuture = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0, RETRY_INTERVAL, TimeUnit.SECONDS);
@@ -155,6 +164,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
                 updateThing(thingBuilder.build());
             }
 
+            communicationEstablished = true;
             installPolling();
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         }
@@ -170,6 +180,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
     @Override
     public void dispose() {
+        communicationEstablished = false;
         removeConnectScheduler();
         uninstallPolling();
         stateCache.clear();
@@ -381,6 +392,6 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(Tr064DiscoveryService.class);
+        return Set.of(Tr064DiscoveryService.class, PhonebookActions.class);
     }
 }

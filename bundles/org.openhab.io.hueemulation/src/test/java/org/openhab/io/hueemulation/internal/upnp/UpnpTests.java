@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,7 +123,7 @@ public class UpnpTests {
         }
 
         // UDP thread started?
-        r.startNow(r).get(5, TimeUnit.SECONDS);
+        r.startNow().get(5, TimeUnit.SECONDS);
         assertThat(subject.upnpAnnouncementThreadRunning(), is(true));
 
         // Send M-SEARCH UPNP "packet" and check if the result contains our bridge ID

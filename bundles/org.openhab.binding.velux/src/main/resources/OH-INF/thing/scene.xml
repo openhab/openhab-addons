@@ -17,9 +17,8 @@
 		<category>Blinds</category>
 		<channels>
 			<channel id="action" typeId="action"/>
-			<channel id="silentMode" typeId="silentMode"/>
 		</channels>
-		<representation-property>unique</representation-property>
+		<representation-property>sceneName</representation-property>
 		<config-description-ref uri="thing-type:velux:scene"/>
 	</thing-type>
 </thing:thing-descriptions>

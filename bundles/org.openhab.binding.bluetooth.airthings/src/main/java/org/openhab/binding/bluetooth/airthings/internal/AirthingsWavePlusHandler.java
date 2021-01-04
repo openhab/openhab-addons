@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -231,14 +231,11 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
 
     private void updateChannels(AirthingsWavePlusDataParser parser) {
         logger.debug("Parsed data: {}", parser);
-        updateState(CHANNEL_ID_HUMIDITY,
-                QuantityType.valueOf(Double.valueOf(parser.getHumidity()), SmartHomeUnits.PERCENT));
+        updateState(CHANNEL_ID_HUMIDITY, QuantityType.valueOf(Double.valueOf(parser.getHumidity()), Units.PERCENT));
         updateState(CHANNEL_ID_TEMPERATURE,
                 QuantityType.valueOf(Double.valueOf(parser.getTemperature()), SIUnits.CELSIUS));
-        updateState(CHANNEL_ID_PRESSURE,
-                QuantityType.valueOf(Double.valueOf(parser.getPressure()), SmartHomeUnits.MILLIBAR));
-        updateState(CHANNEL_ID_CO2,
-                QuantityType.valueOf(Double.valueOf(parser.getCo2()), SmartHomeUnits.PARTS_PER_MILLION));
+        updateState(CHANNEL_ID_PRESSURE, QuantityType.valueOf(Double.valueOf(parser.getPressure()), Units.MILLIBAR));
+        updateState(CHANNEL_ID_CO2, QuantityType.valueOf(Double.valueOf(parser.getCo2()), Units.PARTS_PER_MILLION));
         updateState(CHANNEL_ID_TVOC, QuantityType.valueOf(Double.valueOf(parser.getTvoc()), PARTS_PER_BILLION));
         updateState(CHANNEL_ID_RADON_ST_AVG,
                 QuantityType.valueOf(Double.valueOf(parser.getRadonShortTermAvg()), BECQUEREL_PER_CUBIC_METRE));

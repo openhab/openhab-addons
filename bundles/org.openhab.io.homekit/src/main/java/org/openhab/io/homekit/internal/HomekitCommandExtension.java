@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,10 +38,6 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String SUBCMD_LIST_ACCESSORIES = "list";
     private static final String SUBCMD_PRINT_ACCESSORY = "show";
     private static final String SUBCMD_ALLOW_UNAUTHENTICATED = "allowUnauthenticated";
-    @Deprecated
-    private static final String LEGACY_SUBCMD_LIST_ACCESSORIES = "listAccessories";
-    @Deprecated
-    private static final String LEGACY_SUBCMD_PRINT_ACCESSORY = "printAccessory";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
 
@@ -69,23 +65,13 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                     }
                     break;
                 case SUBCMD_LIST_ACCESSORIES:
-                case LEGACY_SUBCMD_LIST_ACCESSORIES:
                     listAccessories(console);
-                    if (subCommand.equalsIgnoreCase(LEGACY_SUBCMD_LIST_ACCESSORIES)) {
-                        console.println("");
-                        console.println("Hey, you can use the shorter command 'homekit list'");
-                    }
                     break;
                 case SUBCMD_PRINT_ACCESSORY:
-                case LEGACY_SUBCMD_PRINT_ACCESSORY:
                     if (args.length > 1) {
                         printAccessory(args[1], console);
                     } else {
                         console.println("accessory id or name is required as an argument");
-                    }
-                    if (subCommand.equalsIgnoreCase(LEGACY_SUBCMD_PRINT_ACCESSORY)) {
-                        console.println("");
-                        console.println("Hey, you can use the shorter command 'homekit show <accessory_id|name>'");
                     }
                     break;
                 default:

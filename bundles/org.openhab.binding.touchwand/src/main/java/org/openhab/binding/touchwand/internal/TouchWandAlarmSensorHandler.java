@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -90,7 +90,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
     void updateIllumination(TouchWandUnitDataAlarmSensor unitData) {
         for (Sensor sensor : unitData.getCurrStatus().getSensorsStatus()) {
             if (sensor.type == SENSOR_TYPE_LUMINANCE) {
-                updateState(CHANNEL_ILLUMINATION, new QuantityType<Illuminance>(sensor.value, SmartHomeUnits.LUX));
+                updateState(CHANNEL_ILLUMINATION, new QuantityType<Illuminance>(sensor.value, Units.LUX));
             }
         }
     }

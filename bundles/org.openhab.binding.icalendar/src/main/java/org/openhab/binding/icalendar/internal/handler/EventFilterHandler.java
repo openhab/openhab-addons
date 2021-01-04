@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * The {@link EventFilterHandler} filters events from a calendar and presents them in a dynamic way.
  *
  * @author Michael Wodniok - Initial Contribution
+ * @author Michael Wodniok - Fixed subsecond search if rounding to unit
  */
 @NonNullByDefault
 public class EventFilterHandler extends BaseThingHandler implements CalendarUpdateListener {
@@ -64,12 +66,10 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     private final List<ResultChannelSet> resultChannels;
     private final TimeZoneProvider tzProvider;
     private @Nullable ScheduledFuture<?> updateFuture;
-    private boolean initFinished;
 
     public EventFilterHandler(Thing thing, TimeZoneProvider tzProvider) {
         super(thing);
         resultChannels = new CopyOnWriteArrayList<>();
-        initFinished = false;
         this.tzProvider = tzProvider;
     }
 
@@ -95,16 +95,12 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            if (initFinished) {
-                updateStates();
-            }
+            updateStates();
         }
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -121,14 +117,13 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
         }
         configuration = config;
 
+        updateChannelSet(config);
         if (iCalendarBridge.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
-        } else {
-            updateChannelSet(config);
-            updateStates();
         }
-        initFinished = true;
+
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -257,6 +252,10 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
      * Updates all states and channels. Reschedules an update if no error occurs.
      */
     private void updateStates() {
+        if (!ThingHandlerHelper.isHandlerInitialized(this)) {
+            logger.debug("Ignoring call for updating states as this instance is not initialized yet.");
+            return;
+        }
         final Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
             logger.debug("Bridge not instantiated!");
@@ -333,7 +332,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                         case HOUR:
                             refDT = refDT.with(ChronoField.MINUTE_OF_HOUR, 0);
                         case MINUTE:
-                            refDT = refDT.with(ChronoField.SECOND_OF_MINUTE, 0);
+                            refDT = refDT.with(ChronoField.SECOND_OF_MINUTE, 0).with(ChronoField.NANO_OF_SECOND, 0);
                     }
                     reference = refDT.toInstant();
                 }

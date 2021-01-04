@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class JavascriptTransformationProfileFactory implements ProfileFactory, P
         return Arrays.asList(JavascriptTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=JS)")
+    @Reference(target = "(openhab.transform=JS)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

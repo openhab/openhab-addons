@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -89,7 +89,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final long INITIAL_CLOCK_SYNC_DELAY_SEC = 10;
     // spec says wait 50ms, min is 100
     private static final long SLEEP_BETWEEN_CMD_MS = 100;
-    private static final Unit<Time> API_SECOND_UNIT = SmartHomeUnits.SECOND;
+    private static final Unit<Time> API_SECOND_UNIT = Units.SECOND;
 
     private static final String ZONE = "ZONE";
     private static final String SOURCE = "SOURCE";

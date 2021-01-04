@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -160,15 +160,14 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         updateChannel(CH_PWS_TEMP_HEAT_INDEX, undefOrQuantity(obs.imperial.heatIndex, ImperialUnits.FAHRENHEIT));
         updateChannel(CH_PWS_TEMP_WIND_CHILL, undefOrQuantity(obs.imperial.windChill, ImperialUnits.FAHRENHEIT));
         updateChannel(CH_PWS_TEMP_DEW_POINT, undefOrQuantity(obs.imperial.dewpt, ImperialUnits.FAHRENHEIT));
-        updateChannel(CH_PWS_HUMIDITY, undefOrQuantity(obs.humidity, SmartHomeUnits.PERCENT));
+        updateChannel(CH_PWS_HUMIDITY, undefOrQuantity(obs.humidity, Units.PERCENT));
         updateChannel(CH_PWS_PRESSURE, undefOrQuantity(obs.imperial.pressure, ImperialUnits.INCH_OF_MERCURY));
-        updateChannel(CH_PWS_PRECIPTATION_RATE,
-                undefOrQuantity(obs.imperial.precipRate, SmartHomeUnits.INCHES_PER_HOUR));
+        updateChannel(CH_PWS_PRECIPTATION_RATE, undefOrQuantity(obs.imperial.precipRate, Units.INCHES_PER_HOUR));
         updateChannel(CH_PWS_PRECIPITATION_TOTAL, undefOrQuantity(obs.imperial.precipTotal, ImperialUnits.INCH));
         updateChannel(CH_PWS_WIND_SPEED, undefOrQuantity(obs.imperial.windSpeed, ImperialUnits.MILES_PER_HOUR));
         updateChannel(CH_PWS_WIND_GUST, undefOrQuantity(obs.imperial.windGust, ImperialUnits.MILES_PER_HOUR));
-        updateChannel(CH_PWS_WIND_DIRECTION, undefOrQuantity(obs.winddir, SmartHomeUnits.DEGREE_ANGLE));
-        updateChannel(CH_PWS_SOLAR_RADIATION, undefOrQuantity(obs.solarRadiation, SmartHomeUnits.IRRADIANCE));
+        updateChannel(CH_PWS_WIND_DIRECTION, undefOrQuantity(obs.winddir, Units.DEGREE_ANGLE));
+        updateChannel(CH_PWS_SOLAR_RADIATION, undefOrQuantity(obs.solarRadiation, Units.IRRADIANCE));
         updateChannel(CH_PWS_UV, undefOrDecimal(obs.uv));
         updateChannel(CH_PWS_OBSERVATION_TIME_LOCAL, undefOrDate(obs.obsTimeUtc));
         updateChannel(CH_PWS_NEIGHBORHOOD, undefOrString(obs.neighborhood));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.velux.internal.bridge.slip;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.VeluxBridge;
-import org.openhab.binding.velux.internal.bridge.VeluxBridgeInstance;
 import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.slip.io.Connection;
@@ -26,8 +26,8 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.bridge.slip.utils.SlipEncoding;
 import org.openhab.binding.velux.internal.bridge.slip.utils.SlipRFC1055;
 import org.openhab.binding.velux.internal.development.Threads;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
-import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * SLIP-based 2nd Level I/O interface towards the <B>Velux</B> bridge.
  * <P>
- * It provides methods for pre- and postcommunication
- * as well as a common method for the real communication.
+ * It provides methods for pre- and post- communication as well as a common method for the real communication.
  * <P>
  * In addition to the generic {@link VeluxBridge} methods, i.e.
  * <UL>
@@ -53,9 +52,11 @@ import org.slf4j.LoggerFactory;
  * </UL>
  *
  * @author Guenther Schreiner - Initial contribution.
+ * @author Andrew Fiddian-Green - Refactored (simplified) the message processing loop
  */
 @NonNullByDefault
-public class SlipVeluxBridge extends VeluxBridge {
+public class SlipVeluxBridge extends VeluxBridge implements Closeable {
+
     private final Logger logger = LoggerFactory.getLogger(SlipVeluxBridge.class);
 
     /*
@@ -100,7 +101,7 @@ public class SlipVeluxBridge extends VeluxBridge {
      *
      * @param bridgeInstance refers to the binding-wide instance for dealing for common informations.
      */
-    public SlipVeluxBridge(VeluxBridgeInstance bridgeInstance) {
+    public SlipVeluxBridge(VeluxBridgeHandler bridgeInstance) {
         super(bridgeInstance);
         logger.trace("SlipVeluxBridge(constructor) called.");
         bridgeAPI = new SlipBridgeAPI(bridgeInstance);
@@ -153,7 +154,7 @@ public class SlipVeluxBridge extends VeluxBridge {
      */
     @Override
     protected boolean bridgeDirectCommunicate(BridgeCommunicationProtocol communication, boolean useAuthentication) {
-        logger.trace("bridgeDirectCommunicate(BCP: {},{}authenticated) called.", communication.name(),
+        logger.trace("bridgeDirectCommunicate(BCP: {}, {}authenticated) called.", communication.name(),
                 useAuthentication ? "" : "un");
         return bridgeDirectCommunicate((SlipBridgeCommunicationProtocol) communication, useAuthentication);
     }
@@ -181,214 +182,242 @@ public class SlipVeluxBridge extends VeluxBridge {
     }
 
     /**
-     * Initializes a client/server communication towards <b>Velux</b> veluxBridge
-     * based on the Basic I/O interface {@link Connection#io} and parameters
-     * passed as arguments (see below).
+     * Initializes a client/server communication towards the Velux Bridge based on the Basic I/O interface
+     * {@link Connection#io} and parameters passed as arguments (see below).
      *
-     * @param communication Structure of interface type {@link SlipBridgeCommunicationProtocol} describing the
+     * @param communication a structure of interface type {@link SlipBridgeCommunicationProtocol} describing the
      *            intended communication, that is request and response interactions as well as appropriate URL
      *            definition.
-     * @param useAuthentication boolean flag to decide whether to use authenticated communication.
-     * @return <b>success</b> of type boolean which signals the success of the communication.
+     * @param useAuthentication a boolean flag to select whether to use authenticated communication.
+     * @return a boolean which in general signals the success of the communication, but in the
+     *         special case of receive-only calls, signals if any products were updated during the call
      */
     private synchronized boolean bridgeDirectCommunicate(SlipBridgeCommunicationProtocol communication,
             boolean useAuthentication) {
-        String host = this.bridgeInstance.veluxBridgeConfiguration().ipAddress;
-        logger.trace("bridgeDirectCommunicate({},{}authenticated) on {} called.", host, communication.name(),
+        logger.trace("bridgeDirectCommunicate() '{}', {}authenticated", communication.name(),
                 useAuthentication ? "" : "un");
 
-        assert this.bridgeInstance.veluxBridgeConfiguration().protocol.contentEquals("slip");
+        // store common parameters as constants for frequent use
+        final short txCmd = communication.getRequestCommand().toShort();
+        final byte[] txData = communication.getRequestDataAsArrayOfBytes();
+        final Command txEnum = Command.get(txCmd);
+        final String txName = txEnum.toString();
+        final boolean isSequentialEnforced = this.bridgeInstance.veluxBridgeConfiguration().isSequentialEnforced;
+        final boolean isProtocolTraceEnabled = this.bridgeInstance.veluxBridgeConfiguration().isProtocolTraceEnabled;
+        final long expiryTime = System.currentTimeMillis() + COMMUNICATION_TIMEOUT_MSECS;
 
-        long communicationStartInMSecs = System.currentTimeMillis();
-
-        boolean isSequentialEnforced = this.bridgeInstance.veluxBridgeConfiguration().isSequentialEnforced;
-        boolean isProtocolTraceEnabled = this.bridgeInstance.veluxBridgeConfiguration().isProtocolTraceEnabled;
-
-        // From parameters
-        short command = communication.getRequestCommand().toShort();
-        byte[] data = communication.getRequestDataAsArrayOfBytes();
-        // For further use at different logging statements
-        String commandString = Command.get(command).toString();
+        // logger format string
+        final String loggerFmt = String.format("bridgeDirectCommunicate() [%s] %s => {} {} {}",
+                this.bridgeInstance.veluxBridgeConfiguration().ipAddress, txName);
 
         if (isProtocolTraceEnabled) {
             Threads.findDeadlocked();
         }
 
-        logger.debug("bridgeDirectCommunicate({},{}authenticated) on {} initiated by {}.", host, commandString,
-                useAuthentication ? "" : "un", Thread.currentThread());
-        boolean success = false;
+        logger.debug(loggerFmt, "started =>", Thread.currentThread(), "");
 
-        communication: do {
-            if (communicationStartInMSecs + COMMUNICATION_TIMEOUT_MSECS < System.currentTimeMillis()) {
-                logger.warn(
-                        "{} bridgeDirectCommunicate({}) on {}: communication handshake failed (unexpected sequence of requests/responses).",
-                        VeluxBindingConstants.BINDING_VALUES_SEPARATOR, communication.name(), host);
+        boolean looping = false;
+        boolean success = false;
+        boolean sending = false;
+        boolean rcvonly = false;
+        byte[] txPacket = emptyPacket;
+
+        // handling of the requests
+        switch (txEnum) {
+            case GW_OPENHAB_CLOSE:
+                logger.trace(loggerFmt, "shut down command", "=> executing", "");
+                connection.resetConnection();
+                success = true;
+                break;
+
+            case GW_OPENHAB_RECEIVEONLY:
+                logger.trace(loggerFmt, "receive-only mode", "=> checking messages", "");
+                if (!connection.isAlive()) {
+                    logger.trace(loggerFmt, "no connection", "=> opening", "");
+                    looping = true;
+                } else if (connection.isMessageAvailable()) {
+                    logger.trace(loggerFmt, "message(s) waiting", "=> start reading", "");
+                    looping = true;
+                } else {
+                    logger.trace(loggerFmt, "no waiting messages", "=> done", "");
+                }
+                rcvonly = true;
+                break;
+
+            default:
+                logger.trace(loggerFmt, "send mode", "=> preparing command", "");
+                SlipEncoding slipEnc = new SlipEncoding(txCmd, txData);
+                if (!slipEnc.isValid()) {
+                    logger.debug(loggerFmt, "slip encoding error", "=> aborting", "");
+                    break;
+                }
+                txPacket = new SlipRFC1055().encode(slipEnc.toMessage());
+                logger.trace(loggerFmt, "command ready", "=> start sending", "");
+                looping = sending = true;
+        }
+
+        while (looping) {
+            // timeout
+            if (System.currentTimeMillis() > expiryTime) {
+                logger.warn(loggerFmt, "process loop time out", "=> aborting", "=> PLEASE REPORT !!");
+                // abort the processing loop
                 break;
             }
 
-            // Special handling
-            if (Command.get(command) == Command.GW_OPENHAB_CLOSE) {
-                logger.trace("bridgeDirectCommunicate(): special command: shutting down connection.");
-                connection.resetConnection();
-                success = true;
-                continue;
-            }
-
-            // Normal processing
-            logger.trace("bridgeDirectCommunicate() on {}: working on request {} with {} bytes of data.", host,
-                    commandString, data.length);
-            byte[] sendBytes = emptyPacket;
-            if (Command.get(command) == Command.GW_OPENHAB_RECEIVEONLY) {
-                logger.trace(
-                        "bridgeDirectCommunicate() on {}: special command: determine whether there is any message waiting.",
-                        host);
-                logger.trace("bridgeDirectCommunicate(): check for a waiting message.");
-                if (!connection.isMessageAvailable()) {
-                    logger.trace("bridgeDirectCommunicate() on {}: no message waiting, aborting.", host);
-                    break communication;
+            // send command (optionally), and receive response
+            byte[] rxPacket;
+            try {
+                if (sending) {
+                    if (isProtocolTraceEnabled) {
+                        logger.info("sending command {}", txName);
+                    }
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(loggerFmt, txName, "=> sending data =>", new Packet(txData));
+                    } else {
+                        logger.debug(loggerFmt, txName, "=> sending data length =>", txData.length);
+                    }
                 }
-                logger.trace("bridgeDirectCommunicate() on {}: there is a message waiting.", host);
-            } else {
-                SlipEncoding t = new SlipEncoding(command, data);
-                if (!t.isValid()) {
-                    logger.warn("bridgeDirectCommunicate() on {}: SlipEncoding() failed, aborting.", host);
+                rxPacket = connection.io(this.bridgeInstance, sending ? txPacket : emptyPacket);
+                // message sent, don't send it again
+                sending = false;
+                if (rxPacket.length == 0) {
+                    // only log in send mode (in receive-only mode, no response is ok)
+                    if (!rcvonly) {
+                        logger.debug(loggerFmt, "no response", "=> aborting", "");
+                    }
+                    // abort the processing loop
                     break;
                 }
-                logger.trace("bridgeDirectCommunicate() on {}: transportEncoding={}.", host, t.toString());
-                sendBytes = new SlipRFC1055().encode(t.toMessage());
+            } catch (IOException e) {
+                logger.debug(loggerFmt, "i/o error =>", e.getMessage(), "=> aborting");
+                // abort the processing loop
+                break;
             }
-            do {
-                if (communicationStartInMSecs + COMMUNICATION_TIMEOUT_MSECS < System.currentTimeMillis()) {
-                    logger.warn("bridgeDirectCommunicate() on {}: receive takes too long. Please report to maintainer.",
-                            host);
-                    break communication;
-                }
-                byte[] receivedPacket;
-                try {
-                    if (sendBytes.length > 0) {
-                        logger.trace("bridgeDirectCommunicate() on {}: sending {} bytes.", host, sendBytes.length);
-                        if (isProtocolTraceEnabled) {
-                            logger.info("Sending command {}.", commandString);
-                        }
-                    } else {
-                        logger.trace("bridgeDirectCommunicate() on {}: initiating receive-only.", host);
+
+            // RFC1055 decode response
+            byte[] rfc1055;
+            try {
+                rfc1055 = new SlipRFC1055().decode(rxPacket);
+            } catch (ParseException e) {
+                logger.debug(loggerFmt, "parsing error =>", e.getMessage(), "=> aborting");
+                // abort the processing loop
+                break;
+            }
+
+            // SLIP decode response
+            SlipEncoding slipEnc = new SlipEncoding(rfc1055);
+            if (!slipEnc.isValid()) {
+                logger.debug(loggerFmt, "slip decode error", "=> aborting", "");
+                // abort the processing loop
+                break;
+            }
+
+            // attributes of the received (rx) response
+            final short rxCmd = slipEnc.getCommand();
+            final byte[] rxData = slipEnc.getData();
+            final Command rxEnum = Command.get(rxCmd);
+            final String rxName = rxEnum.toString();
+
+            // logging
+            if (logger.isTraceEnabled()) {
+                logger.trace(loggerFmt, rxName, "=> received data =>", new Packet(rxData));
+            } else {
+                logger.debug(loggerFmt, rxName, "=> received data length =>", rxData.length);
+            }
+            if (isProtocolTraceEnabled) {
+                logger.info("received message {} => {}", rxName, new Packet(rxData));
+            }
+
+            // handling of the responses
+            switch (rxEnum) {
+                case GW_ERROR_NTF:
+                    byte code = rxData[0];
+                    switch (code) {
+                        case 7: // busy
+                            logger.trace(loggerFmt, rxName, getErrorText(code), "=> retrying");
+                            sending = true;
+                            break;
+                        case 12: // authentication failed
+                            logger.debug(loggerFmt, rxName, getErrorText(code), "=> aborting");
+                            resetAuthentication();
+                            looping = false;
+                            break;
+                        default:
+                            logger.warn(loggerFmt, rxName, getErrorText(code), "=> aborting");
+                            looping = false;
                     }
-                    // (Optionally) Send and receive packet.
-                    receivedPacket = connection.io(this.bridgeInstance, sendBytes);
-                    // Once being sent, it should never be sent again
-                    sendBytes = emptyPacket;
-                } catch (Exception e) {
-                    logger.warn("bridgeDirectCommunicate() on {}: connection.io returns {}", host, e.getMessage());
-                    break communication;
-                }
-                logger.trace("bridgeDirectCommunicate() on {}: received packet {}.", host,
-                        new Packet(receivedPacket).toString());
-                byte[] response;
-                try {
-                    response = new SlipRFC1055().decode(receivedPacket);
-                } catch (ParseException e) {
-                    logger.warn("bridgeDirectCommunicate() on {}: method SlipRFC1055() raised a decoding error: {}.",
-                            host, e.getMessage());
-                    break communication;
-                }
-                SlipEncoding tr = new SlipEncoding(response);
-                if (!tr.isValid()) {
-                    logger.warn("bridgeDirectCommunicate() on {}: method SlipEncoding() raised a decoding error.",
-                            host);
-                    break communication;
-                }
-                short responseCommand = tr.getCommand();
-                byte[] responseData = tr.getData();
-                logger.debug("bridgeDirectCommunicate() on {}: working on response {} with {} bytes of data.", host,
-                        Command.get(responseCommand).toString(), responseData.length);
-                if (isProtocolTraceEnabled) {
-                    logger.info("Received answer {}.", Command.get(responseCommand).toString());
-                }
-                // Handle some common (unexpected) answers
-                switch (Command.get(responseCommand)) {
-                    case GW_NODE_INFORMATION_CHANGED_NTF:
-                        logger.trace("bridgeDirectCommunicate() on {}: received GW_NODE_INFORMATION_CHANGED_NTF.",
-                                host);
-                        logger.trace("bridgeDirectCommunicate() on {}: continue with receiving.", host);
-                        continue;
-                    case GW_NODE_STATE_POSITION_CHANGED_NTF:
-                        logger.trace(
-                                "bridgeDirectCommunicate() on {}: received GW_NODE_STATE_POSITION_CHANGED_NTF, special processing of this packet.",
-                                host);
-                        SCgetHouseStatus receiver = new SCgetHouseStatus();
-                        receiver.setResponse(responseCommand, responseData, isSequentialEnforced);
-                        if (receiver.isCommunicationSuccessful()) {
-                            logger.trace("bridgeDirectCommunicate() on {}: existingProducts().update() called.", host);
-                            bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
-                                    receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget());
-                        }
-                        logger.trace("bridgeDirectCommunicate() on {}: continue with receiving.", host);
-                        continue;
-                    case GW_ERROR_NTF:
-                        switch (responseData[0]) {
-                            case 0:
-                                logger.warn(
-                                        "bridgeDirectCommunicate() on {}: received GW_ERROR_NTF on {} (Not further defined error), aborting.",
-                                        host, commandString);
-                                break communication;
-                            case 1:
-                                logger.warn(
-                                        "bridgeDirectCommunicate() on {}: received GW_ERROR_NTF (Unknown Command or command is not accepted at this state) on {}, aborting.",
-                                        host, commandString);
-                                break communication;
-                            case 2:
-                                logger.warn(
-                                        "bridgeDirectCommunicate() on {}: received GW_ERROR_NTF (ERROR on Frame Structure) on {}, aborting.",
-                                        host, commandString);
-                                break communication;
-                            case 7:
-                                logger.trace(
-                                        "bridgeDirectCommunicate() on {}: received GW_ERROR_NTF (Busy. Try again later) on {}, retrying.",
-                                        host, commandString);
-                                sendBytes = emptyPacket;
-                                continue;
-                            case 8:
-                                logger.warn(
-                                        "bridgeDirectCommunicate() on {}: received GW_ERROR_NTF (Bad system table index) on {}, aborting.",
-                                        host, commandString);
-                                break communication;
-                            case 12:
-                                logger.warn(
-                                        "bridgeDirectCommunicate() on {}: received GW_ERROR_NTF (Not authenticated) on {}, aborting.",
-                                        host, commandString);
-                                resetAuthentication();
-                                break communication;
-                            default:
-                                logger.warn(
-                                        "bridgeDirectCommunicate() on {}: received GW_ERROR_NTF ({}) on {}, aborting.",
-                                        host, responseData[0], commandString);
-                                break communication;
-                        }
-                    case GW_ACTIVATION_LOG_UPDATED_NTF:
-                        logger.info("bridgeDirectCommunicate() on {}: received GW_ACTIVATION_LOG_UPDATED_NTF.", host);
-                        logger.trace("bridgeDirectCommunicate() on {}: continue with receiving.", host);
-                        continue;
+                    break;
 
-                    case GW_COMMAND_RUN_STATUS_NTF:
-                    case GW_COMMAND_REMAINING_TIME_NTF:
-                    case GW_SESSION_FINISHED_NTF:
-                        if (!isSequentialEnforced) {
-                            logger.trace(
-                                    "bridgeDirectCommunicate() on {}: response ignored due to activated parallelism, continue with receiving.",
-                                    host);
-                            continue;
-                        }
+                case GW_NODE_INFORMATION_CHANGED_NTF:
+                case GW_ACTIVATION_LOG_UPDATED_NTF:
+                    logger.trace(loggerFmt, rxName, "=> ignorable command", "=> continuing");
+                    break;
 
-                    default:
-                }
-                logger.trace("bridgeDirectCommunicate() on {}: passes back command {} and data {}.", host,
-                        new CommandNumber(responseCommand).toString(), new Packet(responseData).toString());
-                communication.setResponse(responseCommand, responseData, isSequentialEnforced);
-            } while (!communication.isCommunicationFinished());
-            success = communication.isCommunicationSuccessful();
-        } while (false); // communication
-        logger.debug("bridgeDirectCommunicate({}) on {}: returns {}.", commandString, host,
-                success ? "success" : "failure");
+                case GW_NODE_STATE_POSITION_CHANGED_NTF:
+                    logger.trace(loggerFmt, rxName, "=> special command", "=> starting");
+                    SCgetHouseStatus receiver = new SCgetHouseStatus();
+                    receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
+                    if (receiver.isCommunicationSuccessful()) {
+                        bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
+                                receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget());
+                        logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
+                        if (rcvonly) {
+                            // receive-only: return success to confirm that product(s) were updated
+                            success = true;
+                        }
+                    }
+                    logger.trace(loggerFmt, rxName, "=> special command", "=> continuing");
+                    break;
+
+                case GW_COMMAND_RUN_STATUS_NTF:
+                case GW_COMMAND_REMAINING_TIME_NTF:
+                case GW_SESSION_FINISHED_NTF:
+                    if (!isSequentialEnforced) {
+                        logger.trace(loggerFmt, rxName, "=> parallelism allowed", "=> continuing");
+                        break;
+                    }
+                    logger.trace(loggerFmt, rxName, "=> serialism enforced", "=> default processing");
+                    // fall through => execute default processing
+
+                default:
+                    logger.trace(loggerFmt, rxName, "=> applying data length =>", rxData.length);
+                    communication.setResponse(rxCmd, rxData, isSequentialEnforced);
+                    looping = !communication.isCommunicationFinished();
+                    success = communication.isCommunicationSuccessful();
+            }
+
+        }
+        // in receive-only mode 'failure` just means that no products were updated, so don't log it as a failure..
+        logger.debug(loggerFmt, "finished", "=>", ((success || rcvonly) ? "success" : "failure"));
         return success;
+    }
+
+    /**
+     * Return text description of potential GW_ERROR_NTF error codes, for logging purposes
+     *
+     * @param errCode is the GW_ERROR_NTF error code
+     * @return the description message
+     */
+    private static String getErrorText(byte errCode) {
+        switch (errCode) {
+            case 0:
+                return "=> (0) not further defined error";
+            case 1:
+                return "=> (1) unknown command or command is not accepted at this state";
+            case 2:
+                return "=> (2) error on frame structure";
+            case 7:
+                return "=> (7) busy, try again later";
+            case 8:
+                return "=> (8) bad system table index";
+            case 12:
+                return "=> (12) not authenticated";
+        }
+        return String.format("=> (%d) unknown error", errCode);
+    }
+
+    @Override
+    public void close() throws IOException {
+        shutdown();
     }
 }

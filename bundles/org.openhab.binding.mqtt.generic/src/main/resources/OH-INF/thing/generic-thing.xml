@@ -21,12 +21,12 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="payloadAvailable" type="text">
-				<label>Payload available</label>
+				<label>Device Available Payload</label>
 				<description>Payload of the 'Availability Topic', when the device is available. Default: 'ON'</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="payloadNotAvailable" type="text">
-				<label>Payload not availabe</label>
+				<label>Device Unavailable Payload</label>
 				<description>Payload of the 'Availability Topic', when the device is *not* available. Default: 'OFF'</description>
 				<advanced>true</advanced>
 			</parameter>
