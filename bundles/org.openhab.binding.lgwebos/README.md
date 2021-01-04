@@ -16,6 +16,7 @@ Under network settings allow "LG CONNECT APPS" to connect.
 
 Note: Under general settings allow mobile applications to turn on the TV, if this option is available.
 On newer models this setting may also be called "Mobile TV On > Turn On Via WiFi".
+If channel `power` receives `ON`, the binding will attempt to power on the TV by broadcasting a Wake on Lan packet.
 
 ## Binding Configuration
 
