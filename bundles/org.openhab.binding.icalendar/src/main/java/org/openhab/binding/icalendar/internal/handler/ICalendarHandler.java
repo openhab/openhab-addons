@@ -272,15 +272,15 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     private void migrateLastUpdateChannel() {
         final Thing thing = getThing();
         if (thing.getChannel(CHANNEL_LAST_UPDATE) == null) {
-            logger.debug("last_update channel is missing in this Thing. Adding it.");
-            final ThingBuilder thingBuilder = editThing();
+            logger.trace("last_update channel is missing in this Thing. Adding it.");
             final ThingHandlerCallback callback = getCallback();
             if (callback == null) {
                 logger.debug("ThingHandlerCallback is null. Skipping migration of last_update channel.");
                 return;
             }
-            ChannelBuilder channelBuilder = callback
+            final ChannelBuilder channelBuilder = callback
                     .createChannelBuilder(new ChannelUID(thing.getUID(), CHANNEL_LAST_UPDATE), LAST_UPDATE_TYPE_UID);
+            final ThingBuilder thingBuilder = editThing();
             thingBuilder.withChannel(channelBuilder.build());
             updateThing(thingBuilder.build());
         }
