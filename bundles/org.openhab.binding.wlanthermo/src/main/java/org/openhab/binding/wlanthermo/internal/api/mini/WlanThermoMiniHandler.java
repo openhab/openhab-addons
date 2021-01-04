@@ -89,12 +89,12 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // Mini is read only!
         if (command instanceof RefreshType) {
             State s = wlanThermoMiniCommandHandler.getState(channelUID, app);
             if (s != null)
                 updateState(channelUID, s);
         }
-        // Mini is read only!
     }
 
     private void update() {
