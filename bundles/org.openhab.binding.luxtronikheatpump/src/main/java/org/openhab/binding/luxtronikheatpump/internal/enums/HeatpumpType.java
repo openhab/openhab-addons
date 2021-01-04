@@ -95,7 +95,7 @@ public enum HeatpumpType {
     TYPE_LWD90V(77, "LWD90V"),
     TYPE_MSW3_12(78, "MSW3-12"),
     TYPE_MSW3_12S(79, "MSW3-12S"),
-    TYPE_UNKNOWN(-1, "Unbekannter Typ");
+    TYPE_UNKNOWN(-1, "Unknown");
 
     private final String name;
     private final Integer code;

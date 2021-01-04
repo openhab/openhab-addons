@@ -34,6 +34,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HeatpumpConnector {
 
+    private static final int SOCKET_PARAM_WRITE_PARAMS = 3002;
+    private static final int SOCKET_PARAM_READ_PARAMS = 3003;
+    private static final int SOCKET_PARAM_READ_VALUES = 3004;
+    private static final int SOCKET_PARAM_READ_VISIBILITIES = 3005;
+
     static final Logger logger = LoggerFactory.getLogger(HeatpumpConnector.class);
 
     private String serverIp;
@@ -60,22 +65,19 @@ public class HeatpumpConnector {
             DataInputStream datain = new DataInputStream(in);
             DataOutputStream dataout = new DataOutputStream(out);
 
-            heatpumpValues = readInt(datain, dataout, 3004);
+            heatpumpValues = readInt(datain, dataout, SOCKET_PARAM_READ_VALUES);
 
             // workaround for thermal energies
             // the thermal energies can be unreasonably high in some cases, probably due to a sign bug in the firmware
             // trying to correct this issue here
-            if (heatpumpValues[151] >= 214748364)
-                heatpumpValues[151] -= 214748364;
-            if (heatpumpValues[152] >= 214748364)
-                heatpumpValues[152] -= 214748364;
-            if (heatpumpValues[153] >= 214748364)
-                heatpumpValues[153] -= 214748364;
-            if (heatpumpValues[154] >= 214748364)
-                heatpumpValues[154] -= 214748364;
+            for (int i = 151; i <= 154; i++) {
+                if (heatpumpValues[i] >= 214748364) {
+                    heatpumpValues[i] -= 214748364;
+                }
+            }
 
-            heatpumpParams = readInt(datain, dataout, 3003);
-            heatpumpVisibilities = readInt(datain, dataout, 3005);
+            heatpumpParams = readInt(datain, dataout, SOCKET_PARAM_READ_PARAMS);
+            heatpumpVisibilities = readInt(datain, dataout, SOCKET_PARAM_READ_VISIBILITIES);
 
             datain.close();
             dataout.close();
@@ -106,7 +108,7 @@ public class HeatpumpConnector {
             while (datain.available() > 0) {
                 datain.readByte();
             }
-            dataout.writeInt(3002);
+            dataout.writeInt(SOCKET_PARAM_WRITE_PARAMS);
             dataout.writeInt(param);
             dataout.writeInt(value);
             dataout.flush();
@@ -117,11 +119,11 @@ public class HeatpumpConnector {
             datain.close();
             dataout.close();
 
-            if (cmd != 3002) {
-                logger.warn("Can't write parameter {} with value {} to heat pump.", param, value);
+            if (cmd != SOCKET_PARAM_WRITE_PARAMS) {
+                logger.debug("Couldn't write parameter {} with value {} to heat pump.", param, value);
                 return false;
             } else {
-                logger.debug("Successful parameter {} with value {} to heatpump written.", param, value);
+                logger.debug("Parameter {} with value {} successfully written to heat pump.", param, value);
                 return true;
             }
         }
@@ -147,7 +149,9 @@ public class HeatpumpConnector {
 
     /**
      * Reads all available parameters for the given value from socket
-     *
+     * 
+     * @param datain data input stream of socket connection
+     * @param dataout data output stream of socket connection
      * @param value int value to read from socket
      * @return an array with all values returned from heat pump socket
      * @throws IOException indicate that no data can be read from the heat pump
@@ -164,7 +168,7 @@ public class HeatpumpConnector {
             return new Integer[0];
         }
 
-        if (value == 3004) {
+        if (value == SOCKET_PARAM_READ_VALUES) {
             datain.readInt();
         }
 
@@ -174,7 +178,7 @@ public class HeatpumpConnector {
 
         result = new Integer[arraylength];
 
-        if (value == 3005) {
+        if (value == SOCKET_PARAM_READ_VISIBILITIES) {
             byte[] data = datain.readNBytes(arraylength);
             for (int i = 0; i < data.length; i++) {
                 result[i] = (int) data[i];

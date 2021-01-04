@@ -76,6 +76,13 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
+        try {
+            HeatpumpChannel.fromString(channelId);
+        } catch (Exception e) {
+            logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
+            return;
+        }
+
         HeatpumpChannel channel = HeatpumpChannel.fromString(channelId);
 
         if (channel.isWritable().equals(Boolean.FALSE)) {
@@ -154,7 +161,9 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         if (param != null && value != null) {
             if (sendParamToHeatpump(param, value)) {
-                logger.info("Heatpump {} mode set to {}.", channel.getCommand(), value);
+                logger.info("Heat pump mode {} set to {}.", channel.getCommand(), value);
+            } else {
+                logger.warn("Failed setting heat pump mode {} to {}", channel.getCommand(), value);
             }
         } else {
             logger.warn("No valid value given for Heatpump operation {}", channel.getCommand());
@@ -188,7 +197,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        updateStatus(ThingStatus.ONLINE);
 
         Integer[] visibilityValues = connector.getVisibilities();
         Integer[] heatpumpValues = connector.getValues();
@@ -200,7 +209,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         for (HeatpumpChannel channel : HeatpumpChannel.values()) {
             Integer channelId = channel.getChannelId();
             int length = channel.isWritable() == Boolean.TRUE ? heatpumpParams.length : heatpumpValues.length;
-            if ((channelId != null && length < channelId) || (config.hideChannels == Boolean.TRUE
+            if ((channelId != null && length < channelId) || (config.showAllChannels == Boolean.FALSE
                     && channel.isVisible(visibilityValues).equals(Boolean.FALSE))) {
                 logger.debug("Hiding channel {}", channel.getCommand());
                 ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());

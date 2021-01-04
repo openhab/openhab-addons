@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.luxtronikheatpump.internal;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 
@@ -61,29 +62,34 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     @Override
     public void run() {
         // connect to heatpump and check if values can be fetched
-        HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
+        final HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
 
         try {
             connector.read();
+        } catch (IOException e) {
+            logger.warn("Could not connect to heatpump (uuid={}, ip={}, port={}): {}", thing.getUID(), config.ipAddress,
+                    config.port, e.getMessage());
+            return;
+        }
 
-            // read all available values
-            Integer[] heatpumpValues = connector.getValues();
+        // read all available values
+        Integer[] heatpumpValues = connector.getValues();
 
-            // read all parameters
-            Integer[] heatpumpParams = connector.getParams();
-            Integer[] heatpumpVisibilities = connector.getVisibilities();
+        // read all parameters
+        Integer[] heatpumpParams = connector.getParams();
+        Integer[] heatpumpVisibilities = connector.getVisibilities();
 
-            for (HeatpumpChannel channel : HeatpumpChannel.values()) {
-
+        for (HeatpumpChannel channel : HeatpumpChannel.values()) {
+            try {
                 Integer channelId = channel.getChannelId();
 
                 if (channelId == null) {
                     continue; // no channel id to read defined (for channels handeled separatly)
                 }
 
-                if (channel.isVisible(heatpumpVisibilities).equals(Boolean.FALSE) && config.hideChannels) {
-                    logger.debug("Channel {} is not availabe. Skipped updating it", channel.getCommand());
-                    continue; // channel not available for heat pump
+                if (channel.isVisible(heatpumpVisibilities).equals(Boolean.FALSE) && config.showAllChannels) {
+                    logger.debug("Channel {} is not available. Skipped updating it", channel.getCommand());
+                    continue;
                 }
 
                 Integer rawValue = null;
@@ -102,14 +108,14 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
                 if (value != null) {
                     handleEventType(value, channel);
                 }
+
+            } catch (Exception e) {
+                logger.warn("An error occurred while updating the channel {}: {}", channel.getCommand(),
+                        e.getMessage());
             }
-
-            updateProperties(heatpumpValues);
-
-        } catch (Exception e) {
-            logger.warn("Could not connect to heatpump (uuid={}, ip={}, port={}): {}", thing.getUID(), config.ipAddress,
-                    config.port, e.getStackTrace());
         }
+
+        updateProperties(heatpumpValues);
     }
 
     private @Nullable State convertValueToState(Integer rawValue, Class<? extends Item> itemClass,
@@ -122,7 +128,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         if (itemClass == DateTimeItem.class) {
             try {
                 if (rawValue > 0) {
-                    var instant = Instant.ofEpochSecond((long) rawValue);
+                    Instant instant = Instant.ofEpochSecond(rawValue.longValue());
                     return new DateTimeType(instant.atZone(ZoneId.of("UTC")));
                 }
             } catch (Exception e) {
@@ -131,29 +137,22 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         }
 
         if (itemClass == NumberItem.class) {
-            if (unit == SIUnits.CELSIUS) {
-                return new QuantityType<>((double) rawValue / 10, SIUnits.CELSIUS);
-            } else if (unit == Units.KELVIN) {
-                return new QuantityType<>((double) rawValue / 10, Units.KELVIN);
-            } else if (unit == Units.KILOWATT_HOUR) {
-                return new QuantityType<>((double) rawValue / 10, Units.KILOWATT_HOUR);
-            } else if (unit == Units.PERCENT) {
-                return new QuantityType<>((double) rawValue / 10, Units.PERCENT);
-            } else if (unit == Units.HOUR) {
-                return new QuantityType<>((double) rawValue / 10, Units.HOUR);
-            } else if (unit == Units.HERTZ) {
-                return new QuantityType<>((double) rawValue, Units.HERTZ);
-            } else if (unit == Units.SECOND) {
-                return new QuantityType<>((double) rawValue, Units.SECOND);
-            } else if (unit == Units.LITRE_PER_MINUTE) {
-                return new QuantityType<>((double) rawValue * 60, Units.LITRE_PER_MINUTE);
-            } else if (unit == Units.BAR) {
-                return new QuantityType<>((double) rawValue / 100, Units.BAR);
-            } else if (unit == Units.VOLT) {
-                return new QuantityType<>((double) rawValue / 100, Units.VOLT);
-            } else {
+            if (unit == null) {
                 return new DecimalType(rawValue);
             }
+            if (unit == SIUnits.CELSIUS || unit == Units.KELVIN || unit == Units.KILOWATT_HOUR || unit == Units.PERCENT
+                    || unit == Units.HOUR) {
+                return new QuantityType<>((double) rawValue / 10, unit);
+            } else if (unit == Units.HERTZ || unit == Units.SECOND) {
+                return new QuantityType<>((double) rawValue, unit);
+            } else if (unit == Units.LITRE_PER_MINUTE) {
+                return new QuantityType<>((double) rawValue * 60, unit);
+            } else if (unit == Units.BAR || unit == Units.VOLT) {
+                return new QuantityType<>((double) rawValue / 100, unit);
+            }
+
+            logger.debug("Unhandled unit {} configured for a channel.", unit);
+            return new DecimalType(rawValue);
         }
 
         return null;

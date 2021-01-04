@@ -673,7 +673,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.luxtranicheatpump</artifactId>
+      <artifactId>org.openhab.binding.luxtranikheatpump</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
