@@ -55,7 +55,7 @@ public abstract class AbstractStateMachine<T extends AbstractStateMachine<T, U>,
 
         state = newState;
 
-        state.startWorking();
+        newState.startWorking();
     }
 
     protected boolean isStateActive(AbstractState<?, ?> otherState) {
