@@ -26,8 +26,8 @@ Location of UUID and Secret:
 
 | File   | Regular Installation         | APT Installation                      |
 |--------|------------------------------|---------------------------------------|
-| UUID   | userdata/uuid                | /var/lib/openhab/uuid                |
-| Secret | userdata/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret |
+| UUID   | userdata/uuid                | /var/lib/openhab/uuid                 |
+| Secret | userdata/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret  |
 
 ## Configuration
 
