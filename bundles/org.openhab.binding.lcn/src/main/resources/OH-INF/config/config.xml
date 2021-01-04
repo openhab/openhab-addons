@@ -42,7 +42,7 @@
 			<label>Connection Timeout</label>
 			<description>Period after which an LCN command is resent, when no acknowledge has been received (in ms).</description>
 			<default>3500</default>
-			<required>true</required>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 
