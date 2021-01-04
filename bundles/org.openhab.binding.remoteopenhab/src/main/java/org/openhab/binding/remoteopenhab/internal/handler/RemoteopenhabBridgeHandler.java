@@ -585,7 +585,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             }
         } catch (IllegalArgumentException | DateTimeException e) {
             logger.warn("Failed to parse state \"{}\" for item {}: {}", state, itemName, e.getMessage());
-            channelState = null;
+            channelState = UnDefType.UNDEF;
         }
         if (channelState != null) {
             if (onlyIfStateChanged && channelState.equals(channelsLastStates.get(channel.getUID()))) {
