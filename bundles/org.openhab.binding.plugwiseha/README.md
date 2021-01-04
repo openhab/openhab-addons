@@ -93,7 +93,9 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | dhwState            | Switch             | Yes        | This channel is used to read the current domestic hot water state of the boiler                                                                                                                                              |
 | waterPressure       | Number:Pressure    | Yes        | This channel is used to read the current water pressure of the boiler                                                                                                                                                        |
 | presetScene         | String             | Yes        | This channel is used to read the current active scene for the zone                                                                                                                                                           |
-| valvePosition       | String             | Yes        | This channel is used to read the current active scene for the zone                                                                                                                                                           |
+| valvePosition       | Number             | Yes        | This channel is used to read the current position of the valve                                                                                                                                                               |
+| preHeat             | Switch             | Yes        | This channel is used to toggle the pre heating of a zone ON/OFF                                                                                                                                                              |
+
 
 
 ## Full Example
@@ -118,12 +120,15 @@ Replace `$device_id` accordingly.
 Number:Temperature living_room_zone_temperature "Zone temperature" {channel="plugwiseha:zone:home:living_room_zone:temperature"}
 Number:Temperature living_room_zone_temperature_setpoint "Zone temperature setpoint" {channel="plugwiseha:zone:home:living_room_zone:setpointTemperature"}
 Number:Temperature living_room_zone_preset_scene "Zone preset scene" {channel="plugwiseha:zone:home:living_room_zone:presetScene"}
+Switch living_room_zone_preheat "Zone preheat enabled" {channel="plugwiseha:zone:home:living_room_zone:preHeat"}
 
 Number:Temperature living_room_radiator_temperature "Radiator valve temperature" {channel="plugwiseha:appliance_valve:home:living_room_radiator:temperature"}
 Number:Temperature living_room_radiator_temperature_setpoint "Radiator valve temperature setpoint" {channel="plugwiseha:appliance_valve:home:living_room_radiator:setpointTemperature"}
+Number living_room_radiator_valve_position "Radiator valve position" {channel="plugwiseha:appliance_valve:home:living_room_radiator:valvePosition"}
 
 Number:Temperature living_room_thermostat_temperature "Room thermostat temperature" {channel="plugwiseha:appliance_valve:home:living_room_thermostat:temperature"}
 Number:Temperature living_room_thermostat_temperature_setpoint "Room thermostat temperature setpoint" {channel="plugwiseha:appliance_valve:home:living_room_thermostat:setpointTemperature"}
+Number:Temperature living_room_thermostat_temperature_offset "Room thermostat temperature offset" {channel="plugwiseha:appliance_valve:home:living_room_thermostat:offsetTemperature"}
 
 Switch living_room_pump_power "Floor heating pump power" {channel="plugwiseha:appliance_pump:home:living_room_pump:power"}
 Switch living_room_pump_lock "Floor heating pump lock [MAP:(plugwiseha.map):%s]" {channel="plugwiseha:appliance_pump:home:living_room_pump:lock"}
@@ -150,12 +155,15 @@ sitemap plugwiseha label="PlugwiseHA Binding"
         Text item=living_room_zone_temperature
         Setpoint item=living_room_zone_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
 		Text item=living_room_zone_presetScene
+		Switch item=living_room_zone_preheat
 
 		Text item=living_room_radiator_temperature
         Setpoint item=living_room_radiator_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
+		Text item=living_room_radiator_valve_position
 
 		Text item=living_room_thermostat_temperature
         Setpoint item=living_room_thermostat_temperature_setpoint label="Living room [%.1f °C]" minValue=5.0 maxValue=25 step=0.5
+		Setpoint item=living_room_thermostat_temperature_offset label="Living room offset [%.1f °C]" minValue=-5.0 maxValue=5 step=0.5
 
 		Number item=living_room_pump_power_usage
 		Switch item=living_room_pump_power

@@ -35,6 +35,9 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
     private String resolution;
     private String lock;
 
+    @XStreamAlias("preheating_allowed")
+    private String preHeat;
+
     @XStreamAlias("lower_bound")
     private String lowerBound;
 
@@ -70,6 +73,10 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
 
     public ZonedDateTime getUpdatedDate() {
         return updatedDate;
+    }
+
+    public Optional<String> getPreHeatState() {
+        return Optional.ofNullable(preHeat);
     }
 
     public Optional<String> getRelayLockState() {

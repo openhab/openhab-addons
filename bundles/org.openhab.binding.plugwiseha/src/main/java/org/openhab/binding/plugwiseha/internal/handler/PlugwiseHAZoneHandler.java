@@ -30,6 +30,7 @@ import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Location;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -111,16 +112,14 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
     @SuppressWarnings("unchecked")
     protected void handleCommand(Location entity, ChannelUID channelUID, Command command) throws PlugwiseHAException {
         String channelID = channelUID.getIdWithoutGroup();
-
-        switch (channelID) {
-            case ZONE_SETPOINT_CHANNEL:
-                if (command instanceof QuantityType) {
-                    QuantityType<Temperature> state = (QuantityType<Temperature>) command;
-
-                    PlugwiseHABridgeHandler bridge = this.getPlugwiseHABridge();
-                    if (bridge != null) {
-                        PlugwiseHAController controller = bridge.getController();
-                        if (controller != null) {
+        PlugwiseHABridgeHandler bridge = this.getPlugwiseHABridge();
+        if (bridge != null) {
+            PlugwiseHAController controller = bridge.getController();
+            if (controller != null) {
+                switch (channelID) {
+                    case ZONE_SETPOINT_CHANNEL:
+                        if (command instanceof QuantityType) {
+                            QuantityType<Temperature> state = (QuantityType<Temperature>) command;
                             try {
                                 Unit<Temperature> unit = location.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
                                         .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
@@ -130,17 +129,28 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                                         entity.getSetpointTemperature().orElse(null), state.doubleValue());
                             }
                         }
-                    }
+                        break;
+                    case ZONE_PREHEAT_CHANNEL:
+                        if (command instanceof OnOffType) {
+                            try {
+                                controller.setPreHeating(entity, command == OnOffType.ON);
+                            } catch (PlugwiseHAException e) {
+                                logger.warn("Unable to switch zone pre heating {} for zone '{}'", (State) command,
+                                        entity.getName());
+                            }
+                        }
+                        break;
+                    default:
+                        logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
                 }
-                break;
-            default:
-                logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
+            }
         }
     }
 
     private State getDefaultState(String channelID) {
         State state = UnDefType.NULL;
         switch (channelID) {
+            case ZONE_PREHEAT_CHANNEL:
             case ZONE_PRESETSCENE_CHANNEL:
             case ZONE_SETPOINT_CHANNEL:
             case ZONE_TEMPERATURE_CHANNEL:
@@ -156,6 +166,12 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
         State state = getDefaultState(channelID);
 
         switch (channelID) {
+            case ZONE_PREHEAT_CHANNEL:
+                Boolean preHeatState = entity.getPreHeatState().orElse(null);
+                if (preHeatState != null) {
+                    state = OnOffType.from(preHeatState);
+                }
+                break;
             case ZONE_PRESETSCENE_CHANNEL:
                 state = new StringType(entity.getPreset());
                 break;

@@ -28,6 +28,13 @@
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="preHeat">
+		<item-type>Switch</item-type>
+		<label>Preheat</label>
+		<description>Switch the preheating of a zone ON or OFF</description>
+		<category>switch</category>
+	</channel-type>
+
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>

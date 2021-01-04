@@ -311,6 +311,18 @@ public class PlugwiseHAController {
         }
     }
 
+    public void setPreHeating(Location location, Boolean state) throws PlugwiseHAException {
+        PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
+        Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
+
+        request.setPath("/core/locations");
+        request.addPathParameter("id", String.format("%s/thermostat", location.getId()));
+        request.addPathParameter("id", String.format("%s", thermostat.get().getId()));
+        request.setBodyParameter(new ActuatorFunctionalityThermostat(state));
+
+        executeRequest(request);
+    }
+
     public void switchRelayOn(Appliance appliance) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
         // Boolean relayLockState = appliance.getRelayLockState().orElse(null);

@@ -45,6 +45,7 @@
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="presetScene" typeId="presetScene"/>
+			<channel id="preHeat" typeId="preHeat"/>
 		</channels>
 
 		<representation-property>id</representation-property>

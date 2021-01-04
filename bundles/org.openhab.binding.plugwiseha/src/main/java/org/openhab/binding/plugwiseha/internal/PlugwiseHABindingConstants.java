@@ -92,6 +92,7 @@ public class PlugwiseHABindingConstants {
     public static final String ZONE_SETPOINT_CHANNEL = "setpointTemperature";
     public static final String ZONE_TEMPERATURE_CHANNEL = "temperature";
     public static final String ZONE_PRESETSCENE_CHANNEL = "presetScene";
+    public static final String ZONE_PREHEAT_CHANNEL = "preHeat";
 
     public static final String APPLIANCE_SETPOINT_CHANNEL = "setpointTemperature";
     public static final String APPLIANCE_TEMPERATURE_CHANNEL = "temperature";
