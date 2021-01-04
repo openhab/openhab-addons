@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.remoteopenhab.internal;
 
+import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.BINDING_ID;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.StateDescription;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -34,6 +39,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class RemoteopenhabChannelTypeProvider implements ChannelTypeProvider {
     private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
+    private final Map<String, List<ChannelType>> channelTypesForItemTypes = new ConcurrentHashMap<>();
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
@@ -50,11 +56,48 @@ public class RemoteopenhabChannelTypeProvider implements ChannelTypeProvider {
         return null;
     }
 
-    public void addChannelType(ChannelType type) {
-        channelTypes.add(type);
+    public @Nullable ChannelType getChannelType(String itemType, boolean readOnly, String pattern) {
+        List<ChannelType> channelTypesForItemType = channelTypesForItemTypes.get(itemType);
+        if (channelTypesForItemType != null) {
+            for (ChannelType channelType : channelTypesForItemType) {
+                boolean channelTypeReadOnly = false;
+                String channelTypePattern = null;
+                StateDescription stateDescription = channelType.getState();
+                if (stateDescription != null) {
+                    channelTypeReadOnly = stateDescription.isReadOnly();
+                    channelTypePattern = stateDescription.getPattern();
+                }
+                if (channelTypePattern == null) {
+                    channelTypePattern = "";
+                }
+                if (channelTypeReadOnly == readOnly && channelTypePattern.equals(pattern)) {
+                    return channelType;
+                }
+            }
+        }
+        return null;
     }
 
-    public void removeChannelType(ChannelType type) {
-        channelTypes.remove(type);
+    public ChannelTypeUID buildNewChannelTypeUID(String itemType) {
+        List<ChannelType> channelTypesForItemType = channelTypesForItemTypes.get(itemType);
+        int nb = channelTypesForItemType == null ? 0 : channelTypesForItemType.size();
+        return new ChannelTypeUID(BINDING_ID, String.format("item%s%d", itemType.replace(":", ""), nb + 1));
+    }
+
+    public void addChannelType(String itemType, ChannelType channelType) {
+        channelTypes.add(channelType);
+        List<ChannelType> channelTypesForItemType = channelTypesForItemTypes.computeIfAbsent(itemType,
+                type -> new CopyOnWriteArrayList<>());
+        if (channelTypesForItemType != null) {
+            channelTypesForItemType.add(channelType);
+        }
+    }
+
+    public void removeChannelType(String itemType, ChannelType channelType) {
+        channelTypes.remove(channelType);
+        List<ChannelType> channelTypesForItemType = channelTypesForItemTypes.get(itemType);
+        if (channelTypesForItemType != null) {
+            channelTypesForItemType.remove(channelType);
+        }
     }
 }
