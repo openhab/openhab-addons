@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,8 +24,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,8 +66,7 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
     private static final int MODULE_NAME_PART_COUNT = 2;
     private static final int DISCOVERY_TIMEOUT_SEC = 90;
     private static final int ACK_TIMEOUT_MS = 1000;
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(LcnBindingConstants.THING_TYPE_MODULE).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(LcnBindingConstants.THING_TYPE_MODULE);
     private @Nullable PckGatewayHandler bridgeHandler;
     private final Map<LcnAddrMod, @Nullable Map<Integer, String>> moduleNames = new HashMap<>();
     private final Map<LcnAddrMod, DiscoveryResultBuilder> discoveryResultBuilders = new ConcurrentHashMap<>();

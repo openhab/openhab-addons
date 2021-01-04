@@ -29,7 +29,7 @@ import org.openhab.binding.lcn.internal.connection.ModInfo;
  * @author Fabian Wolter - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class AbstractTestLcnModuleSubHandler {
 
