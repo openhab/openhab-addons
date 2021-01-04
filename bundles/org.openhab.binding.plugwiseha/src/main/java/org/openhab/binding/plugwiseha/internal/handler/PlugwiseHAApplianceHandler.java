@@ -182,9 +182,8 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 if (command instanceof QuantityType) {
                     QuantityType<Temperature> state = (QuantityType<Temperature>) command;
                     try {
-                        Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS) == UNIT_CELSIUS
-                                ? SIUnits.CELSIUS
-                                : ImperialUnits.FAHRENHEIT;
+                        Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS)
+                                .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
                         controller.setOffsetTemperature(entity, state.toUnit(unit).doubleValue());
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
@@ -209,8 +208,8 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 if (command instanceof QuantityType) {
                     QuantityType<Temperature> state = (QuantityType<Temperature>) command;
                     try {
-                        Unit<Temperature> unit = entity.getSetpointTemperatureUnit()
-                                .orElse(UNIT_CELSIUS) == UNIT_CELSIUS ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
+                        Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
+                                .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
                         controller.setThermostat(entity, state.toUnit(unit).doubleValue());
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to update setpoint for appliance '{}': {} -> {}", entity.getName(),
@@ -298,7 +297,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_OFFSET_CHANNEL:
                 if (entity.getOffsetTemperature().isPresent()) {
-                    Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS) == UNIT_CELSIUS
+                    Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
                     state = new QuantityType<Temperature>(entity.getOffsetTemperature().get(), unit);
@@ -316,15 +315,14 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_SETPOINT_CHANNEL:
                 if (entity.getSetpointTemperature().isPresent()) {
-                    Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS) == UNIT_CELSIUS
-                            ? SIUnits.CELSIUS
-                            : ImperialUnits.FAHRENHEIT;
+                    Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
+                            .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
                     state = new QuantityType<Temperature>(entity.getSetpointTemperature().get(), unit);
                 }
                 break;
             case APPLIANCE_TEMPERATURE_CHANNEL:
                 if (entity.getTemperature().isPresent()) {
-                    Unit<Temperature> unit = entity.getTemperatureUnit().orElse(UNIT_CELSIUS) == UNIT_CELSIUS
+                    Unit<Temperature> unit = entity.getTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
                     state = new QuantityType<Temperature>(entity.getTemperature().get(), unit);

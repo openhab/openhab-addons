@@ -122,9 +122,8 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                         PlugwiseHAController controller = bridge.getController();
                         if (controller != null) {
                             try {
-                                Unit<Temperature> unit = location.getSetpointTemperatureUnit()
-                                        .orElse(UNIT_CELSIUS) == UNIT_CELSIUS ? SIUnits.CELSIUS
-                                                : ImperialUnits.FAHRENHEIT;
+                                Unit<Temperature> unit = location.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
+                                        .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
                                 controller.setLocationThermostat(entity, state.toUnit(unit).doubleValue());
                             } catch (PlugwiseHAException e) {
                                 logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
@@ -162,15 +161,14 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                 break;
             case ZONE_SETPOINT_CHANNEL:
                 if (entity.getSetpointTemperature().isPresent()) {
-                    Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS) == UNIT_CELSIUS
-                            ? SIUnits.CELSIUS
-                            : ImperialUnits.FAHRENHEIT;
+                    Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
+                            .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
                     state = new QuantityType<Temperature>(entity.getSetpointTemperature().get(), unit);
                 }
                 break;
             case ZONE_TEMPERATURE_CHANNEL:
                 if (entity.getTemperature().isPresent()) {
-                    Unit<Temperature> unit = entity.getTemperatureUnit().orElse(UNIT_CELSIUS) == UNIT_CELSIUS
+                    Unit<Temperature> unit = entity.getTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
                     state = new QuantityType<Temperature>(entity.getTemperature().get(), unit);
