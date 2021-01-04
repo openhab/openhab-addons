@@ -14,9 +14,9 @@ package org.openhab.binding.remoteopenhab.internal.handler;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -484,108 +484,108 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             return;
         }
         State channelState = null;
-        if (stateType == null && "NULL".equals(state)) {
-            channelState = UnDefType.NULL;
-        } else if (stateType == null && "UNDEF".equals(state)) {
-            channelState = UnDefType.UNDEF;
-        } else if ("UnDef".equals(stateType)) {
-            switch (state) {
-                case "NULL":
-                    channelState = UnDefType.NULL;
-                    break;
-                case "UNDEF":
-                    channelState = UnDefType.UNDEF;
-                    break;
-                default:
-                    logger.debug("Invalid UnDef value {} for item {}", state, itemName);
-                    break;
-            }
-        } else if (acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
-            // Item type Number with dimension
-            if (stateType == null || "Quantity".equals(stateType)) {
-                List<Class<? extends State>> stateTypes = Collections.singletonList(QuantityType.class);
-                channelState = TypeParser.parseState(stateTypes, state);
-            } else if ("Decimal".equals(stateType)) {
-                channelState = new DecimalType(state);
+        try {
+            if (stateType == null && "NULL".equals(state)) {
+                channelState = UnDefType.NULL;
+            } else if (stateType == null && "UNDEF".equals(state)) {
+                channelState = UnDefType.UNDEF;
+            } else if ("UnDef".equals(stateType)) {
+                switch (state) {
+                    case "NULL":
+                        channelState = UnDefType.NULL;
+                        break;
+                    case "UNDEF":
+                        channelState = UnDefType.UNDEF;
+                        break;
+                    default:
+                        logger.debug("Invalid UnDef value {} for item {}", state, itemName);
+                        break;
+                }
+            } else if (acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
+                // Item type Number with dimension
+                if (stateType == null || "Quantity".equals(stateType)) {
+                    List<Class<? extends State>> stateTypes = Collections.singletonList(QuantityType.class);
+                    channelState = TypeParser.parseState(stateTypes, state);
+                } else if ("Decimal".equals(stateType)) {
+                    channelState = new DecimalType(state);
+                } else {
+                    logger.debug("Unexpected value type {} for item {}", stateType, itemName);
+                }
             } else {
-                logger.debug("Unexpected value type {} for item {}", stateType, itemName);
-            }
-        } else {
-            switch (acceptedItemType) {
-                case CoreItemFactory.STRING:
-                    if (checkStateType(itemName, stateType, "String")) {
-                        channelState = new StringType(state);
-                    }
-                    break;
-                case CoreItemFactory.NUMBER:
-                    if (checkStateType(itemName, stateType, "Decimal")) {
-                        channelState = new DecimalType(state);
-                    }
-                    break;
-                case CoreItemFactory.SWITCH:
-                    if (checkStateType(itemName, stateType, "OnOff")) {
-                        channelState = "ON".equals(state) ? OnOffType.ON : OnOffType.OFF;
-                    }
-                    break;
-                case CoreItemFactory.CONTACT:
-                    if (checkStateType(itemName, stateType, "OpenClosed")) {
-                        channelState = "OPEN".equals(state) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-                    }
-                    break;
-                case CoreItemFactory.DIMMER:
-                    if (checkStateType(itemName, stateType, "Percent")) {
-                        channelState = new PercentType(state);
-                    }
-                    break;
-                case CoreItemFactory.COLOR:
-                    if (checkStateType(itemName, stateType, "HSB")) {
-                        channelState = HSBType.valueOf(state);
-                    }
-                    break;
-                case CoreItemFactory.DATETIME:
-                    if (checkStateType(itemName, stateType, "DateTime")) {
-                        try {
+                switch (acceptedItemType) {
+                    case CoreItemFactory.STRING:
+                        if (checkStateType(itemName, stateType, "String")) {
+                            channelState = new StringType(state);
+                        }
+                        break;
+                    case CoreItemFactory.NUMBER:
+                        if (checkStateType(itemName, stateType, "Decimal")) {
+                            channelState = new DecimalType(state);
+                        }
+                        break;
+                    case CoreItemFactory.SWITCH:
+                        if (checkStateType(itemName, stateType, "OnOff")) {
+                            channelState = "ON".equals(state) ? OnOffType.ON : OnOffType.OFF;
+                        }
+                        break;
+                    case CoreItemFactory.CONTACT:
+                        if (checkStateType(itemName, stateType, "OpenClosed")) {
+                            channelState = "OPEN".equals(state) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                        }
+                        break;
+                    case CoreItemFactory.DIMMER:
+                        if (checkStateType(itemName, stateType, "Percent")) {
+                            channelState = new PercentType(state);
+                        }
+                        break;
+                    case CoreItemFactory.COLOR:
+                        if (checkStateType(itemName, stateType, "HSB")) {
+                            channelState = HSBType.valueOf(state);
+                        }
+                        break;
+                    case CoreItemFactory.DATETIME:
+                        if (checkStateType(itemName, stateType, "DateTime")) {
                             channelState = new DateTimeType(ZonedDateTime.parse(state, FORMATTER_DATE));
-                        } catch (DateTimeParseException e) {
-                            logger.debug("Failed to parse date {} for item {}", state, itemName);
-                            channelState = null;
                         }
-                    }
-                    break;
-                case CoreItemFactory.LOCATION:
-                    if (checkStateType(itemName, stateType, "Point")) {
-                        channelState = new PointType(state);
-                    }
-                    break;
-                case CoreItemFactory.IMAGE:
-                    if (checkStateType(itemName, stateType, "Raw")) {
-                        channelState = RawType.valueOf(state);
-                    }
-                    break;
-                case CoreItemFactory.PLAYER:
-                    if (checkStateType(itemName, stateType, "PlayPause")) {
-                        switch (state) {
-                            case "PLAY":
-                                channelState = PlayPauseType.PLAY;
-                                break;
-                            case "PAUSE":
-                                channelState = PlayPauseType.PAUSE;
-                                break;
-                            default:
-                                logger.debug("Unexpected value {} for item {}", state, itemName);
-                                break;
+                        break;
+                    case CoreItemFactory.LOCATION:
+                        if (checkStateType(itemName, stateType, "Point")) {
+                            channelState = new PointType(state);
                         }
-                    }
-                    break;
-                case CoreItemFactory.ROLLERSHUTTER:
-                    if (checkStateType(itemName, stateType, "Percent")) {
-                        channelState = new PercentType(state);
-                    }
-                    break;
-                default:
-                    logger.debug("Item type {} is not yet supported", acceptedItemType);
-                    break;
+                        break;
+                    case CoreItemFactory.IMAGE:
+                        if (checkStateType(itemName, stateType, "Raw")) {
+                            channelState = RawType.valueOf(state);
+                        }
+                        break;
+                    case CoreItemFactory.PLAYER:
+                        if (checkStateType(itemName, stateType, "PlayPause")) {
+                            switch (state) {
+                                case "PLAY":
+                                    channelState = PlayPauseType.PLAY;
+                                    break;
+                                case "PAUSE":
+                                    channelState = PlayPauseType.PAUSE;
+                                    break;
+                                default:
+                                    logger.debug("Unexpected value {} for item {}", state, itemName);
+                                    break;
+                            }
+                        }
+                        break;
+                    case CoreItemFactory.ROLLERSHUTTER:
+                        if (checkStateType(itemName, stateType, "Percent")) {
+                            channelState = new PercentType(state);
+                        }
+                        break;
+                    default:
+                        logger.debug("Item type {} is not yet supported", acceptedItemType);
+                        break;
+                }
             }
+        } catch (IllegalArgumentException | DateTimeException e) {
+            logger.warn("Failed to parse state \"{}\" for item {}: {}", state, itemName, e.getMessage());
+            channelState = null;
         }
         if (channelState != null) {
             if (onlyIfStateChanged && channelState.equals(channelsLastStates.get(channel.getUID()))) {
