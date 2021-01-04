@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple cache for compiled JavaScript files.
  *
+ * @author Thomas Kordelle - Initial contribution
  * @author Thomas Kordelle - pre compiled scripts
- *
  */
 @NonNullByDefault
 @Component(service = JavaScriptEngineManager.class)

@@ -22,6 +22,7 @@ import java.nio.file.WatchEvent.Kind;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.service.AbstractWatchService;
 import org.openhab.core.transform.TransformationService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -29,28 +30,21 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link TransformationScriptWatcher} watches the transformation directory for files. If a deleted/modified file is
  * detected, the script is passed to the {@link JavaScriptEngineManager}.
  *
+ * @author Thomas Kordelle - Initial contribution
  * @author Thomas Kordelle - pre compiled scripts
- *
  */
-@Component()
+@Component
 public class TransformationScriptWatcher extends AbstractWatchService {
 
     public static final String TRANSFORM_FOLDER = OpenHAB.getConfigFolder() + File.separator
             + TransformationService.TRANSFORM_FOLDER_NAME;
 
-    private JavaScriptEngineManager manager;
+    private final JavaScriptEngineManager manager;
 
-    public TransformationScriptWatcher() {
+    @Activate
+    public TransformationScriptWatcher(final @Reference JavaScriptEngineManager manager) {
         super(TRANSFORM_FOLDER);
-    }
-
-    @Reference
-    public void setJavaScriptEngineManager(JavaScriptEngineManager manager) {
         this.manager = manager;
-    }
-
-    public void unsetJavaScriptEngineManager(JavaScriptEngineManager manager) {
-        this.manager = null;
     }
 
     @Override

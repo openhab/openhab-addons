@@ -27,37 +27,37 @@ import org.openhab.core.thing.profiles.ProfileTypeBuilder;
 import org.openhab.core.thing.profiles.ProfileTypeProvider;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.transform.TransformationService;
+import org.openhab.transform.javascript.internal.JavaScriptTransformationService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Profilefactory that creates the transformation profile for the javascript transformation service
+ * {@link ProfileFactory} that creates the transformation profile for the {@link JavaScriptTransformationService}
  *
- * @author Stefan Triller - initial contribution
- *
+ * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { ProfileFactory.class, ProfileTypeProvider.class })
-public class JavascriptTransformationProfileFactory implements ProfileFactory, ProfileTypeProvider {
+public class JavaScriptTransformationProfileFactory implements ProfileFactory, ProfileTypeProvider {
 
     @NonNullByDefault({})
     private TransformationService service;
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return Arrays.asList(ProfileTypeBuilder.newState(JavascriptTransformationProfile.PROFILE_TYPE_UID,
-                JavascriptTransformationProfile.PROFILE_TYPE_UID.getId()).build());
+        return Arrays.asList(ProfileTypeBuilder.newState(JavaScriptTransformationProfile.PROFILE_TYPE_UID,
+                JavaScriptTransformationProfile.PROFILE_TYPE_UID.getId()).build());
     }
 
     @Override
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
             ProfileContext profileContext) {
-        return new JavascriptTransformationProfile(callback, profileContext, service);
+        return new JavaScriptTransformationProfile(callback, profileContext, service);
     }
 
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
-        return Arrays.asList(JavascriptTransformationProfile.PROFILE_TYPE_UID);
+        return Arrays.asList(JavaScriptTransformationProfile.PROFILE_TYPE_UID);
     }
 
     @Reference(target = "(openhab.transform=JS)")
