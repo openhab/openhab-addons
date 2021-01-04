@@ -13,6 +13,7 @@
 package org.openhab.transform.javascript.internal.profiles;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
@@ -30,29 +31,26 @@ import org.slf4j.LoggerFactory;
 /**
  * Profile to offer the JavascriptTransformationservice on a ItemChannelLink
  *
- * @author Stefan Triller - initial contribution
- *
+ * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
-public class JavascriptTransformationProfile implements StateProfile {
+public class JavaScriptTransformationProfile implements StateProfile {
+
+    private final Logger logger = LoggerFactory.getLogger(JavaScriptTransformationProfile.class);
 
     public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID(
             TransformationService.TRANSFORM_PROFILE_SCOPE, "JS");
 
-    private final Logger logger = LoggerFactory.getLogger(JavascriptTransformationProfile.class);
+    private static final String FUNCTION_PARAM = "function";
+    private static final String SOURCE_FORMAT_PARAM = "sourceFormat";
 
     private final TransformationService service;
     private final ProfileCallback callback;
 
-    private static final String FUNCTION_PARAM = "function";
-    private static final String SOURCE_FORMAT_PARAM = "sourceFormat";
+    private final @Nullable String function;
+    private final @Nullable String sourceFormat;
 
-    @NonNullByDefault({})
-    private final String function;
-    @NonNullByDefault({})
-    private final String sourceFormat;
-
-    public JavascriptTransformationProfile(ProfileCallback callback, ProfileContext context,
+    public JavaScriptTransformationProfile(ProfileCallback callback, ProfileContext context,
             TransformationService service) {
         this.service = service;
         this.callback = callback;
@@ -116,15 +114,23 @@ public class JavascriptTransformationProfile implements StateProfile {
     }
 
     private Type transformState(Type state) {
-        String result = state.toFullString();
-        try {
-            result = TransformationHelper.transform(service, function, sourceFormat, state.toFullString());
-        } catch (TransformationException e) {
-            logger.warn("Could not transform state '{}' with function '{}' and format '{}'", state, function,
-                    sourceFormat);
+        String localFunction = function, localSourceFormat = sourceFormat;
+        if (localFunction != null && localSourceFormat != null) {
+            String result = state.toFullString();
+            try {
+                result = TransformationHelper.transform(service, localFunction, localSourceFormat, result);
+            } catch (TransformationException e) {
+                logger.warn("Could not transform state '{}' with function '{}' and format '{}'", state, function,
+                        sourceFormat);
+            }
+            StringType resultType = new StringType(result);
+            logger.debug("Transformed '{}' into '{}'", state, resultType);
+            return resultType;
+        } else {
+            logger.warn(
+                    "Please specify a function and a source format for this Profile in the '{}' and '{}' parameters. Returning the original state now.",
+                    FUNCTION_PARAM, SOURCE_FORMAT_PARAM);
+            return state;
         }
-        StringType resultType = new StringType(result);
-        logger.debug("Transformed '{}' into '{}'", state, resultType);
-        return resultType;
     }
 }
