@@ -8,6 +8,7 @@ HomeKit organizes your home into "accessories" that are made up of a number of "
 Some accessory types require a specific set of characteristics.
 
 HomeKit integration supports following accessory types:
+
 - Switchable
 - Outlet
 - Lighting (simple, dimmable, color)
@@ -34,11 +35,6 @@ HomeKit integration supports following accessory types:
 - Carbon Monoxide Sensor
 
 ## Global Configuration
-
-::: tip
-This integration relies on the cloud connector addon.
-More information can be found in the corresponding [docs page](https://www.openhab.org/link/openhabcloud).
-:::
 
 Your first step will be to create the `homekit.cfg` in your `$OPENHAB_CONF/services` folder.
 At the very least, you will need to define a pin number for the bridge.
@@ -132,7 +128,6 @@ Group  gLeakSensor                      "Leak Sensor Group"                     
 Switch leaksensor                       "Leak Sensor"                           (gLeakSensor)            {homekit="LeakSensor.LeakDetectedState"}
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
 ```
-
 
 You can use openHAB group to manage state of multiple items. (see [Group items](https://www.openhab.org/docs/configuration/items.html#derive-group-state-from-member-items))
 In this case, you can assign HomeKit accessory type to the group and to the group items
@@ -329,7 +324,6 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | LockCurrentState             | Switch                   | current states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                              |
 |                      |                             | LockTargetState              | Switch                   | target states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                               |
 
-
 ### Examples
 
 See the sample below for example items:
@@ -443,6 +437,7 @@ Following modes are supported:
  Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
  Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
  ```
+
 ### Windows Covering (Blinds) / Window / Door
 
 HomeKit Windows Covering, Window and Door accessory types have following mandatory characteristics:
@@ -467,6 +462,7 @@ openHAB Rollershutter is defined by default as:
 - CLOSED if position is 100%.
 
 In contrast, HomeKit window covering/door/window have inverted mapping
+
 - OPEN if position 100%
 - CLOSED if position is 0%
 
@@ -524,6 +520,7 @@ Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Dur
 ```
 
 ### Sensors
+
 Sensors have typically one mandatory characteristic, e.g. temperature or lead trigger, and several optional characteristics which are typically used for battery powered sensors and/or wireless sensors.
 Following table summarizes the optional characteristics supported by sensors.
 
@@ -605,4 +602,3 @@ openhab> log:tail io.github.hapjava
 `openhab:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.
 
 `openhab:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
-
