@@ -45,9 +45,16 @@ public class NumberItemConverter extends AbstractTransformingItemConverter {
     @Override
     protected State toState(String value) {
         if (channelConfig.unit != null) {
+            // we have a given unit - use that
             return new QuantityType<>(value.trim() + " " + channelConfig.unit);
         }
-        return new DecimalType(value.trim());
+        try {
+            // try if we have a simple number
+            return new DecimalType(value.trim());
+        } catch (NumberFormatException e) {
+            // not a plain number, maybe with unit?
+            return new QuantityType<>(value.trim());
+        }
     }
 
     @Override

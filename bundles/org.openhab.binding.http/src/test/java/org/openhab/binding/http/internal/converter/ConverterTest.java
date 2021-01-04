@@ -21,7 +21,10 @@ import org.openhab.binding.http.internal.config.HttpChannelConfig;
 import org.openhab.binding.http.internal.transform.NoOpValueTransformation;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
@@ -32,6 +35,25 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class ConverterTest {
+
+    @Test
+    public void numberItemConverterWithChannelUnit() {
+        HttpChannelConfig channelConfig = new HttpChannelConfig();
+        channelConfig.unit = "W";
+        NumberItemConverter converter = new NumberItemConverter(this::updateState, this::postCommand,
+                this::sendHttpValue, NoOpValueTransformation.getInstance(), NoOpValueTransformation.getInstance(),
+                channelConfig);
+        Assertions.assertEquals(new QuantityType<>(500, Units.WATT), converter.toState("500"));
+    }
+
+    @Test
+    public void numberItemConverter() {
+        NumberItemConverter converter = new NumberItemConverter(this::updateState, this::postCommand,
+                this::sendHttpValue, NoOpValueTransformation.getInstance(), NoOpValueTransformation.getInstance(),
+                new HttpChannelConfig());
+        Assertions.assertEquals(new QuantityType<>(100, SIUnits.CELSIUS), converter.toState("100°C"));
+        Assertions.assertEquals(new DecimalType(1234), converter.toState("1234"));
+    }
 
     @Test
     public void stringTypeConverter() {
