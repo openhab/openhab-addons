@@ -20,6 +20,14 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="offsetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Thermostat Temperature Offset</label>
+		<description>Gets or sets the temperature offset for this thermostat</description>
+		<category>heating</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>

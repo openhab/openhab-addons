@@ -104,6 +104,7 @@
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="offsetTemperature" typeId="offsetTemperature"/>
 		</channels>
 
 		<representation-property>id</representation-property>
