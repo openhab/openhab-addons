@@ -64,7 +64,7 @@ Values need to be IPv4 addresses in the format `a.b.c.d`.
 This is an optional parameter and multiple values are allowed:  add one value per line in the Main User Interface.
 
 If the `PHONEBOOK` profile shall be used, it is necessary to retrieve the phonebooks from the FritzBox.
-The `phonebookInterval` is uses to set the refresh cycle for phonebooks.
+The `phonebookInterval` is used to set the refresh cycle for phonebooks.
 It defaults to 600 seconds, and it can be set to 0 if phonebooks are not used.
 
 Parameters that accept lists (e.g. `macOnline`, `wanBlockIPs`) can contain comments.
