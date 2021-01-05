@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author David Graeff - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.souliss")
@@ -78,8 +79,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             UDP_Server_RunnableClass = new SoulissBindingUDPServerJob(datagramSocket,
                     SoulissBindingNetworkParameters.discoverResult);
 
-            scheduler.scheduleAtFixedRate(UDP_Server_RunnableClass, 100, SoulissBindingConstants.SERVER_CICLE_IN_MILLIS,
-                    TimeUnit.MILLISECONDS);
+            // Changes from scheduleAtFixedRate - Luca Calcaterra
+            scheduler.scheduleWithFixedDelay(UDP_Server_RunnableClass, 100,
+                    SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
 
         } else {
             logger.debug("Error - datagramSocket is null - Server not started");
@@ -110,6 +112,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
      * The {@link gatewayDetected} used to create the Gateway
      *
      * @author Tonino Fazio - Initial contribution
+     * @author Luca Calcaterra - Refactor for OH3
      */
     @Override
     public void gatewayDetected(InetAddress addr, String id) {
@@ -143,7 +146,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         }
         // create discovery job, that run discovery class
         if (soulissDiscoverRunnableClass != null) {
-            discoveryJob = scheduler.scheduleAtFixedRate(soulissDiscoverRunnableClass, 100,
+            // Changes from scheduleAtFixedRate - Luca Calcaterra
+            discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 100,
                     SoulissBindingConstants.DISCOVERY_RESEND_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
             logger.info("Start Discovery Job");
         }

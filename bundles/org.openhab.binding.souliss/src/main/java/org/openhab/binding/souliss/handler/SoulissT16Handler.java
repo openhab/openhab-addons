@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 public class SoulissT16Handler extends SoulissGenericHandler {
     Configuration gwConfigurationMap;

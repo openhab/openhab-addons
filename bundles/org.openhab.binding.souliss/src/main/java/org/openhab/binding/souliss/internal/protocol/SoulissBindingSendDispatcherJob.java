@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SoulissBindingSendDispatcherJob implements Runnable {
 
-    private static Logger logger = LoggerFactory.getLogger(SoulissBindingSendDispatcherJob.class);
+    private static final Logger logger = LoggerFactory.getLogger(SoulissBindingSendDispatcherJob.class);
 
     private SoulissGatewayHandler gw;
     static boolean bPopSuspend = false;
@@ -63,9 +63,12 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         int node = getNode(packetToPUT);
         if (node >= 0) {
             logger.debug("Push packet in queue - Node {}", node);
-        } else {
-            // logger.debug("Push packet in queue");
         }
+        /*
+         * else {
+         * // logger.debug("Push packet in queue");
+         * }
+         */
 
         if (packetsList.size() == 0 || node < 0) {
             bPacchettoGestito = false;

@@ -23,13 +23,14 @@ import org.slf4j.LoggerFactory;
  * receiving.
  *
  * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 public class SoulissDatagramSocketFactory {
     // static DatagramSocket soulissDatagramSocket;
     // static DatagramSocket soulissDatagramSocket_port230;
 
     // public static Integer serverPort;
-    private static Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
 
     public static DatagramSocket getSocketDatagram() {
         return getSocketDatagram(0);

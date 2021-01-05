@@ -46,7 +46,6 @@ import org.openhab.binding.souliss.handler.SoulissT66Handler;
 import org.openhab.binding.souliss.handler.SoulissT67Handler;
 import org.openhab.binding.souliss.handler.SoulissT68Handler;
 import org.openhab.binding.souliss.handler.SoulissTopicsHandler;
-import org.openhab.binding.souliss.internal.discovery.SoulissGatewayDiscovery;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -64,11 +63,12 @@ import org.slf4j.LoggerFactory;
  * handlers. It fire when a new thing is added.
  *
  * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.souliss", service = ThingHandlerFactory.class)
 public class SoulissHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
+    private Logger logger = LoggerFactory.getLogger(SoulissHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -25,6 +25,7 @@ import org.openhab.core.types.Command;
  * sent to one of the channels.
  *
  * @author Luca Remigio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 public class SoulissT1AHandler extends SoulissGenericHandler {
     Configuration gwConfigurationMap;
@@ -45,7 +46,7 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
     }
 
     private OpenClosedType getTypeFromBool(boolean value) {
-        if (value == false) {
+        if (!value) {
             return OpenClosedType.CLOSED;
         }
         return OpenClosedType.OPEN;

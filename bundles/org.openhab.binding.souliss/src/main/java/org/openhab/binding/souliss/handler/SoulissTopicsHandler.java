@@ -26,6 +26,7 @@ import org.openhab.core.types.PrimitiveType;
  * sent to one of the channels.
  *
  * @author Luca Remigio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 
 public class SoulissTopicsHandler extends SoulissGenericActionMessage implements TypicalCommonMethods {

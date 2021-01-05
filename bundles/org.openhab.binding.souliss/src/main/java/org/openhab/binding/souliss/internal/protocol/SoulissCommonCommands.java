@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SoulissCommonCommands {
 
-    private static Logger logger = LoggerFactory.getLogger(SoulissCommonCommands.class);
+    private static final Logger logger = LoggerFactory.getLogger(SoulissCommonCommands.class);
 
     public static void sendFORCEFrame(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN, byte nodeIndex,
             byte userIndex, int IDNode, int slot, byte shortCommand) {
@@ -201,8 +201,8 @@ public class SoulissCommonCommands {
             SoulissBindingSendDispatcherJob.put(socket, packet);
             // socket.send(packet);
         } catch (IOException e) {
-            logger.error("Error: ", e);
-            logger.error(e.getMessage());
+            logger.error("Error: {} ", e.getMessage());
+            // logger.error(e.getMessage());
         }
     }
 
@@ -251,9 +251,9 @@ public class SoulissCommonCommands {
                 }
             }
         } catch (SocketException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (UnknownHostException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
     }
 
@@ -267,7 +267,7 @@ public class SoulissCommonCommands {
         try {
             ip = InetAddress.getByName(soulissNodeIPAddress);
         } catch (UnknownHostException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
             return frame;
         }
         byte[] dude = ip.getAddress();
@@ -428,9 +428,10 @@ public class SoulissCommonCommands {
     static boolean flag = true;
 
     private static String MaCacoToString(ArrayList<Byte> mACACOframe) {
-        while (!flag) {
-        }
-        ;
+        /*
+         * while (!flag) {
+         * };
+         */
         // copio array per evitare modifiche concorrenti
         ArrayList<Byte> mACACOframe2 = new ArrayList<Byte>();
         mACACOframe2.addAll(mACACOframe);

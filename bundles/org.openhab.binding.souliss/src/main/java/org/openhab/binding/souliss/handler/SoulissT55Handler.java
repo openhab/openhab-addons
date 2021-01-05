@@ -19,6 +19,7 @@ import org.openhab.core.thing.Thing;
  * sent to one of the channels.
  *
  * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 public class SoulissT55Handler extends SoulissT5nHandler {
 

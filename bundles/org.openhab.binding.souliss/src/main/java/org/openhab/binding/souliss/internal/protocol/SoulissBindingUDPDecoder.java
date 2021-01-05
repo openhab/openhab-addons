@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SoulissBindingUDPDecoder {
 
-    private static Logger logger = LoggerFactory.getLogger(SoulissBindingUDPDecoder.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPDecoder.class);
     private static DiscoverResult discoverResult;
 
     public SoulissBindingUDPDecoder(DiscoverResult _discoverResult) {
@@ -101,12 +101,12 @@ public class SoulissBindingUDPDecoder {
         switch (functionalCode) {
 
             case SoulissBindingUDPConstants.Souliss_UDP_function_ping_resp:
-                logger.debug("Received functional code: 0x" + Integer.toHexString(functionalCode) + " - Ping answer");
+                logger.debug("Received functional code: 0x{}- Ping answer", Integer.toHexString(functionalCode));
                 decodePing(lastByteGatewayIP, macacoPck);
                 break;
             case SoulissBindingUDPConstants.Souliss_UDP_function_discover_GW_node_bcas_resp:
-                logger.debug("Received functional code: 0x" + Integer.toHexString(functionalCode)
-                        + " - Discover a gateway node answer (broadcast)");
+                logger.debug("Received functional code: 0x{} - Discover a gateway node answer (broadcast)",
+                        Integer.toHexString(functionalCode));
                 try {
                     decodePingBroadcast(macacoPck);
                 } catch (UnknownHostException e) {
@@ -117,26 +117,25 @@ public class SoulissBindingUDPDecoder {
 
             case SoulissBindingUDPConstants.Souliss_UDP_function_subscribe_resp:
             case SoulissBindingUDPConstants.Souliss_UDP_function_poll_resp:
-                logger.debug(
-                        "Received functional code: 0x" + Integer.toHexString(functionalCode) + " - Read state answer");
+                logger.debug("Received functional code: 0x{} - Read state answer", Integer.toHexString(functionalCode));
                 decodeStateRequest(lastByteGatewayIP, macacoPck);
                 break;
 
             case SoulissBindingUDPConstants.Souliss_UDP_function_typreq_resp:// Answer for assigned typical logic
-                logger.debug("Received functional code: 0x" + Integer.toHexString(functionalCode)
-                        + " - Read typical logic answer");
+                logger.debug("Received functional code: 0x{}- Read typical logic answer",
+                        Integer.toHexString(functionalCode));
                 decodeTypRequest(lastByteGatewayIP, macacoPck);
                 break;
 
             case SoulissBindingUDPConstants.Souliss_UDP_function_healthy_resp:// Answer
                 // nodes healty
-                logger.debug("Received functional code: 0x" + Integer.toHexString(functionalCode) + " - Nodes Healthy");
+                logger.debug("Received functional code: 0x{} - Nodes Healthy", Integer.toHexString(functionalCode));
                 decodeHealthyRequest(lastByteGatewayIP, macacoPck);
                 break;
 
             case (byte) SoulissBindingUDPConstants.Souliss_UDP_function_db_struct_resp:
-                logger.debug("Received functional code: 0x" + Integer.toHexString(functionalCode)
-                        + " - Database structure answer");
+                logger.debug("Received functional code: 0x{} - Database structure answer",
+                        Integer.toHexString(functionalCode));
                 decodeDBStructRequest(lastByteGatewayIP, macacoPck);
                 break;
             // case 0x83:
@@ -152,13 +151,13 @@ public class SoulissBindingUDPDecoder {
             // logger.debug("Unknown functional code");
             // break;
             case (byte) SoulissBindingUDPConstants.Souliss_UDP_function_ActionMessage:
-                logger.debug("Received functional code: 0x" + Integer.toHexString(functionalCode)
-                        + " Action Message (Topic)");
+                logger.debug("Received functional code: 0x{} - Action Message (Topic)",
+                        Integer.toHexString(functionalCode));
                 decodeActionMessages(lastByteGatewayIP, macacoPck);
                 break;
             default:
-                logger.debug("Received functional code: 0x" + Integer.toHexString(functionalCode)
-                        + " - unused by OH Binding");
+                logger.debug("Received functional code: 0x{} - unused by OH Binding",
+                        Integer.toHexString(functionalCode));
         }
     }
 
@@ -265,22 +264,22 @@ public class SoulissBindingUDPDecoder {
                 sTopicNumberArray[1] = "0" + sTopicNumberArray[1];
             }
             sTopicNumber = sTopicNumberArray[0] + sTopicNumberArray[1];
-            logger.debug("Topic Number: 0x" + sTopicNumberArray[0] + sTopicNumberArray[1]);
+            logger.debug("Topic Number: 0x{}", sTopicNumberArray[0] + sTopicNumberArray[1]);
 
             sTopicVariant = Integer.toHexString(mac.get(3)).toUpperCase();
             if (sTopicVariant.length() == 1) {
                 sTopicVariant = "0" + sTopicVariant;
             }
-            logger.debug("Topic Variant: 0x" + sTopicVariant);
+            logger.debug("Topic Variant: 0x{}", sTopicVariant);
             if (mac.get(4) == 1) {
                 fRet = mac.get(5);
-                logger.debug("Topic Value (Payload one byte): " + Integer.toHexString(mac.get(5)).toUpperCase());
+                logger.debug("Topic Value (Payload one byte): {} ", Integer.toHexString(mac.get(5)).toUpperCase());
             } else if (mac.get(4) == 2) {
                 byte value[] = { mac.get(5), mac.get(6) };
 
                 int shifted = value[1] << 8;
                 fRet = HalfFloatUtils.toFloat(shifted + value[0]);
-                logger.debug("Topic Value (Payload 2 bytes): " + fRet);
+                logger.debug("Topic Value (Payload 2 bytes): {}", fRet);
             }
 
             try {
@@ -468,15 +467,18 @@ public class SoulissBindingUDPDecoder {
                                     ((SoulissT22Handler) handler).setRawState(sVal);
                                     break;
                                 case SoulissBindingConstants.T31:
-                                    logger.debug("Decoding " + SoulissBindingConstants.T31 + "/"
-                                            + SoulissBindingConstants.T31 + " packet" + " -- bit0 (system on-off): "
-                                            + getBitState(sVal, 0) + " - bit1 (heating on-off): " + getBitState(sVal, 1)
-                                            + " - bit2 (cooling on-off): " + getBitState(sVal, 2)
-                                            + " - bit3 (fan1 on-off): " + getBitState(sVal, 3)
-                                            + " - bit4 (fan2 on-off): " + getBitState(sVal, 4)
-                                            + " - bit5 (fan3 on-off): " + getBitState(sVal, 5)
-                                            + " - bit6 (Manual/automatic fan mode): " + getBitState(sVal, 6)
-                                            + " - bit7 (heating/cooling mode): " + getBitState(sVal, 7));
+                                    logger.debug("Decoding {}/{}", SoulissBindingConstants.T31,
+                                            SoulissBindingConstants.T31);
+                                    logger.debug("packet: ");
+                                    logger.debug("- bit0 (system on-off): {}", getBitState(sVal, 0));
+                                    logger.debug("- bit1 (heating on-off): {}", getBitState(sVal, 1));
+                                    logger.debug("- bit2 (cooling on-off): {}", getBitState(sVal, 2));
+                                    logger.debug("- bit3 (fan1 on-off): {}", getBitState(sVal, 3));
+                                    logger.debug("- bit4 (fan2 on-off): {}", getBitState(sVal, 4));
+                                    logger.debug("- bit5 (fan3 on-off): {}", getBitState(sVal, 5));
+                                    logger.debug("- bit6 (Manual/automatic fan mode): {}", getBitState(sVal, 6));
+                                    logger.debug("- bit7 (heating/cooling mode): {}", getBitState(sVal, 7));
+
                                     ((SoulissT31Handler) handler).setRawStateValues(sVal, getFloatAtSlot(mac, slot + 1),
                                             getFloatAtSlot(mac, slot + 3));
 
