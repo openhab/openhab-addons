@@ -255,18 +255,31 @@ public class HeliosEasyControlsBindingConstants {
     // List of all Configuration Parameters
     public final static String CONFIG_REFRESH_INTERVAL = "refreshInterval";
 
+    // Messages
+    public final static String PREFIX_ERROR_MSG = "error.";
+    public final static int BITS_ERROR_MSG = 32;
+    public final static String PREFIX_WARNING_MSG = "warning.";
+    public final static int BITS_WARNING_MSG = 8;
+    public final static String PREFIX_INFO_MSG = "info.";
+    public final static int BITS_INFO_MSG = 8;
+    public final static String PREFIX_STATUS_MSG = "stateflag.";
+    public final static int BITS_STATUS_MSG = 32;
+
     // Other constants
     public final static int UNIT_ID = 180;
     public final static int START_ADDRESS = 1;
     public final static String VARIABLES_DEFINITION_FILE = "variables.json";
     public final static int MAX_TRIES = 5;
+    public final static String PROPERTIES_PREFIX = "property.";
 
     // List of all variables that have to be updated regardless if they are linked to an item
     public final static List<String> ALWAYS_UPDATE_VARIABLES = Arrays.asList(
             HeliosEasyControlsBindingConstants.DATE_FORMAT, HeliosEasyControlsBindingConstants.DATE,
             HeliosEasyControlsBindingConstants.TIME, HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT,
             HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY, HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH,
-            HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH);
+            HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH,
+            HeliosEasyControlsBindingConstants.ERRORS, HeliosEasyControlsBindingConstants.WARNINGS,
+            HeliosEasyControlsBindingConstants.INFOS, HeliosEasyControlsBindingConstants.STATUS_FLAGS);
 
     // List of all properties
     public final static List<String> PROPERTY_NAMES = Arrays.asList(

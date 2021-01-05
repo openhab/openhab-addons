@@ -380,7 +380,7 @@ public class HeliosVariable implements Comparable<HeliosVariable> {
                 if (this.type.equals(HeliosVariable.TYPE_INTEGER)) {
                     // using long becuase some variable are specified with a max of 2^32-1
                     // parsing double to allow floating point values to be processed as well
-                    long l = new Double(value).longValue();
+                    long l = Double.valueOf(value).longValue();
                     return (minVal.longValue() <= l) && (maxVal.longValue() >= l);
                 } else if (this.type.equals(HeliosVariable.TYPE_FLOAT)) {
                     double d = Double.parseDouble(value);
@@ -395,44 +395,41 @@ public class HeliosVariable implements Comparable<HeliosVariable> {
         return false;
     }
 
+    private String getText(String property, String value, HeliosEasyControlsTranslationProvider translationProvider)
+            throws HeliosException {
+        String key = "property." + property + "." + value;
+        String text = translationProvider.getText(key);
+        if (!key.equals(text)) {
+            return text;
+        } else {
+            throw new HeliosException("Illegal value for variable " + this.getName() + ": " + value);
+        }
+    }
+
     /**
      * Depending on the type of variable this method formats the provided value according to the interpretation of its
      * value
      *
      * @param value The value to format
+     * @param translationProvider The i18n translation provider to use for finding internationalized texts
      * @return The formatted value
      * @throws HeliosException if the provided value doesn't fit to the variable
      */
-    public String formatPropertyValue(String value) throws HeliosException {
+    public String formatPropertyValue(String value, HeliosEasyControlsTranslationProvider translationProvider)
+            throws HeliosException {
         switch (this.getName()) {
             case HeliosEasyControlsBindingConstants.DATE_FORMAT:
-                switch (value) {
-                    case "0":
-                        return "dd.mm.yyyy";
-                    case "1":
-                        return "mm.dd.yyyy";
-                    case "2":
-                        return "yyyy.mm.dd";
-                }
-                throw new HeliosException(this.createErrorMessage(value));
             case HeliosEasyControlsBindingConstants.UNIT_CONFIG:
-                return value.equals("1") ? "DIBt" : "PHI";
+            case HeliosEasyControlsBindingConstants.HEAT_EXCHANGER_TYPE:
+            case HeliosEasyControlsBindingConstants.ASSIGNMENT_FAN_STAGES:
+            case HeliosEasyControlsBindingConstants.VHZ_TYPE:
+                return this.getText(this.getName(), value, translationProvider);
             case HeliosEasyControlsBindingConstants.KWL_BE:
             case HeliosEasyControlsBindingConstants.KWL_BEC:
-                return value.equals("1") ? "On" : "Off";
+                return this.getText("onOff", value, translationProvider);
             case HeliosEasyControlsBindingConstants.EXTERNAL_CONTACT:
             case HeliosEasyControlsBindingConstants.FUNCTION_TYPE_KWL_EM:
-                return "Function " + value;
-            case HeliosEasyControlsBindingConstants.HEAT_EXCHANGER_TYPE:
-                switch (value) {
-                    case "1":
-                        return "Plastic";
-                    case "2":
-                        return "Aluminium";
-                    case "3":
-                        return "Enthalpy";
-                }
-                throw new HeliosException(this.createErrorMessage(value));
+                return this.getText("function", value, translationProvider) + value;
             case HeliosEasyControlsBindingConstants.OFFSET_EXTRACT_AIR:
             case HeliosEasyControlsBindingConstants.VOLTAGE_FAN_STAGE_1_EXTRACT_AIR:
             case HeliosEasyControlsBindingConstants.VOLTAGE_FAN_STAGE_2_EXTRACT_AIR:
@@ -443,8 +440,6 @@ public class HeliosVariable implements Comparable<HeliosVariable> {
             case HeliosEasyControlsBindingConstants.VOLTAGE_FAN_STAGE_3_SUPPLY_AIR:
             case HeliosEasyControlsBindingConstants.VOLTAGE_FAN_STAGE_4_SUPPLY_AIR:
                 return this.getUnit() != null ? value + this.getUnit() : value;
-            case HeliosEasyControlsBindingConstants.ASSIGNMENT_FAN_STAGES:
-                return value.equals("0") ? "0...10V" : "stepped";
             case HeliosEasyControlsBindingConstants.FAN_STAGE_STEPPED_0TO2V:
             case HeliosEasyControlsBindingConstants.FAN_STAGE_STEPPED_2TO4V:
             case HeliosEasyControlsBindingConstants.FAN_STAGE_STEPPED_4TO6V:
@@ -459,18 +454,6 @@ public class HeliosVariable implements Comparable<HeliosVariable> {
             case HeliosEasyControlsBindingConstants.SENSOR_NAME_HUMIDITY_AND_TEMP_7:
             case HeliosEasyControlsBindingConstants.SENSOR_NAME_HUMIDITY_AND_TEMP_8:
                 return value;
-            case HeliosEasyControlsBindingConstants.VHZ_TYPE:
-                switch (value) {
-                    case "1":
-                        return "EH-basis";
-                    case "2":
-                        return "EH-EWR";
-                    case "3":
-                        return "SEWT";
-                    case "4":
-                        return "LEWT";
-                }
-                throw new HeliosException(this.createErrorMessage(value));
             case HeliosEasyControlsBindingConstants.KWL_FTF_CONFIG_0:
             case HeliosEasyControlsBindingConstants.KWL_FTF_CONFIG_1:
             case HeliosEasyControlsBindingConstants.KWL_FTF_CONFIG_2:
@@ -479,15 +462,7 @@ public class HeliosVariable implements Comparable<HeliosVariable> {
             case HeliosEasyControlsBindingConstants.KWL_FTF_CONFIG_5:
             case HeliosEasyControlsBindingConstants.KWL_FTF_CONFIG_6:
             case HeliosEasyControlsBindingConstants.KWL_FTF_CONFIG_7:
-                switch (value) {
-                    case "1":
-                        return "Relative Humidity";
-                    case "2":
-                        return "Temperature";
-                    case "3":
-                        return "Combined";
-                }
-                throw new HeliosException(this.createErrorMessage(value));
+                return this.getText("kwlFtfConfig", value, translationProvider);
             case HeliosEasyControlsBindingConstants.SENSOR_CONFIG_KWL_FTF_1:
             case HeliosEasyControlsBindingConstants.SENSOR_CONFIG_KWL_FTF_2:
             case HeliosEasyControlsBindingConstants.SENSOR_CONFIG_KWL_FTF_3:
@@ -496,26 +471,14 @@ public class HeliosVariable implements Comparable<HeliosVariable> {
             case HeliosEasyControlsBindingConstants.SENSOR_CONFIG_KWL_FTF_6:
             case HeliosEasyControlsBindingConstants.SENSOR_CONFIG_KWL_FTF_7:
             case HeliosEasyControlsBindingConstants.SENSOR_CONFIG_KWL_FTF_8:
-                return value.equals("0") ? "No sensor" : "Sensor installed";
+                return this.getText("sensorConfig", value, translationProvider);
             case HeliosEasyControlsBindingConstants.HUMIDITY_CONTROL_STATUS:
             case HeliosEasyControlsBindingConstants.CO2_CONTROL_STATUS:
             case HeliosEasyControlsBindingConstants.VOC_CONTROL_STATUS:
-                switch (value) {
-                    case "0":
-                        return "Off";
-                    case "1":
-                        return "Stepped";
-                    case "2":
-                        return "Continuous";
-                }
-                throw new HeliosException(this.createErrorMessage(value));
+                return this.getText("controlStatus", value, translationProvider);
             default:
                 return value;
         }
-    }
-
-    private String createErrorMessage(String value) {
-        return "Illegal value for variable " + this.getName() + ": " + value;
     }
 
     @Override

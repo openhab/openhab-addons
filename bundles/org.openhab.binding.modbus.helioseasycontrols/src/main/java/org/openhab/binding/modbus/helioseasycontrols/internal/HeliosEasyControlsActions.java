@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.modbus.helioseasycontrols.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -55,7 +59,7 @@ public class HeliosEasyControlsActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "reset filter change timer", description = "Sets the filter change timer back to the configured interval.")
+    @RuleAction(label = "@text/action.resetFilterChangeTimer.label", description = "@text/action.resetFilterChangeTimer.description")
     public void resetFilterChangeTimer() {
         triggerSwitch(HeliosEasyControlsBindingConstants.FILTER_CHANGE_RESET);
     }
@@ -64,7 +68,7 @@ public class HeliosEasyControlsActions implements ThingActions {
         ((HeliosEasyControlsActions) actions).resetFilterChangeTimer();
     }
 
-    @RuleAction(label = "reset error messages", description = "Reset error/warning/info messages.")
+    @RuleAction(label = "@text/action.resetErrors.label", description = "@text/action.resetErrors.description")
     public void resetErrors() {
         triggerSwitch(HeliosEasyControlsBindingConstants.RESET_FLAG);
     }
@@ -73,7 +77,7 @@ public class HeliosEasyControlsActions implements ThingActions {
         ((HeliosEasyControlsActions) actions).resetErrors();
     }
 
-    @RuleAction(label = "reset to factory defaults", description = "Reset device to factory defaults.")
+    @RuleAction(label = "@text/action.resetToFactoryDefaults.label", description = "@text/action.resetToFactoryDefaults.description")
     public void resetToFactoryDefaults() {
         triggerSwitch(HeliosEasyControlsBindingConstants.FACTORY_RESET);
     }
@@ -82,7 +86,7 @@ public class HeliosEasyControlsActions implements ThingActions {
         ((HeliosEasyControlsActions) actions).resetToFactoryDefaults();
     }
 
-    @RuleAction(label = "reset individual switching times", description = "Reset individual switching times.")
+    @RuleAction(label = "@text/action.resetSwitchingTimes.label", description = "@text/action.resetSwitchingTimes.description")
     public void resetSwitchingTimes() {
         triggerSwitch(HeliosEasyControlsBindingConstants.FACTORY_SETTING_WZU);
     }
@@ -91,7 +95,7 @@ public class HeliosEasyControlsActions implements ThingActions {
         ((HeliosEasyControlsActions) actions).resetSwitchingTimes();
     }
 
-    @RuleAction(label = "set system date and time", description = "Sets the device's system date and time based on OH's system date and time.")
+    @RuleAction(label = "@text/action.setSysDateTime.label", description = "@text/action.setSysDateTime.description")
     public void setSysDateTime() {
         HeliosEasyControlsHandler handler = this.handler;
         if (handler != null) {
@@ -110,10 +114,10 @@ public class HeliosEasyControlsActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "set the bypass from day and month", description = "Sets the day and month from when the bypass should be active.")
+    @RuleAction(label = "@text/action.setBypassFrom.label", description = "@text/action.setBypassFrom.description")
     public void setBypassFrom(
-            @ActionInput(name = "day", label = "bypass from day", description = "The day from when the bypass should be active") int day,
-            @ActionInput(name = "month", label = "bypass from month", description = "The month from when the bypass should be active") int month) {
+            @ActionInput(name = "day", label = "@text/action.setBypassFrom.inputParams.day.label", description = "@text/action.setBypassFrom.inputParams.day.description") int day,
+            @ActionInput(name = "month", label = "@text/action.setBypassFrom.inputParams.month.label", description = "@text/action.setBypassFrom.inputParams.month.description") int month) {
         setBypass(true, day, month);
     }
 
@@ -121,14 +125,66 @@ public class HeliosEasyControlsActions implements ThingActions {
         ((HeliosEasyControlsActions) actions).setBypassFrom(day, month);
     }
 
-    @RuleAction(label = "set the bypass to day and month", description = "Sets the day and month until when the bypass should be active.")
+    @RuleAction(label = "@text/action.setBypassTo.label", description = "@text/action.setBypassTo.description")
     public void setBypassTo(
-            @ActionInput(name = "day", label = "bypass to day", description = "The day until when the bypass should be active") int day,
-            @ActionInput(name = "month", label = "bypass to month", description = "The month until when the bypass should be active") int month) {
+            @ActionInput(name = "day", label = "@text/action.setBypassTo.inputParams.day.label", description = "@text/action.setBypassTo.inputParams.day.description") int day,
+            @ActionInput(name = "month", label = "@text/action.setBypassTo.inputParams.day.label", description = "@text/action.setBypassTo.inputParams.day.description") int month) {
         setBypass(false, day, month);
     }
 
     public static void setBypassTo(ThingActions actions, int day, int month) {
         ((HeliosEasyControlsActions) actions).setBypassTo(day, month);
+    }
+
+    @RuleAction(label = "@text/action.getErrorMessages.label", description = "@text/action.getErrorMessages.description")
+    public @ActionOutput(name = "errorMessages", type = "java.util.ArrayList<String>") Map<String, Object> getErrorMessages() {
+        Map<String, Object> messages = new HashMap<>();
+        if (handler != null) {
+            messages.put("errorMessages", handler.getErrorMessages());
+        }
+        return messages;
+    }
+
+    public static Map<String, Object> getErrorMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getErrorMessages();
+    }
+
+    @RuleAction(label = "@text/action.getWarningMessages.label", description = "@text/action.getWarningMessages.description")
+    public @ActionOutput(name = "warningMessages", type = "java.util.ArrayList<String>") Map<String, Object> getWarningMessages() {
+        Map<String, Object> messages = new HashMap<>();
+        if (handler != null) {
+            messages.put("warningMessages", handler.getWarningMessages());
+        }
+        return messages;
+    }
+
+    public static Map<String, Object> getWarningMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getWarningMessages();
+    }
+
+    @RuleAction(label = "@text/action.getInfoMessages.label", description = "@text/action.getInfoMessages.description")
+    public @ActionOutput(name = "infoMessages", type = "java.util.ArrayList<String>") Map<String, Object> getInfoMessages() {
+        Map<String, Object> messages = new HashMap<>();
+        if (handler != null) {
+            messages.put("infoMessages", handler.getInfoMessages());
+        }
+        return messages;
+    }
+
+    public static Map<String, Object> getInfoMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getInfoMessages();
+    }
+
+    @RuleAction(label = "@text/action.getStatusMessages.label", description = "@text/action.getStatusMessages.description")
+    public @ActionOutput(name = "statusMessages", type = "java.util.ArrayList<String>") Map<String, Object> getStatusMessages() {
+        Map<String, Object> messages = new HashMap<>();
+        if (handler != null) {
+            messages.put("statusMessages", handler.getStatusMessages());
+        }
+        return messages;
+    }
+
+    public static Map<String, Object> getStatusMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getStatusMessages();
     }
 }
