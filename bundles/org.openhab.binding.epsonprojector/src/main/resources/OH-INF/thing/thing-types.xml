@@ -130,7 +130,7 @@
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 	<channel-type id="keycode" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>KeyCode</label>
 		<description>Send a KEY Operation Command to the Projector</description>
 	</channel-type>
