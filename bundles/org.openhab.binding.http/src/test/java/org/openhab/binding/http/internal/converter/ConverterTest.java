@@ -27,6 +27,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link ConverterTest} is a test class for state converters
@@ -37,22 +38,37 @@ import org.openhab.core.types.State;
 public class ConverterTest {
 
     @Test
-    public void numberItemConverterWithChannelUnit() {
+    public void numberItemConverter() {
+        NumberItemConverter converter = new NumberItemConverter(this::updateState, this::postCommand,
+                this::sendHttpValue, NoOpValueTransformation.getInstance(), NoOpValueTransformation.getInstance(),
+                new HttpChannelConfig());
+
+        // without unit
+        Assertions.assertEquals(new DecimalType(1234), converter.toState("1234"));
+
+        // unit in transformation result
+        Assertions.assertEquals(new QuantityType<>(100, SIUnits.CELSIUS), converter.toState("100°C"));
+
+        // no valid value
+        Assertions.assertEquals(UnDefType.UNDEF, converter.toState("W"));
+        Assertions.assertEquals(UnDefType.UNDEF, converter.toState(""));
+    }
+
+    @Test
+    public void numberItemConverterWithUnit() {
         HttpChannelConfig channelConfig = new HttpChannelConfig();
         channelConfig.unit = "W";
         NumberItemConverter converter = new NumberItemConverter(this::updateState, this::postCommand,
                 this::sendHttpValue, NoOpValueTransformation.getInstance(), NoOpValueTransformation.getInstance(),
                 channelConfig);
-        Assertions.assertEquals(new QuantityType<>(500, Units.WATT), converter.toState("500"));
-    }
 
-    @Test
-    public void numberItemConverter() {
-        NumberItemConverter converter = new NumberItemConverter(this::updateState, this::postCommand,
-                this::sendHttpValue, NoOpValueTransformation.getInstance(), NoOpValueTransformation.getInstance(),
-                new HttpChannelConfig());
-        Assertions.assertEquals(new QuantityType<>(100, SIUnits.CELSIUS), converter.toState("100°C"));
-        Assertions.assertEquals(new DecimalType(1234), converter.toState("1234"));
+        // without unit
+        Assertions.assertEquals(new QuantityType<>(500, Units.WATT), converter.toState("500"));
+
+        // no valid value
+        Assertions.assertEquals(UnDefType.UNDEF, converter.toState("100°C"));
+        Assertions.assertEquals(UnDefType.UNDEF, converter.toState("foo"));
+        Assertions.assertEquals(UnDefType.UNDEF, converter.toState(""));
     }
 
     @Test

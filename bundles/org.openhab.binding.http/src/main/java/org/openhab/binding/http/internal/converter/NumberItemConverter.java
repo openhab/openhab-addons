@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link NumberItemConverter} implements {@link org.openhab.core.library.items.NumberItem} conversions
@@ -44,17 +45,26 @@ public class NumberItemConverter extends AbstractTransformingItemConverter {
 
     @Override
     protected State toState(String value) {
-        if (channelConfig.unit != null) {
-            // we have a given unit - use that
-            return new QuantityType<>(value.trim() + " " + channelConfig.unit);
+        String trimmedValue = value.trim();
+        if (!trimmedValue.isEmpty()) {
+            try {
+                if (channelConfig.unit != null) {
+                    // we have a given unit - use that
+                    return new QuantityType<>(trimmedValue + " " + channelConfig.unit);
+                } else {
+                    try {
+                        // try if we have a simple number
+                        return new DecimalType(trimmedValue);
+                    } catch (IllegalArgumentException e1) {
+                        // not a plain number, maybe with unit?
+                        return new QuantityType<>(trimmedValue);
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+                // finally failed
+            }
         }
-        try {
-            // try if we have a simple number
-            return new DecimalType(value.trim());
-        } catch (NumberFormatException e) {
-            // not a plain number, maybe with unit?
-            return new QuantityType<>(value.trim());
-        }
+        return UnDefType.UNDEF;
     }
 
     @Override
