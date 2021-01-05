@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpChannel;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpCoolingOperationMode;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpOperationMode;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -49,6 +50,8 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LuxtronikHeatpumpHandler.class);
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
+    private static final int RETRY_INTERVAL = 60;
+    private boolean tiggerChannelUpdate = false;
 
     public LuxtronikHeatpumpHandler(Thing thing) {
         super(thing);
@@ -158,7 +161,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         if (param != null && value != null) {
             if (sendParamToHeatpump(param, value)) {
-                logger.info("Heat pump mode {} set to {}.", channel.getCommand(), value);
+                logger.debug("Heat pump mode {} set to {}.", channel.getCommand(), value);
             } else {
                 logger.warn("Failed setting heat pump mode {} to {}", channel.getCommand(), value);
             }
@@ -179,6 +182,17 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        synchronized (scheduledFutures) {
+            // try to connect to the heat pump every X seconds to update the status
+            ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0, RETRY_INTERVAL,
+                    TimeUnit.SECONDS);
+            scheduledFutures.add(future);
+        }
+    }
+
+    private void internalInitialize() {
+        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
+
         // connect to heatpump and check if values can be fetched
         HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
 
@@ -194,13 +208,41 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
+        // stop trying to establish a connection for initializing the thing once it was established
+        stopJobs();
+
+        // When thing is initialized the first time or and update was triggered, set the available channels
+        if (thing.getProperties().isEmpty() || tiggerChannelUpdate) {
+            updateChannels(connector);
+        }
+
         updateStatus(ThingStatus.ONLINE);
+        restartJobs();
+    }
+
+    @Override
+    protected void updateConfiguration(Configuration configuration) {
+        tiggerChannelUpdate = true;
+        super.updateConfiguration(configuration);
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing thing {}", getThing().getUID());
+        stopJobs();
+        logger.debug("Thing {} disposed", getThing().getUID());
+    }
+
+    private void updateChannels(HeatpumpConnector connector) {
+        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
 
         Integer[] visibilityValues = connector.getVisibilities();
         Integer[] heatpumpValues = connector.getValues();
         Integer[] heatpumpParams = connector.getParams();
 
         ThingBuilder thingBuilder = editThing();
+
+        logger.debug("Updating available channels for thing {}", thing.getUID());
 
         // Hide all channel that are actually not available
         for (HeatpumpChannel channel : HeatpumpChannel.values()) {
@@ -215,15 +257,6 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         }
 
         updateThing(thingBuilder.build());
-
-        restartJobs();
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("Disposing thing {}", getThing().getUID());
-        stopJobs();
-        logger.debug("Thing {} disposed", getThing().getUID());
     }
 
     private void restartJobs() {
@@ -251,6 +284,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                     future.cancel(true);
                 }
             }
+            scheduledFutures.clear();
         }
     }
 
