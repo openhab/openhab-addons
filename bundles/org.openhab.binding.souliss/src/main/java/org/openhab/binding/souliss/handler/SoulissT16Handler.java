@@ -56,7 +56,6 @@ public class SoulissT16Handler extends SoulissGenericHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
@@ -151,7 +150,6 @@ public class SoulissT16Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-
         updateStatus(ThingStatus.ONLINE);
 
         gwConfigurationMap = thing.getConfiguration();

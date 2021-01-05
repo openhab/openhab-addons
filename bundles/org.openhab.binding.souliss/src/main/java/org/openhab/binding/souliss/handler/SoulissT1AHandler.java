@@ -53,7 +53,6 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
     }
 
     private boolean getBitState(int value, int bit) {
-
         if ((value & (1L << bit)) == 0) {
             return false;
         } else {
@@ -63,7 +62,6 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
 
     @Override
     public void setRawState(byte _rawState) {
-
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous

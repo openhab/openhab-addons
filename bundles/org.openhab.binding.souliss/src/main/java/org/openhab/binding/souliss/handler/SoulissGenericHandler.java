@@ -73,7 +73,6 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
                     .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR)[0]);
             iSlot = Integer.parseInt(_thing.getUID().toString().split(":")[iPosNode_Slot]
                     .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR)[1]);
-
         } catch (Exception e) {
             logger.debug("Item Definition Error. Use ex:'souliss:t11:nodeNumber-slotNumber'");
         }
@@ -101,7 +100,6 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
      * @param command
      */
     public void commandSEND(byte command) {
-
         SoulissCommonCommands.sendFORCEFrame(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
                 getGatewayUserIndex(), this.getNode(), this.getSlot(), command);
     }

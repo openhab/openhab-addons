@@ -42,7 +42,6 @@ public class SoulissT18Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-
         updateStatus(ThingStatus.ONLINE);
 
         gwConfigurationMap = thing.getConfiguration();
@@ -61,7 +60,6 @@ public class SoulissT18Handler extends SoulissGenericHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.PULSE_CHANNEL:
@@ -92,7 +90,6 @@ public class SoulissT18Handler extends SoulissGenericHandler {
 
     @Override
     public void setRawState(byte _rawState) {
-
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous

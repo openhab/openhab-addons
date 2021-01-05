@@ -103,7 +103,6 @@ public class SoulissT22Handler extends SoulissGenericHandler {
 
     @Override
     public void setRawState(byte _rawState) {
-
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
@@ -148,7 +147,6 @@ public class SoulissT22Handler extends SoulissGenericHandler {
     private PercentType getOHState_T22_FromSoulissVal(short sVal) {
         int iState = 0;
         switch (sVal) {
-
             case SoulissBindingProtocolConstants.Souliss_T2n_Coil_Open:
                 iState = 0;
                 break;

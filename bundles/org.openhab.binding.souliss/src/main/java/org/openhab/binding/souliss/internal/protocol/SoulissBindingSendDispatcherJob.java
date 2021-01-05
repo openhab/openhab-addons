@@ -55,7 +55,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
      * Put packet to send in ArrayList PacketList
      */
     public static synchronized void put(DatagramSocket socket, DatagramPacket packetToPUT) {
-
         bPopSuspend = true;
         boolean bPacchettoGestito = false;
         // estraggo il nodo indirizzato dal pacchetto in ingresso
@@ -143,9 +142,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     @Override
     public void run() {
         try {
-
             if (checkTime()) {
-
                 SoulissBindingSocketAndPacketStruct sp = pop();
                 if (sp != null) {
                     logger.debug(
@@ -330,9 +327,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                                        // Gateway
                     if (sUID_Array[0].equals(SoulissBindingConstants.BINDING_ID) && (byte) Integer
                             .parseInt(handler.getGatewayIP().toString().split("\\.")[3]) == _lastByteGatewayIP) {
-
                         if (handler.getNode() == node && handler.getSlot() == slot) {
-
                             return handler;
                         }
                     }

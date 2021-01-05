@@ -57,7 +57,6 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof RefreshType)) {
-
             switch (channelUID.getId()) {
                 // FAN
                 case SoulissBindingConstants.T31_SYSTEM_CHANNEL:
@@ -133,7 +132,6 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType _state) {
-
         this.updateState(SoulissBindingConstants.T31_BUTTON_CHANNEL, OnOffType.OFF);
 
         super.setLastStatusStored();
@@ -212,7 +210,6 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     String sMessage = "";
 
     public void setRawStateValues(byte _rawState_byte0, float _valTemp, float _valSetPoint) {
-
         sMessage = "";
         switch (getBitState(_rawState_byte0, 0)) {
             case 0:
@@ -287,9 +284,9 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     }
 
     public byte getBitState(byte vRaw, int iBit) {
-        final int MASK_BIT_1 = 0x1;
+        final int maskBit1 = 0x1;
 
-        if (((vRaw >>> iBit) & MASK_BIT_1) == 0) {
+        if (((vRaw >>> iBit) & maskBit1) == 0) {
             return 0;
         } else {
             return 1;

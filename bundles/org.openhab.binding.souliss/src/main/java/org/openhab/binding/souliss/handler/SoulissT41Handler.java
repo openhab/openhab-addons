@@ -45,12 +45,9 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     // called on every status change or change request
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (!(command instanceof RefreshType)) {
-
             if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL)) {
                 if (command instanceof OnOffType) {
-
                     switch (command.toFullString()) {
                         case "OFF":
                             commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_NotArmed);
@@ -59,11 +56,9 @@ public class SoulissT41Handler extends SoulissGenericHandler {
                             commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_Armed);
                             break;
                     }
-
                 }
             } else if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
                 if (command instanceof OnOffType) {
-
                     switch (command.toFullString()) {
                         case "ON":
                             commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_ReArm);
@@ -109,7 +104,6 @@ public class SoulissT41Handler extends SoulissGenericHandler {
 
     @Override
     public void setRawState(byte _rawState) {
-
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous

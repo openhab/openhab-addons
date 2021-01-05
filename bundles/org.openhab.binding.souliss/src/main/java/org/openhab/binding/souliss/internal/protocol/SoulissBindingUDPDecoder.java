@@ -99,7 +99,6 @@ public class SoulissBindingUDPDecoder {
     private void decodeMacaco(byte lastByteGatewayIP, ArrayList<Byte> macacoPck) {
         int functionalCode = macacoPck.get(0);
         switch (functionalCode) {
-
             case SoulissBindingUDPConstants.Souliss_UDP_function_ping_resp:
                 logger.debug("Received functional code: 0x{}- Ping answer", Integer.toHexString(functionalCode));
                 decodePing(lastByteGatewayIP, macacoPck);
@@ -356,7 +355,6 @@ public class SoulissBindingUDPDecoder {
         int numberOf = mac.get(4);
         SoulissGatewayHandler gateway = null;
         try {
-
             gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP)
                     .getHandler();
         } catch (Exception ex) {
@@ -410,7 +408,6 @@ public class SoulissBindingUDPDecoder {
                                        // Gateway
                     if (sUID_Array[0].equals(SoulissBindingConstants.BINDING_ID) && (byte) Integer.parseInt(
                             ((SoulissGenericHandler) handler).getGatewayIP().split("\\.")[3]) == lastByteGatewayIP) {
-
                         if (((SoulissGenericHandler) handler).getNode() == tgtnode) { // execute it
                                                                                       // only
                                                                                       // if it is
@@ -593,9 +590,9 @@ public class SoulissBindingUDPDecoder {
     }
 
     public byte getBitState(byte vRaw, int iBit) {
-        final int MASK_BIT_1 = 0x1;
+        final int maskBit1 = 0x1;
 
-        if (((vRaw >>> iBit) & MASK_BIT_1) == 0) {
+        if (((vRaw >>> iBit) & maskBit1) == 0) {
             return 0;
         } else {
             return 1;
