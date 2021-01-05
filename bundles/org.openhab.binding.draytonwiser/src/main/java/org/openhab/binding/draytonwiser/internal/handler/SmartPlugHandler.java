@@ -104,11 +104,13 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
     }
 
     private State getSignalRSSI() {
-        return new DecimalType(getData().device.getRssi());
+        final Integer rssi = getData().device.getRssi();
+        return rssi == null ? UnDefType.UNDEF : new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS);
     }
 
     private State getSignalLQI() {
-        return new DecimalType(getData().device.getLqi());
+        final Integer lqi = getData().device.getLqi();
+        return lqi == null ? UnDefType.UNDEF : new DecimalType(lqi);
     }
 
     private State getZigbeeConnected() {

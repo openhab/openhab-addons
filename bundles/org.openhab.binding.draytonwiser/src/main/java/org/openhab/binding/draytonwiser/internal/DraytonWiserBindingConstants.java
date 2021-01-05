@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
@@ -151,11 +152,15 @@ public class DraytonWiserBindingConstants {
             this.batteryLevel = batteryLevel;
         }
 
-        public static State toBatteryLevel(final String level) {
-            try {
-                return new DecimalType(BatteryLevel.valueOf(level.toUpperCase()).batteryLevel);
-            } catch (final IllegalArgumentException e) {
-                // Catch unrecognized values.
+        public static State toBatteryLevel(final @Nullable String level) {
+            if (level != null) {
+                try {
+                    return new DecimalType(BatteryLevel.valueOf(level.toUpperCase()).batteryLevel);
+                } catch (final IllegalArgumentException e) {
+                    // Catch unrecognized values.
+                    return UnDefType.UNDEF;
+                }
+            } else {
                 return UnDefType.UNDEF;
             }
         }
