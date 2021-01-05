@@ -49,6 +49,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -269,12 +270,18 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * Migration for last_update-channel as this change is compatible to previous instances.
      */
     private void migrateLastUpdateChannel() {
-        Thing thing = getThing();
+        final Thing thing = getThing();
         if (thing.getChannel(CHANNEL_LAST_UPDATE) == null) {
-            logger.debug("last_update channel is missing in this Thing. Adding it.");
-            ThingBuilder thingBuilder = editThing();
-            ChannelBuilder channelBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), CHANNEL_LAST_UPDATE));
-            thingBuilder.withChannel(channelBuilder.withType(LAST_UPDATE_TYPE_UID).build());
+            logger.trace("last_update channel is missing in this Thing. Adding it.");
+            final ThingHandlerCallback callback = getCallback();
+            if (callback == null) {
+                logger.debug("ThingHandlerCallback is null. Skipping migration of last_update channel.");
+                return;
+            }
+            final ChannelBuilder channelBuilder = callback
+                    .createChannelBuilder(new ChannelUID(thing.getUID(), CHANNEL_LAST_UPDATE), LAST_UPDATE_TYPE_UID);
+            final ThingBuilder thingBuilder = editThing();
+            thingBuilder.withChannel(channelBuilder.build());
             updateThing(thingBuilder.build());
         }
     }
