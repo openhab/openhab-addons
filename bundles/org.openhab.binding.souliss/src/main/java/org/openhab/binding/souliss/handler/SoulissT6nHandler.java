@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.handler;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.HalfFloatUtils;
 import org.openhab.core.library.types.DecimalType;
@@ -64,7 +63,7 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
 
     @Override
     public void setRawState(byte _rawState) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 
     public void setFloatValue(float valueOf) {
@@ -77,7 +76,7 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
 
     @Override
     public byte getRawState() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 
     public float getFloatState() {

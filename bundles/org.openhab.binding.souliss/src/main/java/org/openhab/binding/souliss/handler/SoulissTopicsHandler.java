@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.handler;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
@@ -70,12 +69,12 @@ public class SoulissTopicsHandler extends SoulissGenericActionMessage implements
 
     @Override
     public void setRawState(byte _rawState) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 
     @Override
     public byte getRawState() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 
     @Override

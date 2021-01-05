@@ -14,7 +14,6 @@ package org.openhab.binding.souliss.handler;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -176,7 +175,7 @@ public class SoulissT16Handler extends SoulissGenericHandler {
 
     @Override
     public void setRawState(byte _rawState) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 
     public void setRawState_command(byte _rawState_byte0) {
@@ -208,7 +207,7 @@ public class SoulissT16Handler extends SoulissGenericHandler {
 
     @Override
     public byte getRawState() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 
     public byte getRawState_command() {

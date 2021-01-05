@@ -54,7 +54,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     /**
      * Put packet to send in ArrayList PacketList
      */
-    public synchronized static void put(DatagramSocket socket, DatagramPacket packetToPUT) {
+    public static synchronized void put(DatagramSocket socket, DatagramPacket packetToPUT) {
 
         bPopSuspend = true;
         boolean bPacchettoGestito = false;

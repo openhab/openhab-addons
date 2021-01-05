@@ -35,7 +35,7 @@ public class SoulissBindingConstants {
     public static final long DISCOVERY_RESEND_TIMEOUT_IN_MILLIS = 5000;
     public static final int DISCOVERY_TIMEOUT_IN_SECONDS = 60;
     public static final long SERVER_CICLE_IN_MILLIS = 10;
-    public static final long SEND_DISPATCHER_MIN_DELAY_cicleInMillis = 10;
+    public static final long SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS = 10;
 
     // public static final int PING_resendTimeoutInSeconds = 5;
 
@@ -124,65 +124,65 @@ public class SoulissBindingConstants {
      */
 
     // List of all Channel ids
-    public final static String ONOFF_CHANNEL = "onoff";
+    public static final String ONOFF_CHANNEL = "onoff";
 
-    public final static String PULSE_CHANNEL = "pulse";
-    public final static String SLEEP_CHANNEL = "sleep";
-    public final static String AUTOMODE_CHANNEL = "automode";
-    public final static String STATEONOFF_CHANNEL = "stateOnOff";
-    public final static String STATEOPENCLOSE_CHANNEL = "stateOpenClose";
-    public final static String ROLLERSHUTTER_CHANNEL = "rollershutter";
-    public final static String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollershutter_state";
+    public static final String PULSE_CHANNEL = "pulse";
+    public static final String SLEEP_CHANNEL = "sleep";
+    public static final String AUTOMODE_CHANNEL = "automode";
+    public static final String STATEONOFF_CHANNEL = "stateOnOff";
+    public static final String STATEOPENCLOSE_CHANNEL = "stateOpenClose";
+    public static final String ROLLERSHUTTER_CHANNEL = "rollershutter";
+    public static final String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollershutter_state";
     public static final String ROLLERSHUTTER_STATE_NUMBER_CHANNEL = "rollershutter_state_number";
-    public final static String ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL = "opening";
-    public final static String ROLLERSHUTTER_MESSAGE_CLOSING_CHANNEL = "closing";
-    public final static String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_OPEN_CHANNEL = "limSwitch_open";
-    public final static String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_CLOSE_CHANNEL = "limSwitch_close";
-    public final static String ROLLERSHUTTER_MESSAGE_STATE_OPEN_CHANNEL = "state_open";
-    public final static String ROLLERSHUTTER_MESSAGE_STATE_CLOSE_CHANNEL = "state_close";
-    public final static String ROLLERSHUTTER_MESSAGE_NO_LIMITSWITCH_CHANNEL = "NoLimSwitch";
+    public static final String ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL = "opening";
+    public static final String ROLLERSHUTTER_MESSAGE_CLOSING_CHANNEL = "closing";
+    public static final String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_OPEN_CHANNEL = "limSwitch_open";
+    public static final String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_CLOSE_CHANNEL = "limSwitch_close";
+    public static final String ROLLERSHUTTER_MESSAGE_STATE_OPEN_CHANNEL = "state_open";
+    public static final String ROLLERSHUTTER_MESSAGE_STATE_CLOSE_CHANNEL = "state_close";
+    public static final String ROLLERSHUTTER_MESSAGE_NO_LIMITSWITCH_CHANNEL = "NoLimSwitch";
     public static final String ROLLERSHUTTER_MESSAGE_STOP_CHANNEL = "stop";
     public static final String ROLLERSHUTTER_MESSAGE_TIMER_OFF = "timer off";
 
-    public final static String T1A_1_CHANNEL = "one";
-    public final static String T1A_2_CHANNEL = "two";
-    public final static String T1A_3_CHANNEL = "three";
-    public final static String T1A_4_CHANNEL = "four";
-    public final static String T1A_5_CHANNEL = "five";
-    public final static String T1A_6_CHANNEL = "six";
-    public final static String T1A_7_CHANNEL = "seven";
-    public final static String T1A_8_CHANNEL = "eight";
+    public static final String T1A_1_CHANNEL = "one";
+    public static final String T1A_2_CHANNEL = "two";
+    public static final String T1A_3_CHANNEL = "three";
+    public static final String T1A_4_CHANNEL = "four";
+    public static final String T1A_5_CHANNEL = "five";
+    public static final String T1A_6_CHANNEL = "six";
+    public static final String T1A_7_CHANNEL = "seven";
+    public static final String T1A_8_CHANNEL = "eight";
 
-    public final static String T31_MODE_CHANNEL = "mode";
-    public final static String T31_SYSTEM_CHANNEL = "system";
-    public final static String T31_FIRE_CHANNEL = "fire";
-    public final static String T31_FAN_CHANNEL = "fan";
-    public final static String T31_BUTTON_CHANNEL = "setAsMeasured";
-    public final static String T31_VALUE_CHANNEL = "measured";
-    public final static String T31_SETPOINT_CHANNEL = "setpoint";
+    public static final String T31_MODE_CHANNEL = "mode";
+    public static final String T31_SYSTEM_CHANNEL = "system";
+    public static final String T31_FIRE_CHANNEL = "fire";
+    public static final String T31_FAN_CHANNEL = "fan";
+    public static final String T31_BUTTON_CHANNEL = "setAsMeasured";
+    public static final String T31_VALUE_CHANNEL = "measured";
+    public static final String T31_SETPOINT_CHANNEL = "setpoint";
 
-    public final static String T31_COOLINGMODE_MESSAGE_MODE_CHANNEL = "COOLING_MODE";
-    public final static String T31_HEATINGMODE_MESSAGE_MODE_CHANNEL = "HEATING_MODE";
-    public final static String T31_OFF_MESSAGE_SYSTEM_CHANNEL = "SYSTEM_OFF";
-    public final static String T31_ON_MESSAGE_SYSTEM_CHANNEL = "SYSTEM_ON";
-    public final static String T31_ON_MESSAGE_FIRE_CHANNEL = "FIRE_ON";
-    public final static String T31_OFF_MESSAGE_FIRE_CHANNEL = "FIRE_OFF";
+    public static final String T31_COOLINGMODE_MESSAGE_MODE_CHANNEL = "COOLING_MODE";
+    public static final String T31_HEATINGMODE_MESSAGE_MODE_CHANNEL = "HEATING_MODE";
+    public static final String T31_OFF_MESSAGE_SYSTEM_CHANNEL = "SYSTEM_OFF";
+    public static final String T31_ON_MESSAGE_SYSTEM_CHANNEL = "SYSTEM_ON";
+    public static final String T31_ON_MESSAGE_FIRE_CHANNEL = "FIRE_ON";
+    public static final String T31_OFF_MESSAGE_FIRE_CHANNEL = "FIRE_OFF";
 
-    public final static String T31_FANAUTO_MESSAGE_FAN_CHANNEL = "AUTO";
-    public final static String T31_FANOFF_MESSAGE_FAN_CHANNEL = "FANOFF";
-    public final static String T31_FANLOW_MESSAGE_FAN_CHANNEL = "LOW";
-    public final static String T31_FANMEDIUM_MESSAGE_FAN_CHANNEL = "MEDIUM";
-    public final static String T31_FANHIGH_MESSAGE_FAN_CHANNEL = "HIGH";
+    public static final String T31_FANAUTO_MESSAGE_FAN_CHANNEL = "AUTO";
+    public static final String T31_FANOFF_MESSAGE_FAN_CHANNEL = "FANOFF";
+    public static final String T31_FANLOW_MESSAGE_FAN_CHANNEL = "LOW";
+    public static final String T31_FANMEDIUM_MESSAGE_FAN_CHANNEL = "MEDIUM";
+    public static final String T31_FANHIGH_MESSAGE_FAN_CHANNEL = "HIGH";
 
-    public final static String T4N_ONOFFALARM_CHANNEL = "onOffAlarm";
-    public final static String T4N_STATUSALARM_CHANNEL = "statusAlarm";
-    public final static String T4N_REARMALARM_CHANNEL = "rearmAlarm";
-    public final static String T41_RESETALARM_CHANNEL = "resetAlarm";
+    public static final String T4N_ONOFFALARM_CHANNEL = "onOffAlarm";
+    public static final String T4N_STATUSALARM_CHANNEL = "statusAlarm";
+    public static final String T4N_REARMALARM_CHANNEL = "rearmAlarm";
+    public static final String T41_RESETALARM_CHANNEL = "resetAlarm";
 
-    public final static String T4N_ALARMON_MESSAGE_CHANNEL = "ALARMON";
-    public final static String T4N_ALARMOFF_MESSAGE_CHANNEL = "ALARMOFF";
-    public final static String T4N_REARMOFF_MESSAGE_CHANNEL = "REARMOFF";
-    public final static String T4N_ARMED_MESSAGE_CHANNEL = "ARMED";
+    public static final String T4N_ALARMON_MESSAGE_CHANNEL = "ALARMON";
+    public static final String T4N_ALARMOFF_MESSAGE_CHANNEL = "ALARMOFF";
+    public static final String T4N_REARMOFF_MESSAGE_CHANNEL = "REARMOFF";
+    public static final String T4N_ARMED_MESSAGE_CHANNEL = "ARMED";
 
     public static final String WHITE_MODE_CHANNEL = "whitemode";
     public static final String ROLLER_BRIGHTNESS_CHANNEL = "roller_brightness";
