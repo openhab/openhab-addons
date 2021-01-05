@@ -30,6 +30,7 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Luca Remigio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 public class SoulissT41Handler extends SoulissGenericHandler {
 
@@ -45,31 +46,32 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        if (command instanceof RefreshType) {
+        if (!(command instanceof RefreshType)) {
 
-        } else if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL)) {
-            if (command instanceof OnOffType) {
+            if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL)) {
+                if (command instanceof OnOffType) {
 
-                switch (command.toFullString()) {
-                    case "OFF":
-                        commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_NotArmed);
-                        break;
-                    case "ON":
-                        commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_Armed);
-                        break;
+                    switch (command.toFullString()) {
+                        case "OFF":
+                            commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_NotArmed);
+                            break;
+                        case "ON":
+                            commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_Armed);
+                            break;
+                    }
+
                 }
+            } else if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
+                if (command instanceof OnOffType) {
 
-            }
-        } else if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
-            if (command instanceof OnOffType) {
+                    switch (command.toFullString()) {
+                        case "ON":
+                            commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_ReArm);
+                            this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
+                            break;
+                    }
 
-                switch (command.toFullString()) {
-                    case "ON":
-                        commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_ReArm);
-                        this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
-                        break;
                 }
-
             }
         }
     }

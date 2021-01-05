@@ -56,7 +56,7 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
     private String sTopicVariant;
 
     private String timestamp;
-    private static Logger logger = LoggerFactory.getLogger(SoulissGenericActionMessage.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissGenericActionMessage.class);
 
     public SoulissGenericActionMessage(Thing _thing) {
         super(_thing);

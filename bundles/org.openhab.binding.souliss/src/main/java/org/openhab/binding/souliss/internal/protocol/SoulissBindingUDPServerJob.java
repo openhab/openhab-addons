@@ -36,7 +36,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
     SoulissBindingUDPDecoder decoder = null;
     DiscoverResult discoverResult = null;
     DatagramSocket soulissDatagramSocket;
-    private static Logger logger = LoggerFactory.getLogger(SoulissBindingUDPServerJob.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPServerJob.class);
 
     public SoulissBindingUDPServerJob(DatagramSocket _datagramSocket, DiscoverResult _discoverResult) {
         super();

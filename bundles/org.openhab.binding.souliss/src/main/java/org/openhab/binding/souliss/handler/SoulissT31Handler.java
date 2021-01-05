@@ -33,6 +33,7 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Luca Remigio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 public class SoulissT31Handler extends SoulissGenericHandler {
 
@@ -56,9 +57,8 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     // called on every status change or change request
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
+        if (!(command instanceof RefreshType)) {
 
-        } else {
             switch (channelUID.getId()) {
                 // FAN
                 case SoulissBindingConstants.T31_SYSTEM_CHANNEL:

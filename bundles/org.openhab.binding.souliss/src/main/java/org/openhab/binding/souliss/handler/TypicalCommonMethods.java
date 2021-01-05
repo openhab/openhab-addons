@@ -22,6 +22,7 @@ package org.openhab.binding.souliss.handler;
  * Result callback interface.
  *
  * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 public interface TypicalCommonMethods {
     void setRawState(byte _rawState);

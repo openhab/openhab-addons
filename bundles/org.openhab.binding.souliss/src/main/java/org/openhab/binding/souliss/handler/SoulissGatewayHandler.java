@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
 public class SoulissGatewayHandler extends BaseBridgeHandler {
@@ -187,7 +188,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
                 if (datagramSocket_defaultPort != null) {
                     UDP_Server_DefaultPort_RunnableClass = new SoulissBindingUDPServerJob(datagramSocket_defaultPort,
                             SoulissBindingNetworkParameters.discoverResult);
-                    scheduler.scheduleAtFixedRate(UDP_Server_DefaultPort_RunnableClass, 100,
+                    // Changes from scheduleAtFixedRate - Luca Calcaterra
+                    scheduler.scheduleWithFixedDelay(UDP_Server_DefaultPort_RunnableClass, 100,
                             SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
                 }
             }
@@ -195,16 +197,19 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // START JOB PING
 
             SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
-            scheduler.scheduleAtFixedRate(soulissGatewayJobPingRunnable, 2,
+            // Changes from scheduleAtFixedRate - Luca Calcaterra
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2,
                     soulissGatewayJobPingRunnable.get_pingRefreshInterval(), TimeUnit.SECONDS);
 
             SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(
                     bridge);
-            scheduler.scheduleAtFixedRate(soulissGatewayJobSubscriptionRunnable, 0,
+            // Changes from scheduleAtFixedRate - Luca Calcaterra
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
                     soulissGatewayJobSubscriptionRunnable.get_subscriptionRefreshInterval(), TimeUnit.MINUTES);
 
             SoulissGatewayJobHealty soulissGatewayJobHealtyRunnable = new SoulissGatewayJobHealty(bridge);
-            scheduler.scheduleAtFixedRate(soulissGatewayJobHealtyRunnable, 5,
+            // Changes from scheduleAtFixedRate - Luca Calcaterra
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobHealtyRunnable, 5,
                     soulissGatewayJobHealtyRunnable.get_healthRefreshInterval(), TimeUnit.SECONDS);
 
             // il ciclo Send è schedulato con la costante
@@ -299,6 +304,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
      * The {@link gatewayDetected} is used to notify that UDPServer decoded a Ping Response from gateway
      *
      * @author Tonino Fazio - Initial contribution
+     * @author Luca Calcaterra - Refactor for OH3
      */
 
     public void gatewayDetected() {

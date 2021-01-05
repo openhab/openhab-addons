@@ -16,6 +16,7 @@ import org.openhab.core.thing.Bridge;
 
 /**
  * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  */
 public class SoulissGatewayJobSubscription extends Thread {
 
