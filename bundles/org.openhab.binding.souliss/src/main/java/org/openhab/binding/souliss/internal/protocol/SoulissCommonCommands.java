@@ -105,7 +105,6 @@ public class SoulissCommonCommands {
 
     public static void sendFORCEFrameT61SetPoint(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, int IDNode, int slot, Byte byte1, Byte byte2) {
-
         ArrayList<Byte> MACACOframe = new ArrayList<Byte>();
         MACACOframe.add(SoulissBindingUDPConstants.Souliss_UDP_function_force);
 
@@ -311,7 +310,6 @@ public class SoulissCommonCommands {
      */
     public static void sendMULTICASTFORCEFrame(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, byte typical, byte shortCommand) {
-
         ArrayList<Byte> MACACOframe = new ArrayList<Byte>();
         MACACOframe.add(SoulissBindingUDPConstants.Souliss_UDP_function_force_massive);
 
@@ -333,7 +331,6 @@ public class SoulissCommonCommands {
      */
     public static void sendPing(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN, byte nodeIndex,
             byte userIndex, byte putIn_1, byte punIn_2) {
-
         ArrayList<Byte> MACACOframe = new ArrayList<Byte>();
         MACACOframe.add(SoulissBindingUDPConstants.Souliss_UDP_function_ping);
 
@@ -352,7 +349,6 @@ public class SoulissCommonCommands {
      * Build BROADCAST PING Frame
      */
     public static void sendBroadcastGatewayDiscover(DatagramSocket datagramSocket) {
-
         ArrayList<Byte> MACACOframe = new ArrayList<Byte>();
         MACACOframe.add(SoulissBindingUDPConstants.Souliss_UDP_function_discover_GW_node_bcast);
 
@@ -371,7 +367,6 @@ public class SoulissCommonCommands {
      */
     public static void sendSUBSCRIPTIONframe(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, int iNodes) {
-
         ArrayList<Byte> MACACOframe = new ArrayList<Byte>();
         MACACOframe.add(SoulissBindingUDPConstants.Souliss_UDP_function_subscribe);
 
@@ -391,7 +386,6 @@ public class SoulissCommonCommands {
      */
     public static void sendHEALTY_REQUESTframe(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, int iNodes) {
-
         ArrayList<Byte> MACACOframe = new ArrayList<Byte>();
         MACACOframe.add(SoulissBindingUDPConstants.Souliss_UDP_function_healthyReq);
 
@@ -410,7 +404,6 @@ public class SoulissCommonCommands {
      */
     public static void sendTYPICAL_REQUESTframe(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, int nodes) {
-
         ArrayList<Byte> MACACOframe = new ArrayList<Byte>();
         MACACOframe.add(SoulissBindingUDPConstants.Souliss_UDP_function_typreq);
         // PUTIN, STARTOFFEST, NUMBEROF

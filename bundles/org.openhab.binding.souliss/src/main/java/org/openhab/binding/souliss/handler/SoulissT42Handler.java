@@ -31,7 +31,6 @@ import org.openhab.core.types.PrimitiveType;
  * @author Luca Calcaterra - Refactor for OH3
  */
 public class SoulissT42Handler extends SoulissGenericHandler {
-
     Configuration gwConfigurationMap;
 
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
@@ -46,7 +45,6 @@ public class SoulissT42Handler extends SoulissGenericHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
             if (command instanceof OnOffType) {
-
                 switch (command.toFullString()) {
                     case "ON":
                         commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_ReArm);
@@ -89,7 +87,6 @@ public class SoulissT42Handler extends SoulissGenericHandler {
 
     @Override
     public void setRawState(byte _rawState) {
-
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
