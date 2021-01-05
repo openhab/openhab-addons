@@ -34,7 +34,7 @@ public enum HeatpumpCoolingOperationMode {
         return value;
     }
 
-    public static HeatpumpCoolingOperationMode fromValue(int value) {
+    public static HeatpumpCoolingOperationMode fromValue(int value) throws IllegalArgumentException {
         for (HeatpumpCoolingOperationMode mode : HeatpumpCoolingOperationMode.values()) {
             if (mode.value == value) {
                 return mode;

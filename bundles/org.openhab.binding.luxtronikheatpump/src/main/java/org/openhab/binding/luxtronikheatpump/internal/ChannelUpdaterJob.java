@@ -13,6 +13,7 @@
 package org.openhab.binding.luxtronikheatpump.internal;
 
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
 
@@ -125,14 +126,12 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
             return (rawValue == 0) ? OnOffType.OFF : OnOffType.ON;
         }
 
-        if (itemClass == DateTimeItem.class) {
+        if (itemClass == DateTimeItem.class && rawValue > 0) {
             try {
-                if (rawValue > 0) {
-                    Instant instant = Instant.ofEpochSecond(rawValue.longValue());
-                    return new DateTimeType(instant.atZone(ZoneId.of("UTC")));
-                }
-            } catch (Exception e) {
-                logger.info("Error parsing timestamp: {}", rawValue);
+                Instant instant = Instant.ofEpochSecond(rawValue.longValue());
+                return new DateTimeType(instant.atZone(ZoneId.of("UTC")));
+            } catch (DateTimeException e) {
+                logger.warn("Invalid timestamp '{}' received from heatpump: {}", rawValue, e.getMessage());
             }
         }
 

@@ -353,7 +353,7 @@ public enum HeatpumpVisibility {
         this.name = name;
     }
 
-    public static final HeatpumpVisibility fromCode(Integer code) {
+    public static final HeatpumpVisibility fromCode(Integer code) throws IllegalArgumentException {
         for (HeatpumpVisibility error : HeatpumpVisibility.values()) {
             if (error.code.equals(code)) {
                 return error;

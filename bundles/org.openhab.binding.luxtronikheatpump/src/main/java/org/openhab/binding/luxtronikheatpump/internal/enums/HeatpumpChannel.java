@@ -765,7 +765,7 @@ public enum HeatpumpChannel {
         return Boolean.FALSE;
     }
 
-    public static HeatpumpChannel fromString(String heatpumpCommand) {
+    public static HeatpumpChannel fromString(String heatpumpCommand) throws IllegalArgumentException {
 
         for (HeatpumpChannel c : HeatpumpChannel.values()) {
 

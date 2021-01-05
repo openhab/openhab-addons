@@ -76,14 +76,14 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
+        HeatpumpChannel channel;
+
         try {
-            HeatpumpChannel.fromString(channelId);
-        } catch (Exception e) {
-            logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
+            channel = HeatpumpChannel.fromString(channelId);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Channel '{}' could not be found for thing {}", channelId, thing.getUID());
             return;
         }
-
-        HeatpumpChannel channel = HeatpumpChannel.fromString(channelId);
 
         if (channel.isWritable().equals(Boolean.FALSE)) {
             logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
