@@ -18,8 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpChannel;
@@ -50,7 +48,6 @@ import org.slf4j.LoggerFactory;
 public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LuxtronikHeatpumpHandler.class);
-    private final Lock monitor = new ReentrantLock();
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
 
     public LuxtronikHeatpumpHandler(Thing thing) {
@@ -233,8 +230,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
 
         logger.debug("Restarting jobs for thing {}", getThing().getUID());
-        monitor.lock();
-        try {
+        synchronized (scheduledFutures) {
             stopJobs();
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 // Repeat channel update job every configured seconds
@@ -244,25 +240,17 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 scheduledFutures.add(future);
                 logger.info("Scheduled {} every {} seconds", channelUpdaterJob, config.refresh);
             }
-        } finally {
-            monitor.unlock();
         }
     }
 
     private void stopJobs() {
         logger.debug("Stopping scheduled jobs for thing {}", getThing().getUID());
-        monitor.lock();
-        try {
+        synchronized (scheduledFutures) {
             for (ScheduledFuture<?> future : scheduledFutures) {
                 if (!future.isDone()) {
                     future.cancel(true);
                 }
             }
-            scheduledFutures.clear();
-        } catch (Exception ex) {
-            logger.error("{}", ex.getMessage(), ex);
-        } finally {
-            monitor.unlock();
         }
     }
 
