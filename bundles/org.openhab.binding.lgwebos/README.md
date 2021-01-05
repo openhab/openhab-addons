@@ -16,7 +16,7 @@ Under network settings allow "LG CONNECT APPS" to connect.
 
 Note: Under general settings allow mobile applications to turn on the TV, if this option is available.
 On newer models this setting may also be called "Mobile TV On > Turn On Via WiFi".
-In combination with the wake on LAN binding this will allow you to start the TV via openHAB. Please see demo.items and demo.rules example below.
+If channel `power` receives `ON`, the binding will attempt to power on the TV by broadcasting a Wake on Lan packet.
 
 ## Binding Configuration
 
