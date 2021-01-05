@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Network constants This class contains Souliss constants. Original version is
  * taken from SoulissApp. For scope of this binding not all constants are used.
@@ -19,6 +21,7 @@ package org.openhab.binding.souliss;
  * @author Alessandro Del Pex
  * @since 1.7.0
  */
+@NonNullByDefault
 public class SoulissBindingUDPConstants {
 
     public static final String TAG = "SoulissApp";

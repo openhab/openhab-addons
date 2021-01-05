@@ -13,7 +13,6 @@
 
 package org.openhab.binding.souliss.handler;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.binding.souliss.internal.HalfFloatUtils;
@@ -299,6 +298,6 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
     @Override
     public void setRawState(byte _rawState) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 }

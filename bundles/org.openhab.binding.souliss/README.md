@@ -20,12 +20,15 @@ The easiest way is start with a simple example to control an ON/OFF light (thoug
 You can go to project [Souliss[(https://github.com/souliss/souliss), see a lot of examples sketches: [Souliss examples](https://github.com/souliss/souliss/tree/friariello/examples)
 
 ## Binding Configuration
+
 This binding does not require any special configuration.
 
 ## Discovery
+
 This binding can automatically discover devices. First Gateway Node, then Peer Nodes. 
 
 ## Supported Things
+
 In Souliss Framework a Typical is one of predefined logic dedicated to smart home devices like lights, heating or antitheft. 
 
 Typical can be one of T11, T12, T13, T14, etc... 
@@ -68,6 +71,7 @@ Typicals match directly with openHAB Thing type.
 |Broadcast messages|Action Message|souliss:topic|
 
 ### Channels
+
 The following matrix lists the capabilities (channels) for each type:
 
 |Thing type / Channel |Switch / onoff | Switch / sleep | DateTime / lastStatusStored | Number / healty |Switch / automode|Contact / stateOnOff|Contact / stateOpenClose|Switch / pulse|Switch / whitemode|Rollershutter / roller_brightness|Dimmer / dimmer_brightness|Color / ledcolor|Switch / one|Switch / two|Switch / three|Switch / four|Switch / five|Switch / six|Switch / seven|Switch / eight|
@@ -120,6 +124,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 |souliss:topic|x||x|
 
 ### Parameters
+
 |Thing type| Parameters Name and Default Value| Description|
 |-- |-- |-- |
 |Gateway|GATEWAY_IP_ADDRESS="" |Will be resolved by discovery if auto configured|
@@ -156,16 +161,19 @@ To configure a typical (items) you have to choice your "Name" and "Location", yo
 Thing ID is [node]-[slot]
 For example, if you have two nodes and you want configure a typical on second node at slot seven, you must write 
 Thing ID: 
+
 ```
 2-7
 ```
 
 
 ## Basic UI and Classic UI
+
 Examples to configure items in Basic UI and Classic UI
 Thing <binding_id>:<type_id>:<thing_id> "Label" @ "Location" [ <parameters> ]
     
 The general syntax for .things files is defined as follows (parts in <..> are required):
+
 ```
 Bridge <binding_id>:<type_id>:<bridge_id> "<Souliss Gateway Name>" [ <parameters> ]
 {  
@@ -176,6 +184,7 @@ Thing <type_id> <thing_id>  [ <parameters> ]
 
 
 souliss.things:
+
 ```
 Bridge souliss:gateway:105 "Souliss Gateway - 105" [GATEWAY_IP_ADDRESS="192.168.1.105", GATEWAY_PORT_NUMBER=230, PREFERRED_LOCAL_PORT_NUMBER=0, PING_INTERVAL=30, SUBSCRIBTION_INTERVAL=2, HEALTHY_INTERVAL=38, USER_INDEX=72, NODE_INDEX=38,  TIMEOUT_TO_REQUEUE=5000, TIMEOUT_TO_REMOVE_PACKET=20000]
 {  
@@ -209,7 +218,9 @@ Thing t11 11-0 "Birra"@"Soppalco"
 Thing t52 11-1 "Birra - Temp 1"@"Soppalco"
 Thing t52 11-3 "Birra - Temp 2"@"Soppalco"
 }
+
 ```
+
 You have to write your Gateway IP Number and leave all other to default values
 
 
@@ -260,9 +271,11 @@ Switch termostatosoggiorno_fire "Fire" <fire> (TermostatoSoggiorno) {channel="so
 Dimmer  TermostatoSoggiorno_displayBright   "Lumin.min. display" (TermostatoSoggiorno)      {channel="souliss:t19:105:6-9" }
 String TermostatoSoggiorno_aggiornamento "Agg.[%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring> (TermostatoSoggiorno, Diagnostic)  {channel="souliss:t31:105:6-0:lastStatusStored"}
 Number TermostatoSoggiorno_healty "Salute" <keyring> (TermostatoSoggiorno, Diagnostic )  {channel="souliss:t31:105:6-0:healty"}
+
 ```
 
 default.sitemaps:
+
 ```
 sitemap default label="Tonino" {
     Frame {
@@ -330,8 +343,8 @@ Italian Group, [here](https://groups.google.com/forum/#!forum/souliss-it)
 Spanish Group, [here] (https://groups.google.com/forum/#!forum/souliss-es)
 
 ## Contribution
-Officiale repository for contribution in souliss github area: [here](https://github.com/souliss)
 
+Officiale repository for contribution in souliss github area: [here](https://github.com/souliss)
 
 
 ## Download 

@@ -217,7 +217,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
             SoulissBindingSendDispatcherJob SoulissSendDispatcherRunnable = new SoulissBindingSendDispatcherJob(bridge);
             scheduler.scheduleWithFixedDelay(SoulissSendDispatcherRunnable, 15,
-                    SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis, TimeUnit.MILLISECONDS);
+                    SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
         }
     }
 
