@@ -1,7 +1,7 @@
 # Helios easyControls
 
 Helios Heat-Recovery Ventilation devices use a Modbus protocol to communicate with different sensors, switches, etc. Some devices come with an integrated web interface (easyControls) as well as a Modbus TCP/IP Gateway.
-See https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te for the corresponding specification.
+See the corresponding [specification](https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te).
 
 ## Supported Things
 
@@ -116,16 +116,16 @@ The following channels are supported:
 | operatingHoursNhz                | general         | Operating hours afterheater (in minutes) (0 - 2^32-1 min)                                                                        | Number:Time              | R  | 
 | outputPowerVhz                   | general         | Output power of preheater (in percent) (0 - 2^32-1 %)                                                                            | Number:Dimensionless     | R  | 
 | outputPowerNhz                   | general         | Output power of afterheater (in percent) (0 - 2^32-1 %)                                                                          | Number:Dimensionless     | R  | 
-| errors                           | general         | Errors as integer value (0 - 2^32-1)                                                                                             | Number                   | R  | 
-| warnings                         | general         | Warnings as integer value (0 - 2^32-1)                                                                                           | Number                   | R  | 
-| infos                            | general         | Infos as integer value (0 - 2^32-1)                                                                                              | Number                   | R  | 
-| noOfErrors                       | general         | Number of bit-coded errors (0 - 32)                                                                                              | Number                   | R  | 
-| noOfWarnings                     | general         | Number of bit-coded warnings (0 - 8)                                                                                             | Number                   | R  | 
-| noOfInfos                        | general         | Number of bit-coded infos (0 - 8)                                                                                                | Number                   | R  | 
-| errorsMsg                        | general         | Errors as string                                                                                                                 | String                   | R  | 
-| warningsMsg                      | general         | Warnings as string                                                                                                               | String                   | R  | 
-| infosMsg                         | general         | Infos as string                                                                                                                  | String                   | R  | 
-| statusFlags                      | general         | Status flags                                                                                                                     | String                   | R  | 
+| errors                           | general         | Errors as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                   | Number                   | R  | 
+| warnings                         | general         | Warnings as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                 | Number                   | R  | 
+| infos                            | general         | Infos as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                    | Number                   | R  | 
+| noOfErrors                       | general         | Number of bit-coded errors (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 32)                                    | Number                   | R  | 
+| noOfWarnings                     | general         | Number of bit-coded warnings (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 8)                                   | Number                   | R  | 
+| noOfInfos                        | general         | Number of bit-coded infos (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 8)                                      | Number                   | R  | 
+| errorsMsg                        | general         | Errors as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                       | String                   | R  | 
+| warningsMsg                      | general         | Warnings as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                     | String                   | R  | 
+| infosMsg                         | general         | Infos as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                        | String                   | R  | 
+| statusFlags                      | general         | Status flags (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                           | String                   | R  | 
 | bypassStatus                     | general         | Status of the bypass (OFF = closed, ON = open)                                                                                   | Switch                   | R  | 
 | bypassFrom                       | unitConfig      | Bypass active from                                                                                                               | DateTime                 | RW | 
 | bypassTo                         | unitConfig      | Bypass active to                                                                                                                 | DateTime                 | RW | 
@@ -195,6 +195,29 @@ public void setBypassTo(int day, int month)
 * *day:* The day until when the bypass should be active
 * *month:* The month until when the bypass should be active
 
+
+```
+public Map<String, Object> getErrorMessages()
+```
+
+*Return values:*
+* *errorMessages:* A `ArrayList<String>`object containing all error messages
+
+
+```
+public Map<String, Object> getWarningMessages()
+```
+
+*Return values:*
+* *warningMessages:* A `ArrayList<String>`object containing all warning messages
+
+
+```
+public Map<String, Object> getInfoMessages()
+```
+
+*Return values:*
+* *infoMessages:* A `ArrayList<String>`object containing all info messages
 
 ## Properties
 
@@ -277,6 +300,20 @@ The binding provides the following properties:
 | sensorConfigKwlFtf8              | Sensor configuration (installed or not) KWL-FTF 8 (OFF = no sensor, ON = sensor installed)                                       | 
 
 
+## Errors / Warnings / Infos
+
+Errors, warnings and infos of the device are provided in a bit encoded way. I.e. each bit in a 8 bit or 32 bit variable encodes potentially multiple eorrs, warnings or infos.
+Also status flags are provided this way. For details please refer to the manufacturer's [specification](https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te).
+
+Based on that concept, errors, warnings and infos are provided 3 different ways:
+* As an integer value with the decimal representation of the encoded bits
+* The total number of encoded errors, warning or infos
+* The bit encoded as a string
+
+Since there can potentially be several errors, warnings or infos, using a simple MAP to display the corresponding message in a UI will not work in all cases. String items with multiple lines will not display properly in the UIs.
+Therefore the binding provides actions to retrieve the different messages as an `ArrayList<String>` object which can then be used to e.g. send the messages via email. 
+
+
 ## Full Example
 
 ### Thing Configuration
@@ -315,7 +352,11 @@ Number:Temperature KWL_Temp_Extract_Air  "Temperature extract air [%.1f °C]"   
 Number KWL_Supply_Air_RPM                "RPM supply air [%d]"                       <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#supplyAirRpm"}
 Number KWL_Extract_Air_RPM               "RPM extract air [%d]"                      <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#extractAirRpm"}
 Number KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:unitConfig#filterChange"}
+<<<<<<< HEAD
 Number:Time KWL_Filter_Change_Remaining  "Filter change [%d %unit%]"                 <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
+=======
+Number KWL_Filter_Change_Remaining       "Filter change [%d %unit%]"                 <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
+>>>>>>> 0a7a64eb7 (Corrected some item types in the documentation.)
 
 Number KWL_Errors                        "Number errors [%d]"                        <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfErrors"}
 String KWL_Errors_String                 "Error messages [%s]"                       <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#errorsMsg"}

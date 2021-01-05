@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -74,6 +75,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HeliosEasyControlsHandler.class);
 
+    private final HeliosEasyControlsTranslationProvider translationProvider;
+
     private @Nullable HeliosEasyControlsConfiguration config;
 
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -93,6 +96,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     private int dateFormat = -1;
     private ZonedDateTime sysDate = ZonedDateTime.now(); // initialize with local system time as a best guess
                                                          // before reading from device
+    private long errors = 0;
+    private int warnings = 0;
+    private int infos = 0;
+    private String statusFlags = "";
 
     private class BypassDate {
         private final int[] MONTH_MAX_DAYS = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -142,8 +149,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
 
     private @Nullable BypassDate bypassFrom, bypassTo;
 
-    public HeliosEasyControlsHandler(Thing thing) {
+    public HeliosEasyControlsHandler(Thing thing, HeliosEasyControlsTranslationProvider translationProvider) {
         super(thing);
+        this.translationProvider = translationProvider;
     }
 
     /**
@@ -623,6 +631,75 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         }
     }
 
+    private ArrayList<String> getMessages(long bitMask, int bits, String prefix) {
+        ArrayList<String> msg = new ArrayList<String>();
+        long mask = 1;
+        for (int i = 0; i < bits; i++) {
+            if ((bitMask & mask) != 0) {
+                msg.add(translationProvider.getText(prefix + i));
+            }
+            mask <<= 1;
+        }
+        return msg;
+    }
+
+    /**
+     * Transforms the errors provided by the device into a human readable form (the basis for the
+     * corresponding action)
+     *
+     * @return an <code>ArrayList</code> of messages indicated by the error flags sent by the device
+     */
+    protected ArrayList<String> getErrorMessages() {
+        return this.getMessages(this.errors, HeliosEasyControlsBindingConstants.BITS_ERROR_MSG,
+                HeliosEasyControlsBindingConstants.PREFIX_ERROR_MSG);
+    }
+
+    /**
+     * Transforms the warnings provided by the device into a human readable form (the basis for the
+     * corresponding action)
+     *
+     * @return an <code>ArrayList</code> of messages indicated by the warning flags sent by the device
+     */
+    protected ArrayList<String> getWarningMessages() {
+        return this.getMessages(this.warnings, HeliosEasyControlsBindingConstants.BITS_WARNING_MSG,
+                HeliosEasyControlsBindingConstants.PREFIX_WARNING_MSG);
+    }
+
+    /**
+     * Transforms the infos provided by the device into a human readable form (the basis for the
+     * corresponding action)
+     *
+     * @return an <code>ArrayList</code> of messages indicated by the info flags sent by the device
+     */
+    protected ArrayList<String> getInfoMessages() {
+        return this.getMessages(this.infos, HeliosEasyControlsBindingConstants.BITS_INFO_MSG,
+                HeliosEasyControlsBindingConstants.PREFIX_INFO_MSG);
+    }
+
+    /**
+     * Transforms the status flags provided by the device into a human readable form (the basis for the
+     * corresponding action)
+     *
+     * @return an <code>ArrayList</code> of messages indicated by the status flags sent by the device
+     */
+    protected ArrayList<String> getStatusMessages() {
+        ArrayList<String> msg = new ArrayList<String>();
+        if (this.statusFlags.length() == HeliosEasyControlsBindingConstants.BITS_STATUS_MSG) {
+            for (int i = 0; i < HeliosEasyControlsBindingConstants.BITS_STATUS_MSG; i++) {
+                String key = HeliosEasyControlsBindingConstants.PREFIX_STATUS_MSG + i + "."
+                        + (this.statusFlags.substring(HeliosEasyControlsBindingConstants.BITS_STATUS_MSG - i - 1,
+                                HeliosEasyControlsBindingConstants.BITS_STATUS_MSG - i));
+                String text = translationProvider.getText(key);
+                if (!text.equals(key)) { // there is a text in the properties file (no text => flag is irrelevant)
+                    msg.add(text);
+                }
+            }
+        } else {
+            msg.add("Status messages have not yet been read from the device");
+        }
+        return msg;
+    }
+
     /**
      * Returns a DateTimeType object based on the provided String and the device's configured date format
      *
@@ -718,7 +795,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         if ((parts.length == 2) && (v.getVariableString().equals(parts[0]))) {
             if (this.isProperty(v.getName())) {
                 try {
-                    updateProperty(v.getName(), v.formatPropertyValue(parts[1]));
+                    updateProperty(
+                            translationProvider
+                                    .getText(HeliosEasyControlsBindingConstants.PROPERTIES_PREFIX + v.getName()),
+                            v.formatPropertyValue(parts[1], translationProvider));
                 } catch (HeliosException e) {
                     logger.warn("{} encountered Exception when trying to update property: {}",
                             HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
@@ -772,9 +852,15 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                                 if (state != null) {
                                     updateState(v.getGroupAndName(), state);
                                     updateStatus(ThingStatus.ONLINE);
-                                    // update date format and UTC offset upon read
+                                    // update date format and messages upon read
                                     if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE_FORMAT)) {
                                         this.dateFormat = Integer.parseInt(value);
+                                    } else if (v.getName().equals(HeliosEasyControlsBindingConstants.ERRORS)) {
+                                        this.errors = Long.parseLong(value);
+                                    } else if (v.getName().equals(HeliosEasyControlsBindingConstants.WARNINGS)) {
+                                        this.warnings = Integer.parseInt(value);
+                                    } else if (v.getName().equals(HeliosEasyControlsBindingConstants.INFOS)) {
+                                        this.infos = Integer.parseInt(value);
                                     }
                                 }
                             }
@@ -787,6 +873,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                         case "String":
                             if (variableType.equals(HeliosVariable.TYPE_STRING)) {
                                 updateState(v.getGroupAndName(), StringType.valueOf(value));
+                                if (v.getName().equals(HeliosEasyControlsBindingConstants.STATUS_FLAGS)) {
+                                    this.statusFlags = value;
+                                }
                             }
                             break;
                         case "DateTime":

@@ -279,8 +279,8 @@
 				<description>VOC control status</description>
 			</channel>
 			<channel id="vocControlSteps" typeId="ppmControlSteps">
-				<label>CO2 Control Steps</label>
-				<description>CO2 control steps (in ppm)</description>
+				<label>VOC Control Steps</label>
+				<description>VOC control steps (in ppm)</description>
 			</channel>
 			<!-- External CO2 Sensors -->
 			<channel id="externalSensorKwlVoc1" typeId="sensorValue"/>
@@ -504,7 +504,7 @@
 	<channel-type id="runOnTimeVhzNhz" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Stopping Time Preheater/Afterheater</label>
-		<description>Stopping time preheater/afterheater in seconds</description>
+		<description>Stopping time preheater/afterheater (in seconds)</description>
 		<category>Heating</category>
 		<state min="60" max="120" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
@@ -590,21 +590,21 @@
 	<channel-type id="errors" advanced="false">
 		<item-type>Number</item-type>
 		<label>Errors</label>
-		<description>Errors as integer value</description>
+		<description>Errors encoded as integer value</description>
 		<state min="0" max="4294967295" step="1" pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="warnings" advanced="false">
 		<item-type>Number</item-type>
 		<label>Warnings</label>
-		<description>Warnings as integer value</description>
+		<description>Warnings encoded as integer value</description>
 		<state min="0" max="255" step="1" pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="infos" advanced="false">
 		<item-type>Number</item-type>
 		<label>Infos</label>
-		<description>Infos as integer value</description>
+		<description>Infos encoded as integer value</description>
 		<state min="0" max="255" step="1" pattern="%d" readOnly="true"/>
 	</channel-type>
 
