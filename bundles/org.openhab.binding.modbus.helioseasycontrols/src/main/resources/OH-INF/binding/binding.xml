@@ -4,6 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>HeliosEasyControls Binding</name>
-	<description>This binding supports the integration of Helios ventilation systems with easyControls using a Modbus TCP implementation.</description>
+	<description>This binding supports the integration of Helios ventilation systems with easyControls using a Modbus TCP
+		implementation.</description>
 
 </binding:binding>
