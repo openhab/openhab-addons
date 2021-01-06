@@ -55,6 +55,8 @@ import com.google.gson.Gson;
 public class StatusWrapper {
     private static final Gson GSON = new Gson();
     private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
+    private static double ALLOWED_MILE_CONVERSION_DEVIATION = 1.5;
+    private static double ALLOWED_KM_ROUND_DEVIATION = 0.1;
 
     private VehicleStatus vStatus;
     private boolean imperial;
@@ -154,11 +156,11 @@ public class StatusWrapper {
                 if (imperial) {
                     assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
                     assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeElectricMls),
-                            0.01, "Mileage");
+                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
                     assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeElectric),
-                            0.01, "Mileage");
+                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                 }
                 break;
             case RANGE_FUEL:
@@ -167,12 +169,12 @@ public class StatusWrapper {
                 qt = ((QuantityType) state);
                 if (imperial) {
                     assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuelMls), 0.01,
-                            "Mileage");
+                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuelMls),
+                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuel), 0.01,
-                            "Mileage");
+                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuel),
+                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                 }
                 break;
             case RANGE_HYBRID:
@@ -182,13 +184,13 @@ public class StatusWrapper {
                 if (imperial) {
                     assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
                     assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls), 0.01,
-                            "Mileage");
+                            Converter.round(vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls),
+                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
                     assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vStatus.remainingRangeElectric + vStatus.remainingRangeFuel), 0.01,
-                            "Mileage");
+                            Converter.round(vStatus.remainingRangeElectric + vStatus.remainingRangeFuel),
+                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                 }
                 break;
             case REMAINING_FUEL:
@@ -283,7 +285,7 @@ public class StatusWrapper {
                 assertTrue(isElectric);
                 qt = (QuantityType) state;
                 if (imperial) {
-                    assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeElectricMls), qt.floatValue(), 0.1,
+                    assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeElectricMls), qt.floatValue(), 1,
                             "Range Radius Electric mi");
                 } else {
                     assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeElectric), qt.floatValue(), 0.1,
@@ -295,7 +297,7 @@ public class StatusWrapper {
                 assertTrue(hasFuel);
                 qt = (QuantityType) state;
                 if (imperial) {
-                    assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeFuelMls), qt.floatValue(), 0.1,
+                    assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeFuelMls), qt.floatValue(), 1,
                             "Range Radius Fuel mi");
                 } else {
                     assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeFuel), qt.floatValue(), 0.1,
@@ -310,11 +312,11 @@ public class StatusWrapper {
                     assertEquals(
                             Converter.guessRangeRadius(
                                     vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls),
-                            qt.floatValue(), 0.1, "Range Radius Hybrid mi");
+                            qt.floatValue(), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Hybrid mi");
                 } else {
                     assertEquals(
                             Converter.guessRangeRadius(vStatus.remainingRangeElectric + vStatus.remainingRangeFuel),
-                            qt.floatValue(), 0.1, "Range Radius Hybrid km");
+                            qt.floatValue(), ALLOWED_KM_ROUND_DEVIATION, "Range Radius Hybrid km");
                 }
                 break;
             case DOOR_DRIVER_FRONT:

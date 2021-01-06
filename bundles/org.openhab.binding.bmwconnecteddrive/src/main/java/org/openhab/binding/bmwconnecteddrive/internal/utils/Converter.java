@@ -19,9 +19,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
+import javax.measure.quantity.Length;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
 
 import com.google.gson.Gson;
 
@@ -50,6 +54,8 @@ public class Converter {
 
     private static final Gson GSON = new Gson();
     private static final double SCALE = 10;
+    public static final double MILES_TO_KM_RATIO = 1.60934;
+    private static final QuantityType<Length> UNDEF_MILES = QuantityType.valueOf(-1, ImperialUnits.MILE);
 
     public static Optional<TimeZoneProvider> timeZoneProvider = Optional.empty();
 
@@ -161,5 +167,17 @@ public class Converter {
      */
     public static double guessRangeRadius(double range) {
         return range * 0.8;
+    }
+
+    public static QuantityType<Length> getMiles(QuantityType<Length> qtLength) {
+        if (qtLength.intValue() == -1) {
+            return UNDEF_MILES;
+        }
+        QuantityType<Length> qt = qtLength.toUnit(ImperialUnits.MILE);
+        if (qt != null) {
+            return qt;
+        } else {
+            return QuantityType.valueOf(qtLength.doubleValue() / MILES_TO_KM_RATIO, ImperialUnits.MILE);
+        }
     }
 }
