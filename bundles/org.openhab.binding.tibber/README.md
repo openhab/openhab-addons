@@ -124,11 +124,11 @@ Number:Power               TibberAPILiveMaxPower                 "Max Power Cons
 Number:ElectricPotential   TibberAPILiveVoltage1                 "Live Voltage Phase 1 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage1"}
 Number:ElectricPotential   TibberAPILiveVoltage2                 "Live Voltage Phase 2 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage2"}
 Number:ElectricPotential   TibberAPILiveVoltage3                 "Live Voltage Phase 3 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage3"}
-Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current Phase 1 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current1"}
-Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current2"}
-Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current3"}
+Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current Phase 1 [A]"                  {channel="tibber:tibberapi:7cfae492:live_current1"}
+Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [A]"                  {channel="tibber:tibberapi:7cfae492:live_current2"}
+Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [A]"                  {channel="tibber:tibberapi:7cfae492:live_current3"}
 Number:Power               TibberAPILivePowerProduction          "Live Power Production [W]"                 {channel="tibber:tibberapi:7cfae492:live_powerProduction"}
 Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [W]"                  {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
-Number:Power               TibberAPILiveMaxPowerproduction       "Power consumption/production"              {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
+Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [W]"                  {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
 Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
 ```
