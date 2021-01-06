@@ -546,6 +546,7 @@
 				<option value="728">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.728</option>
 				<option value="729">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.729</option>
 				<option value="730">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.731</option>
 				<option value="732">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.732</option>
 				<option value="733">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.733</option>
 				<option value="734">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.734</option>
@@ -553,6 +554,7 @@
 				<option value="736">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.736</option>
 				<option value="737">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.737</option>
 				<option value="738">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.739</option>
 				<option value="750">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.750</option>
 				<option value="751">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.751</option>
 				<option value="752">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.752</option>
@@ -569,6 +571,8 @@
 				<option value="765">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.765</option>
 				<option value="766">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.766</option>
 				<option value="767">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.769</option>
 				<option value="770">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.770</option>
 				<option value="771">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.771</option>
 				<option value="776">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.776</option>
@@ -589,6 +593,17 @@
 				<option value="791">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.791</option>
 				<option value="792">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.792</option>
 				<option value="793">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.807</option>
 			</options>
 		</state>
 	</channel-type>
@@ -627,6 +642,7 @@
 				<option value="728">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.728</option>
 				<option value="729">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.729</option>
 				<option value="730">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.731</option>
 				<option value="732">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.732</option>
 				<option value="733">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.733</option>
 				<option value="734">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.734</option>
@@ -634,6 +650,7 @@
 				<option value="736">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.736</option>
 				<option value="737">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.737</option>
 				<option value="738">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.739</option>
 				<option value="750">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.750</option>
 				<option value="751">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.751</option>
 				<option value="752">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.752</option>
@@ -650,6 +667,8 @@
 				<option value="765">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.765</option>
 				<option value="766">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.766</option>
 				<option value="767">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.769</option>
 				<option value="770">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.770</option>
 				<option value="771">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.771</option>
 				<option value="776">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.776</option>
@@ -670,6 +689,17 @@
 				<option value="791">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.791</option>
 				<option value="792">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.792</option>
 				<option value="793">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.807</option>
 			</options>
 		</state>
 	</channel-type>
@@ -708,6 +738,7 @@
 				<option value="728">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.728</option>
 				<option value="729">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.729</option>
 				<option value="730">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.731</option>
 				<option value="732">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.732</option>
 				<option value="733">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.733</option>
 				<option value="734">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.734</option>
@@ -715,6 +746,7 @@
 				<option value="736">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.736</option>
 				<option value="737">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.737</option>
 				<option value="738">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.739</option>
 				<option value="750">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.750</option>
 				<option value="751">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.751</option>
 				<option value="752">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.752</option>
@@ -731,6 +763,8 @@
 				<option value="765">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.765</option>
 				<option value="766">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.766</option>
 				<option value="767">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.769</option>
 				<option value="770">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.770</option>
 				<option value="771">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.771</option>
 				<option value="776">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.776</option>
@@ -751,6 +785,17 @@
 				<option value="791">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.791</option>
 				<option value="792">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.792</option>
 				<option value="793">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.807</option>
 			</options>
 		</state>
 	</channel-type>
@@ -789,6 +834,7 @@
 				<option value="728">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.728</option>
 				<option value="729">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.729</option>
 				<option value="730">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.731</option>
 				<option value="732">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.732</option>
 				<option value="733">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.733</option>
 				<option value="734">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.734</option>
@@ -796,6 +842,7 @@
 				<option value="736">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.736</option>
 				<option value="737">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.737</option>
 				<option value="738">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.739</option>
 				<option value="750">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.750</option>
 				<option value="751">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.751</option>
 				<option value="752">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.752</option>
@@ -812,6 +859,8 @@
 				<option value="765">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.765</option>
 				<option value="766">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.766</option>
 				<option value="767">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.769</option>
 				<option value="770">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.770</option>
 				<option value="771">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.771</option>
 				<option value="776">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.776</option>
@@ -832,6 +881,17 @@
 				<option value="791">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.791</option>
 				<option value="792">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.792</option>
 				<option value="793">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.807</option>
 			</options>
 		</state>
 	</channel-type>
@@ -870,6 +930,7 @@
 				<option value="728">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.728</option>
 				<option value="729">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.729</option>
 				<option value="730">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.731</option>
 				<option value="732">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.732</option>
 				<option value="733">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.733</option>
 				<option value="734">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.734</option>
@@ -877,6 +938,7 @@
 				<option value="736">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.736</option>
 				<option value="737">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.737</option>
 				<option value="738">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.739</option>
 				<option value="750">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.750</option>
 				<option value="751">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.751</option>
 				<option value="752">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.752</option>
@@ -893,6 +955,8 @@
 				<option value="765">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.765</option>
 				<option value="766">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.766</option>
 				<option value="767">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.769</option>
 				<option value="770">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.770</option>
 				<option value="771">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.771</option>
 				<option value="776">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.776</option>
@@ -913,6 +977,17 @@
 				<option value="791">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.791</option>
 				<option value="792">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.792</option>
 				<option value="793">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.ERROR_NrX.state.option.807</option>
 			</options>
 		</state>
 	</channel-type>
