@@ -16,15 +16,17 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.openMocks;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import javax.jmdns.ServiceInfo;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultFlag;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -37,19 +39,17 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class TradfriDiscoveryParticipantOSGITest extends JavaOSGiTest {
 
     private MDNSDiscoveryParticipant discoveryParticipant;
-
-    private AutoCloseable mocksCloseable;
 
     private @Mock ServiceInfo tradfriGateway;
     private @Mock ServiceInfo otherDevice;
 
     @BeforeEach
     public void beforeEach() {
-        mocksCloseable = openMocks(this);
-
         discoveryParticipant = getService(MDNSDiscoveryParticipant.class, TradfriDiscoveryParticipant.class);
 
         when(tradfriGateway.getType()).thenReturn("_coap._udp.local.");
@@ -63,11 +63,6 @@ public class TradfriDiscoveryParticipantOSGITest extends JavaOSGiTest {
         when(otherDevice.getHostAddresses()).thenReturn(new String[] { "192.168.0.5" });
         when(otherDevice.getPort()).thenReturn(1234);
         when(otherDevice.getPropertyString("version")).thenReturn("1.1");
-    }
-
-    @AfterEach
-    public void afterEach() throws Exception {
-        mocksCloseable.close();
     }
 
     @Test
