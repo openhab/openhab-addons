@@ -101,6 +101,16 @@ All values that are not `onValue`, `offValue`, `increaseValue`, `decreaseValue` 
 
 All values that are not `onValue`, `offValue`, `increaseValue`, `decreaseValue` are interpreted as brightness 0-100% and need to be numeric only.
 
+### `number`
+
+| parameter               | optional | default     | description |
+|-------------------------|----------|-------------|-------------|
+| `unit`                  | yes      |      -      | The unit label for this channel |
+
+`number` channels can be used for `DecimalType` or `QuantityType` values.
+If a unit is given in the `unit` parameter, the binding tries to create a `QuantityType` state before updating the channel, if no unit is present, it creates a `DecimalType`.
+Please note that incompatible units (e.g. `°C` for a `Number:Density` item) will fail silently, i.e. no error message is logged even if the state update fails.
+
 ### `player`
 
 | parameter               | optional | default     | description |
