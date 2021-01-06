@@ -66,5 +66,4 @@ public class HeliosEasyControlsTranslationProvider {
     public @Nullable String getDefaultText(String key) {
         return i18nProvider.getText(bundle, key, key, Locale.ENGLISH);
     }
-
 }
