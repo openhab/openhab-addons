@@ -1286,13 +1286,13 @@
 
 	<channel-type id="MZ3out" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Output "Mixing circuit 3 Closed"</label>
+		<label>Output "Mixing circuit 3 close"</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="MA3out" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Output "Mixing circuit 3 Up"</label>
+		<label>Output "Mixing circuit 3 open"</label>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1649,7 +1649,7 @@
 
 	<channel-type id="SEC_VerdEVI" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Compressor temperature EVI (Enhanced Vapour Injection)</label>
+		<label>Compressor temperature EVI</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1684,7 +1684,7 @@
 
 	<channel-type id="SEC_FlussigEx" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Liquid temperature EEV (electronic expansion valve)</label>
+		<label>Liquid temperature EEV</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1805,7 +1805,7 @@
 
 	<channel-type id="Switchoff2_file_Nr0" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason shutdown 0 in memory</label>
+		<label>Reason shutdown 0 in memory 2</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1822,7 +1822,7 @@
 	</channel-type>
 	<channel-type id="Switchoff2_file_Nr1" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason shutdown 1 in memory</label>
+		<label>Reason shutdown 1 in memory 2</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1839,7 +1839,7 @@
 	</channel-type>
 	<channel-type id="Switchoff2_file_Nr2" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason shutdown 2 in memory</label>
+		<label>Reason shutdown 2 in memory 2</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1856,7 +1856,7 @@
 	</channel-type>
 	<channel-type id="Switchoff2_file_Nr3" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason shutdown 3 in memory</label>
+		<label>Reason shutdown 3 in memory 2</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1873,7 +1873,7 @@
 	</channel-type>
 	<channel-type id="Switchoff2_file_Nr4" advanced="true">
 		<item-type>Number</item-type>
-		<label>Reason shutdown 4 in memory</label>
+		<label>Reason shutdown 4 in memory 2</label>
 		<state readOnly="true">
 			<options>
 				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
@@ -1891,31 +1891,31 @@
 
 	<channel-type id="Switchoff2_file_Time0" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp shutdown 0 in memory</label>
+		<label>Timestamp shutdown 0 in memory 2</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="Switchoff2_file_Time1" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp shutdown 1 in memory</label>
+		<label>Timestamp shutdown 1 in memory 2</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="Switchoff2_file_Time2" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp shutdown 2 in memory</label>
+		<label>Timestamp shutdown 2 in memory 2</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="Switchoff2_file_Time3" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp shutdown 3 in memory</label>
+		<label>Timestamp shutdown 3 in memory 2</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="Switchoff2_file_Time4" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp shutdown 4 in memory</label>
+		<label>Timestamp shutdown 4 in memory 2</label>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
