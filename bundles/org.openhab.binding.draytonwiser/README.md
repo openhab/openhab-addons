@@ -111,11 +111,13 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 
 #### Smart Plug
 
-| Channel             | Item Type | Description                        |
-|---------------------|-----------|------------------------------------|
-| `currentSignalRSSI` | Number    | Relative Signal Strength Indicator |
-| `currentSignalLQI`  | Number    | Link Quality Indicator             |
-| `zigbeeConnected`   | Switch    | Is the TRV joined to network       |
+| Channel                  | Item Type     | Description                                |
+|--------------------------|---------------|--------------------------------------------|
+| `currentSignalRSSI`      | Number        | Relative Signal Strength Indicator         |
+| `currentSignalLQI`       | Number        | Link Quality Indicator                     |
+| `zigbeeConnected`        | Switch        | Is the TRV joined to network               |
+| `plugInstantaneousPower` | Number:Power  | Current Power being drawn through the plug |
+| `plugEnergyDelivered`    | Number:Energy | Cumulative energy drawn through the plug   |
 
 ### Command Channels
 
