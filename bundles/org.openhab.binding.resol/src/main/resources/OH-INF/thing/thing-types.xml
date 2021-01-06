@@ -19,7 +19,8 @@
 		</supported-bridge-type-refs>
 
 		<label>Emulated EM Device</label>
-		<description>Emulation of an Extension Module (EM) device which can be connected through the VBUS to Resol controllers which support the EM devices.</description>
+		<description>Emulation of an Extension Module (EM) device which can be connected through the VBUS to Resol controllers
+			which support the EM devices.</description>
 		<channels>
 			<channel id="relay_1" typeId="relay"/>
 			<channel id="relay_2" typeId="relay"/>
