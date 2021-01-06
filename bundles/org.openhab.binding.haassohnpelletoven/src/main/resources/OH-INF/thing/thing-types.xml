@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haassohnpelletoven"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="oven">
+		<label>Haas and Sohn Pellet stove Binding Thing</label>
+		<description>The binding for haassohnpelletstove communicates with a Haas and Sohn Pelletoven through the optional
+			WLAN-Modul. More information can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion</description>
+
+
+		<channels>
+			<channel id="channelIsTemp" typeId="isTemp"/>
+			<channel id="channelMode" typeId="mode"/>
+			<channel id="channelSpTemp" typeId="spTemp"/>
+			<channel id="channelPrg" typeId="prg"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostIP" type="text" required="true">
+				<label>IP Address</label>
+				<description>Please add the IP Address of the WIFI Module of the Haas and Sohn oven here</description>
+			</parameter>
+			<parameter name="hostPIN" type="text" required="true">
+				<label>PIN</label>
+				<description>Please add the PIN of your oven here. You can find it in the Menu directly in your oven.</description>
+			</parameter>
+			<parameter name="refreshRate" type="integer">
+				<label>Refresh Rate</label>
+				<description>
+					How often the Pellet Stove should schedule a refresh after a channel is linked to an item. Temperature
+					data will be
+					refreshed according this set time in seconds. Valid input is 0 - 999.
+				</description>
+				<advanced>true</advanced>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+	<channel-type id="isTemp">
+		<item-type>String</item-type>
+		<label>Is Temperature of the Stove</label>
+		<description>Haas and Sohn Stove Binding to receive the Is Temperature as String</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Actual Mode of the Stove</label>
+		<description>Haas and Sohn Stove Binding to receive the acutal Mode of the Stove as String</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="spTemp" advanced="true">
+		<item-type>String</item-type>
+		<label>Set Temperature for the Stove</label>
+		<description>Haas and Sohn Stove Binding to Set the Target Temperature of the Stove as String</description>
+	</channel-type>
+
+	<channel-type id="prg">
+		<item-type>Switch</item-type>
+		<label>On/Off for the Stove</label>
+		<description>Haas and Sohn Stove Binding to turn the Stove On/Off as Switch</description>
+		<event>
+			<options>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</event>
+	</channel-type>
+</thing:thing-descriptions>
