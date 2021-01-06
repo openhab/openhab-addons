@@ -62,7 +62,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private static final Set<String> SUBSCRIBED_EVENT_TYPES = Set.of(ItemStateEvent.TYPE, ItemStateChangedEvent.TYPE);
     private final Logger logger = LoggerFactory.getLogger(PIDControllerTriggerHandler.class);
     private final ScheduledExecutorService scheduler = Executors
-            .newSingleThreadScheduledExecutor(new NamedThreadFactory("OH-automation-" + AUTOMATION_NAME, true));
+            .newSingleThreadScheduledExecutor(new NamedThreadFactory("automation-" + AUTOMATION_NAME, true));
     private final ServiceRegistration<?> eventSubscriberRegistration;
     private final PIDController controller;
     private final int loopTimeMs;
@@ -93,12 +93,16 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
             throw new IllegalArgumentException("Configured setpoint item not found: " + setpointItemName, e);
         }
 
-        double outputLowerLimit = getDoubleFromConfig(config, CONFIG_OUTPUT_LOWER_LIMIT);
-        double outputUpperLimit = getDoubleFromConfig(config, CONFIG_OUTPUT_UPPER_LIMIT);
+        double outputLowerLimit = getDoubleFromConfig(config, CONFIG_INTEGRAL_LOWER_LIMIT);
+        double outputUpperLimit = getDoubleFromConfig(config, CONFIG_INTEGRAL_UPPER_LIMIT);
         double kpAdjuster = getDoubleFromConfig(config, CONFIG_KP_GAIN);
         double kiAdjuster = getDoubleFromConfig(config, CONFIG_KI_GAIN);
         double kdAdjuster = getDoubleFromConfig(config, CONFIG_KD_GAIN);
         double kdTimeConstant = getDoubleFromConfig(config, CONFIG_KD_TIMECONSTANT);
+
+        if (outputLowerLimit >= outputUpperLimit) {
+            throw new IllegalArgumentException("Lower integral limit is bigger or equal to the upper limit");
+        }
 
         loopTimeMs = ((BigDecimal) requireNonNull(config.get(CONFIG_LOOP_TIME), CONFIG_LOOP_TIME + " is not set"))
                 .intValue();
@@ -152,7 +156,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
         long now = System.currentTimeMillis();
 
-        PIDOutputDTO output = controller.calculate(input, setpoint, now - previousTimeMs);
+        PIDOutputDTO output = controller.calculate(input, setpoint, now - previousTimeMs, loopTimeMs);
         previousTimeMs = now;
 
         Map<String, BigDecimal> outputs = new HashMap<>();
@@ -220,6 +224,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         if (localControllerjob != null) {
             localControllerjob.cancel(true);
         }
+
+        scheduler.shutdown();
 
         super.dispose();
     }

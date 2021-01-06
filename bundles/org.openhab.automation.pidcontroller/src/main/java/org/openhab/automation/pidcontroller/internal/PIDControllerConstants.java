@@ -26,8 +26,8 @@ public class PIDControllerConstants {
     public static final String AUTOMATION_NAME = "pidcontroller";
     public static final String CONFIG_INPUT_ITEM = "input";
     public static final String CONFIG_SETPOINT_ITEM = "setpoint";
-    public static final String CONFIG_OUTPUT_LOWER_LIMIT = "outputLowerLimit";
-    public static final String CONFIG_OUTPUT_UPPER_LIMIT = "outputUpperLimit";
+    public static final String CONFIG_INTEGRAL_LOWER_LIMIT = "integralLowerLimit";
+    public static final String CONFIG_INTEGRAL_UPPER_LIMIT = "integralUpperLimit";
     public static final String CONFIG_LOOP_TIME = "loopTime";
     public static final String CONFIG_KP_GAIN = "kp";
     public static final String CONFIG_KI_GAIN = "ki";

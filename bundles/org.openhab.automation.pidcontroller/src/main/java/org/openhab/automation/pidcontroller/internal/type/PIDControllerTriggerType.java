@@ -44,23 +44,28 @@ public class PIDControllerTriggerType extends TriggerType {
                 .withRequired(true).withReadOnly(true).withMultiple(false).withContext("item").withLabel("Setpoint")
                 .withDescription("Targeted setpoint").build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KP_GAIN, Type.DECIMAL).withRequired(true)
-                .withMultiple(false).withDefault("1.0").withLabel("Proportional Gain (Kp)")
+                .withMultiple(false).withDefault("1.0").withMinimum(BigDecimal.ZERO).withLabel("Proportional Gain (Kp)")
                 .withDescription("Change to output propertional to current error value.").build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KI_GAIN, Type.DECIMAL).withRequired(true)
-                .withMultiple(false).withDefault("1.0").withLabel("Integral Gain (Ki)")
+                .withMultiple(false).withDefault("1.0").withMinimum(BigDecimal.ZERO).withLabel("Integral Gain (Ki)")
                 .withDescription("Accelerate movement towards the setpoint.").build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KD_GAIN, Type.DECIMAL).withRequired(true)
-                .withMultiple(false).withDefault("1.0").withLabel("Derivative Gain (Kd)")
+                .withMultiple(false).withDefault("1.0").withMinimum(BigDecimal.ZERO).withLabel("Derivative Gain (Kd)")
                 .withDescription("Slows the rate of change of the output.").build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KD_TIMECONSTANT, Type.DECIMAL)
-                .withRequired(true).withMultiple(false).withDefault("1.0").withLabel("Derivative Time Constant")
-                .withDescription("Slows the rate of change of the D Part (T1) in seconds.").withUnit("s").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_OUTPUT_LOWER_LIMIT, Type.DECIMAL)
-                .withRequired(true).withMultiple(false).withDefault("0").withLabel("Output Lower Limit")
-                .withDescription("The output of the PID controller will be min this value").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_OUTPUT_UPPER_LIMIT, Type.DECIMAL)
-                .withRequired(true).withMultiple(false).withDefault("100").withLabel("Output Upper Limit")
-                .withDescription("The output of the PID controller will be max this value").build());
+                .withRequired(true).withMultiple(false).withMinimum(BigDecimal.ZERO).withDefault("1.0")
+                .withLabel("Derivative Time Constant")
+                .withDescription("Slows the rate of change of the D part (T1) in seconds.").withUnit("s").build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_INTEGRAL_LOWER_LIMIT, Type.DECIMAL)
+                .withRequired(true).withMultiple(false).withDefault("0").withLabel("I-Part Lower Limit")
+                .withDescription(
+                        "The I part of the PID controller will be min this value. If you control the opening of a valve in %, you might want to set this to 0 for example.")
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_INTEGRAL_UPPER_LIMIT, Type.DECIMAL)
+                .withRequired(true).withMultiple(false).withDefault("100").withLabel("I-Part Upper Limit")
+                .withDescription(
+                        "The I part of the PID controller will be max this value. If you control the opening of a valve in %, you might want to set this to 100 for example.")
+                .build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_LOOP_TIME, Type.DECIMAL)
                 .withRequired(true).withMultiple(false).withDefault(DEFAULT_LOOPTIME_MS).withLabel("Loop Time")
                 .withDescription("The interval the output value is updated in ms").withUnit("ms").build());
