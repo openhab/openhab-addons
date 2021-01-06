@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="haassohnpelletoven" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>Haas and Sohn Pelletoven Binding</name>
+	<description>The binding for Haassohnpelletstove communicates with a Haas and Sohn Pelletstove through the optional
+		WLAN-Modul. More information can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion</description>
+
+</binding:binding>
