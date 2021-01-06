@@ -44,4 +44,12 @@ public interface ResponseListener {
     public void receivedResponse(SetOperationmodeCommand command);
 
     public void receivedResponse(SetFanspeedCommand command);
+
+    public void receivedResponse(GetOperationHoursCommand command);
+
+    public void receivedResponse(GetEyeBrightnessCommand command);
+
+    public void receivedResponse(SetEyeBrightnessCommand command);
+
+    public void receivedResponse(GetCleanFilterIndicatorCommand command);
 }

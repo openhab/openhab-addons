@@ -32,7 +32,7 @@ public class GetVersionCommand extends BRC1HCommand {
     private @Nullable String communicationControllerVersion;
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         return MadokaMessage.createRequest(this);
     }
 

@@ -15,9 +15,13 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal;
 import java.io.ByteArrayOutputStream;
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResponseListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * As the protocol emutes an UART communication over BLE (characteristics write/notify), this class takes care of BLE
@@ -27,6 +31,8 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.Respon
  */
 @NonNullByDefault
 public class BRC1HUartProcessor {
+
+    private final Logger logger = LoggerFactory.getLogger(BRC1HUartProcessor.class);
 
     /**
      * Maximum number of bytes per message chunk, including headers
@@ -41,6 +47,8 @@ public class BRC1HUartProcessor {
     private ConcurrentSkipListSet<byte[]> uartMessages = new ConcurrentSkipListSet<>(chunkSorter);
 
     private ResponseListener responseListener;
+
+    private final Lock stateLock = new ReentrantLock();
 
     public BRC1HUartProcessor(ResponseListener responseListener) {
         this.responseListener = responseListener;
@@ -78,21 +86,31 @@ public class BRC1HUartProcessor {
     }
 
     public void chunkReceived(byte[] byteValue) {
-        this.uartMessages.add(byteValue);
-        if (isMessageComplete()) {
+        byte[] fullReceivedMessage = null;
+        stateLock.lock();
+        try {
+            this.uartMessages.add(byteValue);
+            if (isMessageComplete()) {
+                logger.debug("Complete message received!");
 
-            // Beyond this point, full message received
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                // Beyond this point, full message received
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-            for (byte[] msg : uartMessages) {
-                if (msg.length > 1) {
-                    bos.write(msg, 1, msg.length - 1);
+                for (byte[] msg : uartMessages) {
+                    if (msg.length > 1) {
+                        bos.write(msg, 1, msg.length - 1);
+                    }
                 }
+
+                this.uartMessages.clear();
+                fullReceivedMessage = bos.toByteArray();
             }
+        } finally {
+            stateLock.unlock();
+        }
 
-            this.uartMessages.clear();
-
-            this.responseListener.receivedResponse(bos.toByteArray());
+        if (fullReceivedMessage != null) {
+            this.responseListener.receivedResponse(fullReceivedMessage);
         }
     }
 

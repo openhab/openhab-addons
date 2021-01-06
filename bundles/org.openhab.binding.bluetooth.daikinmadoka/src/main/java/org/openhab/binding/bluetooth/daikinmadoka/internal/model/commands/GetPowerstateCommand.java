@@ -35,7 +35,7 @@ public class GetPowerstateCommand extends BRC1HCommand {
     private @Nullable Boolean powerState;
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         return MadokaMessage.createRequest(this);
     }
 

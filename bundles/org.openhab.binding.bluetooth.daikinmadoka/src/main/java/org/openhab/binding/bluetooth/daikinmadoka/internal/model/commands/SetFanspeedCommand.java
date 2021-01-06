@@ -42,7 +42,7 @@ public class SetFanspeedCommand extends BRC1HCommand {
     }
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         MadokaValue paramCoolingFanSpeed = new MadokaValue(0x20, 1, new byte[] { (byte) coolingFanSpeed.value() });
         MadokaValue paramHeatingFanSpeed = new MadokaValue(0x21, 1, new byte[] { (byte) heatingFanSpeed.value() });
 
