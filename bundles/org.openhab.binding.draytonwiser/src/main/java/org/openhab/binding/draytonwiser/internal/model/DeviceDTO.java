@@ -88,8 +88,8 @@ public class DeviceDTO {
         return displayedSignalStrength;
     }
 
-    public int getBatteryVoltage() {
-        return batteryVoltage == null ? Integer.MIN_VALUE : batteryVoltage;
+    public Integer getBatteryVoltage() {
+        return batteryVoltage;
     }
 
     public String getBatteryLevel() {
