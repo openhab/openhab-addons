@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
-import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -109,7 +109,7 @@ public class LifetimeWrapper {
                 qt = ((QuantityType) state);
                 if (imperial) {
                     assertEquals(MILES, qt.getUnit(), "Miles");
-                    assertEquals(allTrips.chargecycleRange.userCurrentChargeCycle / Constants.MILES_TO_KM_RATIO,
+                    assertEquals(allTrips.chargecycleRange.userCurrentChargeCycle / Converter.MILES_TO_KM_RATIO,
                             qt.floatValue(), 0.1, "Distance since charging");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
@@ -122,7 +122,7 @@ public class LifetimeWrapper {
                 qt = ((QuantityType) state);
                 if (imperial) {
                     assertEquals(MILES, qt.getUnit(), "Miles");
-                    assertEquals(allTrips.chargecycleRange.userHigh / Constants.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
+                    assertEquals(allTrips.chargecycleRange.userHigh / Converter.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
                             "Longest Distance");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
@@ -134,7 +134,7 @@ public class LifetimeWrapper {
                 qt = ((QuantityType) state);
                 if (imperial) {
                     assertEquals(MILES, qt.getUnit(), "Miles");
-                    assertEquals(allTrips.totalElectricDistance.userTotal / Constants.MILES_TO_KM_RATIO,
+                    assertEquals(allTrips.totalElectricDistance.userTotal / Converter.MILES_TO_KM_RATIO,
                             qt.floatValue(), 0.1, "Total Electric Distance");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
@@ -148,7 +148,7 @@ public class LifetimeWrapper {
                 qt = ((QuantityType) state);
                 assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw/h");
                 if (imperial) {
-                    assertEquals(allTrips.avgElectricConsumption.userAverage * Constants.MILES_TO_KM_RATIO,
+                    assertEquals(allTrips.avgElectricConsumption.userAverage * Converter.MILES_TO_KM_RATIO,
                             qt.floatValue(), 0.1, "Avg Consumption");
                 } else {
                     assertEquals(allTrips.avgElectricConsumption.userAverage, qt.floatValue(), 0.1, "Avg Consumption");
@@ -160,7 +160,7 @@ public class LifetimeWrapper {
                 qt = ((QuantityType) state);
                 assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw/h");
                 if (imperial) {
-                    assertEquals(allTrips.avgRecuperation.userAverage * Constants.MILES_TO_KM_RATIO, qt.floatValue(),
+                    assertEquals(allTrips.avgRecuperation.userAverage * Converter.MILES_TO_KM_RATIO, qt.floatValue(),
                             0.1, "Avg Recuperation");
                 } else {
                     assertEquals(allTrips.avgRecuperation.userAverage, qt.floatValue(), 0.1, "Avg Recuperation");
@@ -172,7 +172,7 @@ public class LifetimeWrapper {
                 qt = ((QuantityType) state);
                 assertEquals(Units.LITRE, qt.getUnit(), "Liter");
                 if (imperial) {
-                    assertEquals(allTrips.avgCombinedConsumption.userAverage * Constants.MILES_TO_KM_RATIO,
+                    assertEquals(allTrips.avgCombinedConsumption.userAverage * Converter.MILES_TO_KM_RATIO,
                             qt.floatValue(), 0.1, "Avg Combined Consumption");
                 } else {
                     assertEquals(allTrips.avgCombinedConsumption.userAverage, qt.floatValue(), 0.1,

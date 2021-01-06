@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
-import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
@@ -124,7 +123,7 @@ public class TripWrapper {
                 qt = ((QuantityType) state);
                 if (imperial) {
                     assertEquals(MILES, qt.getUnit(), "Miles");
-                    assertEquals(lastTrip.totalDistance / Constants.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
+                    assertEquals(lastTrip.totalDistance / Converter.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
                             "Distance");
 
                 } else {
@@ -137,7 +136,7 @@ public class TripWrapper {
                 qt = ((QuantityType) state);
                 assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw/h");
                 if (imperial) {
-                    assertEquals(lastTrip.avgElectricConsumption * Constants.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
+                    assertEquals(lastTrip.avgElectricConsumption * Converter.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
                             "Avg Consumption");
                 } else {
                     assertEquals(lastTrip.avgElectricConsumption, qt.floatValue(), 0.1, "Avg Consumption");
@@ -149,7 +148,7 @@ public class TripWrapper {
                 qt = ((QuantityType) state);
                 assertEquals(Units.LITRE, qt.getUnit(), "Liter");
                 if (imperial) {
-                    assertEquals(Converter.round(lastTrip.avgCombinedConsumption * Constants.MILES_TO_KM_RATIO),
+                    assertEquals(Converter.round(lastTrip.avgCombinedConsumption * Converter.MILES_TO_KM_RATIO),
                             qt.floatValue(), 0.01, "Percent");
                 } else {
                     assertEquals(Converter.round(lastTrip.avgCombinedConsumption), qt.floatValue(), 0.01, "Percent");
@@ -160,7 +159,7 @@ public class TripWrapper {
                 qt = ((QuantityType) state);
                 assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw/h");
                 if (imperial) {
-                    assertEquals(lastTrip.avgRecuperation * Constants.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
+                    assertEquals(lastTrip.avgRecuperation * Converter.MILES_TO_KM_RATIO, qt.floatValue(), 0.1,
                             "Avg Recuperation");
                 } else {
                     assertEquals(lastTrip.avgRecuperation, qt.floatValue(), 0.1, "Avg Recuperation");

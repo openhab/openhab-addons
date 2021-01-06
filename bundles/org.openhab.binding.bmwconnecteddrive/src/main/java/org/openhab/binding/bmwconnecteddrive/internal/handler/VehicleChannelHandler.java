@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -321,12 +320,14 @@ public class VehicleChannelHandler extends BaseThingHandler {
             if (selection.equals(entry.ccmDescriptionShort)) {
                 selectedCC = selection;
                 updateState(checkControlName, StringType.valueOf(entry.ccmDescriptionShort));
+                QuantityType<Length> qtLength = QuantityType.valueOf(Converter.round(entry.ccmMileage),
+                        MetricPrefix.KILO(SIUnits.METRE));
                 if (imperial) {
                     updateState(checkControlMileage,
                             QuantityType.valueOf(Converter.round(entry.ccmMileage), ImperialUnits.MILE));
+
                 } else {
-                    updateState(checkControlMileage,
-                            QuantityType.valueOf(Converter.round(entry.ccmMileage), MetricPrefix.KILO(SIUnits.METRE)));
+                    updateState(checkControlMileage, qtLength);
                 }
                 return;
             }
@@ -423,28 +424,29 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateAllTrips(AllTrips allTrips) {
-        Unit<Length> lengthUnit = MetricPrefix.KILO(SIUnits.METRE);
-        double totalElectricDistance = allTrips.totalElectricDistance.userTotal;
-        double longestElectricTrip = allTrips.chargecycleRange.userHigh;
-        double distanceSinceCharging = allTrips.chargecycleRange.userCurrentChargeCycle;
+        QuantityType<Length> qtTotalElectric = QuantityType
+                .valueOf(Converter.round(allTrips.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE));
+        QuantityType<Length> qtLongestElectricRange = QuantityType
+                .valueOf(Converter.round(allTrips.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE));
+        QuantityType<Length> qtDistanceSinceCharge = QuantityType.valueOf(
+                Converter.round(allTrips.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE));
         double avgConsumotion = allTrips.avgElectricConsumption.userAverage;
         double avgCombinedConsumption = allTrips.avgCombinedConsumption.userAverage;
         double avgRecuperation = allTrips.avgRecuperation.userAverage;
         if (imperial) {
-            lengthUnit = ImperialUnits.MILE;
-            totalElectricDistance /= Constants.MILES_TO_KM_RATIO;
-            longestElectricTrip /= Constants.MILES_TO_KM_RATIO;
-            distanceSinceCharging /= Constants.MILES_TO_KM_RATIO;
-            avgConsumotion *= Constants.MILES_TO_KM_RATIO;
-            avgCombinedConsumption *= Constants.MILES_TO_KM_RATIO;
-            avgRecuperation *= Constants.MILES_TO_KM_RATIO;
+            updateState(lifeTimeTotalDrivenDistance, Converter.getMiles(qtTotalElectric));
+            updateState(lifeTimeSingleLongestDistance, Converter.getMiles(qtLongestElectricRange));
+            updateState(tripDistanceSinceCharging, Converter.getMiles(qtDistanceSinceCharge));
+
+            // Conversion from kwh/100km to kwh/10mi has to be done manually
+            avgConsumotion *= Converter.MILES_TO_KM_RATIO;
+            avgCombinedConsumption *= Converter.MILES_TO_KM_RATIO;
+            avgRecuperation *= Converter.MILES_TO_KM_RATIO;
+        } else {
+            updateState(lifeTimeTotalDrivenDistance, qtTotalElectric);
+            updateState(lifeTimeSingleLongestDistance, qtLongestElectricRange);
+            updateState(tripDistanceSinceCharging, qtDistanceSinceCharge);
         }
-        updateState(lifeTimeTotalDrivenDistance,
-                QuantityType.valueOf(Converter.round(totalElectricDistance), lengthUnit));
-        updateState(lifeTimeSingleLongestDistance,
-                QuantityType.valueOf(Converter.round(longestElectricTrip), lengthUnit));
-        updateState(tripDistanceSinceCharging,
-                QuantityType.valueOf(Converter.round(distanceSinceCharging), lengthUnit));
         updateState(lifeTimeAverageConsumption,
                 QuantityType.valueOf(Converter.round(avgConsumotion), Units.KILOWATT_HOUR));
         updateState(lifetimeAvgCombinedConsumption,
@@ -457,21 +459,21 @@ public class VehicleChannelHandler extends BaseThingHandler {
         // Whyever the Last Trip DateTime is delivered without offest - so LocalTime
         updateState(tripDateTime, DateTimeType.valueOf(Converter.getLocalDateTimeWithoutOffest(trip.date)));
         updateState(tripDuration, QuantityType.valueOf(trip.duration, Units.MINUTE));
-
-        double distance = trip.totalDistance;
+        QuantityType<Length> qtTotalDistance = QuantityType.valueOf(Converter.round(trip.totalDistance),
+                MetricPrefix.KILO(SIUnits.METRE));
         double avgConsumtption = trip.avgElectricConsumption;
         double avgCombinedConsumption = trip.avgCombinedConsumption;
         double avgRecuperation = trip.avgRecuperation;
-        Unit<Length> lengthUnit = MetricPrefix.KILO(SIUnits.METRE);
-
         if (imperial) {
-            distance /= Constants.MILES_TO_KM_RATIO;
-            avgConsumtption *= Constants.MILES_TO_KM_RATIO;
-            avgCombinedConsumption *= Constants.MILES_TO_KM_RATIO;
-            avgRecuperation *= Constants.MILES_TO_KM_RATIO;
-            lengthUnit = ImperialUnits.MILE;
+            updateState(tripDistance, Converter.getMiles(qtTotalDistance));
+
+            // Conversion from kwh/100km to kwh/10mi has to be done manually
+            avgConsumtption *= Converter.MILES_TO_KM_RATIO;
+            avgCombinedConsumption *= Converter.MILES_TO_KM_RATIO;
+            avgRecuperation *= Converter.MILES_TO_KM_RATIO;
+        } else {
+            updateState(tripDistance, qtTotalDistance);
         }
-        updateState(tripDistance, QuantityType.valueOf(Converter.round(distance), lengthUnit));
         updateState(tripAvgConsumption, QuantityType.valueOf(Converter.round(avgConsumtption), Units.KILOWATT_HOUR));
         updateState(tripAvgCombinedConsumption,
                 QuantityType.valueOf(Converter.round(avgCombinedConsumption), Units.LITRE));
@@ -561,52 +563,52 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         // Range values
         // based on unit of length decide if range shall be reported in km or miles
-        if (!imperial) {
-            updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
-            float totalRange = 0;
-            if (isElectric) {
-                totalRange += vStatus.remainingRangeElectric;
-                updateState(remainingRangeElectric,
-                        QuantityType.valueOf(vStatus.remainingRangeElectric, MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(rangeRadiusElectric, QuantityType.valueOf(
-                        Converter.guessRangeRadius(vStatus.remainingRangeElectric), MetricPrefix.KILO(SIUnits.METRE)));
+        float totalRange = 0;
+        if (isElectric) {
+            totalRange += vStatus.remainingRangeElectric;
+            QuantityType<Length> qtElectricRange = QuantityType.valueOf(vStatus.remainingRangeElectric,
+                    MetricPrefix.KILO(SIUnits.METRE));
+            QuantityType<Length> qtElectricRadius = QuantityType.valueOf(
+                    Converter.guessRangeRadius(vStatus.remainingRangeElectric), MetricPrefix.KILO(SIUnits.METRE));
+            if (imperial) {
+                updateState(remainingRangeElectric, Converter.getMiles(qtElectricRange));
+                updateState(rangeRadiusElectric, Converter.getMiles(qtElectricRadius));
+            } else {
+                updateState(remainingRangeElectric, qtElectricRange);
+                updateState(rangeRadiusElectric, qtElectricRadius);
             }
-            if (hasFuel) {
-                totalRange += vStatus.remainingRangeFuel;
-                updateState(remainingRangeFuel,
-                        QuantityType.valueOf(vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(rangeRadiusFuel, QuantityType.valueOf(
-                        Converter.guessRangeRadius(vStatus.remainingRangeFuel), MetricPrefix.KILO(SIUnits.METRE)));
+        }
+        if (hasFuel) {
+            totalRange += vStatus.remainingRangeFuel;
+            QuantityType<Length> qtFuealRange = QuantityType.valueOf(vStatus.remainingRangeFuel,
+                    MetricPrefix.KILO(SIUnits.METRE));
+            QuantityType<Length> qtFuelRadius = QuantityType
+                    .valueOf(Converter.guessRangeRadius(vStatus.remainingRangeFuel), MetricPrefix.KILO(SIUnits.METRE));
+            if (imperial) {
+                updateState(remainingRangeFuel, Converter.getMiles(qtFuealRange));
+                updateState(rangeRadiusFuel, Converter.getMiles(qtFuelRadius));
+            } else {
+                updateState(remainingRangeFuel, qtFuealRange);
+                updateState(rangeRadiusFuel, qtFuelRadius);
             }
-            if (isHybrid) {
-                updateState(remainingRangeHybrid,
-                        QuantityType.valueOf(Converter.round(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(rangeRadiusHybrid,
-                        QuantityType.valueOf(Converter.guessRangeRadius(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
+        }
+        if (isHybrid) {
+            QuantityType<Length> qtHybridRange = QuantityType.valueOf(totalRange, MetricPrefix.KILO(SIUnits.METRE));
+            QuantityType<Length> qtHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(totalRange),
+                    MetricPrefix.KILO(SIUnits.METRE));
+            if (imperial) {
+                updateState(remainingRangeHybrid, Converter.getMiles(qtHybridRange));
+                updateState(rangeRadiusHybrid, Converter.getMiles(qtHybridRadius));
+            } else {
+                updateState(remainingRangeHybrid, qtHybridRange);
+                updateState(rangeRadiusHybrid, qtHybridRadius);
             }
-        } else {
+        }
+
+        if (imperial) {
             updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
-            float totalRange = 0;
-            if (isElectric) {
-                totalRange += vStatus.remainingRangeElectricMls;
-                updateState(remainingRangeElectric,
-                        QuantityType.valueOf(vStatus.remainingRangeElectricMls, ImperialUnits.MILE));
-                updateState(rangeRadiusElectric, QuantityType
-                        .valueOf(Converter.guessRangeRadius(vStatus.remainingRangeElectricMls), ImperialUnits.MILE));
-            }
-            if (hasFuel) {
-                totalRange += vStatus.remainingRangeFuelMls;
-                updateState(remainingRangeFuel,
-                        QuantityType.valueOf(vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
-                updateState(rangeRadiusFuel, QuantityType
-                        .valueOf(Converter.guessRangeRadius(vStatus.remainingRangeFuelMls), ImperialUnits.MILE));
-            }
-            if (isHybrid) {
-                updateState(remainingRangeHybrid,
-                        QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
-                updateState(rangeRadiusHybrid,
-                        QuantityType.valueOf(Converter.guessRangeRadius(totalRange), ImperialUnits.MILE));
-            }
+        } else {
+            updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
         }
         if (isElectric) {
             updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, Units.PERCENT));
