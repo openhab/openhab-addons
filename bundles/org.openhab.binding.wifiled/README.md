@@ -38,8 +38,8 @@ You can choose between two drivers with different functionality:
 
 | Driver  | Supports Color Fading | Supports Programs | Polls LED State |
 |---------|:---------------------:|:-----------------:|:---------------:|
-| CLASSIC |        |    ✓    |   ✓   |
-| FADING  |  ✓     |    |       |
+| CLASSIC |                       |         ✓         |        ✓        |
+| FADING  |            ✓          |                   |                 |
 
 While the CLASSIC driver lets you choose and run device internal programs (e.g. alternating blue),
 all normal operations (e.g. turn on or off, switch color, etc.) are performed immediately and
@@ -61,14 +61,14 @@ Make sure that the device protocol matches your device type.
 
 ## Channels
 
-| Channel Type ID | Item Type | Description          | Access |
+| Channel Type ID | Item Type | Description                                                            | Access |
 |-----------------|-----------|------------------------------------------------------------------------|--------|
-| power      | Switch    | Power state of the LEDs (ON/OFF)         | R/W    |
-| color      | Color     | Color of the RGB LEDs          | R/W    |
-| white      | Dimmer    | Brightness of the first (warm) white LEDs (min=0, max=100)   | R/W    |
-| white2     | Dimmer    | Brightness of the second (warm) white LEDs (min=0, max=100)  | R/W    |
-| program    | String    | Program to run by the controller (i.e. color cross fade, strobe, etc.) | R/W    |
-| programSpeed    | Dimmer    | Speed of the program           | R/W    |
+| power           | Switch    | Power state of the LEDs (ON/OFF)                                       | R/W    |
+| color           | Color     | Color of the RGB LEDs                                                  | R/W    |
+| white           | Dimmer    | Brightness of the first (warm) white LEDs (min=0, max=100)             | R/W    |
+| white2          | Dimmer    | Brightness of the second (warm) white LEDs (min=0, max=100)            | R/W    |
+| program         | String    | Program to run by the controller (i.e. color cross fade, strobe, etc.) | R/W    |
+| programSpeed    | Dimmer    | Speed of the program                                                   | R/W    |
 
 ## Example
 
