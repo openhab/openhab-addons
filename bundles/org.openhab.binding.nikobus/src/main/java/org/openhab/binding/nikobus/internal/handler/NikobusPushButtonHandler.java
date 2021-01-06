@@ -148,6 +148,7 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             if (pcLink != null) {
                 pcLink.sendCommand(new NikobusCommand(getAddress() + END_OF_TRANSMISSION));
             }
+            processImpactedModules();
         }
     }
 
@@ -163,6 +164,10 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             triggerProcessors.forEach(processor -> processor.process(currentTimeMillis));
         }
 
+        processImpactedModules();
+    }
+
+    private void processImpactedModules() {
         if (!impactedModules.isEmpty()) {
             Utils.cancel(requestUpdateFuture);
             requestUpdateFuture = scheduler.schedule(this::update, 400, TimeUnit.MILLISECONDS);
