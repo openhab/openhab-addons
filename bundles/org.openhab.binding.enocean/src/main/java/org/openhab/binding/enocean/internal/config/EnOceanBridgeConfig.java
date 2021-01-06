@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.openhab.core.config.core.Configuration;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-public class EnOceanBridgeConfig {
+public class EnOceanBridgeConfig extends Configuration {
 
     public enum ESPVersion {
         UNKNOWN("unknown"),
@@ -46,10 +48,16 @@ public class EnOceanBridgeConfig {
     public boolean rs485;
     public String rs485BaseId;
 
-    public int nextSenderId = 0;
+    public Integer nextSenderId;
+
+    public boolean enableSmack;
+    public boolean allowRepeatedLearn;
 
     public EnOceanBridgeConfig() {
         espVersion = "ESP3";
+        allowRepeatedLearn = true;
+        enableSmack = true;
+        nextSenderId = null;
     }
 
     public ESPVersion getESPVersion() {

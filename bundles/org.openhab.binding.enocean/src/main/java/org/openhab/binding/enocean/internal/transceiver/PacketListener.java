@@ -22,5 +22,5 @@ public interface PacketListener {
 
     public void packetReceived(BasePacket packet);
 
-    public long getSenderIdToListenTo();
+    public long getEnOceanIdToListenTo();
 }

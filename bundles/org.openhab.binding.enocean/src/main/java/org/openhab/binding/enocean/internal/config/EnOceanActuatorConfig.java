@@ -19,7 +19,7 @@ package org.openhab.binding.enocean.internal.config;
 public class EnOceanActuatorConfig extends EnOceanBaseConfig {
 
     public int channel;
-    public int senderIdOffset = -1;
+    public Integer senderIdOffset = null;
     public String manufacturerId;
     public String teachInType;
 
