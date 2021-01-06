@@ -112,7 +112,7 @@ public class D2_50 extends _VLDMessage {
             case CHANNEL_VENTILATIONOPERATIONMODE:
                 return new StringType(String.valueOf(bytes[0] & 0x0f));
             case CHANNEL_FIREPLACESAFETYMODE:
-                return getBit(bytes[1], 3) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[1], 3));
             case CHANNEL_HEATEXCHANGERBYPASSSTATUS:
                 return getBit(bytes[1], 2) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             case CHANNEL_SUPPLYAIRFLAPSTATUS:
@@ -120,23 +120,23 @@ public class D2_50 extends _VLDMessage {
             case CHANNEL_EXHAUSTAIRFLAPSTATUS:
                 return getBit(bytes[1], 0) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             case CHANNEL_DEFROSTMODE:
-                return getBit(bytes[2], 7) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[2], 7));
             case CHANNEL_COOLINGPROTECTIONMODE:
-                return getBit(bytes[2], 6) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[2], 6));
             case CHANNEL_OUTDOORAIRHEATERSTATUS:
-                return getBit(bytes[2], 5) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[2], 5));
             case CHANNEL_SUPPLYAIRHEATERSTATUS:
-                return getBit(bytes[2], 4) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[2], 4));
             case CHANNEL_DRAINHEATERSTATUS:
-                return getBit(bytes[2], 3) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[2], 3));
             case CHANNEL_TIMEROPERATIONMODE:
-                return getBit(bytes[2], 2) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[2], 2));
             case CHANNEL_MAINTENANCESTATUS:
-                return getBit(bytes[2], 1) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[2], 1));
             case CHANNEL_WEEKLYTIMERPROGRAMSTATUS:
-                return getBit(bytes[2], 0) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[2], 0));
             case CHANNEL_ROOMTEMPERATURECONTROLSTATUS:
-                return getBit(bytes[3], 7) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[3], 7));
             case CHANNEL_AIRQUALITYVALUE1:
                 return new QuantityType<>((bytes[3] & 0x7f), Units.PERCENT);
             case CHANNEL_AIRQUALITYVALUE2:
