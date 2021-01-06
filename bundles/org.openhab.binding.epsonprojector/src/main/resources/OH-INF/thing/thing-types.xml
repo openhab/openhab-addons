@@ -271,6 +271,7 @@
 				<option value="SILVER">SILVER</option>
 				<option value="XVCOLOR">XVCOLOR</option>
 				<option value="DICOMSIM">DICOMSIM</option>
+				<option value="AUTO">AUTO</option>
 			</options>
 		</state>
 	</channel-type>
