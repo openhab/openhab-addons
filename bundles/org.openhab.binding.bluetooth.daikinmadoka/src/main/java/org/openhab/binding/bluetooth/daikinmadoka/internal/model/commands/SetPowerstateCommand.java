@@ -40,7 +40,7 @@ public class SetPowerstateCommand extends BRC1HCommand {
     }
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         MadokaValue mv = new MadokaValue(0x20, 1,
                 new byte[] { (byte) (this.powerState == OnOffType.ON ? 0x01 : 0x00) });
 

@@ -18,22 +18,45 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This command returns the current AC operation mode
+ * Command used to get the Clean Filter Indicator status
  *
  * @author Benjamin Lafois - Initial contribution
  *
  */
 @NonNullByDefault
-public class GetOperationmodeCommand extends BRC1HCommand {
+public class GetCleanFilterIndicatorCommand extends BRC1HCommand {
 
-    private final Logger logger = LoggerFactory.getLogger(GetOperationmodeCommand.class);
+    private final Logger logger = LoggerFactory.getLogger(GetCleanFilterIndicatorCommand.class);
 
-    private @Nullable OperationMode operationMode;
+    private @Nullable Boolean cleanFilterIndicator;
+
+    @Override
+    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
+            throws MadokaParsingException {
+
+        byte[] valueCleanFilterIndicator = mm.getValues().get(0x62).getRawValue();
+        if (valueCleanFilterIndicator == null || valueCleanFilterIndicator.length != 1) {
+            setState(State.FAILED);
+            throw new MadokaParsingException("Incorrect clean filter indicator value");
+        }
+
+        if ((valueCleanFilterIndicator[0] & 0x01) == 0x01) {
+            this.cleanFilterIndicator = true;
+        } else {
+            this.cleanFilterIndicator = false;
+        }
+
+        setState(State.SUCCEEDED);
+        executor.execute(() -> listener.receivedResponse(this));
+    }
+
+    public @Nullable Boolean getCleanFilterIndicator() {
+        return cleanFilterIndicator;
+    }
 
     @Override
     public byte[][] getRequest() {
@@ -41,28 +64,7 @@ public class GetOperationmodeCommand extends BRC1HCommand {
     }
 
     @Override
-    public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
-            throws MadokaParsingException {
-        byte[] bOperationMode = mm.getValues().get(0x20).getRawValue();
-        if (bOperationMode == null) {
-            setState(State.FAILED);
-            throw new MadokaParsingException("Incorrect operation mode");
-        }
-
-        operationMode = OperationMode.valueOf(bOperationMode[0]);
-
-        logger.debug("operationMode: {}", operationMode);
-
-        setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
-    }
-
-    @Override
     public int getCommandId() {
-        return 48;
-    }
-
-    public @Nullable OperationMode getOperationMode() {
-        return operationMode;
+        return 256;
     }
 }
