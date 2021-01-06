@@ -142,7 +142,7 @@
 	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Number Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config"/>
+		<config-description-ref uri="channel-type:http:channel-config-number"/>
 	</channel-type>
 
 	<channel-type id="player">

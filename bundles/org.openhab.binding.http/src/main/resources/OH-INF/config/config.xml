@@ -202,6 +202,43 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="channel-type:http:channel-config-number">
+		<parameter name="stateExtension" type="text">
+			<label>State URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandExtension" type="text">
+			<label>Command URL Extension</label>
+			<description>This value is added to the base URL configured in the thing for sending values.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Read/Write Mode</label>
+			<options>
+				<option value="READWRITE">Read/Write</option>
+				<option value="READONLY">Read Only</option>
+				<option value="WRITEONLY">Write Only</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>READWRITE</default>
+		</parameter>
+		<parameter name="unit" type="text">
+			<label>Unit</label>
+			<description>Unit to append to the (transformed) value.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
 	<config-description uri="channel-type:http:channel-config-player">
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
