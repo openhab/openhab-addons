@@ -16,6 +16,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.luxtronikheatpump.internal.exceptions.InvalidChannelException;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.NumberItem;
@@ -35,327 +36,467 @@ public enum HeatpumpChannel {
     // for possible values see https://www.loxwiki.eu/display/LOX/Java+Webinterface
     // or https://github.com/Bouni/Home-Assistant-Luxtronik/blob/master/data.txt
 
-    // EN: Flow temperature heating circuit
-    // DE: Vorlauftemperatur Heizkreis
+    /**
+     * Flow temperature heating circuit
+     * (original: Vorlauftemperatur Heizkreis)
+     */
     CHANNEL_TEMPERATUR_TVL(10, "Temperatur_TVL", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_VORLAUF),
 
-    // EN: Return temperature heating circuit
-    // DE: Rücklauftemperatur Heizkreis
+    /**
+     * Return temperature heating circuit
+     * (original: Rücklauftemperatur Heizkreis)
+     */
     CHANNEL_TEMPERATUR_TRL(11, "Temperatur_TRL", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_RUCKLAUF),
 
-    // EN: Return setpoint heating circuit
-    // DE: Rücklauf-Soll Heizkreis
+    /**
+     * Return setpoint heating circuit
+     * (original: Rücklauf-Soll Heizkreis)
+     */
     CHANNEL_SOLLWERT_TRL_HZ(12, "Sollwert_TRL_HZ", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_RL_SOLL),
 
-    // EN: Return temperature in buffer tank
-    // DE: Rücklauftemperatur im Trennspeicher.
+    /**
+     * Return temperature in buffer tank
+     * (original: Rücklauftemperatur im Trennspeicher.)
+     */
     CHANNEL_TEMPERATUR_TRL_EXT(13, "Temperatur_TRL_ext", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_RUECKLEXT),
 
-    // EN: Hot gas temperature
-    // DE: Heißgastemperatur
+    /**
+     * Hot gas temperature
+     * (original: Heißgastemperatur)
+     */
     CHANNEL_TEMPERATUR_THG(14, "Temperatur_THG", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_HEISSGAS),
 
-    // EN: Outside temperature 
-    // DE: Außentemperatur
+    /**
+     * Outside temperature
+     * (original: Außentemperatur)
+     */
     CHANNEL_TEMPERATUR_TA(15, "Temperatur_TA", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_AUSSENT),
 
-    // EN: Average temperature outside over 24 h (heating limit function)
-    // DE: Durchschnittstemperatur Außen über 24 h (Funktion Heizgrenze)
+    /**
+     * Average temperature outside over 24 h (heating limit function)
+     * (original: Durchschnittstemperatur Außen über 24 h (Funktion Heizgrenze))
+     */
     CHANNEL_MITTELTEMPERATUR(16, "Mitteltemperatur", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_AUSSENT),
 
-    // EN: Hot water actual temperature
-    // DE: Warmwasser Ist-Temperatur
+    /**
+     * Hot water actual temperature
+     * (original: Warmwasser Ist-Temperatur)
+     */
     CHANNEL_TEMPERATUR_TBW(17, "Temperatur_TBW", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_BW_IST),
 
-    // EN: Hot water target temperature 
-    // DE: Warmwasser Soll-Temperatur
+    /**
+     * Hot water target temperature
+     * (original: Warmwasser Soll-Temperatur)
+     */
     // Not needed as it duplicates writable param (2)
     // CHANNEL_EINST_BWS_AKT(18, "Einst_BWS_akt", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Heat source inlet temperature
-    // DE: Wärmequellen-Eintrittstemperatur
+    /**
+     * Heat source inlet temperature
+     * (original: Wärmequellen-Eintrittstemperatur)
+     */
     CHANNEL_TEMPERATUR_TWE(19, "Temperatur_TWE", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_WQ_EIN),
 
-    // EN: Heat source outlet temperature
-    // DE: Wärmequellen-Austrittstemperatur
+    /**
+     * Heat source outlet temperature
+     * (original: Wärmequellen-Austrittstemperatur)
+     */
     CHANNEL_TEMPERATUR_TWA(20, "Temperatur_TWA", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_WQ_EIN),
 
-    // EN: Mixing circuit 1 Flow temperature
-    // DE: Mischkreis 1 Vorlauftemperatur
+    /**
+     * Mixing circuit 1 Flow temperature
+     * (original: Mischkreis 1 Vorlauftemperatur)
+     */
     CHANNEL_TEMPERATUR_TFB1(21, "Temperatur_TFB1", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_MK1_VORLAUF),
 
-    // EN: Mixing circuit 1 Flow target temperature
-    // DE: Mischkreis 1 Vorlauf-Soll-Temperatur
+    /**
+     * Mixing circuit 1 Flow target temperature
+     * (original: Mischkreis 1 Vorlauf-Soll-Temperatur)
+     */
     CHANNEL_SOLLWERT_TVL_MK1(22, "Sollwert_TVL_MK1", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_MK1VL_SOLL),
 
-    // EN: Room temperature room station 1
-    // DE: Raumtemperatur Raumstation 1
+    /**
+     * Room temperature room station 1
+     * (original: Raumtemperatur Raumstation 1)
+     */
     CHANNEL_TEMPERATUR_RFV(23, "Temperatur_RFV", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_RAUMSTATION),
 
-    // EN: Mixing circuit 2 Flow temperature
-    // DE: Mischkreis 2 Vorlauftemperatur
+    /**
+     * Mixing circuit 2 Flow temperature
+     * (original: Mischkreis 2 Vorlauftemperatur)
+     */
     CHANNEL_TEMPERATUR_TFB2(24, "Temperatur_TFB2", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_MK2_VORLAUF),
 
-    // EN: Mixing circuit 2 Flow target temperature 
-    // DE: Mischkreis 2 Vorlauf-Soll-Temperatur
+    /**
+     * Mixing circuit 2 Flow target temperature
+     * (original: Mischkreis 2 Vorlauf-Soll-Temperatur)
+     */
     CHANNEL_SOLLWERT_TVL_MK2(25, "Sollwert_TVL_MK2", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_MK2VL_SOLL),
 
-    // EN: Solar collector sensor
-    // DE: Fühler Solarkollektor
+    /**
+     * Solar collector sensor
+     * (original: Fühler Solarkollektor)
+     */
     CHANNEL_TEMPERATUR_TSK(26, "Temperatur_TSK", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_SOLARKOLL),
 
-    // EN: Solar tank sensor 
-    // DE: Fühler Solarspeicher
+    /**
+     * Solar tank sensor
+     * (original: Fühler Solarspeicher)
+     */
     CHANNEL_TEMPERATUR_TSS(27, "Temperatur_TSS", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_SOLARSP),
 
-    // EN: Sensor external energy source 
-    // DE: Fühler externe Energiequelle
+    /**
+     * Sensor external energy source
+     * (original: Fühler externe Energiequelle)
+     */
     CHANNEL_TEMPERATUR_TEE(28, "Temperatur_TEE", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_EXT_ENERG),
 
-    // EN: Input "Defrost end, brine pressure, flow rate"
-    // DE: Eingang "Abtauende, Soledruck, Durchfluss"
+    /**
+     * Input "Defrost end, brine pressure, flow rate"
+     * (original: Eingang "Abtauende, Soledruck, Durchfluss")
+     */
     CHANNEL_ASDIN(29, "ASDin", SwitchItem.class, null, false, HeatpumpVisibility.IN_ASD),
 
-    // EN: Input "Domestic hot water thermostat"
-    // DE: Eingang "Brauchwarmwasserthermostat"
+    /**
+     * Input "Domestic hot water thermostat"
+     * (original: Eingang "Brauchwarmwasserthermostat")
+     */
     CHANNEL_BWTIN(30, "BWTin", SwitchItem.class, null, false, HeatpumpVisibility.IN_BWT),
 
-    // EN: Input "EVU lock"
-    // DE: Eingang "EVU Sperre"
+    /**
+     * Input "EVU lock"
+     * (original: Eingang "EVU Sperre")
+     */
     CHANNEL_EVUIN(31, "EVUin", SwitchItem.class, null, false, HeatpumpVisibility.IN_EVU),
 
-    // EN: Input "High pressure refrigerant circuit
-    // DE: Eingang "Hochdruck Kältekreis"
+    /**
+     * Input "High pressure refrigerant circuit
+     * (original: Eingang "Hochdruck Kältekreis")
+     */
     CHANNEL_HDIN(32, "HDin", SwitchItem.class, null, false, HeatpumpVisibility.IN_HD),
 
-    // EN: Input "Motor protection OK" 
-    // DE: Eingang "Motorschutz OK"
+    /**
+     * Input "Motor protection OK"
+     * (original: Eingang "Motorschutz OK")
+     */
     CHANNEL_MOTIN(33, "MOTin", SwitchItem.class, null, false, HeatpumpVisibility.IN_MOT),
 
-    // EN: Input "Low pressure" 
-    // DE: Eingang "Niederdruck"
+    /**
+     * Input "Low pressure"
+     * (original: Eingang "Niederdruck")
+     */
     CHANNEL_NDIN(34, "NDin", SwitchItem.class, null, false, HeatpumpVisibility.IN_ND),
 
-    // EN: Input "Monitoring contact for potentiostat"
-    // DE: Eingang "Überwachungskontakt für Potentiostat"
+    /**
+     * Input "Monitoring contact for potentiostat"
+     * (original: Eingang "Überwachungskontakt für Potentiostat")
+     */
     CHANNEL_PEXIN(35, "PEXin", SwitchItem.class, null, false, HeatpumpVisibility.IN_PEX),
 
-    // EN: Input "Swimming pool thermostat"
-    // DE: Eingang "Schwimmbadthermostat"
+    /**
+     * Input "Swimming pool thermostat"
+     * (original: Eingang "Schwimmbadthermostat")
+     */
     CHANNEL_SWTIN(36, "SWTin", SwitchItem.class, null, false, HeatpumpVisibility.IN_SWT),
 
-    // EN: Output "Defrost valve"
-    // DE: Ausgang "Abtauventil"
+    /**
+     * Output "Defrost valve"
+     * (original: Ausgang "Abtauventil")
+     */
     CHANNEL_AVOUT(37, "AVout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_ABTAUVENTIL),
 
-    // EN: Output "Domestic hot water pump/changeover valve"
-    // DE: Ausgang "Brauchwasserpumpe/Umstellventil"
+    /**
+     * Output "Domestic hot water pump/changeover valve"
+     * (original: Ausgang "Brauchwasserpumpe/Umstellventil")
+     */
     CHANNEL_BUPOUT(38, "BUPout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_BUP),
 
-    // EN: Output "Heating circulation pump"
-    // DE: Ausgang "Heizungsumwälzpumpe"
+    /**
+     * Output "Heating circulation pump"
+     * (original: Ausgang "Heizungsumwälzpumpe")
+     */
     CHANNEL_HUPOUT(39, "HUPout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_HUP),
 
-    // EN: Output "Mixing circuit 1 Up"
-    // DE: Ausgang "Mischkreis 1 Auf"
+    /**
+     * Output "Mixing circuit 1 Up"
+     * (original: Ausgang "Mischkreis 1 Auf")
+     */
     CHANNEL_MA1OUT(40, "MA1out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_MISCHER1AUF),
 
-    // EN: Output "Mixing circuit 1 Closed"
-    // DE: Ausgang "Mischkreis 1 Zu"
+    /**
+     * Output "Mixing circuit 1 Closed"
+     * (original: Ausgang "Mischkreis 1 Zu")
+     */
     CHANNEL_MZ1OUT(41, "MZ1out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_MISCHER1ZU),
 
-    // EN: Output "Ventilation"
-    // DE: Ausgang "Ventilation (Lüftung)"
+    /**
+     * Output "Ventilation"
+     * (original: Ausgang "Ventilation (Lüftung)")
+     */
     CHANNEL_VENOUT(42, "VENout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_VENTILATION),
 
-    // EN: Output "Brine pump/fan"
-    // DE: Ausgang "Solepumpe/Ventilator"
+    /**
+     * Output "Brine pump/fan"
+     * (original: Ausgang "Solepumpe/Ventilator")
+     */
     CHANNEL_VBOOUT(43, "VBOout", SwitchItem.class, null, false, null),
 
-    // EN: Output "Compressor 1"
-    // DE: Ausgang "Verdichter 1"
+    /**
+     * Output "Compressor 1"
+     * (original: Ausgang "Verdichter 1")
+     */
     CHANNEL_VD1OUT(44, "VD1out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_VERDICHTER1),
 
-    // EN: Output "Compressor 2"
-    // DE: Ausgang "Verdichter 2"
+    /**
+     * Output "Compressor 2"
+     * (original: Ausgang "Verdichter 2")
+     */
     CHANNEL_VD2OUT(45, "VD2out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_VERDICHTER2),
 
-    // EN: Output "Circulation pump"
-    // DE: Ausgang "Zirkulationspumpe"
+    /**
+     * Output "Circulation pump"
+     * (original: Ausgang "Zirkulationspumpe")
+     */
     CHANNEL_ZIPOUT(46, "ZIPout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_ZIP),
 
-    // EN: Output "Auxiliary circulation pump"
-    // DE: Ausgang "Zusatzumwälzpumpe"
+    /**
+     * Output "Auxiliary circulation pump"
+     * (original: Ausgang "Zusatzumwälzpumpe")
+     */
     CHANNEL_ZUPOUT(47, "ZUPout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_ZUP),
 
-    // EN: Output "Control signal additional heating"
-    // DE: Ausgang "Steuersignal Zusatzheizung v. Heizung"
+    /**
+     * Output "Control signal additional heating"
+     * (original: Ausgang "Steuersignal Zusatzheizung v. Heizung")
+     */
     CHANNEL_ZW1OUT(48, "ZW1out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_ZWE1),
 
-    // EN: Output "Control signal additional heating/fault signal"
-    // DE: Ausgang "Steuersignal Zusatzheizung/Störsignal"
+    /**
+     * Output "Control signal additional heating/fault signal"
+     * (original: Ausgang "Steuersignal Zusatzheizung/Störsignal")
+     */
     CHANNEL_ZW2SSTOUT(49, "ZW2SSTout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_ZWE2_SST),
 
-    // EN: Output "Auxiliary heater 3"
-    // DE: Ausgang "Zusatzheizung 3"
+    /**
+     * Output "Auxiliary heater 3"
+     * (original: Ausgang "Zusatzheizung 3")
+     */
     CHANNEL_ZW3SSTOUT(50, "ZW3SSTout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_ZWE3),
 
-    // EN: Output "Pump mixing circuit 2"
-    // DE: Ausgang "Pumpe Mischkreis 2"
+    /**
+     * Output "Pump mixing circuit 2"
+     * (original: Ausgang "Pumpe Mischkreis 2")
+     */
     CHANNEL_FP2OUT(51, "FP2out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_FUP2),
 
-    // EN: Output "Solar charge pump"
-    // DE: Ausgang "Solarladepumpe"
+    /**
+     * Output "Solar charge pump"
+     * (original: Ausgang "Solarladepumpe")
+     */
     CHANNEL_SLPOUT(52, "SLPout", SwitchItem.class, null, false, HeatpumpVisibility.OUT_SLP),
 
-    // EN: Output "Swimming pool pump"
-    // DE: Ausgang "Schwimmbadpumpe"
+    /**
+     * Output "Swimming pool pump"
+     * (original: Ausgang "Schwimmbadpumpe")
+     */
     CHANNEL_OUTPUT_SUP(53, "output_sup", SwitchItem.class, null, false, HeatpumpVisibility.OUT_SUP),
 
-    // EN: Output "Mixing circuit 2 Closed"
-    // DE: Ausgang "Mischkreis 2 Zu"
+    /**
+     * Output "Mixing circuit 2 Closed"
+     * (original: Ausgang "Mischkreis 2 Zu")
+     */
     CHANNEL_MZ2OUT(54, "MZ2out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_MISCHER2ZU),
 
-    // EN: Output "Mixing circuit 2 Up"
-    // DE: Ausgang "Mischkreis 2 Auf"
+    /**
+     * Output "Mixing circuit 2 Up"
+     * (original: Ausgang "Mischkreis 2 Auf")
+     */
     CHANNEL_MA2OUT(55, "MA2out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_MISCHER2AUF),
 
-    // EN: Operating hours compressor 1
-    // DE: Betriebsstunden Verdichter 1
+    /**
+     * Operating hours compressor 1
+     * (original: Betriebsstunden Verdichter 1)
+     */
     CHANNEL_ZAEHLER_BETRZEITVD1(56, "Zaehler_BetrZeitVD1", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDVD1),
 
-    // EN: Pulses compressor 1
-    // DE: Impulse Verdichter 1
+    /**
+     * Pulses compressor 1
+     * (original: Impulse Verdichter 1)
+     */
     CHANNEL_ZAEHLER_BETRZEITIMPVD1(57, "Zaehler_BetrZeitImpVD1", NumberItem.class, null, false,
             HeatpumpVisibility.BST_IMPVD1),
 
-    // EN: Operating hours compressor 2
-    // DE: Betriebsstunden Verdichter 2
+    /**
+     * Operating hours compressor 2
+     * (original: Betriebsstunden Verdichter 2)
+     */
     CHANNEL_ZAEHLER_BETRZEITVD2(58, "Zaehler_BetrZeitVD2", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDVD2),
 
-    // EN: Pulses compressor 2
-    // DE: Impulse Verdichter 2
+    /**
+     * Pulses compressor 2
+     * (original: Impulse Verdichter 2)
+     */
     CHANNEL_ZAEHLER_BETRZEITIMPVD2(59, "Zaehler_BetrZeitImpVD2", NumberItem.class, null, false,
             HeatpumpVisibility.BST_IMPVD2),
 
-    // EN: Pulses Compressor operating hours Second heat generator 1
-    // DE: Betriebsstunden Zweiter Wärmeerzeuger 1
+    /**
+     * Pulses Compressor operating hours Second heat generator 1
+     * (original: Betriebsstunden Zweiter Wärmeerzeuger 1)
+     */
     CHANNEL_ZAEHLER_BETRZEITZWE1(60, "Zaehler_BetrZeitZWE1", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDZWE1),
 
-    // EN: Pulses Compressor operating hours Second heat generator 2
-    // DE: Betriebsstunden Zweiter Wärmeerzeuger 2
+    /**
+     * Pulses Compressor operating hours Second heat generator 2
+     * (original: Betriebsstunden Zweiter Wärmeerzeuger 2)
+     */
     CHANNEL_ZAEHLER_BETRZEITZWE2(61, "Zaehler_BetrZeitZWE2", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDZWE2),
 
-    // EN: Pulses Compressor operating hours Second heat generator 3
-    // DE: Betriebsstunden Zweiter Wärmeerzeuger 3
+    /**
+     * Pulses Compressor operating hours Second heat generator 3
+     * (original: Betriebsstunden Zweiter Wärmeerzeuger 3)
+     */
     CHANNEL_ZAEHLER_BETRZEITZWE3(62, "Zaehler_BetrZeitZWE3", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDZWE3),
 
-    // EN: Operating hours heat pump
-    // DE: Betriebsstunden Wärmepumpe
+    /**
+     * Operating hours heat pump
+     * (original: Betriebsstunden Wärmepumpe)
+     */
     CHANNEL_ZAEHLER_BETRZEITWP(63, "Zaehler_BetrZeitWP", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDWP),
 
-    // EN: Operating hours heating
-    // DE: Betriebsstunden Heizung
+    /**
+     * Operating hours heating
+     * (original: Betriebsstunden Heizung)
+     */
     CHANNEL_ZAEHLER_BETRZEITHZ(64, "Zaehler_BetrZeitHz", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDHZ),
 
-    // EN: Operating hours hot water
-    // DE: Betriebsstunden Warmwasser
+    /**
+     * Operating hours hot water
+     * (original: Betriebsstunden Warmwasser)
+     */
     CHANNEL_ZAEHLER_BETRZEITBW(65, "Zaehler_BetrZeitBW", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDBW),
 
-    // EN: Operating hours cooling
-    // DE: Betriebsstunden Kühlung
+    /**
+     * Operating hours cooling
+     * (original: Betriebsstunden Kühlung)
+     */
     CHANNEL_ZAEHLER_BETRZEITKUE(66, "Zaehler_BetrZeitKue", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDKUE),
 
-    // EN: Heat pump running since
-    // DE: Wärmepumpe läuft seit
+    /**
+     * Heat pump running since
+     * (original: Wärmepumpe läuft seit)
+     */
     CHANNEL_TIME_WPEIN_AKT(67, "Time_WPein_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_WP_SEIT),
 
-    // EN: Second heat generator 1 running since
-    // DE: Zweiter Wärmeerzeuger 1 läuft seit
+    /**
+     * Second heat generator 1 running since
+     * (original: Zweiter Wärmeerzeuger 1 läuft seit)
+     */
     CHANNEL_TIME_ZWE1_AKT(68, "Time_ZWE1_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_ZWE1_SEIT),
 
-    // EN: Second heat generator 2 running since
-    // DE: Zweiter Wärmeerzeuger 2 läuft seit
+    /**
+     * Second heat generator 2 running since
+     * (original: Zweiter Wärmeerzeuger 2 läuft seit)
+     */
     CHANNEL_TIME_ZWE2_AKT(69, "Time_ZWE2_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_ZWE2_SEIT),
 
-    // EN: Mains on delay
-    // DE: Netzeinschaltverzögerung
+    /**
+     * Mains on delay
+     * (original: Netzeinschaltverzögerung)
+     */
     CHANNEL_TIMER_EINSCHVERZ(70, "Timer_EinschVerz", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_NETZEINV),
 
-    // EN: Switching cycle lock off
-    // DE: Schaltspielsperre Aus
+    /**
+     * Switching cycle lock off
+     * (original: Schaltspielsperre Aus)
+     */
     CHANNEL_TIME_SSPAUS_AKT(71, "Time_SSPAUS_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_SSP_ZEIT1),
 
-    // EN: Switching cycle lock on
-    // DE: Schaltspielsperre Ein
+    /**
+     * Switching cycle lock on
+     * (original: Schaltspielsperre Ein)
+     */
     CHANNEL_TIME_SSPEIN_AKT(72, "Time_SSPEIN_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_SSP_ZEIT1),
 
-    // EN: Compressor Idle time
-    // DE: Verdichter-Standzeit
+    /**
+     * Compressor Idle time
+     * (original: Verdichter-Standzeit)
+     */
     CHANNEL_TIME_VDSTD_AKT(73, "Time_VDStd_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_VD_STAND),
 
-    // EN: Heating controller More time
-    // DE: Heizungsregler Mehr-Zeit
+    /**
+     * Heating controller More time
+     * (original: Heizungsregler Mehr-Zeit)
+     */
     CHANNEL_TIME_HRM_AKT(74, "Time_HRM_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_HRM_ZEIT),
 
-    // EN: Heating controller Less time
-    // DE: Heizungsregler Weniger-Zeit
+    /**
+     * Heating controller Less time
+     * (original: Heizungsregler Weniger-Zeit)
+     */
     CHANNEL_TIME_HRW_AKT(75, "Time_HRW_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_HRW_ZEIT),
 
-    // EN: Thermal disinfection running since
-    // DE: Thermische Desinfektion läuft seit
+    /**
+     * Thermal disinfection running since
+     * (original: Thermische Desinfektion läuft seit)
+     */
     CHANNEL_TIME_LGS_AKT(76, "Time_LGS_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_TDI_SEIT),
 
-    // EN: Hot water lock
-    // DE: Sperre Warmwasser
+    /**
+     * Hot water lock
+     * (original: Sperre Warmwasser)
+     */
     CHANNEL_TIME_SBW_AKT(77, "Time_SBW_akt", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_SPERRE_BW),
 
     // Channel 78 (Code_WP_akt_2) represents the heatpump type, will be handeled as property
 
-    // EN: Bivalence stage
-    // DE: Bivalenzstufe
+    /**
+     * Bivalence stage
+     * (original: Bivalenzstufe)
+     */
     CHANNEL_BIV_STUFE_AKT(79, "BIV_Stufe_akt", NumberItem.class, null, false, null),
 
-    // EN: Operating status
-    // DE: Betriebszustand
+    /**
+     * Operating status
+     * (original: Betriebszustand)
+     */
     CHANNEL_WP_BZ_AKT(80, "WP_BZ_akt", NumberItem.class, null, false, null),
 
     // channel 81 - 90 represents the firmware version, will be handeled as property
@@ -364,531 +505,785 @@ public enum HeatpumpChannel {
     // channel 93 represents the Broadcast address, will be handeled as property
     // channel 94 represents the Gateway, will be handeled as property
 
-    // EN: Timestamp error X in memory
-    // DE: Zeitstempel Fehler X im Speicher
+    /**
+     * Timestamp error X in memory
+     * (original: Zeitstempel Fehler X im Speicher)
+     */
     CHANNEL_HEATPUMP_ERROR_TIME0(95, "ERROR_Time0", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_HEATPUMP_ERROR_TIME1(96, "ERROR_Time1", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_HEATPUMP_ERROR_TIME2(97, "ERROR_Time2", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_HEATPUMP_ERROR_TIME3(98, "ERROR_Time3", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_HEATPUMP_ERROR_TIME4(99, "ERROR_Time4", DateTimeItem.class, Units.SECOND, false, null),
 
-    // EN: Error code Error X in memory
-    // DE: Fehlercode Fehler X im Speicher
+    /**
+     * Error code Error X in memory
+     * (original: Fehlercode Fehler X im Speicher)
+     */
     CHANNEL_HEATPUMP_ERROR_NR0(100, "ERROR_Nr0", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_ERROR_NR1(101, "ERROR_Nr1", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_ERROR_NR2(102, "ERROR_Nr2", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_ERROR_NR3(103, "ERROR_Nr3", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_ERROR_NR4(104, "ERROR_Nr4", NumberItem.class, null, false, null),
 
-    // EN: Number of errors in memory
-    // DE: Anzahl der Fehler im Speicher
+    /**
+     * Number of errors in memory
+     * (original: Anzahl der Fehler im Speicher)
+     */
     CHANNEL_ANZAHLFEHLERINSPEICHER(105, "AnzahlFehlerInSpeicher", NumberItem.class, null, false, null),
 
-    // EN: Reason shutdown X in memory
-    // DE: Grund Abschaltung X im Speicher
+    /**
+     * Reason shutdown X in memory
+     * (original: Grund Abschaltung X im Speicher)
+     */
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_NR0(106, "Switchoff_file_Nr0", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_NR1(107, "Switchoff_file_Nr1", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_NR2(108, "Switchoff_file_Nr2", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_NR3(109, "Switchoff_file_Nr3", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_NR4(110, "Switchoff_file_Nr4", NumberItem.class, null, false, null),
 
-    // EN: Timestamp shutdown X in memory
-    // DE: Zeitstempel Abschaltung X im Speicher
+    /**
+     * Timestamp shutdown X in memory
+     * (original: Zeitstempel Abschaltung X im Speicher)
+     */
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_TIME0(111, "Switchoff_file_Time0", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_TIME1(112, "Switchoff_file_Time1", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_TIME2(113, "Switchoff_file_Time2", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_TIME3(114, "Switchoff_file_Time3", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_HEATPUMP_SWITCHOFF_FILE_TIME4(115, "Switchoff_file_Time4", DateTimeItem.class, Units.SECOND, false, null),
 
-    // EN: Comfort board installed
-    // DE: Comfort Platine installiert
+    /**
+     * Comfort board installed
+     * (original: Comfort Platine installiert)
+     */
     CHANNEL_HEATPUMP_COMFORT_EXISTS(116, "Comfort_exists", SwitchItem.class, null, false, null),
 
-    // EN: Status
-    // DE: Status
+    /**
+     * Status
+     * (original: Status)
+     */
     CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE1(117, "HauptMenuStatus_Zeile1", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE2(118, "HauptMenuStatus_Zeile2", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE3(119, "HauptMenuStatus_Zeile3", NumberItem.class, null, false, null),
     CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEIT(120, "HauptMenuStatus_Zeit", NumberItem.class, Units.SECOND, false, null),
 
-    // EN: Stage bakeout program
-    // DE: Stufe Ausheizprogramm
+    /**
+     * Stage bakeout program
+     * (original: Stufe Ausheizprogramm)
+     */
     CHANNEL_HAUPTMENUAHP_STUFE(121, "HauptMenuAHP_Stufe", NumberItem.class, null, false,
             HeatpumpVisibility.SERVICE_AUSHEIZ),
 
-    // EN: Temperature bakeout program
-    // DE: Temperatur Ausheizprogramm
+    /**
+     * Temperature bakeout program
+     * (original: Temperatur Ausheizprogramm)
+     */
     CHANNEL_HAUPTMENUAHP_TEMP(122, "HauptMenuAHP_Temp", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.SERVICE_AUSHEIZ),
 
-    // EN: Runtime bakeout program
-    // DE: Laufzeit Ausheizprogramm
+    /**
+     * Runtime bakeout program
+     * (original: Laufzeit Ausheizprogramm)
+     */
     CHANNEL_HAUPTMENUAHP_ZEIT(123, "HauptMenuAHP_Zeit", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.SERVICE_AUSHEIZ),
 
-    // EN: DHW active/inactive icon
-    // DE: Brauchwasser aktiv/inaktiv Symbol
+    /**
+     * DHW active/inactive icon
+     * (original: Brauchwasser aktiv/inaktiv Symbol)
+     */
     CHANNEL_SH_BWW(124, "SH_BWW", SwitchItem.class, null, false, HeatpumpVisibility.BRAUWASSER),
 
-    // EN: Heater icon
-    // DE: Heizung Symbol
+    /**
+     * Heater icon
+     * (original: Heizung Symbol)
+     */
     CHANNEL_SH_HZ(125, "SH_HZ", NumberItem.class, null, false, HeatpumpVisibility.HEIZUNG),
 
-    // EN: Mixing circuit 1 icon
-    // DE: Mischkreis 1 Symbol
+    /**
+     * Mixing circuit 1 icon
+     * (original: Mischkreis 1 Symbol)
+     */
     CHANNEL_SH_MK1(126, "SH_MK1", NumberItem.class, null, false, HeatpumpVisibility.MK1),
 
-    // EN: Mixing circuit 2 icon
-    // DE: Mischkreis 2 Symbol
+    /**
+     * Mixing circuit 2 icon
+     * (original: Mischkreis 2 Symbol)
+     */
     CHANNEL_SH_MK2(127, "SH_MK2", NumberItem.class, null, false, HeatpumpVisibility.MK2),
 
-    // EN: Short program setting
-    // DE: Einstellung Kurzprogramm
+    /**
+     * Short program setting
+     * (original: Einstellung Kurzprogramm)
+     */
     CHANNEL_EINST_KURZPROGRAMM(128, "Einst_Kurzrpgramm", NumberItem.class, null, false, null),
 
-    // EN: Status Slave X
-    // DE: Status Slave X
+    /**
+     * Status Slave X
+     * (original: Status Slave X)
+     */
     CHANNEL_STATUSSLAVE1(129, "StatusSlave1", NumberItem.class, null, false, null),
     CHANNEL_STATUSSLAVE2(130, "StatusSlave2", NumberItem.class, null, false, null),
     CHANNEL_STATUSSLAVE3(131, "StatusSlave3", NumberItem.class, null, false, null),
     CHANNEL_STATUSSLAVE4(132, "StatusSlave4", NumberItem.class, null, false, null),
     CHANNEL_STATUSSLAVE5(133, "StatusSlave5", NumberItem.class, null, false, null),
 
-    // EN: Current time of the heat pump
-    // DE: Aktuelle Zeit der Wärmepumpe
+    /**
+     * Current time of the heat pump
+     * (original: Aktuelle Zeit der Wärmepumpe)
+     */
     CHANNEL_AKTUELLETIMESTAMP(134, "AktuelleTimeStamp", DateTimeItem.class, Units.SECOND, false,
             HeatpumpVisibility.SERVICE_DATUMUHRZEIT),
 
-    // EN: Mixing circuit 3 icon
-    // DE: Mischkreis 3 Symbol
+    /**
+     * Mixing circuit 3 icon
+     * (original: Mischkreis 3 Symbol)
+     */
     CHANNEL_SH_MK3(135, "SH_MK3", NumberItem.class, null, false, HeatpumpVisibility.MK3),
 
-    // EN: Mixing circuit 3 Flow set temperature
-    // DE: Mischkreis 3 Vorlauf-Soll-Temperatur
+    /**
+     * Mixing circuit 3 Flow set temperature
+     * (original: Mischkreis 3 Vorlauf-Soll-Temperatur)
+     */
     CHANNEL_SOLLWERT_TVL_MK3(136, "Sollwert_TVL_MK3", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_MK3VL_SOLL),
 
-    // EN: Mixing circuit 3 Flow temperature
-    // DE: Mischkreis 3 Vorlauftemperatur
+    /**
+     * Mixing circuit 3 Flow temperature
+     * (original: Mischkreis 3 Vorlauftemperatur)
+     */
     CHANNEL_TEMPERATUR_TFB3(137, "Temperatur_TFB3", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_MK3_VORLAUF),
 
-    // EN: Output "Mixing circuit 3 close"
-    // DE: Ausgang "Mischkreis 3 Zu"
+    /**
+     * Output "Mixing circuit 3 close"
+     * (original: Ausgang "Mischkreis 3 Zu")
+     */
     CHANNEL_MZ3OUT(138, "MZ3out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_MISCHER3ZU),
 
-    // EN: Output "Mixing circuit 3 open"
-    // DE: Ausgang "Mischkreis 3 Auf"
+    /**
+     * Output "Mixing circuit 3 open"
+     * (original: Ausgang "Mischkreis 3 Auf")
+     */
     CHANNEL_MA3OUT(139, "MA3out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_MISCHER3AUF),
 
-    // EN: Pump mixing circuit 3
-    // DE: Pumpe Mischkreis 3
+    /**
+     * Pump mixing circuit 3
+     * (original: Pumpe Mischkreis 3)
+     */
     CHANNEL_FP3OUT(140, "FP3out", SwitchItem.class, null, false, HeatpumpVisibility.OUT_FUP3),
 
-    // EN: Time until defrost
-    // DE: Zeit bis Abtauen
+    /**
+     * Time until defrost
+     * (original: Zeit bis Abtauen)
+     */
     CHANNEL_TIME_ABTIN(141, "Time_AbtIn", NumberItem.class, Units.SECOND, false, HeatpumpVisibility.ABLAUFZ_ABTAUIN),
 
-    // EN: Room temperature room station 2
-    // DE: Raumtemperatur Raumstation 2
+    /**
+     * Room temperature room station 2
+     * (original: Raumtemperatur Raumstation 2)
+     */
     CHANNEL_TEMPERATUR_RFV2(142, "Temperatur_RFV2", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_RAUMSTATION2),
 
-    // EN: Room temperature room station 3
-    // DE: Raumtemperatur Raumstation 3
+    /**
+     * Room temperature room station 3
+     * (original: Raumtemperatur Raumstation 3)
+     */
     CHANNEL_TEMPERATUR_RFV3(143, "Temperatur_RFV3", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMP_RAUMSTATION3),
 
-    // EN: Time switch swimming pool icon
-    // DE: Schaltuhr Schwimmbad Symbol
+    /**
+     * Time switch swimming pool icon
+     * (original: Schaltuhr Schwimmbad Symbol)
+     */
     CHANNEL_SH_SW(144, "SH_SW", NumberItem.class, null, false, HeatpumpVisibility.SCHWIMMBAD),
 
-    // EN: Swimming pool operating hours
-    // DE: Betriebsstunden Schwimmbad
+    /**
+     * Swimming pool operating hours
+     * (original: Betriebsstunden Schwimmbad)
+     */
     CHANNEL_ZAEHLER_BETRZEITSW(145, "Zaehler_BetrZeitSW", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.BST_BSTDSW),
 
-    // EN: Release cooling
-    // DE: Freigabe Kühlung
+    /**
+     * Release cooling
+     * (original: Freigabe Kühlung)
+     */
     CHANNEL_FREIGABKUEHL(146, "FreigabKuehl", SwitchItem.class, null, false, HeatpumpVisibility.KUHLUNG),
 
-    // EN: Analog input signal
-    // DE: Analoges Eingangssignal
+    /**
+     * Analog input signal
+     * (original: Analoges Eingangssignal)
+     */
     CHANNEL_ANALOGIN(147, "AnalogIn", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.IN_ANALOGIN),
 
     // CHANNEL_SONDERZEICHEN(148, "SonderZeichen", NumberItem.class, null, false, null),
 
-    // EN: Circulation pumps icon
-    // DE: Zirkulationspumpen Symbol
+    /**
+     * Circulation pumps icon
+     * (original: Zirkulationspumpen Symbol)
+     */
     CHANNEL_SH_ZIP(149, "SH_ZIP", NumberItem.class, null, false, null),
 
     // CHANNEL_WEBSRVPROGRAMMWERTEBEOBARTEN(150, "WebsrvProgrammWerteBeobarten", NumberItem.class, null, false, null),
 
-    // EN: Heat meter heating
-    // DE: Wärmemengenzähler Heizung
+    /**
+     * Heat meter heating
+     * (original: Wärmemengenzähler Heizung)
+     */
     CHANNEL_WMZ_HEIZUNG(151, "WMZ_Heizung", NumberItem.class, Units.KILOWATT_HOUR, false, HeatpumpVisibility.HEIZUNG),
 
-    // EN: Heat meter domestic water
-    // DE: Wärmemengenzähler Brauchwasser
+    /**
+     * Heat meter domestic water
+     * (original: Wärmemengenzähler Brauchwasser)
+     */
     CHANNEL_WMZ_BRAUCHWASSER(152, "WMZ_Brauchwasser", NumberItem.class, Units.KILOWATT_HOUR, false,
             HeatpumpVisibility.BRAUWASSER),
 
-    // EN: Heat meter swimming pool
-    // DE: Wärmemengenzähler Schwimmbad
+    /**
+     * Heat meter swimming pool
+     * (original: Wärmemengenzähler Schwimmbad)
+     */
     CHANNEL_WMZ_SCHWIMMBAD(153, "WMZ_Schwimmbad", NumberItem.class, Units.KILOWATT_HOUR, false,
             HeatpumpVisibility.SCHWIMMBAD),
 
-    // EN: Total heat meter (since reset)
-    // DE: Wärmemengenzähler seit Reset
+    /**
+     * Total heat meter (since reset)
+     * (original: Wärmemengenzähler seit Reset)
+     */
     CHANNEL_WMZ_SEIT(154, "WMZ_Seit", NumberItem.class, Units.KILOWATT_HOUR, false, null),
 
-    // EN: Heat meter flow rate
-    // DE: Wärmemengenzähler Durchfluss
+    /**
+     * Heat meter flow rate
+     * (original: Wärmemengenzähler Durchfluss)
+     */
     CHANNEL_WMZ_DURCHFLUSS(155, "WMZ_Durchfluss", NumberItem.class, Units.LITRE_PER_MINUTE, false, null),
 
-    // EN: Analog output 1
-    // DE: Analog Ausgang 1
+    /**
+     * Analog output 1
+     * (original: Analog Ausgang 1)
+     */
     CHANNEL_ANALOGOUT1(156, "AnalogOut1", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.OUT_ANALOG_1),
 
-    // EN: Analog output 2
-    // DE: Analog Ausgang 2
+    /**
+     * Analog output 2
+     * (original: Analog Ausgang 2)
+     */
     CHANNEL_ANALOGOUT2(157, "AnalogOut2", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.OUT_ANALOG_2),
 
-    // EN: Lock second compressor hot gas
-    // DE: Sperre zweiter Verdichter Heissgas
+    /**
+     * Lock second compressor hot gas
+     * (original: Sperre zweiter Verdichter Heissgas)
+     */
     CHANNEL_TIME_HEISSGAS(158, "Time_Heissgas", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.ABLAUFZ_HG_SPERRE),
 
-    // EN: Supply air temperature
-    // DE: Zulufttemperatur
+    /**
+     * Supply air temperature
+     * (original: Zulufttemperatur)
+     */
     CHANNEL_TEMP_LUEFTUNG_ZULUFT(159, "Temp_Lueftung_Zuluft", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMPERATUR_LUEFTUNG_ZULUFT),
 
-    // EN: Exhaust air temperature
-    // DE: Ablufttemperatur
+    /**
+     * Exhaust air temperature
+     * (original: Ablufttemperatur)
+     */
     CHANNEL_TEMP_LUEFTUNG_ABLUFT(160, "Temp_Lueftung_Abluft", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.TEMPERATUR_LUEFTUNG_ABLUFT),
 
-    // EN: Operating hours solar
-    // DE: Betriebstundenzähler Solar
+    /**
+     * Operating hours solar
+     * (original: Betriebstundenzähler Solar)
+     */
     CHANNEL_ZAEHLER_BETRZEITSOLAR(161, "Zaehler_BetrZeitSolar", NumberItem.class, Units.SECOND, false,
             HeatpumpVisibility.SOLAR),
 
-    // EN: Analog output 3
-    // DE: Analog Ausgang 3
+    /**
+     * Analog output 3
+     * (original: Analog Ausgang 3)
+     */
     CHANNEL_ANALOGOUT3(162, "AnalogOut3", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.OUT_ANALOG_3),
 
-    // EN: Analog output 4
-    // DE: Analog Ausgang 4
+    /**
+     * Analog output 4
+     * (original: Analog Ausgang 4)
+     */
     CHANNEL_ANALOGOUT4(163, "AnalogOut4", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.OUT_ANALOG_4),
 
-    // EN: Supply air fan (defrost function)
-    // DE: Zuluft Ventilator (Abtaufunktion)
+    /**
+     * Supply air fan (defrost function)
+     * (original: Zuluft Ventilator (Abtaufunktion))
+     */
     CHANNEL_OUT_VZU(164, "Out_VZU", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.OUT_VZU),
 
-    // EN: Exhaust fan
-    // DE: Abluft Ventilator
+    /**
+     * Exhaust fan
+     * (original: Abluft Ventilator)
+     */
     CHANNEL_OUT_VAB(165, "Out_VAB", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.OUT_VAB),
 
-    // EN: Output VSK
-    // DE: Ausgang VSK
+    /**
+     * Output VSK
+     * (original: Ausgang VSK)
+     */
     CHANNEL_OUT_VSK(166, "Out_VSK", SwitchItem.class, null, false, HeatpumpVisibility.OUT_VSK),
 
-    // EN: Output FRH
-    // DE: Ausgang FRH
+    /**
+     * Output FRH
+     * (original: Ausgang FRH)
+     */
     CHANNEL_OUT_FRH(167, "OUT_FRH", SwitchItem.class, null, false, HeatpumpVisibility.OUT_FRH),
 
-    // EN: Analog input 2
-    // DE: Analog Eingang 2
+    /**
+     * Analog input 2
+     * (original: Analog Eingang 2)
+     */
     CHANNEL_ANALOGIN2(168, "AnalogIn2", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.IN_ANALOG_2),
 
-    // EN: Analog input 3
-    // DE: Analog Eingang 3
+    /**
+     * Analog input 3
+     * (original: Analog Eingang 3)
+     */
     CHANNEL_ANALOGIN3(169, "AnalogIn3", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.IN_ANALOG_3),
 
-    // EN: Input SAX
-    // DE: Eingang SAX
+    /**
+     * Input SAX
+     * (original: Eingang SAX)
+     */
     CHANNEL_SAXIN(170, "SAXin", SwitchItem.class, null, false, HeatpumpVisibility.IN_SAX),
 
-    // EN: Input SPL
-    // DE: Eingang SPL
+    /**
+     * Input SPL
+     * (original: Eingang SPL)
+     */
     CHANNEL_SPLIN(171, "SPLin", SwitchItem.class, null, false, HeatpumpVisibility.IN_SPL),
 
-    // EN: Ventilation board installed
-    // DE: Lüftungsplatine verbaut
+    /**
+     * Ventilation board installed
+     * (original: Lüftungsplatine verbaut)
+     */
     CHANNEL_COMPACT_EXISTS(172, "Compact_exists", SwitchItem.class, null, false, null),
 
-    // EN: Flow rate heat source
-    // DE: Durchfluss Wärmequelle
+    /**
+     * Flow rate heat source
+     * (original: Durchfluss Wärmequelle)
+     */
     CHANNEL_DURCHFLUSS_WQ(173, "Durchfluss_WQ", NumberItem.class, Units.LITRE_PER_MINUTE, false, null),
 
-    // EN: LIN BUS installed
-    // DE: LIN BUS verbaut
+    /**
+     * LIN BUS installed
+     * (original: LIN BUS verbaut)
+     */
     CHANNEL_LIN_EXISTS(174, "LIN_exists", SwitchItem.class, null, false, null),
 
-    // EN: Temperature suction evaporator
-    // DE: Temperatur Ansaug Verdampfer
+    /**
+     * Temperature suction evaporator
+     * (original: Temperatur Ansaug Verdampfer)
+     */
     CHANNEL_LIN_ANSAUG_VERDAMPFER(175, "LIN_ANSAUG_VERDAMPFER", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.LIN_ANSAUG_VERDAMPFER),
 
-    // EN: Temperature suction compressor
-    // DE: Temperatur Ansaug Verdichter
+    /**
+     * Temperature suction compressor
+     * (original: Temperatur Ansaug Verdichter)
+     */
     CHANNEL_LIN_ANSAUG_VERDICHTER(176, "LIN_ANSAUG_VERDICHTER", NumberItem.class, SIUnits.CELSIUS, false,
             HeatpumpVisibility.LIN_ANSAUG_VERDICHTER),
 
-    // EN: Temperature compressor heating
-    // DE: Temperatur Verdichter Heizung
+    /**
+     * Temperature compressor heating
+     * (original: Temperatur Verdichter Heizung)
+     */
     CHANNEL_LIN_VDH(177, "LIN_VDH", NumberItem.class, SIUnits.CELSIUS, false, HeatpumpVisibility.LIN_VDH),
 
-    // EN: Overheating
-    // DE: Überhitzung
+    /**
+     * Overheating
+     * (original: Überhitzung)
+     */
     CHANNEL_LIN_UH(178, "LIN_UH", NumberItem.class, Units.KELVIN, false, HeatpumpVisibility.LIN_UH),
 
-    // EN: Overheating target
-    // DE: Überhitzung Soll
+    /**
+     * Overheating target
+     * (original: Überhitzung Soll)
+     */
     CHANNEL_LIN_UH_SOLL(179, "LIN_UH_Soll", NumberItem.class, Units.KELVIN, false, HeatpumpVisibility.LIN_UH),
 
-    // EN: High pressure
-    // DE: Hochdruck
+    /**
+     * High pressure
+     * (original: Hochdruck)
+     */
     CHANNEL_LIN_HD(180, "LIN_HD", NumberItem.class, Units.BAR, false, HeatpumpVisibility.LIN_DRUCK),
 
-    // EN: Low pressure
-    // DE: Niederdruck
+    /**
+     * Low pressure
+     * (original: Niederdruck)
+     */
     CHANNEL_LIN_ND(181, "LIN_ND", NumberItem.class, Units.BAR, false, HeatpumpVisibility.LIN_DRUCK),
 
-    // EN: Output compressor heating
-    // DE: Ausgang Verdichterheizung
+    /**
+     * Output compressor heating
+     * (original: Ausgang Verdichterheizung)
+     */
     CHANNEL_LIN_VDH_OUT(182, "LIN_VDH_out", SwitchItem.class, null, false, null),
 
-    // EN: Control signal circulating pump
-    // DE: Steuersignal Umwälzpumpe
+    /**
+     * Control signal circulating pump
+     * (original: Steuersignal Umwälzpumpe)
+     */
     CHANNEL_HZIO_PWM(183, "HZIO_PWM", NumberItem.class, Units.PERCENT, false, null),
 
-    // EN: Fan speed
-    // DE: Ventilator Drehzahl
+    /**
+     * Fan speed
+     * (original: Ventilator Drehzahl)
+     */
     CHANNEL_HZIO_VEN(184, "HZIO_VEN", NumberItem.class, null, false, null),
 
-    // EN: EVU 2
-    // DE: EVU 2
+    /**
+     * EVU 2
+     * (original: EVU 2)
+     */
     // CHANNEL_HZIO_EVU2(185, "HZIO_EVU2", NumberItem.class, null, false, null),
 
-    // EN: Safety tempearture limiter floor heating
-    // DE: Sicherheits-Tempeartur-Begrenzer Fussbodenheizung
+    /**
+     * Safety tempearture limiter floor heating
+     * (original: Sicherheits-Tempeartur-Begrenzer Fussbodenheizung)
+     */
     CHANNEL_HZIO_STB(186, "HZIO_STB", SwitchItem.class, null, false, null),
 
-    // EN: Power target value
-    // DE: Leistung Sollwert
+    /**
+     * Power target value
+     * (original: Leistung Sollwert)
+     */
     CHANNEL_SEC_QH_SOLL(187, "SEC_Qh_Soll", NumberItem.class, Units.KILOWATT_HOUR, false, null),
 
-    // EN: Power actual value
-    // DE: Leistung Istwert
+    /**
+     * Power actual value
+     * (original: Leistung Istwert)
+     */
     CHANNEL_SEC_QH_IST(188, "SEC_Qh_Ist", NumberItem.class, Units.KILOWATT_HOUR, false, null),
 
-    // EN: Temperature flow set point
-    // DE: Temperatur Vorlauf Soll
+    /**
+     * Temperature flow set point
+     * (original: Temperatur Vorlauf Soll)
+     */
     CHANNEL_SEC_TVL_SOLL(189, "SEC_TVL_Soll", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Software version SEC Board
-    // DE: Software Stand SEC Board
+    /**
+     * Software version SEC Board
+     * (original: Software Stand SEC Board)
+     */
     // CHANNEL_SEC_SOFTWARE(190, "SEC_Software", NumberItem.class, null, false, null),
 
-    // EN: SEC Board operating status
-    // DE: Betriebszustand SEC Board
+    /**
+     * SEC Board operating status
+     * (original: Betriebszustand SEC Board)
+     */
     CHANNEL_SEC_BZ(191, "SEC_BZ", NumberItem.class, null, false, HeatpumpVisibility.SEC),
 
-    // EN: Four-way valve
-    // DE: Vierwegeventil
+    /**
+     * Four-way valve
+     * (original: Vierwegeventil)
+     */
     CHANNEL_SEC_VWV(192, "SEC_VWV", NumberItem.class, null, false, HeatpumpVisibility.SEC),
 
-    // EN: Compressor speed
-    // DE: Verdichterdrehzahl
+    /**
+     * Compressor speed
+     * (original: Verdichterdrehzahl)
+     */
     CHANNEL_SEC_VD(193, "SEC_VD", NumberItem.class, null, false, HeatpumpVisibility.SEC),
 
-    // EN: Compressor temperature EVI (Enhanced Vapour Injection)
-    // DE: Verdichtertemperatur EVI
+    /**
+     * Compressor temperature EVI (Enhanced Vapour Injection)
+     * (original: Verdichtertemperatur EVI)
+     */
     CHANNEL_SEC_VERDEVI(194, "SEC_VerdEVI", NumberItem.class, SIUnits.CELSIUS, false, HeatpumpVisibility.SEC),
 
-    // EN: Intake temperature EVI
-    // DE: Ansaugtemperatur EVI
+    /**
+     * Intake temperature EVI
+     * (original: Ansaugtemperatur EVI)
+     */
     CHANNEL_SEC_ANSEVI(195, "SEC_AnsEVI", NumberItem.class, SIUnits.CELSIUS, false, HeatpumpVisibility.SEC),
 
-    // EN: Overheating EVI
-    // DE: Überhitzung EVI
+    /**
+     * Overheating EVI
+     * (original: Überhitzung EVI)
+     */
     CHANNEL_SEC_UEH_EVI(196, "SEC_UEH_EVI", NumberItem.class, Units.KELVIN, false, HeatpumpVisibility.SEC),
 
-    // EN: Overheating EVI target
-    // DE: Überhitzung EVI Sollwert
+    /**
+     * Overheating EVI target
+     * (original: Überhitzung EVI Sollwert)
+     */
     CHANNEL_SEC_UEH_EVI_S(197, "SEC_UEH_EVI_S", NumberItem.class, Units.KELVIN, false, HeatpumpVisibility.SEC),
 
-    // EN: Condensation temperature
-    // DE: Kondensationstemperatur
+    /**
+     * Condensation temperature
+     * (original: Kondensationstemperatur)
+     */
     CHANNEL_SEC_KONDTEMP(198, "SEC_KondTemp", NumberItem.class, SIUnits.CELSIUS, false, HeatpumpVisibility.SEC),
 
-    // EN: Liquid temperature EEV (electronic expansion valve)
-    // DE: Flüssigtemperatur EEV (elektronisches Expansionsventil)
+    /**
+     * Liquid temperature EEV (electronic expansion valve)
+     * (original: Flüssigtemperatur EEV (elektronisches Expansionsventil))
+     */
     CHANNEL_SEC_FLUSSIGEX(199, "SEC_FlussigEx", NumberItem.class, SIUnits.CELSIUS, false, HeatpumpVisibility.SEC),
 
-    // EN: Hypothermia EEV
-    // DE: Unterkühlung EEV
+    /**
+     * Hypothermia EEV
+     * (original: Unterkühlung EEV)
+     */
     CHANNEL_SEC_UK_EEV(200, "SEC_UK_EEV", NumberItem.class, SIUnits.CELSIUS, false, HeatpumpVisibility.SEC),
 
-    // EN: Pressure EVI
-    // DE: Druck EVI
+    /**
+     * Pressure EVI
+     * (original: Druck EVI)
+     */
     CHANNEL_SEC_EVI_DRUCK(201, "SEC_EVI_Druck", NumberItem.class, Units.BAR, false, HeatpumpVisibility.SEC),
 
-    // EN: Voltage inverter
-    // DE: Spannung Inverter
+    /**
+     * Voltage inverter
+     * (original: Spannung Inverter)
+     */
     CHANNEL_SEC_U_INV(202, "SEC_U_Inv", NumberItem.class, Units.VOLT, false, HeatpumpVisibility.SEC),
 
-    // EN: Hot gas temperature sensor 2
-    // DE: Temperarturfühler Heissgas 2
+    /**
+     * Hot gas temperature sensor 2
+     * (original: Temperarturfühler Heissgas 2)
+     */
     CHANNEL_TEMPERATUR_THG_2(203, "Temperatur_THG_2", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Temperature sensor heat source inlet 2
-    // DE: Temperaturfühler Wärmequelleneintritt 2
+    /**
+     * Temperature sensor heat source inlet 2
+     * (original: Temperaturfühler Wärmequelleneintritt 2)
+     */
     CHANNEL_TEMPERATUR_TWE_2(204, "Temperatur_TWE_2", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Intake temperature evaporator 2
-    // DE: Ansaugtemperatur Verdampfer 2
+    /**
+     * Intake temperature evaporator 2
+     * (original: Ansaugtemperatur Verdampfer 2)
+     */
     CHANNEL_LIN_ANSAUG_VERDAMPFER_2(205, "LIN_ANSAUG_VERDAMPFER_2", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Intake temperature compressor 2
-    // DE: Ansaugtemperatur Verdichter 2
+    /**
+     * Intake temperature compressor 2
+     * (original: Ansaugtemperatur Verdichter 2)
+     */
     CHANNEL_LIN_ANSAUG_VERDICHTER_2(206, "LIN_ANSAUG_VERDICHTER_2", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Temperature compressor 2 heating
-    // DE: Temperatur Verdichter 2 Heizung
+    /**
+     * Temperature compressor 2 heating
+     * (original: Temperatur Verdichter 2 Heizung)
+     */
     CHANNEL_LIN_VDH_2(207, "LIN_VDH_2", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Overheating 2
-    // DE: Überhitzung 2
+    /**
+     * Overheating 2
+     * (original: Überhitzung 2)
+     */
     CHANNEL_LIN_UH_2(208, "LIN_UH_2", NumberItem.class, Units.KELVIN, false, HeatpumpVisibility.LIN_UH),
 
-    // EN: Overheating target 2
-    // DE: Überhitzung Soll 2
+    /**
+     * Overheating target 2
+     * (original: Überhitzung Soll 2)
+     */
     CHANNEL_LIN_UH_SOLL_2(209, "LIN_UH_Soll_2", NumberItem.class, Units.KELVIN, false, HeatpumpVisibility.LIN_UH),
 
-    // EN: High pressure 2
-    // DE: Hochdruck 2
+    /**
+     * High pressure 2
+     * (original: Hochdruck 2)
+     */
     CHANNEL_LIN_HD_2(210, "LIN_HD_2", NumberItem.class, Units.BAR, false, HeatpumpVisibility.LIN_DRUCK),
 
-    // EN: Low pressure 2
-    // DE: Niederdruck 2
+    /**
+     * Low pressure 2
+     * (original: Niederdruck 2)
+     */
     CHANNEL_LIN_ND_2(211, "LIN_ND_2", NumberItem.class, Units.BAR, false, HeatpumpVisibility.LIN_DRUCK),
 
-    // EN: Input pressure switch high pressure 2
-    // DE: Eingang Druckschalter Hochdruck 2
+    /**
+     * Input pressure switch high pressure 2
+     * (original: Eingang Druckschalter Hochdruck 2)
+     */
     CHANNEL_HDIN_2(212, "HDin_2", SwitchItem.class, null, false, HeatpumpVisibility.IN_HD),
 
-    // EN: Output defrost valve 2
-    // DE: Ausgang Abtauventil 2
+    /**
+     * Output defrost valve 2
+     * (original: Ausgang Abtauventil 2)
+     */
     CHANNEL_AVOUT_2(213, "AVout_2", SwitchItem.class, null, false, HeatpumpVisibility.OUT_ABTAUVENTIL),
 
-    // EN: Output brine pump/fan 2
-    // DE: Ausgang Solepumpe/Ventilator 2
+    /**
+     * Output brine pump/fan 2
+     * (original: Ausgang Solepumpe/Ventilator 2)
+     */
     CHANNEL_VBOOUT_2(214, "VBOout_2", SwitchItem.class, null, false, null),
 
-    // EN: Compressor output 1 / 2
-    // DE: Ausgang Verdichter 1 / 2
+    /**
+     * Compressor output 1 / 2
+     * (original: Ausgang Verdichter 1 / 2)
+     */
     CHANNEL_VD1OUT_2(215, "VD1out_2", SwitchItem.class, null, false, null),
 
-    // EN: Compressor output heating 2
-    // DE: Ausgang Verdichter Heizung 2
+    /**
+     * Compressor output heating 2
+     * (original: Ausgang Verdichter Heizung 2)
+     */
     CHANNEL_LIN_VDH_OUT_2(216, "LIN_VDH_out_2", SwitchItem.class, null, false, null),
 
-    // EN: Reason shutdown X in memory 2
-    // DE: Grund Abschaltung X im Speicher 2
+    /**
+     * Reason shutdown X in memory 2
+     * (original: Grund Abschaltung X im Speicher 2)
+     */
     CHANNEL_SWITCHOFF2_FILE_NR0(217, "Switchoff2_file_Nr0", NumberItem.class, null, false, null),
     CHANNEL_SWITCHOFF2_FILE_NR1(218, "Switchoff2_file_Nr1", NumberItem.class, null, false, null),
     CHANNEL_SWITCHOFF2_FILE_NR2(219, "Switchoff2_file_Nr2", NumberItem.class, null, false, null),
     CHANNEL_SWITCHOFF2_FILE_NR3(220, "Switchoff2_file_Nr3", NumberItem.class, null, false, null),
     CHANNEL_SWITCHOFF2_FILE_NR4(221, "Switchoff2_file_Nr4", NumberItem.class, null, false, null),
 
-    // EN: Timestamp shutdown X in memory 2
-    // DE: Zeitstempel Abschaltung X im Speicher 2
+    /**
+     * Timestamp shutdown X in memory 2
+     * (original: Zeitstempel Abschaltung X im Speicher 2)
+     */
     CHANNEL_SWITCHOFF2_FILE_TIME0(222, "Switchoff2_file_Time0", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_SWITCHOFF2_FILE_TIME1(223, "Switchoff2_file_Time1", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_SWITCHOFF2_FILE_TIME2(224, "Switchoff2_file_Time2", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_SWITCHOFF2_FILE_TIME3(225, "Switchoff2_file_Time3", DateTimeItem.class, Units.SECOND, false, null),
     CHANNEL_SWITCHOFF2_FILE_TIME4(226, "Switchoff2_file_Time4", DateTimeItem.class, Units.SECOND, false, null),
 
-    // EN: Room temperature actual value
-    // DE: Raumtemperatur Istwert
+    /**
+     * Room temperature actual value
+     * (original: Raumtemperatur Istwert)
+     */
     CHANNEL_RBE_RT_IST(227, "RBE_RT_Ist", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Room temperature set point
-    // DE: Raumtemperatur Sollwert
+    /**
+     * Room temperature set point
+     * (original: Raumtemperatur Sollwert)
+     */
     CHANNEL_RBE_RT_SOLL(228, "RBE_RT_Soll", NumberItem.class, SIUnits.CELSIUS, false, null),
 
-    // EN: Temperature domestic water top
-    // DE: Temperatur Brauchwasser Oben
+    /**
+     * Temperature domestic water top
+     * (original: Temperatur Brauchwasser Oben)
+     */
     CHANNEL_TEMPERATUR_BW_OBEN(229, "Temperatur_BW_oben", NumberItem.class, SIUnits.CELSIUS, false, null),
 
     // DE: Channel 230 (Code_WP_akt_2) represent the heatpump type 2
 
-    // EN: Compressor frequency
-    // DE: Verdichterfrequenz
+    /**
+     * Compressor frequency
+     * (original: Verdichterfrequenz)
+     */
     CHANNEL_CODE_FREQ_VD(231, "Freq_VD", NumberItem.class, Units.HERTZ, false, null),
 
     // Changeable Parameters
     // https://www.loxwiki.eu/display/LOX/Java+Webinterface?preview=/13306044/13307658/3003.txt
 
-    // EN: Heating temperature (parallel shift)
-    // DE: Heizung Temperatur (Parallelverschiebung)
+    /**
+     * Heating temperature (parallel shift)
+     * (original: Heizung Temperatur (Parallelverschiebung))
+     */
     CHANNEL_EINST_WK_AKT(1, "Einst_WK_akt", NumberItem.class, SIUnits.CELSIUS, true, HeatpumpVisibility.HEIZUNG),
 
-    // EN: Hot water temperature
-    // DE: Warmwasser Soll Temperatur
+    /**
+     * Hot water temperature
+     * (original: Warmwasser Soll Temperatur)
+     */
     CHANNEL_EINST_BWS_AKT(2, "Einst_BWS_akt", NumberItem.class, SIUnits.CELSIUS, true, HeatpumpVisibility.BRAUWASSER),
 
-    // EN: Heating mode
-    // DE: Heizung Betriebsart
+    /**
+     * Heating mode
+     * (original: Heizung Betriebsart)
+     */
     CHANNEL_BA_HZ_AKT(3, "Ba_Hz_akt", NumberItem.class, null, true, HeatpumpVisibility.HEIZUNG),
 
-    // EN: Hot water operating mode
-    // DE: Warmwasser Betriebsart
+    /**
+     * Hot water operating mode
+     * (original: Warmwasser Betriebsart)
+     */
     CHANNEL_BA_BW_AKT(4, "Ba_Bw_akt", NumberItem.class, null, true, HeatpumpVisibility.BRAUWASSER),
 
-    // EN: Thermal disinfection (Monday - Sunday + Permanent)
-    // DE: Thermische Desinfektion (Montag - Sunday + Dauerbetrieb)
+    /**
+     * Thermal disinfection (Monday)
+     * (original: Thermische Desinfektion (Montag))
+     */
     CHANNEL_EINST_BWTDI_AKT_MO(20, "Einst_BwTDI_akt_MO", SwitchItem.class, null, true,
             HeatpumpVisibility.THERMDESINFEKT),
+    /**
+     * Thermal disinfection (Tuesday)
+     * (original: Thermische Desinfektion (Dienstag))
+     */
     CHANNEL_EINST_BWTDI_AKT_DI(21, "Einst_BwTDI_akt_DI", SwitchItem.class, null, true,
             HeatpumpVisibility.THERMDESINFEKT),
+    /**
+     * Thermal disinfection (Wednesday)
+     * (original: Thermische Desinfektion (Mittwoch))
+     */
     CHANNEL_EINST_BWTDI_AKT_MI(22, "Einst_BwTDI_akt_MI", SwitchItem.class, null, true,
             HeatpumpVisibility.THERMDESINFEKT),
+    /**
+     * Thermal disinfection (Thursday)
+     * (original: Thermische Desinfektion (Donnerstag))
+     */
     CHANNEL_EINST_BWTDI_AKT_DO(23, "Einst_BwTDI_akt_DO", SwitchItem.class, null, true,
             HeatpumpVisibility.THERMDESINFEKT),
+    /**
+     * Thermal disinfection (Friday)
+     * (original: Thermische Desinfektion (Freitag))
+     */
     CHANNEL_EINST_BWTDI_AKT_FR(24, "Einst_BwTDI_akt_FR", SwitchItem.class, null, true,
             HeatpumpVisibility.THERMDESINFEKT),
+    /**
+     * Thermal disinfection (Saturday)
+     * (original: Thermische Desinfektion (Samstag))
+     */
     CHANNEL_EINST_BWTDI_AKT_SA(25, "Einst_BwTDI_akt_SA", SwitchItem.class, null, true,
             HeatpumpVisibility.THERMDESINFEKT),
+    /**
+     * Thermal disinfection (Sunday)
+     * (original: Thermische Desinfektion (Sonntag))
+     */
     CHANNEL_EINST_BWTDI_AKT_SO(26, "Einst_BwTDI_akt_SO", SwitchItem.class, null, true,
             HeatpumpVisibility.THERMDESINFEKT),
+    /**
+     * Thermal disinfection (Permanent)
+     * (original: Thermische Desinfektion (Dauerbetrieb))
+     */
     CHANNEL_EINST_BWTDI_AKT_AL(27, "Einst_BwTDI_akt_AL", SwitchItem.class, null, true,
             HeatpumpVisibility.THERMDESINFEKT),
 
-    // EN: Comfort cooling mode
-    // DE: Comfort Kühlung Betriebsart
+    /**
+     * Comfort cooling mode
+     * (original: Comfort Kühlung Betriebsart)
+     */
     CHANNEL_EINST_BWSTYP_AKT(100, "Einst_BWStyp_akt", NumberItem.class, null, true, HeatpumpVisibility.KUHLUNG),
 
-    // EN: Comfort cooling AT release
-    // DE: Comfort Kühlung AT-Freigabe
+    /**
+     * Comfort cooling AT release
+     * (original: Comfort Kühlung AT-Freigabe)
+     */
     CHANNEL_EINST_KUCFTL_AKT(110, "Einst_KuCft1_akt", NumberItem.class, SIUnits.CELSIUS, true,
             HeatpumpVisibility.KUHLUNG),
 
-    // EN: Comfort cooling AT release target
-    // DE: Comfort Kühlung AT-Freigabe Sollwert
+    /**
+     * Comfort cooling AT release target
+     * (original: Comfort Kühlung AT-Freigabe Sollwert)
+     */
     CHANNEL_SOLLWERT_KUCFTL_AKT(132, "Sollwert_KuCft1_akt", NumberItem.class, SIUnits.CELSIUS, true,
             HeatpumpVisibility.KUHLUNG),
 
-    // EN: AT Excess
-    // DE: AT-Überschreitung
+    /**
+     * AT Excess
+     * (original: AT-Überschreitung)
+     */
     CHANNEL_EINST_KUHL_ZEIT_EIN_AKT(850, "Einst_Kuhl_Zeit_Ein_akt", NumberItem.class, null, true,
             HeatpumpVisibility.SYSEIN_KUHL_ZEIT_EIN),
 
-    // EN: AT undercut
-    // DE: AT-Unterschreitung
+    /**
+     * AT undercut
+     * (original: AT-Unterschreitung)
+     */
     CHANNEL_EINST_KUHL_ZEIT_AUS_AKT(851, "Einst_Kuhl_Zeit_Aus_akt", NumberItem.class, null, true,
             HeatpumpVisibility.SYSEIN_KUHL_ZEIT_AUS);
 
@@ -949,7 +1344,7 @@ public enum HeatpumpChannel {
         return Boolean.FALSE;
     }
 
-    public static HeatpumpChannel fromString(String heatpumpCommand) throws IllegalArgumentException {
+    public static HeatpumpChannel fromString(String heatpumpCommand) throws InvalidChannelException {
 
         for (HeatpumpChannel c : HeatpumpChannel.values()) {
 
@@ -958,7 +1353,7 @@ public enum HeatpumpChannel {
             }
         }
 
-        throw new IllegalArgumentException("cannot find LuxtronikHeatpump channel for '" + heatpumpCommand + "'");
+        throw new InvalidChannelException("cannot find LuxtronikHeatpump channel for '" + heatpumpCommand + "'");
     }
 
     @Override

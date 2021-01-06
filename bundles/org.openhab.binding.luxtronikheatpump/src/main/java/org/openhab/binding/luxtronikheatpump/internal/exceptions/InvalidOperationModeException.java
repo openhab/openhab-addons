@@ -10,21 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.luxtronikheatpump.internal;
+package org.openhab.binding.luxtronikheatpump.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link LuxtronikHeatpumpBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link InvalidOperationModeException} is thrown for invalid operation modes
  *
  * @author Stefan Giehl - Initial contribution
  */
 @NonNullByDefault
-public class LuxtronikHeatpumpBindingConstants {
+public class InvalidOperationModeException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    public static final String BINDING_ID = "luxtronikheatpump";
-
-    public static final ThingTypeUID THING_TYPE_HEATPUMP = new ThingTypeUID(BINDING_ID, "heatpump");
+    public InvalidOperationModeException(String message) {
+        super(message);
+    }
 }

@@ -16,6 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Represents all heatpump visibily settings
+ * 
+ * The names of the enum values are those used in the code if the internal Java applet of the heat pump
+ * The meaning of most of the values is currently unclear, but are included here for completeness only
  *
  * @author Stefan Giehl - Initial contribution
  */
@@ -351,16 +354,6 @@ public enum HeatpumpVisibility {
     private HeatpumpVisibility(Integer code, String name) {
         this.code = code;
         this.name = name;
-    }
-
-    public static final HeatpumpVisibility fromCode(Integer code) throws IllegalArgumentException {
-        for (HeatpumpVisibility error : HeatpumpVisibility.values()) {
-            if (error.code.equals(code)) {
-                return error;
-            }
-        }
-
-        throw new IllegalArgumentException("Invalid heat pump visibility code: '" + code + "'");
     }
 
     public String getName() {

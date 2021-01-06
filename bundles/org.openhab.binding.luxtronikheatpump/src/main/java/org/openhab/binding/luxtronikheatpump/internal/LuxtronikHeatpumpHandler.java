@@ -13,8 +13,9 @@
 package org.openhab.binding.luxtronikheatpump.internal;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -23,16 +24,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpChannel;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpCoolingOperationMode;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpOperationMode;
+import org.openhab.binding.luxtronikheatpump.internal.exceptions.InvalidChannelException;
+import org.openhab.binding.luxtronikheatpump.internal.exceptions.InvalidOperationModeException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -67,6 +73,17 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         super.updateProperty(name, value);
     }
 
+    public void setStatusConnectionError() {
+        LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "couldn't establish network connection [host '" + config.ipAddress + "']");
+    }
+
+    public void setStatusOnline() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -80,7 +97,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         try {
             channel = HeatpumpChannel.fromString(channelId);
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidChannelException e) {
             logger.debug("Channel '{}' could not be found for thing {}", channelId, thing.getUID());
             return;
         }
@@ -124,7 +141,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 try {
                     // validate the value is valid
                     HeatpumpOperationMode.fromValue(value);
-                } catch (Exception e) {
+                } catch (InvalidOperationModeException e) {
                     logger.warn("Heatpump {} mode recevieved invalid value {}: {}", channel.getCommand(), value,
                             e.getMessage());
                     return;
@@ -142,7 +159,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 try {
                     // validate the value is valid
                     HeatpumpCoolingOperationMode.fromValue(value);
-                } catch (Exception e) {
+                } catch (InvalidOperationModeException e) {
                     logger.warn("Heatpump {} mode recevieved invalid value {}: {}", channel.getCommand(), value,
                             e.getMessage());
                     return;
@@ -183,7 +200,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         synchronized (scheduledFutures) {
-            // try to connect to the heat pump every X seconds to update the status
+            logger.debug("try to connect to the heat pump every {} seconds to update the status", RETRY_INTERVAL);
             ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0, RETRY_INTERVAL,
                     TimeUnit.SECONDS);
             scheduledFutures.add(future);
@@ -198,13 +215,8 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         try {
             connector.read();
-        } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "the given hostname ''" + config.ipAddress + "' of the heatpump is unknown");
-            return;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "couldn't establish network connection [host '" + config.ipAddress + "']");
+            setStatusConnectionError();
             return;
         }
 
@@ -216,7 +228,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             updateChannels(connector);
         }
 
-        updateStatus(ThingStatus.ONLINE);
+        setStatusOnline();
         restartJobs();
     }
 
@@ -240,21 +252,36 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         Integer[] heatpumpValues = connector.getValues();
         Integer[] heatpumpParams = connector.getParams();
 
-        ThingBuilder thingBuilder = editThing();
-
         logger.debug("Updating available channels for thing {}", thing.getUID());
 
-        // Hide all channel that are actually not available
+        final ThingHandlerCallback callback = getCallback();
+        if (callback == null) {
+            logger.debug("ThingHandlerCallback is null. Skipping migration of last_update channel.");
+            return;
+        }
+
+        ThingBuilder thingBuilder = editThing();
+        List<Channel> channelList = new ArrayList<>();
+
+        // clear channel list
+        thingBuilder.withoutChannels(thing.getChannels());
+
+        // create list with available channels
         for (HeatpumpChannel channel : HeatpumpChannel.values()) {
             Integer channelId = channel.getChannelId();
             int length = channel.isWritable() == Boolean.TRUE ? heatpumpParams.length : heatpumpValues.length;
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID,
+                    channel.getCommand());
             if ((channelId != null && length < channelId) || (config.showAllChannels == Boolean.FALSE
                     && channel.isVisible(visibilityValues).equals(Boolean.FALSE))) {
                 logger.debug("Hiding channel {}", channel.getCommand());
-                ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());
-                thingBuilder.withoutChannel(channelUID);
+            } else {
+                channelList.add(callback.createChannelBuilder(channelUID, channelTypeUID).build());
             }
         }
+
+        thingBuilder.withChannels(channelList);
 
         updateThing(thingBuilder.build());
     }
@@ -263,8 +290,10 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         LuxtronikHeatpumpConfiguration config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
 
         logger.debug("Restarting jobs for thing {}", getThing().getUID());
+
+        stopJobs();
+
         synchronized (scheduledFutures) {
-            stopJobs();
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 // Repeat channel update job every configured seconds
                 Runnable channelUpdaterJob = new ChannelUpdaterJob(getThing());
@@ -300,12 +329,10 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         try {
             return connector.setParam(param, value);
-        } catch (UnknownHostException e) {
-            logger.warn("the given hostname / ip '{}' of the heatpump is unknown", config.ipAddress);
-            return false;
         } catch (IOException e) {
-            logger.warn("couldn't establish network connection [host '{}']", config.ipAddress);
-            return false;
+            setStatusConnectionError();
         }
+
+        return false;
     }
 }

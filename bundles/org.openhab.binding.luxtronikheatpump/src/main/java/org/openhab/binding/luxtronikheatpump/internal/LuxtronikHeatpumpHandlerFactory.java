@@ -14,8 +14,6 @@ package org.openhab.binding.luxtronikheatpump.internal;
 
 import static org.openhab.binding.luxtronikheatpump.internal.LuxtronikHeatpumpBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,7 +36,6 @@ import org.osgi.service.component.annotations.Component;
 public class LuxtronikHeatpumpHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HEATPUMP);
-    private static final Map<String, LuxtronikHeatpumpHandler> THING_HANDLERS = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,20 +45,11 @@ public class LuxtronikHeatpumpHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        LuxtronikHeatpumpHandler thingHandler = null;
 
         if (THING_TYPE_HEATPUMP.equals(thingTypeUID)) {
-            thingHandler = new LuxtronikHeatpumpHandler(thing);
+            return new LuxtronikHeatpumpHandler(thing);
         }
 
-        if (thingHandler != null) {
-            THING_HANDLERS.put(thing.getUID().toString(), thingHandler);
-        }
-
-        return thingHandler;
-    }
-
-    public static @Nullable LuxtronikHeatpumpHandler getHandler(String thingUid) {
-        return THING_HANDLERS.get(thingUid);
+        return null;
     }
 }

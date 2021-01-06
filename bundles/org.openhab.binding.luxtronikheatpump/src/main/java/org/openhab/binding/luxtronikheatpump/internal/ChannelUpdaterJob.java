@@ -64,14 +64,18 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     public void run() {
         // connect to heatpump and check if values can be fetched
         final HeatpumpConnector connector = new HeatpumpConnector(config.ipAddress, config.port);
+        final LuxtronikHeatpumpHandler handler = (LuxtronikHeatpumpHandler) thing.getHandler();
 
         try {
             connector.read();
         } catch (IOException e) {
             logger.warn("Could not connect to heatpump (uuid={}, ip={}, port={}): {}", thing.getUID(), config.ipAddress,
                     config.port, e.getMessage());
+            handler.setStatusConnectionError();
             return;
         }
+
+        handler.setStatusOnline();
 
         // read all available values
         Integer[] heatpumpValues = connector.getValues();
@@ -174,7 +178,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     }
 
     private void handleEventType(org.openhab.core.types.State state, HeatpumpChannel heatpumpCommandType) {
-        LuxtronikHeatpumpHandler handler = LuxtronikHeatpumpHandlerFactory.getHandler(thing.getUID().toString());
+        LuxtronikHeatpumpHandler handler = (LuxtronikHeatpumpHandler) thing.getHandler();
         if (handler == null) {
             logger.warn("Trying to update a channel for a thing without a handler");
             return;
@@ -199,7 +203,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     }
 
     private void setProperty(String name, String value) {
-        LuxtronikHeatpumpHandler handler = LuxtronikHeatpumpHandlerFactory.getHandler(thing.getUID().toString());
+        LuxtronikHeatpumpHandler handler = (LuxtronikHeatpumpHandler) thing.getHandler();
         if (handler == null) {
             logger.warn("Trying to update a channel for a thing without a handler");
             return;

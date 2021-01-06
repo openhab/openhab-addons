@@ -13,6 +13,7 @@
 package org.openhab.binding.luxtronikheatpump.internal.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.luxtronikheatpump.internal.exceptions.InvalidOperationModeException;
 
 /**
  * Represents all heat pump operation modes
@@ -37,13 +38,13 @@ public enum HeatpumpOperationMode {
         return value;
     }
 
-    public static HeatpumpOperationMode fromValue(int value) throws IllegalArgumentException {
+    public static HeatpumpOperationMode fromValue(int value) throws InvalidOperationModeException {
         for (HeatpumpOperationMode mode : HeatpumpOperationMode.values()) {
             if (mode.value == value) {
                 return mode;
             }
         }
 
-        throw new IllegalArgumentException("Invalid heat pump operation mode: '" + value + "'");
+        throw new InvalidOperationModeException("Invalid heat pump operation mode: '" + value + "'");
     }
 }
