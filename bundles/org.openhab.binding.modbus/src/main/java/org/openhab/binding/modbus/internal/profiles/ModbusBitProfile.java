@@ -140,11 +140,6 @@ public class ModbusBitProfile implements StateProfile {
 
             Optional<Boolean> commandBool = ModbusBitUtilities.translateCommand2Boolean(command);
             commandBool.ifPresentOrElse(b -> {
-                // BitSet bits = BitSet.valueOf(bytes);
-                // bits.set(bitIndex, b);
-                // byte[] newBytes = bits.toByteArray();
-                // callback.handleCommand(new DecimalType(new BigDecimal(new BigInteger(newBytes))));
-
                 BigInteger val = new BigInteger(bytes);
                 val = b ? val.setBit(bitIndex) : val.clearBit(bitIndex);
                 DecimalType combinedCommand = new DecimalType(new BigDecimal(val));
