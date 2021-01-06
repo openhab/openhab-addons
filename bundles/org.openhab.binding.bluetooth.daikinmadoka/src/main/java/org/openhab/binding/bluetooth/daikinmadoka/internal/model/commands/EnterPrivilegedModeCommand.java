@@ -16,33 +16,26 @@ import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This command is in charge of changing the current operation mode
+ * This command enable privileged commands on remote device
  *
  * @author Benjamin Lafois - Initial contribution
  *
  */
 @NonNullByDefault
-public class SetOperationmodeCommand extends BRC1HCommand {
+public class EnterPrivilegedModeCommand extends BRC1HCommand {
 
-    private final Logger logger = LoggerFactory.getLogger(SetOperationmodeCommand.class);
-
-    private OperationMode operationMode;
-
-    public SetOperationmodeCommand(OperationMode operationMode) {
-        this.operationMode = operationMode;
-    }
+    private final Logger logger = LoggerFactory.getLogger(EnterPrivilegedModeCommand.class);
 
     @Override
     public byte[][] getRequest() {
-        MadokaValue mv = new MadokaValue(0x20, 1, new byte[] { (byte) this.operationMode.value() });
-        return MadokaMessage.createRequest(this, mv);
+        MadokaValue privilegedMode = new MadokaValue(0xfe, 1, new byte[] { (byte) 0x01 });
+        return MadokaMessage.createRequest(this, privilegedMode);
     }
 
     @Override
@@ -53,15 +46,10 @@ public class SetOperationmodeCommand extends BRC1HCommand {
         }
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
     }
 
     @Override
     public int getCommandId() {
-        return 16432;
-    }
-
-    public OperationMode getOperationMode() {
-        return operationMode;
+        return 16658;
     }
 }
