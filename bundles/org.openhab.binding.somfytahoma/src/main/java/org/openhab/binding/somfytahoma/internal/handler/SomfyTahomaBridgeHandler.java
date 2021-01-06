@@ -563,7 +563,21 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
         Boolean result = sendCommandInternal(io, command, params, url);
         if (!result) {
-            sendCommandInternal(io, command, params, url);
+            scheduler.schedule(() -> {
+                repeatSendCommandInternal(io, command, params, url, thingConfig.getRetries());
+            }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void repeatSendCommandInternal(String io, String command, String params, String url, int retries) {
+        logger.info("Retrying command, retries left: {}", retries);
+        Boolean result = sendCommandInternal(io, command, params, url);
+        if (result != null && !result) {
+            if (retries > 0) {
+                scheduler.schedule(() -> {
+                    repeatSendCommandInternal(io, command, params, url, retries - 1);
+                }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS);
+            }
         }
     }
 
