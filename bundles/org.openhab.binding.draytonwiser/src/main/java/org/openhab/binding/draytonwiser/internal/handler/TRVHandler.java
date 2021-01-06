@@ -93,7 +93,8 @@ public class TRVHandler extends DraytonWiserThingHandler<SmartValveData> {
     }
 
     private State getDemand() {
-        return new QuantityType<>(getData().smartValve.getPercentageDemand(), Units.PERCENT);
+        final Integer demand = getData().smartValve.getPercentageDemand();
+        return demand == null ? UnDefType.UNDEF : new QuantityType<>(demand, Units.PERCENT);
     }
 
     private State getTemperature() {
@@ -104,11 +105,13 @@ public class TRVHandler extends DraytonWiserThingHandler<SmartValveData> {
     }
 
     private State getSignalRSSI() {
-        return new DecimalType(getData().device.getRssi());
+        final Integer rssi = getData().device.getRssi();
+        return rssi == null ? UnDefType.UNDEF : new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS);
     }
 
     private State getSignalLQI() {
-        return new DecimalType(getData().device.getLqi());
+        final Integer lqi = getData().device.getLqi();
+        return lqi == null ? UnDefType.UNDEF : new DecimalType(lqi);
     }
 
     private State getWiserSignalStrength() {
@@ -120,7 +123,8 @@ public class TRVHandler extends DraytonWiserThingHandler<SmartValveData> {
     }
 
     private State getBatteryVoltage() {
-        return new QuantityType<>(getData().device.getBatteryVoltage() / 10.0, Units.VOLT);
+        final Integer voltage = getData().device.getBatteryVoltage();
+        return voltage == null ? UnDefType.UNDEF : new QuantityType<>(voltage / 10.0, Units.VOLT);
     }
 
     private State getWiserBatteryLevel() {

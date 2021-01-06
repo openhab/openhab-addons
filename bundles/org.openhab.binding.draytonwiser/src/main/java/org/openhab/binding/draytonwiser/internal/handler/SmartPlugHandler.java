@@ -23,6 +23,8 @@ import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
 import org.openhab.binding.draytonwiser.internal.model.SmartPlugDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -79,6 +81,8 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
         updateState(CHANNEL_ZIGBEE_CONNECTED, this::getZigbeeConnected);
         updateState(CHANNEL_DEVICE_LOCKED, this::getDeviceLocked);
         updateState(CHANNEL_MANUAL_MODE_STATE, this::getManualModeState);
+        updateState(CHANNEL_SMARTPLUG_INSTANTANEOUS_POWER, this::getInstantaneousDemand);
+        updateState(CHANNEL_SMARTPLUG_ENERGY_DELIVERED, this::getCurrentSummationDelivered);
     }
 
     @Override
@@ -100,11 +104,13 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
     }
 
     private State getSignalRSSI() {
-        return new DecimalType(getData().device.getRssi());
+        final Integer rssi = getData().device.getRssi();
+        return rssi == null ? UnDefType.UNDEF : new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS);
     }
 
     private State getSignalLQI() {
-        return new DecimalType(getData().device.getLqi());
+        final Integer lqi = getData().device.getLqi();
+        return lqi == null ? UnDefType.UNDEF : new DecimalType(lqi);
     }
 
     private State getZigbeeConnected() {
@@ -134,6 +140,16 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
 
     private void setAwayAction(final Boolean awayAction) throws DraytonWiserApiException {
         getApi().setSmartPlugAwayAction(getData().smartPlug.getId(), awayAction);
+    }
+
+    private State getInstantaneousDemand() {
+        final Integer demand = getData().smartPlug.getInstantaneousDemand();
+        return demand == null ? UnDefType.UNDEF : new QuantityType<>(demand, Units.WATT);
+    }
+
+    private State getCurrentSummationDelivered() {
+        final Integer delivered = getData().smartPlug.getCurrentSummationDelivered();
+        return delivered == null ? UnDefType.UNDEF : new QuantityType<>(delivered, Units.WATT_HOUR);
     }
 
     static class SmartPlugData {
