@@ -11,9 +11,9 @@ Device table with supported channels:
 
 | Device Type | power | color | white | white2 | program | programSpeed |
 |-------------|:-----:|:-----:|:-----:|:------:|:-------:|:------------:|
-| LD382  |   ✓   |   ✓   |   ✓   |   |    ✓    | ✓  |
-| LD382A |   ✓   |   ✓   |   ✓   |   |    ✓    | ✓  |
-| LD686  |   ✓   |   ✓   |   ✓   |   ✓    |    ✓    | ✓  |
+| LD382       |   ✓   |   ✓   |   ✓   |        |    ✓    |      ✓       |
+| LD382A      |   ✓   |   ✓   |   ✓   |        |    ✓    |      ✓       |
+| LD686       |   ✓   |   ✓   |   ✓   |   ✓    |    ✓    |      ✓       |
 
 Other LD*** devices might work but probably need some small adaptations.
 
