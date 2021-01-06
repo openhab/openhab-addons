@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="prometheusexporter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="generic">
+		<label>PrometheusExporter Binding Thing</label>
+		<description>Sample thing for PrometheusExporter Binding</description>
+
+		<channels>
+			<channel id="bundlestate" typeId="bundlestate-type"/>
+			<channel id="eventcount" typeId="eventcount-type"/>
+			<channel id="jvm" typeId="jvm-type"/>
+			<channel id="inboxcount" typeId="inboxcount-type"/>
+			<channel id="thingstate" typeId="thingstate-type"/>
+			<channel id="threadpools" typeId="threadpools-type"/>
+			<channel id="all" typeId="all-type"/>
+		</channels>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" required="false" unit="s">
+				<default>60</default>
+				<label>Refresh Interval</label>
+				<unitLabel>Seconds</unitLabel>
+				<description>Interval for updating the metrics. Note that too small intervals might create a high load on the
+					system.</description>
+			</parameter>
+			<parameter name="bundleStatePackageFilter" type="text" required="false">
+				<default>org.openhab</default>
+				<label>Bundle state metric package filter</label>
+				<description>Specifies the package prefix for the bundle state metric. Only bundles under this packages are included
+					in the metric for the bundle state.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="bundlestate-type">
+		<item-type>prometheusexporterItem</item-type>
+		<label>BundleState metric</label>
+		<description>Metric for the state of openHABN bundles (bundles to include can be configured by the
+			bundleStateFilterPackage configuration parameter)</description>
+	</channel-type>
+	<channel-type id="eventcount-type">
+		<item-type>prometheusexporterItem</item-type>
+		<label>Event count metric</label>
+		<description>Metric for the count of openHAB events</description>
+	</channel-type>
+	<channel-type id="jvm-type">
+		<item-type>prometheusexporterItem</item-type>
+		<label>JVM metrics</label>
+		<description>Metrics for the state of the JVM</description>
+	</channel-type>
+	<channel-type id="inboxcount-type">
+		<item-type>prometheusexporterItem</item-type>
+		<label>Inbox count metric</label>
+		<description>Metric for the count of inbox items</description>
+	</channel-type>
+	<channel-type id="thingstate-type">
+		<item-type>prometheusexporterItem</item-type>
+		<label>Thing state metric</label>
+		<description>Metric for the state of openHAB things</description>
+	</channel-type>
+	<channel-type id="threadpools-type">
+		<item-type>prometheusexporterItem</item-type>
+		<label>Threadpool metric</label>
+		<description>Metric for the state of the threadpools used by openHAB</description>
+	</channel-type>
+	<channel-type id="all-type">
+		<item-type>prometheusexporterItem</item-type>
+		<label>All metrics in one channel</label>
+		<description>Get-it-all metric for convenience.</description>
+	</channel-type>
+
+
+</thing:thing-descriptions>

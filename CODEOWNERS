@@ -206,6 +206,7 @@
 /bundles/org.openhab.binding.plclogo/ @falkena
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.powermax/ @lolodomo
+/bundles/org.openhab.binding.prometheusexporter/ @pravussum
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.pushbullet/ @hakan42
 /bundles/org.openhab.binding.pushover/ @cweitkamp
