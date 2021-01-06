@@ -69,6 +69,7 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                     case "chlorTimedPercent":
                     case "filterSpeed":
                     case "pumpSpeed":
+                    case "filterLastSpeed":
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
                     case "chlorAvgSaltLevel":
                     case "chlorInstantSaltLevel":

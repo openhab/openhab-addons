@@ -141,6 +141,16 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            if (!(mspConfigUnits())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unable to getMSPConfigUnits from Hayward's server");
+                clearPolling(pollTelemetryFuture);
+                clearPolling(pollAlarmsFuture);
+                commFailureCount = 50;
+                initPolling(60);
+                return;
+            }
+
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Succesfully opened connection to Hayward's server: {} Username:{}", config.endpointUrl,
                     config.username);
@@ -269,6 +279,23 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             return "Fail";
         }
         return xmlResponse;
+    }
+
+    public synchronized boolean mspConfigUnits() throws HaywardException, InterruptedException {
+        List<String> property1 = new ArrayList<>();
+        List<String> property2 = new ArrayList<>();
+
+        String xmlResponse = getMspConfig();
+
+        // Get Units (Standard, Metric)
+        property1 = evaluateXPath("//System/Units/text()", xmlResponse);
+        account.units = property1.get(0);
+
+        // Get Variable Speed Pump Units (percent, RPM)
+        property2 = evaluateXPath("//System/Msp-Vsp-Speed-Format/text()", xmlResponse);
+        account.vspSpeedFormat = property2.get(0);
+
+        return true;
     }
 
     public synchronized boolean getTelemetryData() throws HaywardException, InterruptedException {

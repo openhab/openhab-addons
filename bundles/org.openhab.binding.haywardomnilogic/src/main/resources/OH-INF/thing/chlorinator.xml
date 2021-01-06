@@ -84,7 +84,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Average Salt Level</label>
 		<description>Average Salt Level</description>
-		<state readOnly="true"/>
+		<state pattern="%1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="instantSaltLevel">
@@ -98,6 +98,6 @@
 		<item-type>Number</item-type>
 		<label>Status</label>
 		<description>Status</description>
-		<state pattern="%1f %unit%" readOnly="true"/>
+		<state pattern="%1f" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -97,20 +97,12 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
 
         if (bridgehandler != null) {
-            // Get Units (Standard, Metric)
-            property1 = bridgehandler.evaluateXPath("//System/Units/text()", xmlResponse);
-            bridgehandler.account.units = property1.get(0);
-
-            // Get Variable Speed Pump Units (percent, RPM)
-            property2 = bridgehandler.evaluateXPath("//System/Msp-Vsp-Speed-Format/text()", xmlResponse);
-            bridgehandler.account.vspSpeedFormat = property2.get(0);
 
             // Find Backyard
             names = bridgehandler.evaluateXPath("//Backyard/Name/text()", xmlResponse);
 
             for (int i = 0; i < names.size(); i++) {
-                onBackyardDiscovered(Integer.parseInt(bridgehandler.account.mspSystemID), names.get(i),
-                        property1.get(i), property2.get(i));
+                onBackyardDiscovered(Integer.parseInt(bridgehandler.account.mspSystemID), names.get(i));
             }
 
             // Find Bodies of Water
@@ -250,7 +242,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         return true;
     }
 
-    public void onBackyardDiscovered(int systemID, String label, String units, String vspFormat) {
+    public void onBackyardDiscovered(int systemID, String label) {
         logger.trace("Hayward Backyard {} Discovered: {}", systemID, label);
         HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
         if (bridgehandler != null) {
@@ -259,8 +251,6 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             Map<String, Object> properties = new HashMap<>();
             properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
             properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BACKYARD);
-            properties.put(HaywardBindingConstants.PROPERTY_BOW_UNITS, String.valueOf(units));
-            properties.put(HaywardBindingConstants.PROPERTY_VSP_SPEED_FORMAT, String.valueOf(vspFormat));
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                     .withBridge(bridgehandler.getThing().getUID())
                     .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)

@@ -74,10 +74,10 @@
 	</channel-type>
 
 	<channel-type id="filterLastSpeed">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
 		<description>Last Speed</description>
-		<state readOnly="true"/>
+		<state pattern="%1f %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
