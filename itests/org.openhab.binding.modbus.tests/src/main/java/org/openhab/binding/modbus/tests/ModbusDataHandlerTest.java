@@ -801,8 +801,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         // Wait for all channels to receive the REFRESH command (initiated by the core)
         waitForAssert(
                 () -> verify((ModbusPollerThingHandler) poller.getHandler(), times(CHANNEL_TO_ACCEPTED_TYPE.size()))
-                        .refresh(),
-                2500, 50);
+                        .refresh());
         // Reset the mock
         reset(poller.getHandler());
 
@@ -811,7 +810,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         // data handler asynchronously calls the poller.refresh() -- it might take some time
         // We check that refresh is finally called
-        waitForAssert(() -> verify((ModbusPollerThingHandler) poller.getHandler()).refresh(), 2500, 50);
+        waitForAssert(() -> verify((ModbusPollerThingHandler) poller.getHandler()).refresh());
     }
 
     /**
