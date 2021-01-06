@@ -341,6 +341,9 @@ Profile has ony parameter, `bit-index`, index of the bit to be manipulated.
 Note: use the profile only with `readValueType=int16` / `writeValueType=int16`.
 Channel should be linked with `number` channel.
 
+Having multiple items linked to same register but different `bit-index` using this profile can cause race conditions if items receive commands in close succession, effectively dropping some of the commands.
+It is good to have pause between the commands so that all the internal caches are updated with the next poll of data.
+
 See examples section for a concrete use case.
 
 ### Discovery
