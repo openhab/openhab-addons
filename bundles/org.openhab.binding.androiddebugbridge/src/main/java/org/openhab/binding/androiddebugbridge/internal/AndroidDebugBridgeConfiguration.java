@@ -13,6 +13,7 @@
 package org.openhab.binding.androiddebugbridge.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link AndroidDebugBridgeConfiguration} class contains fields mapping thing configuration parameters.
@@ -21,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AndroidDebugBridgeConfiguration {
-
     /**
      * The IP address to use for connecting to the Android device.
      */
@@ -34,4 +34,12 @@ public class AndroidDebugBridgeConfiguration {
      * Time for scheduled state check.
      */
     public int refreshTime = 30;
+    /**
+     * Command timeout seconds.
+     */
+    public int timeout = 5;
+    /**
+     * Configure media state detection behavior by package
+     */
+    public @Nullable String mediaStateJSONConfig;
 }

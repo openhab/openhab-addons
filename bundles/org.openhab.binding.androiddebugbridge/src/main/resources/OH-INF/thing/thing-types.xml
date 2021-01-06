@@ -15,6 +15,8 @@
 			<channel id="start-package" typeId="start-package-channel"/>
 			<channel id="stop-package" typeId="stop-package-channel"/>
 			<channel id="current-package" typeId="current-package-channel"/>
+			<channel id="wake-lock" typeId="wake-lock-channel"/>
+			<channel id="screen-state" typeId="screen-state-channel"/>
 		</channels>
 		<representation-property>serial</representation-property>
 		<config-description>
@@ -23,14 +25,25 @@
 				<label>IP Address</label>
 				<description>Device ip address.</description>
 			</parameter>
-			<parameter name="port" type="integer" required="true">
-				<label>ADB Port</label>
+			<parameter name="port" type="integer" required="true" min="0" max="65535">
+				<label>Port</label>
 				<description>Device port listening to adb connections.</description>
+				<default>5555</default>
 			</parameter>
 			<parameter name="refreshTime" type="integer" min="10" max="120" unit="s" required="true">
 				<label>Refresh Time</label>
 				<description>Seconds between device status refreshes.</description>
 				<default>30</default>
+			</parameter>
+			<parameter name="timeout" type="integer" min="1" max="15" unit="s" required="true">
+				<label>Command Timeout</label>
+				<description>Command timeout seconds.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="mediaStateJSONConfig" type="text">
+				<label>Media State Config</label>
+				<description>JSON config that allows to modify the media state detection strategy for each app. Refer to the binding
+					documentation.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -370,6 +383,21 @@
 		<item-type>String</item-type>
 		<label>Current Package</label>
 		<description>Package name of the top application in screen</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wake-lock-channel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Wake Lock</label>
+		<description>Power Wake Lock State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="screen-state-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Screen State</label>
+		<description>Screen Power State</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

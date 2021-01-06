@@ -20,6 +20,10 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -63,14 +67,10 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         logger.debug("scan started: searching android devices");
         discoveryRunning = true;
         Enumeration<NetworkInterface> nets;
-        Dictionary<String, Object> props = getConfig();
-        if (props == null) {
+        AndroidDebugBridgeBindingConfiguration configuration = getConfig();
+        if (configuration == null) {
             return;
         }
-        int discoveryPort = Integer.parseInt((String) props.get("discoveryPort"));
-        int discoveryReachableMs = Integer.parseInt((String) props.get("discoveryReachableMs"));
-        int discoveryIpRangeMin = Integer.parseInt((String) props.get("discoveryIpRangeMin"));
-        int discoveryIpRangeMax = Integer.parseInt((String) props.get("discoveryIpRangeMax"));
         try {
             nets = NetworkInterface.getNetworkInterfaces();
             for (NetworkInterface netint : Collections.list(nets)) {
@@ -84,7 +84,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                     if (inetAddress.getHostAddress().equals(LOCAL_INTERFACE_IP))
                         continue;
                     String[] ipParts = inetAddress.getHostAddress().split("\\.");
-                    for (int i = discoveryIpRangeMin; i <= discoveryIpRangeMax; i++) {
+                    for (int i = configuration.discoveryIpRangeMin; i <= configuration.discoveryIpRangeMax; i++) {
                         if (!discoveryRunning) {
                             break;
                         }
@@ -93,12 +93,12 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                         try {
                             var currentAddress = InetAddress.getByName(currentIp);
                             logger.debug("address: {}", currentIp);
-                            if (currentAddress.isReachable(discoveryReachableMs)) {
+                            if (currentAddress.isReachable(configuration.discoveryReachableMs)) {
                                 logger.debug("Reachable ip: {}", currentIp);
                                 int retries = 0;
                                 while (retries < MAX_RETRIES) {
                                     try {
-                                        discoverWithADB(currentIp, discoveryPort);
+                                        discoverWithADB(currentIp, configuration.discoveryPort);
                                     } catch (IOException e) {
                                         String message = e.getMessage();
                                         if (message != null && message.contains("rejected by remote peer")) {
@@ -107,7 +107,8 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                                             continue;
                                         }
                                         throw e;
-                                    } catch (AndroidDebugBridgeDeviceReadException e) {
+                                    } catch (AndroidDebugBridgeDeviceReadException | TimeoutException
+                                            | ExecutionException e) {
                                         retries++;
                                         if (retries < MAX_RETRIES) {
                                             logger.debug("retrying - pending {}", MAX_RETRIES - retries);
@@ -118,8 +119,8 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                                     break;
                                 }
                             }
-                        } catch (IOException | AndroidDebugBridgeDeviceException
-                                | AndroidDebugBridgeDeviceReadException e) {
+                        } catch (IOException | AndroidDebugBridgeDeviceException | AndroidDebugBridgeDeviceReadException
+                                | TimeoutException | ExecutionException e) {
                             logger.warn("Error connecting to device at {}: {}", currentIp, e.getMessage());
                         }
                     }
@@ -130,10 +131,11 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverWithADB(String ip, int port) throws InterruptedException, IOException,
-            AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException {
-        var device = new AndroidDebugBridgeDevice();
-        device.configure(ip, port);
+    private void discoverWithADB(String ip, int port)
+            throws InterruptedException, IOException, AndroidDebugBridgeDeviceException,
+            AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
+        var device = new AndroidDebugBridgeDevice(scheduler);
+        device.configure(ip, port, 10);
         try {
             device.connect();
             logger.debug("connected adb at {}:{}", ip, port);
@@ -169,17 +171,21 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                 .withProperties(properties).withLabel(String.format("%s (%s)", model, serialNo)).build());
     }
 
-    private @Nullable Dictionary<String, Object> getConfig() {
+    private @Nullable AndroidDebugBridgeBindingConfiguration getConfig() {
         try {
             Configuration configOnline = admin.getConfiguration(BINDING_CONFIGURATION_PID, null);
-            Dictionary<String, Object> propsOnline = null;
-            if (configOnline != null && configOnline.getProperties() != null) {
-                propsOnline = configOnline.getProperties();
+            if (configOnline != null) {
+                Dictionary<String, Object> props = configOnline.getProperties();
+                if (props != null) {
+                    Map<String, Object> propMap = Collections.list(props.keys()).stream()
+                            .collect(Collectors.toMap(Function.identity(), props::get));
+                    return new org.openhab.core.config.core.Configuration(propMap)
+                            .as(AndroidDebugBridgeBindingConfiguration.class);
+                }
             }
-            return propsOnline;
         } catch (IOException e) {
             logger.warn("Unable to read configuration: {}", e.getMessage());
-            return null;
         }
+        return null;
     }
 }

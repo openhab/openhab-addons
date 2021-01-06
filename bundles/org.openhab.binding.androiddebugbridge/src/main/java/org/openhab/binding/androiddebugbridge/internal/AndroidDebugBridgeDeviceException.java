@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AndroidDebugBridgeDeviceException extends Exception {
+    private static final long serialVersionUID = 6608406239134276286L;
+
     public AndroidDebugBridgeDeviceException(String message) {
         super(message);
     }

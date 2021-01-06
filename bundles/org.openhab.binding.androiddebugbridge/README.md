@@ -6,7 +6,7 @@ If you are not familiar with adb I suggest you to search "How to enable adb over
 
 ## Supported Things
 
-This binding was tested on the FireStick (android version 7.1.2, volume control not working) and Nexus5x (android version 8.1.0, everything works nice), please update this document if you test with other android versions to reflect the compatibility of the biding. 
+This binding was tested on the Fire TV Stick (android version 7.1.2, volume control not working) and Nexus5x (android version 8.1.0, everything works nice), please update this document if you tested it with other android versions to reflect the compatibility of the biding. 
 
 ## Discovery
 
@@ -30,8 +30,27 @@ As I can not find a way to identify android devices in the network the discovery
 | Config   |  Type  | description                  |
 |----------|----------|------------------------------|
 | ip | String | Device ip address |
-| port | int | Device port listening to adb connections |
+| port | int | Device port listening to adb connections (default: 5555) |
 | refreshTime | int | Seconds between device status refreshes (default: 30) |
+| timeout | int | Command timeout in seconds (default: 5) |
+| mediaStateJSONConfig | String | Expects a JSON array. Allow to configure the media state detection method per app. Described in the following section |
+
+## Media State Detection
+
+You can configure different modes to detect when the device is playing media depending on the current app.
+
+The available modes are:
+
+* idle: assert not playing, avoid command execution.
+* media_state: detect play status by dumping the media_session service. This is the default for not configured apps 
+* audio: detect play status by dumping the audio service.
+* wake_lock: detect play status by comparing the power wake lock state with the values provided in 'wakeLockPlayStates'
+
+The configuration depends on the application, device and version used.
+
+This is a sample of the mediaStateJSONConfig thing configuration:
+
+`[{"name": "com.amazon.tv.launcher", "mode": "idle"},{"name": "org.jellyfin.androidtv", "mode": "wake_lock", "wakeLockPlayStates": [2,3]},{"name": "com.amazon.firetv.youtube", "mode": "wake_lock", "wakeLockPlayStates": [2]}]`
 
 ## Channels
 
@@ -44,6 +63,8 @@ As I can not find a way to identify android devices in the network the discovery
 | start-package  | String | Run application by package name |
 | stop-package  | String | Stop application by package name |
 | current-package  | String | Package name of the top application in screen |
+| wake-lock  | Number | Power wake lock value |
+| screen-state  | Switch | Screen power state |
 
 #### Available key-event values:
 
