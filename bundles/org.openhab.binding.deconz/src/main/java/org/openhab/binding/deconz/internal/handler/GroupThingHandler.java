@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,8 +76,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                 }
                 break;
             case CHANNEL_ALERT:
-                if (command instanceof OnOffType) {
-                    newGroupAction.alert = command == OnOffType.ON ? "alert" : "none";
+                if (command instanceof StringType) {
+                    newGroupAction.alert = command.toString();
                 } else {
                     return;
                 }
@@ -113,7 +113,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                 if (command instanceof StringType) {
                     String sceneId = scenes.get(command.toString());
                     if (sceneId != null) {
-                        sendCommand(null, command, channelUID, "scene/" + sceneId + "/recall", null);
+                        sendCommand(null, command, channelUID, "scenes/" + sceneId + "/recall", null);
                     } else {
                         logger.debug("Ignoring command {} for {}, scene is not found in available scenes: {}", command,
                                 channelUID, scenes);

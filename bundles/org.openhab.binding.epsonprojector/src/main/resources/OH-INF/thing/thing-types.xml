@@ -56,7 +56,8 @@
 
 	<thing-type id="projector-tcp">
 		<label>Epson Projector - TCP/IP</label>
-		<description>An Epson projector which supports the ESC/VP21 protocol via a serial over IP connection</description>
+		<description>An Epson projector which supports the ESC/VP21 protocol via the built-in ethernet port or a serial over
+			IP connection</description>
 
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -89,15 +90,18 @@
 			<channel id="errmessage" typeId="errmessage"/>
 		</channels>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
 				<context>network-address</context>
-				<description>IP address for the serial over IP device</description>
+				<description>IP address for the projector or serial over IP device</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="true">
 				<label>Port</label>
-				<description>Port for the serial over IP device</description>
+				<description>Port for the projector or serial over IP device</description>
+				<default>3629</default>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
 				<label>Polling interval</label>

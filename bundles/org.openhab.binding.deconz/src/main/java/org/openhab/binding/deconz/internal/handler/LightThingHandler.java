@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,6 +116,9 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 needsPropertyUpdate = true;
             }
         }
+        ThingConfig thingConfig = getConfigAs(ThingConfig.class);
+        colorMode = thingConfig.colormode;
+
         super.initialize();
     }
 
@@ -132,8 +135,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_ALERT:
-                if (command instanceof OnOffType) {
-                    newLightState.alert = command == OnOffType.ON ? "alert" : "none";
+                if (command instanceof StringType) {
+                    newLightState.alert = command.toString();
                 } else {
                     return;
                 }
@@ -360,7 +363,10 @@ public class LightThingHandler extends DeconzBaseThingHandler {
 
         switch (channelId) {
             case CHANNEL_ALERT:
-                updateState(channelId, "alert".equals(newState.alert) ? OnOffType.ON : OnOffType.OFF);
+                String alert = newState.alert;
+                if (alert != null) {
+                    updateState(channelId, new StringType(alert));
+                }
                 break;
             case CHANNEL_SWITCH:
             case CHANNEL_LOCK:

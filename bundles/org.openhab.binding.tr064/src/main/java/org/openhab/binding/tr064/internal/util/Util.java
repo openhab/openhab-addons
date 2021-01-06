@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -217,7 +217,10 @@ public class Util {
                         } else {
                             // create a channel for each parameter
                             parameters.forEach(parameter -> {
-                                String normalizedParameter = UIDUtils.encode(parameter);
+                                // remove comment: split parameter at '#', discard everything after that and remove
+                                // trailing spaces
+                                String rawParameter = parameter.split("#")[0].trim();
+                                String normalizedParameter = UIDUtils.encode(rawParameter);
                                 ChannelUID channelUID = new ChannelUID(thing.getUID(),
                                         channelId + "_" + normalizedParameter);
                                 ChannelBuilder channelBuilder = ChannelBuilder
@@ -226,7 +229,7 @@ public class Util {
                                         .withLabel(channelTypeDescription.getLabel() + " " + parameter);
                                 thingBuilder.withChannel(channelBuilder.build());
                                 Tr064ChannelConfig channelConfig1 = new Tr064ChannelConfig(channelConfig);
-                                channelConfig1.setParameter(parameter);
+                                channelConfig1.setParameter(rawParameter);
                                 channels.put(channelUID, channelConfig1);
                             });
                         }
@@ -259,7 +262,15 @@ public class Util {
             // validate parameter against pattern
             String parameterPattern = parameter.getPattern();
             if (parameterPattern != null) {
-                parameters.removeIf(param -> !param.matches(parameterPattern));
+                parameters.removeIf(param -> {
+                    if (!param.matches(parameterPattern)) {
+                        LOGGER.warn("Removing {} while processing {}, does not match pattern {}, check config.", param,
+                                channelId, parameterPattern);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
             }
 
             // validate parameter against SCPD (if not internal only)

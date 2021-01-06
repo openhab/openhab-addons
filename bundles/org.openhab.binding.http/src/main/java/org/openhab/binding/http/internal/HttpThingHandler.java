@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.http.internal;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -35,22 +33,10 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
 import org.openhab.binding.http.internal.config.HttpChannelMode;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
-import org.openhab.binding.http.internal.converter.AbstractTransformingItemConverter;
-import org.openhab.binding.http.internal.converter.ColorItemConverter;
-import org.openhab.binding.http.internal.converter.DimmerItemConverter;
-import org.openhab.binding.http.internal.converter.FixedValueMappingItemConverter;
-import org.openhab.binding.http.internal.converter.GenericItemConverter;
-import org.openhab.binding.http.internal.converter.ImageItemConverter;
-import org.openhab.binding.http.internal.converter.ItemValueConverter;
-import org.openhab.binding.http.internal.converter.PlayerItemConverter;
-import org.openhab.binding.http.internal.converter.RollershutterItemConverter;
-import org.openhab.binding.http.internal.http.Content;
-import org.openhab.binding.http.internal.http.HttpAuthException;
-import org.openhab.binding.http.internal.http.HttpResponseListener;
-import org.openhab.binding.http.internal.http.RefreshingUrlCache;
+import org.openhab.binding.http.internal.converter.*;
+import org.openhab.binding.http.internal.http.*;
 import org.openhab.binding.http.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -81,13 +67,13 @@ public class HttpThingHandler extends BaseThingHandler {
     private final ValueTransformationProvider valueTransformationProvider;
     private final HttpClientProvider httpClientProvider;
     private HttpClient httpClient;
+    private RateLimitedHttpClient rateLimitedHttpClient;
     private final HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider;
 
     private HttpThingConfig config = new HttpThingConfig();
     private final Map<String, RefreshingUrlCache> urlHandlers = new HashMap<>();
     private final Map<ChannelUID, ItemValueConverter> channels = new HashMap<>();
     private final Map<ChannelUID, String> channelUrls = new HashMap<>();
-    private @Nullable Authentication authentication;
 
     public HttpThingHandler(Thing thing, HttpClientProvider httpClientProvider,
             ValueTransformationProvider valueTransformationProvider,
@@ -95,6 +81,7 @@ public class HttpThingHandler extends BaseThingHandler {
         super(thing);
         this.httpClientProvider = httpClientProvider;
         this.httpClient = httpClientProvider.getSecureClient();
+        this.rateLimitedHttpClient = new RateLimitedHttpClient(httpClient, scheduler);
         this.valueTransformationProvider = valueTransformationProvider;
         this.httpDynamicStateDescriptionProvider = httpDynamicStateDescriptionProvider;
     }
@@ -139,28 +126,54 @@ public class HttpThingHandler extends BaseThingHandler {
                     "Parameter baseURL must not be empty!");
             return;
         }
-        authentication = null;
+
+        // check SSL handling and initialize client
+        if (config.ignoreSSLErrors) {
+            logger.info("Using the insecure client for thing '{}'.", thing.getUID());
+            httpClient = httpClientProvider.getInsecureClient();
+        } else {
+            logger.info("Using the secure client for thing '{}'.", thing.getUID());
+            httpClient = httpClientProvider.getSecureClient();
+        }
+        rateLimitedHttpClient.setHttpClient(httpClient);
+        rateLimitedHttpClient.setDelay(config.delay);
+
+        int channelCount = thing.getChannels().size();
+        if (channelCount * config.delay > config.refresh * 1000) {
+            // this should prevent the rate limit queue from filling up
+            config.refresh = (channelCount * config.delay) / 1000 + 1;
+            logger.warn(
+                    "{} channels in thing {} with a delay of {} incompatible with the configured refresh time. Refresh-Time increased to the minimum of {}",
+                    channelCount, thing.getUID(), config.delay, config.refresh);
+        }
+
+        // remove empty headers
+        config.headers.removeIf(String::isBlank);
+
+        // configure authentication
         if (!config.username.isEmpty()) {
             try {
+                AuthenticationStore authStore = httpClient.getAuthenticationStore();
                 URI uri = new URI(config.baseURL);
                 switch (config.authMode) {
+                    case BASIC_PREEMPTIVE:
+                        config.headers.add("Authorization=Basic " + Base64.getEncoder()
+                                .encodeToString((config.username + ":" + config.password).getBytes()));
+                        logger.debug("Preemptive Basic Authentication configured for thing '{}'", thing.getUID());
+                        break;
                     case BASIC:
-                        authentication = new BasicAuthentication(uri, Authentication.ANY_REALM, config.username,
-                                config.password);
+                        authStore.addAuthentication(new BasicAuthentication(uri, Authentication.ANY_REALM,
+                                config.username, config.password));
                         logger.debug("Basic Authentication configured for thing '{}'", thing.getUID());
                         break;
                     case DIGEST:
-                        authentication = new DigestAuthentication(uri, Authentication.ANY_REALM, config.username,
-                                config.password);
+                        authStore.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM,
+                                config.username, config.password));
                         logger.debug("Digest Authentication configured for thing '{}'", thing.getUID());
                         break;
                     default:
                         logger.warn("Unknown authentication method '{}' for thing '{}'", config.authMode,
                                 thing.getUID());
-                }
-                if (authentication != null) {
-                    AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                    authStore.addAuthentication(authentication);
                 }
             } catch (URISyntaxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -170,14 +183,7 @@ public class HttpThingHandler extends BaseThingHandler {
             logger.debug("No authentication configured for thing '{}'", thing.getUID());
         }
 
-        if (config.ignoreSSLErrors) {
-            logger.info("Using the insecure client for thing '{}'.", thing.getUID());
-            httpClient = httpClientProvider.getInsecureClient();
-        } else {
-            logger.info("Using the secure client for thing '{}'.", thing.getUID());
-            httpClient = httpClientProvider.getSecureClient();
-        }
-
+        // create channels
         thing.getChannels().forEach(this::createChannel);
 
         updateStatus(ThingStatus.ONLINE);
@@ -187,6 +193,7 @@ public class HttpThingHandler extends BaseThingHandler {
     public void dispose() {
         // stop update tasks
         urlHandlers.values().forEach(RefreshingUrlCache::stop);
+        rateLimitedHttpClient.shutdown();
 
         // clear lists
         urlHandlers.clear();
@@ -244,8 +251,8 @@ public class HttpThingHandler extends BaseThingHandler {
                 itemValueConverter = createGenericItemConverter(commandUrl, channelUID, channelConfig, PointType::new);
                 break;
             case "Number":
-                itemValueConverter = createGenericItemConverter(commandUrl, channelUID, channelConfig,
-                        DecimalType::new);
+                itemValueConverter = createItemConverter(NumberItemConverter::new, commandUrl, channelUID,
+                        channelConfig);
                 break;
             case "Player":
                 itemValueConverter = createItemConverter(PlayerItemConverter::new, commandUrl, channelUID,
@@ -266,7 +273,9 @@ public class HttpThingHandler extends BaseThingHandler {
         channels.put(channelUID, itemValueConverter);
         if (channelConfig.mode != HttpChannelMode.WRITEONLY) {
             channelUrls.put(channelUID, stateUrl);
-            urlHandlers.computeIfAbsent(stateUrl, url -> new RefreshingUrlCache(scheduler, httpClient, url, config))
+            urlHandlers
+                    .computeIfAbsent(stateUrl,
+                            url -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, url, config))
                     .addConsumer(itemValueConverter::process);
         }
 
@@ -285,10 +294,10 @@ public class HttpThingHandler extends BaseThingHandler {
     private void sendHttpValue(String commandUrl, String command, boolean isRetry) {
         try {
             // format URL
-            URI finalUrl = new URI(String.format(commandUrl, new Date(), command));
+            URI uri = Util.uriFromString(String.format(commandUrl, new Date(), command));
 
             // build request
-            Request request = httpClient.newRequest(finalUrl).timeout(config.timeout, TimeUnit.MILLISECONDS)
+            Request request = httpClient.newRequest(uri).timeout(config.timeout, TimeUnit.MILLISECONDS)
                     .method(config.commandMethod);
             if (config.commandMethod != HttpMethod.GET) {
                 final String contentType = config.contentType;
@@ -309,30 +318,30 @@ public class HttpThingHandler extends BaseThingHandler {
             });
 
             if (logger.isTraceEnabled()) {
-                logger.trace("Sending to '{}': {}", finalUrl, Util.requestToLogString(request));
+                logger.trace("Sending to '{}': {}", uri, Util.requestToLogString(request));
             }
 
             CompletableFuture<@Nullable Content> f = new CompletableFuture<>();
             f.exceptionally(e -> {
                 if (e instanceof HttpAuthException) {
                     if (isRetry) {
-                        logger.warn("Retry after authentication failure failed again for '{}', failing here", finalUrl);
+                        logger.warn("Retry after authentication failure failed again for '{}', failing here", uri);
                     } else {
                         AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                        Authentication.Result authResult = authStore.findAuthenticationResult(finalUrl);
+                        Authentication.Result authResult = authStore.findAuthenticationResult(uri);
                         if (authResult != null) {
                             authStore.removeAuthenticationResult(authResult);
-                            logger.debug("Cleared authentication result for '{}', retrying immediately", finalUrl);
+                            logger.debug("Cleared authentication result for '{}', retrying immediately", uri);
                             sendHttpValue(commandUrl, command, true);
                         } else {
-                            logger.warn("Could not find authentication result for '{}', failing here", finalUrl);
+                            logger.warn("Could not find authentication result for '{}', failing here", uri);
                         }
                     }
                 }
                 return null;
             });
             request.send(new HttpResponseListener(f, null, config.bufferSize));
-        } catch (IllegalArgumentException | URISyntaxException e) {
+        } catch (IllegalArgumentException | URISyntaxException | MalformedURLException e) {
             logger.warn("Creating request for '{}' failed: {}", commandUrl, e.getMessage());
         }
     }

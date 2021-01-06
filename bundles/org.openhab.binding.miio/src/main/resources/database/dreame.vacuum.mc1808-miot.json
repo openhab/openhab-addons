@@ -167,7 +167,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Charging\",\"1\"\u003d\"Not Charging\",\"1\"\u003d\"Charging\",\"1\"\u003d\"Go Charging\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Go Charging\"]"
 			},
 			{
 				"property": "fault",
@@ -187,7 +187,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"No faults\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\"]"
 			},
 			{
 				"property": "status",
@@ -227,7 +227,11 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"1\"\u003d\"Idle\",\"1\"\u003d\"Paused\",\"1\"\u003d\"Error\",\"1\"\u003d\"Go Charging\",\"1\"\u003d\"Charging\"]"
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Go Charging\",\"6\"\u003d\"Charging\"]"
 			},
 			{
 				"property": "brush-left-time",
@@ -395,7 +399,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"quiet\",\"1\"\u003d\"standard\",\"1\"\u003d\"medium\",\"1\"\u003d\"strong\"]"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"quiet\",\"1\"\u003d\"standard\",\"2\"\u003d\"medium\",\"3\"\u003d\"strong\"]"
 			},
 			{
 				"property": "total-clean-time",
@@ -491,7 +498,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"\",\"1\"\u003d\"\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"in progress\",\"1\"\u003d\"done\"]"
 			},
 			{
 				"property": "life-sieve",

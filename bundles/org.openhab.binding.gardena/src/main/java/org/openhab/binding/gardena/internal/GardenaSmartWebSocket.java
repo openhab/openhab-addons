@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,8 @@ public class GardenaSmartWebSocket {
         this.token = token;
         this.socketId = socketId;
 
-        webSocketClient = webSocketFactory.createWebSocketClient(socketId);
+        String webSocketId = String.valueOf(hashCode());
+        webSocketClient = webSocketFactory.createWebSocketClient(webSocketId);
         webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
         webSocketClient.setStopTimeout(3000);
         webSocketClient.setMaxIdleTimeout(150000);

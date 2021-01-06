@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements IWebSocketCommandHandler, IAmazonThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
-    private Storage<String> stateStorage;
+    private final Storage<String> stateStorage;
     private @Nullable Connection connection;
     private @Nullable WebSocketConnection webSocketConnection;
 
@@ -220,7 +220,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     public void addEchoHandler(EchoHandler echoHandler) {
         if (echoHandlers.add(echoHandler)) {
-
             forceCheckData();
         }
     }
@@ -651,7 +650,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         if (devices != null) {
             return devices;
         }
-        return Collections.emptyList();
+        return List.of();
     }
 
     public void setEnabledFlashBriefingsJson(String flashBriefingJson) {
@@ -909,9 +908,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 return;
             }
             List<SmartHomeBaseDevice> allDevices = getLastKnownSmartHomeDevices();
-            Set<String> applianceIds = new HashSet<>();
+            Set<SmartHomeBaseDevice> targetDevices = new HashSet<>();
             if (deviceFilterId != null) {
-                applianceIds.add(deviceFilterId);
+                allDevices.stream().filter(d -> deviceFilterId.equals(d.findId())).findFirst()
+                        .ifPresent(targetDevices::add);
             } else {
                 SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator = this.smartHomeDeviceStateGroupUpdateCalculator;
                 if (smartHomeDeviceStateGroupUpdateCalculator == null) {
@@ -928,18 +928,13 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             .forEach(devicesToUpdate::add);
                 }
                 smartHomeDeviceStateGroupUpdateCalculator.removeDevicesWithNoUpdate(devicesToUpdate);
-                devicesToUpdate.stream().map(shd -> shd.applianceId).forEach(applianceId -> {
-                    if (applianceId != null) {
-                        applianceIds.add(applianceId);
-                    }
-                });
-                if (applianceIds.isEmpty()) {
+                devicesToUpdate.stream().filter(Objects::nonNull).forEach(targetDevices::add);
+                if (targetDevices.isEmpty()) {
                     return;
                 }
-
             }
             Map<String, JsonArray> applianceIdToCapabilityStates = connection
-                    .getSmartHomeDeviceStatesJson(applianceIds);
+                    .getSmartHomeDeviceStatesJson(targetDevices);
 
             for (SmartHomeDeviceHandler smartHomeDeviceHandler : smartHomeDeviceHandlers) {
                 String id = smartHomeDeviceHandler.getId();

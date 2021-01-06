@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -181,7 +181,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
 
     @SuppressWarnings("null")
     public void updateStatus(Monitor m) {
-        logger.debug("Monitor {}: Updating: {}", m.getId(), m.toString());
+        logger.debug("Monitor {}: Updating Monitor: {}", m.getId(), m);
         updateChannelState(CHANNEL_ID, new StringType(m.getId()));
         updateChannelState(CHANNEL_NAME, new StringType(m.getName()));
         updateChannelState(CHANNEL_FUNCTION, new StringType(m.getFunction()));
@@ -198,25 +198,26 @@ public class ZmMonitorHandler extends BaseThingHandler {
         if (!m.isAlarm()) {
             updateChannelState(CHANNEL_TRIGGER_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
         }
-        Event event = m.getLastEvent();
+        Event event = m.getMostRecentCompletedEvent();
         if (event == null) {
+            // No most recent event, so clear out the event channels
             clearEventChannels();
-        } else if (event.getEnd() != null) {
-            // If end is null, assume event hasn't completed yet
-            logger.trace("Monitor {}: Id:{}, Frames:{}, AlarmFrames:{}, Length:{}", m.getId(), event.getId(),
-                    event.getFrames(), event.getAlarmFrames(), event.getLength());
-            updateChannelState(CHANNEL_EVENT_ID, new StringType(event.getId()));
-            updateChannelState(CHANNEL_EVENT_NAME, new StringType(event.getName()));
-            updateChannelState(CHANNEL_EVENT_CAUSE, new StringType(event.getCause()));
-            updateChannelState(CHANNEL_EVENT_NOTES, new StringType(event.getNotes()));
-            updateChannelState(CHANNEL_EVENT_START, new DateTimeType(
-                    ZonedDateTime.ofInstant(event.getStart().toInstant(), timeZoneProvider.getTimeZone())));
-            updateChannelState(CHANNEL_EVENT_END, new DateTimeType(
-                    ZonedDateTime.ofInstant(event.getEnd().toInstant(), timeZoneProvider.getTimeZone())));
-            updateChannelState(CHANNEL_EVENT_FRAMES, new DecimalType(event.getFrames()));
-            updateChannelState(CHANNEL_EVENT_ALARM_FRAMES, new DecimalType(event.getAlarmFrames()));
-            updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<Time>(event.getLength(), Units.SECOND));
+            return;
         }
+        // Update channels for most recent completed event
+        logger.debug("Monitor {}: Updating Event Id:{}, Name:{}, Frames:{}, AlarmFrames:{}, Length:{}", m.getId(),
+                event.getId(), event.getName(), event.getFrames(), event.getAlarmFrames(), event.getLength());
+        updateChannelState(CHANNEL_EVENT_ID, new StringType(event.getId()));
+        updateChannelState(CHANNEL_EVENT_NAME, new StringType(event.getName()));
+        updateChannelState(CHANNEL_EVENT_CAUSE, new StringType(event.getCause()));
+        updateChannelState(CHANNEL_EVENT_NOTES, new StringType(event.getNotes()));
+        updateChannelState(CHANNEL_EVENT_START, new DateTimeType(
+                ZonedDateTime.ofInstant(event.getStart().toInstant(), timeZoneProvider.getTimeZone())));
+        updateChannelState(CHANNEL_EVENT_END,
+                new DateTimeType(ZonedDateTime.ofInstant(event.getEnd().toInstant(), timeZoneProvider.getTimeZone())));
+        updateChannelState(CHANNEL_EVENT_FRAMES, new DecimalType(event.getFrames()));
+        updateChannelState(CHANNEL_EVENT_ALARM_FRAMES, new DecimalType(event.getAlarmFrames()));
+        updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<Time>(event.getLength(), Units.SECOND));
     }
 
     private void clearEventChannels() {
@@ -254,6 +255,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
     }
 
     private void startImageRefreshJob() {
+        stopImageRefreshJob();
         Integer interval = imageRefreshIntervalSeconds;
         if (interval != null) {
             long delay = getRandomDelay(interval);

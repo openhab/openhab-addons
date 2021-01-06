@@ -4,15 +4,9 @@ This binding uses the [OpenUV Index API service](https://www.openuv.io/) for pro
 
 To use this binding, you first need to [register and get your API token](https://www.openuv.io/auth/google).
 
-## Binding Installation
-
-This binding can be installed via the Add-ons section of the Paper UI. 
-
-Go to Bindings and search for `OpenUV`. Click on install. 
-
 ## Discovery
 
-Once a bridge with the api Key has been created, Local UV Index informations can be autodiscovered based on system location.
+Once a bridge with the api Key has been created, Local UV Index informations can be auto discovered based on system location.
 
 ## Binding Configuration
 
@@ -100,4 +94,3 @@ Number:Angle        Elevation "Elevation" {channel="astro:sun:home:position#elev
                                            channel="openuv:uvreport:local:city1:elevation" [profile="follow"] }
 
 ```
-

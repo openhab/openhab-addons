@@ -1,7 +1,7 @@
 # MAX! Binding
 
 This is the binding for the [eQ-3 MAX! Home Solution](http://www.eq-3.de/).
-This binding allows you to integrate, view and control the MAX! Thermostats in the openHAB environment
+This binding allows you to integrate, view and control the MAX! Thermostats, Ecoswitch and Shuttercontact things.
 
 ## Supported Things
 
@@ -10,29 +10,25 @@ This binding support 6 different things types
 | Thing          | Type   | Description                                                                                                        |
 |----------------|--------|--------------------------------------------------------------------------------------------------------------------|
 | bridge         | Bridge | This is the MAX! Cube LAN gateway.                                                                                 |
-| thermostat     | Thing  | This is for the MAX! Heating Thermostat. This is also used for the powerplug switch "Zwischenstecker-Schaltaktor". |
+| thermostat     | Thing  | This is for the MAX! Heating Thermostat. This is also used for the power plug switch "Zwischenstecker-Schaltaktor". |
 | thermostatplus | Thing  | This is for the MAX! Heating Thermostat+. This is the type that can hold the program by itself.                    |
 | wallthermostat | Thing  | MAX! Wall Thermostat.                                                                                              |
 | ecoswitch      | Thing  | MAX! Ecoswitch.                                                                                                    |
 | shuttercontact | Thing  | MAX! Shuttercontact / Window Contact.                                                                              |
-
 
 Generally one does not have to worry about the thing types as they are automatically defined.
 If for any reason you need to manually define the Things and you are not exactly sure what type of thermostat you have, you can choose `thermostat` for both the thermostat and thermostat+, this will not affect their working.
 
 ## Discovery
 
-The discovery process for the MAX! binding works in 2 steps.
-When the binding is started or when manually triggered, the network is queried for the existence of a MAX! Cube LAN gateway.
-When the Cube is found, it will become available in the discovery inbox. Periodically the network is queried again for a Cube.
+When the bindings discovery is triggered, the network is queried for the existence of a MAX! Cube LAN gateway.
+When the Cube is found, it will become available in the inbox. 
 
-Once the Cube is available in openHAB, all the devices connected to it are discovered and added to the discovery inbox.
-No scan is needed to trigger this.
+After the Cube `bridge` is available in openHAB, all the devices connected to it are discovered and added to the inbox.
 
 ## Binding Configuration
 
-In the openHAB2 version of this binding there are no binding wide settings.
-All the configuration settings are now per MAX! Cube, hence in case you have multiple Cubes, they can run with alternative settings.
+There are no binding wide settings as all configuration settings are now per MAX! Cube, hence in case you have multiple Cubes, they can run with alternative settings.
 
 ## Thing Configuration
 
@@ -107,13 +103,13 @@ Please be aware that the actual temperature measure for thermostats is only upda
 Hence the temperature you see may be hours old.
 In that case you can update the temperature by changing the mode, wait approximately 2 minutes and change the mode back.
 There is an experimental mode that does this automatically.
-This can be enabled by showing the "advanced settings" (e.g. in HABmin UI).
+This can be enabled by ticking "Show advanced".
 Then the "Actual Temperature Refresh Rate" can be set.
 Minimum refresh rate once/10 minutes, recommended 60min to avoid excessive battery drain.
 
 ## New Device Inclusion
 
-When clicking the discovery button for MAX! devices manually in the UI, you  will start New Device Inclusion mode for 60seconds.
+When clicking the discovery button for MAX! devices manually in the UI, you  will start New Device Inclusion mode for 60 seconds.
 During this time, holding the _boost_ button on your device will link it to the Cube.
 
 ## Device Configuration
@@ -128,10 +124,6 @@ _Cube device configurable parameters_
 *   _ntpServer1_ The hostname for NTP Server 1 used by the Cube to get the time
 *   _ntpServer2_ The hostname for NTP Server 2 used by the Cube to get the time
 
-## Action Buttons (visible in HABmin)
-
-The Action Buttons are deprecated and will be removed in a future version.
-
 ## Thing Actions
 
 Several Thing Actions are available to trigger special actions on the MAX! Cube
@@ -143,9 +135,6 @@ Several Thing Actions are available to trigger special actions on the MAX! Cube
 On the MAX! devices you can trigger the following action
 
 *   `deleteFromCube()`: _Delete Device from Cube_ deletes the device from the MAX! Cube. Device will need to be included again!
-
-Note: In Paper UI there are no action buttons.
-You can trigger these actions changing from 'No Action' in the dropdown to the action value.
 
 ### Example Rule
 

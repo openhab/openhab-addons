@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,6 @@ public class DataTypeBoolean implements ComfoAirDataType {
         } else {
             int[] readReplyDataPos = commandType.getReadReplyDataPos();
             int readReplyDataBits = commandType.getReadReplyDataBits();
-            int readCommand = commandType.getReadCommand();
             boolean result;
 
             if (readReplyDataPos != null && readReplyDataPos[0] < data.length) {
@@ -59,8 +58,6 @@ public class DataTypeBoolean implements ComfoAirDataType {
                     result = (data[readReplyDataPos[0]] & readReplyDataBits) == readReplyDataBits;
                 }
                 return OnOffType.from(result);
-            } else if (readCommand == 0) {
-                return OnOffType.OFF; // handle write-only commands (resets)
             } else {
                 return UnDefType.NULL;
             }

@@ -31,6 +31,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -69,7 +73,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "alarm"
 			},
 			{
 				"property": "countdown-time",
@@ -94,10 +99,14 @@
 				"piid": 7,
 				"friendlyName": "Environment - Relative Humidity",
 				"channel": "relative-humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "temperature",
@@ -122,7 +131,6 @@
 				"piid": 1,
 				"friendlyName": "Indicator Light - Brightness",
 				"channel": "brightness",
-				"channelType": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
 				"actions": [
@@ -130,6 +138,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -158,7 +171,8 @@
 				"type": "Number:Time",
 				"unit": "seconds",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "country-code",
@@ -220,7 +234,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Unknown\",\"1\"\u003d\"US\",\"1\"\u003d\"KR\",\"1\"\u003d\"EU\",\"1\"\u003d\"JP\",\"1\"\u003d\"RU\",\"1\"\u003d\"CN\",\"1\"\u003d\"HK\",\"1\"\u003d\"TW\",\"1\"\u003d\"FR\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Unknown\",\"1\"\u003d\"US\",\"82\"\u003d\"KR\",\"44\"\u003d\"EU\",\"81\"\u003d\"JP\",\"7\"\u003d\"RU\",\"86\"\u003d\"CN\",\"852\"\u003d\"HK\",\"886\"\u003d\"TW\",\"33\"\u003d\"FR\"]"
 			}
 		],
 		"experimental": true

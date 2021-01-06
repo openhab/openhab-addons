@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -161,6 +161,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
+        updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
     }
 
     @Override
@@ -227,9 +228,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
-        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()) {
+        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
+                && !command.toString().contentEquals("-")) {
             sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
-            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), UnDefType.UNDEF);
+            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
             forceStatusUpdate();
             return;
         }

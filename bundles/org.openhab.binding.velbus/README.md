@@ -12,7 +12,6 @@ Pushbutton, temperature sensors and input module states are retrieved and made a
 
 ## Supported Things
 
-
 A Velbus configuration module (e.g. VMBRSUSB) or a network server (e.g. [VelServer](https://github.com/StefCoene/velserver/wiki/TCP-server-for-Velbus)) is required as a "bridge" for accessing any other Velbus devices.
 
 The supported Velbus devices are:
@@ -21,7 +20,7 @@ The supported Velbus devices are:
 vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
 ```
 
-The type of a specific device can be found in the configuration section for things in the Paper UI. 
+The type of a specific device can be found in the configuration section for things in the UI. 
 It is part of the unique thing id which could look like:
 
 ```
@@ -41,7 +40,7 @@ The discovery scan will also retrieve the channel names of the Velbus devices.
 
 ## Thing Configuration
 
-The Velbus bridge needs to be added first in the things file or through Paper UI.
+The Velbus bridge needs to be added first.
 
 For the Velbus Serial Bridge it is necessary to specify the serial port device used for communication.
 On Linux systems, this will usually be either `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a higher  number than `0` if multiple devices are present).

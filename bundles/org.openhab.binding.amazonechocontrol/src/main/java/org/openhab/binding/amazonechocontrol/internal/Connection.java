@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,20 +26,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -1052,15 +1039,13 @@ public class Connection {
     }
 
     public List<Device> getDeviceList() throws IOException, URISyntaxException, InterruptedException {
-        String json = getDeviceListJson();
-        JsonDevices devices = parseJson(json, JsonDevices.class);
-        if (devices != null) {
-            Device[] result = devices.devices;
-            if (result != null) {
-                return new ArrayList<>(Arrays.asList(result));
-            }
-        }
-        return Collections.emptyList();
+        JsonDevices devices = Objects.requireNonNull(parseJson(getDeviceListJson(), JsonDevices.class));
+        logger.trace("Devices {}", devices.devices);
+
+        // @Nullable because of a limitation of the null-checker, we filter null-serialNumbers before
+        Set<@Nullable String> serialNumbers = ConcurrentHashMap.newKeySet();
+        return devices.devices.stream().filter(d -> d.serialNumber != null && serialNumbers.add(d.serialNumber))
+                .collect(Collectors.toList());
     }
 
     public String getDeviceListJson() throws IOException, URISyntaxException, InterruptedException {
@@ -1068,15 +1053,30 @@ public class Connection {
         return json;
     }
 
-    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<String> applianceIds)
+    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<SmartHomeBaseDevice> devices)
             throws IOException, URISyntaxException, InterruptedException {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
-        for (String applianceId : applianceIds) {
-            JsonObject stateRequest = new JsonObject();
-            stateRequest.addProperty("entityId", applianceId);
-            stateRequest.addProperty("entityType", "APPLIANCE");
-            stateRequests.add(stateRequest);
+        Map<String, String> mergedApplianceMap = new HashMap<>();
+        for (SmartHomeBaseDevice device : devices) {
+            String applianceId = device.findId();
+            if (applianceId != null) {
+                JsonObject stateRequest;
+                if (device instanceof SmartHomeDevice && !((SmartHomeDevice) device).mergedApplianceIds.isEmpty()) {
+                    for (String idToMerge : ((SmartHomeDevice) device).mergedApplianceIds) {
+                        mergedApplianceMap.put(idToMerge, applianceId);
+                        stateRequest = new JsonObject();
+                        stateRequest.addProperty("entityId", idToMerge);
+                        stateRequest.addProperty("entityType", "APPLIANCE");
+                        stateRequests.add(stateRequest);
+                    }
+                } else {
+                    stateRequest = new JsonObject();
+                    stateRequest.addProperty("entityId", applianceId);
+                    stateRequest.addProperty("entityType", "APPLIANCE");
+                    stateRequests.add(stateRequest);
+                }
+            }
         }
         requestObject.add("stateRequests", stateRequests);
         String requestBody = requestObject.toString();
@@ -1089,10 +1089,21 @@ public class Connection {
         for (JsonElement deviceState : deviceStates) {
             JsonObject deviceStateObject = deviceState.getAsJsonObject();
             JsonObject entity = deviceStateObject.get("entity").getAsJsonObject();
-            String applicanceId = entity.get("entityId").getAsString();
+            String applianceId = entity.get("entityId").getAsString();
             JsonElement capabilityState = deviceStateObject.get("capabilityStates");
             if (capabilityState != null && capabilityState.isJsonArray()) {
-                result.put(applicanceId, capabilityState.getAsJsonArray());
+                String realApplianceId = mergedApplianceMap.get(applianceId);
+                if (realApplianceId != null) {
+                    var capabilityArray = result.get(realApplianceId);
+                    if (capabilityArray != null) {
+                        capabilityArray.addAll(capabilityState.getAsJsonArray());
+                        result.put(realApplianceId, capabilityArray);
+                    } else {
+                        result.put(realApplianceId, capabilityState.getAsJsonArray());
+                    }
+                } else {
+                    result.put(applianceId, capabilityState.getAsJsonArray());
+                }
             }
         }
         return result;

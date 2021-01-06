@@ -9,15 +9,15 @@ Through this mapping, in your rules (local server), you can take actions based u
 
 One use of this binding is to distribute your home automation system on multiple openHAB servers.
 
-Another use is for users to interact with older versions of openHAB that may support old openHAB v1 bindings that were not migrated to openHAB v2 or openHAB v3.
-They can keep an openHAB v2 server to run their old openHAB v1 bindings and setup a new openHAB v3 server for everything else.
-The Remote openHAB binding installed on the openHAB v3 server will then allow to use the openHAB v1 bindings through communication with the openHAB v2 server.
+Another use is for users to interact with older versions of openHAB that may support old openHAB v1 bindings that were not migrated to openHAB v2 or openHAB v3.
+They can keep an openHAB v2 server to run their old openHAB v1 bindings and setup a new openHAB v3 server for everything else.
+The Remote openHAB binding installed on the openHAB v3 server will then allow to use the openHAB v1 bindings through communication with the openHAB v2 server.
 
-A third usage is for users that would like to keep unchanged an existing openHAB v2 server but would like to use the new UI from openHAB v3; they can simply setup a new openHAB v3 server with the Remote openHAB binding linked to their openHAB v2 server.
+A third usage is for users that would like to keep unchanged an existing openHAB v2 server but would like to use the new UI from openHAB v3; they can simply setup a new openHAB v3 server with the Remote openHAB binding linked to their openHAB v2 server.
 
 ## Supported Things
 
-There is two supported things : the `server` bridge thing representing a remote openHAB server and the `thing` thing representing a thing from the remote openHAB server.
+There is two supported things: the `server` bridge thing representing a remote openHAB server and the `thing` thing representing a thing from the remote openHAB server.
 
 ## Discovery
 
@@ -30,7 +30,7 @@ Once a bridge thing representing a remote openHAB server is created, all things 
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The binding has no configuration options, all configuration is done at thing level.
 
 ## Thing Configuration
 
@@ -54,9 +54,9 @@ The `thing` thing has the following configuration parameters:
 | thingUID             | yes      | The thing UID in the remote openHAB server. |
 | buildTriggerChannels | no       | If set to true, a trigger channel will be automatically created and linked to each trigger channel from the remote thing. Default is true. |
 
-Please note that if your remote server is an openHAB v3 server, you will need to define a valid token on your bridge thing to have your things correctly initialized.
+Please note that if your remote server is an openHAB v3 server, you will need to define a valid token on your bridge thing to have your things correctly initialized.
 
-Setting the `buildTriggerChannels` parameter to false is for the main following advanced usages :
+Setting the `buildTriggerChannels` parameter to false is for the main following advanced usages:
 
 * you don't care about the trigger channels of this remote thing and you don't want the binding to create them locally,
 * you want to define the trigger channels in your configuration file, and only the channels that you will finally need,
@@ -85,7 +85,7 @@ For example, if your remote thing provides a trigger channel with this UID `astr
 
 ## Limitations
 
-* The binding will not try to communicate with an openHAB v1 server.
+* The binding will not try to communicate with an openHAB v1 server.
 
 ## Example
 
