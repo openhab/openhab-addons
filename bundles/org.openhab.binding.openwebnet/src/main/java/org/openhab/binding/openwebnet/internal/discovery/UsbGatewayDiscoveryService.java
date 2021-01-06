@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.openwebnet.internal.discovery;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
@@ -38,6 +37,7 @@ import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.OpenMessage;
 import org.openwebnet4j.message.Where;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
     private CountDownLatch portCheckLatch = new CountDownLatch(1);
     private @Nullable ScheduledFuture<?> connectTimeout;
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
     private @Nullable USBGateway zbGateway;
 
     private String currentScannedPortName = "";
@@ -76,9 +76,12 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
     /**
      * Constructs a new UsbGatewayDiscoveryService with the specified ZigBee USB Bridge ThingTypeUID
      */
-    public UsbGatewayDiscoveryService() {
-        super(new HashSet<>(Arrays.asList(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY)), DISCOVERY_TIMEOUT_SECONDS,
+    @Activate
+    public UsbGatewayDiscoveryService(final @Reference SerialPortManager spm) {
+        super(Collections.singleton(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY), DISCOVERY_TIMEOUT_SECONDS,
                 false);
+        // Obtain the serial port manager service using an OSGi reference
+        serialPortManager = spm;
     }
 
     /**
@@ -91,68 +94,65 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
         scanning = true;
         Stream<SerialPortIdentifier> portEnum = serialPortManager.getIdentifiers();
         // Check each available serial port
-        portEnum.forEach(portIdentifier -> {
-            if (scanning) {
-                currentScannedPortName = portIdentifier.getName();
-                logger.debug("[{}] == checking serial port", currentScannedPortName);
-                if (portIdentifier.isCurrentlyOwned()) {
-                    logger.debug("[{}] serial port is owned by: {}", currentScannedPortName,
-                            portIdentifier.getCurrentOwner());
-                    if ("NRSerialPort".equals(portIdentifier.getCurrentOwner())) {
-                        logger.debug(
-                                "[{}] serial port is owned by this binding (or the openwebnet4j/nrjavaserial libs). If no ZigBee USB Gateway is already configured on this port it might indicate the port is locked by an older instance of this binding. Restart the system to unlock the port.",
-                                currentScannedPortName);
-                    }
-                } else {
-                    logger.debug("[{}] trying to connect to a ZigBee USB Gateway...", currentScannedPortName);
-                    USBGateway gw = new USBGateway(currentScannedPortName);
-                    zbGateway = gw;
-                    gw.subscribe(this);
-                    portCheckLatch = new CountDownLatch(1);
-                    connectTimeout = scheduler.schedule(() -> {
-                        logger.debug("[{}] timeout expired", currentScannedPortName);
-                        endSerialPortScan();
-                        portCheckLatch.countDown();
-                    }, PORT_CHECK_TIMEOUT_MSEC, TimeUnit.MILLISECONDS);
-                    try {
-                        gw.connect();
-                        try { // wait for onConnected/onConnectionError or connectTimeout
+        try {
+            for (SerialPortIdentifier portIdentifier : portEnum.toArray(SerialPortIdentifier[]::new)) {
+                if (scanning) {
+                    currentScannedPortName = portIdentifier.getName();
+                    logger.debug("[{}] == checking serial port", currentScannedPortName);
+                    if (portIdentifier.isCurrentlyOwned()) {
+                        logger.debug("[{}] serial port is owned by: {}", currentScannedPortName,
+                                portIdentifier.getCurrentOwner());
+                    } else {
+                        logger.debug("[{}] trying to connect to a ZigBee USB Gateway...", currentScannedPortName);
+                        USBGateway gw = new USBGateway(currentScannedPortName);
+                        zbGateway = gw;
+                        gw.subscribe(this);
+                        portCheckLatch = new CountDownLatch(1);
+                        connectTimeout = scheduler.schedule(() -> {
+                            logger.debug("[{}] timeout expired", currentScannedPortName);
+                            endGwConnection();
+                            portCheckLatch.countDown();
+                        }, PORT_CHECK_TIMEOUT_MSEC, TimeUnit.MILLISECONDS);
+                        try {
+                            gw.connect();
                             portCheckLatch.await();
-                        } catch (InterruptedException ie) {
-                            logger.warn("[{}] interrupted: {}", currentScannedPortName, ie.getMessage());
+                        } catch (OWNException e) {
+                            logger.debug("[{}] OWNException while trying to connect to a ZigBee USB Gateway: {}",
+                                    currentScannedPortName, e.getMessage());
+                            cancelConnectTimeout();
+                            endGwConnection();
                         }
-                    } catch (OWNException e) {
-                        logger.debug("[{}] OWNException while trying to connect to a ZigBee USB Gateway: {}",
-                                currentScannedPortName, e.getMessage());
-                        cancelConnectTimeout();
-                        endSerialPortScan();
                     }
+                    logger.debug("[{}] == finished checking port", currentScannedPortName);
                 }
-                logger.debug("[{}] == finished checking port", currentScannedPortName);
             }
-        });
-        logger.debug("Finished checking all serial ports");
+            logger.debug("Finished checking all serial ports");
+        } catch (InterruptedException ie) {
+            logger.warn("[{}] interrupted: {}", currentScannedPortName, ie.getMessage());
+            endGwConnection();
+            logger.debug("Interrupted while checking serial ports");
+        }
     }
 
     @Override
     protected synchronized void stopScan() {
         scanning = false;
         cancelConnectTimeout();
-        endSerialPortScan();
+        endGwConnection();
         portCheckLatch.countDown();
         super.stopScan();
         logger.debug("Stopped OpenWebNet ZigBee USB Gateway discovery scan");
     }
 
     /**
-     * Cancel the timeout and close connection to proceed to next serial port
+     * Ends connection to the gateway
      */
-    private void endSerialPortScan() {
+    private void endGwConnection() {
         USBGateway gw = zbGateway;
         if (gw != null) {
             gw.closeConnection();
             zbGateway = null;
-            logger.debug("[{}] endSerialPortScan()", currentScannedPortName);
+            logger.debug("[{}] connection to gateway closed", currentScannedPortName);
         }
     }
 
@@ -180,10 +180,10 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
             gwProperties.put(OpenWebNetBindingConstants.PROPERTY_ZIGBEEID, String.valueOf(gatewayZigBeeId));
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(gatewayUID).withProperties(gwProperties)
-                    .withLabel(OpenWebNetBindingConstants.THING_LABEL_ZB_GATEWAY + " (" + gw.getFirmwareVersion() + ", "
-                            + gw.getSerialPortName() + ")")
+                    .withLabel(OpenWebNetBindingConstants.THING_LABEL_ZB_GATEWAY + " (" + gw.getSerialPortName() + ")")
                     .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_ZIGBEEID).build();
-            logger.debug("--- ZigBee USB Gateway thing discovered: {}", discoveryResult.getLabel());
+            logger.debug("--- ZigBee USB Gateway thing discovered: {} fw: {}", discoveryResult.getLabel(),
+                    gw.getFirmwareVersion());
             thingDiscovered(discoveryResult);
         }
     }
@@ -193,7 +193,7 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
         logger.debug("[{}] found ZigBee USB Gateway", currentScannedPortName);
         cancelConnectTimeout();
         bridgeDiscovered();
-        endSerialPortScan();
+        endGwConnection();
         portCheckLatch.countDown();
     }
 
@@ -233,14 +233,5 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
     @Override
     public void onDiscoveryCompleted() {
         logger.debug("UsbGatewayDiscoveryService received onDiscoveryCompleted()");
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 }

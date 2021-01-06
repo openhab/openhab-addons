@@ -111,7 +111,7 @@ Alternatively the ZigBee USB Gateway thing can be configured using the `.things`
 
 ### Configuring Devices
 
-Devices can be discovered automatically using a Inbox Scan after a gateway has been configured and connected.
+Devices can be discovered automatically using an Inbox Scan after a gateway has been configured and connected.
 For any manually added device, you must configure:
 
 - the associated gateway (`Parent Bridge` menu)
