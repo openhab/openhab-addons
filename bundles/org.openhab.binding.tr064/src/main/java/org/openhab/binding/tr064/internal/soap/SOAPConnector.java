@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SOAPConnector {
-    private static final int SOAP_TIMEOUT = 2000; // in ms
+    private static final int SOAP_TIMEOUT = 5; // in s
     private final Logger logger = LoggerFactory.getLogger(SOAPConnector.class);
     private final HttpClient httpClient;
     private final String endpointBaseURL;
@@ -130,7 +130,7 @@ public class SOAPConnector {
             Map<String, String> arguments) throws Tr064CommunicationException {
         try {
             Request request = prepareSOAPRequest(service, soapAction, arguments).timeout(SOAP_TIMEOUT,
-                    TimeUnit.MILLISECONDS);
+                    TimeUnit.SECONDS);
             if (logger.isTraceEnabled()) {
                 request.getContent().forEach(buffer -> logger.trace("Request: {}", new String(buffer.array())));
             }
@@ -141,7 +141,7 @@ public class SOAPConnector {
                 logger.trace("Re-Auth needed.");
                 httpClient.getAuthenticationStore().clearAuthenticationResults();
                 request = prepareSOAPRequest(service, soapAction, arguments).timeout(SOAP_TIMEOUT,
-                        TimeUnit.MILLISECONDS);
+                        TimeUnit.SECONDS);
                 response = request.send();
             }
             try (final ByteArrayInputStream is = new ByteArrayInputStream(response.getContent())) {
