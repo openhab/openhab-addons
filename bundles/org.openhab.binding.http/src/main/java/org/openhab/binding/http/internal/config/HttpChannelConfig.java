@@ -48,6 +48,9 @@ public class HttpChannelConfig {
 
     public HttpChannelMode mode = HttpChannelMode.READWRITE;
 
+    // number
+    public @Nullable String unit;
+
     // switch, dimmer, color
     public @Nullable String onValue;
     public @Nullable String offValue;
