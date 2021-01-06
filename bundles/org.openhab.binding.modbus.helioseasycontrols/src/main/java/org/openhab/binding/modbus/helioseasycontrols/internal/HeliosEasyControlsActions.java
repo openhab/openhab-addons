@@ -187,4 +187,20 @@ public class HeliosEasyControlsActions implements ThingActions {
     public static Map<String, Object> getStatusMessages(ThingActions actions) {
         return ((HeliosEasyControlsActions) actions).getStatusMessages();
     }
+
+    @RuleAction(label = "@text/action.getMessages.label", description = "@text/action.getMessages.description")
+    public @ActionOutput(name = "errorMessages", type = "java.util.ArrayList<String>") @ActionOutput(name = "warningMessages", type = "java.util.ArrayList<String>") @ActionOutput(name = "infoMessages", type = "java.util.ArrayList<String>") @ActionOutput(name = "statusMessages", type = "java.util.ArrayList<String>") Map<String, Object> getMessages() {
+        Map<String, Object> messages = new HashMap<>();
+        if (handler != null) {
+            messages.put("errorMessages", handler.getErrorMessages());
+            messages.put("warningMessages", handler.getWarningMessages());
+            messages.put("infoMessages", handler.getInfoMessages());
+            messages.put("statusMessages", handler.getStatusMessages());
+        }
+        return messages;
+    }
+
+    public static Map<String, Object> getMessages(ThingActions actions) {
+        return ((HeliosEasyControlsActions) actions).getMessages();
+    }
 }
