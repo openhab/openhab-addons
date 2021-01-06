@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.luascripting</artifactId>
@@ -17,11 +17,8 @@
   <properties>
     <bnd.fixupmessages><![CDATA["Classes found in the wrong directory","The default package '.' is not permitted by the Import-Package syntax"; restrict:=error; is:=warning]]></bnd.fixupmessages>
 
-    <bnd.importpackage>
-      com.ibm.icu.*;resolution:=optional,
-      org.abego.treelayout.*;resolution:=optional,
-      org.apache.ivy.*;resolution:=optional,
-      org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>com.ibm.icu.*;resolution:=optional,org.abego.treelayout.*;resolution:=optional,org.apache.ivy.*;resolution:=optional,org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
+
   </properties>
 
   <!-- For whatever reason the luaj developers never released their latest version on Maven Central, once they do this can
