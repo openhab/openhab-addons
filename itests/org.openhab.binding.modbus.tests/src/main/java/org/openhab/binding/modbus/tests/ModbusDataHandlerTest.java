@@ -34,7 +34,6 @@ import java.util.function.Function;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
@@ -767,7 +766,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
-    @Disabled("See: https://github.com/openhab/openhab-addons/issues/9617")
     public void testRefreshOnData() throws InterruptedException {
         ModbusReadFunctionCode functionCode = ModbusReadFunctionCode.READ_COILS;
 
@@ -798,13 +796,20 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         verify(comms, never()).submitOneTimePoll(eq(request), notNull(), notNull());
-        // Reset initial REFRESH commands to data thing channels from the Core
+        ModbusPollerThingHandler handler = (ModbusPollerThingHandler) poller.getHandler();
+        // Wait for all channels to receive the REFRESH command (initiated by the core)
+        waitForAssert(
+                () -> verify((ModbusPollerThingHandler) poller.getHandler(), times(CHANNEL_TO_ACCEPTED_TYPE.size()))
+                        .refresh());
+        // Reset the mock
         reset(poller.getHandler());
+
+        // Issue REFRESH command and verify the results
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);
 
         // data handler asynchronously calls the poller.refresh() -- it might take some time
         // We check that refresh is finally called
-        waitForAssert(() -> verify((ModbusPollerThingHandler) poller.getHandler()).refresh(), 2500, 50);
+        waitForAssert(() -> verify((ModbusPollerThingHandler) poller.getHandler()).refresh());
     }
 
     /**
