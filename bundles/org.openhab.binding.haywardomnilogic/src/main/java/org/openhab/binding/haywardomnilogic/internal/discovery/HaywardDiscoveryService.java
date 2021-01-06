@@ -84,7 +84,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         }
     }
 
-    public synchronized boolean mspConfigDiscovery(String xmlResponse) throws HaywardException {
+    public synchronized boolean mspConfigDiscovery(String xmlResponse) {
         List<String> systemIDs = new ArrayList<>();
         List<String> names = new ArrayList<>();
         List<String> bowName = new ArrayList<>();
@@ -442,7 +442,6 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof HaywardBridgeHandler) {
             this.discoveryBridgehandler = (HaywardBridgeHandler) handler;
-            this.discoveryBridgehandler.setHaywardDiscoveryService(this);
         }
     }
 

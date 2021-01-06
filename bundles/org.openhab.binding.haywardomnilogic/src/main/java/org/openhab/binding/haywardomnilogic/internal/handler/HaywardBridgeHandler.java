@@ -73,7 +73,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollTelemetryFuture;
     private @Nullable ScheduledFuture<?> pollAlarmsFuture;
     private int commFailureCount;
-    private @Nullable HaywardDiscoveryService haywardDiscoveryService;
     public HaywardConfig config = getConfig().as(HaywardConfig.class);
     public HaywardAccount account = getConfig().as(HaywardAccount.class);
 
@@ -85,13 +84,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     public HaywardBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
-    }
-
-    /**
-     * Called by the zone discovery service to let this handler have a reference.
-     */
-    public void setHaywardDiscoveryService(HaywardDiscoveryService s) {
-        haywardDiscoveryService = s;
     }
 
     @Override
