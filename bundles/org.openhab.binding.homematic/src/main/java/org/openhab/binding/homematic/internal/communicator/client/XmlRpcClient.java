@@ -116,7 +116,7 @@ public class XmlRpcClient extends RpcClient<String> {
                 String result = new String(ret, config.getEncoding());
                 logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException | IllegalArgumentException e) {
             throw new IOException(e);
         }
         return ret;
