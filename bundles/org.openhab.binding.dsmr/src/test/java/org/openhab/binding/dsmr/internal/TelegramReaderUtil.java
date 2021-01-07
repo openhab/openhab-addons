@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramParser;
@@ -28,6 +28,7 @@ import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramParser;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public final class TelegramReaderUtil {
     private static final String TELEGRAM_EXT = ".telegram";
 
@@ -46,7 +47,7 @@ public final class TelegramReaderUtil {
             if (is == null) {
                 fail("Could not find telegram file with name:" + telegramName + TELEGRAM_EXT);
             }
-            return IOUtils.toByteArray(is);
+            return is.readAllBytes();
         } catch (IOException e) {
             throw new AssertionError("IOException reading telegram data: ", e);
         }
