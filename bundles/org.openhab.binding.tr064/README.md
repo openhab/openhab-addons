@@ -179,8 +179,8 @@ The phonebooks of a `fritzbox` thing can be used to lookup a number from rules v
 `phonebook` and `matchCount` are optional parameters.
 You can omit one or both of these parameters.
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
-A `matchCount` of `0` is considered as "match everything" and is used as default if no other value is given. As in the phonebook profile, matching is
-done on normalized versions of the numbers that have all characters except digits, '+' and '*' removed.
+A `matchCount` of `0` is considered as "match everything" and is used as default if no other value is given. 
+As in the phonebook profile, matching is done on normalized versions of the numbers that have all characters except digits, '+' and '*' removed.
 The return value is either the phonebook entry (if found) or the input number.
 
 Example (use all phonebooks, match 5 digits from right):
