@@ -357,7 +357,7 @@ Currently the miio binding supports more than 250 different models.
 | Mi Water Purifier 1A/400G Pro | miio:basic       | [yunmi.waterpuri.lx5](#yunmi-waterpuri-lx5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier (Under Counter) | miio:basic       | [yunmi.waterpuri.lx6](#yunmi-waterpuri-lx6) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier 500G/500G Pro | miio:basic       | [yunmi.waterpuri.lx7](#yunmi-waterpuri-lx7) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier 600G       | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier 600G       | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       |            |
 | Mi Water Purifier D1         | miio:basic       | [yunmi.waterpuri.lx9](#yunmi-waterpuri-lx9) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier lx10       | miio:basic       | [yunmi.waterpuri.lx10](#yunmi-waterpuri-lx10) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier C1 (Triple Setting) | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2377,7 +2377,6 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2395,12 +2394,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier v2 (<a name="yunmi-waterpurifier-v2">yunmi.waterpurifier.v2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2418,12 +2425,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier (Under sink) v3 (<a name="yunmi-waterpurifier-v3">yunmi.waterpurifier.v3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2441,12 +2456,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier v4 (<a name="yunmi-waterpurifier-v4">yunmi.waterpurifier.v4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2464,12 +2487,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier lx2 (<a name="yunmi-waterpuri-lx2">yunmi.waterpuri.lx2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2487,12 +2518,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier (Under Counter) (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2510,12 +2549,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier lx4 (<a name="yunmi-waterpuri-lx4">yunmi.waterpuri.lx4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2533,12 +2580,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier 1A/400G Pro (<a name="yunmi-waterpuri-lx5">yunmi.waterpuri.lx5</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2556,12 +2611,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier (Under Counter) (<a name="yunmi-waterpuri-lx6">yunmi.waterpuri.lx6</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2579,12 +2642,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier 500G/500G Pro (<a name="yunmi-waterpuri-lx7">yunmi.waterpuri.lx7</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2602,14 +2673,21 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier 600G (<a name="yunmi-waterpuri-lx8">yunmi.waterpuri.lx8</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
-| temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
 | tds_in           | Number  | TDS in                              |            |
 | tds_out          | Number  | TDS out                             |            |
@@ -2625,12 +2703,19 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier D1 (<a name="yunmi-waterpuri-lx9">yunmi.waterpuri.lx9</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2648,12 +2733,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier lx10 (<a name="yunmi-waterpuri-lx10">yunmi.waterpuri.lx10</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2671,12 +2764,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier C1 (Triple Setting) (<a name="yunmi-waterpuri-lx11">yunmi.waterpuri.lx11</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2694,12 +2795,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Water Purifier S1 (<a name="yunmi-waterpuri-lx12">yunmi.waterpuri.lx12</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
 | run_status       | Number  | Run Status                          |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | rinse            | Number  | Rinse                               |            |
@@ -2717,6 +2826,15 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+| f4_totalflow     | Number  | Filter 4 Total Flow                 |            |
+| f4_totaltime     | Number  | Filter 4 Total Time                 |            |
+| f4_usedflow      | Number  | Filter 4 Used Flow                  |            |
+| f4_usedtime      | Number  | Filter 4 Used Time                  |            |
+| maintenance_state | Number  | Maintenance State                   |            |
+| maintenance_interval | Number  | Maintenance Interval                |            |
+| tds_warn_thd     | Number  | TDS Warn Threshold                  |            |
+| tds_out_avg      | Number  | Average TDS out                     |            |
+| lightMode        | Number  | Light Mode                          |            |
 
 ### Mi Inverter Air Conditioner (1.5HP) (<a name="xiaomi-aircondition-ma1">xiaomi.aircondition.ma1</a>) Channels
 
@@ -6438,7 +6556,6 @@ note: Autogenerated example. Replace the id (waterpurifier) in the channel with 
 
 ```java
 Group G_waterpurifier "Mi Water Purifier v1" <status>
-Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
 Number rinse "Rinse" (G_waterpurifier) {channel="miio:basic:waterpurifier:rinse"}
@@ -6456,6 +6573,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpurifier) {channel="miio:basic
 Number f3_totaltime "Filter 3 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpurifier) {channel="miio:basic:waterpurifier:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpurifier) {channel="miio:basic:waterpurifier:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifier:lightMode"}
 ```
 
 ### Mi Water Purifier v2 (yunmi.waterpurifier.v2) item file lines
@@ -6464,7 +6590,6 @@ note: Autogenerated example. Replace the id (waterpurifier) in the channel with 
 
 ```java
 Group G_waterpurifier "Mi Water Purifier v2" <status>
-Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
 Number rinse "Rinse" (G_waterpurifier) {channel="miio:basic:waterpurifier:rinse"}
@@ -6482,6 +6607,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpurifier) {channel="miio:basic
 Number f3_totaltime "Filter 3 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpurifier) {channel="miio:basic:waterpurifier:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpurifier) {channel="miio:basic:waterpurifier:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifier:lightMode"}
 ```
 
 ### Mi Water Purifier (Under sink) v3 (yunmi.waterpurifier.v3) item file lines
@@ -6490,7 +6624,6 @@ note: Autogenerated example. Replace the id (waterpurifier) in the channel with 
 
 ```java
 Group G_waterpurifier "Mi Water Purifier (Under sink) v3" <status>
-Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
 Number rinse "Rinse" (G_waterpurifier) {channel="miio:basic:waterpurifier:rinse"}
@@ -6508,6 +6641,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpurifier) {channel="miio:basic
 Number f3_totaltime "Filter 3 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpurifier) {channel="miio:basic:waterpurifier:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpurifier) {channel="miio:basic:waterpurifier:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifier:lightMode"}
 ```
 
 ### Mi Water Purifier v4 (yunmi.waterpurifier.v4) item file lines
@@ -6516,7 +6658,6 @@ note: Autogenerated example. Replace the id (waterpurifier) in the channel with 
 
 ```java
 Group G_waterpurifier "Mi Water Purifier v4" <status>
-Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
 Number rinse "Rinse" (G_waterpurifier) {channel="miio:basic:waterpurifier:rinse"}
@@ -6534,6 +6675,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpurifier) {channel="miio:basic
 Number f3_totaltime "Filter 3 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpurifier) {channel="miio:basic:waterpurifier:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpurifier) {channel="miio:basic:waterpurifier:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifier:lightMode"}
 ```
 
 ### Mi Water Purifier lx2 (yunmi.waterpuri.lx2) item file lines
@@ -6542,7 +6692,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier lx2" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6560,6 +6709,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier (Under Counter) (yunmi.waterpuri.lx3) item file lines
@@ -6568,7 +6726,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier (Under Counter)" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6586,6 +6743,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier lx4 (yunmi.waterpuri.lx4) item file lines
@@ -6594,7 +6760,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier lx4" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6612,6 +6777,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier 1A/400G Pro (yunmi.waterpuri.lx5) item file lines
@@ -6620,7 +6794,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier 1A/400G Pro" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6638,6 +6811,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier (Under Counter) (yunmi.waterpuri.lx6) item file lines
@@ -6646,7 +6828,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier (Under Counter)" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6664,6 +6845,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier 500G/500G Pro (yunmi.waterpuri.lx7) item file lines
@@ -6672,7 +6862,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier 500G/500G Pro" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6690,6 +6879,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier 600G (yunmi.waterpuri.lx8) item file lines
@@ -6698,9 +6896,7 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier 600G" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
-Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
 Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
 Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
@@ -6716,6 +6912,14 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier D1 (yunmi.waterpuri.lx9) item file lines
@@ -6724,7 +6928,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier D1" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6742,6 +6945,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier lx10 (yunmi.waterpuri.lx10) item file lines
@@ -6750,7 +6962,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier lx10" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6768,6 +6979,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier C1 (Triple Setting) (yunmi.waterpuri.lx11) item file lines
@@ -6776,7 +6996,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier C1 (Triple Setting)" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6794,6 +7013,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Water Purifier S1 (yunmi.waterpuri.lx12) item file lines
@@ -6802,7 +7030,6 @@ note: Autogenerated example. Replace the id (waterpuri) in the channel with your
 
 ```java
 Group G_waterpuri "Mi Water Purifier S1" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -6820,6 +7047,15 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+Number f4_totalflow "Filter 4 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totalflow"}
+Number f4_totaltime "Filter 4 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_totaltime"}
+Number f4_usedflow "Filter 4 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedflow"}
+Number f4_usedtime "Filter 4 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f4_usedtime"}
+Number maintenance_state "Maintenance State" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_state"}
+Number maintenance_interval "Maintenance Interval" (G_waterpuri) {channel="miio:basic:waterpuri:maintenance_interval"}
+Number tds_warn_thd "TDS Warn Threshold" (G_waterpuri) {channel="miio:basic:waterpuri:tds_warn_thd"}
+Number tds_out_avg "Average TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out_avg"}
+Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:lightMode"}
 ```
 
 ### Mi Inverter Air Conditioner (1.5HP) (xiaomi.aircondition.ma1) item file lines
