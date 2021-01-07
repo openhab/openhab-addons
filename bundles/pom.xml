@@ -76,6 +76,8 @@
     <module>org.openhab.binding.comfoair</module>
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.coronastats</module>
+    <module>org.openhab.binding.cul</module>
+    <module>org.openhab.binding.cul.max</module>
     <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.danfossairunit</module>
     <module>org.openhab.binding.darksky</module>
