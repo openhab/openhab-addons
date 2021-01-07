@@ -177,6 +177,7 @@ public class BoschHttpClient extends HttpClient {
                 contentResponse.getStatus());
 
         try {
+            @Nullable
             TContent content = GSON.fromJson(contentResponse.getContentAsString(), responseContentClass);
             if (content == null) {
                 throw new ExecutionException(String.format("Received no content in response, expected type %s",

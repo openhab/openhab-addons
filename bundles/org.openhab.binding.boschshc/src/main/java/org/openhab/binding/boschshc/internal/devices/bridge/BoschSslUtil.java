@@ -75,7 +75,7 @@ public class BoschSslUtil {
 
     public SslContextFactory getSslContextFactory() throws PairingFailedException {
         // Instantiate and configure the SslContextFactory
-        SslContextFactory sslContextFactory = new SslContextFactory(true); // Accept all certificates
+        SslContextFactory sslContextFactory = new SslContextFactory.Client.Client(true); // Accept all certificates
 
         // during pairing the cert from this keystore is accessed by HTTP client via name
         sslContextFactory.setKeyStore(getKeyStoreAndCreateIfNecessary());
