@@ -1,0 +1,18 @@
+package org.openhab.binding.teleinfo.internal.dto.common;
+
+public enum FrameType {
+	CBETM_SHORT,
+	CBETM_LONG_BASE,
+	CBETM_LONG_EJP,
+	CBETM_LONG_HC,
+	CBETM_LONG_TEMPO,
+	CBEMM_BASE,
+	CBEMM_EJP,
+	CBEMM_HC,
+	CBEMM_TEMPO,
+	CBEMM_ICC_BASE,
+	CBEMM_ICC_EJP,
+	CBEMM_ICC_TEMPO,
+	CBEMM_ICC_HC,
+	UNKNOWN
+}

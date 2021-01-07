@@ -14,12 +14,27 @@ package org.openhab.binding.teleinfo.internal.handler;
 
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameBaseOption;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameEjpOption;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameHcOption;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.CouleurDemain;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.converter.Converter;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.converter.CouleurDemainConverter;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.converter.FloatConverter;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.converter.HhphcConverter;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.converter.IntegerConverter;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.converter.PtecConverter;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.converter.StringConverter;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -46,7 +61,7 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         implements TeleinfoControllerHandlerListener {
     private final Logger logger = LoggerFactory.getLogger(TeleinfoAbstractElectricityMeterHandler.class);
     protected TeleinfoElectricityMeterConfiguration configuration = new TeleinfoElectricityMeterConfiguration();
-
+    
     public TeleinfoAbstractElectricityMeterHandler(Thing thing) {
         super(thing);
     }
@@ -97,6 +112,17 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // no commands supported
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <T> T getRequiredLabelValue(Label label, final Map<Label, Object> frameValues)
+            throws InvalidFrameException {
+        if (!frameValues.containsKey(label)) {
+            final String error = String.format("The required label '%1$s' is missing in frame", label);
+            throw new InvalidFrameException(error);
+        }
+
+        return (T) frameValues.get(label);
     }
 
     protected void updateStatesForBaseFrameOption(FrameBaseOption frameBaseOption) {

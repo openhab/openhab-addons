@@ -82,6 +82,7 @@ public class TeleinfoInputStream extends InputStream {
     private BufferedReader bufferedReader;
     private @Nullable String groupLine;
     private boolean autoRepairInvalidADPSgroupLine;
+    private final Map<Label, Object> frameValues = new EnumMap<>(Label.class);
 
     static {
         LABEL_VALUE_CONVERTERS = new HashMap<>();
@@ -126,7 +127,7 @@ public class TeleinfoInputStream extends InputStream {
      * @throws InvalidFrameException
      * @throws Exception
      */
-    public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, IOException {
+    public synchronized @Nullable Map<Label, Object> readNextFrame() throws InvalidFrameException, IOException {
         // seek the next header frame
         while (!isHeaderFrame(groupLine)) {
             groupLine = bufferedReader.readLine();
@@ -139,7 +140,7 @@ public class TeleinfoInputStream extends InputStream {
             }
         }
 
-        Map<Label, Object> frameValues = new EnumMap<>(Label.class);
+        frameValues.clear();
         while ((groupLine = bufferedReader.readLine()) != null && !isHeaderFrame(groupLine)) {
             logger.trace("groupLine = {}", groupLine);
             String groupLineRef = groupLine;
@@ -196,12 +197,7 @@ public class TeleinfoInputStream extends InputStream {
             }
         }
 
-        // build the frame from map values
-        final Frame frame = buildFrame(frameValues);
-        frame.setTimestamp(LocalDate.now());
-        frame.setId(UUID.randomUUID());
-
-        return frame;
+        return frameValues;
     }
 
     public boolean isAutoRepairInvalidADPSgroupLine() {

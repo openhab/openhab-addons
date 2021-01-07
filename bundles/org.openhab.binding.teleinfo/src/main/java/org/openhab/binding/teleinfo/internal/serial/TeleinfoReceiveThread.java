@@ -13,12 +13,14 @@
 package org.openhab.binding.teleinfo.internal.serial;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
 import org.openhab.binding.teleinfo.internal.reader.io.TeleinfoInputStream;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +56,9 @@ public class TeleinfoReceiveThread extends Thread {
                 TeleinfoReceiveThreadListener listener = this.listener;
                 if (listener != null) {
                     try {
-                        Frame nextFrame = teleinfoStream.readNextFrame();
+                        Map<Label,Object> nextFrame = teleinfoStream.readNextFrame();
                         if (nextFrame != null)
-                            listener.onFrameReceived(this, nextFrame);
+                            listener.onFrameReceived(nextFrame);
                     } catch (InvalidFrameException e) {
                         logger.warn("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
                         listener.onInvalidFrameReceived(this, e);

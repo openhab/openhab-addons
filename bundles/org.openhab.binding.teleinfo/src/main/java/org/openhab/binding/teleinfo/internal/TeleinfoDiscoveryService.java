@@ -38,6 +38,7 @@ import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongTempoOption
 import org.openhab.binding.teleinfo.internal.dto.common.FrameAdco;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoControllerHandlerListener;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -142,26 +143,26 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, Frame frame) {
+    public void onFrameReceived(Map<Label,Object> frame) {
         detectNewElectricityMeterFromReceivedFrame(frame);
     }
 
-    private void detectNewElectricityMeterFromReceivedFrame(final Frame frameSample) {
+    private void detectNewElectricityMeterFromReceivedFrame(final Map<Label,Object> frameSample) {
         TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
         if (controllerHandlerRef != null) {
-            logger.debug("New eletricity meter detection from frame {}", frameSample.getId());
-            if (!(frameSample instanceof FrameAdco)) {
-                throw new IllegalStateException("Teleinfo frame type not supported: " + frameSample.getClass());
+            logger.debug("New eletricity meter detection from frame {}", frameSample);
+            if (!(frameSample.containsKey(Label.ADCO))) {
+                throw new IllegalStateException("Missing ADCO key");
             }
-            final FrameAdco frameAdco = (FrameAdco) frameSample;
 
-            ThingUID thingUID = new ThingUID(getThingTypeUID(frameAdco), frameAdco.getAdco(),
+            String adco = (String) frameSample.get(Label.ADCO);
+            ThingUID thingUID = new ThingUID(getThingTypeUID(frameSample), adco,
                     controllerHandlerRef.getThing().getUID().getId());
 
-            final Map<String, Object> properties = getThingProperties(frameAdco);
+            final Map<String, Object> properties = getThingProperties(adco);
             final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withLabel("Teleinfo ADCO " + frameAdco.getAdco()).withThingType(getThingTypeUID(frameAdco))
+                    .withLabel("Teleinfo ADCO " + adco).withThingType(getThingTypeUID(frameSample))
                     .withBridge(controllerHandlerRef.getThing().getUID())
                     .withRepresentationProperty(representationProperty).build();
 
@@ -201,16 +202,11 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private Map<String, Object> getThingProperties(final Frame teleinfoFrame) {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        if (teleinfoFrame instanceof FrameAdco) {
-            final FrameAdco frameAdco = (FrameAdco) teleinfoFrame;
-            properties.put(THING_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
+    private Map<String, Object> getThingProperties(String adco) {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(THING_ELECTRICITY_METER_PROPERTY_ADCO, adco);
 
-            return properties;
-        }
-
-        throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
+        return properties;
     }
 
     @Override

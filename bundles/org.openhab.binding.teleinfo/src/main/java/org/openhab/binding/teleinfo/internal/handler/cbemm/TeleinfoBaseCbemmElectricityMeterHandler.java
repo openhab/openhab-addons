@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.teleinfo.internal.handler.cbemm;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
 import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmBaseOption;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -33,13 +36,12 @@ public class TeleinfoBaseCbemmElectricityMeterHandler extends TeleinfoAbstractCb
     }
 
     @Override
-    public void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, Frame frame) {
-        final FrameCbemmBaseOption frameCbemmBaseOption = (FrameCbemmBaseOption) frame;
+    public void onFrameReceived(Map<Label,Object> frame) {
 
         String adco = configuration.getAdco();
-        if (frameCbemmBaseOption.getAdco().equalsIgnoreCase(adco)) {
-            updateStatesForCommonCbemmChannels(frameCbemmBaseOption);
-            updateStatesForBaseFrameOption(frameCbemmBaseOption);
+        if (((String) frame.get(Label.ADCO)).equalsIgnoreCase(adco)) {
+            updateStatesForCommonCbemmChannels(frame);
+            updateStatesForBaseFrameOption(frame);
         }
     }
 }
