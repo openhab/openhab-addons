@@ -53,6 +53,7 @@ public class Challenge {
     }
 
     public Status getStatus() {
-        return status != null ? status : Status.NONE;
+        Status localStatus = status;
+        return localStatus != null ? localStatus : Status.NONE;
     }
 }

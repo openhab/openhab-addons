@@ -52,7 +52,8 @@ public class LanHost implements ConnectivityData {
     }
 
     public String getPrimaryNameOrElse(String defaulted) {
-        return primaryName != null ? primaryName : defaulted;
+        String name = primaryName;
+        return name != null ? name : defaulted;
     }
 
     public @Nullable String getVendorName() {

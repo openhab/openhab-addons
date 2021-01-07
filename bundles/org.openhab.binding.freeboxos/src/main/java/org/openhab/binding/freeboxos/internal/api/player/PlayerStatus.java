@@ -38,6 +38,7 @@ public class PlayerStatus {
     private @Nullable PowerState powerState;
 
     public PowerState getPowerState() {
-        return powerState != null ? powerState : PowerState.UNKNOWN;
+        PowerState power = powerState;
+        return power != null ? power : PowerState.UNKNOWN;
     }
 }

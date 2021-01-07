@@ -42,7 +42,8 @@ public class LanConfig implements ConnectivityData {
     private long lastSeen = Instant.now().getEpochSecond();
 
     public NetworkMode getType() {
-        return type != null ? type : NetworkMode.UNKNOWN;
+        NetworkMode localType = type;
+        return localType != null ? localType : NetworkMode.UNKNOWN;
     }
 
     @Override

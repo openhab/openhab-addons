@@ -207,9 +207,12 @@ public class ApiHandler extends BaseBridgeHandler {
     private <T extends BaseResponse> T deserialize(@Nullable Class<T> classOfT, String serviceAnswer)
             throws FreeboxException {
         try {
-            @SuppressWarnings("null")
-            T serialized = gson.fromJson(serviceAnswer, classOfT != null ? classOfT : BaseResponse.class);
-            return serialized;
+            @Nullable
+            T deserialized = gson.fromJson(serviceAnswer, classOfT != null ? classOfT : BaseResponse.class);
+            if (deserialized != null) {
+                return deserialized;
+            }
+            throw new FreeboxException("Deserialization lead to null object");
         } catch (JsonSyntaxException e) {
             if (classOfT != null) {
                 BaseResponse serialized = gson.fromJson(serviceAnswer, BaseResponse.class);

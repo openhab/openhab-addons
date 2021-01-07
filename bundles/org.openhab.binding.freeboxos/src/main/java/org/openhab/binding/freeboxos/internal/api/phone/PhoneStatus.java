@@ -47,7 +47,8 @@ public class PhoneStatus {
     }
 
     public PhoneType getType() {
-        return type != null ? type : PhoneType.UNKNOWN;
+        PhoneType localType = type;
+        return localType != null ? localType : PhoneType.UNKNOWN;
     }
 
     public long getId() {

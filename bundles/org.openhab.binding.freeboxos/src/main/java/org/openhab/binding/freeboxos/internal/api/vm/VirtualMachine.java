@@ -48,7 +48,8 @@ public class VirtualMachine {
     }
 
     public Status getStatus() {
-        return status != null ? status : Status.UNKNOWN;
+        Status localStatus = status;
+        return localStatus != null ? localStatus : Status.UNKNOWN;
     }
 
     public @Nullable String getName() {
