@@ -61,14 +61,17 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
 
-    private @Nullable BoschHttpClient httpClient;
-
+    /**
+     * gson instance to convert a class to json string and back.
+     */
     private final Gson gson = new Gson();
 
     /**
      * Handler to do long polling.
      */
     private final LongPolling longPolling;
+
+    private @Nullable BoschHttpClient httpClient;
 
     private @Nullable ScheduledFuture<?> scheduledPairing;
 

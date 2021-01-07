@@ -42,10 +42,17 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class LongPolling {
+
     private final Logger logger = LoggerFactory.getLogger(LongPolling.class);
 
+    /**
+     * gson instance to convert a class to json string and back.
+     */
     private final Gson gson = new Gson();
 
+    /**
+     * Executor to schedule long polls.
+     */
     private final ScheduledExecutorService scheduler;
 
     /**
