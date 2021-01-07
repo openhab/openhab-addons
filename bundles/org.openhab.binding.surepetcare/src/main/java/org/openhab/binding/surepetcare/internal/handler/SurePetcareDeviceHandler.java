@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                         synchronized (petcareAPI) {
                             SurePetcareDevice device = petcareAPI.getDevice(thing.getUID().getId());
                             if (device != null) {
-                                String newLedModeIdStr = ((StringType) command).toString();
+                                String newLedModeIdStr = command.toString();
                                 try {
                                     Integer newLedModeId = Integer.valueOf(newLedModeIdStr);
                                     petcareAPI.setDeviceLedMode(device, newLedModeId);
@@ -154,13 +154,13 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                             updateState(DEVICE_CHANNEL_BOWLS_TARGET,
                                     new QuantityType<Mass>(bowlSettings.targetId, SIUnits.GRAM));
                         } else if (device.control.bowls.bowlId.equals(4)) {
-                            if ((i + 1) == 1) {
+                            if (i == 0) {
                                 updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT,
                                         new StringType(bowlSettings.foodId.toString()));
                                 updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT,
                                         new QuantityType<Mass>(bowlSettings.targetId, SIUnits.GRAM));
                             }
-                            if ((i + 1) == 2) {
+                            if (i == 1) {
                                 updateState(DEVICE_CHANNEL_BOWLS_FOOD_RIGHT,
                                         new StringType(bowlSettings.foodId.toString()));
                                 updateState(DEVICE_CHANNEL_BOWLS_TARGET_RIGHT,

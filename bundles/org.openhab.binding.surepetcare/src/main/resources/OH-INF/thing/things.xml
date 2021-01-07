@@ -405,14 +405,14 @@
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>Indicator if device is online or offline</description>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="curfewEnabledType">
 		<item-type>Switch</item-type>
 		<label>Curfew Enabled</label>
 		<description>Indicator if the curfew is enabled</description>
-		<state readOnly="false" pattern="%s"/>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="curfewLockTimeType">
@@ -495,10 +495,10 @@
 	</channel-type>
 
 	<channel-type id="batteryVoltageType">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>The current battery voltage</description>
-		<state readOnly="true" pattern="%.1f V"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rssiDeviceType" advanced="true">

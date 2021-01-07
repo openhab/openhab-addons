@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,11 +95,8 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         }
 
         if (config.refreshIntervalTopology != null) {
-            boolean noJob = true;
-            if (topologyPollingJob != null) {
-                noJob = topologyPollingJob.isCancelled();
-            }
-            if (noJob) {
+            ScheduledFuture<?> job = topologyPollingJob;
+            if (job == null || job.isCancelled()) {
                 topologyPollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     petcareAPI.updateTopologyCache();
                     updateThings();
@@ -112,14 +109,10 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                     "@text/offline.conf-error-invalid-refresh-intervals");
         }
         if (config.refreshIntervalStatus != null) {
-            boolean noJob = true;
-            if (petStatusPollingJob != null) {
-                noJob = petStatusPollingJob.isCancelled();
-            }
-            if (noJob) {
-                petStatusPollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    pollAndUpdatePetStatus();
-                }, config.refreshIntervalStatus, config.refreshIntervalStatus, TimeUnit.SECONDS);
+            ScheduledFuture<?> job = petStatusPollingJob;
+            if (job == null || job.isCancelled()) {
+                petStatusPollingJob = scheduler.scheduleWithFixedDelay(this::pollAndUpdatePetStatus,
+                        config.refreshIntervalStatus, config.refreshIntervalStatus, TimeUnit.SECONDS);
                 logger.debug("Pet status polling job every {} seconds", config.refreshIntervalStatus);
             }
         } else {
@@ -217,7 +210,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void pollAndUpdatePetStatus() {
         petcareAPI.updatePetStatus();
-        for (Thing th : ((Bridge) thing).getThings()) {
+        for (Thing th : getThing().getThings()) {
             if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
                 ThingHandler handler = th.getHandler();
                 if (handler != null) {
