@@ -85,9 +85,7 @@ public class FullDeviceManager {
     }
 
     private void initializeDevice(Device device, @Nullable DeviceState deviceState, Map<String, Location> locationMap,
-            Map<String, Capability> capabilityMap, List<Message> messageList)
-            throws ApiException, IOException, AuthenticationException {
-        final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
+            Map<String, Capability> capabilityMap, List<Message> messageList) {
 
         device.setDeviceState(deviceState);
 
@@ -97,7 +95,7 @@ public class FullDeviceManager {
 
         device.setLocation(locationMap.get(device.getLocationId()));
 
-        device.setCapabilityMap(createDeviceCapabilityMap(device, capabilityMap, capabilityStateMap));
+        device.setCapabilityMap(createDeviceCapabilityMap(device, capabilityMap));
 
         device.setMessageList(messageList);
     }
@@ -132,33 +130,43 @@ public class FullDeviceManager {
 
     private static Map<String, Capability> createCapabilityMap(InnogyClient client)
             throws IOException, ApiException, AuthenticationException {
+
+        final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
         final List<Capability> capabilityList = client.getCapabilities();
-        final Map<String, Capability> capabilityMap = new HashMap<>(capabilityList.size());
-        for (final Capability capability : capabilityList) {
-            capabilityMap.put(capability.getId(), capability);
-        }
-        return capabilityMap;
+
+        return initializeCapabilities(capabilityStateMap, capabilityList);
     }
 
     private static Map<String, Capability> createCapabilityMap(String deviceId, InnogyClient client)
             throws IOException, ApiException, AuthenticationException {
+
+        final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
         final List<Capability> capabilityList = client.getCapabilitiesForDevice(deviceId);
+
+        return initializeCapabilities(capabilityStateMap, capabilityList);
+    }
+
+    private static Map<String, Capability> initializeCapabilities(Map<String, CapabilityState> capabilityStateMap,
+            List<Capability> capabilityList) {
         final Map<String, Capability> capabilityMap = new HashMap<>(capabilityList.size());
         for (final Capability capability : capabilityList) {
-            capabilityMap.put(capability.getId(), capability);
+            String capabilityId = capability.getId();
+
+            CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
+            capability.setCapabilityState(capabilityState);
+
+            capabilityMap.put(capabilityId, capability);
         }
         return capabilityMap;
     }
 
     private static Map<String, Capability> createDeviceCapabilityMap(Device device,
-            Map<String, Capability> capabilityMap, Map<String, CapabilityState> capabilityStateMap) {
+            Map<String, Capability> capabilityMap) {
+
         final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
         for (final String capabilityValue : device.getCapabilities()) {
             final Capability capability = capabilityMap.get(Link.getId(capabilityValue));
             final String capabilityId = capability.getId();
-            final CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
-            capability.setCapabilityState(capabilityState); // TODO dangerous to change a state in a method called
-            // "create...". This should get avoided!
             deviceCapabilityMap.put(capabilityId, capability);
         }
         return deviceCapabilityMap;
