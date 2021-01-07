@@ -47,6 +47,8 @@
 /bundles/org.openhab.binding.comfoair/ @boehan
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
 /bundles/org.openhab.binding.coronastats/ @DerOetzi
+/bundles/org.openhab.binding.cul/ @johgoe
+/bundles/org.openhab.binding.cul.max/ @johgoe
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
 /bundles/org.openhab.binding.darksky/ @cweitkamp
