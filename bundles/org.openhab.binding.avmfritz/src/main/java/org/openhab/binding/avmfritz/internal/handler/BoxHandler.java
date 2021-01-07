@@ -15,6 +15,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,10 +57,12 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     @Override
     protected void manageConnections() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
-        if (this.callMonitor == null && callChannelsLinked()) {
+        CallMonitor cm = this.callMonitor;
+        if (cm == null && callChannelsLinked()) {
             this.callMonitor = new CallMonitor(config.ipAddress, this, scheduler);
-        } else if (this.callMonitor != null && !callChannelsLinked()) {
-            CallMonitor cm = this.callMonitor;
+            // initialize states of call monitor channels
+            scheduler.schedule(this::refreshCallChannels, refreshInterval, TimeUnit.SECONDS);
+        } else if (cm != null && !callChannelsLinked()) {
             cm.dispose();
             this.callMonitor = null;
         }
@@ -94,5 +97,19 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     @Override
     public void updateState(String channelID, State state) {
         super.updateState(channelID, state);
+    }
+
+    @Override
+    public void handleRefreshCommand() {
+        refreshCallChannels();
+        super.handleRefreshCommand();
+    }
+
+    private void refreshCallChannels() {
+        CallMonitor cm = this.callMonitor;
+        if (cm != null && callChannelsLinked()) {
+            // initialize states of call monitor channels
+            cm.refreshChannels();
+        }
     }
 }

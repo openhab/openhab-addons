@@ -78,7 +78,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
-    private long refreshInterval = 15;
+    protected long refreshInterval = 15;
 
     /**
      * Interface object for querying the FRITZ!Box web interface

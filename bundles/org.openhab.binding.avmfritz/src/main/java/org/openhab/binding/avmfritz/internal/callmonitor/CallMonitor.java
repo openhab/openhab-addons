@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.avmfritz.internal.callmonitor;
 
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.thing.ThingStatus;
@@ -42,7 +43,7 @@ public class CallMonitor {
     protected final Logger logger = LoggerFactory.getLogger(CallMonitor.class);
 
     // port number to connect to fritzbox
-    private final int MONITOR_PORT = 1012;
+    private static final int MONITOR_PORT = 1012;
 
     private @Nullable CallMonitorThread monitorThread;
     private final ScheduledFuture<?> reconnectJob;
@@ -68,6 +69,16 @@ public class CallMonitor {
             thread.start();
             this.monitorThread = thread;
         }, 0, 2, TimeUnit.HOURS);
+    }
+
+    /**
+     * Refresh channels.
+     */
+    public void refreshChannels() {
+        CallMonitorThread monitorThread = this.monitorThread;
+        if (monitorThread != null) {
+            monitorThread.resetChannels();
+        }
     }
 
     /**
@@ -153,6 +164,16 @@ public class CallMonitor {
         }
 
         /**
+         * Resets states of call monitor channels
+         */
+        public void resetChannels() {
+            handler.updateState(CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
+            handler.updateState(CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
+            handler.updateState(CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
+            handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_IDLE);
+        }
+
+        /**
          * Close socket and stop running thread.
          */
         @Override
@@ -176,34 +197,31 @@ public class CallMonitor {
          * @param ce call event to process
          */
         private void handleCallEvent(CallEvent ce) {
-            if (ce.getCallType().equals("DISCONNECT")) {
-                // reset states of call monitor channels
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
-                        AVMFritzBindingConstants.CALL_STATE_IDLE);
-            } else if (ce.getCallType().equals("RING")) { // first event when call is incoming
-                StringListType state = new StringListType(ce.getInternalNo(), ce.getExternalNo());
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, state);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
-                        AVMFritzBindingConstants.CALL_STATE_RINGING);
-            } else if (ce.getCallType().equals("CONNECT")) { // when call is answered/running
-                StringListType state = new StringListType(ce.getExternalNo(), "");
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, state);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
-                        AVMFritzBindingConstants.CALL_STATE_ACTIVE);
-            } else if (ce.getCallType().equals("CALL")) { // outgoing call
-                StringListType state = new StringListType(ce.getExternalNo(), ce.getInternalNo());
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, state);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
-                        AVMFritzBindingConstants.CALL_STATE_DIALING);
+            switch (ce.getCallType()) {
+                case CallEvent.CALL_TYPE_DISCONNECT:
+                    // reset states of call monitor channels
+                    resetChannels();
+                    break;
+                case CallEvent.CALL_TYPE_RING: // first event when call is incoming
+                    handler.updateState(CHANNEL_CALL_INCOMING,
+                            new StringListType(ce.getInternalNo(), ce.getExternalNo()));
+                    handler.updateState(CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_RINGING);
+                    break;
+                case CallEvent.CALL_TYPE_CONNECT: // when call is answered/running
+                    handler.updateState(CHANNEL_CALL_ACTIVE, new StringListType(ce.getExternalNo(), ""));
+                    handler.updateState(CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_ACTIVE);
+                    break;
+                case CallEvent.CALL_TYPE_CALL: // outgoing call
+                    handler.updateState(CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_OUTGOING,
+                            new StringListType(ce.getExternalNo(), ce.getInternalNo()));
+                    handler.updateState(CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_DIALING);
+                    break;
             }
         }
     }
