@@ -132,8 +132,8 @@ String   current_event_name        "current event [%s]"                       <c
 DateTime current_event_until       "current until [%1$tT, %1$tY-%1$tm-%1$td]" <calendar> { channel="icalendar:calendar:deadbeef:current_end" }
 String   next_event_name           "next event [%s]"                          <calendar> { channel="icalendar:calendar:deadbeef:next_title" }
 DateTime next_event_at             "next at [%1$tT, %1$tY-%1$tm-%1$td]"       <calendar> { channel="icalendar:calendar:deadbeef:next_start" }
-String   first_event_name_tomorrow "first event [%s]"                         <calendar> { channel="icalendar:eventfilter:feedd0d0:event_0#title" }
-DateTime first_event_at_tomorrow   "first at [%1$tT, %1$tY-%1$tm-%1$td]"      <calendar> { channel="icalendar:eventfilter:feedd0d0:event_0#begin" }
+String   first_event_name_tomorrow "first event [%s]"                         <calendar> { channel="icalendar:eventfilter:feedd0d0:result_0#title" }
+DateTime first_event_at_tomorrow   "first at [%1$tT, %1$tY-%1$tm-%1$td]"      <calendar> { channel="icalendar:eventfilter:feedd0d0:result_0#begin" }
 ```
 
 Sitemap just showing the current event and the beginning of the next:
