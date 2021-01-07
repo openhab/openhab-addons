@@ -18,11 +18,12 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -113,7 +114,6 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handlePowerCommand(ChannelUID channelUID, Command command) {
-        @Nullable
         FloureonDevice floureonDevice = this.floureonDevice;
         if (command instanceof OnOffType && floureonDevice != null) {
             try {
@@ -127,7 +127,6 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleModeCommand(ChannelUID channelUID, Command command) {
-        @Nullable
         FloureonDevice floureonDevice = this.floureonDevice;
         if (command instanceof StringType && floureonDevice != null) {
             try {
@@ -145,14 +144,10 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleSetpointCommand(ChannelUID channelUID, Command command) {
-        @Nullable
         FloureonDevice floureonDevice = this.floureonDevice;
         if (command instanceof QuantityType && floureonDevice != null) {
             try {
-                @Nullable
-                @SuppressWarnings("unchecked")
-                QuantityType<Temperature> temperatureQuantityType = ((QuantityType<Temperature>) command)
-                        .toUnit(SIUnits.CELSIUS);
+                QuantityType<?> temperatureQuantityType = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
                 if (temperatureQuantityType != null) {
                     floureonDevice.setThermostatTemp(temperatureQuantityType.doubleValue());
                 } else {
@@ -168,7 +163,6 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleSensorCommand(ChannelUID channelUID, Command command) {
-        @Nullable
         FloureonDevice floureonDevice = this.floureonDevice;
         if (command instanceof StringType && floureonDevice != null) {
             try {
@@ -190,7 +184,6 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleRemoteLockCommand(ChannelUID channelUID, Command command) {
-        @Nullable
         FloureonDevice floureonDevice = this.floureonDevice;
         if (command instanceof OnOffType && floureonDevice != null) {
             try {
@@ -224,7 +217,6 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
             return;
         }
 
-        @Nullable
         FloureonDevice floureonDevice = this.floureonDevice;
         if (floureonDevice != null) {
             try {

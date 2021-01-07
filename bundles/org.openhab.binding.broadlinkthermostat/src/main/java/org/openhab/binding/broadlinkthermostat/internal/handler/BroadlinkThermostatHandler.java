@@ -58,7 +58,6 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
     void authenticate() {
         logger.debug("Authenticating with broadlinkthermostat device {}...", thing.getLabel());
         try {
-            @Nullable
             BLDevice blDevice = this.blDevice;
             if (blDevice != null && blDevice.auth()) {
                 updateStatus(ThingStatus.ONLINE);
@@ -83,7 +82,6 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        @Nullable
         ScheduledFuture<?> currentScanJob = scanJob;
         if (currentScanJob != null) {
             currentScanJob.cancel(true);

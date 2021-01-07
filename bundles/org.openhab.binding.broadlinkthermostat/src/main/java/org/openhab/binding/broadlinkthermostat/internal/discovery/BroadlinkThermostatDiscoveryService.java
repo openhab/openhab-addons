@@ -60,93 +60,87 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
             UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);
     private static final int DISCOVERY_TIMEOUT = 30;
-    private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     @Activate
     public BroadlinkThermostatDiscoveryService(@Reference NetworkAddressService networkAddressService) {
         super(DISCOVERABLE_THING_TYPES_UIDS, DISCOVERY_TIMEOUT);
         this.networkAddressService = networkAddressService;
-        scanner = createScanner();
     }
 
-    private Runnable createScanner() {
-        return () -> {
-            long timestampOfLastScan = getTimestampOfLastScan();
-            BLDevice[] blDevices = new BLDevice[0];
+    private void createScanner() {
+
+        long timestampOfLastScan = getTimestampOfLastScan();
+        BLDevice[] blDevices = new BLDevice[0];
+        try {
+            @Nullable
+            InetAddress sourceAddress = getIpAddress();
+            if (sourceAddress != null) {
+                logger.debug("Using source address {} for sending out broadcast request.", sourceAddress);
+                blDevices = BLDevice.discoverDevices(sourceAddress, 0, DISCOVERY_TIMEOUT * 1000);
+            } else {
+                blDevices = BLDevice.discoverDevices(DISCOVERY_TIMEOUT * 1000);
+            }
+        } catch (IOException e) {
+            logger.debug("Error while trying to discover broadlinkthermostat devices: {}", e.getMessage());
+        }
+        logger.debug("Discovery service found {} broadlinkthermostat devices.", blDevices.length);
+
+        for (BLDevice dev : blDevices) {
+            logger.debug("Broadlinkthermostat device {} of type {} with Host {} and MAC {}", dev.getDeviceDescription(),
+                    Integer.toHexString(dev.getDeviceType()), dev.getHost(), dev.getMac());
+
+            ThingUID thingUID;
+            String id = dev.getHost().replaceAll("\\.", "-");
+            logger.debug("Device ID with IP address replacement: {}", id);
             try {
-                @Nullable
-                InetAddress sourceAddress = getIpAddress();
-                if (sourceAddress != null) {
-                    logger.debug("Using source address {} for sending out broadcast request.", sourceAddress);
-                    blDevices = BLDevice.discoverDevices(sourceAddress, 0, DISCOVERY_TIMEOUT * 1000);
-                } else {
-                    blDevices = BLDevice.discoverDevices(DISCOVERY_TIMEOUT * 1000);
-                }
-            } catch (IOException e) {
-                logger.debug("Error while trying to discover broadlinkthermostat devices: {}", e.getMessage());
+                id = getHostnameWithoutDomain(InetAddress.getByName(dev.getHost()).getHostName());
+                logger.debug("Device ID with DNS name: {}", id);
+            } catch (UnknownHostException e) {
+                logger.debug("Discovered device with IP {} does not have a DNS name, using IP as thing UID.",
+                        dev.getHost());
             }
-            logger.debug("Discovery service found {} broadlinkthermostat devices.", blDevices.length);
 
-            for (BLDevice dev : blDevices) {
-                logger.debug("Broadlinkthermostat device {} of type {} with Host {} and MAC {}",
-                        dev.getDeviceDescription(), Integer.toHexString(dev.getDeviceType()), dev.getHost(),
-                        dev.getMac());
-
-                ThingUID thingUID;
-                String id = dev.getHost().replaceAll("\\.", "-");
-                logger.debug("Device ID with IP address replacement: {}", id);
-                try {
-                    id = getHostnameWithoutDomain(InetAddress.getByName(dev.getHost()).getHostName());
-                    logger.debug("Device ID with DNS name: {}", id);
-                } catch (UnknownHostException e) {
-                    logger.debug("Discovered device with IP {} does not have a DNS name, using IP as thing UID.",
-                            dev.getHost());
-                }
-
-                switch (dev.getDeviceDescription()) {
-                    case "Floureon Thermostat":
-                        thingUID = new ThingUID(FLOUREON_THERMOSTAT_THING_TYPE, id);
-                        break;
-                    case "Hysen Thermostat":
-                        thingUID = new ThingUID(HYSEN_THERMOSTAT_THING_TYPE, id);
-                        break;
-                    default:
-                        thingUID = new ThingUID(UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE, id);
-                }
-
-                Map<String, Object> properties = new HashMap<>();
-                properties.put(BroadlinkThermostatBindingConstants.HOST, dev.getHost());
-                properties.put(Thing.PROPERTY_MAC_ADDRESS, dev.getMac().getMacString());
-                properties.put(BroadlinkThermostatBindingConstants.DESCRIPTION, dev.getDeviceDescription());
-
-                logger.debug("Property map: {}", properties);
-
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withLabel(dev.getDeviceDescription() + " (" + id + ")")
-                        .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
-
-                thingDiscovered(discoveryResult);
-
+            switch (dev.getDeviceDescription()) {
+                case "Floureon Thermostat":
+                    thingUID = new ThingUID(FLOUREON_THERMOSTAT_THING_TYPE, id);
+                    break;
+                case "Hysen Thermostat":
+                    thingUID = new ThingUID(HYSEN_THERMOSTAT_THING_TYPE, id);
+                    break;
+                default:
+                    thingUID = new ThingUID(UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE, id);
             }
-            removeOlderResults(timestampOfLastScan);
-        };
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(BroadlinkThermostatBindingConstants.HOST, dev.getHost());
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, dev.getMac().getMacString());
+            properties.put(BroadlinkThermostatBindingConstants.DESCRIPTION, dev.getDeviceDescription());
+
+            logger.debug("Property map: {}", properties);
+
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withLabel(dev.getDeviceDescription() + " (" + id + ")")
+                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+
+            thingDiscovered(discoveryResult);
+        }
+        removeOlderResults(timestampOfLastScan);
     }
 
     @Override
     protected void startScan() {
-        scheduler.execute(scanner);
+        scheduler.execute(this::createScanner);
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         logger.trace("Starting background scan for Broadlinkthermostat devices");
-        @Nullable
         ScheduledFuture<?> currentBackgroundDiscoveryFuture = backgroundDiscoveryFuture;
-        if (currentBackgroundDiscoveryFuture != null && !currentBackgroundDiscoveryFuture.isDone()) {
+        if (currentBackgroundDiscoveryFuture != null) {
             currentBackgroundDiscoveryFuture.cancel(true);
         }
-        backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(scanner, 0, 60, TimeUnit.SECONDS);
+        backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::createScanner, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
@@ -172,7 +166,6 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
      * @return local ip or <code>empty</code> if configured primary IP is not set or could not be parsed.
      */
     private Optional<InetAddress> getIpFromNetworkAddressService() {
-        @Nullable
         String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
             logger.warn("No network interface could be found.");
