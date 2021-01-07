@@ -60,6 +60,8 @@ import org.slf4j.LoggerFactory;
 public class PowermaxBridgeHandler extends BaseBridgeHandler implements PowermaxStateEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(PowermaxBridgeHandler.class);
+    private final SerialPortManager serialPortManager;
+    private final TimeZoneProvider timeZoneProvider;
 
     private static final long ONE_MINUTE = TimeUnit.MINUTES.toMillis(1);
 
@@ -94,8 +96,6 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     private PowermaxCommManager commManager;
 
     private int remainingDownloadAttempts;
-    private SerialPortManager serialPortManager;
-    private final TimeZoneProvider timeZoneProvider;
 
     public PowermaxBridgeHandler(Bridge thing, SerialPortManager serialPortManager, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -517,11 +517,11 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
 
         for (Value<?> value : state.getValues()) {
-            String v_channel = value.getChannel();
+            String vChannel = value.getChannel();
 
-            if (((channel == null) || channel.equals(v_channel)) && (v_channel != null) && isLinked(v_channel)
+            if (((channel == null) || channel.equals(vChannel)) && (vChannel != null) && isLinked(vChannel)
                     && (value.getValue() != null)) {
-                updateState(v_channel, value.getState());
+                updateState(vChannel, value.getState());
             }
         }
 

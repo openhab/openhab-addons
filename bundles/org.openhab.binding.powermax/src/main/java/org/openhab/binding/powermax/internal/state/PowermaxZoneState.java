@@ -34,8 +34,10 @@ public class PowermaxZoneState extends PowermaxStateContainer {
         return armed.getValue();
     }, () -> {
         Boolean isArmed = armed.getValue();
-        return (Boolean.TRUE.equals(isArmed) ? OpenClosedType.CLOSED
-                : Boolean.FALSE.equals(isArmed) ? OpenClosedType.OPEN : null);
+        if (isArmed == null) {
+            return null;
+        }
+        return isArmed ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
     });
 
     public PowermaxZoneState(TimeZoneProvider timeZoneProvider) {
