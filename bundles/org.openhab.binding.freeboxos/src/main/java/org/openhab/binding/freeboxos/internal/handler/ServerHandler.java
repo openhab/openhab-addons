@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
@@ -30,15 +30,13 @@ import org.openhab.binding.freeboxos.internal.api.netshare.SambaConfig;
 import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
 import org.openhab.core.library.dimension.DataTransferRate;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link ServerHandler} handle common parts of Freebox bridges.
@@ -78,13 +76,13 @@ public class ServerHandler extends FreeDeviceHandler {
         updateChannelString(CONNECTION_STATUS, IP_ADDRESS, connectionStatus.getIpv4());
 
         QuantityType<DataTransferRate> rateUp = new QuantityType<>(connectionStatus.getRateUp() * 8,
-                SmartHomeUnits.BIT_PER_SECOND);
+                Units.BIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, RATE_UP, rateUp, KILOBIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, PCT_BW_UP, rateUp.multiply(HUNDRED).divide(bandwidthUp),
                 Units.PERCENT);
 
         QuantityType<DataTransferRate> rateDown = new QuantityType<>(connectionStatus.getRateDown() * 8,
-                SmartHomeUnits.BIT_PER_SECOND);
+                Units.BIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, RATE_DOWN, rateDown, KILOBIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, PCT_BW_DOWN, rateDown.multiply(HUNDRED).divide(bandwidthDown),
                 Units.PERCENT);

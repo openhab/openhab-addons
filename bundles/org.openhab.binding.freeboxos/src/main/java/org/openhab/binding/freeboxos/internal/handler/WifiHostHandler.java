@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.openhab.binding.freeboxos.internal.api.lan.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
 import org.openhab.binding.freeboxos.internal.api.wifi.AccessPointHost;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -72,7 +72,7 @@ public class WifiHostHandler extends HostHandler {
             updateChannelDecimal(WIFI, WIFI_QUALITY, toQoS(rssi));
             updateChannelString(WIFI, SSID, ssid);
             updateChannelString(WIFI, WIFI_HOST, host);
-            updateChannelQuantity(WIFI, RSSI, new QuantityType<>(rssi, SmartHomeUnits.DECIBEL_MILLIWATTS));
+            updateChannelQuantity(WIFI, RSSI, new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS));
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

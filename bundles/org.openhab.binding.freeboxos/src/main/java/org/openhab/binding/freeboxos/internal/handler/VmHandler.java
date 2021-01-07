@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,16 +48,24 @@ public class VmHandler extends HostHandler {
         super.internalPoll();
         logger.debug("Polling Virtual machine status");
         VmManager vmManager = bridgeHandler.getVmManager();
-        VirtualMachine vm = vmManager.getVM(getConfigAs(ClientConfiguration.class).id);
-        updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
+        if (vmManager != null) {
+            VirtualMachine vm = vmManager.getVM(getConfigAs(ClientConfiguration.class).id);
+            updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
+        } else {
+            logger.warn("Vm Manager unavailable");
+        }
     }
 
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         VmManager vmManager = bridgeHandler.getVmManager();
-        if (STATUS.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
-            vmManager.power(getConfigAs(ClientConfiguration.class).id, command == OnOffType.ON);
-            return true;
+        if (vmManager != null) {
+            if (STATUS.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
+                vmManager.power(getConfigAs(ClientConfiguration.class).id, command == OnOffType.ON);
+                return true;
+            }
+        } else {
+            logger.warn("Vm Manager unavailable");
         }
         return false;
     }

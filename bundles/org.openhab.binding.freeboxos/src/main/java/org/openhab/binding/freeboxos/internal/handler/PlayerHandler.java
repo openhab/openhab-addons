@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,8 +147,10 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     private void fetchPlayerStatus() throws FreeboxException {
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
         PlayerManager playerManager = bridgeHandler.getPlayerManager();
-        PlayerStatus status = playerManager.getPlayerStatus(config.id);
-        updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.getPowerState().name());
+        if (playerManager != null) {
+            PlayerStatus status = playerManager.getPlayerStatus(config.id);
+            updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.getPowerState().name());
+        }
     }
 
     private void fetchAirMediaStatus() throws FreeboxException {
@@ -164,14 +166,19 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     protected DeviceConfig getDeviceConfig() throws FreeboxException {
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
         PlayerManager playerManager = bridgeHandler.getPlayerManager();
-        return playerManager.getConfig(config.id);
+        if (playerManager != null) {
+            return playerManager.getConfig(config.id);
+        }
+        throw new FreeboxException("Player Manager unavailable");
     }
 
     @Override
     protected void internalCallReboot() throws FreeboxException {
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
         PlayerManager playerManager = bridgeHandler.getPlayerManager();
-        playerManager.reboot(config.id);
+        if (playerManager != null) {
+            playerManager.reboot(config.id);
+        }
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,9 +67,11 @@ public class LandlineHandler extends ApiConsumerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         PhoneManager phoneManager = bridgeHandler.getPhoneManager();
-        pollStatus(phoneManager);
-        pollCalls(phoneManager);
-        pollConfig(phoneManager);
+        if (phoneManager != null) {
+            pollStatus(phoneManager);
+            pollCalls(phoneManager);
+            pollConfig(phoneManager);
+        }
     }
 
     private void pollCalls(PhoneManager phoneManager) throws FreeboxException {
@@ -129,7 +131,7 @@ public class LandlineHandler extends ApiConsumerHandler {
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         PhoneManager phoneManager = bridgeHandler.getPhoneManager();
         String target = channelUID.getIdWithoutGroup();
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType && phoneManager != null) {
             boolean status = (OnOffType) command == OnOffType.ON;
             if (RINGING.equals(target)) {
                 phoneManager.ring(status);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.openhab.binding.freeboxos.internal.api.system.Sensor;
 import org.openhab.binding.freeboxos.internal.api.system.Sensor.SensorKind;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -128,7 +128,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
             }
         }
         uptime = newUptime;
-        updateChannelQuantity(SYS_INFO, UPTIME, uptime, SmartHomeUnits.SECOND);
+        updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
     }
 
     public void reboot() {

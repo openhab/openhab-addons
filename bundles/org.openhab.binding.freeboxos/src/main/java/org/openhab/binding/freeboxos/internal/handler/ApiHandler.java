@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -207,6 +207,7 @@ public class ApiHandler extends BaseBridgeHandler {
     private <T extends BaseResponse> T deserialize(@Nullable Class<T> classOfT, String serviceAnswer)
             throws FreeboxException {
         try {
+            @SuppressWarnings("null")
             T serialized = gson.fromJson(serviceAnswer, classOfT != null ? classOfT : BaseResponse.class);
             return serialized;
         } catch (JsonSyntaxException e) {
@@ -230,10 +231,11 @@ public class ApiHandler extends BaseBridgeHandler {
     }
 
     public synchronized LoginManager getLoginManager() {
-        if (!managers.containsKey(LoginManager.class)) {
-            LoginManager loginManager = new LoginManager(this);
+        LoginManager manager = (LoginManager) managers.get(LoginManager.class);
+        if (manager == null) {
+            manager = new LoginManager(this);
             try {
-                headers.setProperty(AUTH_HEADER, loginManager.openSession(getConfiguration().appToken));
+                headers.setProperty(AUTH_HEADER, manager.openSession(getConfiguration().appToken));
                 updateStatus(ThingStatus.ONLINE);
             } catch (FreeboxException e) {
                 BaseResponse response = e.getResponse();
@@ -253,104 +255,127 @@ public class ApiHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 }
             }
-            managers.put(LoginManager.class, loginManager);
+            managers.put(LoginManager.class, manager);
         }
-        return (LoginManager) managers.get(LoginManager.class);
+        return manager;
     }
 
     public synchronized SystemManager getSystemManager() {
-        if (!managers.containsKey(SystemManager.class)) {
-            managers.put(SystemManager.class, new SystemManager(this));
+        SystemManager manager = (SystemManager) managers.get(SystemManager.class);
+        if (manager == null) {
+            manager = new SystemManager(this);
+            managers.put(SystemManager.class, manager);
         }
-        return (SystemManager) managers.get(SystemManager.class);
+        return manager;
     }
 
     public synchronized ConnectionManager getConnectionManager() {
-        if (!managers.containsKey(ConnectionManager.class)) {
-            managers.put(ConnectionManager.class, new ConnectionManager(this));
+        ConnectionManager manager = (ConnectionManager) managers.get(ConnectionManager.class);
+        if (manager == null) {
+            manager = new ConnectionManager(this);
+            managers.put(ConnectionManager.class, manager);
         }
-        return (ConnectionManager) managers.get(ConnectionManager.class);
+        return manager;
     }
 
     public synchronized LanManager getLanManager() {
-        if (!managers.containsKey(LanManager.class)) {
-            managers.put(LanManager.class, new LanManager(this));
+        LanManager manager = (LanManager) managers.get(LanManager.class);
+        if (manager == null) {
+            manager = new LanManager(this);
+            managers.put(LanManager.class, manager);
         }
-        return (LanManager) managers.get(LanManager.class);
+        return manager;
     }
 
     public synchronized LcdManager getLcdManager() {
-        if (!managers.containsKey(LcdManager.class)) {
-            managers.put(LcdManager.class, new LcdManager(this));
+        LcdManager manager = (LcdManager) managers.get(LcdManager.class);
+        if (manager == null) {
+            manager = new LcdManager(this);
+            managers.put(LcdManager.class, manager);
         }
-        return (LcdManager) managers.get(LanManager.class);
+        return manager;
     }
 
     public synchronized AirMediaManager getAirMediaManager() {
-        if (!managers.containsKey(AirMediaManager.class)) {
-            managers.put(AirMediaManager.class, new AirMediaManager(this));
+        AirMediaManager manager = (AirMediaManager) managers.get(AirMediaManager.class);
+        if (manager == null) {
+            manager = new AirMediaManager(this);
+            managers.put(AirMediaManager.class, manager);
         }
-        return (AirMediaManager) managers.get(AirMediaManager.class);
+        return manager;
     }
 
     public synchronized WifiManager getWifiManager() {
-        if (!managers.containsKey(WifiManager.class)) {
-            managers.put(WifiManager.class, new WifiManager(this));
+        WifiManager manager = (WifiManager) managers.get(WifiManager.class);
+        if (manager == null) {
+            manager = new WifiManager(this);
+            managers.put(WifiManager.class, manager);
         }
-        return (WifiManager) managers.get(WifiManager.class);
+        return manager;
     }
 
     public synchronized FtpManager getFtpManager() {
-        if (!managers.containsKey(FtpManager.class)) {
-            managers.put(FtpManager.class, new FtpManager(this));
+        FtpManager manager = (FtpManager) managers.get(FtpManager.class);
+        if (manager == null) {
+            manager = new FtpManager(this);
+            managers.put(FtpManager.class, manager);
         }
-        return (FtpManager) managers.get(FtpManager.class);
+        return manager;
     }
 
     public synchronized UPnPAVManager getuPnPAVManager() {
-        if (!managers.containsKey(UPnPAVManager.class)) {
-            managers.put(UPnPAVManager.class, new UPnPAVManager(this));
+        UPnPAVManager manager = (UPnPAVManager) managers.get(UPnPAVManager.class);
+        if (manager == null) {
+            manager = new UPnPAVManager(this);
+            managers.put(UPnPAVManager.class, manager);
         }
-        return (UPnPAVManager) managers.get(UPnPAVManager.class);
+        return manager;
     }
 
     public synchronized NetShareManager getNetShareManager() {
-        if (!managers.containsKey(NetShareManager.class)) {
-            managers.put(NetShareManager.class, new NetShareManager(this));
+        NetShareManager manager = (NetShareManager) managers.get(NetShareManager.class);
+        if (manager == null) {
+            manager = new NetShareManager(this);
+            managers.put(NetShareManager.class, manager);
         }
-        return (NetShareManager) managers.get(NetShareManager.class);
+        return manager;
     }
 
     public synchronized RepeaterManager getRepeaterManager() {
-        if (!managers.containsKey(RepeaterManager.class)) {
-            managers.put(RepeaterManager.class, new RepeaterManager(this));
+        RepeaterManager manager = (RepeaterManager) managers.get(RepeaterManager.class);
+        if (manager == null) {
+            manager = new RepeaterManager(this);
+            managers.put(RepeaterManager.class, manager);
         }
-        return (RepeaterManager) managers.get(RepeaterManager.class);
+        return manager;
     }
 
-    public synchronized PhoneManager getPhoneManager() {
-        if (!managers.containsKey(PhoneManager.class)
-                && getLoginManager().hasPermission(PhoneManager.associatedPermission())) {
-            managers.put(PhoneManager.class, new PhoneManager(this));
+    public synchronized @Nullable PhoneManager getPhoneManager() {
+        PhoneManager manager = (PhoneManager) managers.get(PhoneManager.class);
+        if (manager == null && getLoginManager().hasPermission(PhoneManager.associatedPermission())) {
+            manager = new PhoneManager(this);
+            managers.put(PhoneManager.class, manager);
         }
-        return (PhoneManager) managers.get(PhoneManager.class);
+        return manager;
     }
 
-    public synchronized VmManager getVmManager() {
-        if (!managers.containsKey(VmManager.class)
-                && getLoginManager().hasPermission(VmManager.associatedPermission())) {
-            managers.put(VmManager.class, new VmManager(this));
+    public synchronized @Nullable VmManager getVmManager() {
+        VmManager manager = (VmManager) managers.get(VmManager.class);
+        if (manager == null && getLoginManager().hasPermission(VmManager.associatedPermission())) {
+            manager = new VmManager(this);
+            managers.put(VmManager.class, manager);
         }
-        return (VmManager) managers.get(VmManager.class);
+        return manager;
     }
 
-    public synchronized PlayerManager getPlayerManager() {
-        if (!managers.containsKey(PlayerManager.class)
-                && getLoginManager().hasPermission(PlayerManager.associatedPermission())) {
+    public synchronized @Nullable PlayerManager getPlayerManager() {
+        PlayerManager manager = (PlayerManager) managers.get(PlayerManager.class);
+        if (manager == null && getLoginManager().hasPermission(PlayerManager.associatedPermission())) {
             ApiConfiguration config = getConfigAs(ApiConfiguration.class);
-            managers.put(PlayerManager.class, new PlayerManager(this, config.baseUrl, config.apiMajorVersion()));
+            manager = new PlayerManager(this, config.baseUrl, config.apiMajorVersion());
+            managers.put(PlayerManager.class, manager);
         }
-        return (PlayerManager) managers.get(PlayerManager.class);
+        return manager;
     }
 
     public String getAppToken() {
