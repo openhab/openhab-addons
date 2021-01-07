@@ -43,6 +43,9 @@ public final class TelegramReaderUtil {
      */
     public static byte[] readRawTelegram(String telegramName) {
         try (InputStream is = TelegramReaderUtil.class.getResourceAsStream(telegramName + TELEGRAM_EXT)) {
+            if (is == null) {
+                fail("Could not find telegram file with name:" + telegramName + TELEGRAM_EXT);
+            }
             return IOUtils.toByteArray(is);
         } catch (IOException e) {
             throw new AssertionError("IOException reading telegram data: ", e);
