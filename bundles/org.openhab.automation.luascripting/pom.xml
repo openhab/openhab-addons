@@ -16,9 +16,6 @@
 
   <properties>
     <bnd.fixupmessages><![CDATA["Classes found in the wrong directory","The default package '.' is not permitted by the Import-Package syntax"; restrict:=error; is:=warning]]></bnd.fixupmessages>
-
-    <bnd.importpackage>com.ibm.icu.*;resolution:=optional,org.abego.treelayout.*;resolution:=optional,org.apache.ivy.*;resolution:=optional,org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
-
   </properties>
 
   <!-- For whatever reason the luaj developers never released their latest version on Maven Central, once they do this can
@@ -36,6 +33,18 @@
       <groupId>org.luaj</groupId>
       <artifactId>luaj-jse</artifactId>
       <version>3.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.bcel</groupId>
+      <artifactId>bcel</artifactId>
+      <version>5.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta-regexp</groupId>
+      <artifactId>jakarta-regexp</artifactId>
+      <version>1.4</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
