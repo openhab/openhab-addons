@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.math.BigDecimal;
 
 /**
  * See {@link DeviceListModel}.
- *
+ * <p>
  * In the functionbitmask element value the following bits are used:
  *
  * <ol>
  * <li>Bit 0: HAN-FUN Gerät</li>
+ * <li>Bit 2: Licht Bit</li>
  * <li>Bit 3: HAN-FUN Button - undocumented</li>
  * <li>Bit 4: Alarm-Sensor</li>
  * <li>Bit 5: AVM-Button</li>
@@ -33,11 +35,15 @@ import java.math.BigDecimal;
  * <li>Bit 10: AVM DECT Repeater</li>
  * <li>Bit 11: Mikrofon</li>
  * <li>Bit 13: HAN-FUN Unit</li>
+ * <li>Bit 15: an-/ausschaltbares Gerät/Steckdose/Lampe/Aktor</li>
+ * <li>Bit 16: Gerät mit einstellbarem Dimm-, Höhen- bzw. Niveau-Level</li>
+ * <li>Bit 17: Lampe mit einstellbarer Farbe/Farbtemperatur</li>
  * </ol>
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Joshua Bacher - Added support AVM FRITZ!DECT 500
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
@@ -52,7 +58,9 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int DECT_REPEATER_BIT = 1 << 10; // Bit 10
     protected static final int MICROPHONE_BIT = 1 << 11; // Bit 11
     protected static final int HAN_FUN_UNIT_BIT = 1 << 13; // Bit 13
-    protected static final int HAN_FUN_DIMMABLE_LIGHT_BIT = 1 << 17; // Bit 17 - dimmable light
+    protected static final int ON_OFF_UNIT_BIT = 1 << 15; // Bit 15 - an-/ausschaltbares Gerät/Steckdose/Lampe/Aktor
+    protected static final int DIMMABLE_LIGHT_BIT = 1 << 16; // Bit 16 - dimmable light
+    protected static final int LIGHTING_COLOR_TEMPERATURE_BIT = 1 << 17; // Bit 17 - dimmable light
     protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
     @XmlAttribute(name = "identifier")
@@ -97,6 +105,13 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     @XmlElement(name = "levelcontrol")
     private LevelControlModel levelControlModel;
 
+    public SimpleOnOffModel getSimpleOnOffUnit() {
+        return simpleOnOffUnit;
+    }
+
+    @XmlElement(name = "simpleonoff")
+    private SimpleOnOffModel simpleOnOffUnit;
+
     @XmlElement(name = "hkr")
     private HeatingModel heatingModel;
 
@@ -104,11 +119,11 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return powermeterModel;
     }
 
-    public ColorControlModel getColorControlModel(){
+    public ColorControlModel getColorControlModel() {
         return colortrolModel;
     }
 
-    public LevelControlModel getLevelControlModel(){
+    public LevelControlModel getLevelControlModel() {
         return levelControlModel;
     }
 
@@ -153,9 +168,17 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask & HAN_FUN_LIGHT_BIT) > 0;
     }
 
+    public boolean isOnOffUnit() {
+        return (bitmask & ON_OFF_UNIT_BIT) > 0;
+    }
+
     // TODO: need to use this one somewhere :)
     public boolean isDimmableLightDevice() {
-        return (bitmask & HAN_FUN_DIMMABLE_LIGHT_BIT) > 0;
+        return (bitmask & DIMMABLE_LIGHT_BIT) > 0;
+    }
+
+    public boolean isLightingColorTemperature() {
+        return (bitmask & LIGHTING_COLOR_TEMPERATURE_BIT) > 0;
     }
 
     public boolean isHANFUNAlarmSensor() {
@@ -236,17 +259,18 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     public String toString() {
         return new StringBuilder().append("[ain=").append(ident).append(",bitmask=").append(bitmask)
                 .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isHANFUNButton=").append(isHANFUNButton())
-                .append(",isLightDevice=").append(isLightDevice()).append(",isDimmableLightDevice=")
-                .append(isDimmableLightDevice()).append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor())
-                .append(",isButton=").append(isButton()).append(",isSwitchableOutlet=").append(isSwitchableOutlet())
-                .append(",isTempSensor=").append(isTempSensor()).append(",isHumiditySensor=").append(isHumiditySensor())
-                .append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
-                .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",isMicrophone=")
-                .append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",id=").append(deviceId)
-                .append(",manufacturer=").append(deviceManufacturer).append(",productname=").append(productName)
-                .append(",fwversion=").append(firmwareVersion).append(",present=").append(present).append(",name=")
-                .append(name).append(",battery=").append(getBattery()).append(",batterylow=").append(getBatterylow())
-                .append(",").append(getSwitch()).append(",").append(getPowermeter()).append(",").append(getHkr())
-                .append(",").toString();
+                .append(",isOnOffUnit=").append(isOnOffUnit()).append(",isLightDevice=").append(isLightDevice())
+                .append(",isDimmableLightDevice=").append(isDimmableLightDevice()).append(",isHANFUNAlarmSensor=")
+                .append(isHANFUNAlarmSensor()).append(",isButton=").append(isButton()).append(",isSwitchableOutlet=")
+                .append(isSwitchableOutlet()).append(",isTempSensor=").append(isTempSensor())
+                .append(",isHumiditySensor=").append(isHumiditySensor()).append(",isPowermeter=").append(isPowermeter())
+                .append(",isDectRepeater=").append(isDectRepeater()).append(",isHeatingThermostat=")
+                .append(isHeatingThermostat()).append(",isMicrophone=").append(isMicrophone()).append(",isHANFUNUnit=")
+                .append(isHANFUNUnit()).append(",id=").append(deviceId).append(",manufacturer=")
+                .append(deviceManufacturer).append(",productname=").append(productName).append(",fwversion=")
+                .append(firmwareVersion).append(",present=").append(present).append(",name=").append(name)
+                .append(",battery=").append(getBattery()).append(",batterylow=").append(getBatterylow()).append(",")
+                .append(getSwitch()).append(",").append(getPowermeter()).append(",").append(getHkr()).append(",")
+                .toString();
     }
 }

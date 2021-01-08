@@ -43,8 +43,21 @@
 		<state pattern="%s"/>
 	</channel-type>
 
+	<!-- Channel definitions for on off units (as used by fritz!500) -->
+	<channel-type id="onoffstate">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>Switch device on/off.</description>
+		<!-- <state pattern="%s" readOnly="true">
+			<options>
+			<option value="ON">On</option>
+			<option value="OFF">Off</option>
+			</options>
+			</state> -->
+	</channel-type>
+
 	<!-- Channel definitions of all FRITZ! devices -->
-	<channel-type id="mode">
+	<channel-type id="state">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>States the mode of the device (MANUAL/AUTOMATIC/VACATION).</description>

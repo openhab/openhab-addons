@@ -17,43 +17,37 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.types.State;
+
 /**
  * See {@link DeviceListModel}.
  *
  * @author Joshua Bacher - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "level", "levelpercentage" })
-@XmlRootElement(name = "levelcontrol")
-public class LevelControlModel {
+@XmlType(propOrder = { "state" })
+@XmlRootElement(name = "simpleonoff")
+public class SimpleOnOffModel {
 
-    // <level> Level/Niveau von 0(0%) bis 255(100%)
-    Integer level;
-    // Level/Niveau in Prozent, 0 bis 100 Prozent
-    Integer levelpercentage;
+    Boolean state;
 
-    public Integer getLevel() {
-        return level;
+    public static State asState(Boolean state) {
+        if (state != null && state == true) {
+            return OnOffType.ON;
+        } else
+            return OnOffType.OFF;
     }
 
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public Integer getLevelpercentage() {
-        return levelpercentage;
-    }
-
-    public void setLevelpercentage(Integer levelpercentage) {
-        this.levelpercentage = levelpercentage;
+    public Boolean getState() {
+        return state;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("[");
-        sb.append("level=").append(level);
-        sb.append(", levelpercentage=").append(levelpercentage);
-        sb.append(']');
+        final StringBuilder sb = new StringBuilder("SimpleOnOffModel{");
+        sb.append("state=").append(state);
+        sb.append('}');
         return sb.toString();
     }
 }

@@ -342,8 +342,7 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="energy"/>
+			<channel id="onoffstate" typeId="onoffstate"/>
 		</channels>
 
 		<representation-property>ain</representation-property>

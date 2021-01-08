@@ -126,6 +126,7 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_CONTACT_STATE = "contact_state";
     public static final String CHANNEL_PRESS = "press";
     public static final String CHANNEL_LAST_CHANGE = "last_change";
+    public static final String CHANNEL_ONOFF_STATE = "onoffstate";
 
     // List of all Channel config ids
     public static final String CONFIG_CHANNEL_TEMP_OFFSET = "offset";

@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.handler;
@@ -26,36 +26,15 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
-import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.dto.AlertModel;
-import org.openhab.binding.avmfritz.internal.dto.BatteryModel;
-import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
-import org.openhab.binding.avmfritz.internal.dto.HeatingModel;
-import org.openhab.binding.avmfritz.internal.dto.HeatingModel.NextChangeModel;
-import org.openhab.binding.avmfritz.internal.dto.HumidityModel;
-import org.openhab.binding.avmfritz.internal.dto.PowerMeterModel;
-import org.openhab.binding.avmfritz.internal.dto.SwitchModel;
-import org.openhab.binding.avmfritz.internal.dto.TemperatureModel;
+import org.openhab.binding.avmfritz.internal.dto.*;
+import org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.IncreaseDecreaseType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.*;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -73,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Joshua Bacher - Added support for AVM FRITZ!DECT 500
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
@@ -131,6 +111,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.isSwitchableOutlet()) {
                 updateSwitchableOutlet(device.getSwitch());
             }
+            if (device.isOnOffUnit()) {
+                updateOnOffUnit(device.getSimpleOnOffUnit());
+            }
             if (device.isHeatingThermostat()) {
                 updateHeatingThermostat(device.getHkr());
             }
@@ -146,6 +129,14 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateHANFUNAlarmSensor(deviceModel.getAlert());
                 }
             }
+        }
+    }
+
+    private void updateOnOffUnit(SimpleOnOffModel simpleOnOffUnit) {
+        if (simpleOnOffUnit != null) {
+            logger.info("updating unit state to " + simpleOnOffUnit + " with state "
+                    + SimpleOnOffModel.asState(simpleOnOffUnit.getState()));
+            updateThingChannelState(CHANNEL_ONOFF_STATE, SimpleOnOffModel.asState(simpleOnOffUnit.getState()));
         }
     }
 
@@ -354,6 +345,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             case CHANNEL_LAST_CHANGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
+            case CHANNEL_ONOFF_STATE:
             case CHANNEL_OUTLET:
                 if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));

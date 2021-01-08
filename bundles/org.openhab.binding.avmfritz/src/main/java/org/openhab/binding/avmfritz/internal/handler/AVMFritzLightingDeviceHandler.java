@@ -6,7 +6,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 /**
  * Handler for a FRITZ! lighting device
  *
- * @author Joshua Bacher - hacker
+ * @author Joshua Bacher - Initial contribution
  */
 public class AVMFritzLightingDeviceHandler extends DeviceHandler implements ThingHandler {
 

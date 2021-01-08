@@ -12,6 +12,16 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
+
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.util.Optional;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,27 +29,18 @@ import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
-
 /**
  * Tests for {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
+ * @author Joshua Bacher - Added support AVM FRITZ!DECT 500
  */
 @NonNullByDefault
 public class AVMFritzDeviceListModelTest {
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzDeviceListModelTest.class);
 
-    private @NonNullByDefault({})
-    DeviceListModel devices;
+    private @NonNullByDefault({}) DeviceListModel devices;
 
     @BeforeEach
     public void setUp() {
@@ -51,7 +52,26 @@ public class AVMFritzDeviceListModelTest {
                         "<device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>" +
                         "<device identifier=\"08761 0000438\" id=\"18\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 210\"><present>1</present><name>FRITZ!DECT 210 #8</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>" +
                         "<device identifier=\"08761 0000437\" id=\"20\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 300\"><present>0</present><name>FRITZ!DECT 300 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>" +
-                        "<device identifier=\"08761 0000436\" id=\"21\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 301\"><present>0</present><name>FRITZ!DECT 301 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>" +
+                        "<device identifier=\"08761 0000436\" id=\"21\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 301\"><present>0</present>" +
+                        "<name>FRITZ!DECT 301 #1</name>" +
+                        "<temperature><celsius>220</celsius><offset>-10</offset></temperature>" +
+                        "<hkr>" +
+                            "<tist>44</tist>" +
+                            "<tsoll>42</tsoll>" +
+                            "<absenk>28</absenk>" +
+                            "<komfort>42</komfort>" +
+                            "<lock>1</lock>" +
+                            "<devicelock>1</devicelock>" +
+                            "<errorcode>0</errorcode>" +
+                            "<windowopenactiv>0</windowopenactiv>" +
+                            "<windowopenactiveendtime>0</windowopenactiveendtime>" +
+                            "<boostactive>0</boostactive>" +
+                            "<boostactiveendtime>0</boostactiveendtime>" +
+                            "<batterylow>0</batterylow>" +
+                            "<battery>100</battery>" +
+                            "<nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange>" +
+                        "</hkr>" +
+                        "</device>" +
                         "<device identifier=\"08761 0000435\" id=\"22\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"Comet DECT\"><present>0</present><name>Comet DECT #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>" +
                         "<device identifier=\"5C:49:79:F0:A3:84\" id=\"30\" functionbitmask=\"640\" fwversion=\"06.92\" manufacturer=\"AVM\" productname=\"FRITZ!Powerline 546E\"><present>1</present><name>FRITZ!Powerline 546E #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter></device>" +
                         "<device identifier=\"08761 0000439\" id=\"40\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device>" +
@@ -85,7 +105,7 @@ public class AVMFritzDeviceListModelTest {
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(13, devices.getDevicelist().size());
+        assertEquals(14, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -649,6 +669,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNButton());
         assertTrue(device.isDimmableLightDevice());
         assertTrue(device.isLightDevice());
+        assertTrue(device.isOnOffUnit());
         assertFalse(device.isSwitchableOutlet());
 
 
@@ -659,10 +680,14 @@ public class AVMFritzDeviceListModelTest {
 
         assertEquals(5, device.getColorControlModel().getSupportedModes());
         assertEquals(1, device.getColorControlModel().getCurrentMode());
+        assertEquals(52, device.getColorControlModel().getHue());
+        assertEquals(51, device.getColorControlModel().getSaturation());
 
         assertNotNull(device.getLevelControlModel());
         assertEquals(54, device.getLevelControlModel().getLevel());
 
+        assertNotNull(device.getSimpleOnOffUnit());
+        assertEquals(true, device.getSimpleOnOffUnit().getState());
     }
 
     private Optional<AVMFritzBaseModel> findModel(String name) {
