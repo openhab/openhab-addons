@@ -73,7 +73,7 @@ public class Tr064PhonebookImpl implements Phonebook {
                 String contactName = contact.getPerson().getRealName();
                 return contact.getTelephony().getNumber().stream()
                         .collect(Collectors.toMap(number -> normalizeNumber(number.getValue()), number -> contactName,
-                                (nameA, nameB) -> mergeSameContactNames(nameA, nameB)));
+                                this::mergeSameContactNames));
             }).collect(HashMap::new, HashMap::putAll, HashMap::putAll);
             logger.debug("Downloaded phonebook {}: {}", phonebookName, phonebook);
         } catch (JAXBException | InterruptedException | ExecutionException | TimeoutException e) {
