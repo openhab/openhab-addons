@@ -56,6 +56,8 @@ public class Converter {
     private static final double SCALE = 10;
     public static final double MILES_TO_KM_RATIO = 1.60934;
     private static final QuantityType<Length> UNDEF_MILES = QuantityType.valueOf(-1, ImperialUnits.MILE);
+    private static final String SPLIT_HYPHEN = "-";
+    private static final String SPLIT_BRACKET = "\\(";
 
     public static Optional<TimeZoneProvider> timeZoneProvider = Optional.empty();
 
@@ -108,16 +110,26 @@ public class Converter {
 
     public static String toTitleCase(@Nullable String input) {
         if (input == null) {
-            return Converter.toTitleCase(Constants.UNDEF);
+            return toTitleCase(Constants.UNDEF);
         } else {
             String lower = input.replaceAll(Constants.UNDERLINE, Constants.SPACE).toLowerCase();
-            String[] arr = lower.split(Constants.SPACE);
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < arr.length; i++) {
-                sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1)).append(" ");
-            }
-            return sb.toString().trim();
+            String converted = toTitleCase(lower, Constants.SPACE);
+            converted = toTitleCase(converted, SPLIT_HYPHEN);
+            converted = toTitleCase(converted, SPLIT_BRACKET);
+            return converted;
         }
+    }
+
+    private static String toTitleCase(String input, String splitter) {
+        String[] arr = input.split(splitter);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arr.length; i++) {
+            if (i > 0) {
+                sb.append(splitter.replaceAll("\\\\", Constants.EMPTY));
+            }
+            sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1));
+        }
+        return sb.toString().trim();
     }
 
     public static String capitalizeFirst(String str) {

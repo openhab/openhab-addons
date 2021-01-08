@@ -37,6 +37,7 @@ public class Constants {
     public static final String UNDEF = UnDefType.UNDEF.toFullString();
     public static final String UTC_APPENDIX = "-01T12:00:00";
     public static final String NULL_DATE = "1900-01-01T00:00:00";
+    public static final int INT_UNDEF = -1;
 
     // Services to query
     public static final String SERVICES_SUPPORTED = "servicesSupported";

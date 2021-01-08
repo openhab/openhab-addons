@@ -13,6 +13,7 @@
 package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 /**
  * The {@link CBSMessage} Data Transfer Object
@@ -26,6 +27,8 @@ public class CBSMessage {
     public String cbsDescription;// ": "Next change due at the latest by the stated date."
     public int cbsRemainingMileage = -1; // 46000
 
+    public String cbsTypeConverted = null;
+
     public String getDueDate() {
         if (cbsDueDate == null) {
             return Constants.NULL_DATE;
@@ -35,11 +38,14 @@ public class CBSMessage {
     }
 
     public String getType() {
-        if (cbsType == null) {
-            return Constants.INVALID;
-        } else {
-            return cbsType;
+        if (cbsTypeConverted == null) {
+            if (cbsType == null) {
+                cbsTypeConverted = Constants.INVALID;
+            } else {
+                cbsTypeConverted = Converter.toTitleCase(cbsType);
+            }
         }
+        return cbsTypeConverted;
     }
 
     @Override

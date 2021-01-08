@@ -25,13 +25,13 @@ import com.google.gson.annotations.SerializedName;
  * @author Bernd Weymann - Initial contribution
  */
 public class VehicleStatus {
-    public int mileage;// ": 17273,
-    public double remainingFuel;// ": 4,
-    public double remainingRangeElectric;// ": 148,
+    public int mileage = Constants.INT_UNDEF;// ": 17273,
+    public double remainingFuel = Constants.INT_UNDEF;// ": 4,
+    public double remainingRangeElectric = Constants.INT_UNDEF;// ": 148,
     public double remainingRangeElectricMls;// ": 91,
-    public double remainingRangeFuel;// ": 70,"
+    public double remainingRangeFuel = Constants.INT_UNDEF;// ": 70,"
     public double remainingRangeFuelMls;// ":43,"
-    public double maxRangeElectric;// ":216,"
+    public double maxRangeElectric = Constants.INT_UNDEF;// ":216,"
     public double maxRangeElectricMls;// ":134,"
     public double maxFuel;// ":8.5,
     public double chargingLevelHv;// ":71,
