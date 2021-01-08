@@ -55,8 +55,8 @@ import com.google.gson.Gson;
 public class StatusWrapper {
     private static final Gson GSON = new Gson();
     private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
-    private static double ALLOWED_MILE_CONVERSION_DEVIATION = 1.5;
-    private static double ALLOWED_KM_ROUND_DEVIATION = 0.1;
+    private static final double ALLOWED_MILE_CONVERSION_DEVIATION = 1.5;
+    private static final double ALLOWED_KM_ROUND_DEVIATION = 0.1;
 
     private VehicleStatus vStatus;
     private boolean imperial;
