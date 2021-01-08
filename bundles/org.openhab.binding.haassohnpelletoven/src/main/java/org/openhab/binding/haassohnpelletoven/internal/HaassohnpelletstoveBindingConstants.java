@@ -26,12 +26,10 @@ public class HaassohnpelletstoveBindingConstants {
 
     private static final String BINDING_ID = "haassohnpelletoven";
 
-    // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_OVEN = new ThingTypeUID(BINDING_ID, "oven");
 
-    // List of all Channel ids
-    public static final String CHANNEL_isTemp = "channelIsTemp"; // is Temperature
-    public static final String CHANNEL_mode = "channelMode"; // Stove Mode
-    public static final String CHANNEL_spTemp = "channelSpTemp"; // Target Temperature
-    public static final String CHANNEL_prg = "channelPrg"; // Programming the Stove
+    public static final String CHANNEL_isTemp = "channelIsTemp";
+    public static final String CHANNEL_mode = "channelMode";
+    public static final String CHANNEL_spTemp = "channelSpTemp";
+    public static final String CHANNEL_prg = "channelPrg";
 }

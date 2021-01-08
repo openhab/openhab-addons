@@ -48,9 +48,17 @@ public class HaassohnpelletstoveJSONCommunication {
         ovenData = new HaassohnpelletstoveJsonData();
     }
 
+    /**
+     * Refreshes the oven Connection with the internal oven token.
+     *
+     * @param message Message object to pass errors to the calling method.
+     * @param thingUID Thing UID for logging purposes
+     * @return true if no error occurred, false otherwise.
+     */
+    @SuppressWarnings("null")
     public boolean refreshOvenConnection(Helper message, String thingUID) {
         if (config == null) {
-            message.SetStatusDescription("Error in configuration. Please recreate Thing.");
+            message.setStatusDescription("Error in configuration. Please recreate Thing.");
             return false;
         }
 
@@ -60,20 +68,20 @@ public class HaassohnpelletstoveJSONCommunication {
         if (config == null) {
             return false;
         }
+        @SuppressWarnings("null")
         String urlStr = "http://" + config.hostIP + "/status.cgi";
 
-        // Run the HTTP request and get the JSON response from Oven
         String response = null;
         try {
             response = HttpUtil.executeUrl("GET", urlStr, 10000);
             logger.debug("OvenData = {}", response);
-            // Map the JSON response to an object
+
             result = gson.fromJson(response, HaassohnpelletstoveJsonData.class);
             resultOk = true;
 
         } catch (IllegalArgumentException e) {
             logger.debug("Illegal argument {}", e.getMessage());
-            // catch Illegal character in path
+
             error = "Error creating URI with Host IP parameter: '" + config.hostIP + "'";
             errorDetail = e.getMessage();
             statusDescr = "Error contacting the oven with the IP" + config.hostIP;
@@ -89,16 +97,16 @@ public class HaassohnpelletstoveJSONCommunication {
             errorDetail = e.getMessage();
             resultOk = false;
         }
-        // Update the thing status
+
         if (resultOk) {
-            // Safe the actual oven data
+
             ovenData = result;
-            x_hs_pin = GetValidXHSPIN(ovenData);
+            x_hs_pin = getValidXHSPIN(ovenData);
         } else {
             logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, error, errorDetail);
             ovenData = null;
         }
-        message.SetStatusDescription(statusDescr);
+        message.setStatusDescription(statusDescr);
         return resultOk;
     }
 
@@ -107,6 +115,7 @@ public class HaassohnpelletstoveJSONCommunication {
      *
      * @return true if success or false in case of error
      */
+    @SuppressWarnings("null")
     public boolean updateOvenData(@Nullable String postData, Helper helper, String thingUID) {
 
         String statusDescr = "";
@@ -115,6 +124,7 @@ public class HaassohnpelletstoveJSONCommunication {
         if (config == null) {
             return false;
         }
+        @SuppressWarnings("null")
         String urlStr = "http://" + config.hostIP + "/status.cgi";
 
         // Run the HTTP POST request and get the JSON response from Oven
@@ -126,9 +136,9 @@ public class HaassohnpelletstoveJSONCommunication {
 
             InputStream targetStream = new ByteArrayInputStream(postData.getBytes());
             try {
-                // run Post Update with Post Body to execute command
+
                 refreshOvenConnection(helper, thingUID);
-                httpHeader = CreateHeader(postData);
+                httpHeader = createHeader(postData);
                 response = HttpUtil.executeUrl("POST", urlStr, httpHeader, targetStream, "application/json", 10000);
                 resultOk = true;
             } catch (IOException e) {
@@ -137,10 +147,10 @@ public class HaassohnpelletstoveJSONCommunication {
                 resultOk = false;
             }
         } else {
-            // Run Post Update of Oven data
+
             try {
                 refreshOvenConnection(helper, thingUID);
-                httpHeader = CreateHeader(null);
+                httpHeader = createHeader(null);
                 response = HttpUtil.executeUrl("POST", urlStr, httpHeader, null, "", 10000);
                 resultOk = true;
             } catch (IOException e) {
@@ -157,7 +167,7 @@ public class HaassohnpelletstoveJSONCommunication {
         }
         if (resultOk) {
             logger.debug("OvenData = {}", response);
-            // Map the JSON response to an object
+
             ovenData = gson.fromJson(response, HaassohnpelletstoveJsonData.class);
 
         } else {
@@ -165,16 +175,17 @@ public class HaassohnpelletstoveJSONCommunication {
             ovenData = null;
 
         }
-        helper.SetStatusDescription(statusDescr);
+        helper.setStatusDescription(statusDescr);
         return resultOk;
     }
 
     /**
      * Creates the header for the Post Request
      *
-     * @return
+     * @return The created Header Properties
      */
-    private Properties CreateHeader(@Nullable String postData) {
+    @SuppressWarnings("null")
+    private Properties createHeader(@Nullable String postData) {
         Properties httpHeader = new Properties();
         httpHeader.setProperty("Host", config.hostIP);
         httpHeader.setProperty("Accept", "*/*");
@@ -200,15 +211,15 @@ public class HaassohnpelletstoveJSONCommunication {
      * @param ovenData
      * @return
      */
-    private @Nullable String GetValidXHSPIN(HaassohnpelletstoveJsonData ovenData) {
+    private @Nullable String getValidXHSPIN(HaassohnpelletstoveJsonData ovenData) {
 
         if (ovenData != null) {
-            // Get nonce from latest call;
-            String nonce = ovenData.GetNonce();
 
-            // MD5 PIN
-            String ePin = MD5Utils.GetMD5String(config.hostPIN);
-            return MD5Utils.GetMD5String(nonce + ePin);
+            String nonce = ovenData.getNonce();
+
+            @SuppressWarnings("null")
+            String ePin = MD5Utils.getMD5String(config.hostPIN);
+            return MD5Utils.getMD5String(nonce + ePin);
         } else {
             return null;
         }
