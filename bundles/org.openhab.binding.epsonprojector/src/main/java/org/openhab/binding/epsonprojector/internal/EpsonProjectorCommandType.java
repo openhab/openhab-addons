@@ -31,7 +31,7 @@ public enum EpsonProjectorCommandType {
     POWER("Power", SwitchItem.class),
     POWER_STATE("PowerState", StringItem.class),
     LAMP_TIME("LampTime", NumberItem.class),
-    KEY_CODE("KeyCode", NumberItem.class),
+    KEY_CODE("KeyCode", StringItem.class),
     VKEYSTONE("VerticalKeystone", NumberItem.class),
     HKEYSTONE("HorizontalKeystone", NumberItem.class),
     AKEYSTONE("AutoKeystone", SwitchItem.class),

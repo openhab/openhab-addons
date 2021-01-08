@@ -130,7 +130,7 @@
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 	<channel-type id="keycode" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>KeyCode</label>
 		<description>Send a KEY Operation Command to the Projector</description>
 	</channel-type>
@@ -271,6 +271,7 @@
 				<option value="SILVER">SILVER</option>
 				<option value="XVCOLOR">XVCOLOR</option>
 				<option value="DICOMSIM">DICOMSIM</option>
+				<option value="AUTO">AUTO</option>
 			</options>
 		</state>
 	</channel-type>
