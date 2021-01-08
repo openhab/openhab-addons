@@ -1,21 +1,20 @@
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import java.math.BigDecimal;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.math.BigDecimal;
 
 /**
  * See {@link DeviceListModel}.
@@ -42,6 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
+    protected static final int HAN_FUN_LIGHT_BIT = 1 << 2; // Bit 1 - light
     protected static final int HAN_FUN_BUTTON_BIT = 1 << 3; // Bit 3 - undocumented
     protected static final int HAN_FUN_ALARM_SENSOR_BIT = 1 << 4; // Bit 4
     protected static final int BUTTON_BIT = 1 << 5; // Bit 5
@@ -52,6 +52,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int DECT_REPEATER_BIT = 1 << 10; // Bit 10
     protected static final int MICROPHONE_BIT = 1 << 11; // Bit 11
     protected static final int HAN_FUN_UNIT_BIT = 1 << 13; // Bit 13
+    protected static final int HAN_FUN_DIMMABLE_LIGHT_BIT = 1 << 17; // Bit 2 - dimmable light
     protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
     @XmlAttribute(name = "identifier")
@@ -97,10 +98,6 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return powermeterModel;
     }
 
-    public void setPowermeter(PowerMeterModel powermeter) {
-        this.powermeterModel = powermeter;
-    }
-
     public HeatingModel getHkr() {
         return heatingModel;
     }
@@ -137,6 +134,16 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask & HAN_FUN_BUTTON_BIT) > 0;
     }
 
+    // TODO: need to use this one somewhere :)
+    public boolean isLightDevice() {
+        return (bitmask & HAN_FUN_LIGHT_BIT) > 0;
+    }
+
+    // TODO: need to use this one somewhere :)
+    public boolean isDimmableLightDevice() {
+        return (bitmask & HAN_FUN_DIMMABLE_LIGHT_BIT) > 0;
+    }
+
     public boolean isHANFUNAlarmSensor() {
         return (bitmask & HAN_FUN_ALARM_SENSOR_BIT) > 0;
     }
@@ -159,6 +166,10 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
 
     public boolean isPowermeter() {
         return (bitmask & POWERMETER_BIT) > 0;
+    }
+
+    public void setPowermeter(PowerMeterModel powermeter) {
+        this.powermeterModel = powermeter;
     }
 
     public boolean isDectRepeater() {
@@ -211,10 +222,11 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     public String toString() {
         return new StringBuilder().append("[ain=").append(ident).append(",bitmask=").append(bitmask)
                 .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isHANFUNButton=").append(isHANFUNButton())
-                .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append(",isButton=").append(isButton())
-                .append(",isSwitchableOutlet=").append(isSwitchableOutlet()).append(",isTempSensor=")
-                .append(isTempSensor()).append(",isHumiditySensor=").append(isHumiditySensor()).append(",isPowermeter=")
-                .append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
+                .append(",isLightDevice=").append(isLightDevice()).append(",isDimmableLightDevice=")
+                .append(isDimmableLightDevice()).append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor())
+                .append(",isButton=").append(isButton()).append(",isSwitchableOutlet=").append(isSwitchableOutlet())
+                .append(",isTempSensor=").append(isTempSensor()).append(",isHumiditySensor=").append(isHumiditySensor())
+                .append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
                 .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",isMicrophone=")
                 .append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",id=").append(deviceId)
                 .append(",manufacturer=").append(deviceManufacturer).append(",productname=").append(productName)

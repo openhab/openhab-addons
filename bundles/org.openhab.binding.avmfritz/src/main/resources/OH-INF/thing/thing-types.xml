@@ -328,4 +328,29 @@
 
 		<config-description-ref uri="thing-type:avmfritz:fritzgroup"/>
 	</thing-type>
+
+	<thing-type id="FRITZ_DECT_500">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 500</label>
+		<description>FRITZ!DECT500 switchable outlet.</description>
+
+		<channels>
+			<channel id="mode" typeId="mode"/>
+			<channel id="locked" typeId="locked"/>
+			<channel id="device_locked" typeId="device_locked"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="energy" typeId="energy"/>
+			<channel id="power" typeId="power"/>
+			<channel id="outlet" typeId="outlet"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 </thing:thing-descriptions>

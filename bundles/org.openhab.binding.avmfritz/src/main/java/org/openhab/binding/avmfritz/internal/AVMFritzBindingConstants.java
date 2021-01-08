@@ -40,6 +40,7 @@ public class AVMFritzBindingConstants {
     public static final String POWERLINE_MODEL_NAME = "FRITZ!Powerline";
 
     // List of main device types
+    public static final String DEVICE_DECT500 = "FRITZ_DECT_500";
     public static final String DEVICE_DECT400 = "FRITZ_DECT_400";
     public static final String DEVICE_DECT440 = "FRITZ_DECT_440";
     public static final String DEVICE_DECT301 = "FRITZ_DECT_301";
@@ -59,6 +60,7 @@ public class AVMFritzBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_FRITZBOX);
+    public static final ThingTypeUID DECT500_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT500);
     public static final ThingTypeUID DECT400_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT400);
     public static final ThingTypeUID DECT440_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT440);
     public static final ThingTypeUID DECT301_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT301);
@@ -162,8 +164,10 @@ public class AVMFritzBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Set.of(DECT300_THING_TYPE, DECT301_THING_TYPE,
             COMETDECT_THING_TYPE);
 
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHTING_THING_TYPES = Set.of(DECT500_THING_TYPE);
+
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
-            DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE);
+            DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE, DECT500_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
             GROUP_SWITCH_THING_TYPE);
