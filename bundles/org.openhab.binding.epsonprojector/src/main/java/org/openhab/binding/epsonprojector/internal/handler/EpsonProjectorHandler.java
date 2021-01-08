@@ -351,7 +351,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setHorizontalReverse((command == OnOffType.ON ? Switch.ON : Switch.OFF));
                     break;
                 case KEY_CODE:
-                    remoteController.sendKeyCode(((DecimalType) command).intValue());
+                    remoteController.sendKeyCode(command.toString());
                     break;
                 case LAMP_TIME:
                     logger.warn("'{}' is read only parameter", commandType);
