@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Class describing the DSMR bridge user configuration
  *
@@ -60,7 +58,8 @@ public class DSMRDeviceConfiguration {
      * @return true if serial port settings are all set.
      */
     public boolean isSerialFixedSettings() {
-        return baudrate > 0 && databits > 0 && !StringUtils.isBlank(parity) && !StringUtils.isBlank(stopbits);
+        return baudrate > 0 && databits > 0 && !(parity != null && parity.isBlank())
+                && !(stopbits != null && stopbits.isBlank());
     }
 
     @Override

@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -45,14 +46,15 @@ import org.openhab.core.thing.ThingUID;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class DSMRMeterDiscoveryServiceTest {
 
     private static final String EXPECTED_CONFIGURED_TELEGRAM = "dsmr_50";
     private static final String UNREGISTERED_METER_TELEGRAM = "unregistered_meter";
 
-    private @Mock(answer = Answers.RETURNS_DEEP_STUBS) DSMRBridgeHandler bridge;
-    private @Mock Thing thing;
-    private @Mock DSMRMeterHandler meterHandler;
+    private @NonNullByDefault({}) @Mock(answer = Answers.RETURNS_DEEP_STUBS) DSMRBridgeHandler bridge;
+    private @NonNullByDefault({}) @Mock Thing thing;
+    private @NonNullByDefault({}) @Mock DSMRMeterHandler meterHandler;
 
     /**
      * Test if discovery reports when the user has incorrectly configured the binding with the wrong meter types.

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
@@ -39,6 +40,7 @@ import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class DSMRMeterDetectorTest {
 
     // @formatter:off
