@@ -336,7 +336,7 @@
 		</supported-bridge-type-refs>
 
 		<label>FRITZ!DECT 500</label>
-		<description>FRITZ!DECT500 switchable outlet.</description>
+		<description>FRITZ!DECT500 dimmable light.</description>
 
 		<channels>
 			<channel id="mode" typeId="mode"/>
@@ -344,8 +344,6 @@
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="energy" typeId="energy"/>
-			<channel id="power" typeId="power"/>
-			<channel id="outlet" typeId="outlet"/>
 		</channels>
 
 		<representation-property>ain</representation-property>

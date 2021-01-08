@@ -52,7 +52,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int DECT_REPEATER_BIT = 1 << 10; // Bit 10
     protected static final int MICROPHONE_BIT = 1 << 11; // Bit 11
     protected static final int HAN_FUN_UNIT_BIT = 1 << 13; // Bit 13
-    protected static final int HAN_FUN_DIMMABLE_LIGHT_BIT = 1 << 17; // Bit 2 - dimmable light
+    protected static final int HAN_FUN_DIMMABLE_LIGHT_BIT = 1 << 17; // Bit 17 - dimmable light
     protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
     @XmlAttribute(name = "identifier")
