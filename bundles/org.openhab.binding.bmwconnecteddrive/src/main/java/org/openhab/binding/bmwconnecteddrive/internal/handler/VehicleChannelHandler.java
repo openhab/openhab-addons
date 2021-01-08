@@ -299,39 +299,41 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         // add all elements to options
         checkControlList = ccl;
-        List<StateOption> options = new ArrayList<>();
+        List<StateOption> ccmDescriptionOptions = new ArrayList<>();
+        List<StateOption> ccmMileageOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
+        int index = 0;
         for (CCMMessage ccEntry : checkControlList) {
-            options.add(new StateOption(ccEntry.ccmDescriptionShort, ccEntry.ccmDescriptionShort));
+            ccmDescriptionOptions.add(new StateOption(Integer.toString(index), ccEntry.ccmDescriptionShort));
+            ccmMileageOptions.add(new StateOption(Integer.toString(index), Integer.toString(ccEntry.ccmMileage)));
             if (selectedCC.equals(ccEntry.ccmDescriptionShort)) {
                 isSelectedElementIn = true;
             }
+            index++;
         }
-        setOptions(checkControlName, options);
+        setOptions(checkControlName, ccmDescriptionOptions);
+        setOptions(checkControlMileage, ccmMileageOptions);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
-            selectCC(checkControlList.get(0).ccmDescriptionShort);
+            selectCheckControl(0);
         }
     }
 
-    protected void selectCC(String selection) {
-        checkControlList.forEach(entry -> {
-            if (selection.equals(entry.ccmDescriptionShort)) {
-                selectedCC = selection;
-                updateState(checkControlName, StringType.valueOf(entry.ccmDescriptionShort));
-                QuantityType<Length> qtLength = QuantityType.valueOf(Converter.round(entry.ccmMileage),
-                        MetricPrefix.KILO(SIUnits.METRE));
-                if (imperial) {
-                    updateState(checkControlMileage,
-                            QuantityType.valueOf(Converter.round(entry.ccmMileage), ImperialUnits.MILE));
-
-                } else {
-                    updateState(checkControlMileage, qtLength);
-                }
-                return;
+    protected void selectCheckControl(int index) {
+        if (index >= 0 && index < checkControlList.size()) {
+            CCMMessage ccEntry = checkControlList.get(index);
+            selectedCC = ccEntry.ccmDescriptionShort;
+            updateState(checkControlName, StringType.valueOf(ccEntry.ccmDescriptionShort));
+            QuantityType<Length> qtLength = QuantityType.valueOf(Converter.round(ccEntry.ccmMileage),
+                    MetricPrefix.KILO(SIUnits.METRE));
+            if (imperial) {
+                updateState(checkControlMileage,
+                        QuantityType.valueOf(Converter.round(ccEntry.ccmMileage), ImperialUnits.MILE));
+            } else {
+                updateState(checkControlMileage, qtLength);
             }
-        });
+        }
     }
 
     protected void updateServices(List<CBSMessage> sl) {
@@ -344,38 +346,46 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         // add all elements to options
         serviceList = sl;
-        List<StateOption> options = new ArrayList<>();
+        List<StateOption> serviceNameOptions = new ArrayList<>();
+        List<StateOption> serviceDateOptions = new ArrayList<>();
+        List<StateOption> serviceMileageOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
+        int index = 0;
         for (CBSMessage serviceEntry : serviceList) {
-            options.add(new StateOption(serviceEntry.getType(), serviceEntry.getType()));
+            // create StateOption with "value = list index" and "label = human readable string"
+            serviceNameOptions.add(new StateOption(Integer.toString(index), serviceEntry.getType()));
+            serviceDateOptions.add(new StateOption(Integer.toString(index), serviceEntry.getDueDate()));
+            serviceMileageOptions
+                    .add(new StateOption(Integer.toString(index), Integer.toString(serviceEntry.cbsRemainingMileage)));
             if (selectedService.equals(serviceEntry.getType())) {
                 isSelectedElementIn = true;
             }
+            index++;
         }
-        setOptions(serviceName, options);
+        setOptions(serviceName, serviceNameOptions);
+        setOptions(serviceDate, serviceDateOptions);
+        setOptions(serviceMileage, serviceMileageOptions);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
-            selectService(serviceList.get(0).getType());
+            selectService(0);
         }
     }
 
-    protected void selectService(String selection) {
-        serviceList.forEach(entry -> {
-            if (selection.equals(entry.getType())) {
-                selectedService = selection;
-                updateState(serviceName, StringType.valueOf(Converter.toTitleCase(entry.getType())));
-                updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(entry.getDueDate())));
-                if (imperial) {
-                    updateState(serviceMileage,
-                            QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage), ImperialUnits.MILE));
-                } else {
-                    updateState(serviceMileage, QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage),
-                            MetricPrefix.KILO(SIUnits.METRE)));
-                }
-                return;
+    protected void selectService(int index) {
+        if (index >= 0 && index < serviceList.size()) {
+            CBSMessage serviceEntry = serviceList.get(index);
+            selectedService = serviceEntry.cbsType;
+            updateState(serviceName, StringType.valueOf(Converter.toTitleCase(serviceEntry.getType())));
+            updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(serviceEntry.getDueDate())));
+            if (imperial) {
+                updateState(serviceMileage,
+                        QuantityType.valueOf(Converter.round(serviceEntry.cbsRemainingMileage), ImperialUnits.MILE));
+            } else {
+                updateState(serviceMileage, QuantityType.valueOf(Converter.round(serviceEntry.cbsRemainingMileage),
+                        MetricPrefix.KILO(SIUnits.METRE)));
             }
-        });
+        }
     }
 
     protected void updateDestinations(List<Destination> dl) {
@@ -390,33 +400,36 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         // add all elements to options
         destinationList = dl;
-        List<StateOption> options = new ArrayList<>();
+        List<StateOption> destinationNameOptions = new ArrayList<>();
+        List<StateOption> destinationGPSOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
+        int index = 0;
         for (Destination destination : destinationList) {
-            options.add(new StateOption(destination.getAddress(), destination.getAddress()));
+            destinationNameOptions.add(new StateOption(Integer.toString(index), destination.getAddress()));
+            destinationGPSOptions.add(new StateOption(Integer.toString(index), destination.getCoordinates()));
             if (selectedDestination.equals(destination.getAddress())) {
                 isSelectedElementIn = true;
             }
+            index++;
         }
-        setOptions(destinationName, options);
+        setOptions(destinationName, destinationNameOptions);
+        setOptions(destinationLocation, destinationGPSOptions);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
-            selectDestination(destinationList.get(0).getAddress());
+            selectDestination(0);
         }
     }
 
-    protected void selectDestination(String selection) {
-        destinationList.forEach(entry -> {
-            if (selection.equals(entry.getAddress())) {
-                // update selected Item
-                selectedDestination = selection;
-                // update coordinates according to new set location
-                updateState(destinationName, StringType.valueOf(entry.getAddress()));
-                updateState(destinationLocation, PointType.valueOf(entry.getCoordinates()));
-                return;
-            }
-        });
+    protected void selectDestination(int index) {
+        if (index >= 0 && index < destinationList.size()) {
+            Destination destinationEntry = destinationList.get(index);
+            // update selected Item
+            selectedDestination = destinationEntry.getAddress();
+            // update coordinates according to new set location
+            updateState(destinationName, StringType.valueOf(destinationEntry.getAddress()));
+            updateState(destinationLocation, PointType.valueOf(destinationEntry.getCoordinates()));
+        }
     }
 
     private void setOptions(ChannelUID cuid, List<StateOption> options) {

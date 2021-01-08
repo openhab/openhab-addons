@@ -180,4 +180,13 @@ public class Converter {
             return QuantityType.valueOf(qtLength.doubleValue() / MILES_TO_KM_RATIO, ImperialUnits.MILE);
         }
     }
+
+    public static int getIndex(String fullString) {
+        int index = -1;
+        try {
+            index = Integer.parseInt(fullString);
+        } catch (NumberFormatException nfe) {
+        }
+        return index;
+    }
 }

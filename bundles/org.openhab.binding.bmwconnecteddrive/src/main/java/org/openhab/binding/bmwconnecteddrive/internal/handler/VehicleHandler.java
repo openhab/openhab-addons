@@ -169,15 +169,30 @@ public class VehicleHandler extends VehicleChannelHandler {
             }
         } else if (CHANNEL_GROUP_DESTINATION.equals(group)) {
             if (command instanceof StringType) {
-                selectDestination(((StringType) command).toFullString());
+                int index = Converter.getIndex(command.toFullString());
+                if (index != -1) {
+                    selectDestination(index);
+                } else {
+                    logger.debug("Cannot select Destination index {}", command.toFullString());
+                }
             }
         } else if (CHANNEL_GROUP_SERVICE.equals(group)) {
             if (command instanceof StringType) {
-                selectService(((StringType) command).toFullString());
+                int index = Converter.getIndex(command.toFullString());
+                if (index != -1) {
+                    selectService(index);
+                } else {
+                    logger.debug("Cannot select Service index {}", command.toFullString());
+                }
             }
         } else if (CHANNEL_GROUP_CHECK_CONTROL.equals(group)) {
             if (command instanceof StringType) {
-                selectCC(((StringType) command).toFullString());
+                int index = Converter.getIndex(command.toFullString());
+                if (index != -1) {
+                    selectCheckControl(index);
+                } else {
+                    logger.debug("Cannot select CheckControl index {}", command.toFullString());
+                }
             }
         }
     }
