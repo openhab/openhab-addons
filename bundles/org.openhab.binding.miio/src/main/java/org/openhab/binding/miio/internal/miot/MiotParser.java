@@ -140,6 +140,8 @@ public class MiotParser {
     public void writeDevice(String path, MiIoBasicDevice device) {
         String usersJson = GSON.toJson(device);
         try (PrintWriter out = new PrintWriter(path)) {
+            // touch up
+            usersJson = usersJson.replace(".0,\n", ",\n");
             usersJson = usersJson.replace("\n", "\r\n").replace("  ", "\t");
             out.println(usersJson);
             logger.info("Database file created:{}", path);
@@ -229,7 +231,7 @@ public class MiotParser {
                                 if (type != null) {
                                     miIoBasicChannel.setType("Number" + ":" + type);
                                     stateDescription.setPattern(
-                                            "%." + (property.format.contentEquals("uint8") ? "0" : "1") + "f %unit%");
+                                            "%." + (property.format.contentEquals("float") ? "1" : "0") + "f %unit%");
                                 } else {
                                     miIoBasicChannel.setType("Number");
 
