@@ -30,6 +30,7 @@ import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
+import org.openhab.binding.innogysmarthome.internal.manager.FullDeviceManager;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
@@ -174,6 +175,7 @@ public class InnogyBridgeHandlerTest {
     private class InnogyBridgeHandlerAccessible extends InnogyBridgeHandler {
 
         private final InnogyClient innogyClientMock;
+        private final FullDeviceManager fullDeviceManagerMock;
         private final ScheduledExecutorService schedulerMock;
         private int executionCount;
         private int directExecutionCount;
@@ -188,7 +190,8 @@ public class InnogyBridgeHandlerTest {
             bridgeDevice.setConfig(new DeviceConfig());
 
             innogyClientMock = mock(InnogyClient.class);
-            when(innogyClientMock.getFullDevices()).thenReturn(Collections.singletonList(bridgeDevice));
+            fullDeviceManagerMock = mock(FullDeviceManager.class);
+            when(fullDeviceManagerMock.getFullDevices()).thenReturn(Collections.singletonList(bridgeDevice));
 
             schedulerMock = mock(ScheduledExecutorService.class);
 
@@ -216,6 +219,12 @@ public class InnogyBridgeHandlerTest {
 
         public int getDirectExecutionCount() {
             return directExecutionCount;
+        }
+
+        @Override
+        @NonNull
+        FullDeviceManager createFullDeviceManager(@NonNull InnogyClient client) {
+            return fullDeviceManagerMock;
         }
 
         @Override
