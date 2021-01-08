@@ -17,6 +17,7 @@ import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYP
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -82,7 +83,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
     private final Map<ChannelUID, Tr064ChannelConfig> channels = new HashMap<>();
     // caching is used to prevent excessive calls to the same action
-    private final ExpiringCacheMap<ChannelUID, State> stateCache = new ExpiringCacheMap<>(2000);
+    private final ExpiringCacheMap<ChannelUID, State> stateCache = new ExpiringCacheMap<>(Duration.ofMillis(2000));
     private Collection<Phonebook> phonebooks = List.of();
 
     private @Nullable ScheduledFuture<?> connectFuture;

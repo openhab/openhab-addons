@@ -17,6 +17,7 @@ import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -58,15 +59,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SOAPConnector {
-    private static final int SOAP_TIMEOUT = 5; // in s
-    private static final int SOAP_MESSAGE_CACHE_EXPIRY_TIME = 2000; // in ms
+    private static final int SOAP_TIMEOUT = 5; // in
     private final Logger logger = LoggerFactory.getLogger(SOAPConnector.class);
     private final HttpClient httpClient;
     private final String endpointBaseURL;
     private final SOAPValueConverter soapValueConverter;
 
     private final ExpiringCacheMap<SOAPRequest, SOAPMessage> soapMessageCache = new ExpiringCacheMap<>(
-            SOAP_MESSAGE_CACHE_EXPIRY_TIME);
+            Duration.ofMillis(2000));
 
     public SOAPConnector(HttpClient httpClient, String endpointBaseURL) {
         this.httpClient = httpClient;

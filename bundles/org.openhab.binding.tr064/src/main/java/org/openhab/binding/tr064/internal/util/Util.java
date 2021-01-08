@@ -17,6 +17,7 @@ import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -69,11 +70,9 @@ import org.w3c.dom.NodeList;
 public class Util {
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
     private static final int HTTP_REQUEST_TIMEOUT = 5; // in s
-    private static final int XML_OBJECT_CACHE_EXPIRY_TIME = 3000; // in ms
-
     // cache XML content for 5s
     private static final ExpiringCacheMap<String, Object> XML_OBJECT_CACHE = new ExpiringCacheMap<>(
-            XML_OBJECT_CACHE_EXPIRY_TIME);
+            Duration.ofMillis(3000));
 
     /**
      * read the channel config from the resource file (static initialization)
