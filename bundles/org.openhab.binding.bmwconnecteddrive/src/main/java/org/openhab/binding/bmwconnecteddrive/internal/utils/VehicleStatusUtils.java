@@ -136,9 +136,8 @@ public class VehicleStatusUtils {
                     }
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                return UNDEF;
             }
         }
-        return overallState;
+        return Converter.toTitleCase(overallState);
     }
 }

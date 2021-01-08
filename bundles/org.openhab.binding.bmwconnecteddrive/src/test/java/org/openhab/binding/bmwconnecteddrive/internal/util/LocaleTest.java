@@ -27,8 +27,7 @@ import org.openhab.core.library.types.DateTimeType;
 import com.google.gson.Gson;
 
 /**
- * The {@link LocaleTest} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link LocaleTest} is testing locale settings
  *
  * @author Bernd Weymann - Initial contribution
  */
