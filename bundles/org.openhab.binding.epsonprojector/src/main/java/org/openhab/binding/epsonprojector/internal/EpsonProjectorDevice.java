@@ -232,8 +232,8 @@ public class EpsonProjectorDevice {
     /*
      * Key code
      */
-    public void sendKeyCode(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
-        sendCommand(String.format("KEY %02X", value));
+    public void sendKeyCode(String value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        sendCommand(String.format("KEY %s", value));
     }
 
     /*

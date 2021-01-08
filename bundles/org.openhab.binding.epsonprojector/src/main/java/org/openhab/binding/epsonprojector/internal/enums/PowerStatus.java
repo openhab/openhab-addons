@@ -32,6 +32,7 @@ public enum PowerStatus {
     COOLDOWN(0x03),
     STANDBYNETWORKON(0x04),
     ABNORMALSTANDBY(0x05),
+    WIRELESSHDSTANDBY(0x07),
     UNKNOWN(0xFF);
 
     private final int value;

@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum ColorMode {
+    AUTO(0x00),
     SRGB(0x01),
     NORMAL(0x02),
     MEETING(0x03),
