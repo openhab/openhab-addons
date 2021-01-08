@@ -96,7 +96,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
 
     @Override
     public CompletableFuture<String> getSerialNumber() {
-        return CompletableFuture.completedFuture("none");
+        return CompletableFuture.completedFuture(accessory.getItem().getName());
     }
 
     @Override
