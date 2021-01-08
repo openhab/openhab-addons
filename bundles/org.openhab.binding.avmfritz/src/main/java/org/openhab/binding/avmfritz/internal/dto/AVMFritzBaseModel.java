@@ -91,11 +91,25 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     @XmlElement(name = "powermeter")
     private PowerMeterModel powermeterModel;
 
+    @XmlElement(name = "colorcontrol")
+    private ColorControlModel colortrolModel;
+
+    @XmlElement(name = "levelcontrol")
+    private LevelControlModel levelControlModel;
+
     @XmlElement(name = "hkr")
     private HeatingModel heatingModel;
 
     public PowerMeterModel getPowermeter() {
         return powermeterModel;
+    }
+
+    public ColorControlModel getColorControlModel(){
+        return colortrolModel;
+    }
+
+    public LevelControlModel getLevelControlModel(){
+        return levelControlModel;
     }
 
     public HeatingModel getHkr() {
