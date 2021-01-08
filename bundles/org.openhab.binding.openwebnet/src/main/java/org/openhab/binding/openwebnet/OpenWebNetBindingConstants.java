@@ -103,6 +103,8 @@ public class OpenWebNetBindingConstants {
 
     // BUS gw config properties
     public static final String CONFIG_PROPERTY_HOST = "host";
+    public static final String CONFIG_PROPERTY_SERIAL_PORT = "serialPort";
+
     // properties
     public static final String PROPERTY_OWNID = "ownId";
     public static final String PROPERTY_ZIGBEEID = "zigbeeid";
