@@ -1,50 +1,47 @@
-# haassohnpelletoven Binding
+# Haas Sohn Pellet Stove Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The binding for Haassohnpelletstove communicates with a Haas and Sohn Pelletstove through the optional
+WIFI-Modul. More information about the WIFI-Modul can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Things                    | Description                                                                  | Thing Type |
+|---------------------------|------------------------------------------------------------------------------|------------|
+| haassohnpelletoven        | Control of a Haas & Sohn Pellet Stove                                        | oven	    |
 
-## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+In general two parameters are required. The IP-Address of the WIFI-Modul of the Stove in the local Network and the Access PIN of the Stove.
+The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Thing oven  [ hostIP="192.168.0.23", hostPIN=1234]
+
+
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+In V0.1 the following channels are yet supported:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| channel  | type   | description                                              |
+|----------|--------|----------------------------------------------------------|
+| prg      | Switch | Turn the Stove On/Off		                               |
+| isTemp   | String | Receives the actual Temperature of the stove	           |
+| spTemp   | String | Receives and Sets the Target Temperature of the stove	   |
+| mode     | String | Receives the actual mode the stove is in          	   |
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+demo.items:
+
+```java
+String isTemp { channel="oven:isTemp" }
+String spTemp { channel="oven:spTemp" }
+String mode   { channel="oven:mode" }
+Switch prg    	{ channel="oven:prg" }
+```
 
 ## Any custom content here!
 

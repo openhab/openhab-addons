@@ -38,7 +38,12 @@ public class HaassohnpelletstoveJsonData {
     String maintenance_in;
     String cleaning_in;
 
-    public String GetNonce() {
+    /***
+     * Get the nonce
+     *
+     * @return nonce
+     */
+    public String getNonce() {
         return this.meta.Getnonce();
     }
 
@@ -51,6 +56,11 @@ public class HaassohnpelletstoveJsonData {
         return is_temp;
     }
 
+    /***
+     * JSON response
+     *
+     * @return JSON response as object
+     */
     public HaassohnpelletstoveJsonData getResponse() {
         return this;
     }

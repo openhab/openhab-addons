@@ -22,11 +22,21 @@ public class Helper {
 
     private String statusDescription = "";
 
-    public String GetStatusDesription() {
+    /***
+     * Gets the Status Description
+     *
+     * @return
+     */
+    public String getStatusDesription() {
         return statusDescription;
     }
 
-    public void SetStatusDescription(String status) {
+    /***
+     * Sets the Status Description
+     *
+     * @param status
+     */
+    public void setStatusDescription(String status) {
         statusDescription = statusDescription + "\n" + status;
     }
 }

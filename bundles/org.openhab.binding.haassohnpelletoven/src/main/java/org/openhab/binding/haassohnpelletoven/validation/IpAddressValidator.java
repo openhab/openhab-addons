@@ -27,7 +27,12 @@ public class IpAddressValidator {
 
     private static final Pattern IP_PATTERN = Pattern.compile(IP_REGEXP);
 
-    // Return true when *address* is IP Address
+    /**
+     * Verifies a given String as a valid IP-Address
+     *
+     * @param address to be verified
+     * @return true if valid IP-Address, false otherwise
+     */
     public boolean isValid(String address) {
         return IP_PATTERN.matcher(address).matches();
     }

@@ -23,7 +23,12 @@ public class PinValidator {
 
     Pattern pattern = Pattern.compile("(\\d{4})");
 
-    // Return true when PIN is a 4 digit PIN
+    /***
+     * Verifies if a given String is a valid PIN.
+     *
+     * @param pin to be verified.
+     * @return true if valid, false otherwise.
+     */
     public boolean isValid(String pin) {
         return pattern.matcher(pin).matches();
     }

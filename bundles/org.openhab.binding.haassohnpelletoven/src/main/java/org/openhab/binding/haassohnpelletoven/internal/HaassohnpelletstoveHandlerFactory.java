@@ -37,14 +37,6 @@ public class HaassohnpelletstoveHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OVEN);
 
-    /*
-     * @Activate
-     * public HaassohnpelletstoveHandlerFactory(final String hostIP, final String hostPIN) {
-     * this.hostIP = hostIP;
-     * this.hostPIN = hostPIN;
-     * }
-     */
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);

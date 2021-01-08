@@ -54,7 +54,6 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
 
     private @Nullable HaassohnpelletstoveConfiguration config;
     boolean resultOk = false;
-    // private @Nullable String x_hs_pin;
 
     private HaassohnpelletstoveJSONCommunication serviceCommunication;
 
@@ -113,7 +112,7 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
             return true;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    message.GetStatusDesription());
+                    message.getStatusDesription());
             return false;
         }
     }
@@ -168,7 +167,7 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
         }
 
         Helper message = new Helper();
-        message.SetStatusDescription(statusDescr);
+        message.setStatusDescription(statusDescr);
         if (validConfig) {
             serviceCommunication.setConfig(config);
             if (serviceCommunication.refreshOvenConnection(message, this.getThing().getUID().toString())) {
@@ -179,12 +178,12 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
             } else {
 
                 logger.debug("Setting thing '{}' to OFFLINE: {}", getThing().getUID(), errors);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.GetStatusDesription());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
             }
 
         } else {
             logger.debug("Setting thing '{}' to OFFLINE: {}", getThing().getUID(), errors);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.GetStatusDesription());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
         }
     }
 
@@ -198,10 +197,8 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
         if (!linkedChannels.isEmpty()) {
             logger.debug("Start automatic refreshing");
 
-            // Request new oven data to the oven service
             updateOvenData(null);
 
-            // Update all channels from the updated oven data
             for (Channel channel : getThing().getChannels()) {
                 updateChannel(channel.getUID().getId());
             }
@@ -212,7 +209,6 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
 
     private void verifyLinkedChannel(String channelID) {
         if (isLinked(channelID) && !linkedChannels.containsKey(channelID)) {
-            // channel Id to Hashmap
             linkedChannels.put(channelID, true);
         }
     }
@@ -243,10 +239,9 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
                 @Override
                 public void run() {
                     try {
-                        // Request new oven data to the oven service
+
                         updateOvenData(null);
 
-                        // Update all channels from the updated oven data
                         for (Channel channel : getThing().getChannels()) {
                             updateChannel(channel.getUID().getId());
                         }
@@ -256,6 +251,7 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
                 }
             };
 
+            @SuppressWarnings("null")
             int period = config.refreshRate;
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, period, TimeUnit.SECONDS);
         }
@@ -263,7 +259,7 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        // start automatic refreshing as soon as first channel is Linked
+
         if (!automaticRefreshing) {
             logger.debug("Start automatic refreshing");
             startAutomaticRefresh();
@@ -278,7 +274,7 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
     public void channelUnlinked(ChannelUID channelUID) {
 
         if (linkedChannels.containsKey(channelUID.getId())) {
-            // remove channel Id from Hashmap
+
             linkedChannels.remove(channelUID.getId());
         }
 
@@ -334,7 +330,6 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
     private void update(@Nullable State state, String channelId) {
         logger.debug("Update channel {} with state {}", channelId, (state == null) ? "null" : state.toString());
 
-        // Update the channel
         if (state != null) {
             updateState(channelId, state);
 
