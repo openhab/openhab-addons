@@ -34,6 +34,40 @@ HomeKit integration supports following accessory types:
 - Carbon Dioxide Sensor
 - Carbon Monoxide Sensor
 
+## Quick start
+
+- install homekit binding via UI
+  
+- add metadata to an existing item (see [UI based configuration](#UI-based-Configuration))
+  
+- go to scan QR code from UI->Setting-HomeKit Integration
+  
+  ![settings_qrcode.png](doc/settings_qrcode.png)
+  
+- open home app on your iPhone or iPad
+- create new home
+  
+  ![ios_add_new_home.png](doc/ios_add_new_home.png)
+  
+- add accessory
+  
+  ![ios_add_accessory.png](doc/ios_add_accessory.png)
+  
+- scan QR code from UI->Setting-HomeKit Integration
+  
+  ![ios_scan_qrcode.png](doc/ios_scan_qrcode.png)  
+
+- click "Add Anyway"
+  
+  ![ios_add_anyway.png](doc/ios_add_anyway.png)
+  
+- follow the instruction of the home app wizard
+  
+  ![ios_add_accessory_wizard.png](doc/ios_add_accessory_wizard.png)
+  
+Add metadata to more item or fine-tune your configuration using further settings
+
+
 ## Global Configuration
 
 Your first step will be to create the `homekit.cfg` in your `$OPENHAB_CONF/services` folder.
@@ -93,8 +127,30 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
-e.g.
 
+### UI based Configuration
+In order to add metadata to an item:
+- select desired item in mainUI
+- click on "Add Metadata"
+  
+  ![item_add_metadata_button.png](doc/item_add_metadata_button.png)
+  
+- select "Apple HomeKit" namespace
+  
+  ![select_homekit_namespace.png](doc/select_homekit_namespace.png)
+  
+- click on "HomeKit Accessory/Characteristic"
+  
+  ![add_homekit_tag.png](doc/add_homekit_tag.png)
+
+- select required HomeKit accessory type or characteristic
+  
+  ![select_homekit_accessory_type.png](doc/select_homekit_accessory_type.png)
+  
+- click on "Save"
+
+
+### Textual configuration
 ```xtend
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```

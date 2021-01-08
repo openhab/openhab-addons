@@ -22,7 +22,11 @@
 			<label>Thermostat Current Heating/Cooling Mapping</label>
 			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
 		</parameter-group>
-
+		<parameter name="qrCode" type="text" required="false" groupName="core">
+			<label>HomeKit QR Code</label>
+			<context>qrcode</context>
+			<description>Scan QR code with home app to add openHAB as HomeKit bridge. </description>
+		</parameter>
 		<parameter name="port" type="integer" required="true" groupName="core">
 			<label>Port</label>
 			<description>Defines the port the HomeKit integration listens on.</description>
@@ -32,6 +36,10 @@
 			<label>Pin</label>
 			<description>Defines the pin, used for pairing, in the form ###-##-###.</description>
 			<default>031-45-154</default>
+		</parameter>
+		<parameter name="setupId" type="text" pattern="[0-9A-Z]{4}" required="false" groupName="core">
+			<label>Setup ID</label>
+			<description>Setup ID used for pairing using QR Code. Alphanumeric code of length 4.</description>
 		</parameter>
 		<parameter name="networkInterface" type="text" required="false" groupName="core">
 			<label>Network Interface</label>
