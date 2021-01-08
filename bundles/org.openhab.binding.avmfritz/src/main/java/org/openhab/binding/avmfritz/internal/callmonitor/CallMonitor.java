@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class handles all communication with the call monitor port of the fritzbox.
+ * This class handles all communication with the Call Monitor port of the FRITZ!Box.
  *
  * @author Kai Kreuzer - Initial contribution
  */
@@ -42,7 +42,7 @@ public class CallMonitor {
 
     protected final Logger logger = LoggerFactory.getLogger(CallMonitor.class);
 
-    // port number to connect to fritzbox
+    // port number to connect to FRITZ!Box
     private static final int MONITOR_PORT = 1012;
 
     private @Nullable CallMonitorThread monitorThread;
@@ -75,9 +75,9 @@ public class CallMonitor {
      * Refresh channels.
      */
     public void refreshChannels() {
-        CallMonitorThread monitorThread = this.monitorThread;
-        if (monitorThread != null) {
-            monitorThread.resetChannels();
+        CallMonitorThread thread = this.monitorThread;
+        if (thread != null) {
+            thread.resetChannels();
         }
     }
 
@@ -86,10 +86,7 @@ public class CallMonitor {
      */
     public void dispose() {
         reconnectJob.cancel(true);
-        CallMonitorThread monitorThread = this.monitorThread;
-        if (monitorThread != null) {
-            monitorThread.interrupt();
-        }
+        stopThread();
     }
 
     public class CallMonitorThread extends Thread {
@@ -228,20 +225,10 @@ public class CallMonitor {
 
     public void stopThread() {
         logger.debug("Stopping call monitor thread...");
-        if (monitorThread != null) {
-            monitorThread.interrupt();
+        CallMonitorThread thread = this.monitorThread;
+        if (thread != null) {
+            thread.interrupt();
             monitorThread = null;
         }
-    }
-
-    public void startThread() {
-        logger.debug("Starting call monitor thread...");
-        if (monitorThread != null) {
-            monitorThread.interrupt();
-            monitorThread = null;
-        }
-        // create a new thread for listening to the FritzBox
-        monitorThread = new CallMonitorThread();
-        monitorThread.start();
     }
 }
