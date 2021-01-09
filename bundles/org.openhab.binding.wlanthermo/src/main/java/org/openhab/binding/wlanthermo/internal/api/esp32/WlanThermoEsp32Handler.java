@@ -190,7 +190,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
         if (data == null) {
             return;
         }
-        data.getChannel().forEach(c -> {
+        for (org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Channel c : data.getChannel()) {
             try {
                 String json = gson.toJson(c);
                 URI uri = config.getUri("/setchannels");
@@ -199,6 +199,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 if (status == 401) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
+                    break;
                 } else if (status != 200) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
                             + c.getName() + " on device, Statuscode " + status + " on URI " + uri.toString());
@@ -210,7 +211,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to update channel " + c.getName() + " on device: " + e.getMessage());
             }
-        });
+        }
     }
 
     @Override
