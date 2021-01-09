@@ -11,3 +11,11 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+## Third-party Content
+
+bcpkix-jdk15on
+bcprov-jdk15on
+* License: Bouncy Castle License
+* Project: https://www.bouncycastle.org
+* Source:  https://github.com/bcgit/bc-java
