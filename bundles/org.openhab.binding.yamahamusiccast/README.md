@@ -109,7 +109,7 @@ If not, a new group will be created.
 *Device A*: Living with IP 192.168.1.1
 *Device B*: Kitchen with IP 192.168.1.2
 
-Set **channelMCServer** to *Standalone* to remove the device/model from the current active group. The group wil keep on exist with other devices/models.
+Set **channelMCServer** to *Standalone* to remove the device/model from the current active group. The group will keep on exist with other devices/models.
 Use **channelUnlinkMCServer** on the Thing which is currently set to master to disband the group.
 
 ```
