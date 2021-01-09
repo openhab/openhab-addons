@@ -41,8 +41,8 @@
 		</parameter>
 		<parameter name="lastSeenPolling" type="integer" min="0" unit="min">
 			<label>LastSeen Poll Interval</label>
-			<description>Interval to poll the deCONZ Gateway for this sensor's "lastSeen" channel. Polling is disabled when set
-				to 1440 (once per day).</description>
+			<description>Interval to poll the deCONZ Gateway for this sensor's "last_seen" channel. Polling is disabled when set
+				to 0 (default: 1440, once per day).</description>
 			<default>1440</default>
 		</parameter>
 	</config-description>

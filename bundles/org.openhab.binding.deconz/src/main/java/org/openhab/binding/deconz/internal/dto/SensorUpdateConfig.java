@@ -14,16 +14,13 @@ package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.deconz.internal.types.ThermostatMode;
 
 /**
- * The {@link ThermostatConfig} is send to the Rest API to configure Thermostat.
+ * The {@link SensorUpdateConfig} is send to the Rest API to configure presence sensors.
  *
- * @author Lukas Agethen - Initial contribution
+ * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class ThermostatConfig {
-    public @Nullable Integer heatsetpoint;
-    public @Nullable ThermostatMode mode;
-    public @Nullable Integer offset;
+public class SensorUpdateConfig {
+    public @Nullable Boolean on;
 }

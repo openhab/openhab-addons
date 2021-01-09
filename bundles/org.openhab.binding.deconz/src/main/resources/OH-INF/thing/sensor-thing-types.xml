@@ -13,6 +13,7 @@
 		<channels>
 			<channel typeId="system.motion" id="presence"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="system.power" id="enabled"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
