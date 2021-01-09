@@ -20,6 +20,8 @@ import java.util.Map;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class to store the state of the alarm system
@@ -27,6 +29,8 @@ import org.openhab.core.library.types.StringType;
  * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxState extends PowermaxStateContainer {
+
+    private final Logger logger = LoggerFactory.getLogger(PowermaxState.class);
 
     // For values that are mapped to channels, use a channel name constant from
     // PowermaxBindingConstants. For values used internally but not mapped to
@@ -104,6 +108,7 @@ public class PowermaxState extends PowermaxStateContainer {
      */
     public PowermaxZoneState getZone(int zone) {
         if ((zone < 1) || (zone > zones.length)) {
+            logger.warn("Received update for invalid zone {}", zone);
             return new PowermaxZoneState(timeZoneProvider);
         } else {
             return zones[zone - 1];

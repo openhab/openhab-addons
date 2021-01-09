@@ -431,6 +431,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             // After Enrolling Powerlink or if a reset is required
             logger.debug("Powermax alarm binding: Reset");
             commManager.startDownload();
+            updateState.downloadSetupRequired.setValue(false);
             if (currentState.lastKeepAlive.getValue() != null) {
                 currentState.lastKeepAlive.setValue(System.currentTimeMillis());
             }
