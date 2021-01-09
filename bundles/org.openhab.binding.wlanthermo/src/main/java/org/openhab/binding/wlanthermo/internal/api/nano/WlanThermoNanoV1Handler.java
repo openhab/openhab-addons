@@ -23,7 +23,9 @@ import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.openhab.binding.wlanthermo.internal.WlanThermoException;
 import org.openhab.binding.wlanthermo.internal.WlanThermoExtendedConfiguration;
+import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Data;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.settings.Settings;
 import org.openhab.core.thing.*;
@@ -106,9 +108,13 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            State s = WlanThermoNanoV1CommandHandler.getState(channelUID, data, settings);
-            if (s != null)
+            try {
+                State s = WlanThermoNanoV1CommandHandler.getState(channelUID, data, settings);
                 updateState(channelUID, s);
+            } catch (WlanThermoException e) {
+                logger.debug("Could not handle command of type {} for channel {}!",
+                        command.getClass().toGenericString(), channelUID.getId());
+            }
         } else {
             if (WlanThermoNanoV1CommandHandler.setState(channelUID, command, data)) {
                 logger.debug("Data updated, pushing changes");
@@ -132,18 +138,17 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
 
             // Update channels
             for (Channel channel : thing.getChannels()) {
-                State state = WlanThermoNanoV1CommandHandler.getState(channel.getUID(), data, settings);
-                if (state != null) {
+                try {
+                    State state = WlanThermoNanoV1CommandHandler.getState(channel.getUID(), data, settings);
                     updateState(channel.getUID(), state);
-                } else {
+                } catch (WlanThermoUnknownChannelException e) {
                     // if we could not obtain a state, try trigger instead
                     String trigger = WlanThermoNanoV1CommandHandler.getTrigger(channel.getUID(), data);
-                    if (trigger != null) {
-                        triggerChannel(channel.getUID(), trigger);
-                    }
+                    triggerChannel(channel.getUID(), trigger);
                 }
             }
-        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException
+                | WlanThermoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Update failed: " + e.getMessage());
             ScheduledFuture<?> oldScheduler = pollingScheduler;

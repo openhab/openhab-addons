@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.wlanthermo.internal.WlanThermoConfiguration;
+import org.openhab.binding.wlanthermo.internal.WlanThermoException;
+import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
 import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.App;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -90,9 +92,14 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Mini is read only!
         if (command instanceof RefreshType) {
-            State s = WlanThermoMiniCommandHandler.getState(channelUID, app);
-            if (s != null)
+            try {
+                assert app != null;
+                State s = WlanThermoMiniCommandHandler.getState(channelUID, app);
                 updateState(channelUID, s);
+            } catch (WlanThermoException e) {
+                logger.debug("Could not handle command of type {} for channel {}!",
+                        command.getClass().toGenericString(), channelUID.getId());
+            }
         }
     }
 
@@ -105,18 +112,18 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
             // Update channels
             for (Channel channel : thing.getChannels()) {
-                State state = WlanThermoMiniCommandHandler.getState(channel.getUID(), app);
-                if (state != null) {
+                try {
+                    State state = WlanThermoMiniCommandHandler.getState(channel.getUID(), app);
                     updateState(channel.getUID(), state);
-                } else {
+                } catch (WlanThermoUnknownChannelException e) {
+                    // if we could not obtain a state, try trigger instead
                     String trigger = WlanThermoMiniCommandHandler.getTrigger(channel.getUID(), app);
-                    if (trigger != null) {
-                        triggerChannel(channel.getUID(), trigger);
-                    }
+                    triggerChannel(channel.getUID(), trigger);
                 }
             }
 
-        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException
+                | WlanThermoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Update failed: " + e.getMessage());
             ScheduledFuture<?> oldScheduler = pollingScheduler;

@@ -19,7 +19,11 @@ import java.awt.*;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
+import org.openhab.binding.wlanthermo.internal.WlanThermoException;
+import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
 import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.*;
 import org.openhab.core.library.types.*;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -34,36 +38,33 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Christian Schlipp - Initial contribution
  */
+@NonNullByDefault
 public class WlanThermoMiniCommandHandler {
 
     public static final String ERROR = "er";
 
-    public static State getState(ChannelUID channelUID, App app) {
-        State state = null;
-
-        String groupId = channelUID.getGroupId();
-        if (groupId == null || app == null) {
-            return null;
+    public static State getState(ChannelUID channelUID, @Nullable App app) throws WlanThermoException {
+        if (channelUID.getGroupId() == null || app == null) {
+            throw new WlanThermoException(INVALID_INPUT_EXCEPTION);
         }
 
+        String groupId = channelUID.getGroupId();
         Unit<Temperature> unit = "fahrenheit".equals(app.getTempUnit()) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
 
         if (SYSTEM.equals(groupId)) {
             switch (channelUID.getIdWithoutGroup()) {
                 case WlanThermoBindingConstants.SYSTEM_CPU_TEMP:
                     if (app.getCpuTemp() == null) {
-                        state = UnDefType.UNDEF;
+                        return UnDefType.UNDEF;
                     } else {
-                        state = new DecimalType(app.getCpuTemp());
+                        return new DecimalType(app.getCpuTemp());
                     }
-                    break;
                 case WlanThermoBindingConstants.SYSTEM_CPU_LOAD:
                     if (app.getCpuLoad() == null) {
-                        state = UnDefType.UNDEF;
+                        return UnDefType.UNDEF;
                     } else {
-                        state = new DecimalType(app.getCpuLoad());
+                        return new DecimalType(app.getCpuLoad());
                     }
-                    break;
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length()));
@@ -75,45 +76,36 @@ public class WlanThermoMiniCommandHandler {
                 Data data = channel.getData(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case WlanThermoBindingConstants.CHANNEL_NAME:
-                        state = new StringType(data.getName());
-                        break;
+                        return new StringType(data.getName());
                     case WlanThermoBindingConstants.CHANNEL_TEMP:
                         if (data.getState().equals(ERROR)) {
-                            state = UnDefType.UNDEF;
+                            return UnDefType.UNDEF;
                         } else {
-                            state = new QuantityType<>(data.getTemp(), unit);
+                            return new QuantityType<>(data.getTemp(), unit);
                         }
-                        break;
                     case WlanThermoBindingConstants.CHANNEL_MIN:
-                        state = new QuantityType<>(data.getTempMin(), unit);
-                        break;
+                        return new QuantityType<>(data.getTempMin(), unit);
                     case WlanThermoBindingConstants.CHANNEL_MAX:
-                        state = new QuantityType<>(data.getTempMax(), unit);
-                        break;
+                        return new QuantityType<>(data.getTempMax(), unit);
                     case WlanThermoBindingConstants.CHANNEL_ALARM_DEVICE:
-                        state = OnOffType.from(data.getAlert());
-                        break;
+                        return OnOffType.from(data.getAlert());
                     case WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_HIGH:
                         if (!data.getState().equals(ERROR) && data.getTemp() > data.getTempMax()) {
-                            state = OnOffType.ON;
+                            return OnOffType.ON;
                         } else {
-                            state = OnOffType.OFF;
+                            return OnOffType.OFF;
                         }
-                        break;
                     case WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_LOW:
                         if (!data.getState().equals(ERROR) && data.getTemp() < data.getTempMin()) {
-                            state = OnOffType.ON;
+                            return OnOffType.ON;
                         } else {
-                            state = OnOffType.OFF;
+                            return OnOffType.OFF;
                         }
-                        break;
                     case WlanThermoBindingConstants.CHANNEL_COLOR:
                         Color c = Color.decode(UtilMini.toHex(data.getColor()));
-                        state = HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
-                        break;
+                        return HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
                     case WlanThermoBindingConstants.CHANNEL_COLOR_NAME:
-                        state = new StringType(data.getColor());
-                        break;
+                        return new StringType(data.getColor());
                 }
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_PREFIX)) {
@@ -130,54 +122,48 @@ public class WlanThermoMiniCommandHandler {
             }
             switch (channelUID.getIdWithoutGroup()) {
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_ENABLED:
-                    state = OnOffType.from(pit.getEnabled());
-                    break;
+                    return OnOffType.from(pit.getEnabled());
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_CURRENT:
-                    state = new DecimalType(pit.getCurrent());
-                    break;
+                    return new DecimalType(pit.getCurrent());
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_SETPOINT:
-                    state = new QuantityType<>(pit.getSetpoint(), unit);
-                    break;
+                    return new QuantityType<>(pit.getSetpoint(), unit);
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_DUTY_CYCLE:
-                    state = new DecimalType(pit.getControlOut());
-                    break;
+                    return new DecimalType(pit.getControlOut());
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_LID_OPEN:
-                    state = OnOffType.from(pit.getOpenLid().equals("True"));
-                    break;
+                    return OnOffType.from(pit.getOpenLid().equals("True"));
                 case WlanThermoBindingConstants.CHANNEL_PITMASTER_CHANNEL_ID:
-                    state = new DecimalType(pit.getCh());
-                    break;
+                    return new DecimalType(pit.getCh());
             }
         }
-        return state;
+        throw new WlanThermoUnknownChannelException();
     }
 
-    public static String getTrigger(ChannelUID channelUID, App app) {
-        String trigger = null;
-        String groupId = channelUID.getGroupId();
-        if (groupId == null || app == null) {
-            return null;
+    public static String getTrigger(ChannelUID channelUID, @Nullable App app) throws WlanThermoException {
+        if (channelUID.getGroupId() == null || app == null) {
+            throw new WlanThermoException(INVALID_INPUT_EXCEPTION);
         }
+
+        String groupId = channelUID.getGroupId();
+
         if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
             if (channelId >= 0 && channelId <= 9) {
                 Channel channel = app.getChannel();
                 if (channel == null) {
-                    return "";
+                    throw new WlanThermoException("Channel ID is unavailable!");
                 }
                 Data data = channel.getData(channelId);
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_ALARM_OPENHAB:
-                        if (!data.getState().equals(ERROR)) {
-                            if (data.getTemp() > data.getTempMax()) {
-                                trigger = WlanThermoBindingConstants.TRIGGER_ALARM_MAX;
-                            } else if (data.getTemp() < data.getTempMin()) {
-                                trigger = WlanThermoBindingConstants.TRIGGER_ALARM_MIN;
-                            }
+                if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
+                    if (!data.getState().equals(ERROR)) {
+                        if (data.getTemp() > data.getTempMax()) {
+                            return TRIGGER_ALARM_MAX;
+                        } else if (data.getTemp() < data.getTempMin()) {
+                            return TRIGGER_ALARM_MIN;
                         }
+                    }
                 }
             }
         }
-        return trigger;
+        throw new WlanThermoUnknownChannelException();
     }
 }
