@@ -93,21 +93,21 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
             throw new IllegalArgumentException("Configured setpoint item not found: " + setpointItemName, e);
         }
 
-        double outputLowerLimit = getDoubleFromConfig(config, CONFIG_INTEGRAL_LOWER_LIMIT);
-        double outputUpperLimit = getDoubleFromConfig(config, CONFIG_INTEGRAL_UPPER_LIMIT);
+        double integralLowerLimit = getDoubleFromConfig(config, CONFIG_INTEGRAL_LOWER_LIMIT);
+        double integralUpperLimit = getDoubleFromConfig(config, CONFIG_INTEGRAL_UPPER_LIMIT);
         double kpAdjuster = getDoubleFromConfig(config, CONFIG_KP_GAIN);
         double kiAdjuster = getDoubleFromConfig(config, CONFIG_KI_GAIN);
         double kdAdjuster = getDoubleFromConfig(config, CONFIG_KD_GAIN);
         double kdTimeConstant = getDoubleFromConfig(config, CONFIG_KD_TIMECONSTANT);
 
-        if (outputLowerLimit >= outputUpperLimit) {
+        if (integralLowerLimit >= integralUpperLimit) {
             throw new IllegalArgumentException("Lower integral limit is bigger or equal to the upper limit");
         }
 
         loopTimeMs = ((BigDecimal) requireNonNull(config.get(CONFIG_LOOP_TIME), CONFIG_LOOP_TIME + " is not set"))
                 .intValue();
 
-        controller = new PIDController(outputLowerLimit, outputUpperLimit, kpAdjuster, kiAdjuster, kdAdjuster,
+        controller = new PIDController(integralLowerLimit, integralUpperLimit, kpAdjuster, kiAdjuster, kdAdjuster,
                 kdTimeConstant);
 
         eventFilter = event -> {
