@@ -256,7 +256,7 @@ The following channels are also writable:
 | Einst_BwTDI_akt_DI | Switch |  x  | Thermal disinfection (Tuesday) |
 | Einst_BwTDI_akt_MI | Switch |  x  | Thermal disinfection (Wednesday) |
 | Einst_BwTDI_akt_DO | Switch |  x  | Thermal disinfection (Thursday) |
-| Einst_BwTDI_akt_FR | Switch |  x  | Thermal disinfection (Firday) |
+| Einst_BwTDI_akt_FR | Switch |  x  | Thermal disinfection (Friday) |
 | Einst_BwTDI_akt_SA | Switch |  x  | Thermal disinfection (Saturday) |
 | Einst_BwTDI_akt_SO | Switch |  x  | Thermal disinfection (Sunday) |
 | Einst_BwTDI_akt_AL | Switch |  x  | Thermal disinfection (Permanent) |

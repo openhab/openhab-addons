@@ -24,13 +24,37 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum HeatpumpVisibility {
+    /**
+     * Defines if the device has heating capabilities
+     */
     HEIZUNG(0, "Heizung"),
+
+    /**
+     * Defines if the device has hot water capabilities
+     */
     BRAUWASSER(1, "Brauwasser"),
+
+    /**
+     * Defines if the device swimming pool capabilities
+     */
     SCHWIMMBAD(2, "Schwimmbad"),
+
+    /**
+     * Defines if the device has cooling capabilities
+     */
     KUHLUNG(3, "Kuhlung"),
+
+    /**
+     * Defines if the device has ventilation capabilities
+     */
     LUEFTUNG(4, "Lueftung"),
+
     MK1(5, "MK1"),
     MK2(6, "MK2"),
+
+    /**
+     * Defines if thermal disinfiction is available
+     */
     THERMDESINFEKT(7, "ThermDesinfekt"),
     ZIRKULATION(8, "Zirkulation"),
     KUHLTEMP_SOLLTEMPMK1(9, "KuhlTemp_SolltempMK1"),
