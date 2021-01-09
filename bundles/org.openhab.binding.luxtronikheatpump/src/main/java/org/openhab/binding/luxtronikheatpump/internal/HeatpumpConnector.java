@@ -100,7 +100,7 @@ public class HeatpumpConnector {
      */
     public Boolean setParam(int param, int value) throws IOException {
         try (Socket sock = new Socket(serverIp, serverPort)) {
-            InputStream in = sock.getInputStream(); // @SuppressWarnings
+            InputStream in = sock.getInputStream();
             OutputStream out = sock.getOutputStream();
             DataInputStream datain = new DataInputStream(in);
             DataOutputStream dataout = new DataOutputStream(out);

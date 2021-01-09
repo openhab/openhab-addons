@@ -273,7 +273,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID,
                     channel.getCommand());
-            if ((channelId != null && length < channelId) || (config.showAllChannels == Boolean.FALSE
+            if ((channelId != null && length <= channelId) || (config.showAllChannels == Boolean.FALSE
                     && channel.isVisible(visibilityValues).equals(Boolean.FALSE))) {
                 logger.debug("Hiding channel {}", channel.getCommand());
             } else {

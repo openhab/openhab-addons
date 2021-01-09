@@ -71,11 +71,16 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         } catch (IOException e) {
             logger.warn("Could not connect to heatpump (uuid={}, ip={}, port={}): {}", thing.getUID(), config.ipAddress,
                     config.port, e.getMessage());
-            handler.setStatusConnectionError();
+
+            if (handler != null) {
+                handler.setStatusConnectionError();
+            }
             return;
         }
 
-        handler.setStatusOnline();
+        if (handler != null) {
+            handler.setStatusOnline();
+        }
 
         // read all available values
         Integer[] heatpumpValues = connector.getValues();
@@ -102,7 +107,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
                 if (channel.isWritable().equals(Boolean.TRUE)) {
                     rawValue = heatpumpParams[channelId];
                 } else {
-                    if (heatpumpValues.length < channelId) {
+                    if (heatpumpValues.length <= channelId) {
                         continue; // channel not available
                     }
                     rawValue = heatpumpValues[channelId];
