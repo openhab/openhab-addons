@@ -325,7 +325,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     @Override
     public void remoteDeviceAdded(@Nullable Registry registry, @Nullable RemoteDevice device) {
         if (configuration.hostName != null && device != null && device.getIdentity() != null
-                && device.getIdentity().getDescriptorURL() == null
+                && device.getIdentity().getDescriptorURL() != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())
                 && device.getType() != null) {
             logger.debug("remoteDeviceAdded: {}, {}", device.getType().getType(),
