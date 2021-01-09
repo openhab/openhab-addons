@@ -15,15 +15,12 @@ package org.openhab.binding.qbus.internal;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -59,11 +56,16 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void initialize() {
-        logger.info("Initializing bridge handler");
-
-        setConfig();
-        InetAddress addr = getAddr();
+        readConfig();
+        InetAddress addr = null;
         int port = getPort();
+
+        try {
+            addr = InetAddress.getByName(getAddress());
+        } catch (UnknownHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "No or incorrect ip address set for Qbus Server");
+        }
 
         if (addr != null) {
             createCommunicationObject(addr, port);
@@ -156,7 +158,6 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
         }
 
         // This timer will check connection with server and client periodically
-        logger.info("Check communication with Server and Client every {} min", refreshInterval);
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
             logger.info("Checking connection with Qbus Server & Client.");
 
@@ -165,18 +166,14 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
             if (comm != null) {
                 if (!comm.communicationActive()) {
                     // Disconnected from Qbus Server, try to reconnect
-                    logger.info("No connection with Qbus Server. Try to restart.");
                     comm.restartCommunication();
                     if (!comm.communicationActive()) {
                         bridgeOffline("No connection with Qbus Server");
                         return;
                     }
-
                 } else {
-
                     // Controller disconnected from Qbus client, try to reconnect controller
                     if (!comm.clientConnected()) {
-                        logger.info("No connection with Qbus Client. Try to restart.");
                         comm.restartCommunication();
                         if (!comm.clientConnected()) {
                             bridgeOffline("No connection with Qbus Client");
@@ -213,22 +210,9 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Update the configuration parameters
+     * Sets the configuration parameters
      */
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        Configuration configuration = editConfiguration();
-        for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
-            configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());
-        }
-        updateConfiguration(configuration);
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    /**
-     * Sets the configuration prameters
-     */
-    protected synchronized void setConfig() {
+    protected void readConfig() {
         config = getConfig().as(QbusConfiguration.class);
     }
 
@@ -242,20 +226,13 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Get the IP-address of the Qbus server.
+     * Get the ip address of the Qbus server.
      *
-     * @return the addr
+     * @return the ip address
      */
-
     @SuppressWarnings("null")
-    public @Nullable InetAddress getAddr() {
-        InetAddress addr = null;
-        try {
-            addr = InetAddress.getByName(config.addr);
-        } catch (UnknownHostException e) {
-            logger.debug("Cannot resolve hostname {} to IP adress", config.addr);
-        }
-        return addr;
+    public String getAddress() {
+        return config.addr;
     }
 
     /**
@@ -290,6 +267,5 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
     }
 }

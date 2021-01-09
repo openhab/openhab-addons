@@ -119,7 +119,8 @@ public final class QbusCommunication {
                 throw new IOException();
             }
 
-            InetAddress addr = handler.getAddr();
+            InetAddress addr = null;
+            addr = InetAddress.getByName(handler.getAddress());
             int port = handler.getPort();
 
             Socket socket = new Socket(addr, port);
