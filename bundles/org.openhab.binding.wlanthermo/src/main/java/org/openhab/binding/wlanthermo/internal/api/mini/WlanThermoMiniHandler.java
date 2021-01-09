@@ -64,27 +64,47 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     }
 
     private void checkConnection() {
-        try {
-            if (httpClient.GET(config.getUri("/app.php")).getStatus() == 200) {
-                updateStatus(ThingStatus.ONLINE);
-                ScheduledFuture<?> oldScheduler = pollingScheduler;
-                if (oldScheduler != null) {
-                    oldScheduler.cancel(false);
+        if (this.thing.getStatus() == ThingStatus.OFFLINE) {
+            try {
+                if (httpClient.GET(config.getUri("/app.php")).getStatus() == 200) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "WlanThermo not found under given address.");
                 }
-                pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(),
-                        TimeUnit.SECONDS);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "WlanThermo not found under given address.");
+            } catch (URISyntaxException | ExecutionException | TimeoutException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not connect to WlanThermo at " + config.getIpAddress() + ": " + e.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug("Connection check interrupted. {}", e.getMessage());
             }
-        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to WlanThermo at " + config.getIpAddress() + ": " + e.getMessage());
-            ScheduledFuture<?> oldScheduler = pollingScheduler;
-            if (oldScheduler != null) {
-                oldScheduler.cancel(false);
+        } else {
+            try {
+                // Update objects with data from device
+                String json = httpClient.GET(config.getUri("/app.php")).getContentAsString();
+                app = gson.fromJson(json, App.class);
+                logger.debug("Received at /app.php: {}", json);
+
+                // Update channels
+                for (Channel channel : thing.getChannels()) {
+                    try {
+                        State state = WlanThermoMiniCommandHandler.getState(channel.getUID(), app);
+                        updateState(channel.getUID(), state);
+                    } catch (WlanThermoUnknownChannelException e) {
+                        // if we could not obtain a state, try trigger instead
+                        String trigger = WlanThermoMiniCommandHandler.getTrigger(channel.getUID(), app);
+                        triggerChannel(channel.getUID(), trigger);
+                    }
+                }
+            } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Update failed: " + e.getMessage());
+                for (Channel channel : thing.getChannels()) {
+                    updateState(channel.getUID(), UnDefType.UNDEF);
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Update interrupted. {}", e.getMessage());
             }
-            pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
         }
     }
 
@@ -100,41 +120,6 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                 logger.debug("Could not handle command of type {} for channel {}!",
                         command.getClass().toGenericString(), channelUID.getId());
             }
-        }
-    }
-
-    private void update() {
-        try {
-            // Update objects with data from device
-            String json = httpClient.GET(config.getUri("/app.php")).getContentAsString();
-            app = gson.fromJson(json, App.class);
-            logger.debug("Received at /app.php: {}", json);
-
-            // Update channels
-            for (Channel channel : thing.getChannels()) {
-                try {
-                    State state = WlanThermoMiniCommandHandler.getState(channel.getUID(), app);
-                    updateState(channel.getUID(), state);
-                } catch (WlanThermoUnknownChannelException e) {
-                    // if we could not obtain a state, try trigger instead
-                    String trigger = WlanThermoMiniCommandHandler.getTrigger(channel.getUID(), app);
-                    triggerChannel(channel.getUID(), trigger);
-                }
-            }
-
-        } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Update failed: " + e.getMessage());
-            ScheduledFuture<?> oldScheduler = pollingScheduler;
-            if (oldScheduler != null) {
-                oldScheduler.cancel(false);
-            }
-            for (Channel channel : thing.getChannels()) {
-                updateState(channel.getUID(), UnDefType.UNDEF);
-            }
-            checkConnection();
-        } catch (InterruptedException e) {
-            logger.debug("Update interrupted. {}", e.getMessage());
         }
     }
 

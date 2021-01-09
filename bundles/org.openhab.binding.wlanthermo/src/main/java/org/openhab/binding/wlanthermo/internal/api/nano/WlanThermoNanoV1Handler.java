@@ -73,35 +73,59 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                 authStore.addAuthentication(new DigestAuthentication(config.getUri(), Authentication.ANY_REALM,
                         config.getUsername(), config.getPassword()));
             }
-            pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
+            pollingScheduler = scheduler.schedule(this::checkConnectionAndUpdate, config.getPollingInterval(),
+                    TimeUnit.SECONDS);
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to initialize WlanThermo Nano: " + e.getMessage());
         }
     }
 
-    private void checkConnection() {
-        try {
-            if (httpClient.GET(config.getUri()).getStatus() == 200) {
-                updateStatus(ThingStatus.ONLINE);
-                ScheduledFuture<?> oldScheduler = pollingScheduler;
-                if (oldScheduler != null) {
-                    oldScheduler.cancel(false);
+    private void checkConnectionAndUpdate() {
+        if (this.thing.getStatus() == ThingStatus.OFFLINE) {
+            try {
+                if (httpClient.GET(config.getUri()).getStatus() == 200) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "WlanThermo not found under given address.");
                 }
-                pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(),
-                        TimeUnit.SECONDS);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "WlanThermo not found under given address.");
+            } catch (URISyntaxException | ExecutionException | TimeoutException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not connect to WlanThermo at " + config.getIpAddress() + ": " + e.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug("Connection check interrupted. {}", e.getMessage());
             }
-        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to WlanThermo at " + config.getIpAddress() + ": " + e.getMessage());
-            ScheduledFuture<?> oldScheduler = pollingScheduler;
-            if (oldScheduler != null) {
-                oldScheduler.cancel(false);
+        } else {
+            try {
+                // Update objects with data from device
+                String json = httpClient.GET(config.getUri("/data")).getContentAsString();
+                data = gson.fromJson(json, Data.class);
+                logger.debug("Received at /data: {}", json);
+                json = httpClient.GET(config.getUri("/settings")).getContentAsString();
+                settings = gson.fromJson(json, Settings.class);
+                logger.debug("Received at /settings: {}", json);
+
+                // Update channels
+                for (Channel channel : thing.getChannels()) {
+                    try {
+                        State state = WlanThermoNanoV1CommandHandler.getState(channel.getUID(), data, settings);
+                        updateState(channel.getUID(), state);
+                    } catch (WlanThermoUnknownChannelException e) {
+                        // if we could not obtain a state, try trigger instead
+                        String trigger = WlanThermoNanoV1CommandHandler.getTrigger(channel.getUID(), data);
+                        triggerChannel(channel.getUID(), trigger);
+                    }
+                }
+            } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Update failed: " + e.getMessage());
+                for (Channel channel : thing.getChannels()) {
+                    updateState(channel.getUID(), UnDefType.UNDEF);
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Update interrupted. {}", e.getMessage());
             }
-            pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
         }
     }
 
@@ -118,48 +142,11 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
         } else {
             if (WlanThermoNanoV1CommandHandler.setState(channelUID, command, data)) {
                 logger.debug("Data updated, pushing changes");
-                push();
+                scheduler.execute(this::push);
             } else {
                 logger.debug("Could not handle command of type {} for channel {}!",
                         command.getClass().toGenericString(), channelUID.getId());
             }
-        }
-    }
-
-    private void update() {
-        try {
-            // Update objects with data from device
-            String json = httpClient.GET(config.getUri("/data")).getContentAsString();
-            data = gson.fromJson(json, Data.class);
-            logger.debug("Received at /data: {}", json);
-            json = httpClient.GET(config.getUri("/settings")).getContentAsString();
-            settings = gson.fromJson(json, Settings.class);
-            logger.debug("Received at /settings: {}", json);
-
-            // Update channels
-            for (Channel channel : thing.getChannels()) {
-                try {
-                    State state = WlanThermoNanoV1CommandHandler.getState(channel.getUID(), data, settings);
-                    updateState(channel.getUID(), state);
-                } catch (WlanThermoUnknownChannelException e) {
-                    // if we could not obtain a state, try trigger instead
-                    String trigger = WlanThermoNanoV1CommandHandler.getTrigger(channel.getUID(), data);
-                    triggerChannel(channel.getUID(), trigger);
-                }
-            }
-        } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Update failed: " + e.getMessage());
-            ScheduledFuture<?> oldScheduler = pollingScheduler;
-            if (oldScheduler != null) {
-                oldScheduler.cancel(false);
-            }
-            for (Channel channel : thing.getChannels()) {
-                updateState(channel.getUID(), UnDefType.UNDEF);
-            }
-            checkConnection();
-        } catch (InterruptedException e) {
-            logger.debug("Update interrupted. {}", e.getMessage());
         }
     }
 
