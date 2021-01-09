@@ -173,17 +173,17 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                 int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
                         .timeout(5, TimeUnit.SECONDS).send().getStatus();
                 if (status == 401) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
                 } else if (status != 200) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
                             + c.getName() + " on device, Statuscode " + status + " on URI " + uri.toString());
                     logger.debug("Payload sent: {}", json);
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to update channel " + c.getName() + " on device: " + e.getMessage());
             }
         });
