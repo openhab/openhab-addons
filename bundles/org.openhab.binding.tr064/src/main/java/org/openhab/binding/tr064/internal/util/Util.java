@@ -17,6 +17,7 @@ import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +50,7 @@ import org.openhab.binding.tr064.internal.dto.config.ChannelTypeDescriptions;
 import org.openhab.binding.tr064.internal.dto.config.ParameterType;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDServiceType;
 import org.openhab.binding.tr064.internal.dto.scpd.service.*;
+import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -67,6 +69,10 @@ import org.w3c.dom.NodeList;
 @NonNullByDefault
 public class Util {
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
+    private static final int HTTP_REQUEST_TIMEOUT = 5; // in s
+    // cache XML content for 5s
+    private static final ExpiringCacheMap<String, Object> XML_OBJECT_CACHE = new ExpiringCacheMap<>(
+            Duration.ofMillis(3000));
 
     /**
      * read the channel config from the resource file (static initialization)
@@ -317,23 +323,37 @@ public class Util {
      * @param clazz the class describing the XML file
      * @return unmarshalling result
      */
+    @SuppressWarnings("unchecked")
     public static <T> @Nullable T getAndUnmarshalXML(HttpClient httpClient, String uri, Class<T> clazz) {
         try {
-            ContentResponse contentResponse = httpClient.newRequest(uri).timeout(2, TimeUnit.SECONDS)
-                    .method(HttpMethod.GET).send();
-            byte[] response = contentResponse.getContent();
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("XML = {}", new String(response));
-            }
-            InputStream xml = new ByteArrayInputStream(response);
+            T returnValue = (T) XML_OBJECT_CACHE.putIfAbsentAndGet(uri, () -> {
+                try {
+                    LOGGER.trace("Refreshing cache for '{}'", uri);
+                    ContentResponse contentResponse = httpClient.newRequest(uri)
+                            .timeout(HTTP_REQUEST_TIMEOUT, TimeUnit.SECONDS).method(HttpMethod.GET).send();
+                    byte[] response = contentResponse.getContent();
+                    if (LOGGER.isTraceEnabled()) {
+                        LOGGER.trace("XML = {}", new String(response));
+                    }
+                    InputStream xml = new ByteArrayInputStream(response);
 
-            JAXBContext context = JAXBContext.newInstance(clazz);
-            Unmarshaller um = context.createUnmarshaller();
-            return um.unmarshal(new StreamSource(xml), clazz).getValue();
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            LOGGER.debug("HTTP Failed to GET uri '{}': {}", uri, e.getMessage());
-        } catch (JAXBException e) {
-            LOGGER.debug("Unmarshalling failed: {}", e.getMessage());
+                    JAXBContext context = JAXBContext.newInstance(clazz);
+                    Unmarshaller um = context.createUnmarshaller();
+                    T newValue = um.unmarshal(new StreamSource(xml), clazz).getValue();
+                    LOGGER.trace("Storing in cache {}", newValue);
+                    return newValue;
+                } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                    LOGGER.debug("HTTP Failed to GET uri '{}': {}", uri, e.getMessage());
+                    throw new IllegalArgumentException();
+                } catch (JAXBException e) {
+                    LOGGER.debug("Unmarshalling failed: {}", e.getMessage());
+                    throw new IllegalArgumentException();
+                }
+            });
+            LOGGER.trace("Returning from cache: {}", returnValue);
+            return returnValue;
+        } catch (IllegalArgumentException e) {
+            // already logged
         }
         return null;
     }
