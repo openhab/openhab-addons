@@ -253,8 +253,8 @@ public class AndroidDebugBridgeDevice {
         connection = adbConnection;
     }
 
-    private String runAdbShell(String... args) throws IOException, InterruptedException,
-            AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+    private String runAdbShell(String... args)
+            throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
         var adb = connection;
         if (adb == null) {
             throw new AndroidDebugBridgeDeviceException("Device not connected");

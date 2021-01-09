@@ -268,44 +268,46 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                     refreshStatus();
                 }
             }
-        } catch (InterruptedException | IOException | AndroidDebugBridgeDeviceException e) {
+        } catch (InterruptedException | IOException | AndroidDebugBridgeDeviceException | ExecutionException e) {
             logger.warn("Connection checker error: {}", e.getMessage());
+            adbConnection.disconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void refreshStatus() throws InterruptedException, IOException, AndroidDebugBridgeDeviceException {
+    private void refreshStatus()
+            throws InterruptedException, IOException, AndroidDebugBridgeDeviceException, ExecutionException {
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), MEDIA_VOLUME_CHANNEL), RefreshType.REFRESH);
-        } catch (AndroidDebugBridgeDeviceReadException | ExecutionException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh media volume: {}", e.getMessage());
         } catch (TimeoutException e) {
             logger.warn("Unable to refresh media volume: Timeout");
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), MEDIA_CONTROL_CHANNEL), RefreshType.REFRESH);
-        } catch (AndroidDebugBridgeDeviceReadException | ExecutionException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh play status: {}", e.getMessage());
         } catch (TimeoutException e) {
             logger.warn("Unable to refresh play status: Timeout");
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), CURRENT_PACKAGE_CHANNEL), RefreshType.REFRESH);
-        } catch (AndroidDebugBridgeDeviceReadException | ExecutionException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh current package: {}", e.getMessage());
         } catch (TimeoutException e) {
             logger.warn("Unable to refresh current package: Timeout");
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), WAKE_LOCK_CHANNEL), RefreshType.REFRESH);
-        } catch (AndroidDebugBridgeDeviceReadException | ExecutionException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh wake lock: {}", e.getMessage());
         } catch (TimeoutException e) {
             logger.warn("Unable to refresh wake lock: Timeout");
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), SCREEN_STATE_CHANNEL), RefreshType.REFRESH);
-        } catch (AndroidDebugBridgeDeviceReadException | ExecutionException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh screen state: {}", e.getMessage());
         } catch (TimeoutException e) {
             logger.warn("Unable to refresh screen state: Timeout");
