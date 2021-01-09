@@ -53,16 +53,10 @@ public class WlanThermoEsp32CommandHandler {
 
         System system = data.getSystem();
 
-        Unit<Temperature> unit;
-        if (system.getUnit().equals("F")) {
-            unit = ImperialUnits.FAHRENHEIT;
-        } else {
-            // Default to Celsius
-            unit = SIUnits.CELSIUS;
-        }
+        Unit<Temperature> unit = "F".equals(system.getUnit()) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
 
         List<Channel> channel = data.getChannel();
-        if ("system".equals(groupId)) {
+        if (SYSTEM.equals(groupId)) {
             switch (channelUID.getIdWithoutGroup()) {
                 case SYSTEM_SOC:
                     if (system.getSoc() != null) {
@@ -81,21 +75,21 @@ public class WlanThermoEsp32CommandHandler {
                 case SYSTEM_RSSI_SIGNALSTRENGTH:
                     int dbm = system.getRssi();
                     if (dbm >= -80) {
-                        state = new DecimalType(4);
+                        state = SIGNAL_STRENGTH_4;
                     } else if (dbm >= -95) {
-                        state = new DecimalType(3);
+                        state = SIGNAL_STRENGTH_3;
                     } else if (dbm >= -105) {
-                        state = new DecimalType(2);
+                        state = SIGNAL_STRENGTH_2;
                     } else {
-                        state = new DecimalType(1);
+                        state = SIGNAL_STRENGTH_1;
                     }
                     break;
                 case SYSTEM_RSSI:
                     state = new QuantityType<>(system.getRssi(), Units.DECIBEL_MILLIWATTS);
                     break;
             }
-        } else if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(groupId.substring("channel".length())) - 1;
+        } else if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
+            int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
             if (channel != null && channel.size() > 0 && channelId < channel.size()) {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -154,7 +148,7 @@ public class WlanThermoEsp32CommandHandler {
                         break;
                 }
             }
-        } else if (channelUID.getId().startsWith("pit1")) {
+        } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_1)) {
             if (data.getPitmaster() != null && data.getPitmaster().getPm() != null
                     && data.getPitmaster().getPm().size() > 0) {
                 Pm pm = data.getPitmaster().getPm().get(0);
@@ -188,8 +182,8 @@ public class WlanThermoEsp32CommandHandler {
             return false;
         }
         List<Channel> channel = data.getChannel();
-        if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(groupId.substring("channel".length())) - 1;
+        if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
+            int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
             if (channel.size() > 0 && channelId < channel.size()) {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -242,7 +236,7 @@ public class WlanThermoEsp32CommandHandler {
                         break;
                 }
             }
-        } else if (channelUID.getId().equals("pit1")) {
+        } else if (channelUID.getId().equals(CHANNEL_PITMASTER_1)) {
             if (data.getPitmaster() != null && data.getPitmaster().getPm() != null
                     && data.getPitmaster().getPm().size() > 0) {
                 Pm pm = data.getPitmaster().getPm().get(0);
@@ -279,8 +273,8 @@ public class WlanThermoEsp32CommandHandler {
             return null;
         }
         List<Channel> channel = data.getChannel();
-        if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(groupId.substring("channel".length())) - 1;
+        if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
+            int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
             if (channel.size() > 0 && channelId < channel.size()) {
                 if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
                     if (channel.get(channelId).getTemp() != 999) {

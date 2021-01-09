@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wlanthermo.internal.api.mini;
 
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
+
 import java.awt.*;
 
 import javax.measure.Unit;
@@ -34,6 +36,8 @@ import org.openhab.core.types.UnDefType;
  */
 public class WlanThermoMiniCommandHandler {
 
+    public static final String ERROR = "er";
+
     public State getState(ChannelUID channelUID, App app) {
         State state = null;
 
@@ -42,15 +46,9 @@ public class WlanThermoMiniCommandHandler {
             return null;
         }
 
-        Unit<Temperature> unit;
-        if (app.getTempUnit().equals("fahrenheit")) {
-            unit = ImperialUnits.FAHRENHEIT;
-        } else {
-            // Default to Celsius
-            unit = SIUnits.CELSIUS;
-        }
+        Unit<Temperature> unit = "fahrenheit".equals(app.getTempUnit()) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
 
-        if ("system".equals(groupId)) {
+        if (SYSTEM.equals(groupId)) {
             switch (channelUID.getIdWithoutGroup()) {
                 case WlanThermoBindingConstants.SYSTEM_CPU_TEMP:
                     if (app.getCpuTemp() == null) {
@@ -67,8 +65,8 @@ public class WlanThermoMiniCommandHandler {
                     }
                     break;
             }
-        } else if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(groupId.substring("channel".length()));
+        } else if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
+            int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length()));
             if (channelId >= 0 && channelId <= 9) {
                 Channel channel = app.getChannel();
                 if (channel == null) {
@@ -80,7 +78,7 @@ public class WlanThermoMiniCommandHandler {
                         state = new StringType(data.getName());
                         break;
                     case WlanThermoBindingConstants.CHANNEL_TEMP:
-                        if (data.getState().equals("er")) {
+                        if (data.getState().equals(ERROR)) {
                             state = UnDefType.UNDEF;
                         } else {
                             state = new QuantityType<>(data.getTemp(), unit);
@@ -96,14 +94,14 @@ public class WlanThermoMiniCommandHandler {
                         state = OnOffType.from(data.getAlert());
                         break;
                     case WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_HIGH:
-                        if (!data.getState().equals("er") && data.getTemp() > data.getTempMax()) {
+                        if (!data.getState().equals(ERROR) && data.getTemp() > data.getTempMax()) {
                             state = OnOffType.ON;
                         } else {
                             state = OnOffType.OFF;
                         }
                         break;
                     case WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_LOW:
-                        if (!data.getState().equals("er") && data.getTemp() < data.getTempMin()) {
+                        if (!data.getState().equals(ERROR) && data.getTemp() < data.getTempMin()) {
                             state = OnOffType.ON;
                         } else {
                             state = OnOffType.OFF;
@@ -118,11 +116,11 @@ public class WlanThermoMiniCommandHandler {
                         break;
                 }
             }
-        } else if (channelUID.getId().startsWith("pit")) {
+        } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_PREFIX)) {
             Pit pit;
-            if (groupId.equals("pit1")) {
+            if (groupId.equals(CHANNEL_PITMASTER_1)) {
                 pit = app.getPit();
-            } else if (groupId.equals("pit2")) {
+            } else if (groupId.equals(CHANNEL_PITMASTER_2)) {
                 pit = app.getPit2();
             } else {
                 return UnDefType.UNDEF;
@@ -160,8 +158,8 @@ public class WlanThermoMiniCommandHandler {
         if (groupId == null || app == null) {
             return null;
         }
-        if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(groupId.substring("channel".length())) - 1;
+        if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
+            int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
             if (channelId >= 0 && channelId <= 9) {
                 Channel channel = app.getChannel();
                 if (channel == null) {
@@ -169,8 +167,8 @@ public class WlanThermoMiniCommandHandler {
                 }
                 Data data = channel.getData(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
-                    case "alarm_openhab":
-                        if (!data.getState().equals("er")) {
+                    case CHANNEL_ALARM_OPENHAB:
+                        if (!data.getState().equals(ERROR)) {
                             if (data.getTemp() > data.getTempMax()) {
                                 trigger = WlanThermoBindingConstants.TRIGGER_ALARM_MAX;
                             } else if (data.getTemp() < data.getTempMin()) {

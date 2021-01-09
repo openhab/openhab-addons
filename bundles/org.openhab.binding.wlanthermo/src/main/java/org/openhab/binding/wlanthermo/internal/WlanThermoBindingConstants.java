@@ -13,6 +13,7 @@
 package org.openhab.binding.wlanthermo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -67,6 +68,9 @@ public class WlanThermoBindingConstants {
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_NAME = "color_name";
 
+    public static final String CHANNEL_PITMASTER_PREFIX = "pit";
+    public static final String CHANNEL_PITMASTER_1 = "pit1";
+    public static final String CHANNEL_PITMASTER_2 = "pit2";
     public static final String CHANNEL_PITMASTER_ENABLED = "enabled"; // Mini
     public static final String CHANNEL_PITMASTER_CURRENT = "current"; // Mini
     public static final String CHANNEL_PITMASTER_SETPOINT = "setpoint"; // Mini+Nano
@@ -79,4 +83,9 @@ public class WlanThermoBindingConstants {
     public static final String TRIGGER_ALARM_OFF = "OFF";
     public static final String TRIGGER_ALARM_MIN = "MIN";
     public static final String TRIGGER_ALARM_MAX = "MAX";
+
+    public static final DecimalType SIGNAL_STRENGTH_4 = new DecimalType(4);
+    public static final DecimalType SIGNAL_STRENGTH_3 = new DecimalType(3);
+    public static final DecimalType SIGNAL_STRENGTH_2 = new DecimalType(2);
+    public static final DecimalType SIGNAL_STRENGTH_1 = new DecimalType(1);
 }
