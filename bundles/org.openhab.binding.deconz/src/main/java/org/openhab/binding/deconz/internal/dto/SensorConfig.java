@@ -39,6 +39,6 @@ public class SensorConfig {
     @Override
     public String toString() {
         return "SensorConfig{" + "on=" + on + ", reachable=" + reachable + ", battery=" + battery + ", temperature="
-                + temperature + ", heatsetpoint=" + heatsetpoint + ", mode=" + mode + ", offset=" + offset + '}';
+                + temperature + ", heatsetpoint=" + heatsetpoint + ", mode=" + mode + ", offset=" + offset + "}";
     }
 }
