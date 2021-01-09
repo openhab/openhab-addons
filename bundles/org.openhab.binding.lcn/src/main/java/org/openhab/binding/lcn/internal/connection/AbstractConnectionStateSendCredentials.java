@@ -41,7 +41,7 @@ public abstract class AbstractConnectionStateSendCredentials extends AbstractCon
      */
     protected void startTimeoutTimer() {
         addTimer(getScheduler().schedule(
-                () -> context.handleConnectionFailed(
+                () -> handleConnectionFailed(
                         new LcnException("Network timeout in state " + getClass().getSimpleName())),
                 connection.getSettings().getTimeout(), TimeUnit.MILLISECONDS));
     }
