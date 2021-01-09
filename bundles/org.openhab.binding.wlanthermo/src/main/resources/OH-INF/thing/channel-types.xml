@@ -254,7 +254,7 @@
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>RSSI in dBm</label>
-		<category>Text</category>
+		<category>Number</category>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
