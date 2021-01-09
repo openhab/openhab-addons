@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,12 +102,10 @@ public final class QbusCommunication {
 
     public synchronized void startCommunication() {
         QbusBridgeHandler handler = bridgeCallBack;
-
         try {
 
             for (int i = 1; qEventsRunning && (i <= 5); i++) {
                 Thread.sleep(1000);
-
             }
             if (qEventsRunning) {
                 logger.error("Starting from thread {}, but previous connection still active after 5000ms",
@@ -264,7 +262,6 @@ public final class QbusCommunication {
     synchronized void sendMessage(Object qMessage) {
         PrintWriter writer = qOut;
         String json = gsonOut.toJson(qMessage);
-        logger.debug("Send json from thread {}", Thread.currentThread().getId());
 
         if (writer != null) {
             writer.println(json);
@@ -280,7 +277,6 @@ public final class QbusCommunication {
             logger.warn("Error sending message, trying to restart communication");
             restartCommunication();
             // retry sending after restart
-            logger.debug("Resend json from thread {}", Thread.currentThread().getId());
             writer = qOut;
             if (writer != null) {
                 writer.println(json);
@@ -312,9 +308,7 @@ public final class QbusCommunication {
      *
      * @param qMessage message read from Qbus.
      */
-    // @SuppressWarnings("null")
     private void readMessage(String qMessage) {
-        logger.debug("Received json on thread {}", Thread.currentThread().getId());
         String confsn = "";
         String cmd = "";
         String CTD = "";
@@ -414,7 +408,6 @@ public final class QbusCommunication {
                 logger.info("Requesting CO2 outputs from client");
                 sendAndReadMessage("getCo2");
             } else {
-                logger.warn("No CTD client connected to server with sn {}", CTD);
                 CTDConnected = false;
 
                 QbusBridgeHandler handler = bridgeCallBack;
@@ -440,7 +433,6 @@ public final class QbusCommunication {
         if (bridgeCallBack != null) {
             CTD = bridgeCallBack.getSn();
         }
-        logger.info("Connecting to server");
         QbusMessageCmd QCmd = new QbusMessageCmd(CTD, "openHAB");
 
         sendMessage(QCmd);
@@ -459,8 +451,6 @@ public final class QbusCommunication {
      */
     @SuppressWarnings("null")
     private void cmdListBistabiel(@Nullable List<Map<String, String>> outputs) {
-        logger.info("Bistabiel/Timers/Monos/Intervals received from Qbus server");
-
         if (outputs != null) {
             for (Map<String, String> bistabiel : outputs) {
                 String idStr = bistabiel.get("id");
@@ -491,8 +481,6 @@ public final class QbusCommunication {
      * @param outputs
      */
     private void cmdlistscenes(@Nullable List<Map<String, String>> outputs) {
-        logger.info("Scenes received from Qbus server");
-
         if (outputs != null) {
             for (Map<String, String> scene : outputs) {
                 String idStr = scene.get("id");
@@ -515,8 +503,6 @@ public final class QbusCommunication {
      */
     @SuppressWarnings("null")
     private void cmdListDimmers(@Nullable List<Map<String, String>> outputs) {
-        logger.info("Dimmers received from the Qbus server");
-
         if (outputs != null) {
             for (Map<String, String> dimmer : outputs) {
                 String idStr = dimmer.get("id");
@@ -546,8 +532,6 @@ public final class QbusCommunication {
      */
     @SuppressWarnings("null")
     private void cmdlistrol(@Nullable List<Map<String, String>> outputs) {
-
-        logger.info("ROL02P received from Qbus server");
         if (outputs != null) {
             for (Map<String, String> rol : outputs) {
                 String idStr = rol.get("id");
@@ -577,8 +561,6 @@ public final class QbusCommunication {
      */
     @SuppressWarnings("null")
     private void cmdlistrolslats(@Nullable List<Map<String, String>> outputs) {
-        logger.info("ROL02PSLATS received from Qbus server");
-
         if (outputs != null) {
             for (Map<String, String> rol : outputs) {
 
@@ -615,8 +597,6 @@ public final class QbusCommunication {
      */
     @SuppressWarnings("null")
     private void cmdlistco2(@Nullable List<Map<String, String>> outputs) {
-        logger.info("CO2 received from Qbus server");
-
         if (outputs != null) {
             for (Map<String, String> co2 : outputs) {
                 String idStr = co2.get("id");
@@ -649,8 +629,6 @@ public final class QbusCommunication {
      */
     @SuppressWarnings("null")
     private void cmdListThermostat(@Nullable List<Map<String, String>> outputs) {
-        logger.info("Thermostats received from the Qbus server");
-
         if (outputs != null) {
             for (Map<String, String> thermostat : outputs) {
                 String idStr = thermostat.get("id");
