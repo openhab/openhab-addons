@@ -306,6 +306,7 @@
 /bundles/org.openhab.io.homekit/ @beowulfe @yfre
 /bundles/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
 /bundles/org.openhab.io.imperihome/ @pdegeus
+/bundles/org.openhab.io.metrics/ @pravussum
 /bundles/org.openhab.io.neeo/ @tmrobert8
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
 /bundles/org.openhab.persistence.dynamodb/ @ssalonen
