@@ -15,11 +15,14 @@ package org.openhab.binding.wlanthermo.internal.api.mini;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UtilMini} class provides conversion functions for the WlanThermo Mini
  *
  * @author Christian Schlipp - Initial contribution
  */
+@NonNullByDefault
 public class UtilMini {
     private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
     private static final String DEFAULT_HEX = "#ffffff";

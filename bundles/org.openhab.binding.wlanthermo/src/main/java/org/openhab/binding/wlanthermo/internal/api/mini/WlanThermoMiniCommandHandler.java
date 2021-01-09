@@ -38,7 +38,7 @@ public class WlanThermoMiniCommandHandler {
 
     public static final String ERROR = "er";
 
-    public State getState(ChannelUID channelUID, App app) {
+    public static State getState(ChannelUID channelUID, App app) {
         State state = null;
 
         String groupId = channelUID.getGroupId();
@@ -152,7 +152,7 @@ public class WlanThermoMiniCommandHandler {
         return state;
     }
 
-    public String getTrigger(ChannelUID channelUID, App app) {
+    public static String getTrigger(ChannelUID channelUID, App app) {
         String trigger = null;
         String groupId = channelUID.getGroupId();
         if (groupId == null || app == null) {

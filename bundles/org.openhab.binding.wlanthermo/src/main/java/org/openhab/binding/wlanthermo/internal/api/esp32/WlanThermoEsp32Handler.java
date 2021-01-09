@@ -51,7 +51,6 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(WlanThermoEsp32Handler.class);
 
     private WlanThermoExtendedConfiguration config = new WlanThermoExtendedConfiguration();
-    private WlanThermoEsp32CommandHandler wlanThermoEsp32CommandHandler = new WlanThermoEsp32CommandHandler();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> pollingScheduler;
     private final Gson gson = new Gson();
@@ -109,12 +108,12 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            State s = wlanThermoEsp32CommandHandler.getState(channelUID, data, settings);
+            State s = WlanThermoEsp32CommandHandler.getState(channelUID, data, settings);
             if (s != null) {
                 updateState(channelUID, s);
             }
         } else {
-            if (wlanThermoEsp32CommandHandler.setState(channelUID, command, data)) {
+            if (WlanThermoEsp32CommandHandler.setState(channelUID, command, data)) {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
@@ -158,12 +157,12 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
 
             // Update channel state
             for (Channel channel : thing.getChannels()) {
-                State state = wlanThermoEsp32CommandHandler.getState(channel.getUID(), data, settings);
+                State state = WlanThermoEsp32CommandHandler.getState(channel.getUID(), data, settings);
                 if (state != null) {
                     updateState(channel.getUID(), state);
                 } else {
                     // if we could not obtain a state, try trigger instead
-                    String trigger = wlanThermoEsp32CommandHandler.getTrigger(channel.getUID(), data);
+                    String trigger = WlanThermoEsp32CommandHandler.getTrigger(channel.getUID(), data);
                     if (trigger != null) {
                         triggerChannel(channel.getUID(), trigger);
                     }

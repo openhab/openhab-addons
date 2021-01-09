@@ -49,7 +49,6 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(WlanThermoNanoV1Handler.class);
 
     private WlanThermoExtendedConfiguration config = new WlanThermoExtendedConfiguration();
-    private WlanThermoNanoV1CommandHandler wlanThermoNanoV1CommandHandler = new WlanThermoNanoV1CommandHandler();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> pollingScheduler;
     private final Gson gson = new Gson();
@@ -107,11 +106,11 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            State s = wlanThermoNanoV1CommandHandler.getState(channelUID, data, settings);
+            State s = WlanThermoNanoV1CommandHandler.getState(channelUID, data, settings);
             if (s != null)
                 updateState(channelUID, s);
         } else {
-            if (wlanThermoNanoV1CommandHandler.setState(channelUID, command, data)) {
+            if (WlanThermoNanoV1CommandHandler.setState(channelUID, command, data)) {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
@@ -133,12 +132,12 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
 
             // Update channels
             for (Channel channel : thing.getChannels()) {
-                State state = wlanThermoNanoV1CommandHandler.getState(channel.getUID(), data, settings);
+                State state = WlanThermoNanoV1CommandHandler.getState(channel.getUID(), data, settings);
                 if (state != null) {
                     updateState(channel.getUID(), state);
                 } else {
                     // if we could not obtain a state, try trigger instead
-                    String trigger = wlanThermoNanoV1CommandHandler.getTrigger(channel.getUID(), data);
+                    String trigger = WlanThermoNanoV1CommandHandler.getTrigger(channel.getUID(), data);
                     if (trigger != null) {
                         triggerChannel(channel.getUID(), trigger);
                     }

@@ -43,7 +43,7 @@ import org.openhab.core.types.UnDefType;
  */
 public class WlanThermoEsp32CommandHandler {
 
-    public State getState(ChannelUID channelUID, Data data, Settings settings) {
+    public static State getState(ChannelUID channelUID, Data data, Settings settings) {
         State state = null;
 
         String groupId = channelUID.getGroupId();
@@ -175,7 +175,7 @@ public class WlanThermoEsp32CommandHandler {
         return state;
     }
 
-    public boolean setState(ChannelUID channelUID, Command command, Data data) {
+    public static boolean setState(ChannelUID channelUID, Command command, Data data) {
         boolean success = false;
         String groupId = channelUID.getGroupId();
         if (groupId == null || data == null) {
@@ -266,7 +266,7 @@ public class WlanThermoEsp32CommandHandler {
         return success;
     }
 
-    public String getTrigger(ChannelUID channelUID, Data data) {
+    public static String getTrigger(ChannelUID channelUID, Data data) {
         String trigger = null;
         String groupId = channelUID.getGroupId();
         if (groupId == null || data == null) {

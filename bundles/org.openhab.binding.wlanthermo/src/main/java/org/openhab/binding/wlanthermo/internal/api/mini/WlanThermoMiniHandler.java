@@ -41,7 +41,6 @@ import com.google.gson.Gson;
 public class WlanThermoMiniHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WlanThermoMiniHandler.class);
-    private final WlanThermoMiniCommandHandler wlanThermoMiniCommandHandler = new WlanThermoMiniCommandHandler();
 
     private WlanThermoConfiguration config = new WlanThermoConfiguration();
     private final HttpClient httpClient;
@@ -91,7 +90,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Mini is read only!
         if (command instanceof RefreshType) {
-            State s = wlanThermoMiniCommandHandler.getState(channelUID, app);
+            State s = WlanThermoMiniCommandHandler.getState(channelUID, app);
             if (s != null)
                 updateState(channelUID, s);
         }
@@ -106,11 +105,11 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
             // Update channels
             for (Channel channel : thing.getChannels()) {
-                State state = wlanThermoMiniCommandHandler.getState(channel.getUID(), app);
+                State state = WlanThermoMiniCommandHandler.getState(channel.getUID(), app);
                 if (state != null) {
                     updateState(channel.getUID(), state);
                 } else {
-                    String trigger = wlanThermoMiniCommandHandler.getTrigger(channel.getUID(), app);
+                    String trigger = WlanThermoMiniCommandHandler.getTrigger(channel.getUID(), app);
                     if (trigger != null) {
                         triggerChannel(channel.getUID(), trigger);
                     }

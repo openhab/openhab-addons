@@ -15,11 +15,14 @@ package org.openhab.binding.wlanthermo.internal.api.esp32;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UtilEsp32} class provides conversion functions for the WlanThermo Nano V3
  *
  * @author Christian Schlipp - Initial contribution
  */
+@NonNullByDefault
 public class UtilEsp32 {
 
     private static final Map<String, String> COLOR_MAPPINGS = createColorMap();

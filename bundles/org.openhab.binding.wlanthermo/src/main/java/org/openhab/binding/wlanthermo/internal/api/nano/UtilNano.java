@@ -15,11 +15,14 @@ package org.openhab.binding.wlanthermo.internal.api.nano;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UtilNano} class provides conversion functions for the WlanThermo Nano V1+
  *
  * @author Christian Schlipp - Initial contribution
  */
+@NonNullByDefault
 public class UtilNano {
 
     private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
