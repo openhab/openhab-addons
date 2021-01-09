@@ -215,6 +215,9 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         } else if (SamsungTvConfiguration.PROTOCOL_WEBSOCKET.equals(protocol)
                 || SamsungTvConfiguration.PROTOCOL_SECUREWEBSOCKET.equals(protocol)) {
             try {
+                for (EventListener listener : listeners) {
+                    listener.putOffline();
+                }
                 remoteController = new RemoteControllerWebSocket(host, port, "openHAB", "openHAB", this);
             } catch (RemoteControllerException e) {
                 reportError("Cannot connect to remote control service", e);

@@ -64,4 +64,10 @@ public interface EventListener {
      * @return WebSocket Factory
      */
     WebSocketFactory getWebSocketFactory();
+
+    /**
+     * Put thing offline
+     *
+     */
+    void putOffline();
 }
