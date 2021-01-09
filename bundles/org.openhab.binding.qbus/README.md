@@ -4,11 +4,11 @@
 
 This binding for [Qbus](https://qbus.be) communicates with all controllers of the Qbus home automation system.
 
-We also host a site which contains a [manual](https://manualoh.schockaert.tk/) where you can find lot's of information to set up openHAB with Qbus client and server (for the moment only in Dutch).
+We also host a site which contains a [manual](https://manualoh.schockaert.tk/) where you can find lots of information to set up openHAB with Qbus client and server (for the moment only in Dutch).
 
 The controllers can not communicate directly with openHAB, therefore we developed a client/server application which you must install prior to enable this binding.
 More information can be found here:
-[Qbus Client/Server]( https://github.com/QbusKoen/QbusClientServer-Installer)
+[Qbus Client/Server](https://github.com/QbusKoen/QbusClientServer-Installer)
 
 With this binding you can control and read almost every output from the Qbus system.
 
@@ -41,43 +41,38 @@ For now the following Qbus things are not yet supported but will come:
 
 The discovery service is not yet implemented but the System Manager III software of Qbus generates things and item files from the programming, which you can use directly in openHAB.
 
-## Thing Configuration
-
-This is an example of the things configuration file:
+## Bridge configuration
 
 ```
 Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh=10 ] {
-    dimmer                   1     "ToonzaalLED"      [ dimmerId=100 ]
-    onOff                    30    "Toonzaal230V"     [ bistabielId=76 ]
-    thermostat               50    "Service"          [ thermostatId=99 ]
-    scene                    70    "Disco"            [ sceneId=36 ]
-    co2                      100   "Productie"        [ co2Id=26 ]
-    rollershutter            120   "Roller1"          [ rolId=268 ]
-    rollershutter_slats      121   "Roller2"          [ rolId=264 ]
+...
 }
 ```
 
 
-| Property   | Default  | Required | Description    |
-|------------|----------|----------|----------------|
-| `addr`    | localhost | YES      | The ip address of the machine where the Qbus Server runs |
-| `sn`      |           | YES      | The serial number of your controller |
-| `port`    | 8447      | YES      | The communication port of the client/server |
+
+| Property  | Default   | Required | Description                                                                                                                          |
+| --------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `addr`    | localhost | YES      | The ip address of the machine where the Qbus Server runs                                                                             |
+| `sn`      |           | YES      | The serial number of your controller                                                                                                 |
+| `port`    | 8447      | YES      | The communication port of the client/server                                                                                          |
 | `refresh` | 5         | NO       | Refresh time - After x minutes there will be a check if server is still running and if client is still connected. If not - reconnect |
 
-## Channels
+ 
 
-| Thing Type ID  | Channel Name         | Read only  | description                                             |
-|---------------------|---------------|---------------------------------------------------------|
-| `onOff`               | switch        | No | This is the channel for Bistable, Timers and Intervals  |
-| `dimmer`              | brightness    | No | This is the channel for Dimmers 1&2 buttons and CLC     |
-| `scene`               | Switch        | No | This is the channel for scenes                          |
-| `co2`                 | co2           | Yes | This is the channel for CO2 sensors                     |
-| `rollershutter`       | rollershutter | No | This is the channel for rollershutters                  | 
-| `rollershutter_slats` | rollershutter | No | This is the channel for rollershutters with slats       |
-| `thermostat`          | setpoint      | No | This is the channel for thermostats setpoint            |
-| `thermostat`          | measured      | Yes | This is the channel for thermostats currenttemp         |
-| `thermostat`          | mode          | No | This is the channel for thermostats mode                |
+## Things configuration
+
+| Thing Type ID         | Channel Name  | Read only | description                                            |
+| --------------------- | ------------- | --------- | ------------------------------------------------------ |
+| `onOff`               | switch        | No        | This is the channel for Bistable, Timers and Intervals |
+| `dimmer`              | brightness    | No        | This is the channel for Dimmers 1&2 buttons and CLC    |
+| `scene`               | Switch        | No        | This is the channel for scenes                         |
+| `co2`                 | co2           | Yes       | This is the channel for CO2 sensors                    |
+| `rollershutter`       | rollershutter | No        | This is the channel for rollershutters                 |
+| `rollershutter_slats` | rollershutter | No        | This is the channel for rollershutters with slats      |
+| `thermostat`          | setpoint      | No        | This is the channel for thermostats setpoint           |
+| `thermostat`          | measured      | Yes       | This is the channel for thermostats currenttemp        |
+| `thermostat`          | mode          | No        | This is the channel for thermostats mode               |
 
 
 ## Full Example
