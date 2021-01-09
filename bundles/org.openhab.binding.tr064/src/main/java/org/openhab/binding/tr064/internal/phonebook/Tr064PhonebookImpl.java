@@ -72,12 +72,23 @@ public class Tr064PhonebookImpl implements Phonebook {
             phonebook = phonebooksType.getPhonebook().getContact().stream().map(contact -> {
                 String contactName = contact.getPerson().getRealName();
                 return contact.getTelephony().getNumber().stream()
-                        .collect(Collectors.toMap(number -> normalizeNumber(number.getValue()), number -> contactName));
+                        .collect(Collectors.toMap(number -> normalizeNumber(number.getValue()), number -> contactName,
+                                this::mergeSameContactNames));
             }).collect(HashMap::new, HashMap::putAll, HashMap::putAll);
             logger.debug("Downloaded phonebook {}: {}", phonebookName, phonebook);
         } catch (JAXBException | InterruptedException | ExecutionException | TimeoutException e) {
             logger.warn("Failed to get phonebook with URL {}:", phonebookUrl, e);
         }
+    }
+
+    // in case there are multiple phone entries with same number -> name mapping, i.e. in phonebooks exported from
+    // mobiles containing multiple accounts like: local, cloudprovider1, messenger1, messenger2,...
+    private String mergeSameContactNames(String nameA, String nameB) {
+        if (nameA != null && nameA.equals(nameB)) {
+            return nameA;
+        }
+        throw new IllegalStateException(
+                "Found different names for the same number: '" + nameA + "' and '" + nameB + "'");
     }
 
     @Override
