@@ -171,8 +171,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                     triggerChannel(channel.getUID(), trigger);
                 }
             }
-        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException
-                | WlanThermoException e) {
+        } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Update failed: " + e.getMessage());
             ScheduledFuture<?> oldScheduler = pollingScheduler;
@@ -183,6 +182,8 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 updateState(channel.getUID(), UnDefType.UNDEF);
             }
             checkConnection();
+        } catch (InterruptedException e) {
+            logger.debug("Update interrupted. {}", e.getMessage());
         }
     }
 
@@ -207,9 +208,11 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
+            } catch (TimeoutException | ExecutionException | URISyntaxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to update channel " + c.getName() + " on device: " + e.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug("Push interrupted. {}", e.getMessage());
             }
         }
     }

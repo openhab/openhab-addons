@@ -122,8 +122,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                 }
             }
 
-        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException
-                | WlanThermoException e) {
+        } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Update failed: " + e.getMessage());
             ScheduledFuture<?> oldScheduler = pollingScheduler;
@@ -134,6 +133,8 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                 updateState(channel.getUID(), UnDefType.UNDEF);
             }
             checkConnection();
+        } catch (InterruptedException e) {
+            logger.debug("Update interrupted. {}", e.getMessage());
         }
     }
 
