@@ -13,8 +13,10 @@
 package org.openhab.binding.tr064.internal;
 
 import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
+import static org.openhab.binding.tr064.internal.util.Util.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -24,12 +26,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tr064.internal.config.Tr064ChannelConfig;
 import org.openhab.binding.tr064.internal.config.Tr064SubConfiguration;
+import org.openhab.binding.tr064.internal.dto.config.ActionType;
+import org.openhab.binding.tr064.internal.dto.config.ChannelTypeDescription;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDDeviceType;
+import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDServiceType;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDActionType;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDDirection;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDScpdType;
+import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDStateVariableType;
 import org.openhab.binding.tr064.internal.soap.SOAPConnector;
 import org.openhab.binding.tr064.internal.util.SCPDUtil;
 import org.openhab.binding.tr064.internal.util.Util;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -38,6 +48,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -151,8 +162,54 @@ public class Tr064SubHandler extends BaseThingHandler {
         if (checkProperties(scpdUtil)) {
             // properties set, check channels
             ThingBuilder thingBuilder = editThing();
-            thingBuilder.withoutChannels(thing.getChannels());
+            List<Channel> provided = thing.getChannels();
+            thingBuilder.withoutChannels(provided);
             Util.checkAvailableChannels(thing, callback, thingBuilder, scpdUtil, config.uuid, deviceType, channels);
+            for (Channel channel : provided) {
+                if (!channels.containsKey(channel.getUID())) {
+                    SCPDServiceType deviceService = null;
+                    String typeId = channel.getChannelTypeUID().getId();
+                    ChannelTypeDescription description = CHANNEL_TYPES.stream()
+                            .filter(type -> typeId.equals(type.getName())).findFirst().orElse(null);
+                    if (description != null) {
+                        String serviceId = description.getService().getServiceId();
+                        deviceService = scpdUtil.getDevice(config.uuid)
+                                .flatMap(device -> device.getServiceList().stream()
+                                        .filter(service -> service.getServiceId().equals(serviceId)).findFirst())
+                                .orElse(null);
+                    }
+
+                    ActionType getAction = null;
+                    SCPDScpdType serviceRoot = null;
+                    if ((description != null) && (deviceService != null)) {
+                        String itemType = channel.getAcceptedItemType();
+                        if ((itemType != null) && itemType.equals(description.getItem().getType())) {
+                            getAction = description.getGetAction();
+                            serviceRoot = scpdUtil.getService(deviceService.getServiceId()).orElse(null);
+                        }
+                    }
+
+                    if ((getAction != null) && (serviceRoot != null)) {
+                        try {
+                            SCPDActionType action = getAction(serviceRoot, getAction.getName(), "Get-Action");
+                            SCPDStateVariableType argument = getStateVariable(serviceRoot,
+                                    getArgument(action, getAction.getArgument(), SCPDDirection.OUT));
+
+                            Tr064ChannelConfig config = new Tr064ChannelConfig(description, deviceService);
+                            config.setDataType(argument.getDataType());
+                            config.setGetAction(action);
+                            config.setParameter((String) channel.getConfiguration().get("mac"));
+                            ChannelBuilder builder = ChannelBuilder.create(channel.getUID(), config.getDataType());
+                            builder.withType(channel.getChannelTypeUID());
+                            builder.withLabel(description.getLabel() + " " + config.getParameter());
+                            thingBuilder.withChannel(builder.build());
+                            channels.put(channel.getUID(), config);
+                        } catch (ChannelConfigException e) {
+                            logger.debug("Channel {} not available: {}", channel.getUID(), e.getMessage());
+                        }
+                    }
+                }
+            }
             updateThing(thingBuilder.build());
 
             // remove connect scheduler

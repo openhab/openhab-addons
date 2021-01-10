@@ -256,20 +256,25 @@ The definition of the bridge and of the subdevices things is the following
 
 ```java
 Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", user="user", password="passwd",
-                                                         phonebookInterval="0"]{
-    Thing subdeviceLan LAN "label LAN"   [ uuid="uuid:xxxxxxxx-xxxx-xxxx-yyyy-xxxxxxxxxxxx",
-                                                macOnline="XX:XX:XX:XX:XX:XX",  
-                                                          "YY:YY:YY:YY:YY:YY"]  
-    Thing subdevice WAN "label WAN"               [ uuid="uuid:xxxxxxxx-xxxx-xxxx-zzzz-xxxxxxxxxxxx"]
-    Thing subdevice WANCon "label WANConnection"  [ uuid="uuid:xxxxxxxx-xxxx-xxxx-wwww-xxxxxxxxxxxx"]
-    }
+                                                         phonebookInterval="0"]
+{
+  Thing subdeviceLan LAN "label LAN"   [ uuid="uuid:xxxxxxxx-xxxx-xxxx-yyyy-xxxxxxxxxxxx" ]
+  {
+    Channels:
+      Type macOnline : Laptop      [ mac="XX:XX:XX:XX:XX:XX" ]
+      Type macOnline : Workstation [ mac="YY:YY:YY:YY:YY:YY" ]
+  }
+
+  Thing subdevice WAN "label WAN"               [ uuid="uuid:xxxxxxxx-xxxx-xxxx-zzzz-xxxxxxxxxxxx" ]
+  Thing subdevice WANCon "label WANConnection"  [ uuid="uuid:xxxxxxxx-xxxx-xxxx-wwww-xxxxxxxxxxxx" ]
+}
 ```
 
-The channel are automatically generated and it is simpler to use the Main User Interface to copy the textual definition of the channel
+The channels can be then bound to items
 
 ```java
-Switch PresXX "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_XX_3AXX_3AXX_3AXX_3AXX_3AXX"}
-Switch PresYY "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_YY_3AYY_3AYY_3AYY_3AYY_3AYY"}
+Switch PresentLaptop      "[%s]" { channel="tr064:subdeviceLan:rootuid:LANDevices:Laptop" }
+Switch PresentWorkstation "[%s]" { channel="tr064:subdeviceLan:rootuid:LANDevices:Workstation" }
 ```
 
 Example `*.items` file using the `PHONEBOOK` profile for storing the name of a caller in an item. it matches 8 digits from the right of the "from" number (note the escaping of `:` to `_3A`):
