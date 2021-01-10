@@ -48,22 +48,15 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ResolHandlerFactory.class);
 
-    private @Nullable LocaleProvider localeProvider;
+    private LocaleProvider localeProvider;
 
     private ResolStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
-    public ResolHandlerFactory(final @Reference ResolStateDescriptionOptionProvider stateDescriptionProvider) {
+    public ResolHandlerFactory(final @Reference ResolStateDescriptionOptionProvider stateDescriptionProvider,
+            final @Reference LocaleProvider localeProvider) {
         this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = null;
     }
 
     @Override
