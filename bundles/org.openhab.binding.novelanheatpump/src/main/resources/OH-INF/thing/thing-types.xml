@@ -7,10 +7,23 @@
 	<!-- Sample Thing Type -->
 	<thing-type id="heatpump">
 		<label>NovelanHeatpump Binding Thing</label>
-		<description>Sample thing for NovelanHeatpump Binding</description>
+		<description>
+			This binding was originally created for the Novelan heat pump.
+			Since the Novelan control unit is based on
+			the Luxtronic 2 contol unit of Alpha Innotec,
+			this binding should work with all heat pumps that use this type of
+			controller.
+
+			The heat pump bundle connects to your heat pump via network.
+			Make sure your heat pump is connected to your
+			network and the network settings are configured.
+			To access the network settings go in the heat pump Service menu ->
+			system control -> IP address.
+		</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<!-- channel id="channel1" typeId="sample-channel"/ -->
+			<channel id="temperature" typeId="temperature"/>
 		</channels>
 
 		<config-description>
@@ -43,10 +56,18 @@
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
+	<!-- channel-type id="sample-channel">
 		<item-type>novelanheatpumpItem</item-type>
 		<label>NovelanHeatpump Binding Channel</label>
 		<description>Sample channel for NovelanHeatpump Binding</description>
+		</channel-type -->
+
+	<channel-type id="temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

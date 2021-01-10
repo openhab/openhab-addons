@@ -12,13 +12,21 @@
  */
 package org.openhab.binding.novelanheatpump.internal;
 
-import static org.openhab.binding.novelanheatpump.internal.NovelanHeatpumpBindingConstants.*;
+import static org.openhab.binding.novelanheatpump.internal.NovelanHeatpumpBindingConstants.CHANNEL_1;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -33,10 +41,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NovelanHeatpumpHandler extends BaseThingHandler {
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     private final Logger logger = LoggerFactory.getLogger(NovelanHeatpumpHandler.class);
 
     private @Nullable NovelanHeatpumpConfiguration config;
+    private @Nullable HeatpumpConnector connector;
 
     public NovelanHeatpumpHandler(Thing thing) {
         super(thing);
@@ -60,41 +70,62 @@ public class NovelanHeatpumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        logger.debug("Initializing NovelanHeatpump handler.");
         config = getConfigAs(NovelanHeatpumpConfiguration.class);
+        logger.debug("config address = {}", config.address);
+        logger.debug("config port = {}", config.port);
+        logger.debug("config refresh = {}", config.refresh);
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
+        List<String> errorMsg = new ArrayList<>();
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
+        if (config.address.trim().isEmpty()) {
+            errorMsg.add("Parameter 'address' is mandatory and must be configured");
+        }
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
+        connector = new HeatpumpConnector(config.address, config.port);
+
+        if (errorMsg.isEmpty()) {
+            ScheduledFuture<?> job = this.refreshJob;
+            if (job == null || job.isCancelled()) {
+                refreshJob = scheduler.scheduleWithFixedDelay(this::updateAndPublishData, 0, config.refresh,
+                        TimeUnit.SECONDS);
             }
-        });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.join(", ", errorMsg));
+        }
+    }
 
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
+    private void updateAndPublishData() {
+        String errorMsg;
+        try {
+            connector.connect();
+            // read all parameters
+            int[] heatpumpValues = connector.getValues();
+            // read all parameters
+            int[] heatpumpParams = connector.getParams();
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+            logger.warn("read data!");
+            logger.warn("Thing {}", getThing().getThingTypeUID());
+            logger.warn("channels {}", getThing().getChannels());
+            getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID().getId())).forEach(channel -> {
+                String channelId = channel.getUID().getId();
+                logger.warn("channelId:{}", channelId);
+                // State state = getValue(channelId, aqiResponse);
+                // updateState(channelId, state);
+            });
+
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            return;
+        } catch (UnknownHostException e) {
+            errorMsg = "Configuration is incorrect. the given hostname of the Novelan heatpump is unknown";
+            logger.warn("Error running aqicn.org request: {}", errorMsg);
+        } catch (IOException e) {
+            errorMsg = e.getMessage();
+        } finally {
+            if (connector != null) {
+                connector.disconnect();
+            }
+        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
     }
 }
