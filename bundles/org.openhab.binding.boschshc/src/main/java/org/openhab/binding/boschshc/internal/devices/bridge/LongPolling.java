@@ -177,16 +177,17 @@ public class LongPolling {
         String nextSubscriptionId = subscriptionId;
 
         LongPollResult longPollResult = gson.fromJson(content, LongPollResult.class);
-        if (longPollResult != null) {
+        if (longPollResult != null && longPollResult.result != null) {
             this.handleResult.accept(longPollResult);
         } else {
-            logger.warn("Could not parse long poll response: {}", content);
+            logger.warn("Long poll response contained no results: {}", content);
 
             // Check if we got a proper result from the SHC
             LongPollError longPollError = gson.fromJson(content, LongPollError.class);
 
-            if (longPollError != null) {
-                logger.warn("Got error from SHC: {} (code: {})", longPollError.error.message, longPollError.error.code);
+            if (longPollError != null && longPollError.error != null) {
+                logger.warn("Got long poll error: {} (code: {})", longPollError.error.message,
+                        longPollError.error.code);
 
                 if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
                     logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
