@@ -13,7 +13,9 @@
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
@@ -23,14 +25,18 @@ import com.google.gson.Gson;
  *
  * @author Christian Oeing - Initial contribution
  */
+@NonNullByDefault
 public class LongPollResultTest {
     private final Gson gson = new Gson();
 
     @Test
-    public void NoResultsForErrorResult() {
+    public void noResultsForErrorResult() {
         LongPollResult longPollResult = gson.fromJson(
                 "{\"jsonrpc\":\"2.0\", \"error\": { \"code\":-32001, \"message\":\"No subscription with id: e8fei62b0-0\" } }",
                 LongPollResult.class);
-        assertEquals(null, longPollResult.result);
+        assertNotEquals(null, longPollResult);
+        if (longPollResult != null) {
+            assertEquals(null, longPollResult.result);
+        }
     }
 }
