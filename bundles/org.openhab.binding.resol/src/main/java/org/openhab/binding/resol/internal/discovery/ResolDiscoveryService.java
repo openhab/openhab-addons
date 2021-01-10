@@ -61,7 +61,7 @@ public class ResolDiscoveryService extends AbstractDiscoveryService {
             properties.put("type", type);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withProperties(properties).withLabel(name).build();
+                    .withRepresentationProperty("type").withProperties(properties).withLabel(name).build();
             logger.trace("call register: {} label: {}", discoveryResult.getBindingId(), discoveryResult.getLabel());
             thingDiscovered(discoveryResult);
         } else {
