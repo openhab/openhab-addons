@@ -136,6 +136,18 @@ public class ResolThingHandler extends BaseThingHandler {
         }
     }
 
+    public void setChannelValue(String channelId, long value) {
+        Channel channel = getThing().getChannel(channelId);
+        if (channel == null) {
+            logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
+        } else if (!"Number".contentEquals(Objects.requireNonNullElse(channel.getAcceptedItemType(), ""))) {
+            logger.trace("Channel '{}:{}' expected to have a String type for parameters '{}'",
+                    getThing().getUID().getId(), channelId, value);
+        } else {
+            this.updateState(channelId, new StringType(Long.toString(value)));
+        }
+    }
+
     public void setChannelValue(String channelId, Date value) {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {

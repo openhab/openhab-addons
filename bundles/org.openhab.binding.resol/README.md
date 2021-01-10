@@ -101,39 +101,36 @@ The channels of a thing are determined automatically based on the received VBUS 
 Here is a list of the channels of a DeltaSol MX with a heat quantity meter (HQM) and an extension module EM.
 The channels supported for your device can be seen in the UI or in the logs if DEBUG logging is enabled for this binding after data is received from the physical device.
 
-| channel                       | type                     | description                                        |
-|-------------------------------|--------------------------|----------------------------------------------------|
-| pump_speed_relay_x            | Number:Dimensionless     | Percentage of the output state of relay 'x'        |
-| temperature_sensor_x          | Number:Temperature       | Temperature sensor 'x' of the controller           |
-| temperature_Module_y_Sensor_x | Number:Temperature       | Temperature sensor 'x' of the extension module 'y' |
-| pressure_sensor_x             | Number:Pressure          | Pressure sensor 'x'                                |
-| humidity_sensor_x             | Number:Dimensionless     | Humidity sensor 'x'                                |
-| irradiation_sensor_x          | Number:Intensity         | Sunlight intensity sensor                          |
-| output_m                      | Number:Dimensionless     | PWM/0-10V level value of the output 'm'            |
-| system_date                   | DateTime                 | Date and time of the controller clock              |
-| error_mask                    | Number                   | Bitmask for the different errors                   |
-| error_sensor_line_broken-str  | String                   | Sensor line broken status (details for Error_mask) |
-| flow_rate_sensor_x            | Number:VolumetricFlowRate| of sensor 'x'                                      |
-| flow_set_temperature          | Number:Temperature       | Heating circuit set temperature                    |
-| operating_state               | Number                   | Heating circuit operationg state                   |
-| operating_state-str           | String                   | Heating circuit operationg state, as text          |
-| heat_quantity                 | Number:Energy            | Total heat quantity (of a HQM)                     |
-| heat_quantity_today           | Number:Energy            | Todays heat quantity (of a HQM)                    |
-| heat_quantity_week            | Number:Energy            | This weeks heat quantity (of a HQM)                |
-| heat_quantity_month           | Number:Energy            | This months heat quantity (of a HQM)               |
-| volume_in_total               | Number:Volume            | Total volume (of a HQM)                            |
-| volume_today                  | Number:Volume            | Todays volume (of a HQM)                           |
-| volume_week                   | Number:Volume            | This weeks volume (of a HQM)                       |
-| volume_month                  | Number:Volume            | This months volume (of a HQM)                      |
-| power                         | Number:Power             | Current power (of a HQM)                           |
+| channel                           | type                     | description                                        |
+|-----------------------------------|--------------------------|----------------------------------------------------|
+| pump_speed_relay_x                | Number:Dimensionless     | Percentage of the output state of relay 'x'        |
+| temperature_sensor_x              | Number:Temperature       | Temperature sensor 'x' of the controller           |
+| temperature_Module_y_Sensor_x     | Number:Temperature       | Temperature sensor 'x' of the extension module 'y' |
+| pressure_sensor_x                 | Number:Pressure          | Pressure sensor 'x'                                |
+| humidity_sensor_x                 | Number:Dimensionless     | Humidity sensor 'x'                                |
+| irradiation_sensor_x              | Number:Intensity         | Sunlight intensity sensor                          |
+| output_m                          | Number:Dimensionless     | PWM/0-10V level value of the output 'm'            |
+| system_date                       | DateTime                 | Date and time of the controller clock              |
+| error_mask                        | Number                   | Bitmask for the different errors                   |
+| error_sensor_line_broken          | Number                   | Sensor line broken status (details for Error_mask) |
+| error_sensor_line_short-circuited | Number                   | Sensor short circuit status (details for Error_mask) |
+| flow_rate_sensor_x                | Number:VolumetricFlowRate| of sensor 'x'                                      |
+| flow_set_temperature              | Number:Temperature       | Heating circuit set temperature                    |
+| operating_state                   | Number                   | Heating circuit operating state                    |
+| heat_quantity                     | Number:Energy            | Total heat quantity (of a HQM)                     |
+| heat_quantity_today               | Number:Energy            | Todays heat quantity (of a HQM)                    |
+| heat_quantity_week                | Number:Energy            | This weeks heat quantity (of a HQM)                |
+| heat_quantity_month               | Number:Energy            | This months heat quantity (of a HQM)               |
+| volume_in_total                   | Number:Volume            | Total volume (of a HQM)                            |
+| volume_today                      | Number:Volume            | Todays volume (of a HQM)                           |
+| volume_week                       | Number:Volume            | This weeks volume (of a HQM)                       |
+| volume_month                      | Number:Volume            | This months volume (of a HQM)                      |
+| power                             | Number:Power             | Current power (of a HQM)                           |
 
 
 Channels are dynamically created dependent on the devices connected to the VBus.
 So far only reading is supported.
 The classical channels are for temperature sensors and the like, but also relay outputs with the output level (0-100%) are visible as numerical values with the corresponding unit.
-Some data points have an enumeration type and are available in two versions, a numerical and a textual channel.
-Examples are Error mask, which is a number for the complete mask and each bit is available as single string channel, or the operation state of a heating circuit.
-In those cases the numerical version is hidden and have to be view explicitly if needed, while the string representation has an "-str" suffix in the name.
 
 String values are localized as far as possible, but only French, German and English are supported by the underlaying library which is based on the vbus-specification file from Resol.
 

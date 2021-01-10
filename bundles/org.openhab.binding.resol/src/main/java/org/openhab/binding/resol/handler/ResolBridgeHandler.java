@@ -14,8 +14,10 @@ package org.openhab.binding.resol.handler;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.internal.ResolBindingConstants;
 import org.openhab.binding.resol.internal.ResolBridgeConfiguration;
+import org.openhab.binding.resol.internal.ResolStateDescriptionOptionProvider;
 import org.openhab.binding.resol.internal.discovery.ResolDiscoveryService;
 import org.openhab.binding.resol.internal.providers.ResolChannelTypeProvider;
 import org.openhab.core.i18n.LocaleProvider;
@@ -41,6 +44,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +53,11 @@ import de.resol.vbus.Connection.ConnectionState;
 import de.resol.vbus.ConnectionAdapter;
 import de.resol.vbus.Packet;
 import de.resol.vbus.Specification;
+import de.resol.vbus.Specification.PacketFieldSpec;
 import de.resol.vbus.Specification.PacketFieldValue;
 import de.resol.vbus.SpecificationFile;
+import de.resol.vbus.SpecificationFile.Enum;
+import de.resol.vbus.SpecificationFile.EnumVariant;
 import de.resol.vbus.SpecificationFile.Language;
 import de.resol.vbus.TcpDataSource;
 import de.resol.vbus.TcpDataSourceProvider;
@@ -74,7 +81,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private boolean isConnected = false;
     private String unconnectedReason = "";
 
-    // Background Runable
+    // Background Runnable
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private @Nullable Connection tcpConnection;
@@ -87,9 +94,14 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     // Managing Thing Discovery Service
     private @Nullable ResolDiscoveryService discoveryService = null;
 
-    public ResolBridgeHandler(Bridge bridge, @Nullable LocaleProvider localeProvider) {
+    private ResolStateDescriptionOptionProvider stateDescriptionProvider;
+
+    public ResolBridgeHandler(Bridge bridge, @Nullable LocaleProvider localeProvider,
+            ResolStateDescriptionOptionProvider stateDescriptionProvider) {
         super(bridge);
         spec = Specification.getDefaultSpecification();
+        this.stateDescriptionProvider = stateDescriptionProvider;
+
         if (localeProvider != null) {
             locale = localeProvider.getLocale();
             lang = SpecificationFile.getLanguageForLocale(locale);
@@ -384,7 +396,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
                     ResolThingHandler thingHandler = thingHandlerMap.get(thingType);
                     if (thingHandler != null) {
-                        String channelId = pfv.getName(); // use English here
+                        String channelId = pfv.getName(); // use English name as channel
                         channelId = channelId.replace(" [", "-");
                         channelId = channelId.replace("]", "");
                         channelId = channelId.replace("(", "-");
@@ -399,21 +411,14 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                         if (pfv.getPacketFieldSpec().getUnit().getUnitId() >= 0) {
                             channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
                                     pfv.getPacketFieldSpec().getUnit().getUnitCodeText());
-                        } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.Number) {
-                            if (pfv.getEnumVariant() != null) {
-                                // Do not auto-link the numeric value, if there is an enum for it
-                                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "NoneHidden");
-                            } else {
-                                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
-                            }
-
                         } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.DateTime) {
                             channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "DateTime");
                         } else {
+                            /* used for enums and the numeric types without unit */
                             channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
                         }
 
-                        String acceptedItemType = "String";
+                        String acceptedItemType;
 
                         Thing thing = thingHandler.getThing();
                         switch (pfv.getPacketFieldSpec().getType()) {
@@ -432,65 +437,71 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                         }
                         Channel a = thing.getChannel(channelId);
 
-                        if (a == null && pfv.getRawValueDouble() != null) {
+                        if (a == null) {
+                            /* channel doesn't exit, let's create it */
                             ThingBuilder thingBuilder = thingHandler.editThing();
-
                             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-                            Channel channel = ChannelBuilder.create(channelUID, acceptedItemType)
-                                    .withType(channelTypeUID).withLabel(pfv.getName(lang)).build();
 
-                            thingBuilder.withChannel(channel).withLabel(thing.getLabel());
-                            thingHandler.updateThing(thingBuilder.build());
+                            if (pfv.getEnumVariant() != null) {
+                                /* create a state option channel */
+                                List<StateOption> options = new ArrayList<>();
+                                PacketFieldSpec ff = pfv.getPacketFieldSpec();
+                                Enum e = ff.getEnum();
+                                for (long l : e.getValues()) {
+                                    EnumVariant v = e.getEnumVariantForValue(l);
+                                    options.add(new StateOption(Long.toString(l), v.getText(lang)));
+                                }
 
+                                stateDescriptionProvider.setStateOptions(channelUID, options);
+
+                                Channel channel = ChannelBuilder.create(channelUID, "Number").withType(channelTypeUID)
+                                        .withLabel(pfv.getName(lang)).build();
+
+                                thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+                                thingHandler.updateThing(thingBuilder.build());
+                            } else if (pfv.getRawValueDouble() != null) {
+                                /* a number channel */
+                                Channel channel = ChannelBuilder.create(channelUID, acceptedItemType)
+                                        .withType(channelTypeUID).withLabel(pfv.getName(lang)).build();
+
+                                thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+                                thingHandler.updateThing(thingBuilder.build());
+                            }
                             logger.debug("Creating channel: {}", channelUID);
                         }
 
-                        switch (pfv.getPacketFieldSpec().getType()) {
-                            case Number:
-                                Double dd = pfv.getRawValueDouble();
-                                if (dd != null) {
-                                    if (!isSpecialValue(dd)) {
-                                        /* only set the value if no error occured */
-                                        thingHandler.setChannelValue(channelId, dd.doubleValue());
-                                    }
-                                } else {
-                                    /*
-                                     * field not available in this packet, e. g. old firmware version
-                                     * not (yet) transmitting it
-                                     */
-                                }
-                                break;
-                            case DateTime:
-                                thingHandler.setChannelValue(channelId, pfv.getRawValueDate());
-                                break;
-                            case WeekTime:
-                            case Time:
-                            default:
-                                thingHandler.setChannelValue(channelId,
-                                        pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), locale));
-                        }
-
                         if (pfv.getEnumVariant() != null) {
-                            // if we have an enum, we additionally add that as channel
-                            String enumChannelId = channelId + "-str";
-                            if (thing.getChannel(enumChannelId) == null) {
-                                ChannelTypeUID enumChannelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                        "None");
-                                ThingBuilder thingBuilder = thingHandler.editThing();
+                            /* update the enum / State channel */
+                            thingHandler.setChannelValue(channelId, pfv.getRawValueLong()); // pfv.getEnumVariant().getText(lang));
 
-                                ChannelUID enumChannelUID = new ChannelUID(thing.getUID(), enumChannelId);
-                                Channel channel = ChannelBuilder.create(enumChannelUID, "String")
-                                        .withType(enumChannelTypeUID).withLabel(pfv.getName(lang)).build();
-
-                                thingBuilder.withChannel(channel).withLabel(thing.getLabel());
-
-                                thingHandler.updateThing(thingBuilder.build());
+                        } else {
+                            switch (pfv.getPacketFieldSpec().getType()) {
+                                case Number:
+                                    Double dd = pfv.getRawValueDouble();
+                                    if (dd != null) {
+                                        if (!isSpecialValue(dd)) {
+                                            /* only set the value if no error occurred */
+                                            thingHandler.setChannelValue(channelId, dd.doubleValue());
+                                        }
+                                    } else {
+                                        /*
+                                         * field not available in this packet, e. g. old firmware version
+                                         * not (yet) transmitting it
+                                         */
+                                    }
+                                    break;
+                                case DateTime:
+                                    thingHandler.setChannelValue(channelId, pfv.getRawValueDate());
+                                    break;
+                                case WeekTime:
+                                case Time:
+                                default:
+                                    thingHandler.setChannelValue(channelId,
+                                            pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), locale));
                             }
-
-                            thingHandler.setChannelValue(enumChannelId, pfv.getEnumVariant().getText(lang));
                         }
                     } else {
-                        // logger.debug("ThingHandler for {} not registered.", thingType);
+                        /* No thing registered for this VBUS frame */
                     }
                 }
             }

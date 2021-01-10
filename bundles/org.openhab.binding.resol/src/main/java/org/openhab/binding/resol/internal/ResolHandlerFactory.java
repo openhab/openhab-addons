@@ -30,6 +30,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -48,6 +49,13 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ResolHandlerFactory.class);
 
     private @Nullable LocaleProvider localeProvider;
+
+    private ResolStateDescriptionOptionProvider stateDescriptionProvider;
+
+    @Activate
+    public ResolHandlerFactory(final @Reference ResolStateDescriptionOptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     @Reference
     protected void setLocaleProvider(final LocaleProvider localeProvider) {
@@ -76,7 +84,8 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(ResolBindingConstants.THING_TYPE_UID_BRIDGE)) {
-            ResolBridgeHandler handler = new ResolBridgeHandler((Bridge) thing, localeProvider);
+            ResolBridgeHandler handler = new ResolBridgeHandler((Bridge) thing, localeProvider,
+                    stateDescriptionProvider);
             registerThingDiscovery(handler);
             return handler;
         }

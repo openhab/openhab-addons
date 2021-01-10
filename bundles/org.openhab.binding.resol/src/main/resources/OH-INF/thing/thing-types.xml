@@ -75,7 +75,7 @@
 	</thing-type>
 
 	<channel-type id="None">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Any</label>
 		<state readOnly="true"/>
 	</channel-type>
