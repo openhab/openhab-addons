@@ -1,4 +1,4 @@
-# openHAB Add-ons
+# openHAB Add-ons Test
 
 <img align="right" width="220" src="./logo.png" />
 
