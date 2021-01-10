@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="novelanheatpump"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="heatpump">
+		<label>NovelanHeatpump Binding Thing</label>
+		<description>Sample thing for NovelanHeatpump Binding</description>
+
+		<channels>
+			<channel id="channel1" typeId="sample-channel"/>
+		</channels>
+
+		<config-description>
+			<!--
+				<parameter name="config1" type="text" required="true">
+				<label>Sample Parameter</label>
+				<description>This is a sample text configuration parameter</description>
+				</parameter>
+			-->
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>The Network Address of the Heatpump</label>
+				<description>Heatpump network address</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65335">
+				<label>Port</label>
+				<description>Port of the Heatpump API</description>
+				<default>8888</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refresh" type="integer" min="10" unit="s">
+				<label>Refresh Interval</label>
+				<description>Heatpump data fetches interval (in seconds)</description>
+				<default>60</default>
+				<unitLabel>s</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="sample-channel">
+		<item-type>novelanheatpumpItem</item-type>
+		<label>NovelanHeatpump Binding Channel</label>
+		<description>Sample channel for NovelanHeatpump Binding</description>
+	</channel-type>
+
+</thing:thing-descriptions>

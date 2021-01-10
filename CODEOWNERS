@@ -185,6 +185,7 @@
 /bundles/org.openhab.binding.nikobus/ @crnjan
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.novafinedust/ @t2000
+/bundles/org.openhab.binding.novelanheatpump/ @pbolle
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @mkatter
 /bundles/org.openhab.binding.nuvo/ @mlobstein
