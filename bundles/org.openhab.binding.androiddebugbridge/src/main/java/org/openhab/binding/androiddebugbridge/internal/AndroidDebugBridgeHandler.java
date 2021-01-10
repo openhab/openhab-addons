@@ -235,12 +235,12 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        packageConfigs = null;
         var schedule = connectionCheckerSchedule;
         if (schedule != null) {
             schedule.cancel(true);
             connectionCheckerSchedule = null;
         }
+        packageConfigs = null;
         adbConnection.disconnect();
         super.dispose();
     }
@@ -268,8 +268,9 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                     refreshStatus();
                 }
             }
-        } catch (InterruptedException | IOException | AndroidDebugBridgeDeviceException | ExecutionException e) {
-            logger.warn("Connection checker error: {}", e.getMessage());
+        } catch (InterruptedException ignored) {
+        } catch (IOException | AndroidDebugBridgeDeviceException | ExecutionException e) {
+            logger.debug("Connection checker error: {}", e.getMessage());
             adbConnection.disconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
