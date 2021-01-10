@@ -201,7 +201,7 @@ public Map<String, Object> getErrorMessages()
 ```
 
 *Return values:*
-* *errorMessages:* A `ArrayList<String>`object containing all error messages
+* *errorMessages:* A `List<String>` object containing all error messages
 
 
 ```
@@ -209,7 +209,7 @@ public Map<String, Object> getWarningMessages()
 ```
 
 *Return values:*
-* *warningMessages:* A `ArrayList<String>`object containing all warning messages
+* *warningMessages:* A `List<String>` object containing all warning messages
 
 
 ```
@@ -217,7 +217,7 @@ public Map<String, Object> getInfoMessages()
 ```
 
 *Return values:*
-* *infoMessages:* A `ArrayList<String>`object containing all info messages
+* *infoMessages:* A `List<String>` object containing all info messages
 
 
 ```
@@ -225,7 +225,7 @@ public Map<String, Object> getStatusMessages()
 ```
 
 *Return values:*
-* *statusMessages:* A `ArrayList<String>`object containing all status messages
+* *statusMessages:* A `List<String>` object containing all status messages
 
 
 ```
@@ -233,10 +233,10 @@ public Map<String, Object> getMessages()
 ```
 
 *Return values:*
-* *errorMessages:* A `ArrayList<String>` object containing all error messages
-* *warningMessages:* A `ArrayList<String>` object containing all warning messages
-* *infoMessages:* A `ArrayList<String>` object containing all info messages
-* *statusMessages:* A `ArrayList<String>` object containing all status messages
+* *errorMessages:* A `List<String>` object containing all error messages
+* *warningMessages:* A `List<String>` object containing all warning messages
+* *infoMessages:* A `List<String>` object containing all info messages
+* *statusMessages:* A `List<String>` object containing all status messages
 
 
 ## Properties
@@ -386,7 +386,7 @@ String KWL_Status_Flags                  "Status Flags [%s]"                    
 ### Rule
 
 ```
-import java.util.ArrayList
+import java.util.List
 import java.util.Map
 
 rule "Reset filter change remaining time"
@@ -406,7 +406,7 @@ rule "Log KWL messages"
         KWL_Status_Flags changed
     then
         val kwlActions = getActions("modbus.helioseasycontrols", "modbus:helios-easycontrols:modbus-gateway:kwl")
-        val Map<String, ArrayList<String>> msg = kwlActions.getMessages
+        val Map<String, List<String>> msg = kwlActions.getMessages
         logInfo("KWL Error Messages", msg.get("errorMessages").toString)
         logInfo("KWL Warning Messages", msg.get("warningMessages").toString)
         logInfo("KWL Info Messages", msg.get("infoMessages").toString)

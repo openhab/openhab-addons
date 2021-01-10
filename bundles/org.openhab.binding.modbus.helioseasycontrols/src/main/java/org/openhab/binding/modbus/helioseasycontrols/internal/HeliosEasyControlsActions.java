@@ -137,7 +137,7 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getErrorMessages.label", description = "@text/action.getErrorMessages.description")
-    public @ActionOutput(name = "errorMessages", type = "java.util.ArrayList<String>") Map<String, Object> getErrorMessages() {
+    public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") Map<String, Object> getErrorMessages() {
         Map<String, Object> messages = new HashMap<>();
         if (handler != null) {
             messages.put("errorMessages", handler.getErrorMessages());
@@ -150,7 +150,7 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getWarningMessages.label", description = "@text/action.getWarningMessages.description")
-    public @ActionOutput(name = "warningMessages", type = "java.util.ArrayList<String>") Map<String, Object> getWarningMessages() {
+    public @ActionOutput(name = "warningMessages", type = "java.util.List<String>") Map<String, Object> getWarningMessages() {
         Map<String, Object> messages = new HashMap<>();
         if (handler != null) {
             messages.put("warningMessages", handler.getWarningMessages());
@@ -163,7 +163,7 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getInfoMessages.label", description = "@text/action.getInfoMessages.description")
-    public @ActionOutput(name = "infoMessages", type = "java.util.ArrayList<String>") Map<String, Object> getInfoMessages() {
+    public @ActionOutput(name = "infoMessages", type = "java.util.List<String>") Map<String, Object> getInfoMessages() {
         Map<String, Object> messages = new HashMap<>();
         if (handler != null) {
             messages.put("infoMessages", handler.getInfoMessages());
@@ -176,7 +176,7 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getStatusMessages.label", description = "@text/action.getStatusMessages.description")
-    public @ActionOutput(name = "statusMessages", type = "java.util.ArrayList<String>") Map<String, Object> getStatusMessages() {
+    public @ActionOutput(name = "statusMessages", type = "java.util.List<String>") Map<String, Object> getStatusMessages() {
         Map<String, Object> messages = new HashMap<>();
         if (handler != null) {
             messages.put("statusMessages", handler.getStatusMessages());
@@ -189,8 +189,9 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getMessages.label", description = "@text/action.getMessages.description")
-    public @ActionOutput(name = "errorMessages", type = "java.util.ArrayList<String>") @ActionOutput(name = "warningMessages", type = "java.util.ArrayList<String>") @ActionOutput(name = "infoMessages", type = "java.util.ArrayList<String>") @ActionOutput(name = "statusMessages", type = "java.util.ArrayList<String>") Map<String, Object> getMessages() {
+    public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") @ActionOutput(name = "warningMessages", type = "java.util.List<String>") @ActionOutput(name = "infoMessages", type = "java.util.List<String>") @ActionOutput(name = "statusMessages", type = "java.util.List<String>") Map<String, Object> getMessages() {
         Map<String, Object> messages = new HashMap<>();
+        HeliosEasyControlsHandler handler = this.handler;
         if (handler != null) {
             messages.put("errorMessages", handler.getErrorMessages());
             messages.put("warningMessages", handler.getWarningMessages());
