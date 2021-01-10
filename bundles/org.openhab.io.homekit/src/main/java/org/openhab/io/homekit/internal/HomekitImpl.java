@@ -173,7 +173,7 @@ public class HomekitImpl implements Homekit {
             changeListener.setBridge(bridge);
             this.bridge = bridge;
             bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
-
+            bridge.refreshAuthInfo();
             final int lastAccessoryCount = changeListener.getLastAccessoryCount();
             int currentAccessoryCount = changeListener.getAccessories().size();
             if (currentAccessoryCount < lastAccessoryCount) {
