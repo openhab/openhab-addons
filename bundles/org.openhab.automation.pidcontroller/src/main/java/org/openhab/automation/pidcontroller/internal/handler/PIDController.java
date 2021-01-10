@@ -25,9 +25,6 @@ import org.openhab.automation.pidcontroller.internal.LowpassFilter;
  */
 @NonNullByDefault
 class PIDController {
-    private final double integralLowerLimit;
-    private final double integralUpperLimit;
-
     private double integralResult;
     private double derivativeResult;
     private double previousError;
@@ -38,10 +35,7 @@ class PIDController {
     private double kd;
     private double derivativeTimeConstantSec;
 
-    public PIDController(double integralLowerLimit, double integralUpperLimit, double kpAdjuster, double kiAdjuster,
-            double kdAdjuster, double derivativeTimeConstantSec) {
-        this.integralLowerLimit = integralLowerLimit;
-        this.integralUpperLimit = integralUpperLimit;
+    public PIDController(double kpAdjuster, double kiAdjuster, double kdAdjuster, double derivativeTimeConstantSec) {
         this.kp = kpAdjuster;
         this.ki = kiAdjuster;
         this.kd = kdAdjuster;
@@ -61,12 +55,6 @@ class PIDController {
 
         // integral calculation
         integralResult += error * lastInvocationMs / loopTimeMs;
-        // limit to output limits
-        if (ki != 0) {
-            final double maxIntegral = integralUpperLimit / ki;
-            final double minIntegral = integralLowerLimit / ki;
-            integralResult = Math.min(maxIntegral, Math.max(minIntegral, integralResult));
-        }
 
         // calculate parts
         final double proportionalPart = kp * error;
@@ -75,5 +63,13 @@ class PIDController {
         output = proportionalPart + integralPart + derivativePart;
 
         return new PIDOutputDTO(output, proportionalPart, integralPart, derivativePart, error);
+    }
+
+    public void setIntegralResult(double integralResult) {
+        this.integralResult = integralResult;
+    }
+
+    public void setDerivativeResult(double derivativeResult) {
+        this.derivativeResult = derivativeResult;
     }
 }

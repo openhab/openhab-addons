@@ -56,16 +56,10 @@ public class PIDControllerTriggerType extends TriggerType {
                 .withRequired(true).withMultiple(false).withMinimum(BigDecimal.ZERO).withDefault("1.0")
                 .withLabel("Derivative Time Constant")
                 .withDescription("Slows the rate of change of the D part (T1) in seconds.").withUnit("s").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_INTEGRAL_LOWER_LIMIT, Type.DECIMAL)
-                .withRequired(true).withMultiple(false).withDefault("0").withLabel("I-Part Lower Limit")
-                .withDescription(
-                        "The I part of the PID controller will be min this value. If you control the opening of a valve in %, you might want to set this to 0 for example.")
-                .build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_INTEGRAL_UPPER_LIMIT, Type.DECIMAL)
-                .withRequired(true).withMultiple(false).withDefault("100").withLabel("I-Part Upper Limit")
-                .withDescription(
-                        "The I part of the PID controller will be max this value. If you control the opening of a valve in %, you might want to set this to 100 for example.")
-                .build());
+        configDescriptions
+                .add(ConfigDescriptionParameterBuilder.create(CONFIG_COMMAND_ITEM, Type.TEXT).withRequired(false)
+                        .withReadOnly(true).withMultiple(false).withContext("item").withLabel("Command Item")
+                        .withDescription("You can send String commands to this Item like \"RESET\".").build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_LOOP_TIME, Type.DECIMAL)
                 .withRequired(true).withMultiple(false).withDefault(DEFAULT_LOOPTIME_MS).withLabel("Loop Time")
                 .withDescription("The interval the output value is updated in ms").withUnit("ms").build());

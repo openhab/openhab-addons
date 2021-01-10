@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -70,6 +71,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private long previousTimeMs = System.currentTimeMillis();
     private Item inputItem;
     private Item setpointItem;
+    private Optional<String> commandTopic;
     private EventFilter eventFilter;
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
@@ -93,29 +95,30 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
             throw new IllegalArgumentException("Configured setpoint item not found: " + setpointItemName, e);
         }
 
-        double integralLowerLimit = getDoubleFromConfig(config, CONFIG_INTEGRAL_LOWER_LIMIT);
-        double integralUpperLimit = getDoubleFromConfig(config, CONFIG_INTEGRAL_UPPER_LIMIT);
+        String commandItemName = (String) config.get(CONFIG_COMMAND_ITEM);
+        if (commandItemName != null) {
+            commandTopic = Optional.of("openhab/items/" + commandItemName + "/statechanged");
+        } else {
+            commandTopic = Optional.empty();
+        }
+
         double kpAdjuster = getDoubleFromConfig(config, CONFIG_KP_GAIN);
         double kiAdjuster = getDoubleFromConfig(config, CONFIG_KI_GAIN);
         double kdAdjuster = getDoubleFromConfig(config, CONFIG_KD_GAIN);
         double kdTimeConstant = getDoubleFromConfig(config, CONFIG_KD_TIMECONSTANT);
 
-        if (integralLowerLimit >= integralUpperLimit) {
-            throw new IllegalArgumentException("Lower integral limit is bigger or equal to the upper limit");
-        }
-
         loopTimeMs = ((BigDecimal) requireNonNull(config.get(CONFIG_LOOP_TIME), CONFIG_LOOP_TIME + " is not set"))
                 .intValue();
 
-        controller = new PIDController(integralLowerLimit, integralUpperLimit, kpAdjuster, kiAdjuster, kdAdjuster,
-                kdTimeConstant);
+        controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant);
 
         eventFilter = event -> {
             String topic = event.getTopic();
 
             return topic.equals("openhab/items/" + inputItemName + "/state")
                     || topic.equals("openhab/items/" + inputItemName + "/statechanged")
-                    || topic.equals("openhab/items/" + setpointItemName + "/statechanged");
+                    || topic.equals("openhab/items/" + setpointItemName + "/statechanged")
+                    || commandTopic.map(t -> topic.equals(t)).orElse(false);
         };
 
         eventSubscriberRegistration = bundleContext.registerService(EventSubscriber.class.getName(), this, null);
@@ -202,7 +205,17 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     @Override
     public void receive(Event event) {
         if (event instanceof ItemStateChangedEvent) {
-            calculate();
+            if (event.getTopic().equals(commandTopic.get())) {
+                ItemStateChangedEvent changedEvent = (ItemStateChangedEvent) event;
+                if ("RESET".equals(changedEvent.getItemState().toString())) {
+                    controller.setIntegralResult(0);
+                    controller.setDerivativeResult(0);
+                } else {
+                    logger.warn("Unknown command: {}", changedEvent.getItemState());
+                }
+            } else {
+                calculate();
+            }
         }
     }
 
