@@ -134,10 +134,11 @@ The following channels are holding read only values:
 | Switchoff_file_Time3 | DateTime | x | Timestamp shutdown 3 in memory | 
 | Switchoff_file_Time4 | DateTime | x | Timestamp shutdown 4 in memory | 
 | Comfort_exists | Switch | x | Comfort board installed | 
+| HauptMenuStatus | String |   | Status (complete) | 
 | HauptMenuStatus_Zeile1 | Number |   | Status line 1 | 
-| HauptMenuStatus_Zeile2 | Number |   | Status line 2 | 
-| HauptMenuStatus_Zeile3 | Number |   | Status Zeile 3 | 
-| HauptMenuStatus_Zeit | Number:Time |   | Status Time Line 2 | 
+| HauptMenuStatus_Zeile2 | Number | x | Status line 2 | 
+| HauptMenuStatus_Zeile3 | Number | x | Status Zeile 3 | 
+| HauptMenuStatus_Zeit | Number:Time | x | Status Time Line 2 | 
 | HauptMenuAHP_Stufe | Number | x | Stage bakeout program | 
 | HauptMenuAHP_Temp | Number:Temperature | x | Temperature bakeout program | 
 | HauptMenuAHP_Zeit | Number:Time | x | Runtime bakeout program | 

@@ -58,9 +58,11 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
     private static final int RETRY_INTERVAL = 60;
     private boolean tiggerChannelUpdate = false;
+    private final LuxtronikTranslationProvider translationProvider;
 
-    public LuxtronikHeatpumpHandler(Thing thing) {
+    public LuxtronikHeatpumpHandler(Thing thing, LuxtronikTranslationProvider translationProvider) {
         super(thing);
+        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -296,7 +298,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         synchronized (scheduledFutures) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 // Repeat channel update job every configured seconds
-                Runnable channelUpdaterJob = new ChannelUpdaterJob(getThing());
+                Runnable channelUpdaterJob = new ChannelUpdaterJob(getThing(), translationProvider);
                 ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(channelUpdaterJob, 0, config.refresh,
                         TimeUnit.SECONDS);
                 scheduledFutures.add(future);

@@ -18,12 +18,17 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link LuxtronikHeatpumpHandlerFactory} is responsible for creating things and thing
@@ -36,6 +41,15 @@ import org.osgi.service.component.annotations.Component;
 public class LuxtronikHeatpumpHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HEATPUMP);
+    private final LuxtronikTranslationProvider translationProvider;
+
+    @Activate
+    public LuxtronikHeatpumpHandlerFactory(final @Reference LocaleProvider localeProvider,
+            final @Reference TranslationProvider i18nProvider, ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.translationProvider = new LuxtronikTranslationProvider(getBundleContext().getBundle(), i18nProvider,
+                localeProvider);
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,7 +61,7 @@ public class LuxtronikHeatpumpHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_HEATPUMP.equals(thingTypeUID)) {
-            return new LuxtronikHeatpumpHandler(thing);
+            return new LuxtronikHeatpumpHandler(thing, translationProvider);
         }
 
         return null;

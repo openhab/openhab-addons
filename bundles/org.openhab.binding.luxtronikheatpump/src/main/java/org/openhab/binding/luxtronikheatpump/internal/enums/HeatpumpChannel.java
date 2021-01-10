@@ -20,6 +20,7 @@ import org.openhab.binding.luxtronikheatpump.internal.exceptions.InvalidChannelE
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -1285,7 +1286,12 @@ public enum HeatpumpChannel {
      * (original: AT-Unterschreitung)
      */
     CHANNEL_EINST_KUHL_ZEIT_AUS_AKT(851, "Einst_Kuhl_Zeit_Aus_akt", NumberItem.class, null, true,
-            HeatpumpVisibility.SYSEIN_KUHL_ZEIT_AUS);
+            HeatpumpVisibility.SYSEIN_KUHL_ZEIT_AUS),
+
+    /**
+     * Channel holding complete (localized) status message
+     */
+    CHANNEL_HEATPUMP_STATUS(null, "Status", StringItem.class, null, false, null);
 
     private @Nullable Integer channelId;
     private String command;

@@ -1121,64 +1121,70 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="HauptMenuStatus_Zeile1">
+	<channel-type id="HauptMenuStatus_Zeile1" advanced="true">
 		<item-type>Number</item-type>
 		<label>Status line 1</label>
 		<state readOnly="true">
 			<options>
-				<option value="0">Heat pump runs</option>
-				<option value="1">Heat pump stopped</option>
-				<option value="2">Heat pump coming</option>
-				<option value="3">Error code memory location 0</option>
-				<option value="4">Defrost</option>
-				<option value="5">Wait for LIN connection</option>
-				<option value="6">Compressor heats up</option>
-				<option value="7">Pump flow</option>
+				<option value="0">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile1.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile1.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile1.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile1.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile1.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile1.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile1.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile1.state.option.7</option>
 			</options>
 		</state>
 	</channel-type>
 
-	<channel-type id="HauptMenuStatus_Zeile2">
+	<channel-type id="HauptMenuStatus_Zeile2" advanced="true">
 		<item-type>Number</item-type>
 		<label>Status line 2</label>
 		<state readOnly="true">
 			<options>
-				<option value="0">since</option>
-				<option value="1">in</option>
+				<option value="0">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile2.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile2.state.option.1</option>
 			</options>
 		</state>
 	</channel-type>
 
-	<channel-type id="HauptMenuStatus_Zeile3">
+	<channel-type id="HauptMenuStatus_Zeile3" advanced="true">
 		<item-type>Number</item-type>
 		<label>Status Zeile 3</label>
 		<state readOnly="true">
 			<options>
-				<option value="0">Heating mode</option>
-				<option value="1">No requirement</option>
-				<option value="2">Mains switch-on delay</option>
-				<option value="3">Switching cycle lock</option>
-				<option value="4">Blocking time</option>
-				<option value="5">Service water</option>
-				<option value="6">Info bakeout program</option>
-				<option value="7">Defrost</option>
-				<option value="8">Pump flow</option>
-				<option value="9">Thermal disinfection</option>
-				<option value="10">Cooling mode</option>
-				<option value="12">Swimming pool / Photovoltaics</option>
-				<option value="13">Heating ext. energy source</option>
-				<option value="14">Service water ext. energy source</option>
-				<option value="16">Flow monitoring</option>
-				<option value="17">Second heat generator 1 operation</option>
+				<option value="0">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.9</option>
+				<option value="10">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.10</option>
+				<option value="12">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.12</option>
+				<option value="13">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.13</option>
+				<option value="14">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.14</option>
+				<option value="16">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.16</option>
+				<option value="17">@text/channel-type.luxtronikheatpump.HauptMenuStatus_Zeile3.state.option.17</option>
 			</options>
 		</state>
 	</channel-type>
 
-	<channel-type id="HauptMenuStatus_Zeit">
+	<channel-type id="HauptMenuStatus_Zeit" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Status Time Line 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="HauptMenuStatus">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="HauptMenuAHP_Stufe" advanced="true">
@@ -1967,11 +1973,11 @@
 		<label>Heating mode</label>
 		<state>
 			<options>
-				<option value="0">Auto</option>
-				<option value="1">Auxiliary heater</option>
-				<option value="2">Party</option>
-				<option value="3">Holiday</option>
-				<option value="4">Off</option>
+				<option value="0">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.4</option>
 			</options>
 		</state>
 	</channel-type>
@@ -1981,11 +1987,11 @@
 		<label>Hot water operating mode</label>
 		<state>
 			<options>
-				<option value="0">Auto</option>
-				<option value="1">Auxiliary heater</option>
-				<option value="2">Party</option>
-				<option value="3">Holiday</option>
-				<option value="4">Off</option>
+				<option value="0">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.Ba_XX_akt.state.option.4</option>
 			</options>
 		</state>
 	</channel-type>

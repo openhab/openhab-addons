@@ -31,6 +31,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.scheduler.SchedulerRunnable;
@@ -49,10 +50,12 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
     private final Thing thing;
     private final LuxtronikHeatpumpConfiguration config;
+    private final LuxtronikTranslationProvider translationProvider;
     private final Logger logger = LoggerFactory.getLogger(ChannelUpdaterJob.class);
 
-    public ChannelUpdaterJob(Thing thing) {
+    public ChannelUpdaterJob(Thing thing, LuxtronikTranslationProvider translationProvider) {
         this.thing = thing;
+        this.translationProvider = translationProvider;
         this.config = thing.getConfiguration().as(LuxtronikHeatpumpConfiguration.class);
     }
 
@@ -91,26 +94,10 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
         for (HeatpumpChannel channel : HeatpumpChannel.values()) {
             try {
-                Integer channelId = channel.getChannelId();
+                Integer rawValue = getChannelValue(channel, heatpumpValues, heatpumpParams, heatpumpVisibilities);
 
-                if (channelId == null) {
-                    continue; // no channel id to read defined (for channels handeled separatly)
-                }
-
-                if (channel.isVisible(heatpumpVisibilities).equals(Boolean.FALSE) && config.showAllChannels) {
-                    logger.debug("Channel {} is not available. Skipped updating it", channel.getCommand());
+                if (rawValue == null) {
                     continue;
-                }
-
-                Integer rawValue = null;
-
-                if (channel.isWritable().equals(Boolean.TRUE)) {
-                    rawValue = heatpumpParams[channelId];
-                } else {
-                    if (heatpumpValues.length <= channelId) {
-                        continue; // channel not available
-                    }
-                    rawValue = heatpumpValues[channelId];
                 }
 
                 State value = convertValueToState(rawValue, channel.getItemClass(), channel.getUnit());
@@ -124,6 +111,8 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
                         e.getMessage());
             }
         }
+
+        setExtendedState(heatpumpValues, heatpumpParams, heatpumpVisibilities);
 
         updateProperties(heatpumpValues);
     }
@@ -166,6 +155,33 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         return null;
     }
 
+    private @Nullable Integer getChannelValue(HeatpumpChannel channel, Integer[] heatpumpValues,
+            Integer[] heatpumpParams, Integer[] heatpumpVisibilities) {
+        Integer channelId = channel.getChannelId();
+
+        if (channelId == null) {
+            return null; // no channel id to read defined (for channels handeled separatly)
+        }
+
+        if (channel.isVisible(heatpumpVisibilities).equals(Boolean.FALSE) && config.showAllChannels) {
+            logger.debug("Channel {} is not available. Skipped updating it", channel.getCommand());
+            return null;
+        }
+
+        Integer rawValue = null;
+
+        if (channel.isWritable().equals(Boolean.TRUE)) {
+            rawValue = heatpumpParams[channelId];
+        } else {
+            if (heatpumpValues.length <= channelId) {
+                return null; // channel not available
+            }
+            rawValue = heatpumpValues[channelId];
+        }
+
+        return rawValue;
+    }
+
     private String getSoftwareVersion(Integer[] heatpumpValues) {
         String softwareVersion = "";
 
@@ -191,6 +207,32 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         handler.updateState(heatpumpCommandType.getCommand(), state);
     }
 
+    private void setExtendedState(Integer[] heatpumpValues, Integer[] heatpumpParams, Integer[] heatpumpVisibilities) {
+        Integer zeile1 = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE1, heatpumpValues,
+                heatpumpParams, heatpumpVisibilities);
+        Integer error = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_ERROR_NR0, heatpumpValues, heatpumpParams,
+                heatpumpVisibilities);
+        Integer zeile2 = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE2, heatpumpValues,
+                heatpumpParams, heatpumpVisibilities);
+        Integer zeile3 = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE2, heatpumpValues,
+                heatpumpParams, heatpumpVisibilities);
+        Integer zeit = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEIT, heatpumpValues,
+                heatpumpParams, heatpumpVisibilities);
+        String state = "";
+
+        if (zeile1 != null && zeile1 == 3) {
+            // 3 means error state
+            state = getStateTranslation("ERROR_NrX", error);
+        } else {
+            state = getStateTranslation("HauptMenuStatus_Zeile1", zeile1);
+        }
+
+        var longState = String.format("%s - %s %s - %s", state, getStateTranslation("HauptMenuStatus_Zeile2", zeile2),
+                formatHours(zeit), getStateTranslation("HauptMenuStatus_Zeile3", zeile3));
+
+        handleEventType((State) new StringType(longState), HeatpumpChannel.CHANNEL_HEATPUMP_STATUS);
+    }
+
     private void updateProperties(Integer[] heatpumpValues) {
         String heatpumpType = HeatpumpType.fromCode(heatpumpValues[78]).getName();
 
@@ -207,6 +249,16 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         setProperty("Gateway", transformIpAddress(heatpumpValues[94]));
     }
 
+    private String getStateTranslation(String name, @Nullable Integer option) {
+        if (option == null) {
+            return "";
+        }
+
+        String translation = translationProvider
+                .getText("channel-type.luxtronikheatpump." + name + ".state.option." + option);
+        return translation == null ? "" : translation;
+    }
+
     private void setProperty(String name, String value) {
         LuxtronikHeatpumpHandler handler = (LuxtronikHeatpumpHandler) thing.getHandler();
         if (handler == null) {
@@ -214,5 +266,20 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
             return;
         }
         handler.updateProperty(name, value);
+    }
+
+    private String formatHours(@Nullable Integer value) {
+        String returnValue = "";
+
+        if (value == null) {
+            return returnValue;
+        }
+
+        returnValue += String.format("%02d:", Integer.valueOf(value / 3600));
+        value %= 3600;
+        returnValue += String.format("%02d:", Integer.valueOf(value / 60));
+        value %= 60;
+        returnValue += String.format("%02d", value);
+        return returnValue;
     }
 }

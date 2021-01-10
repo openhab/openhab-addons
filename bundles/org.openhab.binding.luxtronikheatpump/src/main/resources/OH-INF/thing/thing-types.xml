@@ -103,6 +103,7 @@
 			<channel id="HauptMenuStatus_Zeile2" typeId="HauptMenuStatus_Zeile2"/>
 			<channel id="HauptMenuStatus_Zeile3" typeId="HauptMenuStatus_Zeile3"/>
 			<channel id="HauptMenuStatus_Zeit" typeId="HauptMenuStatus_Zeit"/>
+			<channel id="HauptMenuStatus" typeId="HauptMenuStatus"/>
 			<channel id="HauptMenuAHP_Stufe" typeId="HauptMenuAHP_Stufe"/>
 			<channel id="HauptMenuAHP_Temp" typeId="HauptMenuAHP_Temp"/>
 			<channel id="HauptMenuAHP_Zeit" typeId="HauptMenuAHP_Zeit"/>
