@@ -59,6 +59,7 @@ They are all read-only.
 | next_title        | String    | Title of the next event                                                             |
 | next_start        | DateTime  | Start of the next event                                                             |
 | next_end          | DateTime  | End of the next event                                                               |
+| last_update       | DateTime  | The time and date of the last successful update of the calendar                     |
 
 ### Channels for `eventfilter`
 
@@ -131,8 +132,8 @@ String   current_event_name        "current event [%s]"                       <c
 DateTime current_event_until       "current until [%1$tT, %1$tY-%1$tm-%1$td]" <calendar> { channel="icalendar:calendar:deadbeef:current_end" }
 String   next_event_name           "next event [%s]"                          <calendar> { channel="icalendar:calendar:deadbeef:next_title" }
 DateTime next_event_at             "next at [%1$tT, %1$tY-%1$tm-%1$td]"       <calendar> { channel="icalendar:calendar:deadbeef:next_start" }
-String   first_event_name_tomorrow "first event [%s]"                         <calendar> { channel="icalendar:eventfilter:feedd0d0:event_0#title" }
-DateTime first_event_at_tomorrow   "first at [%1$tT, %1$tY-%1$tm-%1$td]"      <calendar> { channel="icalendar:eventfilter:feedd0d0:event_0#begin" }
+String   first_event_name_tomorrow "first event [%s]"                         <calendar> { channel="icalendar:eventfilter:feedd0d0:result_0#title" }
+DateTime first_event_at_tomorrow   "first at [%1$tT, %1$tY-%1$tm-%1$td]"      <calendar> { channel="icalendar:eventfilter:feedd0d0:result_0#begin" }
 ```
 
 Sitemap just showing the current event and the beginning of the next:
@@ -165,6 +166,11 @@ Command tags in a calendar event (in the case that configuration parameter `auth
 BEGIN:Calendar_Test_Switch:ON
 END:Calendar_Test_Switch:OFF
 ```
+
+### Notes for Nextcloud
+
+The `url` should be: `https://<URL_TO_SERVER>/remote.php/dav/calendars/<username>/<calendar_name>?export`, so the `?export` is important to get an `ical` file from the calendar.
+Username and password for the nextcloud account have to be set as well.
 
 ## Breaking changes
 

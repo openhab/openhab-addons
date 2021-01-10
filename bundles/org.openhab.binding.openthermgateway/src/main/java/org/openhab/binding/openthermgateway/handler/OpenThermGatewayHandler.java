@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +88,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
             GatewayCommand gatewayCommand = null;
 
+            if (command instanceof OnOffType) {
+                OnOffType onOff = (OnOffType) command;
+                gatewayCommand = GatewayCommand.parse(code, onOff == OnOffType.ON ? "1" : "0");
+            }
             if (command instanceof QuantityType<?>) {
                 QuantityType<?> quantityType = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
 
@@ -106,6 +111,16 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
                 if (conn != null) {
                     conn.sendCommand(gatewayCommand);
+
+                    if (code == GatewayCommandCode.ControlSetpoint) {
+                        if (gatewayCommand.getMessage().equals("0.0")) {
+                            updateState(
+                                    OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
+                                    UnDefType.UNDEF);
+                        }
+                        updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
+                                OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
+                    }
                 }
             }
         }
@@ -153,7 +168,8 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             for (DataItem dataItem : dataItems) {
                 String channelId = dataItem.getSubject();
 
-                if (!OpenThermGatewayBindingConstants.SUPPORTED_CHANNEL_IDS.contains(channelId)) {
+                if (!OpenThermGatewayBindingConstants.SUPPORTED_CHANNEL_IDS.contains(channelId)
+                        || (dataItem.getFilteredCode() != null && dataItem.getFilteredCode() != message.getCode())) {
                     continue;
                 }
 
@@ -264,6 +280,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 return GatewayCommandCode.TemperatureOutside;
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT:
                 return GatewayCommandCode.SetpointWater;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT:
+                return GatewayCommandCode.ControlSetpoint;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED:
+                return GatewayCommandCode.CentralHeating;
             case OpenThermGatewayBindingConstants.CHANNEL_SEND_COMMAND:
                 return null;
             default:

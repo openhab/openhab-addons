@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import com.hubspot.jinjava.Jinjava;
  *
  */
 @NonNullByDefault
-@Component(property = { "smarthome.transform=JINJA" })
+@Component(property = { "openhab.transform=JINJA" })
 public class JinjaTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(JinjaTransformationService.class);

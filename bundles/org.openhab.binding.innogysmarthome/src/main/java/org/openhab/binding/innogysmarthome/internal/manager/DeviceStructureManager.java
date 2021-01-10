@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class DeviceStructureManager {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceStructureManager.class);
 
-    private final InnogyClient client;
+    private final FullDeviceManager deviceManager;
     private final Map<String, Device> deviceMap;
     private final Map<String, Device> capabilityIdToDeviceMap;
     private String bridgeDeviceId = "";
@@ -54,10 +54,10 @@ public class DeviceStructureManager {
     /**
      * Constructs the {@link DeviceStructureManager}.
      *
-     * @param client the {@link InnogyClient}
+     * @param deviceManager the {@link FullDeviceManager}
      */
-    public DeviceStructureManager(InnogyClient client) {
-        this.client = client;
+    public DeviceStructureManager(FullDeviceManager deviceManager) {
+        this.deviceManager = deviceManager;
         deviceMap = Collections.synchronizedMap(new HashMap<>());
         capabilityIdToDeviceMap = new ConcurrentHashMap<>();
     }
@@ -82,7 +82,7 @@ public class DeviceStructureManager {
     public void refreshDevices() throws IOException, ApiException, AuthenticationException {
         deviceMap.clear();
         capabilityIdToDeviceMap.clear();
-        List<Device> devices = client.getFullDevices();
+        List<Device> devices = deviceManager.getFullDevices();
         for (Device d : devices) {
             handleRefreshedDevice(d);
         }
@@ -98,7 +98,7 @@ public class DeviceStructureManager {
      */
     public void refreshDevice(String deviceId) throws IOException, ApiException, AuthenticationException {
         logger.trace("Refreshing Device with id '{}'", deviceId);
-        Device d = client.getFullDeviceById(deviceId);
+        Device d = deviceManager.getFullDeviceById(deviceId);
         handleRefreshedDevice(d);
     }
 
@@ -155,7 +155,7 @@ public class DeviceStructureManager {
             getDeviceMap().put(device.getId(), device);
         }
 
-        for (String cl : device.getCapabilityLinkList()) {
+        for (String cl : device.getCapabilities()) {
             capabilityIdToDeviceMap.put(Link.getId(cl), device);
         }
     }

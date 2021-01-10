@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -346,32 +346,32 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                             } else if ("%".equals(valParts[1])) {
                                 // channelType = "Number:Percent"; Number:Percent is currently not handled...
                                 channelType = "Number:Dimensionless";
-                                state = new QuantityType<>(bd, SmartHomeUnits.PERCENT);
+                                state = new QuantityType<>(bd, Units.PERCENT);
                             } else if ("Imp".equals(valParts[1])) {
                                 // impulses - no idea how to map this to something useful here?
                                 channelType = "Number";
                                 state = new DecimalType(bd);
                             } else if ("V".equals(valParts[1])) {
                                 channelType = "Number:Voltage";
-                                state = new QuantityType<>(bd, SmartHomeUnits.VOLT);
+                                state = new QuantityType<>(bd, Units.VOLT);
                             } else if ("A".equals(valParts[1])) {
                                 channelType = "Number:Current";
-                                state = new QuantityType<>(bd, SmartHomeUnits.AMPERE);
+                                state = new QuantityType<>(bd, Units.AMPERE);
                             } else if ("Hz".equals(valParts[1])) {
                                 channelType = "Number:Frequency";
-                                state = new QuantityType<>(bd, SmartHomeUnits.HERTZ);
+                                state = new QuantityType<>(bd, Units.HERTZ);
                             } else if ("kW".equals(valParts[1])) {
                                 channelType = "Number:Power";
                                 bd = bd.multiply(new BigDecimal(1000));
-                                state = new QuantityType<>(bd, SmartHomeUnits.WATT);
+                                state = new QuantityType<>(bd, Units.WATT);
                             } else if ("kWh".equals(valParts[1])) {
                                 channelType = "Number:Power";
                                 bd = bd.multiply(new BigDecimal(1000));
-                                state = new QuantityType<>(bd, SmartHomeUnits.KILOWATT_HOUR);
+                                state = new QuantityType<>(bd, Units.KILOWATT_HOUR);
                             } else if ("l/h".equals(valParts[1])) {
                                 channelType = "Number:Volume";
                                 bd = bd.divide(new BigDecimal(60));
-                                state = new QuantityType<>(bd, SmartHomeUnits.LITRE_PER_MINUTE);
+                                state = new QuantityType<>(bd, Units.LITRE_PER_MINUTE);
                             } else {
                                 channelType = "Number";
                                 state = new DecimalType(bd);
@@ -469,8 +469,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     }
                     ChannelType ct = ChannelTypeBuilder
                             .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)
-                            .withDescription("Auto-created for " + shortName)
-                            .withStateDescription(sdb.build().toStateDescription()).build();
+                            .withDescription("Auto-created for " + shortName).withStateDescriptionFragment(sdb.build())
+                            .build();
                     channelTypeProvider.addChannelType(ct);
                     channelBuilder.withType(ct.getUID());
                 } else {

@@ -71,8 +71,7 @@ Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibb
 * Sign in (Tibber user account) and "load" personal token.
 * Copy query from below and paste into the Tibber API Explorer, and run query. 
 * If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
-* Copy HomeId from Tibber API Explorer, without quotation marks, and paste into Paper UI configuration
-
+* Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
 
 ```
 {
@@ -87,16 +86,15 @@ Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibb
 }
 ```
 
-If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds in Paper UI.
-
+If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds.
 
 ## Thing Configuration
 
-When Tibber Binding is installed, Tibber API should be autodiscovered in Paper UI. 
+When Tibber Binding is installed, Tibber API should be auto discovered. 
 
-Retrieve personal token and HomeId from description above, and initialize/start Binding from Paper UI. 
+Retrieve personal token and HomeId from description above, and initialize/start a scan with the binding. 
 
-Tibber API will be autodiscovered if provided input is correct.
+Tibber API will be auto discovered if provided input is correct.
 
 
 ## Full Example
@@ -126,11 +124,11 @@ Number:Power               TibberAPILiveMaxPower                 "Max Power Cons
 Number:ElectricPotential   TibberAPILiveVoltage1                 "Live Voltage Phase 1 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage1"}
 Number:ElectricPotential   TibberAPILiveVoltage2                 "Live Voltage Phase 2 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage2"}
 Number:ElectricPotential   TibberAPILiveVoltage3                 "Live Voltage Phase 3 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage3"}
-Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current Phase 1 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current1"}
-Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current2"}
-Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current3"}
+Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current Phase 1 [A]"                  {channel="tibber:tibberapi:7cfae492:live_current1"}
+Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [A]"                  {channel="tibber:tibberapi:7cfae492:live_current2"}
+Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [A]"                  {channel="tibber:tibberapi:7cfae492:live_current3"}
 Number:Power               TibberAPILivePowerProduction          "Live Power Production [W]"                 {channel="tibber:tibberapi:7cfae492:live_powerProduction"}
 Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [W]"                  {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
-Number:Power               TibberAPILiveMaxPowerproduction       "Power consumption/production"              {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
+Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [W]"                  {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
 Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
 ```

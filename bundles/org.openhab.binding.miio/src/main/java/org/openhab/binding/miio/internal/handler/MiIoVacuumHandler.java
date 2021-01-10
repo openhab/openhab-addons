@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -97,15 +97,13 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private ExpiringCache<String> map;
     private String lastHistoryId = "";
     private String lastMap = "";
-    private CloudConnector cloudConnector;
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry) {
-        super(thing, miIoDatabaseWatchService);
-        this.cloudConnector = cloudConnector;
+        super(thing, miIoDatabaseWatchService, cloudConnector);
         this.channelTypeRegistry = channelTypeRegistry;
         mapChannelUid = new ChannelUID(thing.getUID(), CHANNEL_VACUUM_MAP);
         status = new ExpiringCache<>(CACHE_EXPIRY, () -> {
@@ -163,6 +161,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
+        updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
     }
 
     @Override
@@ -180,6 +179,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return;
         }
+        if (handleCommandsChannels(channelUID, command)) {
+            return;
+        }
         if (channelUID.getId().equals(CHANNEL_VACUUM)) {
             if (command instanceof OnOffType) {
                 if (command.equals(OnOffType.ON)) {
@@ -188,7 +190,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     return;
                 } else {
                     sendCommand(MiIoCommand.STOP_VACUUM);
-                    scheduler.schedule(() -> {
+                    miIoScheduler.schedule(() -> {
                         sendCommand(MiIoCommand.CHARGE);
                         forceStatusUpdate();
                     }, 2000, TimeUnit.MILLISECONDS);
@@ -205,7 +207,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 sendCommand(MiIoCommand.PAUSE);
             } else if (command.toString().equals("dock")) {
                 sendCommand(MiIoCommand.STOP_VACUUM);
-                scheduler.schedule(() -> {
+                miIoScheduler.schedule(() -> {
                     sendCommand(MiIoCommand.CHARGE);
                     forceStatusUpdate();
                 }, 2000, TimeUnit.MILLISECONDS);
@@ -226,9 +228,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
-        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()) {
+        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
+                && !command.toString().contentEquals("-")) {
             sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
-            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), UnDefType.UNDEF);
+            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
             forceStatusUpdate();
             return;
         }
@@ -243,14 +246,13 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             sendCommand(MiIoCommand.CONSUMABLES_RESET, "[" + command.toString() + "]");
             updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         }
-        if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString()), command.toString());
-        }
     }
 
     private void forceStatusUpdate() {
         status.invalidateValue();
-        status.getValue();
+        miIoScheduler.schedule(() -> {
+            status.getValue();
+        }, 3000, TimeUnit.MILLISECONDS);
     }
 
     private void safeUpdateState(String channelID, @Nullable Integer state) {
@@ -270,7 +272,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (statusInfo.getCleanTime() != null) {
             updateState(CHANNEL_CLEAN_TIME,
-                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime()), SmartHomeUnits.MINUTE));
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime()), Units.MINUTE));
         }
         safeUpdateState(CHANNEL_DND_ENABLED, statusInfo.getDndEnabled());
 
@@ -350,20 +352,20 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         int sideBrush = consumablesData.get("side_brush_work_time").getAsInt();
         int filter = consumablesData.get("filter_work_time").getAsInt();
         int sensor = consumablesData.get("sensor_dirty_time").getAsInt();
-        updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_MAIN_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(mainBrush, ConsumablesType.MAIN_BRUSH)));
-        updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_SIDE_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(sideBrush, ConsumablesType.SIDE_BRUSH)));
-        updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(filter, ConsumablesType.FILTER), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(filter, ConsumablesType.FILTER), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(filter, ConsumablesType.FILTER)));
-        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(sensor, ConsumablesType.SENSOR)));
         return true;
@@ -382,7 +384,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean updateHistory(JsonArray historyData) {
         logger.trace("Cleaning history data: {}", historyData.toString());
         updateState(CHANNEL_HISTORY_TOTALTIME,
-                new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), SmartHomeUnits.MINUTE));
+                new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), Units.MINUTE));
         updateState(CHANNEL_HISTORY_TOTALAREA,
                 new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
         updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
@@ -414,7 +416,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         historyRecord.addProperty("finished", finished);
         updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(startTime));
         updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(endTime));
-        updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, SmartHomeUnits.MINUTE));
+        updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
         updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(area, SIUnits.SQUARE_METRE));
         updateState(CHANNEL_HISTORY_ERROR, new DecimalType(error));
         updateState(CHANNEL_HISTORY_FINISH, new DecimalType(finished));
@@ -521,12 +523,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     String mapresponse = response.getResult().getAsJsonArray().get(0).getAsString();
                     if (!mapresponse.contentEquals("retry") && !mapresponse.contentEquals(lastMap)) {
                         lastMap = mapresponse;
-                        scheduler.submit(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)));
+                        miIoScheduler.submit(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)));
                     }
                 }
-                break;
-            case UNKNOWN:
-                updateState(CHANNEL_COMMAND, new StringType(response.getResponse().toString()));
                 break;
             default:
                 break;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.remoteopenhab.internal.rest;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +38,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabChannelTriggerEvent;
@@ -128,7 +131,7 @@ public class RemoteopenhabRestClient {
 
     public void tryApi() throws RemoteopenhabException {
         try {
-            String jsonResponse = executeUrl(HttpMethod.GET, getRestUrl(), "application/json", null, null);
+            String jsonResponse = executeGetUrl(getRestUrl(), "application/json", false);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
@@ -149,10 +152,14 @@ public class RemoteopenhabRestClient {
         }
     }
 
-    public List<RemoteopenhabItem> getRemoteItems() throws RemoteopenhabException {
+    public List<RemoteopenhabItem> getRemoteItems(@Nullable String fields) throws RemoteopenhabException {
         try {
             String url = String.format("%s?recursive=false", getRestApiUrl("items"));
-            String jsonResponse = executeUrl(HttpMethod.GET, url, "application/json", null, null);
+            if (fields != null) {
+                url += "&fields=" + fields;
+            }
+            boolean asyncReading = fields == null || Arrays.asList(fields.split(",")).contains("state");
+            String jsonResponse = executeGetUrl(url, "application/json", asyncReading);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
@@ -166,7 +173,7 @@ public class RemoteopenhabRestClient {
     public String getRemoteItemState(String itemName) throws RemoteopenhabException {
         try {
             String url = String.format("%s/%s/state", getRestApiUrl("items"), itemName);
-            return executeUrl(HttpMethod.GET, url, "text/plain", null, null);
+            return executeGetUrl(url, "text/plain", true);
         } catch (RemoteopenhabException e) {
             throw new RemoteopenhabException("Failed to get the state of remote item " + itemName
                     + " using the items REST API: " + e.getMessage(), e);
@@ -177,7 +184,7 @@ public class RemoteopenhabRestClient {
         try {
             String url = String.format("%s/%s", getRestApiUrl("items"), itemName);
             InputStream stream = new ByteArrayInputStream(command.toFullString().getBytes(StandardCharsets.UTF_8));
-            executeUrl(HttpMethod.POST, url, "application/json", stream, "text/plain");
+            executeUrl(HttpMethod.POST, url, "application/json", stream, "text/plain", false);
             stream.close();
         } catch (RemoteopenhabException | IOException e) {
             throw new RemoteopenhabException("Failed to send command to the remote item " + itemName
@@ -187,7 +194,7 @@ public class RemoteopenhabRestClient {
 
     public List<RemoteopenhabThing> getRemoteThings() throws RemoteopenhabException {
         try {
-            String jsonResponse = executeUrl(HttpMethod.GET, getRestApiUrl("things"), "application/json", null, null);
+            String jsonResponse = executeGetUrl(getRestApiUrl("things"), "application/json", false);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
@@ -201,7 +208,7 @@ public class RemoteopenhabRestClient {
     public RemoteopenhabThing getRemoteThing(String uid) throws RemoteopenhabException {
         try {
             String url = String.format("%s/%s", getRestApiUrl("things"), uid);
-            String jsonResponse = executeUrl(HttpMethod.GET, url, "application/json", null, null);
+            String jsonResponse = executeGetUrl(url, "application/json", false);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
@@ -356,14 +363,20 @@ public class RemoteopenhabRestClient {
                 case "ItemStateEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "state");
                     payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
-                    itemsListeners
-                            .forEach(listener -> listener.onItemStateEvent(itemName, payload.type, payload.value));
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, false));
+                    break;
+                case "ItemStateChangedEvent":
+                    itemName = extractItemNameFromTopic(event.topic, event.type, "statechanged");
+                    payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, true));
                     break;
                 case "GroupItemStateChangedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "statechanged");
                     payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
-                    itemsListeners
-                            .forEach(listener -> listener.onItemStateEvent(itemName, payload.type, payload.value));
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, false));
                     break;
                 case "ItemAddedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "added");
@@ -411,7 +424,6 @@ public class RemoteopenhabRestClient {
                             .forEach(listener -> listener.onChannelTriggered(triggerEvent.channel, triggerEvent.event));
                     break;
                 case "ItemStatePredictedEvent":
-                case "ItemStateChangedEvent":
                 case "ItemCommandEvent":
                 case "ThingStatusInfoEvent":
                 case "ThingUpdatedEvent":
@@ -454,8 +466,12 @@ public class RemoteopenhabRestClient {
         return parts[2];
     }
 
+    public String executeGetUrl(String url, String acceptHeader, boolean asyncReading) throws RemoteopenhabException {
+        return executeUrl(HttpMethod.GET, url, acceptHeader, null, null, asyncReading);
+    }
+
     public String executeUrl(HttpMethod httpMethod, String url, String acceptHeader, @Nullable InputStream content,
-            @Nullable String contentType) throws RemoteopenhabException {
+            @Nullable String contentType, boolean asyncReading) throws RemoteopenhabException {
         final Request request = httpClient.newRequest(url).method(httpMethod).timeout(REQUEST_TIMEOUT,
                 TimeUnit.MILLISECONDS);
 
@@ -473,15 +489,34 @@ public class RemoteopenhabRestClient {
         }
 
         try {
-            ContentResponse response = request.send();
-            int statusCode = response.getStatus();
-            if (statusCode >= HttpStatus.BAD_REQUEST_400) {
-                String statusLine = statusCode + " " + response.getReason();
-                throw new RemoteopenhabException("HTTP call failed: " + statusLine);
+            if (asyncReading) {
+                InputStreamResponseListener listener = new InputStreamResponseListener();
+                request.send(listener);
+                Response response = listener.get(5, TimeUnit.SECONDS);
+                int statusCode = response.getStatus();
+                if (statusCode != HttpStatus.OK_200) {
+                    response.abort(new Exception(response.getReason()));
+                    String statusLine = statusCode + " " + response.getReason();
+                    throw new RemoteopenhabException("HTTP call failed: " + statusLine);
+                }
+                ByteArrayOutputStream responseContent = new ByteArrayOutputStream();
+                try (InputStream input = listener.getInputStream()) {
+                    input.transferTo(responseContent);
+                }
+                return new String(responseContent.toByteArray(), StandardCharsets.UTF_8.name());
+            } else {
+                ContentResponse response = request.send();
+                int statusCode = response.getStatus();
+                if (statusCode >= HttpStatus.BAD_REQUEST_400) {
+                    String statusLine = statusCode + " " + response.getReason();
+                    throw new RemoteopenhabException("HTTP call failed: " + statusLine);
+                }
+                String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
+                        : StandardCharsets.UTF_8.name();
+                return new String(response.getContent(), encoding);
             }
-            String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
-                    : StandardCharsets.UTF_8.name();
-            return new String(response.getContent(), encoding);
+        } catch (RemoteopenhabException e) {
+            throw e;
         } catch (Exception e) {
             throw new RemoteopenhabException(e);
         }

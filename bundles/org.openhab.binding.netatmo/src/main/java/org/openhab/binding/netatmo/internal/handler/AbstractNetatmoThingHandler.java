@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.openhab.binding.netatmo.internal.channelhelper.RadioHelper;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -63,18 +63,17 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
-    public static final Unit<Dimensionless> API_HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
+    public static final Unit<Dimensionless> API_HUMIDITY_UNIT = Units.PERCENT;
     public static final Unit<Pressure> API_PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
     public static final Unit<Speed> API_WIND_SPEED_UNIT = SIUnits.KILOMETRE_PER_HOUR;
-    public static final Unit<Angle> API_WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
+    public static final Unit<Angle> API_WIND_DIRECTION_UNIT = Units.DEGREE_ANGLE;
     public static final Unit<Length> API_RAIN_UNIT = MILLI(SIUnits.METRE);
-    public static final Unit<Dimensionless> API_CO2_UNIT = SmartHomeUnits.PARTS_PER_MILLION;
-    public static final Unit<Dimensionless> API_NOISE_UNIT = SmartHomeUnits.DECIBEL;
+    public static final Unit<Dimensionless> API_CO2_UNIT = Units.PARTS_PER_MILLION;
+    public static final Unit<Dimensionless> API_NOISE_UNIT = Units.DECIBEL;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
 
     protected final TimeZoneProvider timeZoneProvider;
-    protected final MeasurableChannels measurableChannels = new MeasurableChannels();
     private @Nullable RadioHelper radioHelper;
     private @Nullable BatteryHelper batteryHelper;
     protected @Nullable Configuration config;
@@ -123,9 +122,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     protected abstract void initializeThing();
 
     protected State getNAThingProperty(String channelId) {
-        Optional<State> result;
-
-        result = getBatteryHelper().flatMap(helper -> helper.getNAThingProperty(channelId));
+        Optional<State> result = getBatteryHelper().flatMap(helper -> helper.getNAThingProperty(channelId));
         if (result.isPresent()) {
             return result.get();
         }
@@ -133,9 +130,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         if (result.isPresent()) {
             return result.get();
         }
-        result = measurableChannels.getNAThingProperty(channelId);
-
-        return result.orElse(UnDefType.UNDEF);
+        return UnDefType.UNDEF;
     }
 
     protected void updateChannels() {
@@ -149,15 +144,13 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     private void updateDataChannels() {
-        getThing().getChannels().stream().filter(channel -> !channel.getKind().equals(ChannelKind.TRIGGER))
-                .forEach(channel -> {
+        getThing().getChannels().stream()
+                .filter(channel -> !ChannelKind.TRIGGER.equals(channel.getKind()) && isLinked(channel.getUID()))
+                .map(channel -> channel.getUID()).forEach(this::updateChannel);
+    }
 
-                    String channelId = channel.getUID().getId();
-                    if (isLinked(channelId)) {
-                        State state = getNAThingProperty(channelId);
-                        updateState(channel.getUID(), state);
-                    }
-                });
+    private void updateChannel(ChannelUID channelUID) {
+        updateState(channelUID, getNAThingProperty(channelUID.getId()));
     }
 
     /**
@@ -165,8 +158,8 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
      * (when a channel is triggered, a rule can get all other information from the updated non-trigger channels)
      */
     private void triggerEventChannels() {
-        getThing().getChannels().stream().filter(channel -> channel.getKind().equals(ChannelKind.TRIGGER))
-                .forEach(channel -> triggerChannelIfRequired(channel.getUID().getId()));
+        getThing().getChannels().stream().filter(channel -> ChannelKind.TRIGGER.equals(channel.getKind()))
+                .map(channel -> channel.getUID().getId()).forEach(this::triggerChannelIfRequired);
     }
 
     /**
@@ -178,22 +171,10 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-        measurableChannels.addChannel(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        super.channelUnlinked(channelUID);
-        measurableChannels.removeChannel(channelUID);
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
-            logger.debug("Refreshing {}", channelUID);
-            updateChannels();
+            logger.debug("Refreshing '{}'", channelUID);
+            updateChannel(channelUID);
         }
     }
 

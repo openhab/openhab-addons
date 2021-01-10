@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,7 +88,7 @@ public class NeatoAccountDiscoveryService extends AbstractDiscoveryService {
             return;
         }
 
-        logger.debug("addThing(): Adding new Neato unit {} to the smarthome inbox", robot.getName());
+        logger.debug("addThing(): Adding new Neato unit {} to the inbox", robot.getName());
 
         Map<String, Object> properties = new HashMap<>();
         String serial = robot.getSerial();

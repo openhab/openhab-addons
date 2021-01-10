@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.binding.smartmeter.internal.MeterValue;
 import org.openhab.binding.smartmeter.internal.ObisCode;
 import org.openhab.binding.smartmeter.internal.conformity.negate.NegateHandler;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
@@ -69,7 +69,7 @@ public enum Conformity {
                 String channelObis = channel.getProperties().get(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS);
                 if (channelObis != null) {
                     MeterValue<?> value = device.getMeterValue(channelObis);
-                    if (value != null && SmartHomeUnits.WATT.isCompatible(value.getUnit())) {
+                    if (value != null && Units.WATT.isCompatible(value.getUnit())) {
                         for (String obis : device.getObisCodes()) {
                             try {
                                 MeterValue<?> otherValue = device.getMeterValue(obis);

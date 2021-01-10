@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,15 @@ import org.openhab.binding.modbus.internal.AtomicStampedValue;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
+import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusConstants;
+import org.openhab.core.io.transport.modbus.ModbusFailureCallback;
+import org.openhab.core.io.transport.modbus.ModbusReadCallback;
+import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -33,15 +42,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.io.transport.modbus.AsyncModbusFailure;
-import org.openhab.io.transport.modbus.AsyncModbusReadResult;
-import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusConstants;
-import org.openhab.io.transport.modbus.ModbusFailureCallback;
-import org.openhab.io.transport.modbus.ModbusReadCallback;
-import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.PollTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

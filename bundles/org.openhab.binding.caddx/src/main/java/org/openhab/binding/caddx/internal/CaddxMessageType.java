@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -636,10 +636,10 @@ public enum CaddxMessageType {
             new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "Message number", false),
 
             // Byte 2
-            new CaddxProperty("keypad_address", 1, 2, 0, 0, CaddxPropertyType.INT, "Keypad address", false),
+            new CaddxProperty("", 1, 2, 0, 0, CaddxPropertyType.INT, "Keypad address", false),
 
             // Byte 3
-            new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "Key value", false)),
+            new CaddxProperty("keypad_key_pressed", 1, 1, 0, 0, CaddxPropertyType.INT, "Key value", false)),
 
     PROGRAM_DATA_REPLY(0x10, null, 13, "Program Data Reply",
             "This message will contain a system device’s buss address, logical location, and program data that was previously requested (via Program Data Request (3Ch)).",

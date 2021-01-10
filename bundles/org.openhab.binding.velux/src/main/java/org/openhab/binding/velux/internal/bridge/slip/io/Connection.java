@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.velux.internal.bridge.slip.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
-import org.openhab.binding.velux.internal.bridge.VeluxBridgeInstance;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
+import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-public class Connection {
+public class Connection implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     /*
@@ -76,8 +79,10 @@ public class Connection {
      * @throws java.net.ConnectException in case of unrecoverable communication failures.
      * @throws java.io.IOException in case of continuous communication I/O failures.
      */
-    public synchronized byte[] io(VeluxBridgeInstance bridgeInstance, byte[] request)
+    public synchronized byte[] io(VeluxBridgeHandler bridgeInstance, byte[] request)
             throws ConnectException, IOException {
+        VeluxBridgeConfiguration cfg = bridgeInstance.veluxBridgeConfiguration();
+        host = cfg.ipAddress;
         logger.trace("io() on {}: called.", host);
 
         lastCommunicationInMSecs = System.currentTimeMillis();
@@ -89,15 +94,11 @@ public class Connection {
         do {
             try {
                 if (!connectivity.isReady()) {
+                    // dispose old connectivity class instances (if any)
+                    resetConnection();
                     try {
-                        // From configuration
-                        host = bridgeInstance.veluxBridgeConfiguration().ipAddress;
-                        int port = bridgeInstance.veluxBridgeConfiguration().tcpPort;
-                        int timeoutMsecs = bridgeInstance.veluxBridgeConfiguration().timeoutMsecs;
-
-                        logger.trace("io() on {}: connecting to port {}", host, port);
-                        connectivity = new SSLconnection(host, port);
-                        connectivity.setTimeout(timeoutMsecs);
+                        logger.trace("io() on {}: connecting to port {}", cfg.ipAddress, cfg.tcpPort);
+                        connectivity = new SSLconnection(bridgeInstance);
                     } catch (ConnectException ce) {
                         throw new ConnectException(String
                                 .format("raised a non-recoverable error during connection setup: %s", ce.getMessage()));
@@ -107,7 +108,8 @@ public class Connection {
                         continue;
                     }
                 }
-                if (request.length > 0) {
+                boolean sending = request.length > 0;
+                if (sending) {
                     try {
                         if (logger.isTraceEnabled()) {
                             logger.trace("io() on {}: sending packet with {} bytes: {}", host, request.length,
@@ -122,22 +124,15 @@ public class Connection {
                         logger.info("io() on {}: raised an error during sending: {}.", host, e.getMessage());
                         break;
                     }
-
-                    // Give the bridge some time to breathe
-                    if (bridgeInstance.veluxBridgeConfiguration().timeoutMsecs > 0) {
-                        logger.trace("io() on {}: wait time {} msecs.", host,
-                                bridgeInstance.veluxBridgeConfiguration().timeoutMsecs);
-                        try {
-                            Thread.sleep(bridgeInstance.veluxBridgeConfiguration().timeoutMsecs);
-                        } catch (InterruptedException ie) {
-                            logger.trace("io() on {}: wait interrupted.", host);
-                        }
-                    }
                 }
                 byte[] packet = new byte[0];
                 logger.trace("io() on {}: receiving bytes.", host);
                 if (connectivity.isReady()) {
                     packet = connectivity.receive();
+                    // in receive-only mode, a zero length response packet is NOT a timeout
+                    if (sending && (packet.length == 0)) {
+                        throw new SocketTimeoutException("read time out after send");
+                    }
                 }
                 if (logger.isTraceEnabled()) {
                     logger.trace("io() on {}: received packet with {} bytes: {}", host, packet.length,
@@ -168,9 +163,7 @@ public class Connection {
                     bridgeInstance.veluxBridgeConfiguration().retries);
         }
         logger.trace("io() on {}: shutting down connection.", host);
-        if (connectivity.isReady()) {
-            connectivity.close();
-        }
+        resetConnection();
         logger.trace("io() on {}: finishes with failure by throwing exception.", host);
         throw lastIOE;
     }
@@ -192,17 +185,13 @@ public class Connection {
      */
     public synchronized boolean isMessageAvailable() {
         logger.trace("isMessageAvailable() on {}: called.", host);
-        try {
-            if ((connectivity.isReady()) && (connectivity.available())) {
-                logger.trace("isMessageAvailable() on {}: there is a message waiting.", host);
-                return true;
-            }
-        } catch (IOException e) {
-            logger.trace("isMessageAvailable() on {}: lost connection due to {}.", host, e.getMessage());
-            resetConnection();
+        if (!connectivity.isReady()) {
+            logger.trace("isMessageAvailable() on {}: lost connection, there may be messages", host);
+            return false;
         }
-        logger.trace("isMessageAvailable() on {}: no message waiting.", host);
-        return false;
+        boolean result = connectivity.available();
+        logger.trace("isMessageAvailable() on {}: there are {}messages waiting.", host, result ? "" : "no ");
+        return result;
     }
 
     /**
@@ -236,5 +225,10 @@ public class Connection {
             logger.info("resetConnection() on {}: raised an error during connection close: {}.", host, e.getMessage());
         }
         logger.trace("resetConnection() on {}: done.", host);
+    }
+
+    @Override
+    public void close() throws IOException {
+        resetConnection();
     }
 }

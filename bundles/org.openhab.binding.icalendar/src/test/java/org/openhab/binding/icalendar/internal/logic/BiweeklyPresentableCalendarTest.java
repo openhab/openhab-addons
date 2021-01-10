@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -44,12 +46,15 @@ public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar;
     private AbstractPresentableCalendar calendar2;
     private AbstractPresentableCalendar calendar3;
+    private AbstractPresentableCalendar calendar_issue9647;
 
     @BeforeEach
     public void setUp() throws IOException, CalendarException {
         calendar = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test.ics"));
         calendar2 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test2.ics"));
         calendar3 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test3.ics"));
+        calendar_issue9647 = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issue9647.ics"));
     }
 
     /**
@@ -151,6 +156,7 @@ public class BiweeklyPresentableCalendarTest {
      * This test checks for Events that have just begun or ended, and if so it checks for Command Tags
      * and checks if these tags are valid
      */
+    @SuppressWarnings("null")
     @Test
     public void testCommandTagCode() {
         List<Event> events = null;
@@ -584,5 +590,20 @@ public class BiweeklyPresentableCalendarTest {
         List<Event> realFilteredEvents6 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-15T06:00:00Z"),
                 Instant.parse("2019-12-31T00:00:00Z"), null, 3);
         assertEquals(0, realFilteredEvents6.size());
+
+        List<Event> realFilteredEvents7 = calendar_issue9647.getFilteredEventsBetween(
+                LocalDate.parse("2021-01-01").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.parse("2021-01-02").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
+        assertEquals(0, realFilteredEvents7.size());
+
+        Event[] expectedFilteredEvents8 = new Event[] {
+                new Event("Restabfall", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), ""),
+                new Event("Gelbe Tonne", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "") };
+        List<Event> realFilteredEvents8 = calendar_issue9647.getFilteredEventsBetween(
+                LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
+        assertArrayEquals(expectedFilteredEvents8, realFilteredEvents8.toArray(new Event[] {}));
     }
 }

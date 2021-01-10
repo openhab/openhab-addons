@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,11 @@ import static java.util.stream.Collectors.joining;
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.*;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,8 @@ import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyFo
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
+import org.openhab.binding.openweathermap.internal.dto.onecall.OpenWeatherMapOneCallAPIData;
+import org.openhab.binding.openweathermap.internal.dto.onecallhist.OpenWeatherMapOneCallHistAPIData;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
 import org.openhab.core.cache.ByteArrayFileCache;
 import org.openhab.core.cache.ExpiringCacheMap;
@@ -73,6 +76,8 @@ public class OpenWeatherMapConnection {
     private static final String PARAM_LON = "lon";
     private static final String PARAM_LANG = "lang";
     private static final String PARAM_FORECAST_CNT = "cnt";
+    private static final String PARAM_HISTORY_DATE = "dt";
+    private static final String PARAM_EXCLUDE = "exclude";
 
     // Current weather data (see https://openweathermap.org/current)
     private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather";
@@ -85,6 +90,9 @@ public class OpenWeatherMapConnection {
     private static final String UVINDEX_FORECAST_URL = "https://api.openweathermap.org/data/2.5/uvi/forecast";
     // Weather icons (see https://openweathermap.org/weather-conditions)
     private static final String ICON_URL = "https://openweathermap.org/img/w/%s.png";
+    // One Call API (see https://openweathermap.org/api/one-call-api )
+    private static final String ONECALL_URL = "https://api.openweathermap.org/data/2.5/onecall";
+    private static final String ONECALL_HISTORY_URL = "https://api.openweathermap.org/data/2.5/onecall/timemachine";
 
     private final OpenWeatherMapAPIHandler handler;
     private final HttpClient httpClient;
@@ -227,7 +235,7 @@ public class OpenWeatherMapConnection {
         if (IMAGE_CACHE.containsKey(url)) {
             try {
                 return new RawType(IMAGE_CACHE.get(url), PNG_CONTENT_TYPE);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LoggerFactory.getLogger(OpenWeatherMapConnection.class)
                         .trace("Failed to download the content of URL '{}'", url, e);
             }
@@ -243,6 +251,65 @@ public class OpenWeatherMapConnection {
 
     private static @Nullable RawType downloadWeatherIcon(String url) {
         return HttpUtil.downloadImage(url);
+    }
+
+    /**
+     * Get Weather data from the OneCall API for the given location. See https://openweathermap.org/api/one-call-api for
+     * details
+     *
+     * @param location location represented as {@link PointType}
+     * @param excludeMinutely if true, will not fetch minutely forecast data from the server
+     * @param excludeHourly if true, will not fethh hourly forecast data from the server
+     * @param excludeDaily if true, will not fetch hourly forecast data from the server
+     * @return
+     * @throws JsonSyntaxException
+     * @throws OpenWeatherMapCommunicationException
+     * @throws OpenWeatherMapConfigurationException
+     */
+    public synchronized @Nullable OpenWeatherMapOneCallAPIData getOneCallAPIData(@Nullable PointType location,
+            boolean excludeMinutely, boolean excludeHourly, boolean excludeDaily)
+            throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
+        Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
+        StringBuilder exclude = new StringBuilder("");
+        if (excludeMinutely) {
+            exclude.append("minutely");
+        }
+        if (excludeHourly) {
+            exclude.append(exclude.length() > 0 ? "," : "").append("hourly");
+        }
+        if (excludeDaily) {
+            exclude.append(exclude.length() > 0 ? "," : "").append("daily");
+        }
+        logger.debug("Exclude: '{}'", exclude);
+        if (exclude.length() > 0) {
+            params.put(PARAM_EXCLUDE, exclude.toString());
+        }
+        return gson.fromJson(getResponseFromCache(buildURL(ONECALL_URL, params)), OpenWeatherMapOneCallAPIData.class);
+    }
+
+    /**
+     * Get the historical weather data from the OneCall API for the given location and the given number of days in the
+     * past.
+     * As of now, OpenWeatherMap supports this function for up to 5 days in the past. However, this may change in the
+     * future,
+     * so we don't enforce this limit here. See https://openweathermap.org/api/one-call-api for details
+     *
+     * @param location location represented as {@link PointType}
+     * @param days number of days in the past, relative to the current time.
+     * @return
+     * @throws JsonSyntaxException
+     * @throws OpenWeatherMapCommunicationException
+     * @throws OpenWeatherMapConfigurationException
+     */
+    public synchronized @Nullable OpenWeatherMapOneCallHistAPIData getOneCallHistAPIData(@Nullable PointType location,
+            int days)
+            throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
+        Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
+        // the API requests the history as timestamp in Unix time format.
+        params.put(PARAM_HISTORY_DATE,
+                Long.toString(ZonedDateTime.now(ZoneId.of("UTC")).minusDays(days).toEpochSecond()));
+        return gson.fromJson(getResponseFromCache(buildURL(ONECALL_HISTORY_URL, params)),
+                OpenWeatherMapOneCallHistAPIData.class);
     }
 
     private Map<String, String> getRequestParams(OpenWeatherMapAPIConfiguration config, @Nullable PointType location) {

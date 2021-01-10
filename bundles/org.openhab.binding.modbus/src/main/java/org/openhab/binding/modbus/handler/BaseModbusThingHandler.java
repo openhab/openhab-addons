@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,20 +18,19 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusFailureCallback;
+import org.openhab.core.io.transport.modbus.ModbusReadCallback;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusWriteCallback;
+import org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint;
+import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusFailureCallback;
-import org.openhab.io.transport.modbus.ModbusReadCallback;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusWriteCallback;
-import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
-import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
  * This is a convenience class to interact with the Thing's {@link ModbusCommunicationInterface}.
@@ -43,23 +42,51 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 public abstract class BaseModbusThingHandler extends BaseThingHandler {
     private List<PollTask> periodicPollers = Collections.synchronizedList(new ArrayList<>());
     private List<Future<?>> oneTimePollers = Collections.synchronizedList(new ArrayList<>());
-    private volatile boolean initialized;
 
     public BaseModbusThingHandler(Thing thing) {
         super(thing);
     }
 
     /**
-     * This method must be invoked in the base class' initialize() method before any other initialization is done.
-     * It will throw an unchecked exception if the {@link ModbusCommunicationInterface} is not accessible (fail-fast).
-     * This prevents any further initialization of the Thing. The framework will set the ThingStatus to
-     * HANDLER_INITIALIZING_ERROR and display the exception's message.
+     * This method is called when the Thing is being initialized, but only if the Modbus Bridge is configured correctly.
+     * The code that normally goes into `BaseThingHandler.initialize()` like configuration reading and validation goes
+     * here.
      */
-    @Override
-    public void initialize() {
-        getModbus();
+    public abstract void modbusInitialize();
 
-        initialized = true;
+    @Override
+    public final void initialize() {
+        try {
+            // check if the Bridge is configured correctly (fail-fast)
+            getModbus();
+            getSlaveId();
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
+        }
+
+        modbusInitialize();
+    }
+
+    /**
+     * Get Slave ID, also called as unit id, represented by the thing
+     *
+     * @return slave id represented by this thing handler
+     */
+    public int getSlaveId() {
+        try {
+            return getBridgeHandler().getSlaveId();
+        } catch (EndpointNotInitializedException e) {
+            throw new IllegalStateException("Bridge not initialized");
+        }
+    }
+
+    /**
+     * Return true if auto discovery is enabled for this endpoint
+     *
+     * @return boolean true if the discovery is enabled
+     */
+    public boolean isDiscoveryEnabled() {
+        return getBridgeHandler().isDiscoveryEnabled();
     }
 
     /**
@@ -79,8 +106,6 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
     public PollTask registerRegularPoll(ModbusReadRequestBlueprint request, long pollPeriodMillis,
             long initialDelayMillis, ModbusReadCallback resultCallback,
             ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
-        checkInitialized();
-
         PollTask task = getModbus().registerRegularPoll(request, pollPeriodMillis, initialDelayMillis, resultCallback,
                 failureCallback);
         periodicPollers.add(task);
@@ -96,6 +121,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * @param task poll task to unregister
      * @return whether poll task was unregistered. Poll task is not unregistered in case of unexpected errors or
      *         in the case where the poll task is not registered in the first place
+     * @throws IllegalStateException when this communication has been closed already
      */
     public boolean unregisterRegularPoll(PollTask task) {
         periodicPollers.remove(task);
@@ -114,8 +140,6 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      */
     public Future<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback resultCallback,
             ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
-        checkInitialized();
-
         Future<?> future = getModbus().submitOneTimePoll(request, resultCallback, failureCallback);
         oneTimePollers.add(future);
         oneTimePollers.removeIf(Future::isDone);
@@ -135,8 +159,6 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      */
     public Future<?> submitOneTimeWrite(ModbusWriteRequestBlueprint request, ModbusWriteCallback resultCallback,
             ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback) {
-        checkInitialized();
-
         Future<?> future = getModbus().submitOneTimeWrite(request, resultCallback, failureCallback);
         oneTimePollers.add(future);
         oneTimePollers.removeIf(Future::isDone);
@@ -144,57 +166,33 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
         return future;
     }
 
-    /**
-     * Get endpoint associated with this communication interface
-     *
-     * @return modbus slave endpoint
-     */
-    public ModbusSlaveEndpoint getEndpoint() {
-        return getModbus().getEndpoint();
+    private ModbusCommunicationInterface getModbus() {
+        ModbusCommunicationInterface communicationInterface = getBridgeHandler().getCommunicationInterface();
+
+        if (communicationInterface == null) {
+            throw new IllegalStateException("Bridge not initialized");
+        } else {
+            return communicationInterface;
+        }
     }
 
-    /**
-     * Retrieves the {@link ModbusCommunicationInterface} and does some validity checking.
-     * Sets the ThingStatus to offline if it couldn't be retrieved and throws an unchecked exception.
-     *
-     * The unchecked exception should not be caught by the implementing class, as the initialization of the Thing
-     * already fails if the {@link ModbusCommunicationInterface} cannot be retrieved.
-     *
-     * @throws IllegalStateException if the {@link ModbusCommunicationInterface} couldn't be retrieved.
-     * @return the {@link ModbusCommunicationInterface}
-     */
-    private ModbusCommunicationInterface getModbus() {
+    private ModbusEndpointThingHandler getBridgeHandler() {
         try {
             Bridge bridge = getBridge();
             if (bridge == null) {
-                throw new IllegalStateException("Thing has no Bridge set");
+                throw new IllegalStateException("No Bridge configured");
             }
 
             BridgeHandler handler = bridge.getHandler();
 
             if (handler instanceof ModbusEndpointThingHandler) {
-                ModbusCommunicationInterface communicationInterface = ((ModbusEndpointThingHandler) handler)
-                        .getCommunicationInterface();
-
-                if (communicationInterface == null) {
-                    throw new IllegalStateException("Failed to retrieve Modbus communication interface");
-                } else {
-                    return communicationInterface;
-                }
+                return (ModbusEndpointThingHandler) handler;
             } else {
-                throw new IllegalStateException("Bridge is not a Modbus bridge: " + handler);
+                throw new IllegalStateException("Not a Modbus Bridge: " + handler);
             }
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Modbus initialization failed: " + e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
             throw e;
-        }
-    }
-
-    private void checkInitialized() {
-        if (!initialized) {
-            throw new IllegalStateException(
-                    getClass().getSimpleName() + " not initialized. Please call super.initialize().");
         }
     }
 

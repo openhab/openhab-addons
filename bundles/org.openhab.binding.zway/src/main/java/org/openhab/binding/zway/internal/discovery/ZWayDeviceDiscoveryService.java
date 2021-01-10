@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,7 +131,7 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     /*
                      * Properties
                      * - Configuration: DEVICE_CONFIG_NODE_ID
-                     * - ESH default properties:
+                     * - System properties:
                      * --- PROPERTY_VENDOR
                      * --- other default properties not available
                      * - Custom properties:

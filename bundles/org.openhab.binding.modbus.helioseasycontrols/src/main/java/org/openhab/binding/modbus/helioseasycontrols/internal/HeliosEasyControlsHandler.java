@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,13 +31,20 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
+import org.openhab.core.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -50,13 +57,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
-import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -332,25 +332,25 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     if (unit != null) {
                         switch (unit) {
                             case HeliosVariable.UNIT_DAY:
-                                val = val.toUnit(SmartHomeUnits.DAY);
+                                val = val.toUnit(Units.DAY);
                                 break;
                             case HeliosVariable.UNIT_HOUR:
-                                val = val.toUnit(SmartHomeUnits.HOUR);
+                                val = val.toUnit(Units.HOUR);
                                 break;
                             case HeliosVariable.UNIT_MIN:
-                                val = val.toUnit(SmartHomeUnits.MINUTE);
+                                val = val.toUnit(Units.MINUTE);
                                 break;
                             case HeliosVariable.UNIT_SEC:
-                                val = val.toUnit(SmartHomeUnits.SECOND);
+                                val = val.toUnit(Units.SECOND);
                                 break;
                             case HeliosVariable.UNIT_VOLT:
-                                val = val.toUnit(SmartHomeUnits.VOLT);
+                                val = val.toUnit(Units.VOLT);
                                 break;
                             case HeliosVariable.UNIT_PERCENT:
-                                val = val.toUnit(SmartHomeUnits.PERCENT);
+                                val = val.toUnit(Units.PERCENT);
                                 break;
                             case HeliosVariable.UNIT_PPM:
-                                val = val.toUnit(SmartHomeUnits.PARTS_PER_MILLION);
+                                val = val.toUnit(Units.PARTS_PER_MILLION);
                                 break;
                             case HeliosVariable.UNIT_TEMP:
                                 val = val.toUnit(SIUnits.CELSIUS);
@@ -661,19 +661,19 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         if (unit == null) {
             return null;
         } else if (unit.equals(HeliosVariable.UNIT_DAY)) {
-            return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.DAY);
+            return new QuantityType<>(Integer.parseInt(value), Units.DAY);
         } else if (unit.equals(HeliosVariable.UNIT_HOUR)) {
-            return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.HOUR);
+            return new QuantityType<>(Integer.parseInt(value), Units.HOUR);
         } else if (unit.equals(HeliosVariable.UNIT_MIN)) {
-            return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.MINUTE);
+            return new QuantityType<>(Integer.parseInt(value), Units.MINUTE);
         } else if (unit.equals(HeliosVariable.UNIT_SEC)) {
-            return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.SECOND);
+            return new QuantityType<>(Integer.parseInt(value), Units.SECOND);
         } else if (unit.equals(HeliosVariable.UNIT_VOLT)) {
-            return new QuantityType<>(Float.parseFloat(value), SmartHomeUnits.VOLT);
+            return new QuantityType<>(Float.parseFloat(value), Units.VOLT);
         } else if (unit.equals(HeliosVariable.UNIT_PERCENT)) {
-            return new QuantityType<>(Float.parseFloat(value), SmartHomeUnits.PERCENT);
+            return new QuantityType<>(Float.parseFloat(value), Units.PERCENT);
         } else if (unit.equals(HeliosVariable.UNIT_PPM)) {
-            return new QuantityType<>(Float.parseFloat(value), SmartHomeUnits.PARTS_PER_MILLION);
+            return new QuantityType<>(Float.parseFloat(value), Units.PARTS_PER_MILLION);
         } else if (unit.equals(HeliosVariable.UNIT_TEMP)) {
             return new QuantityType<>(Float.parseFloat(value), SIUnits.CELSIUS);
         } else {

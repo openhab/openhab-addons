@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -651,15 +651,15 @@ public class HPPrinterBinder {
         if (result.getStatus() == RequestStatus.SUCCESS) {
             // Inks
             handler.updateState(CGROUP_INK, CHANNEL_BLACK_LEVEL,
-                    new QuantityType<>(result.getData().getInkBlack(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(result.getData().getInkBlack(), Units.PERCENT));
             handler.updateState(CGROUP_INK, CHANNEL_COLOR_LEVEL,
-                    new QuantityType<>(result.getData().getInkColor(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(result.getData().getInkColor(), Units.PERCENT));
             handler.updateState(CGROUP_INK, CHANNEL_CYAN_LEVEL,
-                    new QuantityType<>(result.getData().getInkCyan(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(result.getData().getInkCyan(), Units.PERCENT));
             handler.updateState(CGROUP_INK, CHANNEL_MAGENTA_LEVEL,
-                    new QuantityType<>(result.getData().getInkMagenta(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(result.getData().getInkMagenta(), Units.PERCENT));
             handler.updateState(CGROUP_INK, CHANNEL_YELLOW_LEVEL,
-                    new QuantityType<>(result.getData().getInkYellow(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(result.getData().getInkYellow(), Units.PERCENT));
 
             handler.updateState(CGROUP_USAGE, CHANNEL_JAM_EVENTS, new DecimalType(result.getData().getJamEvents()));
             handler.updateState(CGROUP_USAGE, CHANNEL_SUBSCRIPTION,
@@ -675,16 +675,16 @@ public class HPPrinterBinder {
             handler.updateState(CGROUP_USAGE, CHANNEL_FRONT_PANEL_CANCEL,
                     new DecimalType(result.getData().getFrontPanelCancelCount()));
 
-            handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_MARKING, new QuantityType<>(
-                    result.getData().getInkBlackMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
-            handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_MARKING, new QuantityType<>(
-                    result.getData().getInkColorMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_MARKING,
+                    new QuantityType<>(result.getData().getInkBlackMarking(), MetricPrefix.MILLI(Units.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_MARKING,
+                    new QuantityType<>(result.getData().getInkColorMarking(), MetricPrefix.MILLI(Units.LITRE)));
             handler.updateState(CGROUP_USAGE, CHANNEL_CYAN_MARKING,
-                    new QuantityType<>(result.getData().getInkCyanMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
-            handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_MARKING, new QuantityType<>(
-                    result.getData().getInkMagentaMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
-            handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_MARKING, new QuantityType<>(
-                    result.getData().getInkYellowMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
+                    new QuantityType<>(result.getData().getInkCyanMarking(), MetricPrefix.MILLI(Units.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_MARKING,
+                    new QuantityType<>(result.getData().getInkMagentaMarking(), MetricPrefix.MILLI(Units.LITRE)));
+            handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_MARKING,
+                    new QuantityType<>(result.getData().getInkYellowMarking(), MetricPrefix.MILLI(Units.LITRE)));
 
             handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING,
                     new DecimalType(result.getData().getInkBlackPagesRemaining()));

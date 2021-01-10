@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecobee.internal.config.EcobeeSensorConfiguration;
 import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorCapabilityDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorDTO;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -189,7 +189,7 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
                 break;
             case CAPABILITY_HUMIDITY:
                 try {
-                    state = EcobeeUtils.undefOrQuantity(Integer.parseInt(value), SmartHomeUnits.PERCENT);
+                    state = EcobeeUtils.undefOrQuantity(Integer.parseInt(value), Units.PERCENT);
                 } catch (NumberFormatException e) {
                     state = UnDefType.UNDEF;
                 }

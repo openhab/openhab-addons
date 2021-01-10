@@ -16,6 +16,10 @@
 						"command": "set_power",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -30,6 +34,9 @@
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
@@ -116,7 +123,12 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "co2",
+				"tags": [
+					"Measurement",
+					"CO2"
+				]
 			},
 			{
 				"property": "control_speed",
@@ -159,7 +171,6 @@
 				"channelType": "airFreshFilterPercents",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": []
 			},
 			{

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1461,19 +1461,19 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                             String existingList = "";
                             List<SonosEntry> playLists = getPlayLists();
                             for (SonosEntry someList : playLists) {
-                                if (someList.getTitle().equals(ESH_PREFIX + getUDN())) {
+                                if (someList.getTitle().equals(TITLE_PREFIX + getUDN())) {
                                     existingList = someList.getId();
                                     break;
                                 }
                             }
 
-                            saveQueue(ESH_PREFIX + getUDN(), existingList);
+                            saveQueue(TITLE_PREFIX + getUDN(), existingList);
 
                             // get all the playlists and a ref to our
                             // saved list
                             playLists = getPlayLists();
                             for (SonosEntry someList : playLists) {
-                                if (someList.getTitle().equals(ESH_PREFIX + getUDN())) {
+                                if (someList.getTitle().equals(TITLE_PREFIX + getUDN())) {
                                     savedState.entry = new SonosEntry(someList.getId(), someList.getTitle(),
                                             someList.getParentId(), "", "", "", someList.getUpnpClass(),
                                             someList.getRes());

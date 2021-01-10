@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotif
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -173,7 +173,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
 
     private void updateRSSI(@Nullable Integer rssi) {
         if (rssi != null && rssi != 0) {
-            QuantityType<Power> quantity = new QuantityType<>(rssi, SmartHomeUnits.DECIBEL_MILLIWATTS);
+            QuantityType<Power> quantity = new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS);
             updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, quantity);
             updateStatusBasedOnRssi(true);
         } else {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -271,7 +271,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
         } else if (type.equals("Number:Pressure")) {
             state = new QuantityType<>(value, HECTO(SIUnits.PASCAL));
         } else if (type.equals("Number:Speed")) {
-            state = new QuantityType<>(value, SmartHomeUnits.METRE_PER_SECOND);
+            state = new QuantityType<>(value, Units.METRE_PER_SECOND);
         }
 
         return state;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.handler.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -61,7 +62,7 @@ public class ThingProperty {
      * @param propertyName defines the property which is to be modified,
      * @param propertyValue defines the new property value.
      */
-    public static void setValue(Thing thing, String propertyName, String propertyValue) {
+    public static void setValue(Thing thing, String propertyName, @Nullable String propertyValue) {
         thing.setProperty(propertyName, propertyValue);
         LOGGER.trace("setValue() {} set to {}.", propertyName, propertyValue);
         return;
@@ -75,7 +76,8 @@ public class ThingProperty {
      * @param propertyName defines the property which is to be modified.
      * @param propertyValue defines the new property value.
      */
-    public static void setValue(ExtendedBaseBridgeHandler bridgeHandler, String propertyName, String propertyValue) {
+    public static void setValue(ExtendedBaseBridgeHandler bridgeHandler, String propertyName,
+            @Nullable String propertyValue) {
         setValue(bridgeHandler.getThing(), propertyName, propertyValue);
     }
 
@@ -91,7 +93,7 @@ public class ThingProperty {
      * @param propertyValue defines the new property value.
      */
     public static void setValue(ExtendedBaseBridgeHandler bridgeHandler, ChannelUID channelUID, String propertyName,
-            String propertyValue) {
+            @Nullable String propertyValue) {
         ThingUID channelTUID = channelUID.getThingUID();
         Thing thingOfChannel = bridgeHandler.getThing().getThing(channelTUID);
         if (thingOfChannel == null) {

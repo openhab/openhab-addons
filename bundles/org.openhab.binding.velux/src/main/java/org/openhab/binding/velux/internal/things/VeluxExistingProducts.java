@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public class VeluxExistingProducts {
     // Type definitions, class-internal variables
 
     private Map<String, VeluxProduct> existingProductsByUniqueIndex;
-    private Map<Integer, String> bridgeIndexToSerialNumber;
+    private Map<Integer, String> bridgeIndexToUniqueIndex;
     private Map<String, VeluxProduct> modifiedProductsByUniqueIndex;
     private int memberCount;
 
@@ -61,7 +61,7 @@ public class VeluxExistingProducts {
     public VeluxExistingProducts() {
         logger.trace("VeluxExistingProducts(constructor) called.");
         existingProductsByUniqueIndex = new ConcurrentHashMap<>();
-        bridgeIndexToSerialNumber = new ConcurrentHashMap<>();
+        bridgeIndexToUniqueIndex = new ConcurrentHashMap<>();
         modifiedProductsByUniqueIndex = new ConcurrentHashMap<>();
         memberCount = 0;
         dirty = true;
@@ -70,24 +70,22 @@ public class VeluxExistingProducts {
 
     // Class access methods
 
-    public boolean isRegistered(String productUniqueIndexOrSerialNumber) {
-        logger.trace("isRegistered(String {}) returns {}.", productUniqueIndexOrSerialNumber,
-                existingProductsByUniqueIndex.containsKey(productUniqueIndexOrSerialNumber) ? "true" : "false");
-        return existingProductsByUniqueIndex.containsKey(productUniqueIndexOrSerialNumber);
+    public boolean isRegistered(String productUniqueIndex) {
+        boolean result = existingProductsByUniqueIndex.containsKey(productUniqueIndex);
+        logger.trace("isRegistered(String {}) returns {}.", productUniqueIndex, result);
+        return result;
     }
 
     public boolean isRegistered(VeluxProduct product) {
-        logger.trace("isRegistered(VeluxProduct {}) called.", product.toString());
-        if (product.isV2()) {
-            return isRegistered(product.getSerialNumber());
-        }
-        return isRegistered(product.getProductUniqueIndex());
+        boolean result = existingProductsByUniqueIndex.containsKey(product.getProductUniqueIndex());
+        logger.trace("isRegistered(VeluxProduct {}) returns {}.", product, result);
+        return result;
     }
 
     public boolean isRegistered(ProductBridgeIndex bridgeProductIndex) {
-        logger.trace("isRegisteredProductBridgeIndex {}) called.", bridgeProductIndex.toString());
-        String serialNumber = bridgeIndexToSerialNumber.get(bridgeProductIndex.toInt());
-        return serialNumber != null && isRegistered(serialNumber);
+        boolean result = bridgeIndexToUniqueIndex.containsKey(bridgeProductIndex.toInt());
+        logger.trace("isRegistered(ProductBridgeIndex {}) returns {}.", bridgeProductIndex, result);
+        return result;
     }
 
     public boolean register(VeluxProduct newProduct) {
@@ -97,12 +95,12 @@ public class VeluxExistingProducts {
         }
         logger.trace("register() registering new product {}.", newProduct);
 
-        String uniqueIndex = newProduct.isV2() ? newProduct.getSerialNumber() : newProduct.getProductUniqueIndex();
+        String uniqueIndex = newProduct.getProductUniqueIndex();
         logger.trace("register() registering by UniqueIndex {}", uniqueIndex);
         existingProductsByUniqueIndex.put(uniqueIndex, newProduct);
 
         logger.trace("register() registering by ProductBridgeIndex {}", newProduct.getBridgeProductIndex().toInt());
-        bridgeIndexToSerialNumber.put(newProduct.getBridgeProductIndex().toInt(), newProduct.getSerialNumber());
+        bridgeIndexToUniqueIndex.put(newProduct.getBridgeProductIndex().toInt(), uniqueIndex);
 
         logger.trace("register() registering set of modifications by UniqueIndex {}", uniqueIndex);
         modifiedProductsByUniqueIndex.put(uniqueIndex, newProduct);
@@ -121,12 +119,11 @@ public class VeluxExistingProducts {
             return false;
         }
         VeluxProduct thisProduct = this.get(bridgeProductIndex);
-        if (thisProduct.setState(productState) || thisProduct.setCurrentPosition(productPosition)
-                || thisProduct.setTarget(productTarget)) {
-            dirty = true;
-
-            String uniqueIndex = thisProduct.isV2() ? thisProduct.getSerialNumber()
-                    : thisProduct.getProductUniqueIndex();
+        dirty |= thisProduct.setState(productState);
+        dirty |= thisProduct.setCurrentPosition(productPosition);
+        dirty |= thisProduct.setTarget(productTarget);
+        if (dirty) {
+            String uniqueIndex = thisProduct.getProductUniqueIndex();
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);
             existingProductsByUniqueIndex.replace(uniqueIndex, thisProduct);
             modifiedProductsByUniqueIndex.put(uniqueIndex, thisProduct);
@@ -141,21 +138,16 @@ public class VeluxExistingProducts {
                 currentProduct.getCurrentPosition(), currentProduct.getTarget());
     }
 
-    public VeluxProduct get(String productUniqueIndexOrSerialNumber) {
-        logger.trace("get({}) called.", productUniqueIndexOrSerialNumber);
-        if (!isRegistered(productUniqueIndexOrSerialNumber)) {
-            return VeluxProduct.UNKNOWN;
-        }
-        return existingProductsByUniqueIndex.getOrDefault(productUniqueIndexOrSerialNumber, VeluxProduct.UNKNOWN);
+    public VeluxProduct get(String productUniqueIndex) {
+        logger.trace("get({}) called.", productUniqueIndex);
+        return existingProductsByUniqueIndex.getOrDefault(productUniqueIndex, VeluxProduct.UNKNOWN);
     }
 
     public VeluxProduct get(ProductBridgeIndex bridgeProductIndex) {
         logger.trace("get({}) called.", bridgeProductIndex);
-        String serialNumber = bridgeIndexToSerialNumber.get(bridgeProductIndex.toInt());
-        if (!isRegistered(bridgeProductIndex) || serialNumber == null) {
-            return VeluxProduct.UNKNOWN;
-        }
-        return existingProductsByUniqueIndex.getOrDefault(serialNumber, VeluxProduct.UNKNOWN);
+        String unique = bridgeIndexToUniqueIndex.get(bridgeProductIndex.toInt());
+        return unique != null ? existingProductsByUniqueIndex.getOrDefault(unique, VeluxProduct.UNKNOWN)
+                : VeluxProduct.UNKNOWN;
     }
 
     public VeluxProduct[] values() {

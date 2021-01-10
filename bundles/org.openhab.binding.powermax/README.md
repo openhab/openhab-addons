@@ -129,18 +129,17 @@ The following channels are available:
 ## Console Commands
 
 The binding provides few specific commands you can use in the console.
-Enter the command `smarthome:powermax` to get the usage of each available command.
+Enter the command `openhab:powermax` to get the usage of each available command.
 
 ```
-openhab> smarthome:powermax
-Usage: smarthome:powermax <bridgeUID> info_setup - information on setup
-Usage: smarthome:powermax <bridgeUID> download_setup - download setup
+Usage: openhab:powermax <bridgeUID> info_setup - information on setup
+Usage: openhab:powermax <bridgeUID> download_setup - download setup
 ```
 
 The command `info_setup` displays in the console informations about your current panel setup.
 The command `download_setup` will trigger a new download of the panel setup.
 
-Here is an example of command you can run: `smarthome:powermax powermax:serial:home info_setup`.
+Here is an example of command you can run: `openhab:powermax powermax:serial:home info_setup`.
 
 ## Notes & Limitations
 
@@ -155,6 +154,7 @@ In case it fails after all the retries, you still have the option to later trigg
 -   Visonic does not provide a specification of the RS232 protocol and, thus, use this binding at your own risk.
 -   The binding is not able to arm/disarm a particular partition.
 -   The compatibility of the binding with the Powermaster alarm panel series is probably only partial.
+-   In order to be able to bypass zones, you must first enable this feature by updating your panel configuration. Look at your installer's manual.
 
 ## Full Example
 

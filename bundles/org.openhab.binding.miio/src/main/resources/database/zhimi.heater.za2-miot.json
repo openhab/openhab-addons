@@ -31,6 +31,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -48,6 +52,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
 				]
 			},
 			{
@@ -64,7 +73,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "alarm"
 			},
 			{
 				"property": "countdown-time",
@@ -89,10 +99,14 @@
 				"piid": 7,
 				"friendlyName": "Environment - Relative Humidity",
 				"channel": "relative-humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "temperature",
@@ -104,7 +118,12 @@
 				"type": "Number:Temperature",
 				"unit": "CELCIUS",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "brightness",
@@ -112,7 +131,6 @@
 				"piid": 1,
 				"friendlyName": "Indicator Light - Brightness",
 				"channel": "brightness",
-				"channelType": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
 				"actions": [
@@ -120,6 +138,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -148,7 +171,8 @@
 				"type": "Number:Time",
 				"unit": "seconds",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time"
 			}
 		],
 		"experimental": true

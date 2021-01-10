@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.packets.VelbusLightValueRequestPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -86,7 +86,7 @@ public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
                 byte lowByteCurrentLightValue = packet[7];
 
                 double lightValue = (((highByteCurrentLightValue & 0xff) << 8) + (lowByteCurrentLightValue & 0xff));
-                QuantityType<Illuminance> lightValueState = new QuantityType<>(lightValue, SmartHomeUnits.LUX);
+                QuantityType<Illuminance> lightValueState = new QuantityType<>(lightValue, Units.LUX);
                 updateState(illuminanceChannel, lightValueState);
             }
         }

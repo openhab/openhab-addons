@@ -14,16 +14,25 @@ It can be extended with different channels.
 | `baseURL`         | no       |    -    | The base URL for this thing. Can be extended in channel-configuration. |
 | `refresh`         | no       |   30    | Time in seconds between two refresh calls for the channels of this thing. |
 | `timeout`         | no       |  3000   | Timeout for HTTP requests in ms. |
+| `bufferSize`      | no       |  2048   | The buffer size for the response data (in kB). |
+| `delay`           | no       |    0    | Delay between two requests in ms (advanced parameter). |
 | `username`        | yes      |    -    | Username for authentication (advanced parameter). |
 | `password`        | yes      |    -    | Password for authentication (advanced parameter). |
-| `authMode`        | no       |  BASIC  | Authentication mode, `BASIC` or `DIGEST` (advanced parameter). |
+| `authMode`        | no       |  BASIC  | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE` or `DIGEST` (advanced parameter). |
 | `commandMethod`   | no       |   GET   | Method used for sending commands `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
 | `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  
 | `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value".| 
 | `ignoreSSLErrors` | no       |  false  | If set to true ignores invalid SSL certificate errors. This is potentially dangerous.|
 
-*Note:* optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
+*Note:* Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
+
+*Note:* The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
+This is dangerous and might be misused.
+The option exists to be able to authenticate when the server is not sending the proper 401/Unauthorized code.
+Authentication might fail if redirections are involved as headers are stripper prior to redirection.
+
+*Note:* If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 
 ## Channels
 
@@ -38,11 +47,11 @@ The `image` channel-type supports `stateExtension` only.
 | `commandExtension`      | yes      |      -      | Appended to the `baseURL` for sending commands. If empty, same as `stateExtension`. |
 | `stateTransformation  ` | yes      |      -      | One or more transformation applied to received values before updating channel. |
 | `commandTransformation` | yes      |      -      | One or more transformation applied to channel value before sending to a remote. |
-| `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READ` means receive state, `WRITE` means send commands. |
+| `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
 
 Transformations need to be specified in the same format as 
 Some channels have additional parameters.
-When concatenating the `baseURL` and `stateExtions` or `commandExtension` the binding checks if a proper URL part separator (`/`, `&` or `?`) is present and adds a `/` if missing.
+When concatenating the `baseURL` and `stateExtension` or `commandExtension` the binding checks if a proper URL part separator (`/`, `&` or `?`) is present and adds a `/` if missing.
 
 ### Value Transformations (`stateTransformation`, `commandTransformation`)
 
@@ -91,6 +100,16 @@ All values that are not `onValue`, `offValue`, `increaseValue`, `decreaseValue` 
 | `step`                  | no       |      1      | The amount the brightness is increased/decreased on `INCREASE`/`DECREASE` |
 
 All values that are not `onValue`, `offValue`, `increaseValue`, `decreaseValue` are interpreted as brightness 0-100% and need to be numeric only.
+
+### `number`
+
+| parameter               | optional | default     | description |
+|-------------------------|----------|-------------|-------------|
+| `unit`                  | yes      |      -      | The unit label for this channel |
+
+`number` channels can be used for `DecimalType` or `QuantityType` values.
+If a unit is given in the `unit` parameter, the binding tries to create a `QuantityType` state before updating the channel, if no unit is present, it creates a `DecimalType`.
+Please note that incompatible units (e.g. `°C` for a `Number:Density` item) will fail silently, i.e. no error message is logged even if the state update fails.
 
 ### `player`
 

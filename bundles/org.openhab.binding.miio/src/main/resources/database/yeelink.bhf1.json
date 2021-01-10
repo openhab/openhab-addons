@@ -9,15 +9,17 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -26,7 +28,6 @@
 				"channel": "bh_mode",
 				"type": "String",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_bh_mode",
@@ -38,10 +39,8 @@
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"channelType": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_bright",
@@ -57,16 +56,20 @@
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Light"
 				]
 			},
 			{
 				"property": "delayoff",
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
-				"channelType": "delayoff",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "seconds",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "cron_add",
@@ -76,17 +79,26 @@
 							"$value$"
 						]
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
-				"ChannelGroup": "",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "nl_br",
@@ -95,8 +107,12 @@
 				"channelType": "nightlightBrightness",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
-				"actions": []
+				"actions": [],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Light"
+				]
 			}
 		]
 	}

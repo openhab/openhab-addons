@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,8 @@ import org.openhab.binding.modbus.e3dc.internal.dto.PowerBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.StringBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxArray;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
-import org.openhab.io.transport.modbus.AsyncModbusReadResult;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

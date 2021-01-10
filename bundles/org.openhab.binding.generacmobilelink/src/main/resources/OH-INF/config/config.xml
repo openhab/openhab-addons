@@ -1,0 +1,30 @@
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:generacmobilelink:account">
+		<parameter name="username" type="text" required="true">
+			<label>Username</label>
+			<description>Account username</description>
+		</parameter>
+		<parameter name="password" type="text" required="true">
+			<label>Password</label>
+			<description>Account password</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="30" required="true" unit="s">
+			<label>Refresh Interval</label>
+			<description>Specifies the refresh interval in seconds</description>
+			<default>60</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:generacmobilelink:generator">
+		<parameter name="generatorId" type="text" required="true">
+			<label>Generator ID</label>
+			<description>Generator ID</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

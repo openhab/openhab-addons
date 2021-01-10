@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -137,21 +137,21 @@ public class WindcentraleHandler extends BaseThingHandler {
             updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
             updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
             updateState(CHANNEL_POWER_TOTAL,
-                    new QuantityType<>(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal(), KILO(SmartHomeUnits.WATT)));
+                    new QuantityType<>(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal(), KILO(Units.WATT)));
             updateState(CHANNEL_POWER_PER_WD,
                     new QuantityType<>(
                             millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(new BigDecimal(config.wd)),
-                            SmartHomeUnits.WATT));
+                            Units.WATT));
             updateState(CHANNEL_POWER_RELATIVE,
-                    new QuantityType<>(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal(), Units.PERCENT));
             updateState(CHANNEL_ENERGY,
-                    new QuantityType<>(millData.get(CHANNEL_ENERGY).getAsBigDecimal(), SmartHomeUnits.KILOWATT_HOUR));
-            updateState(CHANNEL_ENERGY_FC, new QuantityType<>(millData.get(CHANNEL_ENERGY_FC).getAsBigDecimal(),
-                    SmartHomeUnits.KILOWATT_HOUR));
+                    new QuantityType<>(millData.get(CHANNEL_ENERGY).getAsBigDecimal(), Units.KILOWATT_HOUR));
+            updateState(CHANNEL_ENERGY_FC,
+                    new QuantityType<>(millData.get(CHANNEL_ENERGY_FC).getAsBigDecimal(), Units.KILOWATT_HOUR));
             updateState(CHANNEL_RUNTIME,
-                    new QuantityType<>(millData.get(HOURS_RUN_THIS_YEAR).getAsBigDecimal(), SmartHomeUnits.HOUR));
+                    new QuantityType<>(millData.get(HOURS_RUN_THIS_YEAR).getAsBigDecimal(), Units.HOUR));
             updateState(CHANNEL_RUNTIME_PER,
-                    new QuantityType<>(millData.get(CHANNEL_RUNTIME_PER).getAsBigDecimal(), SmartHomeUnits.PERCENT));
+                    new QuantityType<>(millData.get(CHANNEL_RUNTIME_PER).getAsBigDecimal(), Units.PERCENT));
             updateState(CHANNEL_LAST_UPDATE, new DateTimeType(millData.get(CHANNEL_LAST_UPDATE).getAsString()));
 
             if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {

@@ -27,6 +27,10 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -42,17 +46,25 @@
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "aqi",
@@ -62,7 +74,10 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "average_aqi",
@@ -72,7 +87,10 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "led",
@@ -119,22 +137,26 @@
 				"friendlyName": "Filter Hours used",
 				"channel": "filterhours",
 				"channelType": "filterhours",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
 				"channelType": "usedhours",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "motor1_speed",
@@ -148,7 +170,7 @@
 			},
 			{
 				"property": "filter1_life",
-				"friendlyName": "Filter  Life",
+				"friendlyName": "Filter Life",
 				"channel": "filterlife",
 				"type": "Number",
 				"refresh": true,
@@ -174,12 +196,18 @@
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperature",
-				"type": "Number",
+				"channelType": "temperatureC",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"transformation": "/10",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "purify_volume",

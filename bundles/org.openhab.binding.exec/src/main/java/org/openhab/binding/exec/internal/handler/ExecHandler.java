@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.IllegalFormatException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -168,16 +169,17 @@ public class ExecHandler extends BaseThingHandler {
             // problem for external commands that generate a lot of output, but this will be dependent on the limits
             // of the underlying operating system.
 
+            Date date = Calendar.getInstance().getTime();
             try {
                 if (lastInput != null) {
-                    commandLine = String.format(commandLine, Calendar.getInstance().getTime(), lastInput);
+                    commandLine = String.format(commandLine, date, lastInput);
                 } else {
-                    commandLine = String.format(commandLine, Calendar.getInstance().getTime());
+                    commandLine = String.format(commandLine, date);
                 }
             } catch (IllegalFormatException e) {
                 logger.warn(
-                        "An exception occurred while formatting the command line with the current time and input values : '{}'",
-                        e.getMessage());
+                        "An exception occurred while formatting the command line '{}' with the current time '{}' and input value '{}': {}",
+                        commandLine, date, lastInput, e.getMessage());
                 updateState(RUN, OnOffType.OFF);
                 updateState(OUTPUT, new StringType(e.getMessage()));
                 return;

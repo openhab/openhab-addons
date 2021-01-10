@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -99,16 +99,16 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
                 }
             case CHANNEL_DURATION_LATEST_DETECTION:
                 if (mouse.getDetections().size() == 0) {
-                    return new QuantityType<Time>(0, SmartHomeUnits.SECOND);
+                    return new QuantityType<Time>(0, Units.SECOND);
                 } else {
-                    return new QuantityType<Time>(mouse.getDetections().get(0).getDuration(), SmartHomeUnits.SECOND);
+                    return new QuantityType<Time>(mouse.getDetections().get(0).getDuration(), Units.SECOND);
                 }
             case CHANNEL_DURATION_LAST_24_HOURS:
                 if (mouse.getDetections().size() == 0) {
-                    return new QuantityType<Time>(0, SmartHomeUnits.SECOND);
+                    return new QuantityType<Time>(0, Units.SECOND);
                 } else {
                     return new QuantityType<Time>(mouse.getDetections().stream().mapToInt(Detection::getDuration).sum(),
-                            SmartHomeUnits.SECOND);
+                            Units.SECOND);
                 }
             case CHANNEL_LOCATION:
                 String location = mouse.getDevice().getArea();

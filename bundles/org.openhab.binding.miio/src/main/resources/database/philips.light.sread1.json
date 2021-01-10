@@ -12,19 +12,21 @@
 				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"channelType": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -43,6 +45,11 @@
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -82,7 +89,6 @@
 				"channelType": "illumination",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": []
 			},
 			{

@@ -16,13 +16,16 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "mode",
 				"friendlyName": "Humidifier Mode",
 				"channel": "humidifierMode",
-				"channelType": "humidifierMode",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -31,17 +34,26 @@
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
+				],
+				"tags": [
+					"Measurement",
+					"Humidity"
 				]
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "limit_hum",
@@ -62,7 +74,7 @@
 				"property": "led_b",
 				"friendlyName": "LED Brightness",
 				"channel": "bright",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -117,11 +129,13 @@
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
 				"channelType": "usedhours",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "speed",
@@ -137,11 +151,17 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperature",
-				"type": "Number",
+				"channelType": "temperatureC",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "child_lock",

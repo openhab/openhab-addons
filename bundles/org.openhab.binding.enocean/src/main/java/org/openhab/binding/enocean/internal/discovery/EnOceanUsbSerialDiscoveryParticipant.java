@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,8 +28,8 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Discovery for Enocean USB dongles, integrated in Eclipse SmartHome's USB-serial discovery by implementing
- * a component of type {@link UsbSerialDiscoveryParticipant}.
+ * Discovery for Enocean USB dongles, integrated in USB-serial discovery by implementing a component of type
+ * {@link UsbSerialDiscoveryParticipant}.
  * <p/>
  * Currently, this {@link UsbSerialDiscoveryParticipant} supports the Enocean USB300 dongles.
  *

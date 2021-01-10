@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ import org.openhab.binding.heos.internal.resources.HeosEventListener;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.*;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.UnDefType;
@@ -321,7 +321,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     private QuantityType<Time> quantityFromMilliSeconds(long position) {
-        return new QuantityType<>(position / 1000, SmartHomeUnits.SECOND);
+        return new QuantityType<>(position / 1000, Units.SECOND);
     }
 
     private void handleShuffleMode(HeosObject eventObject) {

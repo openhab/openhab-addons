@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,17 +47,16 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
     /** Caddx Alarm Thing type. */
     private CaddxThingType caddxThingType;
 
-    /** Partition Number. */
+    /** Partition */
     private int partitionNumber;
-
-    /** User Number. */
     private int userNumber;
 
-    /** Zone Number. */
+    /** Zone */
     private int zoneNumber;
 
-    /** Keypad Address. */
+    /** Keypad */
     private int keypadAddress;
+    private int terminalModeSeconds;
 
     public CaddxBaseThingHandler(Thing thing, CaddxThingType caddxThingType) {
         super(thing);
@@ -224,6 +223,24 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
      */
     public void setKeypadAddress(int keypadAddress) {
         this.keypadAddress = keypadAddress;
+    }
+
+    /**
+     * Get Keypad Terminal Mode Seconds.
+     *
+     * @return keypadAddress
+     */
+    public int getTerminalModeSeconds() {
+        return terminalModeSeconds;
+    }
+
+    /**
+     * Set Keypad Address.
+     *
+     * @param keypadAddress
+     */
+    public void setTerminalModeSeconds(int terminalModeSeconds) {
+        this.terminalModeSeconds = terminalModeSeconds;
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tr064.internal.config.Tr064ChannelConfig;
 import org.openhab.binding.tr064.internal.config.Tr064SubConfiguration;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDDeviceType;
+import org.openhab.binding.tr064.internal.soap.SOAPConnector;
 import org.openhab.binding.tr064.internal.util.SCPDUtil;
 import org.openhab.binding.tr064.internal.util.Util;
 import org.openhab.core.cache.ExpiringCacheMap;

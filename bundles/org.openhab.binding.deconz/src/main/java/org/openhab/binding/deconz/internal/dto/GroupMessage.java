@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.deconz.internal.dto;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,20 +27,22 @@ import org.openhab.binding.deconz.internal.types.GroupType;
 @NonNullByDefault
 public class GroupMessage extends DeconzBaseMessage {
     public @Nullable GroupAction action;
-    public String @Nullable [] devicemembership;
+    public List<String> devicemembership = List.of();
     public @Nullable Boolean hidden;
-    public String @Nullable [] lights;
-    public String @Nullable [] lightsequence;
-    public String @Nullable [] multideviceids;
-    public Scene @Nullable [] scenes;
+    public List<String> lights = List.of();
+    public List<String> lightsequence = List.of();
+    public List<String> multideviceids = List.of();
+    public List<Scene> scenes = List.of();
     public @Nullable GroupState state;
     public @Nullable GroupType type;
 
     @Override
     public String toString() {
-        return "GroupMessage{" + "action=" + action + ", devicemembership=" + Arrays.toString(devicemembership)
-                + ", hidden=" + hidden + ", lights=" + Arrays.toString(lights) + ", lightsequence="
-                + Arrays.toString(lightsequence) + ", multideviceids=" + Arrays.toString(multideviceids) + ", scenes="
-                + Arrays.toString(scenes) + ", state=" + state + ", type=" + type + '}';
+        return "GroupMessage{" + "e='" + e + '\'' + ", r=" + r + ", t='" + t + '\'' + ", id='" + id + '\''
+                + ", manufacturername='" + manufacturername + '\'' + ", modelid='" + modelid + '\'' + ", name='" + name
+                + '\'' + ", swversion='" + swversion + '\'' + ", ep='" + ep + '\'' + ", lastseen='" + lastseen + '\''
+                + ", uniqueid='" + uniqueid + '\'' + ", action=" + action + ", devicemembership=" + devicemembership
+                + ", hidden=" + hidden + ", lights=" + lights + ", lightsequence=" + lightsequence + ", multideviceids="
+                + multideviceids + ", scenes=" + scenes + ", state=" + state + ", type=" + type + '}';
     }
 }

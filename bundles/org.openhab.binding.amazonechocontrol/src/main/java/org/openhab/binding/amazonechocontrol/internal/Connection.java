@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,26 +26,19 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.concurrent.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -56,7 +49,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementContent;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget.TargetDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
@@ -104,11 +96,19 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWo
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWebSiteCookie;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -147,8 +147,10 @@ public class Connection {
     private @Nullable String accountCustomerId;
     private @Nullable String customerName;
 
-    private Map<Integer, Announcement> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
+    private Map<Integer, AnnouncementWrapper> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<Integer, TextToSpeech> textToSpeeches = Collections.synchronizedMap(new LinkedHashMap<>());
+    private Map<Integer, TextCommand> textCommands = Collections.synchronizedMap(new LinkedHashMap<>());
+
     private Map<Integer, Volume> volumes = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<String, LinkedBlockingQueue<QueueObject>> devices = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -159,7 +161,8 @@ public class Connection {
         ANNOUNCEMENT,
         TTS,
         VOLUME,
-        DEVICES
+        DEVICES,
+        TEXT_COMMAND
     }
 
     public Connection(@Nullable Connection oldConnection, Gson gson) {
@@ -949,6 +952,8 @@ public class Connection {
         replaceTimer(TimerType.VOLUME, null);
         volumes.clear();
         replaceTimer(TimerType.DEVICES, null);
+        textCommands.clear();
+        replaceTimer(TimerType.TTS, null);
 
         devices.values().forEach((queueObjects) -> {
             queueObjects.forEach((queueObject) -> {
@@ -1034,15 +1039,13 @@ public class Connection {
     }
 
     public List<Device> getDeviceList() throws IOException, URISyntaxException, InterruptedException {
-        String json = getDeviceListJson();
-        JsonDevices devices = parseJson(json, JsonDevices.class);
-        if (devices != null) {
-            Device[] result = devices.devices;
-            if (result != null) {
-                return new ArrayList<>(Arrays.asList(result));
-            }
-        }
-        return Collections.emptyList();
+        JsonDevices devices = Objects.requireNonNull(parseJson(getDeviceListJson(), JsonDevices.class));
+        logger.trace("Devices {}", devices.devices);
+
+        // @Nullable because of a limitation of the null-checker, we filter null-serialNumbers before
+        Set<@Nullable String> serialNumbers = ConcurrentHashMap.newKeySet();
+        return devices.devices.stream().filter(d -> d.serialNumber != null && serialNumbers.add(d.serialNumber))
+                .collect(Collectors.toList());
     }
 
     public String getDeviceListJson() throws IOException, URISyntaxException, InterruptedException {
@@ -1050,15 +1053,30 @@ public class Connection {
         return json;
     }
 
-    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<String> applianceIds)
+    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<SmartHomeBaseDevice> devices)
             throws IOException, URISyntaxException, InterruptedException {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
-        for (String applianceId : applianceIds) {
-            JsonObject stateRequest = new JsonObject();
-            stateRequest.addProperty("entityId", applianceId);
-            stateRequest.addProperty("entityType", "APPLIANCE");
-            stateRequests.add(stateRequest);
+        Map<String, String> mergedApplianceMap = new HashMap<>();
+        for (SmartHomeBaseDevice device : devices) {
+            String applianceId = device.findId();
+            if (applianceId != null) {
+                JsonObject stateRequest;
+                if (device instanceof SmartHomeDevice && !((SmartHomeDevice) device).mergedApplianceIds.isEmpty()) {
+                    for (String idToMerge : ((SmartHomeDevice) device).mergedApplianceIds) {
+                        mergedApplianceMap.put(idToMerge, applianceId);
+                        stateRequest = new JsonObject();
+                        stateRequest.addProperty("entityId", idToMerge);
+                        stateRequest.addProperty("entityType", "APPLIANCE");
+                        stateRequests.add(stateRequest);
+                    }
+                } else {
+                    stateRequest = new JsonObject();
+                    stateRequest.addProperty("entityId", applianceId);
+                    stateRequest.addProperty("entityType", "APPLIANCE");
+                    stateRequests.add(stateRequest);
+                }
+            }
         }
         requestObject.add("stateRequests", stateRequests);
         String requestBody = requestObject.toString();
@@ -1071,10 +1089,21 @@ public class Connection {
         for (JsonElement deviceState : deviceStates) {
             JsonObject deviceStateObject = deviceState.getAsJsonObject();
             JsonObject entity = deviceStateObject.get("entity").getAsJsonObject();
-            String applicanceId = entity.get("entityId").getAsString();
+            String applianceId = entity.get("entityId").getAsString();
             JsonElement capabilityState = deviceStateObject.get("capabilityStates");
             if (capabilityState != null && capabilityState.isJsonArray()) {
-                result.put(applicanceId, capabilityState.getAsJsonArray());
+                String realApplianceId = mergedApplianceMap.get(applianceId);
+                if (realApplianceId != null) {
+                    var capabilityArray = result.get(realApplianceId);
+                    if (capabilityArray != null) {
+                        capabilityArray.addAll(capabilityState.getAsJsonArray());
+                        result.put(realApplianceId, capabilityArray);
+                    } else {
+                        result.put(realApplianceId, capabilityState.getAsJsonArray());
+                    }
+                } else {
+                    result.put(applianceId, capabilityState.getAsJsonArray());
+                }
             }
         }
         return result;
@@ -1157,7 +1186,11 @@ public class Connection {
         JsonObject parameters = new JsonObject();
         parameters.addProperty("action", action);
         if (property != null) {
-            if (value instanceof Boolean) {
+            if (value instanceof QuantityType<?>) {
+                parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
+                parameters.addProperty(property + ".scale",
+                        ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius" : "fahrenheit");
+            } else if (value instanceof Boolean) {
                 parameters.addProperty(property, (boolean) value);
             } else if (value instanceof String) {
                 parameters.addProperty(property, (String) value);
@@ -1176,25 +1209,21 @@ public class Connection {
         String requestBody = json.toString();
         try {
             String resultBody = makeRequestAndReturnString("PUT", url, requestBody, true, null);
-            logger.debug("{}", resultBody);
+            logger.trace("Request '{}' resulted in '{}", requestBody, resultBody);
             JsonObject result = parseJson(resultBody, JsonObject.class);
             if (result != null) {
                 JsonElement errors = result.get("errors");
                 if (errors != null && errors.isJsonArray()) {
                     JsonArray errorList = errors.getAsJsonArray();
                     if (errorList.size() > 0) {
-                        logger.info("Smart home device command failed.");
-                        logger.info("Request:");
-                        logger.info("{}", requestBody);
-                        logger.info("Answer:");
-                        for (JsonElement error : errorList) {
-                            logger.info("{}", error.toString());
-                        }
+                        logger.warn("Smart home device command failed. The request '{}' resulted in error(s): {}",
+                                requestBody, StreamSupport.stream(errorList.spliterator(), false)
+                                        .map(JsonElement::toString).collect(Collectors.joining(" / ")));
                     }
                 }
             }
         } catch (URISyntaxException e) {
-            logger.info("Wrong url {}", url, e);
+            logger.warn("URL '{}' has invalid format for request '{}': {}", url, requestBody, e.getMessage());
         }
     }
 
@@ -1313,16 +1342,20 @@ public class Connection {
 
     public void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
-        if (speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim().isEmpty()) {
+        String plainSpeak = speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
+        String plainBody = bodyText.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
+
+        if (plainSpeak.isEmpty() && plainBody.isEmpty()) {
+            // if there is neither a bodytext nor (except tags) a speaktext, we have nothing to announce
             return;
         }
 
         // we lock announcements until we have finished adding this one
-        Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock()));
         lock.lock();
         try {
-            Announcement announcement = Objects.requireNonNull(announcements.computeIfAbsent(
-                    Objects.hash(speak, bodyText, title), k -> new Announcement(speak, bodyText, title)));
+            AnnouncementWrapper announcement = Objects.requireNonNull(announcements.computeIfAbsent(
+                    Objects.hash(speak, plainBody, title), k -> new AnnouncementWrapper(speak, plainBody, title)));
             announcement.devices.add(device);
             announcement.ttsVolumes.add(ttsVolume);
             announcement.standardVolumes.add(standardVolume);
@@ -1337,41 +1370,21 @@ public class Connection {
 
     private void sendAnnouncement() {
         // we lock new announcements until we have dispatched everything
-        Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock()));
         lock.lock();
         try {
-            Iterator<Announcement> iterator = announcements.values().iterator();
+            Iterator<AnnouncementWrapper> iterator = announcements.values().iterator();
             while (iterator.hasNext()) {
-                Announcement announcement = iterator.next();
+                AnnouncementWrapper announcement = iterator.next();
                 try {
                     List<Device> devices = announcement.devices;
                     if (!devices.isEmpty()) {
-                        String speak = announcement.speak;
-                        String bodyText = announcement.bodyText;
-                        String title = announcement.title;
+                        JsonAnnouncementContent content = new JsonAnnouncementContent(announcement);
 
                         Map<String, Object> parameters = new HashMap<>();
                         parameters.put("expireAfter", "PT5S");
-                        JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
-                        JsonAnnouncementContent content = new JsonAnnouncementContent();
-                        content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
-                        content.display.body = bodyText;
-                        content.display.body = speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
-                        if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
-                            content.speak.type = "ssml";
-                        }
-                        content.speak.value = speak;
-
-                        contentArray[0] = content;
-
-                        parameters.put("content", contentArray);
-
-                        JsonAnnouncementTarget target = new JsonAnnouncementTarget();
-                        target.customerId = devices.get(0).deviceOwnerCustomerId;
-                        TargetDevice[] targetDevices = devices.stream().map(TargetDevice::new)
-                                .collect(Collectors.toList()).toArray(new TargetDevice[0]);
-                        target.devices = targetDevices;
-                        parameters.put("target", target);
+                        parameters.put("content", new JsonAnnouncementContent[] { content });
+                        parameters.put("target", new JsonAnnouncementTarget(devices));
 
                         String customerId = getCustomerId(devices.get(0).deviceOwnerCustomerId);
                         if (customerId != null) {
@@ -1399,7 +1412,7 @@ public class Connection {
         }
 
         // we lock TTS until we have finished adding this one
-        Lock lock = locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock()));
         lock.lock();
         try {
             TextToSpeech textToSpeech = Objects
@@ -1417,7 +1430,7 @@ public class Connection {
 
     private void sendTextToSpeech() {
         // we lock new TTS until we have dispatched everything
-        Lock lock = locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock()));
         lock.lock();
         try {
             Iterator<TextToSpeech> iterator = textToSpeeches.values().iterator();
@@ -1427,8 +1440,7 @@ public class Connection {
                     List<Device> devices = textToSpeech.devices;
                     if (!devices.isEmpty()) {
                         String text = textToSpeech.text;
-                        Map<String, Object> parameters = new HashMap<>();
-                        parameters.put("textToSpeak", text);
+                        Map<String, Object> parameters = Map.of("textToSpeak", text);
                         executeSequenceCommandWithVolume(devices, "Alexa.Speak", parameters, textToSpeech.ttsVolumes,
                                 textToSpeech.standardVolumes);
                     }
@@ -1444,9 +1456,60 @@ public class Connection {
         }
     }
 
+    public void textCommand(Device device, String text, @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
+        if (text.replaceAll("<.+?>", "").replaceAll("\\s+", " ").trim().isEmpty()) {
+            return;
+        }
+
+        // we lock TextCommands until we have finished adding this one
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.TEXT_COMMAND, k -> new ReentrantLock()));
+        lock.lock();
+        try {
+            TextCommand textCommand = Objects
+                    .requireNonNull(textCommands.computeIfAbsent(Objects.hash(text), k -> new TextCommand(text)));
+            textCommand.devices.add(device);
+            textCommand.ttsVolumes.add(ttsVolume);
+            textCommand.standardVolumes.add(standardVolume);
+            // schedule a TextCommand only if it has not been scheduled before
+            timers.computeIfAbsent(TimerType.TEXT_COMMAND,
+                    k -> scheduler.schedule(this::sendTextCommand, 500, TimeUnit.MILLISECONDS));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private synchronized void sendTextCommand() {
+        // we lock new TTS until we have dispatched everything
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.TEXT_COMMAND, k -> new ReentrantLock()));
+        lock.lock();
+
+        try {
+            Iterator<TextCommand> iterator = textCommands.values().iterator();
+            while (iterator.hasNext()) {
+                TextCommand textCommand = iterator.next();
+                try {
+                    List<Device> devices = textCommand.devices;
+                    if (!devices.isEmpty()) {
+                        String text = textCommand.text;
+                        Map<String, Object> parameters = Map.of("text", text);
+                        executeSequenceCommandWithVolume(devices, "Alexa.TextCommand", parameters,
+                                textCommand.ttsVolumes, textCommand.standardVolumes);
+                    }
+                } catch (Exception e) {
+                    logger.warn("send textCommand fails with unexpected error", e);
+                }
+                iterator.remove();
+            }
+        } finally {
+            // the timer is done anyway immediately after we unlock
+            timers.remove(TimerType.TEXT_COMMAND);
+            lock.unlock();
+        }
+    }
+
     public void volume(Device device, int vol) {
         // we lock volume until we have finished adding this one
-        Lock lock = locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock()));
         lock.lock();
         try {
             Volume volume = Objects.requireNonNull(volumes.computeIfAbsent(vol, k -> new Volume(vol)));
@@ -1462,7 +1525,7 @@ public class Connection {
 
     private void sendVolume() {
         // we lock new volume until we have dispatched everything
-        Lock lock = locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock()));
         lock.lock();
         try {
             Iterator<Volume> iterator = volumes.values().iterator();
@@ -1507,7 +1570,7 @@ public class Connection {
 
         if (command != null && !parameters.isEmpty()) {
             JsonArray commandNodesToExecute = new JsonArray();
-            if ("Alexa.Speak".equals(command)) {
+            if ("Alexa.Speak".equals(command) || "Alexa.TextCommand".equals(command)) {
                 for (Device device : devices) {
                     commandNodesToExecute.add(createExecutionNode(device, command, parameters));
                 }
@@ -1568,7 +1631,7 @@ public class Connection {
     }
 
     private void handleExecuteSequenceNode() {
-        Lock lock = locks.computeIfAbsent(TimerType.DEVICES, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.DEVICES, k -> new ReentrantLock()));
         if (lock.tryLock()) {
             try {
                 for (String serialNumber : devices.keySet()) {
@@ -1710,6 +1773,9 @@ public class Connection {
         JsonObject nodeToExecute = new JsonObject();
         nodeToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode");
         nodeToExecute.addProperty("type", command);
+        if ("Alexa.TextCommand".equals(command)) {
+            nodeToExecute.addProperty("skillId", "amzn1.ask.1p.tellalexa");
+        }
         nodeToExecute.add("operationPayload", operationPayload);
         return nodeToExecute;
     }
@@ -1754,6 +1820,9 @@ public class Connection {
                 if (operationPayload != null) {
                     if (operationPayload.has("textToSpeak")) {
                         executionNodeObject.text = operationPayload.get("textToSpeak").getAsString();
+                        return true;
+                    } else if (operationPayload.has("text")) {
+                        executionNodeObject.text = operationPayload.get("text").getAsString();
                         return true;
                     } else if (operationPayload.has("content")) {
                         JsonArray content = operationPayload.getAsJsonArray("content");
@@ -2024,7 +2093,7 @@ public class Connection {
                 true, true, null, 0);
     }
 
-    private static class Announcement {
+    public static class AnnouncementWrapper {
         public List<Device> devices = new ArrayList<>();
         public String speak;
         public String bodyText;
@@ -2032,7 +2101,7 @@ public class Connection {
         public List<@Nullable Integer> ttsVolumes = new ArrayList<>();
         public List<@Nullable Integer> standardVolumes = new ArrayList<>();
 
-        public Announcement(String speak, String bodyText, @Nullable String title) {
+        public AnnouncementWrapper(String speak, String bodyText, @Nullable String title) {
             this.speak = speak;
             this.bodyText = bodyText;
             this.title = title;
@@ -2046,6 +2115,17 @@ public class Connection {
         public List<@Nullable Integer> standardVolumes = new ArrayList<>();
 
         public TextToSpeech(String text) {
+            this.text = text;
+        }
+    }
+
+    private static class TextCommand {
+        public List<Device> devices = new ArrayList<>();
+        public String text;
+        public List<@Nullable Integer> ttsVolumes = new ArrayList<>();
+        public List<@Nullable Integer> standardVolumes = new ArrayList<>();
+
+        public TextCommand(String text) {
             this.text = text;
         }
     }

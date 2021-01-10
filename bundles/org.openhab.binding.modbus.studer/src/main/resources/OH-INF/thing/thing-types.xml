@@ -7,6 +7,7 @@
 	<thing-type id="bsp">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
 		<label>BSP Studer</label>
 		<description>Thing for Studer BSP Device</description>

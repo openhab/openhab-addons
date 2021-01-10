@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -49,13 +49,13 @@ public class D2_14_30 extends _VLDMessage {
     protected State getBatteryLevel() {
         switch ((bytes[1] & 0b110) >>> 1) {
             case 0:
-                return new QuantityType<>(100, SmartHomeUnits.PERCENT); // High
+                return new QuantityType<>(100, Units.PERCENT); // High
             case 1:
-                return new QuantityType<>(50, SmartHomeUnits.PERCENT); // Medium
+                return new QuantityType<>(50, Units.PERCENT); // Medium
             case 2:
-                return new QuantityType<>(25, SmartHomeUnits.PERCENT); // Low
+                return new QuantityType<>(25, Units.PERCENT); // Low
             case 3:
-                return new QuantityType<>(5, SmartHomeUnits.PERCENT); // Critical
+                return new QuantityType<>(5, Units.PERCENT); // Critical
         }
 
         return UnDefType.UNDEF;
@@ -76,12 +76,12 @@ public class D2_14_30 extends _VLDMessage {
             case CHANNEL_SENSORANALYSISTEMPERATURRANGE:
                 return getBit(bytes[0], 3) ? OnOffType.ON : OnOffType.OFF;
             case CHANNEL_TIMESINCELASTMAINTENANCE:
-                return new QuantityType<>(((bytes[0] << 5) + (bytes[0] >>> 3)) & 0xFF, SmartHomeUnits.WEEK);
+                return new QuantityType<>(((bytes[0] << 5) + (bytes[0] >>> 3)) & 0xFF, Units.WEEK);
             case CHANNEL_BATTERY_LEVEL:
                 return getBatteryLevel();
             case CHANNEL_REMAININGPLT: {
                 int months = ((bytes[1] << 7) + (bytes[2] >>> 1)) & 0xFF;
-                return months < 121 ? new QuantityType<>(months * 4, SmartHomeUnits.WEEK) : UnDefType.NULL;
+                return months < 121 ? new QuantityType<>(months * 4, Units.WEEK) : UnDefType.NULL;
             }
             case CHANNEL_TEMPERATURE: {
                 int unscaledValue = ((bytes[2] << 7) + (bytes[3] >>> 1)) & 0xFF;

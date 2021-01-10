@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -931,7 +931,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             assertFalse(results.isEmpty(), "No Thing with UID " + computerUID.getAsString() + " in inbox");
         });
 
-        inbox.approve(computerUID, SysteminfoDiscoveryService.DEFAULT_THING_LABEL);
+        inbox.approve(computerUID, SysteminfoDiscoveryService.DEFAULT_THING_LABEL, null);
 
         waitForAssert(() -> {
             systemInfoThing = thingRegistry.get(computerUID);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -255,7 +255,7 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_LAST_UPDATE,
                     new DateTimeType(ZonedDateTime.ofInstant(statusTimestamp, ZoneId.systemDefault())));
             updateState(CHANNEL_STATUS_BATTERY, new QuantityType<Dimensionless>(
-                    mower.getAttributes().getBattery().getBatteryPercent(), SmartHomeUnits.PERCENT));
+                    mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
 
             updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(mower.getAttributes().getMower().getErrorCode()));
 

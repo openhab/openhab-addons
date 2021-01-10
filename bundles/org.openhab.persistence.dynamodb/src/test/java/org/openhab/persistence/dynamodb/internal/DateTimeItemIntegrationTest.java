@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,8 +36,10 @@ public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest 
     private static final ZonedDateTime ZDT2 = ZonedDateTime.parse("2016-06-15T16:00:00.123Z");
     private static final ZonedDateTime ZDT_BETWEEN = ZonedDateTime.parse("2016-06-15T14:00:00Z");
 
+    // State1 stored as DateTimeType wrapping ZonedDateTime specified in UTC
     private static final DateTimeType STATE1 = new DateTimeType(ZDT1);
-    private static final DateTimeType STATE2 = new DateTimeType(ZDT2);
+    // State2 stored as DateTimeType wrapping ZonedDateTime specified in UTC+5
+    private static final DateTimeType STATE2 = new DateTimeType(ZDT2.withZoneSameInstant(ZoneOffset.ofHours(5)));
     private static final DateTimeType STATE_BETWEEN = new DateTimeType(ZDT_BETWEEN);
 
     @BeforeAll
@@ -65,12 +69,24 @@ public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest 
 
     @Override
     protected State getFirstItemState() {
-        return STATE1;
+        // The persistence converts to system default timezone
+        // Thus we need to convert here as well for comparison
+        // In the logs:
+        // [main] TRACE org.openhab.persistence.dynamodb.internal.DynamoDBPersistenceService - Dynamo item datetime
+        // (Type=DateTimeItem, State=2016-06-15T16:00:00.123+0000, Label=null, Category=null) converted to historic
+        // item: datetime: 2020-11-28T11:29:54.326Z: 2016-06-15T19:00:00.123+0300
+        return STATE1.toZone(ZoneId.systemDefault());
     }
 
     @Override
     protected State getSecondItemState() {
-        return STATE2;
+        // The persistence converts to system default timezone
+        // Thus we need to convert here as well for comparison
+        // In the logs:
+        // [main] TRACE org.openhab.persistence.dynamodb.internal.DynamoDBPersistenceService - Dynamo item datetime
+        // (Type=DateTimeItem, State=2016-06-15T16:00:00.123+0000, Label=null, Category=null) converted to historic
+        // item: datetime: 2020-11-28T11:29:54.326Z: 2016-06-15T19:00:00.123+0300
+        return STATE2.toZone(ZoneId.systemDefault());
     }
 
     @Override

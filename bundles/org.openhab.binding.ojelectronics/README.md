@@ -1,8 +1,6 @@
 # OJElectronics Binding
 
-With this binding it is possible to connect [OWD5/MWD5 Thermostat](https://www.ojelectronics.com/business-areas/wifi-thermostat-owd5-prod400) of OJ Electronics.
-
-At this moment all information is read only.
+With this binding it is possible to connect [OWD5/MWD5 Thermostat](https://ojelectronics.com/floorheating/products/wifi-thermostat-owd5/) of OJ Electronics.
 
 ## Supported Things
 
@@ -15,9 +13,7 @@ There are two things:
 
 ## Discovery
 
-Not supported at the moment.
-
-## Thing Configuration
+After the ojcloud bridge is succesfully initialized all thermostats will be discovered.
 
 ### OJ Electronics Bridge configuration (ojcloud)
 
@@ -54,7 +50,9 @@ Not supported at the moment.
 | comfortEndTime     | Date time          | Date and time when the thermostat switchs back from comfort mode to automatic mode |
 | boostEndTime       | Date time          | Date and time when the thermostat switchs back from boost mode to automatic mode   |
 | manualModeSetpoint | Number:Temperature | Target temperature of the manual mode                                              |
-| vacationEnabled    | Switch             | Vacation is enabled                                                                |
+| vacationEnabled    | Contact            | Vacation is enabled                                                                |
+| vacationBeginDay   | Date time          | Vacation start date                                                                |
+| vacationEndDay     | Date time          | Vacation end date                                                                  |
 
 ## Example
 
@@ -63,7 +61,7 @@ This example shows how to configure the OJElecttronics binding.
 ### demo.things
 
 ```
-Binding ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName" password="MyPassword" apiKey="The Key" ] {
+Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName", password="MyPassword", apiKey="The Key" ] {
     Thing owd5 myThermostat [ serialNumber="123" ]
 }
 ```
@@ -71,8 +69,8 @@ Binding ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserN
 ### demo.items
 
 ```
-Number Bath_Floor_Temperature "Bathroom: Floor Temperature" {channel="ojelectronics:owd5:myThermostat:floorTemperature"}
-String Bath_Mode "Bathroom: Mode" {channel="ojelectronics:owd5:myThermostat:regulationMode"}
+Number Bath_Floor_Temperature "Bathroom: Floor Temperature" {channel="ojelectronics:owd5:myCloud:myThermostat:floorTemperature"}
+String Bath_Mode "Bathroom: Mode" {channel="ojelectronics:owd5:myCloud:myThermostat:regulationMode"}
 ```
 
 ### demo.sitemap

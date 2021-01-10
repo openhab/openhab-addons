@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -235,16 +235,14 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
             updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
-            updateState(CHANNEL_STATUS_DURATION,
-                    new QuantityType<>(info.getStatus().getDuration(), SmartHomeUnits.SECOND));
-            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), SmartHomeUnits.HOUR));
+            updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(info.getStatus().getDuration(), Units.SECOND));
+            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), Units.HOUR));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
             updateState(CHANNEL_MOWER_START, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
             if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP,
                         new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
-                updateState(CHANNEL_HEALTH_HUM,
-                        new QuantityType(info.getHealth().getHumidity(), SmartHomeUnits.PERCENT));
+                updateState(CHANNEL_HEALTH_HUM, new QuantityType(info.getHealth().getHumidity(), Units.PERCENT));
             }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
@@ -381,14 +379,8 @@ public class RobonectHandler extends BaseThingHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
-        try {
-            if (httpClient != null) {
-                httpClient.stop();
-                httpClient = null;
-            }
-        } catch (Exception e) {
-            logger.debug("Could not stop http client", e);
-        }
+
+        httpClient = null;
     }
 
     /**

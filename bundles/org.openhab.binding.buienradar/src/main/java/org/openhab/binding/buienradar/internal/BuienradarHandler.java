@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.openhab.binding.buienradar.internal.buienradarapi.PredictionAPI;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -152,7 +152,7 @@ public class BuienradarHandler extends BaseThingHandler {
                 if (minutesFromNow >= 0 && minutesFromNow <= 115) {
                     final String label = String.format(Locale.ENGLISH, "forecast_%d", minutesFromNow);
 
-                    updateState(label, new QuantityType<>(intensity, SmartHomeUnits.MILLIMETRE_PER_HOUR));
+                    updateState(label, new QuantityType<>(intensity, Units.MILLIMETRE_PER_HOUR));
                 }
             }
 

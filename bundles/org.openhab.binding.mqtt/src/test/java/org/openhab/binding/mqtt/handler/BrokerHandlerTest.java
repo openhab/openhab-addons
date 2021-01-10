@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttService;
+import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusInfo;
@@ -48,7 +49,7 @@ import org.osgi.service.cm.ConfigurationException;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
-public class BrokerHandlerTest {
+public class BrokerHandlerTest extends JavaTest {
     private ScheduledExecutorService scheduler;
 
     private @Mock ThingHandlerCallback callback;
@@ -60,10 +61,10 @@ public class BrokerHandlerTest {
     private BrokerHandler handler;
 
     @BeforeEach
-    public void setUp() throws ConfigurationException, MqttException {
+    public void setUp() {
         scheduler = new ScheduledThreadPoolExecutor(1);
         connection = spy(new MqttBrokerConnectionEx("10.10.0.10", 80, false, "BrokerHandlerTest"));
-        connection.setTimeoutExecutor(scheduler, 10);
+        connection.setTimeoutExecutor(scheduler, 10000);
         connection.setConnectionCallback(connection);
 
         Configuration config = new Configuration();
@@ -79,8 +80,7 @@ public class BrokerHandlerTest {
     }
 
     @Test
-    public void handlerInitWithoutUrl()
-            throws InterruptedException, IllegalArgumentException, MqttException, ConfigurationException {
+    public void handlerInitWithoutUrl() throws IllegalArgumentException {
         // Assume it is a real handler and not a mock as defined above
         handler = new BrokerHandler(thing);
         assertThrows(IllegalArgumentException.class, () -> initializeHandlerWaitForTimeout());
@@ -97,8 +97,7 @@ public class BrokerHandlerTest {
     }
 
     @Test
-    public void handlerInit()
-            throws InterruptedException, IllegalArgumentException, MqttException, ConfigurationException {
+    public void handlerInit() throws InterruptedException, IllegalArgumentException {
         assertThat(initializeHandlerWaitForTimeout(), is(true));
 
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
@@ -116,8 +115,7 @@ public class BrokerHandlerTest {
      * @throws MqttException
      * @throws ConfigurationException
      */
-    boolean initializeHandlerWaitForTimeout()
-            throws InterruptedException, IllegalArgumentException, MqttException, ConfigurationException {
+    boolean initializeHandlerWaitForTimeout() throws InterruptedException, IllegalArgumentException {
         MqttBrokerConnection c = connection;
 
         MqttConnectionObserverEx o = new MqttConnectionObserverEx();
@@ -125,13 +123,13 @@ public class BrokerHandlerTest {
 
         assertThat(connection.connectionState(), is(MqttConnectionState.DISCONNECTED));
         handler.initialize();
-        verify(connection, times(2)).addConnectionObserver(any());
-        verify(connection, times(1)).start();
+        waitForAssert(() -> verify(connection, times(2)).addConnectionObserver(any()));
+        waitForAssert(() -> verify(connection, times(1)).start());
         // First we expect a CONNECTING state and then a CONNECTED unique state change
-        assertThat(o.counter, is(2));
+        waitForAssert(() -> assertThat(o.counter, is(2)));
         // First we expect a CONNECTING state and then a CONNECTED state change
         // (and other CONNECTED after the future completes)
-        verify(handler, times(3)).connectionStateChanged(any(), any());
+        waitForAssert(() -> verify(handler, times(3)).connectionStateChanged(any(), any()));
         return true;
     }
 }

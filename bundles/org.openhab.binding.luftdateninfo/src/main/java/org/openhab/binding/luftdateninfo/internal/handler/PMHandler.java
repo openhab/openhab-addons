@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -35,8 +35,8 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class PMHandler extends BaseSensorHandler {
 
-    protected QuantityType<Density> pm25Cache = QuantityType.valueOf(-1, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
-    protected QuantityType<Density> pm100Cache = QuantityType.valueOf(-1, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+    protected QuantityType<Density> pm25Cache = QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE);
+    protected QuantityType<Density> pm100Cache = QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE);
 
     public PMHandler(Thing thing) {
         super(thing);
@@ -51,11 +51,11 @@ public class PMHandler extends BaseSensorHandler {
                     valueList.forEach(v -> {
                         if (v.getValueType().equals(P1)) {
                             pm100Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
-                                    SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                                    Units.MICROGRAM_PER_CUBICMETRE);
                             updateState(PM100_CHANNEL, pm100Cache);
                         } else if (v.getValueType().equals(P2)) {
                             pm25Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
-                                    SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                                    Units.MICROGRAM_PER_CUBICMETRE);
                             updateState(PM25_CHANNEL, pm25Cache);
                         }
                     });
