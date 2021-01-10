@@ -504,7 +504,7 @@
 	<channel-type id="runOnTimeVhzNhz" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Stopping Time Preheater/Afterheater</label>
-		<description>Stopping time preheater/afterheater (in seconds)</description>
+		<description>Stopping time preheater/afterheater</description>
 		<category>Heating</category>
 		<state min="60" max="120" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
