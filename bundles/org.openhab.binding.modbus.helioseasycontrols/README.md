@@ -325,7 +325,7 @@ The binding provides the following properties:
 Errors, warnings and infos of the device are provided in a bit encoded way. I.e. each bit in a 8 bit or 32 bit variable encodes potentially multiple errors, warnings or infos.
 Also status flags are provided this way. For details please refer to the manufacturer's [specification](https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te).
 
-Based on that concept, errors, warnings and infos are provided 3 different ways:
+Based on that concept, errors, warnings and infos are provided in 3 different ways:
 * As an unsigned integer value with the decimal representation of the encoded bits
 * The total number of encoded errors, warning or infos
 * The bit encoded as a string
