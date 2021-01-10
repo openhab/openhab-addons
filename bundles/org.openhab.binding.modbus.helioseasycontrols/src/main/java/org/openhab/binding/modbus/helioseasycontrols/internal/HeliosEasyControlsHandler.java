@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -335,36 +336,39 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 // convert item's unit to the Helios device's unit
                 Map<String, HeliosVariable> variableMap = this.variableMap;
                 if (variableMap != null) {
-                    String unit = variableMap.get(channelId).getUnit();
-                    QuantityType<?> val = (QuantityType<?>) command;
-                    if (unit != null) {
-                        switch (unit) {
-                            case HeliosVariable.UNIT_DAY:
-                                val = val.toUnit(Units.DAY);
-                                break;
-                            case HeliosVariable.UNIT_HOUR:
-                                val = val.toUnit(Units.HOUR);
-                                break;
-                            case HeliosVariable.UNIT_MIN:
-                                val = val.toUnit(Units.MINUTE);
-                                break;
-                            case HeliosVariable.UNIT_SEC:
-                                val = val.toUnit(Units.SECOND);
-                                break;
-                            case HeliosVariable.UNIT_VOLT:
-                                val = val.toUnit(Units.VOLT);
-                                break;
-                            case HeliosVariable.UNIT_PERCENT:
-                                val = val.toUnit(Units.PERCENT);
-                                break;
-                            case HeliosVariable.UNIT_PPM:
-                                val = val.toUnit(Units.PARTS_PER_MILLION);
-                                break;
-                            case HeliosVariable.UNIT_TEMP:
-                                val = val.toUnit(SIUnits.CELSIUS);
-                                break;
+                    HeliosVariable v = variableMap.get(channelId);
+                    if (v != null) {
+                        String unit = v.getUnit();
+                        QuantityType<?> val = (QuantityType<?>) command;
+                        if (unit != null) {
+                            switch (unit) {
+                                case HeliosVariable.UNIT_DAY:
+                                    val = val.toUnit(Units.DAY);
+                                    break;
+                                case HeliosVariable.UNIT_HOUR:
+                                    val = val.toUnit(Units.HOUR);
+                                    break;
+                                case HeliosVariable.UNIT_MIN:
+                                    val = val.toUnit(Units.MINUTE);
+                                    break;
+                                case HeliosVariable.UNIT_SEC:
+                                    val = val.toUnit(Units.SECOND);
+                                    break;
+                                case HeliosVariable.UNIT_VOLT:
+                                    val = val.toUnit(Units.VOLT);
+                                    break;
+                                case HeliosVariable.UNIT_PERCENT:
+                                    val = val.toUnit(Units.PERCENT);
+                                    break;
+                                case HeliosVariable.UNIT_PPM:
+                                    val = val.toUnit(Units.PARTS_PER_MILLION);
+                                    break;
+                                case HeliosVariable.UNIT_TEMP:
+                                    val = val.toUnit(SIUnits.CELSIUS);
+                                    break;
+                            }
+                            value = val != null ? String.valueOf(val.doubleValue()) : null; // ignore the UoM
                         }
-                        value = val != null ? String.valueOf(val.doubleValue()) : null; // ignore the UoM
                     }
                 }
             }
@@ -421,39 +425,44 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             if (variableMap != null) {
                 HeliosVariable v = variableMap.get(variableName);
 
-                if (!v.hasWriteAccess()) {
-                    throw new HeliosException("Variable " + variableName + " is read-only");
-                } else if (!v.isInAllowedRange(value)) {
-                    throw new HeliosException(
-                            "Value " + value + " is outside of allowed range of variable " + variableName);
-                } else if (this.comms != null) {
-                    // write to device
-                    String payload = v.getVariableString() + "=" + value;
-                    ModbusCommunicationInterface comms = this.comms;
-                    if (comms != null) {
-                        final Semaphore lock = transactionLocks.get(comms.getEndpoint());
-                        try {
-                            lock.acquire();
-                            comms.submitOneTimeWrite(
-                                    new ModbusWriteRegisterRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
+                if (v != null) {
+                    if (!v.hasWriteAccess()) {
+                        throw new HeliosException("Variable " + variableName + " is read-only");
+                    } else if (!v.isInAllowedRange(value)) {
+                        throw new HeliosException(
+                                "Value " + value + " is outside of allowed range of variable " + variableName);
+                    } else if (this.comms != null) {
+                        // write to device
+                        String payload = v.getVariableString() + "=" + value;
+                        ModbusCommunicationInterface comms = this.comms;
+                        if (comms != null) {
+                            final Semaphore lock = transactionLocks.get(comms.getEndpoint());
+                            try {
+                                if (lock != null) {
+                                    lock.acquire();
+                                    comms.submitOneTimeWrite(new ModbusWriteRegisterRequestBlueprint(
+                                            HeliosEasyControlsBindingConstants.UNIT_ID,
                                             HeliosEasyControlsBindingConstants.START_ADDRESS, preparePayload(payload),
-                                            true, HeliosEasyControlsBindingConstants.MAX_TRIES),
-                                    result -> {
-                                        lock.release();
-                                        updateStatus(ThingStatus.ONLINE);
-                                    }, failureInfo -> {
-                                        lock.release();
-                                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                                "Error writing to device: " + failureInfo.getCause().getMessage());
-                                    });
-                        } catch (InterruptedException e) {
-                            logger.warn(
-                                    "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
-                                    HeliosEasyControlsHandler.class.getSimpleName(), variableName, e.getMessage());
+                                            true, HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
+                                                lock.release();
+                                                updateStatus(ThingStatus.ONLINE);
+                                            }, failureInfo -> {
+                                                lock.release();
+                                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                                        "Error writing to device: "
+                                                                + failureInfo.getCause().getMessage());
+                                            });
+                                }
+                            } catch (InterruptedException e) {
+                                logger.warn(
+                                        "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
+                                        HeliosEasyControlsHandler.class.getSimpleName(), variableName, e.getMessage());
+                            }
                         }
+                    } else { // comms is null
+                        this.handleError("Modbus communication interface is null",
+                                ThingStatusDetail.COMMUNICATION_ERROR);
                     }
-                } else { // comms is null
-                    this.handleError("Modbus communication interface is null", ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
         }
@@ -471,7 +480,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         if ((comms != null) && (variableMap != null)) {
             final Semaphore lock = transactionLocks.get(comms.getEndpoint());
             HeliosVariable v = variableMap.get(variableName);
-            if (v.hasReadAccess()) {
+            if ((v != null) && v.hasReadAccess() && (lock != null)) {
                 try {
                     lock.acquire(); // will block until lock is available
                 } catch (InterruptedException e) {
@@ -647,9 +656,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * Transforms the errors provided by the device into a human readable form (the basis for the
      * corresponding action)
      *
-     * @return an <code>ArrayList</code> of messages indicated by the error flags sent by the device
+     * @return an <code>List</code> of messages indicated by the error flags sent by the device
      */
-    protected ArrayList<String> getErrorMessages() {
+    protected List<String> getErrorMessages() {
         return this.getMessages(this.errors, HeliosEasyControlsBindingConstants.BITS_ERROR_MSG,
                 HeliosEasyControlsBindingConstants.PREFIX_ERROR_MSG);
     }
@@ -658,9 +667,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * Transforms the warnings provided by the device into a human readable form (the basis for the
      * corresponding action)
      *
-     * @return an <code>ArrayList</code> of messages indicated by the warning flags sent by the device
+     * @return an <code>List</code> of messages indicated by the warning flags sent by the device
      */
-    protected ArrayList<String> getWarningMessages() {
+    protected List<String> getWarningMessages() {
         return this.getMessages(this.warnings, HeliosEasyControlsBindingConstants.BITS_WARNING_MSG,
                 HeliosEasyControlsBindingConstants.PREFIX_WARNING_MSG);
     }
@@ -669,9 +678,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * Transforms the infos provided by the device into a human readable form (the basis for the
      * corresponding action)
      *
-     * @return an <code>ArrayList</code> of messages indicated by the info flags sent by the device
+     * @return an <code>List</code> of messages indicated by the info flags sent by the device
      */
-    protected ArrayList<String> getInfoMessages() {
+    protected List<String> getInfoMessages() {
         return this.getMessages(this.infos, HeliosEasyControlsBindingConstants.BITS_INFO_MSG,
                 HeliosEasyControlsBindingConstants.PREFIX_INFO_MSG);
     }
@@ -680,9 +689,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * Transforms the status flags provided by the device into a human readable form (the basis for the
      * corresponding action)
      *
-     * @return an <code>ArrayList</code> of messages indicated by the status flags sent by the device
+     * @return an <code>List</code> of messages indicated by the status flags sent by the device
      */
-    protected ArrayList<String> getStatusMessages() {
+    protected List<String> getStatusMessages() {
         ArrayList<String> msg = new ArrayList<String>();
         if (this.statusFlags.length() == HeliosEasyControlsBindingConstants.BITS_STATUS_MSG) {
             for (int i = 0; i < HeliosEasyControlsBindingConstants.BITS_STATUS_MSG; i++) {

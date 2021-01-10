@@ -429,7 +429,7 @@ public class HeliosVariable implements Comparable<HeliosVariable> {
                 return this.getText("onOff", value, translationProvider);
             case HeliosEasyControlsBindingConstants.EXTERNAL_CONTACT:
             case HeliosEasyControlsBindingConstants.FUNCTION_TYPE_KWL_EM:
-                return this.getText("function", value, translationProvider) + value;
+                return this.getText("function", value, translationProvider);
             case HeliosEasyControlsBindingConstants.OFFSET_EXTRACT_AIR:
             case HeliosEasyControlsBindingConstants.VOLTAGE_FAN_STAGE_1_EXTRACT_AIR:
             case HeliosEasyControlsBindingConstants.VOLTAGE_FAN_STAGE_2_EXTRACT_AIR:
