@@ -631,7 +631,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         }
     }
 
-    private ArrayList<String> getMessages(long bitMask, int bits, String prefix) {
+    private List<String> getMessages(long bitMask, int bits, String prefix) {
         ArrayList<String> msg = new ArrayList<String>();
         long mask = 1;
         for (int i = 0; i < bits; i++) {
