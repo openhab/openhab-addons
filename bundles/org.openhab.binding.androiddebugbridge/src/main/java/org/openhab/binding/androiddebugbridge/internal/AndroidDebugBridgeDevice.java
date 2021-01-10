@@ -123,7 +123,7 @@ public class AndroidDebugBridgeDevice {
         String devicesResp = runAdbShell("dumpsys", "power", "|", "grep", "'Display Power'");
         if (devicesResp.contains("=")) {
             try {
-                return devicesResp.split("=")[1] == "ON";
+                return devicesResp.split("=")[1].equals("ON");
             } catch (NumberFormatException e) {
                 logger.debug("Unable to parse device wake lock: {}", e.getMessage());
             }
@@ -241,7 +241,7 @@ public class AndroidDebugBridgeDevice {
             sock.connect(new InetSocketAddress(ip, port), (int) TimeUnit.SECONDS.toMillis(15));
         } catch (IOException e) {
             logger.debug("Error connecting to {}: [{}] {}", ip, e.getClass().getName(), e.getMessage());
-            if (e.getMessage() == "Socket closed") {
+            if (e.getMessage().equals("Socket closed")) {
                 // Connection aborted by us
                 throw new InterruptedException();
             }

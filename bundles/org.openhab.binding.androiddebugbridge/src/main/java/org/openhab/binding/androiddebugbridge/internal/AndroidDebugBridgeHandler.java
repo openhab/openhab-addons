@@ -14,7 +14,6 @@ package org.openhab.binding.androiddebugbridge.internal;
 
 import static org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeBindingConstants.*;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -80,19 +79,20 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 adbConnection.connect();
             }
             handleCommandInternal(channelUID, command);
-        } catch (AndroidDebugBridgeDeviceException | InterruptedException | IOException e) {
+        } catch (InterruptedException ignored) {
+        } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             adbConnection.disconnect();
         } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("{} - read error: {}", currentConfig.ip, e.getMessage());
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (TimeoutException e) {
             logger.warn("{} - timeout error", currentConfig.ip);
         }
     }
 
     private void handleCommandInternal(ChannelUID channelUID, Command command)
-            throws InterruptedException, IOException, AndroidDebugBridgeDeviceException,
-            AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
+            throws InterruptedException, AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException,
+            TimeoutException, ExecutionException {
         if (!isLinked(channelUID))
             return;
         String channelId = channelUID.getId();
@@ -129,8 +129,8 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     private void handleMediaVolume(ChannelUID channelUID, Command command)
-            throws IOException, InterruptedException, AndroidDebugBridgeDeviceReadException,
-            AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+            throws InterruptedException, AndroidDebugBridgeDeviceReadException, AndroidDebugBridgeDeviceException,
+            TimeoutException, ExecutionException {
         if (command instanceof RefreshType) {
             var volumeInfo = adbConnection.getMediaVolume();
             maxMediaVolume = volumeInfo.max;
@@ -153,8 +153,8 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     private void handleMediaControlCommand(ChannelUID channelUID, Command command)
-            throws InterruptedException, IOException, AndroidDebugBridgeDeviceException,
-            AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
+            throws InterruptedException, AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException,
+            TimeoutException, ExecutionException {
         if (command instanceof RefreshType) {
             boolean playing;
             String currentPackage = adbConnection.getCurrentPackage();
@@ -269,15 +269,14 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 }
             }
         } catch (InterruptedException ignored) {
-        } catch (IOException | AndroidDebugBridgeDeviceException | ExecutionException e) {
+        } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
             logger.debug("Connection checker error: {}", e.getMessage());
             adbConnection.disconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void refreshStatus()
-            throws InterruptedException, IOException, AndroidDebugBridgeDeviceException, ExecutionException {
+    private void refreshStatus() throws InterruptedException, AndroidDebugBridgeDeviceException, ExecutionException {
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), MEDIA_VOLUME_CHANNEL), RefreshType.REFRESH);
         } catch (AndroidDebugBridgeDeviceReadException e) {

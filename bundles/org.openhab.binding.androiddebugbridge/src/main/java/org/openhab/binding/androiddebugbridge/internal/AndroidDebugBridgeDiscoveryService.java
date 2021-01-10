@@ -99,16 +99,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                                 while (retries < MAX_RETRIES) {
                                     try {
                                         discoverWithADB(currentIp, configuration.discoveryPort);
-                                    } catch (IOException e) {
-                                        String message = e.getMessage();
-                                        if (message != null && message.contains("rejected by remote peer")) {
-                                            retries++;
-                                            logger.debug("retrying - pending {}", MAX_RETRIES - retries);
-                                            continue;
-                                        }
-                                        throw e;
-                                    } catch (AndroidDebugBridgeDeviceReadException | TimeoutException
-                                            | ExecutionException e) {
+                                    } catch (AndroidDebugBridgeDeviceReadException | TimeoutException e) {
                                         retries++;
                                         if (retries < MAX_RETRIES) {
                                             logger.debug("retrying - pending {}", MAX_RETRIES - retries);
@@ -131,8 +122,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverWithADB(String ip, int port)
-            throws InterruptedException, IOException, AndroidDebugBridgeDeviceException,
+    private void discoverWithADB(String ip, int port) throws InterruptedException, AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         var device = new AndroidDebugBridgeDevice(scheduler);
         device.configure(ip, port, 10);
