@@ -233,10 +233,10 @@ public Map<String, Object> getMessages()
 ```
 
 *Return values:*
-* *errorMessages:* A `ArrayList<String>`object containing all error messages
-* *warningMessages:* A `ArrayList<String>`object containing all warning messages
-* *infoMessages:* A `ArrayList<String>`object containing all info messages
-* *statusMessages:* A `ArrayList<String>`object containing all status messages
+* *errorMessages:* A `ArrayList<String>` object containing all error messages
+* *warningMessages:* A `ArrayList<String>` object containing all warning messages
+* *infoMessages:* A `ArrayList<String>` object containing all info messages
+* *statusMessages:* A `ArrayList<String>` object containing all status messages
 
 
 ## Properties
