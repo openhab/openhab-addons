@@ -88,7 +88,4 @@ public class WlanThermoBindingConstants {
     public static final DecimalType SIGNAL_STRENGTH_3 = new DecimalType(3);
     public static final DecimalType SIGNAL_STRENGTH_2 = new DecimalType(2);
     public static final DecimalType SIGNAL_STRENGTH_1 = new DecimalType(1);
-
-    public static final String INVALID_INPUT_EXCEPTION = "Input Data is invalid!";
-    public static final String UNKNOWN_CHANNEL_EXCEPTION = "Channel or Trigger unknown!";
 }

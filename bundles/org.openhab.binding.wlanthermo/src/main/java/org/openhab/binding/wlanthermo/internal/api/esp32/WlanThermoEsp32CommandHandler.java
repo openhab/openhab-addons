@@ -23,7 +23,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wlanthermo.internal.WlanThermoException;
+import org.openhab.binding.wlanthermo.internal.WlanThermoInputException;
 import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Channel;
 import org.openhab.binding.wlanthermo.internal.api.esp32.dto.data.Data;
@@ -49,9 +49,9 @@ import org.openhab.core.types.UnDefType;
 public class WlanThermoEsp32CommandHandler {
 
     public static State getState(ChannelUID channelUID, @Nullable Data data, @Nullable Settings settings)
-            throws WlanThermoException {
+            throws WlanThermoUnknownChannelException, WlanThermoInputException {
         if (channelUID.getGroupId() == null || data == null || settings == null) {
-            throw new WlanThermoException(INVALID_INPUT_EXCEPTION);
+            throw new WlanThermoInputException();
         }
 
         String groupId = channelUID.getGroupId();
@@ -156,7 +156,7 @@ public class WlanThermoEsp32CommandHandler {
                 return UnDefType.UNDEF;
             }
         }
-        throw new WlanThermoUnknownChannelException();
+        throw new WlanThermoUnknownChannelException(channelUID);
     }
 
     public static boolean setState(ChannelUID channelUID, Command command, @Nullable Data data) {
@@ -245,9 +245,10 @@ public class WlanThermoEsp32CommandHandler {
         return false;
     }
 
-    public static String getTrigger(ChannelUID channelUID, @Nullable Data data) throws WlanThermoException {
+    public static String getTrigger(ChannelUID channelUID, @Nullable Data data)
+            throws WlanThermoUnknownChannelException, WlanThermoInputException {
         if (channelUID.getGroupId() == null || data == null) {
-            throw new WlanThermoException(INVALID_INPUT_EXCEPTION);
+            throw new WlanThermoInputException();
         }
 
         String groupId = channelUID.getGroupId();
@@ -268,6 +269,6 @@ public class WlanThermoEsp32CommandHandler {
                 }
             }
         }
-        throw new WlanThermoUnknownChannelException();
+        throw new WlanThermoUnknownChannelException(channelUID);
     }
 }

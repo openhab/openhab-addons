@@ -60,7 +60,8 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
         config = getConfigAs(WlanThermoConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
-        pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
+        pollingScheduler = scheduler.scheduleWithFixedDelay(this::checkConnection, 0, config.getPollingInterval(),
+                TimeUnit.SECONDS);
     }
 
     private void checkConnection() {
@@ -92,8 +93,12 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                         updateState(channel.getUID(), state);
                     } catch (WlanThermoUnknownChannelException e) {
                         // if we could not obtain a state, try trigger instead
-                        String trigger = WlanThermoMiniCommandHandler.getTrigger(channel.getUID(), app);
-                        triggerChannel(channel.getUID(), trigger);
+                        try {
+                            String trigger = WlanThermoMiniCommandHandler.getTrigger(channel.getUID(), app);
+                            triggerChannel(channel.getUID(), trigger);
+                        } catch (WlanThermoUnknownChannelException e1) {
+                            logger.debug("{}", e.getMessage());
+                        }
                     }
                 }
             } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {

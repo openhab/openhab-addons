@@ -13,6 +13,7 @@
 package org.openhab.binding.wlanthermo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ChannelUID;
 
 /**
  * The {@link WlanThermoUnknownChannelException} is thrown if a channel or trigger is unknown
@@ -22,9 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class WlanThermoUnknownChannelException extends WlanThermoException {
 
-    static final long serialVersionUID = 1l;
+    static final long serialVersionUID = 1L;
+    public static final String UNKNOWN_CHANNEL_EXCEPTION = "Channel or Trigger unknown!";
 
     public WlanThermoUnknownChannelException() {
-        super(WlanThermoBindingConstants.UNKNOWN_CHANNEL_EXCEPTION);
+        super(UNKNOWN_CHANNEL_EXCEPTION);
+    }
+
+    public WlanThermoUnknownChannelException(ChannelUID channelUID) {
+        super(UNKNOWN_CHANNEL_EXCEPTION + "ChannelUID: " + channelUID.toString());
     }
 }

@@ -22,7 +22,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
-import org.openhab.binding.wlanthermo.internal.WlanThermoException;
+import org.openhab.binding.wlanthermo.internal.WlanThermoInputException;
 import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
 import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.*;
 import org.openhab.core.library.types.*;
@@ -43,9 +43,10 @@ public class WlanThermoMiniCommandHandler {
 
     public static final String ERROR = "er";
 
-    public static State getState(ChannelUID channelUID, @Nullable App app) throws WlanThermoException {
+    public static State getState(ChannelUID channelUID, @Nullable App app)
+            throws WlanThermoUnknownChannelException, WlanThermoInputException {
         if (channelUID.getGroupId() == null || app == null) {
-            throw new WlanThermoException(INVALID_INPUT_EXCEPTION);
+            throw new WlanThermoInputException();
         }
 
         String groupId = channelUID.getGroupId();
@@ -135,12 +136,13 @@ public class WlanThermoMiniCommandHandler {
                     return new DecimalType(pit.getCh());
             }
         }
-        throw new WlanThermoUnknownChannelException();
+        throw new WlanThermoUnknownChannelException(channelUID);
     }
 
-    public static String getTrigger(ChannelUID channelUID, @Nullable App app) throws WlanThermoException {
+    public static String getTrigger(ChannelUID channelUID, @Nullable App app)
+            throws WlanThermoUnknownChannelException, WlanThermoInputException {
         if (channelUID.getGroupId() == null || app == null) {
-            throw new WlanThermoException(INVALID_INPUT_EXCEPTION);
+            throw new WlanThermoInputException();
         }
 
         String groupId = channelUID.getGroupId();
@@ -150,7 +152,7 @@ public class WlanThermoMiniCommandHandler {
             if (channelId >= 0 && channelId <= 9) {
                 Channel channel = app.getChannel();
                 if (channel == null) {
-                    throw new WlanThermoException("Channel ID is unavailable!");
+                    throw new WlanThermoInputException();
                 }
                 Data data = channel.getData(channelId);
                 if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
@@ -164,6 +166,6 @@ public class WlanThermoMiniCommandHandler {
                 }
             }
         }
-        throw new WlanThermoUnknownChannelException();
+        throw new WlanThermoUnknownChannelException(channelUID);
     }
 }

@@ -73,8 +73,8 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                 authStore.addAuthentication(new DigestAuthentication(config.getUri(), Authentication.ANY_REALM,
                         config.getUsername(), config.getPassword()));
             }
-            pollingScheduler = scheduler.schedule(this::checkConnectionAndUpdate, config.getPollingInterval(),
-                    TimeUnit.SECONDS);
+            pollingScheduler = scheduler.scheduleWithFixedDelay(this::checkConnectionAndUpdate, 0,
+                    config.getPollingInterval(), TimeUnit.SECONDS);
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to initialize WlanThermo Nano: " + e.getMessage());
@@ -113,8 +113,12 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                         updateState(channel.getUID(), state);
                     } catch (WlanThermoUnknownChannelException e) {
                         // if we could not obtain a state, try trigger instead
-                        String trigger = WlanThermoNanoV1CommandHandler.getTrigger(channel.getUID(), data);
-                        triggerChannel(channel.getUID(), trigger);
+                        try {
+                            String trigger = WlanThermoNanoV1CommandHandler.getTrigger(channel.getUID(), data);
+                            triggerChannel(channel.getUID(), trigger);
+                        } catch (WlanThermoUnknownChannelException e1) {
+                            logger.debug("{}", e.getMessage());
+                        }
                     }
                 }
             } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {

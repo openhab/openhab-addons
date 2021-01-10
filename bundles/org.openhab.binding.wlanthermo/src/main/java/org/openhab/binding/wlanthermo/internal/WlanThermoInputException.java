@@ -15,16 +15,17 @@ package org.openhab.binding.wlanthermo.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link WlanThermoException} is thrown if an exception in WlanThermoBinding occurs.
+ * The {@link WlanThermoInputException} is thrown if input is invalid or null
  *
  * @author Christian Schlipp - Initial contribution
  */
 @NonNullByDefault
-public abstract class WlanThermoException extends Exception {
+public class WlanThermoInputException extends WlanThermoException {
 
     static final long serialVersionUID = 1L;
+    public static final String INVALID_INPUT_EXCEPTION = "Input Data is invalid!";
 
-    public WlanThermoException(String reason) {
-        super(reason, null);
+    public WlanThermoInputException() {
+        super(INVALID_INPUT_EXCEPTION);
     }
 }
