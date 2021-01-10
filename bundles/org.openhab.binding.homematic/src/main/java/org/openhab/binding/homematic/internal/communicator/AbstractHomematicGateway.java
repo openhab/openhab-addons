@@ -190,16 +190,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         logger.debug("Used Homematic transfer modes: {}", sb.toString());
         startClients();
         startServers();
-
-        if (!config.getGatewayInfo().isHomegear()) {
-            // delay the newDevice event handling at startup, reduces some API calls
-            long delay = config.getGatewayInfo().isCCU1() ? 10 : 3;
-            enableNewDeviceFuture = scheduler.schedule(() -> {
-                newDeviceEventsEnabled = true;
-            }, delay, TimeUnit.MINUTES);
-        } else {
-            newDeviceEventsEnabled = true;
-        }
     }
 
     @Override
@@ -208,7 +198,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         if (enableNewDeviceFuture != null) {
             enableNewDeviceFuture.cancel(true);
         }
-        newDeviceEventsEnabled = false;
         stopWatchdogs();
         sendDelayedExecutor.stop();
         receiveDelayedExecutor.stop();
@@ -257,12 +246,22 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
             getRpcClient(hmInterface).init(hmInterface, hmInterface.toString() + "-" + id);
         }
+        if (!config.getGatewayInfo().isHomegear()) {
+            // delay the newDevice event handling at startup, reduces some API calls
+            long delay = config.getGatewayInfo().isCCU1() ? 10 : 3;
+            enableNewDeviceFuture = scheduler.schedule(() -> {
+                newDeviceEventsEnabled = true;
+            }, delay, TimeUnit.MINUTES);
+        } else {
+            newDeviceEventsEnabled = true;
+        }
     }
 
     /**
      * Stops the Homematic RPC server.
      */
     private synchronized void stopServers() {
+        newDeviceEventsEnabled = false;
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
             try {
                 getRpcClient(hmInterface).release(hmInterface);
