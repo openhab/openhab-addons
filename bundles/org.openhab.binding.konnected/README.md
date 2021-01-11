@@ -7,7 +7,7 @@ The Konnected hardware is specifically designed for an alarm panel installation,
 
 ## Supported Things
 
-This binding supports one type of thing module, which represents a Konnected Alarm Panel.
+This binding supports two types of thing modules, which represents the wifi version of the Konnected Alarm Panel and the Konnected Alarm Panel Pro.
 
 ## Discovery
 
@@ -28,24 +28,33 @@ The blink setting will disable the transmission LED on the Konnected Alarm Panel
 
 ## Channels
 
-The auto discovered thing adds two default channels.
+Depending on whether the thing type is the wifi version or the pro version the automativally added channels will differ.  
+For the wifi verision the auto discovered thing adds two default channels.
 
 | Channel | Channel Id | Channel Type | Description                                              |
 |---------|------------|--------------|----------------------------------------------------------|
-| 1       | Zone_6     | Switch       | A Switch channel for zone 6                              |
-| 2       | Out        | Actuator     | The Channel for the Out Pin on the Konnected Alarm Panel |
+| 1       | Zone_6     | Switch-wifi       | A Switch channel for zone 6                              |
+| 2       | Out        | Actuator-wifi     | The Channel for the Out Pin on the Konnected Alarm Panel |
 
 One channel for Zone 6 which is a sensor type channel, and one channel for the out pin that is an actuator type channel.
 These channels represent the two pins on the Konnected Alarm Panel whose type cannot be changed.
-For zones 1-5, you will need to add channels for the remaining zones that you have connected and configure them with the appropriate configuration parameters for each channel.
 
+For the Konnected Alarm Panel Pro the auto discovered thing adds three default channels.
+
+| Channel | Channel Id | Channel Type | Description                                              |
+|---------|------------|--------------|----------------------------------------------------------|
+| 1       | Alarm1     | Switch-Pro       | 12v Alarm 1 Output on the Konnected Pro                      |
+| 2       | Output1    | Actuator-Pro     | 3.3v Output 1 on the Konnected Alarm Panel					 |
+| 3       | Alarm2-Output2  | Switch-Pro     | The Selectable 12v Alarm 2 / 3.3v Output 2 on the Konnected Alarm Panel Pro |
+
+For zones 1-5 (wifi version) or zones 1-12 (pro version), you will need to add channels for the remaining zones that you have connected and configure them with the appropriate configuration parameters for each channel.
 
 | Channel Type | Item Type            | Config Parameters                                  | Description                                                                                                                                                                                                                                     |
 |--------------|----------------------|----------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Switch       | Switch               | Zone Number                                        | This is the channel type for sensors or other read only devices                                                                                                                                                                                 |
-| Actuator     | Switch               | Zone Number, Momentary, Pause, Times               | This is the channel type for devices whose state can be turned on an off by the Konnected Alarm Panel                                                                                                                                           |
-| Temperature  | Number:Temperature   | Zone Number, DHT22, Poll Interval, DS18b20 Address | This is the channel for sensors which measure temperature (DHT22 and DS18B20). The DHT22 setting should be set to true when the channel is monitoring a zone connected to a DHT22 sensor and false if the zone is connected to a DS1820B sensor |
-| Humidity     | Number:Dimensionless | Zone Number                                        | This is the channel type for the humidity sensor on a connected DHT22 sensor                                                                                                                                                                    |
+| Switch-(wifi/pro)       | Switch               | Zone Number                                        | This is the channel type for sensors or other read only devices                                                                                                                                                                                 |
+| Actuator-(wifi/pro)    | Switch               | Zone Number, Momentary, Pause, Times               | This is the channel type for devices whose state can be turned on an off by the Konnected Alarm Panel                                                                                                                                           |
+| Temperature-(wifi/pro)  | Number:Temperature   | Zone Number, DHT22, Poll Interval, DS18b20 Address | This is the channel for sensors which measure temperature (DHT22 and DS18B20). The DHT22 setting should be set to true when the channel is monitoring a zone connected to a DHT22 sensor and false if the zone is connected to a DS1820B sensor |
+| Humidity-(wifi/pro)    | Number:Dimensionless | Zone Number                                        | This is the channel type for the humidity sensor on a connected DHT22 sensor                                                                                                                                                                    |
 
 You will need to configure each channel with the appropriate zone number corresponding to the zone on The Konnected Alarm Panel.
 Then you need to link the corresponding item to the channel.
@@ -57,6 +66,11 @@ This is commonly used with a relay module to actuate a garage door opener, or wi
 A beep/blink switch is like a momentary switch that repeats either a specified number of times or indefinitely.
 This is commonly used with a piezo buzzer to make a "beep beep" sound when a door is opened, or to make a repeating beep pattern for an alarm or audible warning.
 It can also be used to blink lights.
+
+A note about the Alarm Panel Pro.
+Zones 1-8 can be configured for any Channel-Types.  
+Zones 9-12 can only be configured for the Switch-Pro type. (binary sensor)
+For More information see: https://help.konnected.io/support/solutions/articles/32000028978-alarm-panel-pro-inputs-and-outputs 
 
 DSB1820 temperature probes.
 These are one wire devices which can all be Konnected to the same "Zone" on the Konnected Alarm Panel.
@@ -71,8 +85,11 @@ A channel should be added for each probe, as indicated above and configured with
 *.items
 
 ```
-Contact Front_Door_Sensor "Front Door" {channel="konnected:module:generic:switch"}
-Switch Siren "Siren" {channel="konnected:module:generic:actuator"}
+Switch Front_Door_Sensor "Front Door" {channel="konnected:wifi-module:generic:switch-wifi"}
+Switch Siren "Siren" {channel="konnected:wifi-module:generic:actuator-wifi"}
+
+Switch Front_Door_Sensor_Pro "Front Door" {channel="konnected:pro-module:generic:switch-pro"}
+Switch Siren_Pro "Siren" {channel="konnected:pro-module:generic:actuator-pro"}
 ```
 
 *.sitemap
@@ -85,12 +102,20 @@ Switch item=Siren label="Alarm Siren" icon="Siren" mappings=[ON="Open", OFF="Clo
 *.things
 
 ```
-Thing konnected:module:generic "Konnected Module" [ipAddress="http://192.168.30.153:9586", macAddress="1586517"]{
-   Type switch      : switch      "Front Door"          [channel_zone=1]
-   Type actuator    : actuator    "Siren"               [channel_zone=1, momentary = 50, times = 2, pause = 50]
-   Type humidity    : humidity    "DHT - Humidity"      [channel_zone=1]
-   Type temperature : temperature "DHT Temperature"     [channel_zone=1, tempsensorType = true, pollinterval = 1]
-   Type temperature : temperature "DS18B20 Temperature" [channel_zone=1, tempsensorType = false, pollinterval = 1, ds18b20_address = "XX:XX:XX:XX:XX:XX:XX"]
+Thing konnected:wifi-module:generic "Konnected Module" [ipAddress="http://192.168.30.153:9586", macAddress="1586517"]{
+   Type switch      : switch-wifi      "Front Door"          [channel_zone=1]
+   Type actuator    : actuator-wifi    "Siren"               [channel_zone=1, momentary = 50, times = 2, pause = 50]
+   Type humidity    : humidity-wifi    "DHT - Humidity"      [channel_zone=1]
+   Type temperature : temperature-wifi "DHT Temperature"     [channel_zone=1, tempsensorType = true, pollinterval = 1]
+   Type temperature : temperature-wifi "DS18B20 Temperature" [channel_zone=1, tempsensorType = false, pollinterval = 1, ds18b20_address = "XX:XX:XX:XX:XX:XX:XX"]
+}
+
+Thing konnected:pro-module:generic "Konnected Module" [ipAddress="http://192.168.30.154:9586", macAddress="1684597"]{
+   Type switch      : switch-pro      "Front Door"          [channel_zone=1]
+   Type actuator    : actuator-pro    "Siren"               [channel_zone=1, momentary = 50, times = 2, pause = 50]
+   Type humidity    : humidity-pro    "DHT - Humidity"      [channel_zone=1]
+   Type temperature : temperature-pro "DHT Temperature"     [channel_zone=1, tempsensorType = true, pollinterval = 1]
+   Type temperature : temperature-pro "DS18B20 Temperature" [channel_zone=1, tempsensorType = false, pollinterval = 1, ds18b20_address = "XX:XX:XX:XX:XX:XX:XX"]
 }
 ```
 
