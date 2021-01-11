@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="wundergroundupdatereceiver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>Wunderground Update Receiver Binding</name>
+	<description><![CDATA[
+		<p>
+		This binding enables acting as a receiver of updates from weather stations that post measurements
+		to https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php. If the hostname is configurable - as on
+		weather stations based on the Fine Offset Electronics WH2600-IP - this is simple, otherwise you have to set up dns
+		such that it resolves the above hostname to your server, without preventing the server from resolving the proper ip if
+		you want to forward the request.
+		</p>
+
+		<p>
+		If you wish to pass the measurements on to rtupdate.wunderground.com, you can use a simple rule that triggers on the
+		wundergroundupdatereceiver:wundergroundUpdateReceiver:&lt;channel-id&gt;:metadata#last-query-trigger running the
+		following simple dsl:
+		</p>
+
+		<p>
+		<code>
+		val requestQuery = receivedEvent
+		sendHttpGetRequest("https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?" + requestQuery)
+		</code>
+		</p>
+
+		<p>
+		You can also submit the measurements to other services such as OpenWeatherMap by constructing an HTTP request in a rule.
+		</p> ]]></description>
+	<author>Daniel Demus</author>
+</binding:binding>
