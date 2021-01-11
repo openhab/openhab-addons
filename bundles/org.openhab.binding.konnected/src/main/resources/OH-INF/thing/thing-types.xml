@@ -21,7 +21,7 @@
 	<!-- This is the Konnected Alarm Panel Pro Thing-Type -->
 	<thing-type id="pro-module" extensible="switch-pro,actuator-pro,temperature-pro,humidity-pro">
 		<label>The Konnected Alarm Panel Pro</label>
-		<description>The Konnected Wifi Alarm Panel Pro</description>
+		<description>The Konnected Alarm Panel Pro</description>
 		<channels>
 			<channel id="Alarm1" typeId="actuator-pro-alarm1"></channel>
 			<channel id="Output1" typeId="actuator-pro-out1"></channel>
