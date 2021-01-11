@@ -56,7 +56,7 @@ public enum MiIoDevices {
     ZIMI_CLOCK_MYK01("zimi.clock.myk01", "Mi AI Alarm", THING_TYPE_UNSUPPORTED),
     YEELIGHT_BHF_LIGHT_V2("yeelight.bhf_light.v2", "Yeelight Smart Bath Heater", THING_TYPE_UNSUPPORTED),
     CUCO_PLUG_CP1("cuco.plug.cp1", "Gosund Smart Plug", THING_TYPE_BASIC),
-    NWT_DERH_WDH318EFW1("nwt.derh.wdh318efw1", "WIDETECH WDH318EFW1 Internet Dehumidifier", THING_TYPE_UNSUPPORTED),
+    NWT_DERH_WDH318EFW1("nwt.derh.wdh318efw1", "WIDETECH WDH318EFW1 Internet Dehumidifier", THING_TYPE_BASIC),
     DREAME_VACUUM_MC1808("dreame.vacuum.mc1808", "Mi Robot Vacuum Mop 1C STYTJ01ZHM", THING_TYPE_BASIC),
     DREAME_VACUUM_P2008("dreame.vacuum.p2008", "Dreame Robot Vacuum-Mop F9", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MB1("zhimi.airpurifier.mb1", "Mi Air Purifier 2S", THING_TYPE_BASIC),

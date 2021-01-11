@@ -202,7 +202,7 @@ Currently the miio binding supports more than 250 different models.
 | Mi AI Alarm                  | miio:unsupported | zimi.clock.myk01       | No        |            |
 | Yeelight Smart Bath Heater   | miio:unsupported | yeelight.bhf_light.v2  | No        |            |
 | Gosund Smart Plug            | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes       |            |
-| WIDETECH WDH318EFW1 Internet Dehumidifier | miio:unsupported | nwt.derh.wdh318efw1    | No        |            |
+| WIDETECH WDH318EFW1 Internet Dehumidifier | miio:basic       | [nwt.derh.wdh318efw1](#nwt-derh-wdh318efw1) | Yes       |            |
 | Mi Robot Vacuum Mop 1C STYTJ01ZHM | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       | Identified manual actions for execution<br />`action{"did":"battery-start-charge","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-start-sweep","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":3,"aiid":2,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":26,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":27,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":28,"aiid":1,"in":[]}`<br />`action{"did":"clean-start-clean","siid":18,"aiid":1,"in":[]}`<br />`action{"did":"clean-stop-clean","siid":18,"aiid":2,"in":[]}`<br />`action{"did":"remote-start-remote","siid":21,"aiid":1,"in":[1.0, 2.0]}`<br />`action{"did":"remote-stop-remote","siid":21,"aiid":2,"in":[]}`<br />`action{"did":"remote-exit-remote","siid":21,"aiid":3,"in":[]}`<br />`action{"did":"map-map-req","siid":23,"aiid":1,"in":[2.0]}`<br />`action{"did":"audio-position","siid":24,"aiid":1,"in":[]}`<br />`action{"did":"audio-set-voice","siid":24,"aiid":2,"in":[]}`<br />`action{"did":"audio-play-sound","siid":24,"aiid":3,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Dreame Robot Vacuum-Mop F9   | miio:basic       | [dreame.vacuum.p2008](#dreame-vacuum-p2008) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"battery-start-charge","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":9,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":10,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |            |
@@ -1013,6 +1013,25 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Model            | String  | Device Information-Device Model     |            |
 | SerialNumber     | String  | Device Information-Device Serial Number |            |
 | On               | Switch  | Switch-Switch Status                |            |
+
+### WIDETECH WDH318EFW1 Internet Dehumidifier (<a name="nwt-derh-wdh318efw1">nwt.derh.wdh318efw1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| autohumidity     | Number  | Auto humidity                       |            |
+| fanspeed         | Number  | Fan Speed                           |            |
+| buzzer           | Switch  | Buzzer                              |            |
+| led              | Switch  | LED                                 |            |
+| childlock        | Switch  | Child Lock                          |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
+| temperature      | Number:Temperature | Temperature                         |            |
+| tankfull         | Switch  | Tank Full                           |            |
+| compressorstatus | Switch  | Compressor Status                   |            |
+| defroststatus    | Switch  | Defrost Status                      |            |
+| fanst            | Number  | Fan St                              |            |
+| alarm            | String  | Alarm                               |            |
 
 ### Mi Robot Vacuum Mop 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
 
@@ -4768,6 +4787,28 @@ String Manufacturer "Device Information-Device Manufacturer" (G_plug) {channel="
 String Model "Device Information-Device Model" (G_plug) {channel="miio:basic:plug:Model"}
 String SerialNumber "Device Information-Device Serial Number" (G_plug) {channel="miio:basic:plug:SerialNumber"}
 Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
+```
+
+### WIDETECH WDH318EFW1 Internet Dehumidifier (nwt.derh.wdh318efw1) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_derh "WIDETECH WDH318EFW1 Internet Dehumidifier" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+String mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number autohumidity "Auto humidity" (G_derh) {channel="miio:basic:derh:autohumidity"}
+Number fanspeed "Fan Speed" (G_derh) {channel="miio:basic:derh:fanspeed"}
+Switch buzzer "Buzzer" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "LED" (G_derh) {channel="miio:basic:derh:led"}
+Switch childlock "Child Lock" (G_derh) {channel="miio:basic:derh:childlock"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Switch tankfull "Tank Full" (G_derh) {channel="miio:basic:derh:tankfull"}
+Switch compressorstatus "Compressor Status" (G_derh) {channel="miio:basic:derh:compressorstatus"}
+Switch defroststatus "Defrost Status" (G_derh) {channel="miio:basic:derh:defroststatus"}
+Number fanst "Fan St" (G_derh) {channel="miio:basic:derh:fanst"}
+String alarm "Alarm" (G_derh) {channel="miio:basic:derh:alarm"}
 ```
 
 ### Mi Robot Vacuum Mop 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
