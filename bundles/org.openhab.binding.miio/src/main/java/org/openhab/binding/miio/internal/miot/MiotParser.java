@@ -188,7 +188,7 @@ public class MiotParser {
                         miIoBasicChannel.setSiid(service.siid);
                         miIoBasicChannel.setPiid(property.piid);
                         // avoid duplicates and make camel case and avoid wrong names
-                        String chanId = propertyId.replace(" ", "");
+                        String chanId = propertyId.replace(" ", "").replace(".", "-");
 
                         int cnt = 0;
                         while (propCheck.contains(chanId + Integer.toString(cnt))) {
