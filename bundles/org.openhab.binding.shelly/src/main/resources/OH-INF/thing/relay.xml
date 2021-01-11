@@ -346,13 +346,13 @@
 		<item-type>Number:Time</item-type>
 		<label>Auto-ON Timer</label>
 		<description>ON: After the output was turned off it turns on automatically after xx seconds; 0 disables the timer</description>
-		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="timerAutoOff" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Auto-OFF Timer</label>
 		<description>ON: After the output was turned on it turns off automatically after xx seconds; 0 disables the timer</description>
-		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="timerActive" advanced="true">
 		<item-type>Switch</item-type>
@@ -371,7 +371,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Roller Position (100=open, 0=closed)</label>
 		<description>Position the roller (100..0 in %, where 100%=open, 0%=closed)</description>
-		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
+		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="rollerFavorite">
 		<item-type>Number</item-type>
@@ -466,14 +466,14 @@
 	<channel-type id="meterAccuTotal" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Accumulated Total</label>
-		<description>Accumulated total power consumption in kw/h from all meters</description>
+		<description>Accumulated total power consumption from all meters</description>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterAccuReturned" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Accumulated Returned</label>
-		<description>Accumulated returned power consumption in kw/h from all meters</description>
+		<description>Accumulated returned power consumption from all meters</description>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -494,14 +494,14 @@
 	<channel-type id="meterTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
-		<description>Total power consumption in kw/h</description>
+		<description>Total power consumption</description>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterReturned">
 		<item-type>Number:Energy</item-type>
-		<label>Total Returned Energy (kw/h)</label>
-		<description>Total returned energy in kw/h</description>
+		<label>Total Returned Energy</label>
+		<description>Total returned energy</description>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>

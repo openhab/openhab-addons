@@ -207,7 +207,7 @@
 		<item-type>Number</item-type>
 		<label>Event Count</label>
 		<description>Event Count</description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%.0f" readOnly="true">
 		</state>
 	</channel-type>
 
@@ -271,7 +271,7 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Brightness from the sensor (Lux)</description>
-		<state readOnly="true" pattern="%d %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorIllumination">
@@ -311,21 +311,21 @@
 		<item-type>Number:Angle</item-type>
 		<label>Tilt</label>
 		<description>Tilt in degrees (requires calibration)</description>
-		<state readOnly="true" pattern="%d %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorPPM">
 		<item-type>Number:Density</item-type>
 		<label>Concentration</label>
 		<description>Gas concentration in ppm</description>
-		<state readOnly="true" pattern="%d %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorADC">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage (ADC)</label>
 		<description>ADC voltage in V</description>
-		<state readOnly="true" pattern="%d %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorValve">

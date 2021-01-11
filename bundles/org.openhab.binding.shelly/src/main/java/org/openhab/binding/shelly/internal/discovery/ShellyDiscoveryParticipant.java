@@ -159,12 +159,8 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
                     // create shellyunknown thing - will be changed during thing initialization with valid credentials
                     thingUID = ShellyThingCreator.getThingUID(name, model, mode, true);
-                }
-                if (e.isTimeout()) {
-                    logger.info("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
                 } else {
                     logger.info("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
-                    logger.debug("{}: Discovery failed", name, e);
                 }
             } catch (IllegalArgumentException e) { // maybe some format description was buggy
                 logger.debug("{}: Discovery failed!", name, e);
@@ -184,9 +180,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
                         .withRepresentationProperty(PROPERTY_DEV_NAME).build();
             }
-        } catch (IOException |
-
-                NullPointerException e) {
+        } catch (IOException | NullPointerException e) {
             // maybe some format description was buggy
             logger.debug("{}: Exception on processing serviceInfo '{}'", name, service.getNiceTextString(), e);
         }

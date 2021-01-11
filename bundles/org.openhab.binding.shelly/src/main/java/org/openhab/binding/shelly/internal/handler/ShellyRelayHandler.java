@@ -244,7 +244,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 int pos = profile.getRollerFav(config.favoriteUP - 1);
                 position = pos > 0 ? pos : SHELLY_MAX_ROLLER_POS;
                 if (pos > 0) {
-                    logger.info("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
+                    logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
                             pos);
                 }
             }
@@ -255,7 +255,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 if (pos > 0) {
                     // use favorite position
                     if (pos > 0) {
-                        logger.info("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
+                        logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
                                 config.favoriteDOWN, pos);
                     }
                     api.setRollerPos(index, pos);
