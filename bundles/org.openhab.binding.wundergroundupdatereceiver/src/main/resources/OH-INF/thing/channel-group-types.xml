@@ -1,0 +1,118 @@
+<?xml version="1.0" ?>
+<thing:thing-descriptions bindingId="wundergroundupdatereceiver"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="metadata-group">
+		<label>Metadata</label>
+		<description>Metadata regarding the last submission</description>
+		<category>Text</category>
+		<channels>
+			<channel id="last-received" typeId="last-received-datetime"/>
+			<channel id="dateutc" typeId="datetime-utc"/>
+			<channel id="softwaretype" typeId="softwaretype"/>
+			<channel id="last-query-state" typeId="last-query-state"/>
+			<channel id="last-query-trigger" typeId="last-query-trigger"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="wind-group">
+		<label>Wind</label>
+		<description>Wind measurements</description>
+		<category>Wind</category>
+		<channels>
+			<channel id="winddir" typeId="system.wind-direction"/>
+			<channel id="windspeedmph" typeId="wind-speed"/>
+			<channel id="windgustmph" typeId="wind-gust-speed"/>
+			<channel id="windgustdir" typeId="wind-gust-direction"/>
+			<channel id="windspdmph_avg2m" typeId="wind-speed-avg-2min"/>
+			<channel id="winddir_avg2m" typeId="wind-direction-avg-2min"/>
+			<channel id="windgustmph_10m" typeId="wind-gust-speed-10min"/>
+			<channel id="windgustdir_10m" typeId="wind-gust-direction-10min"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="temperature-group">
+		<label>Temperature</label>
+		<description>Temperature measurements</description>
+		<category>Temperature</category>
+		<channels>
+			<channel id="tempf" typeId="system.outdoor-temperature"/>
+			<channel id="indoortempf" typeId="indoor-temperature"/>
+			<channel id="soiltempf" typeId="soil-temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="humidity-group">
+		<label>Moisture</label>
+		<description>Moisture measurements</description>
+		<category>Humidity</category>
+		<channels>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="indoorhumidity" typeId="indoor-humidity"/>
+			<channel id="dewptf" typeId="dew-point"/>
+			<channel id="soilmoisture" typeId="soil-moisture"/>
+			<channel id="leafwetness" typeId="leafwetness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rain-group">
+		<label>Rain</label>
+		<description>Rain measurements</description>
+		<category>Rain</category>
+		<channels>
+			<channel id="rainin" typeId="rain"/>
+			<channel id="dailyrainin" typeId="rain-daily"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sunlight-group">
+		<label>Sunlight</label>
+		<description>Sunlight measurements</description>
+		<category>Sun_Clouds</category>
+		<channels>
+			<channel id="solarradiation" typeId="solarradiation"/>
+			<channel id="UV" typeId="uv"/>
+			<channel id="visibility" typeId="visibility"/>
+			<channel id="weather" typeId="metar"/>
+			<channel id="clouds" typeId="clouds"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pressure-group">
+		<label>Pressure</label>
+		<description>Barometric measurements</description>
+		<category>Pressure</category>
+		<channels>
+			<channel id="baromin" typeId="system.barometric-pressure"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pollution-group">
+		<label>Pollution</label>
+		<description>Pollutant measurements</description>
+		<category>Pollution</category>
+		<channels>
+			<channel id="AqNO" typeId="nitric-oxide"/>
+			<channel id="AqNO2T" typeId="nitrogen-dioxide-measured"/>
+			<channel id="AqNO2" typeId="nitrogen-dioxide-nox-no"/>
+			<channel id="AqNO2Y" typeId="nitrogen-dioxide-noy-no"/>
+			<channel id="AqNOX" typeId="nitrogen-oxides"/>
+			<channel id="AqNOY" typeId="total-reactive-nitrogen"/>
+			<channel id="AqNO3" typeId="no3-ion"/>
+			<channel id="AqSO4" typeId="so4-ion"/>
+			<channel id="AqSO2" typeId="sulfur-dioxide"/>
+			<channel id="AqSO2T" typeId="sulfur-dioxide-trace-levels"/>
+			<channel id="AqCO" typeId="carbon-monoxide"/>
+			<channel id="AqCOT" typeId="carbon-monoxide-trace-levels"/>
+			<channel id="AqEC" typeId="elemental-carbon"/>
+			<channel id="AqOC" typeId="organic-carbon"/>
+			<channel id="AqBC" typeId="black-carbon"/>
+			<channel id="AqUV-AETH" typeId="aethalometer"/>
+			<channel id="AqPM2_5" typeId="pm2_5-mass"/>
+			<channel id="AqPM10" typeId="pm10-mass"/>
+			<channel id="AqOZONE" typeId="ozone"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
