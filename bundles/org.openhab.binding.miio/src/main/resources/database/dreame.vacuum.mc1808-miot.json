@@ -124,7 +124,8 @@
 							]
 						}
 					}
-				]
+				],
+				"readmeComment": "Value mapping [\"vacuum\"\u003d\"Vacuum\",\"stop\"\u003d\"Stop\",\"sweep\"\u003d\"Sweep\",\"stopsweep\"\u003d\"Stop Sweep\",\"dock\"\u003d\"Goto Dock\"]"
 			},
 			{
 				"property": "battery-level",
