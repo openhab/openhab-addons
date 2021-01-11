@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.konnected.internal.handler;
 import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -54,13 +53,14 @@ import com.google.gson.GsonBuilder;
 public class KonnectedHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
     private KonnectedConfiguration config;
-
     private final String konnectedServletPath;
     private final KonnectedHTTPUtils http = new KonnectedHTTPUtils(30);
     private String callbackIpAddress = null;
     private String moduleIpAddress;
     private Gson gson = new GsonBuilder().create();
     private int retryCount;
+    private String thingID;
+    public String authToken;
 
     /**
      * This is the constructor of the Konnected Handler.
@@ -73,11 +73,12 @@ public class KonnectedHandler extends BaseThingHandler {
      */
     public KonnectedHandler(Thing thing, String path, String hostAddress, String port) {
         super(thing);
-
         this.konnectedServletPath = path;
         callbackIpAddress = hostAddress + ":" + port;
         logger.debug("The callback ip address is: {}", callbackIpAddress);
         retryCount = 2;
+        thingID = this.getThing().getThingTypeUID().getId();
+        authToken = getThing().getUID().getAsString();
     }
 
     @Override
@@ -88,22 +89,20 @@ public class KonnectedHandler extends BaseThingHandler {
         String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
         Integer zone = Integer.parseInt(zoneNumber);
         logger.debug("The channelUID is: {} and the zone is : {}", channelUID.getAsString(), zone);
-        // convert the zone to the pin based on value at index of zone
-        Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
         // if the command is OnOfftype
         if (command instanceof OnOffType) {
-            if (channelType.equalsIgnoreCase(CHANNEL_SWITCH)) {
+            if (channelType.contains(CHANNEL_SWITCH)) {
                 logger.debug("A command was sent to a sensor type so we are ignoring the command");
             } else {
                 int sendCommand = (OnOffType.OFF.compareTo((OnOffType) command));
-                logger.debug("The command being sent to pin {} for channel:{}  is {}", pin, channelUID.getAsString(),
+                logger.debug("The command being sent to zone {} for channel:{}  is {}", zone, channelUID.getAsString(),
                         sendCommand);
-                sendActuatorCommand(Integer.toString(sendCommand), pin, channelUID);
+                sendActuatorCommand(Integer.toString(sendCommand), zone, channelUID);
             }
         } else if (command instanceof RefreshType) {
             // check to see if handler has been initialized before attempting to get state of pin, else wait one minute
             if (this.isInitialized()) {
-                getSwitchState(pin, channelUID);
+                getSwitchState(zone, channelUID);
             } else {
                 scheduler.schedule(() -> {
                     handleCommand(channelUID, command);
@@ -119,13 +118,14 @@ public class KonnectedHandler extends BaseThingHandler {
      * @param event the {@link KonnectedModuleGson} event that contains the state and pin information to be processed
      */
     public void handleWebHookEvent(KonnectedModuleGson event) {
-        // if we receive a command upteate the thing status to being online
+        // if we receive a command update the thing status to being online
         updateStatus(ThingStatus.ONLINE);
         // get the zone number based off of the index location of the pin value
-        String sentZone = Integer.toString(Arrays.asList(PIN_TO_ZONE).indexOf(event.getPin()));
+        // String sentZone = Integer.toString(Arrays.asList(PIN_TO_ZONE).indexOf(event.getPin()));
+        String sentZone = Integer.toString(event.getPinZone(thingID));
         // check that the zone number is in one of the channelUID definitions
         logger.debug("Looping Through all channels on thing: {} to find a match for {}", thing.getUID().getAsString(),
-                event.getAuthToken());
+                sentZone);
         getThing().getChannels().forEach(channel -> {
             ChannelUID channelId = channel.getUID();
             String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
@@ -139,14 +139,14 @@ public class KonnectedHandler extends BaseThingHandler {
                 logger.debug("The channeltypeID is: {}", channelType);
                 // check if the itemType has been defined for the zone received
                 // check the itemType of the Zone, if Contact, send the State if Temp send Temp, etc.
-                if (channelType.equalsIgnoreCase(CHANNEL_SWITCH) || channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
+                if (channelType.contains(CHANNEL_SWITCH) || channelType.contains(CHANNEL_ACTUATOR)) {
                     OnOffType onOffType = event.getState().equalsIgnoreCase(getOnState(channel)) ? OnOffType.ON
                             : OnOffType.OFF;
                     updateState(channelId, onOffType);
-                } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
+                } else if (channelType.contains(CHANNEL_HUMIDITY)) {
                     // if the state is of type number then this means it is the humidity channel of the dht22
                     updateState(channelId, new QuantityType<>(Double.parseDouble(event.getHumi()), Units.PERCENT));
-                } else if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
+                } else if (channelType.contains(CHANNEL_TEMPERATURE)) {
                     Configuration configuration = channel.getConfiguration();
                     if (((Boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE))) {
                         updateState(channelId,
@@ -324,7 +324,6 @@ public class KonnectedHandler extends BaseThingHandler {
     private String constructSettingsPayload() {
         String hostPath = "";
         hostPath = callbackIpAddress + this.konnectedServletPath;
-        String authToken = getThing().getUID().getAsString();
         logger.debug("The Auth_Token is: {}", authToken);
         KonnectedModulePayload payload = new KonnectedModulePayload(authToken, "http://" + hostPath);
         payload.setBlink(config.blink);
@@ -337,8 +336,6 @@ public class KonnectedHandler extends BaseThingHandler {
                 // get the zone number in integer form
                 String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
                 Integer zone = Integer.parseInt(zoneNumber);
-                // convert the zone to the pin based on value at index of zone
-                Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
                 // if the pin is an actuator add to actuator string
                 // else add to sensor string
                 // This is determined based off of the accepted item type, contact types are sensors
@@ -346,20 +343,20 @@ public class KonnectedHandler extends BaseThingHandler {
                 String channelType = channel.getChannelTypeUID().getAsString();
                 logger.debug("The channeltypeID is: {}", channelType);
                 KonnectedModuleGson module = new KonnectedModuleGson();
-                module.setPin(pin);
-                if (channelType.equalsIgnoreCase(CHANNEL_SWITCH)) {
+                module.setPinZone(thingID, zone);
+                if (channelType.contains(CHANNEL_SWITCH)) {
                     payload.addSensor(module);
                     logger.trace("Channel {} will be configured on the konnected alarm panel as a switch",
                             channel.toString());
-                } else if (channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
+                } else if (channelType.contains(CHANNEL_ACTUATOR)) {
                     payload.addActuators(module);
                     logger.trace("Channel {} will be configured on the konnected alarm panel as an actuator",
                             channel.toString());
-                } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
+                } else if (channelType.contains(CHANNEL_HUMIDITY)) {
                     // the humidity channels do not need to be added because the supported sensor (dht22) is added under
                     // the temp sensor
                     logger.trace("Channel {} is a humidity channel.", channel.toString());
-                } else if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
+                } else if (channelType.contains(CHANNEL_TEMPERATURE)) {
                     logger.trace("Channel {} will be configured on the konnected alarm panel as a temperature sensor",
                             channel.toString());
                     Configuration configuration = channel.getConfiguration();
@@ -416,9 +413,9 @@ public class KonnectedHandler extends BaseThingHandler {
      * Sends a command to the module via {@link KonnectedHTTPUtils}
      *
      * @param scommand the string command, either 0 or 1 to send to the actutor pin on the Konnected module
-     * @param pin the pin to send the command to on the Konnected Module
+     * @param zone the zone to send the command to on the Konnected Module
      */
-    private void sendActuatorCommand(String scommand, Integer pin, ChannelUID channelId) {
+    private void sendActuatorCommand(String scommand, Integer zone, ChannelUID channelId) {
         try {
             Channel channel = getThing().getChannel(channelId.getId());
             if (!(channel == null)) {
@@ -427,7 +424,9 @@ public class KonnectedHandler extends BaseThingHandler {
                 Configuration configuration = channel.getConfiguration();
                 KonnectedModuleGson payload = new KonnectedModuleGson();
                 payload.setState(scommand);
-                payload.setPin(pin);
+
+                payload.setPinZone(thingID, zone);
+
                 // check to see if this is an On Command type, if so add the momentary, pause, times to the payload if
                 // they exist on the configuration.
                 if (scommand.equals(getOnState(channel))) {
@@ -461,7 +460,16 @@ public class KonnectedHandler extends BaseThingHandler {
                 }
                 String payloadString = gson.toJson(payload);
                 logger.debug("The command payload  is: {}", payloadString);
-                http.doPut(moduleIpAddress + "/device", payloadString, retryCount);
+                String path = "";
+                switch (this.thingID) {
+                    case PRO_MODULE:
+                        path = "/zone";
+                        break;
+                    case WIFI_MODULE:
+                        path = "/device";
+                        break;
+                }
+                http.doPut(moduleIpAddress + path, payloadString, retryCount);
             } else {
                 logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
                         channelId.getId());
@@ -474,13 +482,13 @@ public class KonnectedHandler extends BaseThingHandler {
         }
     }
 
-    private void getSwitchState(Integer pin, ChannelUID channelId) {
+    private void getSwitchState(Integer zone, ChannelUID channelId) {
         Channel channel = getThing().getChannel(channelId.getId());
         if (!(channel == null)) {
             logger.debug("getasstring: {} getID: {} getGroupId: {} toString:{}", channelId.getAsString(),
                     channelId.getId(), channelId.getGroupId(), channelId.toString());
             KonnectedModuleGson payload = new KonnectedModuleGson();
-            payload.setPin(pin);
+            payload.setPinZone(thingID, zone);
             String payloadString = gson.toJson(payload);
             logger.debug("The command payload  is: {}", payloadString);
             try {

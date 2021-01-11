@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,12 @@ import org.openhab.core.thing.ThingTypeUID;
 public class KonnectedBindingConstants {
 
     public static final String BINDING_ID = "konnected";
+    public static final String PRO_MODULE = "pro-module";
+    public static final String WIFI_MODULE = "wifi-module";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_MODULE = new ThingTypeUID(BINDING_ID, "module");
+    public static final ThingTypeUID THING_TYPE_WIFIMODULE = new ThingTypeUID(BINDING_ID, WIFI_MODULE);
+    public static final ThingTypeUID THING_TYPE_PROMODULE = new ThingTypeUID(BINDING_ID, PRO_MODULE);
 
     // Thing config properties
     public static final String HOST = "ipAddress";
@@ -59,4 +62,8 @@ public class KonnectedBindingConstants {
     public static final String CHANNEL_ACTUATOR_PAUSE = "pause";
 
     public static final String CHANNEL_ONVALUE = "onvalue";
+
+    public static final String PRO_MODULE_ALARM1 = "alarm1";
+    public static final String PRO_MODULE_OUT1 = "out1";
+    public static final String PRO_MODULE_ALARM2_OUT2 = "alarm2_out2";
 }
