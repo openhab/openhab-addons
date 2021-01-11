@@ -171,7 +171,8 @@ Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:0xE6C4:level"}
 Dimmer Hallway_ColourTemperature "White Color Temp" {channel="mqtt:rgb_cct:0xE6C4:colourTemperature"}
 Color  Hallway_Colour "Front Hall" ["Lighting"] {channel="mqtt:rgb_cct:0xE6C4:colour"}
 String Hallway_DiscoMode "Disco Mode" {channel="mqtt:rgb_cct:0xE6C4:discoMode"}
-Switch Hallway_Command "Send Command" {channel="mqtt:rgb_cct:0xE6C4:command"}
+String Hallway_BulbCommand "Send Command" {channel="mqtt:rgb_cct:0xE6C4:command"}
+String Hallway_BulbMode "Bulb Mode" {channel="mqtt:rgb_cct:0xE6C4:bulbMode"}
 
 ```
 
@@ -185,6 +186,7 @@ Switch Hallway_Command "Send Command" {channel="mqtt:rgb_cct:0xE6C4:command"}
             Slider      item=Hallway_ColourTemperature
             Colorpicker item=Hallway_Colour
             Selection   item=Hallway_DiscoMode
-            Switch      item=Hallway_Command     
+            Text        item=Hallway_BulbMode
+            Switch item=Hallway_BulbCommand mappings=[next_mode='Mode +', previous_mode='Mode -', mode_speed_up='Speed +', mode_speed_down='Speed -', set_white='White', night_mode='Night' ]   
         }
 ```
