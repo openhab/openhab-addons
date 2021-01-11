@@ -143,7 +143,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
             } else if (unit == Units.HERTZ || unit == Units.SECOND) {
                 return new QuantityType<>((double) rawValue, unit);
             } else if (unit == Units.LITRE_PER_MINUTE) {
-                return new QuantityType<>((double) rawValue * 60, unit);
+                return new QuantityType<>((double) rawValue / 60, unit);
             } else if (unit == Units.BAR || unit == Units.VOLT) {
                 return new QuantityType<>((double) rawValue / 100, unit);
             }
@@ -214,7 +214,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
                 heatpumpVisibilities);
         Integer zeile2 = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE2, heatpumpValues,
                 heatpumpParams, heatpumpVisibilities);
-        Integer zeile3 = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE2, heatpumpValues,
+        Integer zeile3 = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEILE3, heatpumpValues,
                 heatpumpParams, heatpumpVisibilities);
         Integer zeit = getChannelValue(HeatpumpChannel.CHANNEL_HEATPUMP_HAUPTMENUSTATUS_ZEIT, heatpumpValues,
                 heatpumpParams, heatpumpVisibilities);

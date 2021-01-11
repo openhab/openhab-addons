@@ -227,7 +227,11 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
 
         // When thing is initialized the first time or and update was triggered, set the available channels
         if (thing.getProperties().isEmpty() || tiggerChannelUpdate) {
-            updateChannels(connector);
+            try {
+                updateChannels(connector);
+            } catch (Exception e) {
+                logger.debug("Failed updating channels: {}", e.getMessage());
+            }
         }
 
         setStatusOnline();

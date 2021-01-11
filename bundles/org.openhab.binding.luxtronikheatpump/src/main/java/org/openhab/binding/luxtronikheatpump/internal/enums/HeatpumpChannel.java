@@ -1291,7 +1291,7 @@ public enum HeatpumpChannel {
     /**
      * Channel holding complete (localized) status message
      */
-    CHANNEL_HEATPUMP_STATUS(null, "Status", StringItem.class, null, false, null);
+    CHANNEL_HEATPUMP_STATUS(null, "HauptMenuStatus", StringItem.class, null, false, null);
 
     private @Nullable Integer channelId;
     private String command;
