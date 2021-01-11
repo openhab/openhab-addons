@@ -91,7 +91,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
         if (command == RefreshType.REFRESH) {
-            restartJobs();
+            // ignore resresh command as channels will be updated automatically
             return;
         }
 
