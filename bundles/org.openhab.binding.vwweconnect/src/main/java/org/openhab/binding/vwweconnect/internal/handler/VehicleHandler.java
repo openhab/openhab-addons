@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -177,7 +177,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                 return OnOffType.from(vehicle.getEngineTypeCNG());
             case FUEL_LEVEL:
                 return vehicleStatus.getFuelLevel() != BaseVehicle.UNDEFINED
-                        ? new QuantityType<>(vehicleStatus.getFuelLevel(), SmartHomeUnits.PERCENT)
+                        ? new QuantityType<>(vehicleStatus.getFuelLevel(), Units.PERCENT)
                         : UnDefType.UNDEF;
             case FUEL_CONSUMPTION:
                 return trips.getRtsViewModel().getLongTermData().getAverageFuelConsumption() != BaseVehicle.UNDEFINED
@@ -193,7 +193,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                         : UnDefType.UNDEF;
             case CNG_LEVEL:
                 return vehicleStatus.getCngFuelLevel() != BaseVehicle.UNDEFINED
-                        ? new QuantityType<>(vehicleStatus.getCngFuelLevel(), SmartHomeUnits.PERCENT)
+                        ? new QuantityType<>(vehicleStatus.getCngFuelLevel(), Units.PERCENT)
                         : UnDefType.UNDEF;
             case CNG_CONSUMPTION:
                 return trips.getRtsViewModel().getLongTermData().getAverageCngConsumption() != BaseVehicle.UNDEFINED
@@ -209,7 +209,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                         : UnDefType.UNDEF;
             case BATTERY_LEVEL:
                 return vehicleStatus.getBatteryLevel() != BaseVehicle.UNDEFINED
-                        ? new QuantityType<>(vehicleStatus.getBatteryLevel(), SmartHomeUnits.PERCENT)
+                        ? new QuantityType<>(vehicleStatus.getBatteryLevel(), Units.PERCENT)
                         : UnDefType.UNDEF;
             case ELECTRIC_CONSUMPTION:
                 return trips.getRtsViewModel().getLongTermData()
@@ -231,12 +231,12 @@ public class VehicleHandler extends VWWeConnectHandler {
             case CHARGING_REMAINING_HOUR:
                 return eManager.getEManager().getRbc().getStatus().getChargingRemainingHour() != BaseVehicle.UNDEFINED
                         ? new QuantityType<>(eManager.getEManager().getRbc().getStatus().getChargingRemainingHour(),
-                                SmartHomeUnits.HOUR)
+                                Units.HOUR)
                         : UnDefType.UNDEF;
             case CHARGING_REMAINING_MINUTE:
                 return eManager.getEManager().getRbc().getStatus().getChargingRemainingMinute() != BaseVehicle.UNDEFINED
                         ? new QuantityType<>(eManager.getEManager().getRbc().getStatus().getChargingRemainingMinute(),
-                                SmartHomeUnits.MINUTE)
+                                Units.MINUTE)
                         : UnDefType.UNDEF;
             case CHARGING_REASON:
                 String chargingReason = eManager.getEManager().getRbc().getStatus().getChargingReason();
@@ -250,12 +250,11 @@ public class VehicleHandler extends VWWeConnectHandler {
             case CHARGER_MAX_CURRENT:
                 return eManager.getEManager().getRbc().getSettings().getChargerMaxCurrent() != BaseVehicle.UNDEFINED
                         ? new QuantityType<>(eManager.getEManager().getRbc().getSettings().getChargerMaxCurrent(),
-                                SmartHomeUnits.AMPERE)
+                                Units.AMPERE)
                         : UnDefType.UNDEF;
             case MAX_AMPERE:
                 return eManager.getEManager().getRbc().getSettings().getMaxAmpere() != BaseVehicle.UNDEFINED
-                        ? new QuantityType<>(eManager.getEManager().getRbc().getSettings().getMaxAmpere(),
-                                SmartHomeUnits.AMPERE)
+                        ? new QuantityType<>(eManager.getEManager().getRbc().getSettings().getMaxAmpere(), Units.AMPERE)
                         : UnDefType.UNDEF;
             case MAX_CURRENT_REDUCED:
                 return OnOffType.from(eManager.getEManager().getRbc().getSettings().isMaxCurrentReduced());
@@ -267,7 +266,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                         .getClimatisationRemaningTime() != BaseVehicle.UNDEFINED
                                 ? new QuantityType<>(
                                         eManager.getEManager().getRpc().getStatus().getClimatisationRemaningTime(),
-                                        SmartHomeUnits.MINUTE)
+                                        Units.MINUTE)
                                 : UnDefType.UNDEF;
             case CLIMATISATION_REASON:
                 return new StringType(eManager.getEManager().getRpc().getStatus().getClimatisationReason());
@@ -289,7 +288,7 @@ public class VehicleHandler extends VWWeConnectHandler {
             case TOTAL_TRIP_DURATION:
                 return trips.getRtsViewModel().getLongTermData().getTripDuration() != BaseVehicle.UNDEFINED
                         ? new QuantityType<Time>(trips.getRtsViewModel().getLongTermData().getTripDuration(),
-                                SmartHomeUnits.MINUTE)
+                                Units.MINUTE)
                         : UnDefType.UNDEF;
             case TOTAL_AVERAGE_SPEED:
                 return trips.getRtsViewModel().getLongTermData().getAverageSpeed() != BaseVehicle.UNDEFINED
@@ -348,7 +347,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                         .getRemainingTime() != BaseVehicle.UNDEFINED
                                 ? new QuantityType<>(
                                         vehicleHeaterStatus.getRemoteAuxiliaryHeating().getStatus().getRemainingTime(),
-                                        SmartHomeUnits.MINUTE)
+                                        Units.MINUTE)
                                 : UnDefType.UNDEF;
         }
         return UnDefType.UNDEF;
@@ -450,7 +449,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                 return localEndTimestamp != null ? new DateTimeType(localEndTimestamp) : UnDefType.UNDEF;
             case TRIP_DURATION:
                 return trip.getTripDuration() != BaseVehicle.UNDEFINED
-                        ? new QuantityType<>(trip.getTripDuration(), SmartHomeUnits.MINUTE)
+                        ? new QuantityType<>(trip.getTripDuration(), Units.MINUTE)
                         : UnDefType.UNDEF;
         }
 
