@@ -82,10 +82,12 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
     }
 
     private void checkConnectionAndUpdate() {
-        if (this.thing.getStatus() == ThingStatus.OFFLINE) {
+        if (this.thing.getStatus() != ThingStatus.ONLINE) {
             try {
                 if (httpClient.GET(config.getUri()).getStatus() == 200) {
                     updateStatus(ThingStatus.ONLINE);
+                    // rerun immediately to update state
+                    checkConnectionAndUpdate();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "WlanThermo not found under given address.");
@@ -158,6 +160,8 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
         if (data == null) {
             return;
         }
+
+        // push update for sensor channels
         for (org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Channel c : data.getChannel()) {
             try {
                 String json = gson.toJson(c);
@@ -181,6 +185,30 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
             } catch (InterruptedException e) {
                 logger.debug("Push interrupted. {}", e.getMessage());
             }
+        }
+
+        // push update for pitmaster channels
+        try {
+            String json = gson.toJson(data.getPitmaster().getPm());
+            URI uri = config.getUri("/setpitmaster");
+            int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
+                    .timeout(5, TimeUnit.SECONDS).send().getStatus();
+            if (status == 401) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
+            } else if (status != 200) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to update pitmaster channel on device, Statuscode " + status + " on URI "
+                                + uri.toString());
+                logger.debug("Payload sent: {}", json);
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (TimeoutException | ExecutionException | URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Failed to update pitmaster channel on device: " + e.getMessage());
+        } catch (InterruptedException e) {
+            logger.debug("Push interrupted. {}", e.getMessage());
         }
     }
 

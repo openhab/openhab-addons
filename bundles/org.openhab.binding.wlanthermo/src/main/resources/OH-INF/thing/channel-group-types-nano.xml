@@ -30,7 +30,7 @@
 			<channel id="alarm_openhab" typeId="alarm_openhab"/>
 			<channel id="alarm_openhab_low" typeId="alarm_openhab_low"/>
 			<channel id="alarm_openhab_high" typeId="alarm_openhab_high"/>
-			<channel id="color" typeId="color"/>
+			<channel id="color" typeId="color_ro"/>
 			<channel id="color_name" typeId="color_name_nano"/>
 		</channels>
 	</channel-group-type>

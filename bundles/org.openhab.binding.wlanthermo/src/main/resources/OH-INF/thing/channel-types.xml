@@ -110,7 +110,6 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<category>Colorpicker</category>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="color_name_nano" advanced="true">

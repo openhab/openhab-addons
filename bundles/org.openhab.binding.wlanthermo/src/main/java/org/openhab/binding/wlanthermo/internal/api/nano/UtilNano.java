@@ -59,18 +59,16 @@ public class UtilNano {
     }
 
     public static String toColorName(String colorHex) {
-        String colorName = null;
         if (!colorHex.startsWith("#")) {
             colorHex = "#" + colorHex;
         }
+
         for (Map.Entry<String, String> entry : COLOR_MAPPINGS.entrySet()) {
             if (entry.getValue().equalsIgnoreCase(colorHex)) {
-                colorName = entry.getKey();
+                return entry.getKey();
             }
         }
-        if (colorName == null) {
-            colorName = DEFAULT_COLORNAME;
-        }
-        return colorName;
+
+        return DEFAULT_COLORNAME;
     }
 }

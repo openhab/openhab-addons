@@ -65,10 +65,12 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     }
 
     private void checkConnection() {
-        if (this.thing.getStatus() == ThingStatus.OFFLINE) {
+        if (this.thing.getStatus() != ThingStatus.ONLINE) {
             try {
                 if (httpClient.GET(config.getUri("/app.php")).getStatus() == 200) {
                     updateStatus(ThingStatus.ONLINE);
+                    // rerun immediately to update state
+                    checkConnection();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "WlanThermo not found under given address.");

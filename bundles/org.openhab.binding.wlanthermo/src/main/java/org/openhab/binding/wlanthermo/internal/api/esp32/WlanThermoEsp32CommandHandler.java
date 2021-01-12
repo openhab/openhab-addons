@@ -216,12 +216,18 @@ public class WlanThermoEsp32CommandHandler {
                             channel.setColor(UtilEsp32.toHex(((StringType) command).toString()));
                             return true;
                         }
+                    case CHANNEL_COLOR:
+                        if (command instanceof HSBType) {
+                            channel.setColor(UtilEsp32.toHex((HSBType) command));
+                            return true;
+                        }
                 }
             }
-        } else if (channelUID.getId().equals(CHANNEL_PITMASTER_1)) {
+        } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_PREFIX)) {
+            int channelId = Integer.parseInt(groupId.substring(CHANNEL_PITMASTER_PREFIX.length())) - 1;
             if (data.getPitmaster() != null && data.getPitmaster().getPm() != null
-                    && data.getPitmaster().getPm().size() > 0) {
-                Pm pm = data.getPitmaster().getPm().get(0);
+                    && data.getPitmaster().getPm().size() > channelId) {
+                Pm pm = data.getPitmaster().getPm().get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PITMASTER_CHANNEL_ID:
                         pm.setChannel(((QuantityType<?>) command).intValue());
