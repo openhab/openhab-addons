@@ -22,20 +22,17 @@ This module triggers whenever the `input` or the `setpoint` changes or the `loop
 Every trigger calculates the P, the I and the D part and sums them up to form the `output` value.
 This is then transferred to the action module.
 
-| Name               | Type    | Description                                                                                                                                        | Required |
-|--------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| `input`            | Item    | Name of the input [Item](https://www.openhab.org/docs/configuration/items.html) (e.g. temperature sensor value)                                    | Y        |
-| `setpoint`         | Item    | Name of the setpoint Item (e.g. desired room temperature)                                                                                          | Y        |
-| `kp`               | Decimal | P: [Proportional Gain](#proportional-p-gain-parameter) Parameter                                                                                   | Y        |
-| `ki`               | Decimal | I: [Integral Gain](#integral-i-gain-parameter) Parameter                                                                                           | Y        |
-| `kd`               | Decimal | D: [Derivative Gain](#derivative-d-gain-parameter) Parameter                                                                                       | Y        |
-| `kdTimeConstant`   | Decimal | D-T1: [Derivative Gain Time Constant](#derivative-time-constant-d-t1-parameter) in sec.                                                            | Y        |
-| `outputLowerLimit` | Decimal | The output of the PID controller will be max this value                                                                                            | Y        |
-| `outputUpperLimit` | Decimal | The output of the PID controller will be min this value                                                                                            | Y        |
-| `loopTime`         | Decimal | The interval the output value will be updated in milliseconds. Note: the output will also be updated when the input value or the setpoint changes. | Y        |
+| Name             | Type    | Description                                                                                                                                        | Required |
+|------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `input`          | Item    | Name of the input [Item](https://www.openhab.org/docs/configuration/items.html) (e.g. temperature sensor value)                                    | Y        |
+| `setpoint`       | Item    | Name of the setpoint Item (e.g. desired room temperature)                                                                                          | Y        |
+| `kp`             | Decimal | P: [Proportional Gain](#proportional-p-gain-parameter) Parameter                                                                                   | Y        |
+| `ki`             | Decimal | I: [Integral Gain](#integral-i-gain-parameter) Parameter                                                                                           | Y        |
+| `kd`             | Decimal | D: [Derivative Gain](#derivative-d-gain-parameter) Parameter                                                                                       | Y        |
+| `kdTimeConstant` | Decimal | D-T1: [Derivative Gain Time Constant](#derivative-time-constant-d-t1-parameter) in sec.                                                            | Y        |
+| `commandItem`    | String  | Send a String "RESET" to this item to reset the I and the D part to 0.                                                                             | N        |
+| `loopTime`       | Decimal | The interval the output value will be updated in milliseconds. Note: the output will also be updated when the input value or the setpoint changes. | Y        |
 
-The purpose of the limit parameters are to keep the output value and the integral value in a reasonable range, if the regulation cannot meet its setpoint.
-E.g. the window is open and the heater doesn't manage to heat up the room.
 
 The `loopTime` should be max a tenth of the system response.
 E.g. the heating needs 10 min to heat up the room, the loop time should be max 1 min.
@@ -76,8 +73,8 @@ The bigger this parameter, the faster the drifting.
 
 A value of 0 disables the I part.
 
-A value of 1 adds the current setpoint deviation (error) to the output each second.
-E.g. the setpoint is 25°C and the measured value is 20°C, the output will be set to 5 after 1 sec.
+A value of 1 adds the current setpoint deviation (error) to the output each `loopTime` (in milliseconds).
+E.g. (`loopTimeMs=1000`) the setpoint is 25°C and the measured value is 20°C, the output will be set to 5 after 1 sec.
 After 2 sec the output will be 10.
 If the output is the opening of a valve in %, you might want to set this parameter to a lower value (`ki=0.1` would result in 30% after 60 sec: 5\*0.1\*60=30).
 
