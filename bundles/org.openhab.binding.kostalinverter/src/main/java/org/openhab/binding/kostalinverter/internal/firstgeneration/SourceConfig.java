@@ -10,16 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter.thirdgeneration;
+package org.openhab.binding.kostalinverter.internal.firstgeneration;
 
 /**
- * The {@link ThirdGenerationConfiguration} class contains fields mapping thing configuration parameters.
- *
- * @author René Stakemeier - Initial contribution
+ * @author Christian Schneider - Initial contribution
  */
-public class ThirdGenerationConfiguration {
-
+public class SourceConfig {
     public String url;
-    public String userPassword;
-    public int refreshInternalInSeconds;
+    public String userName;
+    public String password;
+    public int refreshInterval;
 }
