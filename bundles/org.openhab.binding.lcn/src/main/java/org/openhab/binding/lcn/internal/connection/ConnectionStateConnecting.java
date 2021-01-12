@@ -86,7 +86,7 @@ public class ConnectionStateConnecting extends AbstractConnectionState {
             message = e.getMessage();
         }
         connection.getCallback().onOffline(Objects.requireNonNullElse(message, ""));
-        context.handleConnectionFailed(e);
+        handleConnectionFailed(e);
     }
 
     @Override

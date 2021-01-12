@@ -46,7 +46,7 @@ public class ConnectionStateMachine extends AbstractStateMachine<ConnectionState
 
     /**
      * Gets the PCHK Connection object.
-     * 
+     *
      * @return the connection
      */
     public Connection getConnection() {
@@ -72,15 +72,10 @@ public class ConnectionStateMachine extends AbstractStateMachine<ConnectionState
      *
      * @param e the cause
      */
-    public void handleConnectionFailed(@Nullable Throwable e) {
-        if (!(state instanceof ConnectionStateShutdown)) {
-            if (e != null) {
-                String message = e.getMessage();
-                connection.getCallback().onOffline(message != null ? message : "");
-            } else {
-                connection.getCallback().onOffline("");
-            }
-            setState(ConnectionStateGracePeriodBeforeReconnect::new);
+    public synchronized void handleConnectionFailed(@Nullable Throwable e) {
+        AbstractConnectionState localState = state;
+        if (localState != null) {
+            localState.handleConnectionFailed(e);
         }
     }
 

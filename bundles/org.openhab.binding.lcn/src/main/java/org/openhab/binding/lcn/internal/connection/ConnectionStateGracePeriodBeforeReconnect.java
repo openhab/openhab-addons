@@ -15,6 +15,7 @@ package org.openhab.binding.lcn.internal.connection;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This state is active when the connection failed. A grace period is enforced to prevent fast cycling through the
@@ -40,6 +41,11 @@ public class ConnectionStateGracePeriodBeforeReconnect extends AbstractConnectio
 
     @Override
     public void onPckMessageReceived(String data) {
+        // nothing
+    }
+
+    @Override
+    public void handleConnectionFailed(@Nullable Throwable e) {
         // nothing
     }
 }
