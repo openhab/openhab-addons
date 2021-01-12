@@ -19,6 +19,7 @@ import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +113,7 @@ public class Poller {
 
     private void setParamsAndStart(@Nullable Thread thread) {
         if (thread != null) {
-            thread.setName("Insteon Poll Queue Reader");
+            thread.setName("OH-binding-" + InsteonBindingConstants.BINDING_ID + "-pollQueueReader");
             thread.setDaemon(true);
             thread.start();
         }
