@@ -249,7 +249,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (TransferMode mode : availableInterfaces.values()) {
             if (!rpcServers.containsKey(mode)) {
                 RpcServer rpcServer = mode == TransferMode.XML_RPC ? new XmlRpcServer(this, config)
-                        : new BinRpcServer(this, config);
+                        : new BinRpcServer(this, config, id);
                 rpcServers.put(mode, rpcServer);
                 rpcServer.start();
             }
