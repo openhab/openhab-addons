@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Initial contribution
  */
 
-class KeContactTransceiver {
+public class KeContactTransceiver {
 
     public static final int LISTENER_PORT_NUMBER = 7090;
     public static final int REMOTE_PORT_NUMBER = 7090;
@@ -74,7 +74,7 @@ class KeContactTransceiver {
                 selector = Selector.open();
 
                 if (transceiverThread == null) {
-                    transceiverThread = new Thread(transceiverRunnable, "openHAB-Keba-Transceiver");
+                    transceiverThread = new Thread(transceiverRunnable, "OH-binding-Keba-Transceiver");
                     transceiverThread.start();
                 }
 

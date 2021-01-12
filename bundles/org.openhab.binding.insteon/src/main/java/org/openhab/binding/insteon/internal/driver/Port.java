@@ -192,7 +192,7 @@ public class Port {
 
     private void setParamsAndStart(@Nullable Thread thread, String type) {
         if (thread != null) {
-            thread.setName("Insteon " + logName + " " + type);
+            thread.setName("OH-binding-Insteon " + logName + " " + type);
             thread.setDaemon(true);
             thread.start();
         }
