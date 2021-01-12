@@ -95,10 +95,17 @@ public class MiotParser {
             }
             JsonElement urnData = miotParser.getUrnData(urn);
             miotParser.getDevice(urnData);
-            httpClient.stop();
             return miotParser;
         } catch (Exception e) {
             throw new MiotParseException("Error parsing miot data: " + e.getMessage(), e);
+        } finally {
+            try {
+                if (httpClient.isRunning()) {
+                    httpClient.stop();
+                }
+            } catch (Exception e) {
+                // ignore
+            }
         }
     }
 
@@ -229,6 +236,13 @@ public class MiotParser {
                                 }
                                 String type = MiIoQuantiyTypesConversion.getType(property.unit);
                                 if (type != null) {
+                                    // hack as time related items can both be duration as well as time
+                                    if (type.contentEquals("Time")) {
+                                        if (miIoBasicChannel.getFriendlyName().toLowerCase().contains("duration")
+                                                || miIoBasicChannel.getChannel().toLowerCase().contains("duration")) {
+                                            type = "Duration";
+                                        }
+                                    }
                                     miIoBasicChannel.setType("Number" + ":" + type);
                                     stateDescription.setPattern(
                                             "%." + (property.format.contentEquals("float") ? "1" : "0") + "f %unit%");

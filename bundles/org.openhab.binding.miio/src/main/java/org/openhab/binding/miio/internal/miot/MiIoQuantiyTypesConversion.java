@@ -35,7 +35,9 @@ public enum MiIoQuantiyTypesConversion {
     PRESSURE("Pressure", "pascal"),
     TEMPERATURE("Temperature", "c", "celcius", "celsius", "f", "farenheith", "kelvin", "K"),
     TIME("Time", "seconds", "minutes", "minute", "hour", "hours", "days", "Months"),
-    VOLUME("Volume", "litre", "liter");
+    VOLUME("Volume", "litre", "liter"),
+    POWER("Power", "watt");
+
     /*
      * availale options according to miot spec:
      * percentage
