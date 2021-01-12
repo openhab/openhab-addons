@@ -15,7 +15,6 @@ package org.openhab.binding.avmfritz.internal.handler;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -60,8 +59,6 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
         CallMonitor cm = this.callMonitor;
         if (cm == null && callChannelsLinked()) {
             this.callMonitor = new CallMonitor(config.ipAddress, this, scheduler);
-            // initialize states of call monitor channels
-            scheduler.schedule(this::refreshCallChannels, refreshInterval, TimeUnit.SECONDS);
         } else if (cm != null && !callChannelsLinked()) {
             cm.dispose();
             this.callMonitor = null;
@@ -101,15 +98,15 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
 
     @Override
     public void handleRefreshCommand() {
-        refreshCallChannels();
+        refreshCallMonitorChannels();
         super.handleRefreshCommand();
     }
 
-    private void refreshCallChannels() {
+    private void refreshCallMonitorChannels() {
         CallMonitor cm = this.callMonitor;
-        if (cm != null && callChannelsLinked()) {
+        if (cm != null) {
             // initialize states of call monitor channels
-            cm.refreshChannels();
+            cm.resetChannels();
         }
     }
 }

@@ -69,16 +69,18 @@ public class CallMonitor {
             thread.start();
             this.monitorThread = thread;
         }, 0, 2, TimeUnit.HOURS);
+        // initialize states of call monitor channels
+        resetChannels();
     }
 
     /**
-     * Refresh channels.
+     * Reset channels.
      */
-    public void refreshChannels() {
-        CallMonitorThread thread = this.monitorThread;
-        if (thread != null) {
-            thread.resetChannels();
-        }
+    public void resetChannels() {
+        handler.updateState(CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
+        handler.updateState(CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
+        handler.updateState(CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
+        handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_IDLE);
     }
 
     /**
@@ -100,9 +102,6 @@ public class CallMonitor {
         // time to wait before reconnecting
         private long reconnectTime = 60000L;
 
-        public CallMonitorThread() {
-        }
-
         @Override
         public void run() {
             while (!interrupted) {
@@ -114,7 +113,7 @@ public class CallMonitor {
                     reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     // reset the retry interval
                     reconnectTime = 60000L;
-                } catch (Exception e) {
+                } catch (IOException e) {
                     handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Cannot connect to Fritz!Box call monitor - make sure to enable it by dialing '#96*5'!");
                     logger.debug("Error attempting to connect to FritzBox. Retrying in {} seconds",
@@ -158,16 +157,6 @@ public class CallMonitor {
                     }
                 }
             }
-        }
-
-        /**
-         * Resets states of call monitor channels
-         */
-        public void resetChannels() {
-            handler.updateState(CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
-            handler.updateState(CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
-            handler.updateState(CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
-            handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_IDLE);
         }
 
         /**
