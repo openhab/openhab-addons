@@ -23,5 +23,9 @@
 			<description>Refresh Interval in seconds.</description>
 			<default>60</default>
 		</parameter>
+		<parameter name="invertertype" type="text" required="true">
+			<label>Inverter Typel</label>
+			<description>Type of inverter, with/without battery.</description>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

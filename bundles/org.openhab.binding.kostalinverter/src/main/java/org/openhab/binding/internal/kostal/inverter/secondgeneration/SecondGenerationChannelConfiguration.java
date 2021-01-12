@@ -28,7 +28,7 @@ import org.openhab.core.library.unit.Units;
  *
  * @author Christian Schneider - Initial contribution
  * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
- * @author Örjan Backsell - Added methods for channel configuration (Piko1020, Piko New Generation)
+ * @author Örjan Backsell - Added channels for (Piko1020, Piko New Generation)
  */
 
 @NonNullByDefault
@@ -166,5 +166,20 @@ public class SecondGenerationChannelConfiguration {
         channelConfigurationExtExt.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_SELFCONSUMPTION, "td", 148, Units.WATT, "83888128"));
         return channelConfigurationExtExt;
+    }
+
+    public static List<SecondGenerationChannelConfiguration> getChannelConfigurationConfigurable() {
+        final List<SecondGenerationChannelConfiguration> channelConfigurationConfigurable = new ArrayList<>();
+        channelConfigurationConfigurable.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_BATTERYUSAGECONSUMPTION, "td", 151, Units.WATT, "33556249"));
+        channelConfigurationConfigurable.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_SMARTBATTERYCONTROL, "td", 154, Units.ONE, "33556484"));
+        channelConfigurationConfigurable.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_MAXDEPTHOFDISCHARGE, "td", 157, Units.ONE, "33556247"));
+        channelConfigurationConfigurable.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_SHADOWMANAGEMENT, "td", 160, Units.ONE, "33556483"));
+        channelConfigurationConfigurable.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_EXTERNALMODULECONTROL, "td", 163, Units.ONE, "33556482"));
+        return channelConfigurationConfigurable;
     }
 }

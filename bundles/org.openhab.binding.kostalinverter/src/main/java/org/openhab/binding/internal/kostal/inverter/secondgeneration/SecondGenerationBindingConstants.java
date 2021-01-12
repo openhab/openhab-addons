@@ -84,15 +84,18 @@ public class SecondGenerationBindingConstants {
     public static final String CHANNEL_BATSTATEOFCHARGE = "batStateOfCharge";
     public static final String CHANNEL_SELFCONSUMPTION = "selfConsumption";
 
-    public static final String CHANNEL_CHARGETIMEEND = "chargeTimeEnd";
-    public static final String CHANNEL_BATTERYTYPE = "batteryType";
     public static final String CHANNEL_BATTERYUSAGECONSUMPTION = "batteryUsageConsumption";
-    public static final String CHANNEL_BATTERYUSAGESTRATEGY = "batteryUsageStrategy";
     public static final String CHANNEL_SMARTBATTERYCONTROL = "smartBatteryControl";
-    public static final String CHANNEL_BATTERYCHARGETIMEFROM = "batteryChargeTimeFrom";
-    public static final String CHANNEL_BATTERYCHARGETIMETO = "batteryChargeTimeTo";
     public static final String CHANNEL_MAXDEPTHOFDISCHARGE = "maxDepthOfDischarge";
     public static final String CHANNEL_SHADOWMANAGEMENT = "shadowManagement";
     public static final String CHANNEL_EXTERNALMODULECONTROL = "externalModuleControl";
-    public static final String CHANNEL_INVERTERNAME = "inverterName";
+
+    public static final String CHANNEL_BATTERYUSAGECONSUMPTIONSET = "batteryUsageConsumptionSet";
+    public static final String CHANNEL_BATTERYUSAGESTRATEGYSET = "batteryUsageStrategySet";
+    public static final String CHANNEL_SMARTBATTERYCONTROLSET = "smartBatteryControlSet";
+    public static final String CHANNEL_BATTERYCHARGETIMEFROMSET = "batteryChargeTimeFromSet";
+    public static final String CHANNEL_BATTERYCHARGETIMETOSET = "batteryChargeTimeToSet";
+    public static final String CHANNEL_MAXDEPTHOFDISCHARGESET = "maxDepthOfDischargeSet";
+    public static final String CHANNEL_SHADOWMANAGEMENTSET = "shadowManagementSet";
+    public static final String CHANNEL_EXTERNALMODULECONTROLSET = "externalModuleControlSet";
 }

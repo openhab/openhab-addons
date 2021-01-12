@@ -57,17 +57,19 @@
 			<channel typeId="device-local-battery-voltage" id="batteryVoltage"/>
 			<channel typeId="device-local-bat-state-of-charge" id="batStateOfCharge"/>
 			<channel typeId="device-local-self-consumption" id="selfConsumption"/>
-			<channel typeId="device-local-charge-time-end" id="chargetimeend"/>
-			<channel typeId="device-local-battery-type" id="batteryType"/>
 			<channel typeId="device-local-battery-usage-consumption" id="batteryUsageConsumption"/>
-			<channel typeId="device-local-battery-usage-strategy" id="batteryUsageStrategy"/>
 			<channel typeId="device-local-smart-battery-control" id="smartBatteryControl"/>
-			<channel typeId="device-local-battery-charge-time-from" id="batteryChargeTimeFrom"/>
-			<channel typeId="device-local-battery-charge-time-to" id="batteryChargeTimeTo"/>
 			<channel typeId="device-local-max-depth-of-discharge" id="maxDepthOfDischarge"/>
 			<channel typeId="device-local-shadow-management" id="shadowManagement"/>
 			<channel typeId="device-local-external-module-control" id="externalModuleControl"/>
-			<channel typeId="device-local-inverter-name" id="inverterName"/>
+			<channel typeId="device-local-battery-usage-consumption-set" id="batteryUsageConsumptionSet"/>
+			<channel typeId="device-local-battery-usage-strategy-set" id="batteryUsageStrategySet"/>
+			<channel typeId="device-local-smart-battery-control-set" id="smartBatteryControlSet"/>
+			<channel typeId="device-local-battery-charge-time-from-set" id="batteryChargeTimeFromSet"/>
+			<channel typeId="device-local-battery-charge-time-to-set" id="batteryChargeTimeToSet"/>
+			<channel typeId="device-local-max-depth-of-discharge-set" id="maxDepthOfDischargeSet"/>
+			<channel typeId="device-local-shadow-management-set" id="shadowManagementSet"/>
+			<channel typeId="device-local-external-module-control-set" id="externalModuleControlSet"/>
 		</channels>
 		<properties>
 			<property name="vendor">KOSTAL Solar Electric GmbH</property>

@@ -118,24 +118,24 @@ None
 | device-local-battery-voltage             | Number:ElectricPotential | Battery current voltage                                                          |     R      |
 | device-local-bat-state-of-charge         | Number:Dimensionless     | Battery current charge state                                                     |     R      |
 | device-local-self-consumption            | Number:Power             | Current self consumption                                                         |     R      |
+| device-local-battery-usage-consumption   | Number:Power             | Battery usage consumption                                                        |     R      |
+| device-local-smart-battery-control       | Switch                   | Smart battery control                                                            |     R      |
+| device-local-shadow-management           | Number:Dimensionless     | Shadow management                                                                |     R      |
+| device-local-external-module-control     | Number:Dimensionless     | External module control                                                          |     R      |
 
 The following Channels are writeable
 
 | Channel Type ID                          | Item Type                | Description                                                                      | Read Write |
 |------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|    
-| device-local-charge-time-end             | Number:Time              | Charge time end, Value = 00:00                                                   |     W      |
-| device-local-battery-type                | String                   | Battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV
-                                                                                                                                                         |     W      |
-| device-local-battery-usage-consumption   | Number:Power             | Battery usage consumption level for power-consumption from battery, default value = 100 (W)
-                                                                                                                                                         |     W      |
-| device-local-battery-usage-strategy      | String                   | Battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |     W      |             
-| device-local-smart-battery-control       | Switch                   | Smart battery control, Value = False / True                                      |     W      |
-| device-local-battery-charge-time-from    | Number:Time              | Battery charge time from, Value = 00:00                                          |     W      |
-| device-local-battery-charge-time-to      | Number:Time              | Battery charge time to, Value = 23:59                                            |     W      |
-| device-local-max-depth-of-discharge      | String                   | Max depth of discharge (SoC), Value = 10                                         |     W      |
-| device-local-shadow-management           | String                   | Shadow management, Value = 0 = No shadow management enabled, Value = 1 = Shadow management enabled for DC-Input String 1, Value = 2 = Shadow  management enabled for DC-Input String 2,  Value = 3 = Shadow management enabled for DC-Input String 1 and 2               |     W      |
-| device-local-external-module-control     | String                   | External module control, Value = 0 = True                                        |     W      |
-| device-local-inverter-name               | String                   | Inverter name, Value = 'Name of inverter'                                        |     W      |
+| device-local-battery-usage-consumption-set| String                  | Battery usage consumption level for power-consumption from battery, value = 100 (W)                                                                                                                                                         |     W      |
+| device-local-battery-usage-strategy-set  | String                   | Battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |     W      |             
+| device-local-smart-battery-control-set   | Switch                   | Smart battery control, Value = OFF / ON                                          |     W      |
+| device-local-battery-charge-time-from-set| String                   | Battery charge time from, Value = 00:00                                          |     W      |
+| device-local-battery-charge-time-to-set  | String                   | Battery charge time to, Value = 23:59                                            |     W      |
+| device-local-max-depth-of-discharge-set  | String                   | Max depth of discharge (SoC), Value = 10                                         |     W      |
+| device-local-shadow-management-set       | String                   | Shadow management, Value = 0 = No shadow management enabled, Value = 1 = Shadow management enabled for DC-Input String 1, Value = 2 = Shadow  management enabled for DC-Input String 2,  Value = 3 = Shadow management enabled for DC-Input String 1 and 2               |     W      |
+| device-local-external-module-control-set | String                   | External module control, Value = 0 = Not Activated, Value = 1 = Activated                                        |     W      |
+
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
@@ -229,7 +229,7 @@ You optionally can define a `userName` and a `password` parameter if the access 
 
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
 
-Second generation inverters require 4 mandatory parameters:
+Second generation inverters require 5 mandatory parameters:
 
 | Parameter                | Description                                            | Type    |  Unit   | Default value | Example value |
 |--------------------------|--------------------------------------------------------|---------|---------|---------------|---------------|
@@ -237,14 +237,17 @@ Second generation inverters require 4 mandatory parameters:
 | username                 | Username for your inverter                             | Text    | ---     | ---           | myUsername    |
 | password                 | Password for your inverter                             | Text    | ---     | ---           | myPassword    |
 | refreshInterval          | Pollingintervall of your inverter                      | Integer | Seconds | 60            | 60            |
+| invertertype             | Type of PIKO 10-20 inverter, with or without battery   | Text    | ---     | --            | withBattery/withoutBattery   |   
 
 demo.things
 
 ```
 
-Thing kostalinverter:piko1020:mypiko1020 [ url="http://'inverter-ip'", username="'myUsername'", password="'myPassword'", refreshInterval=60]
+Thing kostalinverter:piko1020:mypiko1020 [ url="http://'inverter-ip'", username="'myUsername'", password="'myPassword'", refreshInterval=60, invertertype = "withBattery"]
 
 ```
+
+You can define which type of PIKO10-20 inverter you will connect to with parameter invertertype.
 
 
 
@@ -336,11 +339,15 @@ Number:Dimensionless        OwnConsRateTotal            "Own Cons Rate Total"   
 Number:Dimensionless        AutonomyDegreeTotal         "Autonomy Degree Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:autonomyDegreeTotal" } 
 Number:ElectricPotential    BatteryVoltage              "Battery Voltage"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:batteryVoltage" }
 Number:Dimensionless        BatStateOfCharge            "Bat State Of Charge"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:batStateOfCharge" }
-Number:Power                SelfConsumption             "Self Consumption"                          <energy> { channel="kostalinverter:piko1020:mypiko1020:selfConsumption" } 
+Number:Power                SelfConsumption             "Self Consumption"                          <energy> { channel="kostalinverter:piko1020:mypiko1020:selfConsumption" }
+Number:Dimensionless        BatteryUsageConsumption     "Battery Usage Consumption"                 <energy> { channel="kostalinverter:piko1020:mypiko1020:batteryUsageConsumption" }
+Switch                      SmartBatteryControl         "Smart Battery Control"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:smartBatteryControl" }
+Number:Dimensionless        MaxDepthOfDischarge         "Max Depth Of Discharge"                    <energy> { channel="kostalinverter:piko1020:mypiko1020:maxDepthOfDischarge" }
+Number:Dimensionless        ShadowManagement            "Shadow Management"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:shadowManagement" }
+Number:Dimensionless        ExternalModuleControl       "External Module Control"                   <energy> { channel="kostalinverter:piko1020:mypiko1020:externalModuleControl" }           
 
-``
 
-
+```
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
 demo.items:
@@ -416,3 +423,28 @@ Number:Energy                MyPlentiCore100WithBattery_STATISTIC_YIELD_TOTAL   
 Number:Energy                MyPlentiCore100WithBattery_STATISTIC_YIELD_YEAR                          <energy> { channel="kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery:statisticYieldYear"}
 
 ```
+
+
+### Rules
+
+Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
+
+```
+
+Ex. Set Smart battery control OFF with cron trigger:
+
+triggers:
+   id: "1"
+    configuration:
+      cronExpression: 0 0/2 * * * ? *
+    type: timer.GenericCronTrigger
+conditions: []
+actions:
+   inputs: {}
+    id: "2"
+    configuration:
+      type: application/vnd.openhab.dsl.rule
+      script: KOSTALPIKO1020_SmartBatteryControlSet.sendCommand("OFF")
+    type: script.ScriptAction
+    
+

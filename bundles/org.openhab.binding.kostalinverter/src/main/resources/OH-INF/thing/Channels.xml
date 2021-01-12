@@ -827,80 +827,94 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-	<channel-type id="device-local-charge-time-end">
-		<item-type>Number:Time</item-type>
-		<label>Charge Time End</label>
-		<description>Set charge time end</description>
-		<category>Energy</category>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="device-local-battery-type">
-		<item-type>String</item-type>
-		<label>Battery Type</label>
-		<description>Set battery type</description>
-		<category>Energy</category>
-		<state readOnly="false"/>
-	</channel-type>
 	<channel-type id="device-local-battery-usage-consumption">
 		<item-type>Number:Power</item-type>
 		<label>Battery Usage Consumption</label>
-		<description>Set battery usage consumption</description>
+		<description>Battery usage consumption</description>
 		<category>Energy</category>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="device-local-battery-usage-strategy">
-		<item-type>String</item-type>
-		<label>Battery Usage Strategy</label>
-		<description>Set battery usage strategy</description>
-		<category>Energy</category>
-		<state readOnly="false"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-smart-battery-control">
 		<item-type>Switch</item-type>
 		<label>Smart Battery Control</label>
+		<description>Smart battery control</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="device-local-max-depth-of-discharge">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Max Depth Of Discharge</label>
+		<description>Max depth of discharge</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-shadow-management">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Shadow Management</label>
+		<description>Shadow management</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-external-module-control">
+		<item-type>Number:Dimensionless</item-type>
+		<label>External Module Control</label>
+		<description>External Module Control</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="device-local-battery-usage-consumption-set">
+		<item-type>String</item-type>
+		<label>Battery Usage Consumption Set</label>
+		<description>Set battery usage consumption</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-battery-usage-strategy-set">
+		<item-type>String</item-type>
+		<label>Battery Usage Strategy Set</label>
+		<description>Set battery usage strategy</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="device-local-smart-battery-control-set">
+		<item-type>Switch</item-type>
+		<label>Smart Battery Control Set</label>
 		<description>Set smart battery control</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="device-local-battery-charge-time-from">
+	<channel-type id="device-local-battery-charge-time-from-set">
 		<item-type>String</item-type>
-		<label>Battery Charge Time From</label>
+		<label>Battery Charge Time From Set</label>
 		<description>Set battery charge time from</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="device-local-battery-charge-time-to">
+	<channel-type id="device-local-battery-charge-time-to-set">
 		<item-type>String</item-type>
-		<label>Battery Charge Time To</label>
+		<label>Battery Charge Time To Set</label>
 		<description>Set battery charge time to</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="device-local-max-depth-of-discharge">
+	<channel-type id="device-local-max-depth-of-discharge-set">
 		<item-type>String</item-type>
-		<label>Max Depth Of Discharge</label>
+		<label>Max Depth Of Discharge Set</label>
 		<description>Set max depth of discharge</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="device-local-shadow-management">
+	<channel-type id="device-local-shadow-management-set">
 		<item-type>String</item-type>
-		<label>Shadow Management</label>
+		<label>Shadow Management Set</label>
 		<description>Set shadow management</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="device-local-external-module-control">
+	<channel-type id="device-local-external-module-control-set">
 		<item-type>String</item-type>
-		<label>External Module Control</label>
-		<description>Set external module control</description>
-		<category>Energy</category>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="device-local-inverter-name">
-		<item-type>String</item-type>
-		<label>Inverter Name</label>
-		<description>Set inverter name</description>
+		<label>External Module Control Set</label>
+		<description>External Module Control Set</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>

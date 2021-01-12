@@ -62,12 +62,14 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
 
-    private List<SecondGenerationChannelConfiguration> channelConfigs = new ArrayList<>(23);
-    private List<SecondGenerationChannelConfiguration> channelConfigsExt = new ArrayList<>(23);
-    private List<SecondGenerationChannelConfiguration> channelConfigsExtExt = new ArrayList<>(3);
-    private List<SecondGenerationChannelConfiguration> channelConfigsAll = new ArrayList<>(49);
+    private List<SecondGenerationChannelConfiguration> channelConfigs = new ArrayList<>();
+    private List<SecondGenerationChannelConfiguration> channelConfigsExt = new ArrayList<>();
+    private List<SecondGenerationChannelConfiguration> channelConfigsExtExt = new ArrayList<>();
+    private List<SecondGenerationChannelConfiguration> channelConfigsConfigurable = new ArrayList<>();
+    private List<SecondGenerationChannelConfiguration> channelConfigsAll = new ArrayList<>();
 
     private @Nullable SecondGenerationInverterConfig inverterConfig;
+
     private @Nullable Gson gson;
 
     public SecondGenerationHandler(Thing thing, HttpClient httpClient) {
@@ -75,89 +77,73 @@ public class SecondGenerationHandler extends BaseThingHandler {
         this.httpClient = httpClient;
     }
 
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        @SuppressWarnings("null")
         String url = inverterConfig.url;
-        @SuppressWarnings("null")
         String username = inverterConfig.username;
-        @SuppressWarnings("null")
         String password = inverterConfig.password;
         String valueConfiguration = "";
         String dxsEntriesConf = "";
 
-        switch (channelUID.getId()) {
-            case SecondGenerationBindingConstants.CHANNEL_CHARGETIMEEND:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "33556236";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_BATTERYTYPE:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "33556252";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_BATTERYUSAGECONSUMPTION:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "33556249";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_BATTERYUSAGESTRATEGY:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "83888896";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_SMARTBATTERYCONTROL:
-                if (command == OnOffType.ON) {
-                    valueConfiguration = "True";
-                }
-                if (command == OnOffType.OFF) {
-                    valueConfiguration = "False";
-                }
-                dxsEntriesConf = "33556484";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_BATTERYCHARGETIMEFROM:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "33556239";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_BATTERYCHARGETIMETO:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "33556240";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_MAXDEPTHOFDISCHARGE:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "33556247";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_SHADOWMANAGEMENT:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "33556483";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_EXTERNALMODULECONTROL:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "33556482";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
-            case SecondGenerationBindingConstants.CHANNEL_INVERTERNAME:
-                valueConfiguration = command.toString();
-                dxsEntriesConf = "16777984";
-                preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
-                        valueConfiguration);
-                break;
+        if (inverterConfig.invertertype.equals("withBattery")) {
+            switch (channelUID.getId()) {
+                case SecondGenerationBindingConstants.CHANNEL_BATTERYUSAGECONSUMPTIONSET:
+                    valueConfiguration = command.toString();
+                    dxsEntriesConf = "33556249";
+                    preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
+                            valueConfiguration);
+                    break;
+                case SecondGenerationBindingConstants.CHANNEL_BATTERYUSAGESTRATEGYSET:
+                    valueConfiguration = command.toString();
+                    dxsEntriesConf = "83888896";
+                    preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
+                            valueConfiguration);
+                    break;
+                case SecondGenerationBindingConstants.CHANNEL_SMARTBATTERYCONTROLSET:
+                    if (command.toString().equals("ON")) {
+                        valueConfiguration = "true";
+                    }
+                    if (command.toString().equals("OFF")) {
+                        valueConfiguration = "false";
+                    }
+                    dxsEntriesConf = "33556484";
+                    preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
+                            valueConfiguration);
+                    break;
+                case SecondGenerationBindingConstants.CHANNEL_BATTERYCHARGETIMEFROMSET:
+                    valueConfiguration = command.toString();
+                    String valueConfigurationFromTransformed = String.valueOf(stringToSeconds(valueConfiguration));
+                    dxsEntriesConf = "33556239";
+                    preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
+                            valueConfigurationFromTransformed);
+                    break;
+                case SecondGenerationBindingConstants.CHANNEL_BATTERYCHARGETIMETOSET:
+                    valueConfiguration = command.toString();
+                    String valueConfigurationToTransformed = String.valueOf(stringToSeconds(valueConfiguration));
+                    dxsEntriesConf = "33556240";
+                    preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
+                            valueConfigurationToTransformed);
+                    break;
+                case SecondGenerationBindingConstants.CHANNEL_MAXDEPTHOFDISCHARGESET:
+                    valueConfiguration = command.toString();
+                    dxsEntriesConf = "33556247";
+                    preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
+                            valueConfiguration);
+                    break;
+                case SecondGenerationBindingConstants.CHANNEL_SHADOWMANAGEMENTSET:
+                    valueConfiguration = command.toString();
+                    dxsEntriesConf = "33556483";
+                    preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
+                            valueConfiguration);
+                    break;
+                case SecondGenerationBindingConstants.CHANNEL_EXTERNALMODULECONTROLSET:
+                    valueConfiguration = command.toString();
+                    dxsEntriesConf = "33556482";
+                    preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
+                            valueConfiguration);
+                    break;
+            }
         }
     }
 
@@ -167,6 +153,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         channelConfigs = SecondGenerationChannelConfiguration.getChannelConfiguration();
         channelConfigsExt = SecondGenerationChannelConfiguration.getChannelConfigurationExt();
         channelConfigsExtExt = SecondGenerationChannelConfiguration.getChannelConfigurationExtExt();
+        channelConfigsConfigurable = SecondGenerationChannelConfiguration.getChannelConfigurationConfigurable();
 
         // Set inverter configuration parameters
         final SecondGenerationInverterConfig inverterConfig = getConfigAs(SecondGenerationInverterConfig.class);
@@ -212,77 +199,160 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     @SuppressWarnings({ "null", "unchecked" })
     private void refresh() throws InterruptedException, ExecutionException, TimeoutException {
+        // dxsEntries part
         String dxsEntriesCall = inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigs.get(0).dxsEntries;
-        String dxsEntriesCallExt = inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
-                + channelConfigsExt.get(0).dxsEntries;
-
         for (int i = 1; i < channelConfigs.size(); i++) {
             dxsEntriesCall += ("&dxsEntries=" + channelConfigs.get(i).dxsEntries);
-            dxsEntriesCallExt += ("&dxsEntries=" + channelConfigsExt.get(i).dxsEntries);
         }
-
         String jsonDxsEntriesResponse = callURL(dxsEntriesCall);
-        String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt);
-        String jsonDxsEntriesResponseExtExt = callURL(inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
-                + channelConfigsExtExt.get(0).dxsEntries + "&dxsEntries=" + channelConfigsExtExt.get(1).dxsEntries
-                + "&dxsEntries=" + channelConfigsExtExt.get(2).dxsEntries);
-
-        // Parse result
         SecondGenerationDxsEntriesContainerDTO dxsEntriesContainer = gson.fromJson(jsonDxsEntriesResponse,
                 SecondGenerationDxsEntriesContainerDTO.class);
-        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExt = gson.fromJson(jsonDxsEntriesResponseExt,
-                SecondGenerationDxsEntriesContainerDTO.class);
-        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExtExt = gson.fromJson(jsonDxsEntriesResponseExtExt,
-                SecondGenerationDxsEntriesContainerDTO.class);
 
-        // Create channel-posts array's
         String[] channelPosts = new String[23];
-        String[] channelPostsExt = new String[23];
-        String[] channelPostsExtExt = new String[3];
-
-        // Fill channelPosts with each item value
         int channelPostsCounter = 0;
         for (SecondGenerationDxsEntries dxsentries : dxsEntriesContainer.dxsEntries) {
             channelPosts[channelPostsCounter] = dxsentries.getName();
             channelPostsCounter++;
         }
+        List<String> channelPostsTemp = new ArrayList<String>(Arrays.asList(channelPosts));
 
-        // Fill channelPostsExt with each item value
+        // dxsEntriesExt part
+        String dxsEntriesCallExt = inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
+                + channelConfigsExt.get(0).dxsEntries;
+        for (int i = 1; i < channelConfigs.size(); i++) {
+            dxsEntriesCallExt += ("&dxsEntries=" + channelConfigsExt.get(i).dxsEntries);
+        }
+        String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt);
+        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExt = gson.fromJson(jsonDxsEntriesResponseExt,
+                SecondGenerationDxsEntriesContainerDTO.class);
+
+        String[] channelPostsExt = new String[23];
         int channelPostsCounterExt = 0;
         for (SecondGenerationDxsEntries dxsentriesExt : dxsEntriesContainerExt.dxsEntries) {
             channelPostsExt[channelPostsCounterExt] = dxsentriesExt.getName();
             channelPostsCounterExt++;
         }
+        channelPostsTemp.addAll(Arrays.asList(channelPostsExt));
 
-        // Fill channelPostsExt with each item value
+        // dxsEntriesExtExt part
+        String dxsEntriesCallExtExt = inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
+                + channelConfigsExtExt.get(0).dxsEntries;
+        for (int i = 1; i < channelConfigsExtExt.size(); i++) {
+            dxsEntriesCallExtExt += ("&dxsEntries=" + channelConfigsExtExt.get(i).dxsEntries);
+        }
+        String jsonDxsEntriesResponseExtExt = callURL(dxsEntriesCallExtExt);
+        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExtExt = gson.fromJson(jsonDxsEntriesResponseExtExt,
+                SecondGenerationDxsEntriesContainerDTO.class);
+
+        String[] channelPostsExtExt = new String[3];
         int channelPostsCounterExtExt = 0;
         for (SecondGenerationDxsEntries dxsentriesExtExt : dxsEntriesContainerExtExt.dxsEntries) {
             channelPostsExtExt[channelPostsCounterExtExt] = dxsentriesExtExt.getName();
             channelPostsCounterExtExt++;
         }
-
-        // Create Arrays and Lists which will be used for updating
-        List<String> channelPostsTemp = new ArrayList<String>(Arrays.asList(channelPosts));
-        channelPostsTemp.addAll(Arrays.asList(channelPostsExt));
         channelPostsTemp.addAll(Arrays.asList(channelPostsExtExt));
-        Object[] channelPostsTemp1 = channelPostsTemp.toArray();
-        String[] channelPostsAll = Arrays.copyOf(channelPostsTemp1, channelPostsTemp1.length, String[].class);
 
-        channelConfigsAll = combineChannelConfigLists(channelConfigs, channelConfigsExt, channelConfigsExtExt);
+        // dxsEntriesConfigurable part
+        String dxsEntriesCallConfigurable = inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
+                + channelConfigsConfigurable.get(0).dxsEntries;
+        for (int i = 1; i < channelConfigsConfigurable.size(); i++) {
+            dxsEntriesCallConfigurable += ("&dxsEntries=" + channelConfigsConfigurable.get(i).dxsEntries);
+        }
 
-        // Create and update actual values for each channelPost
-        int channelValuesCounterAll = 0;
+        String jsonDxsEntriesResponseConfigurable = callURL(dxsEntriesCallConfigurable);
+        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerConfigurable = gson
+                .fromJson(jsonDxsEntriesResponseConfigurable, SecondGenerationDxsEntriesContainerDTO.class);
 
-        for (SecondGenerationChannelConfiguration cConfig : channelConfigsAll) {
-            String channel = cConfig.id;
-            State state = getState(channelPostsAll[channelValuesCounterAll], cConfig.unit);
+        String[] channelPostsConfigurable = new String[5];
+        int channelPostsCounterConfigurable = 0;
+        for (SecondGenerationDxsEntries dxsentriesConfigurable : dxsEntriesContainerConfigurable.dxsEntries) {
+            channelPostsConfigurable[channelPostsCounterConfigurable] = dxsentriesConfigurable.getName();
+            channelPostsCounterConfigurable++;
+        }
 
-            // Update the channels
-            if (state != null) {
-                updateState(channel, state);
+        // Create and update actual values for non-configurable items
+        if (inverterConfig.invertertype.equals("withoutBattery")) {
+            Object[] channelPostsTemp1 = channelPostsTemp.toArray();
+            String[] channelPostsAll = Arrays.copyOf(channelPostsTemp1, channelPostsTemp1.length, String[].class);
+
+            channelConfigsAll = combineChannelConfigLists(channelConfigs, channelConfigsExt, channelConfigsExtExt);
+
+            int channelValuesCounterAll = 0;
+            for (SecondGenerationChannelConfiguration cConfig : channelConfigsAll) {
+                String channel = cConfig.id;
+                State state = getState(channelPostsAll[channelValuesCounterAll], cConfig.unit);
+
+                // Update the channels
+                if (state != null) {
+                    updateState(channel, state);
+                }
+                channelValuesCounterAll++;
             }
-            channelValuesCounterAll++;
+        }
+
+        // Create and update actual values for all items
+        if (inverterConfig.invertertype.equals("withBattery")) {
+
+            // Part for non-configurable updating
+            Object[] channelPostsTemp1 = channelPostsTemp.toArray();
+            String[] channelPostsAll = Arrays.copyOf(channelPostsTemp1, channelPostsTemp1.length, String[].class);
+
+            channelConfigsAll = combineChannelConfigLists(channelConfigs, channelConfigsExt, channelConfigsExtExt);
+            // Update the non-configurable channels
+            int channelValuesCounterAll = 0;
+            for (SecondGenerationChannelConfiguration cConfig : channelConfigsAll) {
+                String channel = cConfig.id;
+                State state = getState(channelPostsAll[channelValuesCounterAll], cConfig.unit);
+
+                if (state != null) {
+                    updateState(channel, state);
+                }
+                channelValuesCounterAll++;
+            }
+
+            // Update the configurable channels
+            int channelValuesCounterConfigurable = 0;
+            for (SecondGenerationChannelConfiguration cConfig : channelConfigsConfigurable) {
+                String channel = cConfig.id;
+                String value = channelPostsConfigurable[channelValuesCounterConfigurable];
+                int dxsEntriesCheckCounter = 3;
+
+                if (cConfig.dxsEntries.equals("33556484")) {
+                    dxsEntriesCheckCounter = 1;
+                }
+                if (cConfig.dxsEntries.equals("33556482")) {
+                    dxsEntriesCheckCounter = 2;
+                }
+                switch (dxsEntriesCheckCounter) {
+                    case 1:
+                        if (value.equals("false")) {
+                            updateState(channel, OnOffType.OFF);
+                        }
+                        if (value.equals("true")) {
+                            updateState(channel, OnOffType.ON);
+                        }
+                        channelValuesCounterConfigurable++;
+                        break;
+                    case 2:
+                        if (value.equals("false")) {
+                            State stateFalse = new StringType("0");
+                            updateState(channel, stateFalse);
+                        }
+                        if (value.equals("true")) {
+                            State stateTrue = new StringType("1");
+                            updateState(channel, stateTrue);
+                        }
+                        channelValuesCounterConfigurable++;
+                        break;
+                    case 3:
+                        State stateOther = getState(channelPostsConfigurable[channelValuesCounterConfigurable],
+                                cConfig.unit);
+                        updateState(channel, stateOther);
+                        channelValuesCounterConfigurable++;
+                        break;
+                }
+            }
         }
     }
 
@@ -299,12 +369,14 @@ public class SecondGenerationHandler extends BaseThingHandler {
         }
     }
 
+    // Method callURL connect to inverter for value scraping
     public final String callURL(String dxsEntriesCall)
             throws InterruptedException, ExecutionException, TimeoutException {
         String jsonDxsResponse = httpClient.GET(dxsEntriesCall).getContentAsString();
         return jsonDxsResponse;
     }
 
+    // Method getState is used for non-configurable values
     private State getState(String value, @Nullable Unit<?> unit) {
         if (unit == null) {
             return new StringType(value);
@@ -316,6 +388,13 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 return UnDefType.UNDEF;
             }
         }
+    }
+
+    // Method stringToSeconds transform given time in 00:16 syntax to seconds syntax
+    public static long stringToSeconds(String stringTime) {
+        long secondsMin = Long.parseLong(stringTime.substring(3, 5)) * 60;
+        long secondsHrs = Long.parseLong(stringTime.substring(0, 2)) * 3600;
+        return secondsMin + secondsHrs;
     }
 
     // Method to concatenate channelConfigs Lists to one List

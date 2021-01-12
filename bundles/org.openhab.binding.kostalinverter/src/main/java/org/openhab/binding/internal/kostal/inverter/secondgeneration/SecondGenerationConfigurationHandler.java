@@ -91,24 +91,12 @@ public class SecondGenerationConfigurationHandler {
             sessionId = extractSessionId(loginPostJsonObject);
 
             // Part for sending data to Inverter
-            String postJsonData = "";
-
-            if (dxsId.contentEquals("16777984")) {
-                // Works with inverterName, name will be changed, due to "" around value
-                postJsonData = "{\"dxsEntries\":[{\"dxsId\":" + dxsId + ",\"value\":\"" + value + "\"}]}";
-            } else {
-                // Works not with inverterName, name will not be changed, due to "" around value, but the other
-                // configuration options will be changed.
-                postJsonData = "{\"dxsEntries\":[{\"dxsId\":" + dxsId + ",\"value\":" + value + "}]}";
-            }
+            String postJsonData = "{\"dxsEntries\":[{\"dxsId\":" + dxsId + ",\"value\":" + value + "}]}";
 
             Request postJsonDataRequest = httpClient.POST(url + "/api/dxs.json?sessionId=" + sessionId);
             postJsonDataRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
             postJsonDataRequest.content(new StringContentProvider(postJsonData));
-
-            ContentResponse postJsonDataContentResponse = postJsonDataRequest.send();
-            @SuppressWarnings("unused")
-            String postResponse = new String(postJsonDataContentResponse.getContent());
+            postJsonDataRequest.send();
 
         } catch (JsonIOException getAuthenticateResponseException) {
             logger.debug("Could not read the response: {}", getAuthenticateResponseException.getMessage());
