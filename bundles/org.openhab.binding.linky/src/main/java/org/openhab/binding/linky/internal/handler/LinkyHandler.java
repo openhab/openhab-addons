@@ -16,6 +16,7 @@ import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
@@ -214,9 +215,11 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateDailyData() {
         if (isLinked(YESTERDAY)) {
-            cachedDailyData.getValue().ifPresent(values -> {
+            cachedDailyData.getValue().ifPresentOrElse(values -> {
                 Aggregate days = values.aggregats.days;
                 updateKwhChannel(YESTERDAY, days.datas.get(days.datas.size() - 1));
+            }, () -> {
+                updateKwhChannel(YESTERDAY, Double.NaN);
             });
         }
     }
@@ -226,7 +229,7 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateWeeklyData() {
         if (isLinked(LAST_WEEK) || isLinked(THIS_WEEK)) {
-            cachedDailyData.getValue().ifPresent(values -> {
+            cachedDailyData.getValue().ifPresentOrElse(values -> {
                 Aggregate days = values.aggregats.days;
                 int idxLast = days.periodes.get(days.periodes.size() - 1).dateDebut.get(weekFields.dayOfWeek()) == 7 ? 2
                         : 1;
@@ -239,6 +242,13 @@ public class LinkyHandler extends BaseThingHandler {
                 } else {
                     updateKwhChannel(THIS_WEEK, 0.0);
                 }
+            }, () -> {
+                if (ZonedDateTime.now().get(weekFields.dayOfWeek()) == 1) {
+                    updateKwhChannel(THIS_WEEK, 0.0);
+                    updateKwhChannel(LAST_WEEK, Double.NaN);
+                } else {
+                    updateKwhChannel(THIS_WEEK, Double.NaN);
+                }
             });
         }
     }
@@ -248,13 +258,20 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateMonthlyData() {
         if (isLinked(LAST_MONTH) || isLinked(THIS_MONTH)) {
-            cachedMonthlyData.getValue().ifPresent(values -> {
+            cachedMonthlyData.getValue().ifPresentOrElse(values -> {
                 Aggregate months = values.aggregats.months;
                 updateKwhChannel(LAST_MONTH, months.datas.get(0));
                 if (months.datas.size() > 1) {
                     updateKwhChannel(THIS_MONTH, months.datas.get(1));
                 } else {
                     updateKwhChannel(THIS_MONTH, 0.0);
+                }
+            }, () -> {
+                if (ZonedDateTime.now().getDayOfMonth() == 1) {
+                    updateKwhChannel(THIS_MONTH, 0.0);
+                    updateKwhChannel(LAST_MONTH, Double.NaN);
+                } else {
+                    updateKwhChannel(THIS_MONTH, Double.NaN);
                 }
             });
         }
@@ -265,13 +282,20 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateYearlyData() {
         if (isLinked(LAST_YEAR) || isLinked(THIS_YEAR)) {
-            cachedYearlyData.getValue().ifPresent(values -> {
+            cachedYearlyData.getValue().ifPresentOrElse(values -> {
                 Aggregate years = values.aggregats.years;
                 updateKwhChannel(LAST_YEAR, years.datas.get(0));
                 if (years.datas.size() > 1) {
                     updateKwhChannel(THIS_YEAR, years.datas.get(1));
                 } else {
                     updateKwhChannel(THIS_YEAR, 0.0);
+                }
+            }, () -> {
+                if (ZonedDateTime.now().getDayOfYear() == 1) {
+                    updateKwhChannel(THIS_YEAR, 0.0);
+                    updateKwhChannel(LAST_YEAR, Double.NaN);
+                } else {
+                    updateKwhChannel(THIS_YEAR, Double.NaN);
                 }
             });
         }
