@@ -38,7 +38,7 @@ public enum ALD1Registers {
     CURRENT(0.1f, 37, UINT16, Units.AMPERE),
     ACTIVE_POWER(10, 38, INT16, Units.WATT),
     REACTIVE_POWER(10, 39, INT16, Units.VAR),
-    POWER_FACTOR(0.01f, 40, UINT16, Units.ONE);
+    POWER_FACTOR(0.01f, 40, INT16, Units.ONE);
 
     private BigDecimal multiplier;
     private int registerNumber;
