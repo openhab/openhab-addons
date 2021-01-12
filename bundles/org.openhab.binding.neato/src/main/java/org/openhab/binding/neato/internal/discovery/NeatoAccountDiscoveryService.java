@@ -42,14 +42,15 @@ public class NeatoAccountDiscoveryService extends AbstractDiscoveryService {
 
     private static final int TIMEOUT = 15;
 
-    private NeatoAccountHandler handler;
-    private ThingUID bridgeUID;
+    private final NeatoAccountHandler handler;
+    private final ThingUID bridgeUID;
 
     private ScheduledFuture<?> scanTask;
 
     public NeatoAccountDiscoveryService(NeatoAccountHandler handler) {
         super(NeatoHandlerFactory.DISCOVERABLE_THING_TYPE_UIDS, TIMEOUT);
         this.handler = handler;
+        this.bridgeUID = handler.getThing().getUID();
     }
 
     private void findRobots() {
@@ -70,7 +71,7 @@ public class NeatoAccountDiscoveryService extends AbstractDiscoveryService {
         if (this.scanTask != null) {
             scanTask.cancel(true);
         }
-        this.scanTask = scheduler.schedule(() -> findRobots(), 0, TimeUnit.SECONDS);
+        this.scanTask = scheduler.schedule(this::findRobots, 0, TimeUnit.SECONDS);
     }
 
     @Override
@@ -88,17 +89,16 @@ public class NeatoAccountDiscoveryService extends AbstractDiscoveryService {
             return;
         }
 
-        logger.debug("addThing(): Adding new Neato unit {} to the inbox", robot.getName());
+        logger.debug("addThing(): Adding new Neato unit ({}) to the inbox", robot.getName());
 
         Map<String, Object> properties = new HashMap<>();
-        String serial = robot.getSerial();
         ThingUID thingUID = new ThingUID(NeatoBindingConstants.THING_TYPE_VACUUMCLEANER, bridgeUID, robot.getSerial());
         properties.put(NeatoBindingConstants.CONFIG_SECRET, robot.getSecretKey());
         properties.put(NeatoBindingConstants.CONFIG_SERIAL, robot.getSerial());
         properties.put(Thing.PROPERTY_MODEL_ID, robot.getModel());
         properties.put(NeatoBindingConstants.PROPERTY_NAME, robot.getName());
 
-        thingDiscovered(
-                DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withProperties(properties).build());
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(robot.getName()).withBridge(bridgeUID)
+                .withProperties(properties).build());
     }
 }
