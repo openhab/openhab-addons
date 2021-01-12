@@ -58,16 +58,17 @@ public class MiotJsonFileCreator {
 
         LinkedHashSet<String> models = new LinkedHashSet<>();
         for (int i = 1; i <= 12; i++) {
-            models.add("xiaomi.aircondition.mc" + String.valueOf(i));
+            models.add("chuangmi.plug.212a0" + String.valueOf(i));
         }
 
         if (args.length > 0) {
             models.add(args[0]);
         }
+        MiotParser miotParser;
         for (String model : models) {
             LOGGER.info("Processing: {}", model);
             try {
-                MiotParser miotParser = MiotParser.parse(model);
+                miotParser = MiotParser.parse(model);
                 LOGGER.info("urn: ", miotParser.getUrn());
                 LOGGER.info("{}", miotParser.getUrnData());
                 MiIoBasicDevice device = miotParser.getDevice();

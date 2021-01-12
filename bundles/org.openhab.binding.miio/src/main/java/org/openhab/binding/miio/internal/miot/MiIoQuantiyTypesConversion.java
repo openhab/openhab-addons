@@ -31,12 +31,13 @@ public enum MiIoQuantiyTypesConversion {
     DENSITY("Density", "mg/m3"),
     DIMENSIONLESS("Dimensionless", "percent", "percentage", "ppm"),
     ELECTRIC_POTENTIAL("ElectricPotential", "volt"),
+    POWER("Power", "watt"),
+    CURRENT("ElectricCurrent", "ampere", "mA"),
     ILLUMINANCE("Illuminance", "lux"),
     PRESSURE("Pressure", "pascal"),
     TEMPERATURE("Temperature", "c", "celcius", "celsius", "f", "farenheith", "kelvin", "K"),
     TIME("Time", "seconds", "minutes", "minute", "hour", "hours", "days", "Months"),
-    VOLUME("Volume", "litre", "liter"),
-    POWER("Power", "watt");
+    VOLUME("Volume", "litre", "liter", "m3");
 
     /*
      * availale options according to miot spec:
