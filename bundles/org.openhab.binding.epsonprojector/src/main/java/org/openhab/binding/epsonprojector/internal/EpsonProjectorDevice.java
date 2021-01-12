@@ -201,6 +201,7 @@ public class EpsonProjectorDevice {
     public void connect() throws EpsonProjectorException {
         connection.connect();
         connected = true;
+        ready = true;
     }
 
     public void disconnect() throws EpsonProjectorException {
