@@ -71,7 +71,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         }
 
         final PrgBridgeConfig config = getPrgBridgeConfig();
-        session = new SocketSession(config.getIpAddress(), 23);
+        session = new SocketSession(getThing().getUID().getAsString(), config.getIpAddress(), 23);
 
         protocolHandler = new PrgProtocolHandler(session, new PrgHandlerCallback() {
             @Override
