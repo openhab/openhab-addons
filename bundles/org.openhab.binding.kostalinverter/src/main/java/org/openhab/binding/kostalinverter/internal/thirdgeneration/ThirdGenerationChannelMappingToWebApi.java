@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter.thirdgeneration;
+package org.openhab.binding.kostalinverter.internal.thirdgeneration;
 
 /***
  * The {@link ThirdGenerationChannelMappingToWebApi}} is used to map the channel name to the web API commands
