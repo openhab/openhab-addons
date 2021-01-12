@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.harmonyhub.internal.HarmonyHubBindingConstants;
 import org.openhab.binding.harmonyhub.internal.handler.HarmonyHubHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -222,7 +223,9 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
         public void start() {
             running = true;
-            Thread localThread = new Thread(this::run, "HarmonyDiscoveryServer(tcp/" + getPort() + ")");
+            Thread localThread = new Thread(this::run,
+                    "OH-binding-" + HarmonyHubBindingConstants.BINDING_ID + "discoveryServer");
+            localThread.setDaemon(true);
             localThread.start();
         }
 

@@ -130,7 +130,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
 
     protected void startMsgReader() {
         synchronized (msgReaderThreadLock) {
-            Thread mrt = new Thread(this::readerThread, "AD Reader");
+            Thread mrt = new Thread(this::readerThread, "OH-binding-" + getThing().getUID() + "-ADReader");
             mrt.setDaemon(true);
             mrt.start();
             msgReaderThread = mrt;

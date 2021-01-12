@@ -449,7 +449,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
             return;
         }
 
-        session = new SocketChannelSession(config.getIpAddress(), 23);
+        session = new SocketChannelSession(getThing().getUID().getAsString(), config.getIpAddress(), 23);
         atlonaHandler = new AtlonaPro3PortocolHandler(session, config, getCapabilities(),
                 new StatefulHandlerCallback(new AtlonaHandlerCallback() {
                     @Override
