@@ -302,7 +302,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         synchronized (scheduledFutures) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 // Repeat channel update job every configured seconds
-                Runnable channelUpdaterJob = new ChannelUpdaterJob(getThing(), translationProvider);
+                Runnable channelUpdaterJob = new ChannelUpdaterJob(this, translationProvider);
                 ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(channelUpdaterJob, 0, config.refresh,
                         TimeUnit.SECONDS);
                 scheduledFutures.add(future);

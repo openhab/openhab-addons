@@ -108,11 +108,14 @@ public class HeatpumpConnector {
             while (datain.available() > 0) {
                 datain.readByte();
             }
+
+            // write command, param and value to heatpump socket
             dataout.writeInt(SOCKET_PARAM_WRITE_PARAMS);
             dataout.writeInt(param);
             dataout.writeInt(value);
             dataout.flush();
 
+            // first integer on socket output should represent the command
             int cmd = datain.readInt();
             datain.readInt();
 
@@ -148,37 +151,47 @@ public class HeatpumpConnector {
     }
 
     /**
-     * Reads all available parameters for the given value from socket
+     * Reads all available values for the given parameter from socket
      * 
      * @param datain data input stream of socket connection
      * @param dataout data output stream of socket connection
-     * @param value int value to read from socket
+     * @param parameter int command to read from socket
      * @return an array with all values returned from heat pump socket
      * @throws IOException indicate that no data can be read from the heat pump
      */
-    private Integer[] readInt(DataInputStream datain, DataOutputStream dataout, int value) throws IOException {
+    private Integer[] readInt(DataInputStream datain, DataOutputStream dataout, int parameter) throws IOException {
         Integer[] result = null;
         while (datain.available() > 0) {
             datain.readByte();
         }
-        dataout.writeInt(value);
+
+        // to receive values we first need to write the command followed by four 0 byte values to the socket
+        dataout.writeInt(parameter);
         dataout.writeInt(0);
         dataout.flush();
-        if (datain.readInt() != value) {
+
+        // the first integer received from socket should match the written command
+        if (datain.readInt() != parameter) {
             return new Integer[0];
         }
 
-        if (value == SOCKET_PARAM_READ_VALUES) {
+        if (parameter == SOCKET_PARAM_READ_VALUES) {
+            // when reading values the next integer represents some kind of status
             datain.readInt();
         }
 
-        int arraylength = datain.readInt();
+        // the next integer value should define the number of values that are following
+        // Currently the list or parameters is the longest list and contains around 1050 values
+        // To avoid possible (memory) problems in case the returned number would be unexpected high we limit it to 2000
+        int arraylength = Integer.min(datain.readInt(), 2000);
 
-        logger.debug("Found {} values for {}", arraylength, value);
+        logger.debug("Found {} values for {}", arraylength, parameter);
 
         result = new Integer[arraylength];
 
-        if (value == SOCKET_PARAM_READ_VISIBILITIES) {
+        // Note: the visibility params are returned as single byte values
+        // probably as the are used as boolean values (0/1) only
+        if (parameter == SOCKET_PARAM_READ_VISIBILITIES) {
             byte[] data = datain.readNBytes(arraylength);
             for (int i = 0; i < data.length; i++) {
                 result[i] = (int) data[i];
