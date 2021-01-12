@@ -135,7 +135,7 @@ public class BuienradarHandler extends BaseThingHandler {
                             "Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
                             tries, retryInSeconds);
                 } else {
-                    logger.info(
+                    logger.debug(
                             "Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
                             tries, retryInSeconds);
                 }
