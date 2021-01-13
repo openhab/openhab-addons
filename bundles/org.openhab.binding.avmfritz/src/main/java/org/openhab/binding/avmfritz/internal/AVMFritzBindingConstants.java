@@ -90,6 +90,7 @@ public class AVMFritzBindingConstants {
     public static final String PRODUCT_NAME = "productName";
 
     // List of all channel groups
+    public static final String CHANNEL_GROUP_DEVICE = "device";
     public static final String CHANNEL_GROUP_SENSORS = "sensors";
     public static final String CHANNEL_GROUP_TOP_LEFT = "top-left";
     public static final String CHANNEL_GROUP_BOTTOM_LEFT = "bottom-left";
