@@ -2300,7 +2300,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | needClean        | Switch  | Need Clean                          |            |
 | modeType         | Number  | Mode                                |            |
 | appointStart     | Number  | Appoint Start                       |            |
-| appointEnd       | Number  | Eppoint End                         |            |
+| appointEnd       | Number  | Appoint End                         |            |
 
 ### Viomi Cleaning Robot V-RVCLM21B (<a name="viomi-vacuum-v6">viomi.vacuum.v6</a>) Channels
 
@@ -6358,7 +6358,7 @@ Number hotWater "Hot Water" (G_waterheater) {channel="miio:basic:waterheater:hot
 Switch needClean "Need Clean" (G_waterheater) {channel="miio:basic:waterheater:needClean"}
 Number modeType "Mode" (G_waterheater) {channel="miio:basic:waterheater:modeType"}
 Number appointStart "Appoint Start" (G_waterheater) {channel="miio:basic:waterheater:appointStart"}
-Number appointEnd "Eppoint End" (G_waterheater) {channel="miio:basic:waterheater:appointEnd"}
+Number appointEnd "Appoint End" (G_waterheater) {channel="miio:basic:waterheater:appointEnd"}
 ```
 
 ### Viomi Cleaning Robot V-RVCLM21B (viomi.vacuum.v6) item file lines
