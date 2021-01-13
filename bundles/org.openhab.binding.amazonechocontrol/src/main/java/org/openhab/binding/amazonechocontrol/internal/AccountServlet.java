@@ -497,13 +497,14 @@ public class AccountServlet extends HttpServlet {
     private void renderCapabilities(Connection connection, Device device, StringBuilder html) {
         html.append("<h2>Capabilities</h2>");
         html.append("<table><tr><th align='left'>Name</th></tr>");
-        device.getCapabilities().forEach(
-                capability -> html.append("<tr><td>" + StringEscapeUtils.escapeHtml(capability) + "</td></tr>"));
+        device.getCapabilities().forEach(capability -> html.append("<tr><td>")
+                .append(StringEscapeUtils.escapeHtml(capability)).append("</td></tr>"));
         html.append("</table>");
     }
 
     private void renderMusicProviderIdChannel(Connection connection, StringBuilder html) {
-        html.append("<h2>" + StringEscapeUtils.escapeHtml("Channel " + CHANNEL_MUSIC_PROVIDER_ID) + "</h2>");
+        html.append("<h2>").append(StringEscapeUtils.escapeHtml("Channel " + CHANNEL_MUSIC_PROVIDER_ID))
+                .append("</h2>");
         html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
         List<JsonMusicProvider> musicProviders = connection.getMusicProviders();
         for (JsonMusicProvider musicProvider : musicProviders) {
@@ -524,7 +525,7 @@ public class AccountServlet extends HttpServlet {
     }
 
     private void renderPlayAlarmSoundChannel(Connection connection, Device device, StringBuilder html) {
-        html.append("<h2>" + StringEscapeUtils.escapeHtml("Channel " + CHANNEL_PLAY_ALARM_SOUND) + "</h2>");
+        html.append("<h2>").append(StringEscapeUtils.escapeHtml("Channel " + CHANNEL_PLAY_ALARM_SOUND)).append("</h2>");
         List<JsonNotificationSound> notificationSounds = List.of();
         String errorMessage = "No notifications sounds found";
         try {
@@ -554,7 +555,8 @@ public class AccountServlet extends HttpServlet {
     }
 
     private void renderAmazonMusicPlaylistIdChannel(Connection connection, Device device, StringBuilder html) {
-        html.append("<h2>" + StringEscapeUtils.escapeHtml("Channel " + CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID) + "</h2>");
+        html.append("<h2>").append(StringEscapeUtils.escapeHtml("Channel " + CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID))
+                .append("</h2>");
 
         JsonPlaylists playLists = null;
         String errorMessage = "No playlists found";
@@ -592,7 +594,7 @@ public class AccountServlet extends HttpServlet {
     }
 
     private void renderBluetoothMacChannel(Connection connection, Device device, StringBuilder html) {
-        html.append("<h2>" + StringEscapeUtils.escapeHtml("Channel " + CHANNEL_BLUETOOTH_MAC) + "</h2>");
+        html.append("<h2>").append(StringEscapeUtils.escapeHtml("Channel " + CHANNEL_BLUETOOTH_MAC)).append("</h2>");
         JsonBluetoothStates bluetoothStates = connection.getBluetoothConnectionStates();
         if (bluetoothStates == null) {
             return;
