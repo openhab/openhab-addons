@@ -60,7 +60,7 @@ public class PowermaxInfoMessage extends PowermaxBaseMessage {
         debug("Panel type", panelTypeNr, panelTypeStr);
 
         logger.debug("Reading panel settings");
-        updatedState.setDownloadMode(true);
+        updatedState.downloadMode.setValue(true);
         commManager.sendMessage(PowermaxSendType.DL_PANELFW);
         commManager.sendMessage(PowermaxSendType.DL_SERIAL);
         commManager.sendMessage(PowermaxSendType.DL_ZONESTR);

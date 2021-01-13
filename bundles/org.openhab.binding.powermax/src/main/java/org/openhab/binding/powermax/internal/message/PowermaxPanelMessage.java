@@ -50,7 +50,7 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
             int eventType = logEvent & 0x0000007F;
             String logEventStr = PowermaxMessageConstants.getSystemEventString(eventType);
             String logUserStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
-            updatedState.setPanelStatus(logEventStr + " (" + logUserStr + ")");
+            updatedState.panelStatus.setValue(logEventStr + " (" + logUserStr + ")");
 
             debug("Event " + i + " zone code", eventZone, logUserStr);
             debug("Event " + i + " event code", eventType, logEventStr);
@@ -62,7 +62,7 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
             } catch (IllegalArgumentException e) {
                 alarmStatus = "None";
             }
-            updatedState.setAlarmType(alarmStatus);
+            updatedState.alarmType.setValue(alarmStatus);
 
             String troubleStatus;
             try {
@@ -71,11 +71,11 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
             } catch (IllegalArgumentException e) {
                 troubleStatus = "None";
             }
-            updatedState.setTroubleType(troubleStatus);
+            updatedState.troubleType.setValue(troubleStatus);
 
             if (eventType == 0x60) {
                 // System reset
-                updatedState.setDownloadSetupRequired(true);
+                updatedState.downloadSetupRequired.setValue(true);
             }
         }
 

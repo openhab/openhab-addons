@@ -36,6 +36,7 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String INFO_SETUP = "info_setup";
     private static final String DOWNLOAD_SETUP = "download_setup";
+    private static final String BRIDGE_STATE = "bridge_state";
 
     private ThingRegistry thingRegistry;
 
@@ -81,6 +82,11 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
                         handler.downloadSetup();
                         console.println("Command '" + args[1] + "' handled.");
                         break;
+                    case BRIDGE_STATE:
+                        for (String line : handler.getCurrentState().toString().split("\n")) {
+                            console.println(line);
+                        }
+                        break;
                     default:
                         console.println("Unknown Powermax sub command '" + args[1] + "'");
                         printUsage(console);
@@ -95,7 +101,8 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + INFO_SETUP, "information on setup"),
-                buildCommandUsage("<bridgeUID> " + DOWNLOAD_SETUP, "download setup") });
+                buildCommandUsage("<bridgeUID> " + DOWNLOAD_SETUP, "download setup"),
+                buildCommandUsage("<bridgeUID> " + BRIDGE_STATE, "show current state") });
     }
 
     @Reference
