@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
 
+import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +29,14 @@ public class BinRpcServer implements RpcServer {
 
     private Thread networkServiceThread;
     private BinRpcNetworkService networkService;
-    private HomematicConfig config;
-    private RpcEventListener listener;
+    private final HomematicConfig config;
+    private final RpcEventListener listener;
+    private final String id;
 
-    public BinRpcServer(RpcEventListener listener, HomematicConfig config) {
+    public BinRpcServer(RpcEventListener listener, HomematicConfig config, String id) {
         this.listener = listener;
         this.config = config;
+        this.id = id;
     }
 
     @Override
@@ -42,7 +45,8 @@ public class BinRpcServer implements RpcServer {
 
         networkService = new BinRpcNetworkService(listener, config);
         networkServiceThread = new Thread(networkService);
-        networkServiceThread.setName("HomematicRpcServer");
+        networkServiceThread
+                .setName("OH-binding-" + HomematicBindingConstants.THING_TYPE_BRIDGE + ":" + id + "-rpcServer");
         networkServiceThread.start();
     }
 

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter.firstgeneration;
+package org.openhab.binding.kostalinverter.internal.firstgeneration;
 
 import javax.measure.Unit;
 

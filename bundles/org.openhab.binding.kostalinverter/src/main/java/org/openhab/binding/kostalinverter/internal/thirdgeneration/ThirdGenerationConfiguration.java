@@ -10,21 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter.thirdgeneration;
+package org.openhab.binding.kostalinverter.internal.thirdgeneration;
 
 /**
- * The {@link ThirdGenerationChannelDatatypes} enumeration contains the data types provided by the device
+ * The {@link ThirdGenerationConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author René Stakemeier - Initial contribution
  */
-enum ThirdGenerationChannelDatatypes {
-    INTEGER,
-    PERCEMTAGE,
-    KILOGRAM,
-    SECONDS,
-    KILOWATT_HOUR,
-    WATT,
-    AMPERE,
-    AMPERE_HOUR,
-    VOLT
+public class ThirdGenerationConfiguration {
+
+    public String url;
+    public String userPassword;
+    public int refreshInternalInSeconds;
 }
