@@ -38,9 +38,26 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.nanoleaf.internal.*;
+import org.openhab.binding.nanoleaf.internal.NanoleafControllerListener;
+import org.openhab.binding.nanoleaf.internal.NanoleafException;
+import org.openhab.binding.nanoleaf.internal.NanoleafInterruptedException;
+import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
+import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
-import org.openhab.binding.nanoleaf.internal.model.*;
+import org.openhab.binding.nanoleaf.internal.model.AuthToken;
+import org.openhab.binding.nanoleaf.internal.model.BooleanState;
+import org.openhab.binding.nanoleaf.internal.model.Brightness;
+import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
+import org.openhab.binding.nanoleaf.internal.model.Ct;
+import org.openhab.binding.nanoleaf.internal.model.Effects;
+import org.openhab.binding.nanoleaf.internal.model.Hue;
+import org.openhab.binding.nanoleaf.internal.model.IntegerState;
+import org.openhab.binding.nanoleaf.internal.model.Layout;
+import org.openhab.binding.nanoleaf.internal.model.On;
+import org.openhab.binding.nanoleaf.internal.model.Rhythm;
+import org.openhab.binding.nanoleaf.internal.model.Sat;
+import org.openhab.binding.nanoleaf.internal.model.State;
+import org.openhab.binding.nanoleaf.internal.model.TouchEvents;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -321,8 +338,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             logger.debug("NOT starting TouchJob for Panel {} because it has wrong device type '{}' vs required '{}'",
                     this.getThing().getUID(), config.deviceType, DEVICE_TYPE_CANVAS);
             return;
-        } else
+        } else {
             logger.debug("Starting TouchJob for Panel {}", this.getThing().getUID());
+        }
 
         if (StringUtils.isNotEmpty(getAuthToken())) {
             if (touchJob == null || touchJob.isCancelled()) {
@@ -739,7 +757,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                         colorMax = (max == null) ? 0 : max;
                     }
 
-                    state.setValue(Math.round((colorMax - colorMin) * ((PercentType) command).intValue()
+                    state.setValue(Math.round((colorMax - colorMin) * (100 - ((PercentType) command).intValue())
                             / PercentType.HUNDRED.floatValue() + colorMin));
                     stateObject.setState(state);
                 } else {
