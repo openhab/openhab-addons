@@ -31,7 +31,6 @@ import org.openhab.binding.plugwiseha.internal.handler.PlugwiseHABridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PlugwiseHADiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+        implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHADiscoveryService.class);
     private static final int TIMEOUT_SECONDS = 5;
