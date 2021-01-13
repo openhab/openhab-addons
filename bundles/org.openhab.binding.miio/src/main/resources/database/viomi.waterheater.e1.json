@@ -127,7 +127,7 @@
 			},
 			{
 				"property": "appointEnd",
-				"friendlyName": "Eppoint End",
+				"friendlyName": "Appoint End",
 				"channel": "appointEnd",
 				"type": "Number",
 				"refresh": true,
