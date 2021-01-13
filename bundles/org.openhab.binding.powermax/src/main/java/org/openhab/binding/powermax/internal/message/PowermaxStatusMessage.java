@@ -93,8 +93,8 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             String batteryStatusStr = zoneList(batteryStatusBytes);
 
             for (int i = 1; i <= panelSettings.getNbZones(); i++) {
-                updatedState.setSensorTripped(i, zoneStatus[i]);
-                updatedState.setSensorLowBattery(i, batteryStatus[i]);
+                updatedState.getZone(i).tripped.setValue(zoneStatus[i]);
+                updatedState.getZone(i).lowBattery.setValue(batteryStatus[i]);
             }
 
             debug("Zone status", zoneStatusBytes, zoneStatusStr);
@@ -110,17 +110,17 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             String zoneETypeStr = PowermaxMessageConstants.getZoneEventString(zoneEType & 0x000000FF);
 
             if (zoneEType == 0x03) {
-                updatedState.setSensorTripped(eventZone, Boolean.TRUE);
-                updatedState.setSensorLastTripped(eventZone, System.currentTimeMillis());
+                updatedState.getZone(eventZone).tripped.setValue(true);
+                updatedState.getZone(eventZone).lastTripped.setValue(System.currentTimeMillis());
             } else if (zoneEType == 0x04) {
-                updatedState.setSensorTripped(eventZone, Boolean.FALSE);
+                updatedState.getZone(eventZone).tripped.setValue(false);
             } else if (zoneEType == 0x05) {
                 PowermaxZoneSettings zone = panelSettings.getZoneSettings(eventZone);
                 if ((zone != null) && zone.getSensorType().equalsIgnoreCase("unknown")) {
                     zone.setSensorType("Motion");
                 }
-                updatedState.setSensorTripped(eventZone, Boolean.TRUE);
-                updatedState.setSensorLastTripped(eventZone, System.currentTimeMillis());
+                updatedState.getZone(eventZone).tripped.setValue(true);
+                updatedState.getZone(eventZone).lastTripped.setValue(System.currentTimeMillis());
             }
 
             // PGM & X10 devices
@@ -131,30 +131,30 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             String sysStatusStr = "";
             if ((sysFlags & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Ready, ";
-                updatedState.setReady(true);
+                updatedState.ready.setValue(true);
             } else {
                 sysStatusStr = sysStatusStr + "Not ready, ";
-                updatedState.setReady(false);
+                updatedState.ready.setValue(false);
             }
             if (((sysFlags >> 1) & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Alert in memory, ";
-                updatedState.setAlertInMemory(true);
+                updatedState.alertInMemory.setValue(true);
             } else {
-                updatedState.setAlertInMemory(false);
+                updatedState.alertInMemory.setValue(false);
             }
             if (((sysFlags >> 2) & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Trouble, ";
-                updatedState.setTrouble(true);
+                updatedState.trouble.setValue(true);
             } else {
-                updatedState.setTrouble(false);
+                updatedState.trouble.setValue(false);
             }
             if (((sysFlags >> 3) & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Bypass on, ";
-                updatedState.setBypass(true);
+                updatedState.bypass.setValue(true);
             } else {
-                updatedState.setBypass(false);
+                updatedState.bypass.setValue(false);
                 for (int i = 1; i <= panelSettings.getNbZones(); i++) {
-                    updatedState.setSensorBypassed(i, false);
+                    updatedState.getZone(i).bypassed.setValue(false);
                 }
             }
             if (((sysFlags >> 4) & 0x1) == 1) {
@@ -175,9 +175,9 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             }
             if (((sysFlags >> 7) & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Alarm event, ";
-                updatedState.setAlarmActive(true);
+                updatedState.alarmActive.setValue(true);
             } else {
-                updatedState.setAlarmActive(false);
+                updatedState.alarmActive.setValue(false);
             }
             sysStatusStr = sysStatusStr.substring(0, sysStatusStr.length() - 2);
             String statusStr;
@@ -187,8 +187,8 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             } catch (IllegalArgumentException e) {
                 statusStr = "UNKNOWN";
             }
-            updatedState.setArmMode(statusStr);
-            updatedState.setStatusStr(statusStr + ", " + sysStatusStr);
+            updatedState.armMode.setValue(statusStr);
+            updatedState.statusStr.setValue(statusStr + ", " + sysStatusStr);
 
             debug("System status", sysStatus, statusStr);
             debug("System flags", sysFlags, sysStatusStr);
@@ -208,7 +208,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
                     boolean armed = (!zone.getType().equalsIgnoreCase("Non-Alarm") && (zone.isAlwaysInAlarm()
                             || (mode == 0x5) || ((mode == 0x4) && !zone.getType().equalsIgnoreCase("Interior-Follow")
                                     && !zone.getType().equalsIgnoreCase("Interior"))));
-                    updatedState.setSensorArmed(i, armed);
+                    updatedState.getZone(i).armed.setValue(armed);
                 }
             }
         } else if (eventType == 0x06) {
@@ -217,7 +217,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             String zoneBypassStr = zoneList(zoneBypassBytes);
 
             for (int i = 1; i <= panelSettings.getNbZones(); i++) {
-                updatedState.setSensorBypassed(i, zoneBypass[i]);
+                updatedState.getZone(i).bypassed.setValue(zoneBypass[i]);
             }
 
             debug("Zone bypass", zoneBypassBytes, zoneBypassStr);
