@@ -200,8 +200,8 @@ public class ReadmeHelper {
                     sw.write("Group " + gr + " \"" + device.getDescription() + "\" <status>\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
-                        sw.write(ch.getType() + " " + ch.getChannel() + " \"" + ch.getFriendlyName() + "\" (" + gr
-                                + ") {channel=\"miio:basic:" + id + ":" + ch.getChannel() + "\"}\n");
+                        sw.write(ch.getType() + " " + ch.getChannel().replace("-", "_") + " \"" + ch.getFriendlyName()
+                                + "\" (" + gr + ") {channel=\"miio:basic:" + id + ":" + ch.getChannel() + "\"}\n");
                     }
                     sw.write("```\n\n");
                 }
