@@ -160,7 +160,7 @@ public class WlanThermoEsp32CommandHandler {
     }
 
     public static boolean setState(ChannelUID channelUID, Command command, @Nullable Data data) {
-        if (channelUID.getGroupId() == null || data == null) {
+        if (channelUID.getGroupId() == null || data == null || data.getSystem() == null) {
             return false;
         }
 

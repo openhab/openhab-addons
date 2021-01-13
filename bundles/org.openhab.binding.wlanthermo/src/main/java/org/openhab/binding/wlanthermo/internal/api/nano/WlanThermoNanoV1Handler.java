@@ -157,7 +157,7 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
     }
 
     private void push() {
-        if (data == null) {
+        if (data == null || this.thing.getStatus() != ThingStatus.ONLINE) {
             return;
         }
 
