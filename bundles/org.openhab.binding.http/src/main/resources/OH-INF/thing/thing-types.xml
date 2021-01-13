@@ -54,9 +54,34 @@
 					<option value="BASIC">Basic Authentication</option>
 					<option value="BASIC_PREEMPTIVE">Preemptive Basic Authentication</option>
 					<option value="DIGEST">Digest Authentication</option>
+					<option value="TOKEN_PASSWORD">OAuth2 Token-Authentication with Token-Endpoint and grant-type password</option>
 				</options>
 				<default>BASIC</default>
 				<limitToOptions>true</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tokenEndpointURL" type="text">
+				<label>Token Endpoint URL</label>
+				<description></description>
+				<default></default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tokenJsonPath" type="text">
+				<label>JSON-Path to select token in response</label>
+				<description>dot-separated path to select the bearer token value from the response</description>
+				<default>$.access_token</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tokenEndpointClientId" type="text">
+				<label>client-id</label>
+				<description>Optional client_id to pass to the token request</description>
+				<default></default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tokenValidtyPeriod" type="integer" min="0">
+				<label>Token refresh time</label>
+				<description>Time in minutes the requested token is valid (default 30 Minutes)</description>
+				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="commandMethod" type="text">

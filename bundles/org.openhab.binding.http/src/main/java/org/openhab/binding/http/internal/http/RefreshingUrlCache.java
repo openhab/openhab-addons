@@ -22,8 +22,6 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.openhab.binding.http.internal.Util;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
 import org.slf4j.Logger;
@@ -78,7 +76,8 @@ public class RefreshingUrlCache {
             URI uri = Util.uriFromString(String.format(this.url, new Date()));
             logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
-            httpClient.newRequest(uri).thenAccept(request -> {
+            httpClient.newRequest(uri, context -> {
+                var request = context.request;
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
 
                 headers.forEach(header -> {
@@ -90,31 +89,14 @@ public class RefreshingUrlCache {
                     }
                 });
 
-                CompletableFuture<@Nullable Content> response = new CompletableFuture<>();
-                response.exceptionally(e -> {
-                    if (e instanceof HttpAuthException) {
-                        if (isRetry) {
-                            logger.warn("Retry after authentication failure failed again for '{}', failing here", uri);
-                        } else {
-                            AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                            Authentication.Result authResult = authStore.findAuthenticationResult(uri);
-                            if (authResult != null) {
-                                authStore.removeAuthenticationResult(authResult);
-                                logger.debug("Cleared authentication result for '{}', retrying immediately", uri);
-                                refresh(true);
-                            } else {
-                                logger.warn("Could not find authentication result for '{}', failing here", uri);
-                            }
-                        }
-                    }
-                    return null;
-                }).thenAccept(this::processResult);
+                context.response.thenAccept(this::processResult);
 
                 if (logger.isTraceEnabled()) {
                     logger.trace("Sending to '{}': {}", uri, Util.requestToLogString(request));
                 }
 
-                request.send(new HttpResponseListener(response, fallbackEncoding, bufferSize));
+                request.send(new HttpResponseListener(context.response, fallbackEncoding, bufferSize));
+
             }).exceptionally(e -> {
                 if (e instanceof CancellationException) {
                     logger.debug("Request to URL {} was cancelled by thing handler.", uri);
@@ -123,6 +105,7 @@ public class RefreshingUrlCache {
                 }
                 return null;
             });
+
         } catch (IllegalArgumentException | URISyntaxException | MalformedURLException e) {
             logger.warn("Creating request for '{}' failed: {}", url, e.getMessage());
         }

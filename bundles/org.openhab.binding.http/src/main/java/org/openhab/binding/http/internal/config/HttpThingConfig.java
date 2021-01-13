@@ -37,6 +37,11 @@ public class HttpThingConfig {
     public HttpMethod commandMethod = HttpMethod.GET;
     public int bufferSize = 2048;
 
+    public String tokenEndpointURL = "";
+    public String tokenEndpointClientId = "";
+    public String tokenJsonPath = "";
+    public int tokenValidtyPeriod = 30;
+
     public @Nullable String encoding = null;
     public @Nullable String contentType = null;
 

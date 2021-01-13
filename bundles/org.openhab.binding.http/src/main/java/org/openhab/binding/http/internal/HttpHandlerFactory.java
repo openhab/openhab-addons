@@ -19,7 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
 import org.openhab.binding.http.internal.transform.CascadedValueTransformationImpl;
 import org.openhab.binding.http.internal.transform.NoOpValueTransformation;
 import org.openhab.binding.http.internal.transform.ValueTransformation;
@@ -59,8 +59,9 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory
     @Activate
     public HttpHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider) {
-        this.secureClient = new HttpClient(new SslContextFactory());
-        this.insecureClient = new HttpClient(new SslContextFactory(true));
+
+        this.secureClient = new HttpClient(new Client.Client());
+        this.insecureClient = new HttpClient(new Client.Client(true));
         try {
             this.secureClient.start();
             this.insecureClient.start();

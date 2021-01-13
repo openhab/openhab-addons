@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.http.internal;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 
@@ -28,6 +29,7 @@ public interface HttpClientProvider {
      *
      * @return a HttpClient
      */
+    @NonNull
     HttpClient getSecureClient();
 
     /**
@@ -35,5 +37,6 @@ public interface HttpClientProvider {
      *
      * @return q HttpClient
      */
+    @NonNull
     HttpClient getInsecureClient();
 }

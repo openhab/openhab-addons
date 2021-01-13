@@ -26,8 +26,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BasicAuthentication;
-import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
@@ -66,10 +64,11 @@ public class HttpThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HttpThingHandler.class);
     private final ValueTransformationProvider valueTransformationProvider;
     private final HttpClientProvider httpClientProvider;
-    private HttpClient httpClient;
+
     private RateLimitedHttpClient rateLimitedHttpClient;
     private final HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider;
 
+    private @Nullable HttpClient httpClient;
     private HttpThingConfig config = new HttpThingConfig();
     private final Map<String, RefreshingUrlCache> urlHandlers = new HashMap<>();
     private final Map<ChannelUID, ItemValueConverter> channels = new HashMap<>();
@@ -80,8 +79,8 @@ public class HttpThingHandler extends BaseThingHandler {
             HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider) {
         super(thing);
         this.httpClientProvider = httpClientProvider;
-        this.httpClient = httpClientProvider.getSecureClient();
-        this.rateLimitedHttpClient = new RateLimitedHttpClient(httpClient, scheduler);
+        this.rateLimitedHttpClient = new RateLimitedHttpClient(thing, scheduler);
+
         this.valueTransformationProvider = valueTransformationProvider;
         this.httpDynamicStateDescriptionProvider = httpDynamicStateDescriptionProvider;
     }
@@ -135,9 +134,12 @@ public class HttpThingHandler extends BaseThingHandler {
             logger.info("Using the secure client for thing '{}'.", thing.getUID());
             httpClient = httpClientProvider.getSecureClient();
         }
-        rateLimitedHttpClient.setHttpClient(httpClient);
-        rateLimitedHttpClient.setDelay(config.delay);
-
+        try {
+            rateLimitedHttpClient.initialize(getHttpClient(), config);
+        } catch (URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "failed to create authentication: baseUrl or tokenEndpointURL is invalid");
+        }
         int channelCount = thing.getChannels().size();
         if (channelCount * config.delay > config.refresh * 1000) {
             // this should prevent the rate limit queue from filling up
@@ -149,39 +151,6 @@ public class HttpThingHandler extends BaseThingHandler {
 
         // remove empty headers
         config.headers.removeIf(String::isBlank);
-
-        // configure authentication
-        if (!config.username.isEmpty()) {
-            try {
-                AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                URI uri = new URI(config.baseURL);
-                switch (config.authMode) {
-                    case BASIC_PREEMPTIVE:
-                        config.headers.add("Authorization=Basic " + Base64.getEncoder()
-                                .encodeToString((config.username + ":" + config.password).getBytes()));
-                        logger.debug("Preemptive Basic Authentication configured for thing '{}'", thing.getUID());
-                        break;
-                    case BASIC:
-                        authStore.addAuthentication(new BasicAuthentication(uri, Authentication.ANY_REALM,
-                                config.username, config.password));
-                        logger.debug("Basic Authentication configured for thing '{}'", thing.getUID());
-                        break;
-                    case DIGEST:
-                        authStore.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM,
-                                config.username, config.password));
-                        logger.debug("Digest Authentication configured for thing '{}'", thing.getUID());
-                        break;
-                    default:
-                        logger.warn("Unknown authentication method '{}' for thing '{}'", config.authMode,
-                                thing.getUID());
-                }
-            } catch (URISyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "failed to create authentication: baseUrl is invalid");
-            }
-        } else {
-            logger.debug("No authentication configured for thing '{}'", thing.getUID());
-        }
 
         // create channels
         thing.getChannels().forEach(this::createChannel);
@@ -204,6 +173,11 @@ public class HttpThingHandler extends BaseThingHandler {
         httpDynamicStateDescriptionProvider.removeDescriptionsForThing(thing.getUID());
 
         super.dispose();
+    }
+
+    private HttpClient getHttpClient() {
+        return Optional.ofNullable(this.httpClient)
+                .orElseThrow(() -> new IllegalStateException("HttpClient is only available if thing is initialized!"));
     }
 
     /**
@@ -297,7 +271,7 @@ public class HttpThingHandler extends BaseThingHandler {
             URI uri = Util.uriFromString(String.format(commandUrl, new Date(), command));
 
             // build request
-            Request request = httpClient.newRequest(uri).timeout(config.timeout, TimeUnit.MILLISECONDS)
+            Request request = getHttpClient().newRequest(uri).timeout(config.timeout, TimeUnit.MILLISECONDS)
                     .method(config.commandMethod);
             if (config.commandMethod != HttpMethod.GET) {
                 final String contentType = config.contentType;
@@ -327,7 +301,7 @@ public class HttpThingHandler extends BaseThingHandler {
                     if (isRetry) {
                         logger.warn("Retry after authentication failure failed again for '{}', failing here", uri);
                     } else {
-                        AuthenticationStore authStore = httpClient.getAuthenticationStore();
+                        AuthenticationStore authStore = getHttpClient().getAuthenticationStore();
                         Authentication.Result authResult = authStore.findAuthenticationResult(uri);
                         if (authResult != null) {
                             authStore.removeAuthenticationResult(authResult);
