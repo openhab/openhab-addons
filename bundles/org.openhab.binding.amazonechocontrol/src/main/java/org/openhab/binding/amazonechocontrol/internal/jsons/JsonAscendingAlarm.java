@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -23,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonAscendingAlarm {
 
-    public @Nullable AscendingAlarmModel @Nullable [] ascendingAlarmModelList;
+    public @Nullable List<AscendingAlarmModel> ascendingAlarmModelList;
 
     public static class AscendingAlarmModel {
         public @Nullable Boolean ascendingAlarmEnabled;
