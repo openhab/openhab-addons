@@ -181,7 +181,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                         : UnDefType.UNDEF;
             case FUEL_CONSUMPTION:
                 return trips.getRtsViewModel().getLongTermData().getAverageFuelConsumption() != BaseVehicle.UNDEFINED
-                        ? new DecimalType(trips.getRtsViewModel().getLongTermData().getAverageFuelConsumption() / 10)
+                        ? new DecimalType(trips.getRtsViewModel().getLongTermData().getAverageFuelConsumption())
                         : UnDefType.UNDEF;
             case FUEL_RANGE:
                 return vehicleStatus.getFuelRange() != BaseVehicle.UNDEFINED
@@ -197,7 +197,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                         : UnDefType.UNDEF;
             case CNG_CONSUMPTION:
                 return trips.getRtsViewModel().getLongTermData().getAverageCngConsumption() != BaseVehicle.UNDEFINED
-                        ? new DecimalType(trips.getRtsViewModel().getLongTermData().getAverageCngConsumption() / 10)
+                        ? new DecimalType(trips.getRtsViewModel().getLongTermData().getAverageCngConsumption())
                         : UnDefType.UNDEF;
             case CNG_RANGE:
                 return vehicleStatus.getCngRange() != BaseVehicle.UNDEFINED
@@ -215,7 +215,7 @@ public class VehicleHandler extends VWWeConnectHandler {
                 return trips.getRtsViewModel().getLongTermData()
                         .getAverageElectricConsumption() != BaseVehicle.UNDEFINED
                                 ? new DecimalType(
-                                        trips.getRtsViewModel().getLongTermData().getAverageElectricConsumption() / 10)
+                                        trips.getRtsViewModel().getLongTermData().getAverageElectricConsumption())
                                 : UnDefType.UNDEF;
             case BATTERY_RANGE:
                 return vehicleStatus.getBatteryRange() != BaseVehicle.UNDEFINED
@@ -419,11 +419,11 @@ public class VehicleHandler extends VWWeConnectHandler {
         switch (channelId) {
             case AVERAGE_FUEL_CONSUMPTION:
                 return trip.getAverageFuelConsumption() != BaseVehicle.UNDEFINED
-                        ? new DecimalType(trip.getAverageFuelConsumption() / 10)
+                        ? new DecimalType(trip.getAverageFuelConsumption())
                         : UnDefType.UNDEF;
             case AVERAGE_CNG_CONSUMPTION:
                 return trip.getAverageCngConsumption() != BaseVehicle.UNDEFINED
-                        ? new DecimalType(trip.getAverageCngConsumption() / 10)
+                        ? new DecimalType(trip.getAverageCngConsumption())
                         : UnDefType.UNDEF;
             case AVERAGE_ELECTRIC_CONSUMPTION:
                 return trip.getAverageElectricConsumption() != BaseVehicle.UNDEFINED

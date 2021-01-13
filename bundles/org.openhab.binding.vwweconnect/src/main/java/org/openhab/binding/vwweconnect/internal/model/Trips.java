@@ -513,8 +513,8 @@ public class Trips {
         private @Nullable String timestamp;
         private @Nullable String tripDurationFormatted;
         private Object recuperation = new Object();
-        private int averageAuxiliaryConsumption = BaseVehicle.UNDEFINED;
-        private int totalElectricConsumption = BaseVehicle.UNDEFINED;
+        private double averageAuxiliaryConsumption = BaseVehicle.UNDEFINED;
+        private double totalElectricConsumption = BaseVehicle.UNDEFINED;
         private @Nullable String longFormattedTimestamp;
 
         public int getTripId() {
@@ -557,11 +557,11 @@ public class Trips {
             return recuperation;
         }
 
-        public int getAverageAuxiliaryConsumption() {
+        public double getAverageAuxiliaryConsumption() {
             return averageAuxiliaryConsumption;
         }
 
-        public int getTotalElectricConsumption() {
+        public double getTotalElectricConsumption() {
             return totalElectricConsumption;
         }
 

@@ -631,7 +631,8 @@ public class EManager {
 
             public int getChargingRemainingHour() {
                 String localChargingRemaningHour = chargingRemaningHour;
-                if (localChargingRemaningHour != null && !localChargingRemaningHour.equals("")) {
+                if (localChargingRemaningHour != null && !localChargingRemaningHour.equals("--")
+                        && !localChargingRemaningHour.equals("")) {
                     return Integer.parseInt(localChargingRemaningHour);
                 }
                 return BaseVehicle.UNDEFINED;
@@ -639,7 +640,8 @@ public class EManager {
 
             public int getChargingRemainingMinute() {
                 String localChargingRemaningMinute = chargingRemaningMinute;
-                if (localChargingRemaningMinute != null && !localChargingRemaningMinute.equals("")) {
+                if (localChargingRemaningMinute != null && !localChargingRemaningMinute.equals("--")
+                        && !localChargingRemaningMinute.equals("")) {
                     return Integer.parseInt(localChargingRemaningMinute);
                 }
                 return BaseVehicle.UNDEFINED;
@@ -658,7 +660,7 @@ public class EManager {
             }
 
             public boolean getExtPowerSupplyState() {
-                return extPowerSupplyState != null && extPowerSupplyState.equals("AVAILABLE") ? true : false;
+                return extPowerSupplyState != null && extPowerSupplyState.equals("STATION_CONNECTED") ? true : false;
             }
 
             public double getRange() {
