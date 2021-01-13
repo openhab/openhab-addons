@@ -50,7 +50,7 @@ public class DeviceModel extends AVMFritzBaseModel {
         return humidity;
     }
 
-    public void setTemperature(HumidityModel humidityModel) {
+    public void setHumidity(HumidityModel humidityModel) {
         this.humidity = humidityModel;
     }
 
