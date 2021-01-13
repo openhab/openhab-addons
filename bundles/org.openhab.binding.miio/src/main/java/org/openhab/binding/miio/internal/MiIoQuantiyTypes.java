@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miio.internal;
 
+import static org.openhab.core.library.unit.MetricPrefix.MILLI;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,12 +45,13 @@ public enum MiIoQuantiyTypes {
     HOUR(Units.HOUR, "hours"),
     DAY(Units.DAY, "days"),
     AMPERE(Units.AMPERE),
+    MILLI_AMPERE(MILLI(Units.AMPERE), "mA"),
     VOLT(Units.VOLT),
     WATT(Units.WATT),
     LITRE(Units.LITRE, "liter"),
     LUX(Units.LUX),
     RADIANS(Units.RADIAN, "radians"),
-    KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh"),
+    KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh", "kWH"),
     SQUARE_METRE(SIUnits.SQUARE_METRE, "square_meter", "squaremeter"),
     PERCENT(Units.PERCENT),
     KGM3(Units.KILOGRAM_PER_CUBICMETRE, "kilogram_per_cubicmeter"),
