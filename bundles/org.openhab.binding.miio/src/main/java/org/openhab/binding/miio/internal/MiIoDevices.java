@@ -165,6 +165,8 @@ public enum MiIoDevices {
     CHUANGMI_PLUG_HMI205("chuangmi.plug.hmi205", "Mi Smart Plug WiFi", THING_TYPE_BASIC),
     CHUANGMI_PLUG_HMI206("chuangmi.plug.hmi206", "Mi Smart Plug (WiFi)", THING_TYPE_BASIC),
     CHUANGMI_PLUG_HMI208("chuangmi.plug.hmi208", "Mi Smart Wi-Fi Plug (Bluetooth Gateway)", THING_TYPE_BASIC),
+    CHUANGMI_PLUG_212A01("chuangmi.plug.212a01", "Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway)",
+            THING_TYPE_BASIC),
     QMI_POWERSTRIP_V1("qmi.powerstrip.v1", "CHINGMI Smart Power Strip v1", THING_TYPE_BASIC),
     ZIMI_POWERSTRIP_V2("zimi.powerstrip.v2", "Mi Smart Power Strip", THING_TYPE_BASIC),
     SOOCARE_TOOTHBRUSH_X3("soocare.toothbrush.x3", "Soocare Electric Toothbrush", THING_TYPE_UNSUPPORTED),
