@@ -37,8 +37,8 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
 
     private final String serialPortName;
     private final int baudRate;
+    private final SerialPortManager serialPortManager;
     private SerialPort serialPort;
-    private SerialPortManager serialPortManager;
 
     /**
      * Constructor
