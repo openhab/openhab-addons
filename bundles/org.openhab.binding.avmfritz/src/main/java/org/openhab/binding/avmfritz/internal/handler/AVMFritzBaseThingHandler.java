@@ -367,8 +367,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (command instanceof DecimalType) {
                     temperature = normalizeCelsius(((DecimalType) command).toBigDecimal());
                 } else if (command instanceof QuantityType) {
-                    temperature = normalizeCelsius(
-                            ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS).toBigDecimal());
+                    @SuppressWarnings("unchecked")
+                    QuantityType<Temperature> convertedCommand = ((QuantityType<Temperature>) command)
+                            .toUnit(SIUnits.CELSIUS);
+                    if (convertedCommand != null) {
+                        temperature = normalizeCelsius(convertedCommand.toBigDecimal());
+                    } else {
+                        logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
+                                ((QuantityType<?>) command).getUnit(), SIUnits.CELSIUS);
+                    }
                 } else if (command instanceof IncreaseDecreaseType) {
                     temperature = state.getHkr().getTsoll();
                     if (IncreaseDecreaseType.INCREASE.equals(command)) {
