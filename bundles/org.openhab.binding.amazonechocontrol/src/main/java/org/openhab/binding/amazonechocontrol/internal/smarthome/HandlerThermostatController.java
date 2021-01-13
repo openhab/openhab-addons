@@ -23,6 +23,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.QuantityType;
@@ -47,6 +48,10 @@ public class HandlerThermostatController extends HandlerBase {
     private static final ChannelInfo TARGET_SETPOINT = new ChannelInfo("targetSetpoint" /* propertyName */ ,
             "targetSetpoint" /* ChannelId */, CHANNEL_TYPE_TEMPERATURE /* Channel Type */ ,
             ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
+
+    public HandlerThermostatController(SmartHomeDeviceHandler smartHomeDeviceHandler) {
+        super(smartHomeDeviceHandler);
+    }
 
     @Override
     public String[] getSupportedInterface() {
@@ -84,10 +89,10 @@ public class HandlerThermostatController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command)
+            List<SmartHomeCapability> capabilities, String channelId, Command command)
             throws IOException, InterruptedException {
         if (channelId.equals(TARGET_SETPOINT.channelId)) {
-            if (containsCapabilityProperty(capabilties, TARGET_SETPOINT.propertyName)) {
+            if (containsCapabilityProperty(capabilities, TARGET_SETPOINT.propertyName)) {
                 if (command instanceof QuantityType) {
                     connection.smartHomeCommand(entityId, "setTargetTemperature", "targetTemperature", command);
                     return true;
