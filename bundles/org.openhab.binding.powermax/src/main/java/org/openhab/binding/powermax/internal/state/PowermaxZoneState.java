@@ -12,68 +12,40 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
+import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
+
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.OpenClosedType;
+
 /**
  * A class to store the state of a zone
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class PowermaxZoneState {
+public class PowermaxZoneState extends PowermaxStateContainer {
 
-    private Boolean tripped;
-    private Long lastTripped;
-    private Boolean lowBattery;
-    private Boolean bypassed;
-    private Boolean armed;
+    public BooleanValue tripped = new BooleanValue(this, TRIPPED, OpenClosedType.OPEN, OpenClosedType.CLOSED);
+    public DateTimeValue lastTripped = new DateTimeValue(this, LAST_TRIP);
+    public BooleanValue lowBattery = new BooleanValue(this, LOW_BATTERY);
+    public BooleanValue bypassed = new BooleanValue(this, BYPASSED);
+    public BooleanValue armed = new BooleanValue(this, ARMED);
 
-    public PowermaxZoneState() {
-        tripped = null;
-        lastTripped = null;
-        lowBattery = null;
-        bypassed = null;
-        armed = null;
-    }
+    public DynamicValue<Boolean> locked = new DynamicValue<>(this, LOCKED, () -> {
+        return armed.getValue();
+    }, () -> {
+        Boolean isArmed = armed.getValue();
+        if (isArmed == null) {
+            return null;
+        }
+        return isArmed ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+    });
 
-    public Boolean isTripped() {
-        return tripped;
-    }
-
-    public void setTripped(Boolean tripped) {
-        this.tripped = tripped;
-    }
-
-    public Long getLastTripped() {
-        return lastTripped;
-    }
-
-    public void setLastTripped(Long lastTripped) {
-        this.lastTripped = lastTripped;
+    public PowermaxZoneState(TimeZoneProvider timeZoneProvider) {
+        super(timeZoneProvider);
     }
 
     public boolean isLastTripBeforeTime(long refTime) {
-        return isTripped() == Boolean.TRUE && getLastTripped() != null && getLastTripped() < refTime;
-    }
-
-    public Boolean isLowBattery() {
-        return lowBattery;
-    }
-
-    public void setLowBattery(Boolean lowBattery) {
-        this.lowBattery = lowBattery;
-    }
-
-    public Boolean isBypassed() {
-        return bypassed;
-    }
-
-    public void setBypassed(Boolean bypassed) {
-        this.bypassed = bypassed;
-    }
-
-    public Boolean isArmed() {
-        return armed;
-    }
-
-    public void setArmed(Boolean armed) {
-        this.armed = armed;
+        return Boolean.TRUE.equals(tripped.getValue()) && (lastTripped.getValue() != null)
+                && (lastTripped.getValue() < refTime);
     }
 }
