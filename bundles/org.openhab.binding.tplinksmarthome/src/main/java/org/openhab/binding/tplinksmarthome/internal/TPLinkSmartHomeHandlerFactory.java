@@ -75,7 +75,7 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
                 device = new DimmerDevice();
                 break;
             case PLUG:
-                if (HS110.is(thingTypeUID)) {
+                if (HS110.is(thingTypeUID) || KP115.is(thingTypeUID)) {
                     device = new EnergySwitchDevice();
                 } else {
                     device = new SwitchDevice();
