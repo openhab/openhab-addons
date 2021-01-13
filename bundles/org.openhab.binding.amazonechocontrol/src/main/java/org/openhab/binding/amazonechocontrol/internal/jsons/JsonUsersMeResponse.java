@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,7 +28,7 @@ public class JsonUsersMeResponse {
     public @Nullable String effectiveMarketPlaceId;
     public @Nullable String email;
     public @Nullable Boolean eulaAcceptance;
-    public @Nullable String @Nullable [] features;
+    public @Nullable List<String> features;
     public @Nullable String fullName;
     public @Nullable Boolean hasActiveDopplers;
     public @Nullable String id;

@@ -23,6 +23,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.QuantityType;
@@ -48,6 +49,10 @@ public class HandlerTemperatureSensor extends HandlerBase {
     private static final ChannelInfo TEMPERATURE = new ChannelInfo("temperature" /* propertyName */ ,
             "temperature" /* ChannelId */, CHANNEL_TYPE_TEMPERATURE /* Channel Type */ ,
             ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
+
+    public HandlerTemperatureSensor(SmartHomeDeviceHandler smartHomeDeviceHandler) {
+        super(smartHomeDeviceHandler);
+    }
 
     @Override
     public String[] getSupportedInterface() {
@@ -85,7 +90,7 @@ public class HandlerTemperatureSensor extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            List<SmartHomeCapability> capabilities, String channelId, Command command) throws IOException {
         return false;
     }
 

@@ -26,4 +26,9 @@ public class JsonFeed {
     public @Nullable String name;
     public @Nullable String skillId;
     public @Nullable String imageUrl;
+
+    public JsonFeed(@Nullable Object feedId, @Nullable String skillId) {
+        this.feedId = feedId;
+        this.skillId = skillId;
+    }
 }

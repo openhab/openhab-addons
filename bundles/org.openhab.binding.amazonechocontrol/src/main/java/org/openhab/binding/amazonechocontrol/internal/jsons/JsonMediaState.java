@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -36,7 +38,7 @@ public class JsonMediaState {
     public @Nullable String programId;
     public int progressSeconds;
     public @Nullable String providerId;
-    public @Nullable QueueEntry @Nullable [] queue;
+    public @Nullable List<QueueEntry> queue;
     public @Nullable String queueId;
     public @Nullable Integer queueSize;
     public @Nullable String radioStationId;
@@ -48,7 +50,6 @@ public class JsonMediaState {
     public int volume;
 
     public static class QueueEntry {
-
         public @Nullable String album;
         public @Nullable String albumAsin;
         public @Nullable String artist;

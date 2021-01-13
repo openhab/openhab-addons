@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonActivity} encapsulate the GSON data of the get equalizer command
+ * The {@link JsonEqualizer} encapsulate the GSON data of the get equalizer command
  *
  * @author Michael Geramb - Initial contribution
  */

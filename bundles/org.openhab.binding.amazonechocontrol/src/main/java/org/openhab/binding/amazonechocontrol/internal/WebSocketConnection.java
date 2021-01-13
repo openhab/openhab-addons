@@ -73,9 +73,7 @@ public class WebSocketConnection {
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
         this.webSocketCommandHandler = webSocketCommandHandler;
         amazonEchoControlWebSocket = new AmazonEchoControlWebSocket();
-
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        webSocketClient = new WebSocketClient(sslContextFactory);
+        webSocketClient = new WebSocketClient(new SslContextFactory.Client());
         try {
             String host;
             if (amazonSite.equalsIgnoreCase("amazon.com")) {

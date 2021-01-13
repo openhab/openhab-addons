@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -22,5 +24,5 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class JsonNotificationSounds {
-    public @Nullable JsonNotificationSound @Nullable [] notificationSounds;
+    public @Nullable List<JsonNotificationSound> notificationSounds;
 }
