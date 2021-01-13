@@ -131,7 +131,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         setAuthToken(config.authToken);
 
         Map<String, String> properties = getThing().getProperties();
-        @Nullable
         String propertyModelId = properties.get(Thing.PROPERTY_MODEL_ID);
         if (MODEL_ID_CANVAS.equals(propertyModelId)) {
             config.deviceType = DEVICE_TYPE_CANVAS;
@@ -270,13 +269,11 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     public NanoleafControllerConfig getControllerConfig() {
         NanoleafControllerConfig config = new NanoleafControllerConfig();
-        String localAddress = this.getAddress();
-        config.address = localAddress == null ? "" : localAddress;
-        config.port = this.getPort();
-        config.refreshInterval = this.getRefreshIntervall();
-        config.authToken = this.getAuthToken();
-        String localDeviceType = this.getDeviceType();
-        config.deviceType = localDeviceType == null ? "" : localDeviceType;
+        config.address = Objects.requireNonNullElse(getAddress(), "");
+        config.port = getPort();
+        config.refreshInterval = getRefreshIntervall();
+        config.authToken = getAuthToken();
+        config.deviceType = Objects.requireNonNullElse(getDeviceType(), "");
         return config;
     }
 
