@@ -50,14 +50,22 @@ class BoschSslUtilTest {
     }
 
     @Test
-    void getBoschSHCId() {
+    void getBoschShcClientId() {
         // OpenSource Bosch SHC clients needs start with oss
-        assertTrue(BoschSslUtil.getBoschSHCId().startsWith("oss"));
+        assertTrue(BoschSslUtil.getBoschShcClientId().startsWith("oss"));
+    }
+
+    @Test
+    void getBoschShcServerId() {
+        // OpenSource Bosch SHC clients needs start with oss
+        assertTrue(BoschSslUtil.getBoschShcServerId("localhost").startsWith("oss"));
+        assertTrue(BoschSslUtil.getBoschShcServerId("localhost").contains("localhost"));
     }
 
     @Test
     void getKeystorePath() {
-        assertTrue(BoschSslUtil.getKeystorePath().endsWith(".jks"));
+        BoschSslUtil sslUtil = new BoschSslUtil("123.45.67.89");
+        assertTrue(sslUtil.getKeystorePath().endsWith(".jks"));
     }
 
     /**
@@ -65,9 +73,10 @@ class BoschSslUtilTest {
      */
     @Test
     void keyStoreAndFactory() throws PairingFailedException {
+        BoschSslUtil sslUtil1 = new BoschSslUtil("127.0.0.1");
 
         // remote old, existing jks
-        File keyStoreFile = new File(BoschSslUtil.getKeystorePath());
+        File keyStoreFile = new File(sslUtil1.getKeystorePath());
         keyStoreFile.deleteOnExit();
         if (keyStoreFile.exists()) {
             assertTrue(keyStoreFile.delete());
@@ -75,19 +84,19 @@ class BoschSslUtilTest {
 
         assertFalse(keyStoreFile.exists());
 
-        BoschSslUtil sslUtil = new BoschSslUtil("pwd");
+        BoschSslUtil sslUtil2 = new BoschSslUtil("127.0.0.1");
         // fist call where keystore is created
-        KeyStore keyStore = sslUtil.getKeyStoreAndCreateIfNecessary();
+        KeyStore keyStore = sslUtil2.getKeyStoreAndCreateIfNecessary();
         assertNotNull(keyStore);
 
         assertTrue(keyStoreFile.exists());
 
         // second call where keystore is reopened
-        KeyStore keyStore2 = sslUtil.getKeyStoreAndCreateIfNecessary();
+        KeyStore keyStore2 = sslUtil2.getKeyStoreAndCreateIfNecessary();
         assertNotNull(keyStore2);
 
         // basic test if a SSL factory instance can be created
-        SslContextFactory factory = sslUtil.getSslContextFactory();
+        SslContextFactory factory = sslUtil2.getSslContextFactory();
         assertNotNull(factory);
     }
 }

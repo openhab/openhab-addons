@@ -14,6 +14,8 @@ package org.openhab.binding.boschshc.internal.devices.bridge;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -31,6 +33,7 @@ import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 @NonNullByDefault
 class BoschHttpClientTest {
 
+    @Nullable
     private BoschHttpClient httpClient;
 
     @BeforeAll
@@ -40,8 +43,9 @@ class BoschHttpClientTest {
 
     @BeforeEach
     void beforeEach() throws PairingFailedException {
-        SslContextFactory sslFactory = new BoschSslUtil("dummy").getSslContextFactory();
+        SslContextFactory sslFactory = new BoschSslUtil("127.0.0.1").getSslContextFactory();
         httpClient = new BoschHttpClient("127.0.0.1", "dummy", sslFactory);
+        assertNotNull(httpClient);
     }
 
     @Test

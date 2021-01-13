@@ -58,23 +58,50 @@ import org.slf4j.LoggerFactory;
 public class BoschSslUtil {
 
     private static final String OSS_OPENHAB_BINDING = "oss_openhab_binding";
+    private static final String KEYSTORE_PASSWORD = "openhab";
 
     private final Logger logger = LoggerFactory.getLogger(BoschSslUtil.class);
 
+    private final String boschShcServerID;
     private final String keystorePath;
-    private final String keystorePassword;
 
-    public static String getBoschSHCId() {
+    /**
+     * Returns unique ID for this Bosch SmartHomeController client.
+     * 
+     * @return unique string containing the openhab UUID.
+     */
+    public static String getBoschShcClientId() {
         return OSS_OPENHAB_BINDING + "_" + InstanceUUID.get();
     }
 
-    public static String getKeystorePath() {
-        return Paths.get(OpenHAB.getUserDataFolder(), "etc", getBoschSHCId() + ".jks").toString();
+    /**
+     * Returns ID for passed Bosch SmartHomeController server.
+     * 
+     * @param shcServerID the ip address of the SHC server
+     * @return unique string containing the server id
+     */
+    public static String getBoschShcServerId(String shcServerID) {
+        return OSS_OPENHAB_BINDING + "_" + shcServerID;
     }
 
-    public BoschSslUtil(String keystorePassword) {
+    /**
+     * Constructor
+     * 
+     * @param boschShcServerID the ip address of the SHC server
+     */
+    public BoschSslUtil(String boschShcServerID) {
+        this.boschShcServerID = boschShcServerID;
         this.keystorePath = getKeystorePath();
-        this.keystorePassword = keystorePassword;
+    }
+
+    /// Returns unique ID for Bosch SmartHomeController server.
+    public String getBoschShcServerId() {
+        return BoschSslUtil.getBoschShcServerId(boschShcServerID);
+    }
+
+    /// Returns the unique keystore for each Bosch Smart Home Controller server.
+    public String getKeystorePath() {
+        return Paths.get(OpenHAB.getUserDataFolder(), "etc", getBoschShcServerId() + ".jks").toString();
     }
 
     public SslContextFactory getSslContextFactory() throws PairingFailedException {
@@ -87,7 +114,7 @@ public class BoschSslUtil {
         // Keystore for managing the keys that have been used to pair with the SHC
         // https://www.eclipse.org/jetty/javadoc/9.4.12.v20180830/org/eclipse/jetty/util/ssl/SslContextFactory.html
         sslContextFactory.setKeyStorePath(keystorePath);
-        sslContextFactory.setKeyStorePassword(keystorePassword);
+        sslContextFactory.setKeyStorePassword(KEYSTORE_PASSWORD);
 
         // Bosch is using a self signed certificate
         sslContextFactory.setTrustAll(true);
@@ -104,12 +131,12 @@ public class BoschSslUtil {
             if (!file.exists()) {
                 // create new keystore
                 logger.info("Creating new keystore {} because it doesn't exist.", keystorePath);
-                return createKeyStore(keystorePath, keystorePassword);
+                return createKeyStore(keystorePath);
             } else {
                 // load keystore as a first check
                 KeyStore keyStore = KeyStore.getInstance("JKS");
-                try (FileInputStream streamKeystore = new FileInputStream(file)) {
-                    keyStore.load(streamKeystore, keystorePassword.toCharArray());
+                try (FileInputStream keystoreStream = new FileInputStream(file)) {
+                    keyStore.load(keystoreStream, KEYSTORE_PASSWORD.toCharArray());
                 }
                 logger.debug("Using existing keystore {}", keystorePath);
                 return keyStore;
@@ -123,7 +150,7 @@ public class BoschSslUtil {
 
     private X509Certificate generateClientCertificate(KeyPair keyPair)
             throws GeneralSecurityException, OperatorCreationException {
-        final String dirName = "CN=" + getBoschSHCId() + ", O=openHAB, L=None, ST=None, C=None";
+        final String dirName = "CN=" + getBoschShcClientId() + ", O=openHAB, L=None, ST=None, C=None";
         logger.debug("Creating a new self signed certificate: {}", dirName);
         final Instant now = Instant.now();
         final Date notBefore = Date.from(now);
@@ -141,7 +168,7 @@ public class BoschSslUtil {
                 .getCertificate(certificateBuilder.build(contentSigner));
     }
 
-    private KeyStore createKeyStore(String keystore, String keystorePassword)
+    private KeyStore createKeyStore(String keystore)
             throws IOException, OperatorCreationException, GeneralSecurityException {
         // create a new keystore
         KeyStore keyStore = KeyStore.getInstance("JKS");
@@ -161,8 +188,8 @@ public class BoschSslUtil {
 
         X509Certificate cert = generateClientCertificate(keyPair);
 
-        logger.debug("Adding keypair and self signed certificate to keystore");
-        keyStore.setKeyEntry(getBoschSHCId(), keyPair.getPrivate(), keystorePassword.toCharArray(),
+        logger.debug("Adding keyEntry '{}' with self signed certificate to keystore", getBoschShcServerId());
+        keyStore.setKeyEntry(getBoschShcServerId(), keyPair.getPrivate(), KEYSTORE_PASSWORD.toCharArray(),
                 new Certificate[] { cert });
 
         // add Bosch Certs
@@ -183,8 +210,8 @@ public class BoschSslUtil {
         }
 
         logger.debug("Storing keystore to file {}", keystore);
-        try (FileOutputStream streamKeystore = new FileOutputStream(keystore)) {
-            keyStore.store(streamKeystore, keystorePassword.toCharArray());
+        try (FileOutputStream keystoreStream = new FileOutputStream(keystore)) {
+            keyStore.store(keystoreStream, KEYSTORE_PASSWORD.toCharArray());
         }
 
         return keyStore;

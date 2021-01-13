@@ -136,12 +136,12 @@ public class BoschHttpClient extends HttpClient {
         ContentResponse contentResponse;
         try {
             String publicCert = getCertFromSslContextFactory();
-            logger.trace("Pairing this Client '{}' with SHC {}", BoschSslUtil.getBoschSHCId(), ipAddress);
+            logger.trace("Pairing with SHC {}", ipAddress);
 
             // JSON Rest content
             Map<String, String> items = new HashMap<>();
             items.put("@type", "client");
-            items.put("id", BoschSslUtil.getBoschSHCId()); // Client Id contains the unique OpenHab instance Id
+            items.put("id", BoschSslUtil.getBoschShcClientId()); // Client Id contains the unique OpenHab instance Id
             items.put("name", "oss_OpenHAB_Binding"); // Client name according to
                                                       // https://github.com/BoschSmartHome/bosch-shc-api-docs#terms-and-conditions
             items.put("primaryRole", "ROLE_RESTRICTED_CLIENT");
@@ -240,7 +240,8 @@ public class BoschHttpClient extends HttpClient {
     }
 
     private String getCertFromSslContextFactory() throws KeyStoreException, CertificateEncodingException {
-        Certificate cert = this.getSslContextFactory().getKeyStore().getCertificate(BoschSslUtil.getBoschSHCId());
+        Certificate cert = this.getSslContextFactory().getKeyStore()
+                .getCertificate(BoschSslUtil.getBoschShcServerId(ipAddress));
         return Base64.getEncoder().encodeToString(cert.getEncoded());
     }
 }

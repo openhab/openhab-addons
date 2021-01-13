@@ -99,7 +99,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         SslContextFactory factory;
         try {
             // prepare SSL key and certificates
-            factory = new BoschSslUtil(config.password).getSslContextFactory();
+            factory = new BoschSslUtil(config.ipAddress).getSslContextFactory();
         } catch (PairingFailedException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-ssl");
