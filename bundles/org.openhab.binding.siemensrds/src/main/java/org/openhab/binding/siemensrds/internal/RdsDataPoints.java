@@ -299,7 +299,7 @@ public class RdsDataPoints {
             @Nullable
             RdsDataPoints newPoints = GSON.fromJson(json, RdsDataPoints.class);
 
-            Map<String, @Nullable BasePoint> newPointsMap = newPoints.points;
+            Map<String, @Nullable BasePoint> newPointsMap = newPoints != null ? newPoints.points : null;
 
             if (newPointsMap == null) {
                 throw new RdsCloudException("new points map empty");
