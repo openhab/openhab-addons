@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class JablotronBindingConstants {
 
-    private static final String BINDING_ID = "jablotron";
+    public static final String BINDING_ID = "jablotron";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
