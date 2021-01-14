@@ -16,6 +16,9 @@ import java.lang.reflect.Type;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -27,6 +30,7 @@ import com.google.gson.JsonSerializer;
 /**
  * GSON serialiser/deserialiser for converting {@link LocalTime} objects.
  */
+@NonNullByDefault
 public class GsonLocalTimeTypeAdapter implements JsonSerializer<LocalTime>, JsonDeserializer<LocalTime> {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -68,7 +72,7 @@ public class GsonLocalTimeTypeAdapter implements JsonSerializer<LocalTime>, Json
      * @throws JsonParseException if json is not in the expected format of {@code typeOfT}
      */
     @Override
-    public LocalTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public @Nullable LocalTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
         return TIME_FORMATTER.parse(json.getAsString(), LocalTime::from);
     }

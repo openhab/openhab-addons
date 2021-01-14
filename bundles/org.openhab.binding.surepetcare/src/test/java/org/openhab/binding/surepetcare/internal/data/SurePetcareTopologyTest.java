@@ -29,6 +29,7 @@ public class SurePetcareTopologyTest {
 
     @Test
     public void testTopologyPopulated() {
+
         String testResponse = "{\"devices\":[{\"id\":23912},{\"id\":23481}],\"households\":[{\"id\":83271}],\"pets\":[{\"id\":12345}],\"photos\":[{\"id\":64257,\"version\":\"MA==\",\"created_at\":\"2019-10-04T16:03:20+00:00\",\"updated_at\":\"2019-10-04T16:03:20+00:00\"}],\"user\":{\"id\":33421,\"version\":\"MA==\",\"created_at\":\"2019-09-18T16:09:30+00:00\",\"updated_at\":\"2019-09-18T16:09:30+00:00\"}}";
         SurePetcareTopology response = SurePetcareConstants.GSON.fromJson(testResponse, SurePetcareTopology.class);
 

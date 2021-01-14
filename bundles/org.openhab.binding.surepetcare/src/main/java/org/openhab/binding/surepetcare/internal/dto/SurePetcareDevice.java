@@ -61,8 +61,9 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
     public SurePetcareDeviceStatus status = new SurePetcareDeviceStatus();
 
     @Override
-    public Map<@NonNull String, String> getThingProperties() {
-        Map<@NonNull String, String> properties = super.getThingProperties();
+    public @NonNull Map<@NonNull String, @NonNull String> getThingProperties() {
+        @NonNull
+        Map<@NonNull String, @NonNull String> properties = super.getThingProperties();
         properties.put("householdId", householdId.toString());
         properties.put("productType", productId.toString());
         properties.put("productName", ProductType.findByTypeId(productId).name);

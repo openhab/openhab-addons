@@ -14,8 +14,10 @@ package org.openhab.binding.surepetcare.internal.utils;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -26,8 +28,9 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * GSON serialiser/deserialiser for converting {@link ZonedDateTime} objects.
+ * GSON serialiser/deserialiser for converting {@link LocalDate} objects.
  */
+@NonNullByDefault
 public class GsonLocalDateTypeAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
 
     private static final DateTimeFormatter LOCAL_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -70,7 +73,7 @@ public class GsonLocalDateTypeAdapter implements JsonSerializer<LocalDate>, Json
      * @throws JsonParseException if json is not in the expected format of {@code typeOfT}
      */
     @Override
-    public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public @Nullable LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
         String el = json.getAsString();
         // we allow dates to be represented as dates only or with time and timezone offset

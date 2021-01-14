@@ -16,6 +16,9 @@ import java.lang.reflect.Type;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -27,6 +30,7 @@ import com.google.gson.JsonSerializer;
 /**
  * GSON serialiser/deserialiser for converting {@link ZonedDateTime} objects.
  */
+@NonNullByDefault
 public class GsonZonedDateTimeTypeAdapter implements JsonSerializer<ZonedDateTime>, JsonDeserializer<ZonedDateTime> {
 
     private static final DateTimeFormatter ZONED_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx");
@@ -68,7 +72,7 @@ public class GsonZonedDateTimeTypeAdapter implements JsonSerializer<ZonedDateTim
      * @throws JsonParseException if json is not in the expected format of {@code typeOfT}
      */
     @Override
-    public ZonedDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public @Nullable ZonedDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
         return ZONED_FORMATTER.parse(json.getAsString(), ZonedDateTime::from);
     }

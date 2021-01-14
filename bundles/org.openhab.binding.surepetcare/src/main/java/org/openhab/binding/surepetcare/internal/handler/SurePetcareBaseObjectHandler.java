@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.thing.ChannelUID;
@@ -41,12 +42,12 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareBaseObjectHandler.class);
 
-    protected SurePetcareAPIHelper petcareAPI;
+    protected final SurePetcareAPIHelper petcareAPI;
 
-    protected ExpiringCache<Integer> updateThingCache = new ExpiringCache<>(Duration.ofSeconds(CACHE_TIMEOUT_SECOND),
+    protected ExpiringCache<Void> updateThingCache = new ExpiringCache<>(Duration.ofSeconds(CACHE_TIMEOUT_SECOND),
             this::refreshCache);
 
-    public SurePetcareBaseObjectHandler(Thing thing, SurePetcareAPIHelper petcareAPI) {
+    public SurePetcareBaseObjectHandler(Thing thing, final SurePetcareAPIHelper petcareAPI) {
         super(thing);
         this.petcareAPI = petcareAPI;
     }
@@ -68,11 +69,11 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
         super.updateProperties(properties);
     }
 
-    private Integer refreshCache() {
+    private @Nullable Void refreshCache() {
         logger.debug("cache has timed out, we refresh the values in the thing");
         updateThing();
         // we don't care about the cache content, we just return a zero
-        return 0;
+        return null;
     }
 
     /**

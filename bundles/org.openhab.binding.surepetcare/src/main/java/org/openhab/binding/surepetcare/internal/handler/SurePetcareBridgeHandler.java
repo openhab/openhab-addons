@@ -86,6 +86,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             } catch (AuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-authentication");
+                return;
             }
         } else {
             logger.warn("Setting thing '{}' to OFFLINE: Parameter 'password' and 'username' must be configured.",
@@ -107,6 +108,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             logger.warn("Invalid setting for topology refresh interval");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-invalid-refresh-intervals");
+            return;
         }
         if (config.refreshIntervalStatus != null) {
             ScheduledFuture<?> job = petStatusPollingJob;
@@ -119,6 +121,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             logger.warn("Invalid setting for status refresh interval");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-invalid-refresh-intervals");
+            return;
         }
     }
 
@@ -127,16 +130,17 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         return Collections.singleton(SurePetcareDiscoveryService.class);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void dispose() {
-        if (topologyPollingJob != null && !topologyPollingJob.isCancelled()) {
-            topologyPollingJob.cancel(true);
+        ScheduledFuture<?> job = topologyPollingJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
             topologyPollingJob = null;
             logger.debug("Stopped topology background polling process");
         }
-        if (petStatusPollingJob != null && !petStatusPollingJob.isCancelled()) {
-            petStatusPollingJob.cancel(true);
+        job = petStatusPollingJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
             petStatusPollingJob = null;
             logger.debug("Stopped pet status background polling process");
         }

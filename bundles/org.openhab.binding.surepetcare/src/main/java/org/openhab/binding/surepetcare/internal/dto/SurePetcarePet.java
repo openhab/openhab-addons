@@ -88,8 +88,9 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     }
 
     @Override
-    public Map<@NonNull String, @NonNull String> getThingProperties() {
-        Map<String, String> properties = super.getThingProperties();
+    public @NonNull Map<@NonNull String, @NonNull String> getThingProperties() {
+        @NonNull
+        Map<@NonNull String, @NonNull String> properties = super.getThingProperties();
         properties.put("householdId", householdId.toString());
         return properties;
     }

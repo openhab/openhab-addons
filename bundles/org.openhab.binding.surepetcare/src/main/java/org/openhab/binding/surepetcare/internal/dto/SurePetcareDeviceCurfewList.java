@@ -35,11 +35,9 @@ public class SurePetcareDeviceCurfewList extends ArrayList<SurePetcareDeviceCurf
      */
     @Override
     public SurePetcareDeviceCurfew get(int index) {
-        if (index >= size()) {
+        while (size() <= index) {
             // grow list to required size
-            for (int i = size(); i <= index; i++) {
-                add(new SurePetcareDeviceCurfew());
-            }
+            add(new SurePetcareDeviceCurfew());
         }
         return super.get(index);
     }
@@ -67,6 +65,7 @@ public class SurePetcareDeviceCurfewList extends ArrayList<SurePetcareDeviceCurf
                 orderedList.add(curfew);
             }
         }
+        // now fill up the list with empty disabled slots.
         for (int i = orderedList.size(); i < SurePetcareConstants.FLAP_MAX_NUMBER_OF_CURFEWS; i++) {
             orderedList.add(new SurePetcareDeviceCurfew());
         }
