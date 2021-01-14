@@ -52,6 +52,9 @@ public class SurePetcareConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_HOUSEHOLD,
             THING_TYPE_PET, THING_TYPE_HUB_DEVICE, THING_TYPE_FLAP_DEVICE, THING_TYPE_FEEDER_DEVICE));
 
+    public static final long DEFAULT_REFRESH_INTERVAL_TOPOLOGY = 36000; // 10 hours
+    public static final long DEFAULT_REFRESH_INTERVAL_STATUS = 300; // 5 mins
+
     public static final int FLAP_MAX_NUMBER_OF_CURFEWS = 4;
 
     public static final Gson GSON = new GsonBuilder()

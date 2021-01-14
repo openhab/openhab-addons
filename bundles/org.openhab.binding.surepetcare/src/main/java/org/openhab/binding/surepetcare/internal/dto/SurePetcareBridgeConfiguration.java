@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.surepetcare.internal.dto;
 
+import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
+
 /**
  * The {@link SurePetcareBridgeConfiguration} is a container for all the bridge configuration.
  *
@@ -21,6 +23,6 @@ public class SurePetcareBridgeConfiguration {
 
     public String username;
     public String password;
-    public Long refreshIntervalTopology;
-    public Long refreshIntervalStatus;
+    public long refreshIntervalTopology = DEFAULT_REFRESH_INTERVAL_TOPOLOGY;
+    public long refreshIntervalStatus = DEFAULT_REFRESH_INTERVAL_STATUS;
 }

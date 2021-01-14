@@ -95,33 +95,20 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                     "@text/offline.conf-error-missing-username-or-password");
         }
 
-        if (config.refreshIntervalTopology != null) {
-            ScheduledFuture<?> job = topologyPollingJob;
-            if (job == null || job.isCancelled()) {
-                topologyPollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    petcareAPI.updateTopologyCache();
-                    updateThings();
-                }, config.refreshIntervalTopology, config.refreshIntervalTopology, TimeUnit.SECONDS);
-                logger.debug("Bridge topology polling job every {} seconds", config.refreshIntervalTopology);
-            }
-        } else {
-            logger.warn("Invalid setting for topology refresh interval");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-invalid-refresh-intervals");
-            return;
+        ScheduledFuture<?> job = topologyPollingJob;
+        if (job == null || job.isCancelled()) {
+            topologyPollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                petcareAPI.updateTopologyCache();
+                updateThings();
+            }, config.refreshIntervalTopology, config.refreshIntervalTopology, TimeUnit.SECONDS);
+            logger.debug("Bridge topology polling job every {} seconds", config.refreshIntervalTopology);
         }
-        if (config.refreshIntervalStatus != null) {
-            ScheduledFuture<?> job = petStatusPollingJob;
-            if (job == null || job.isCancelled()) {
-                petStatusPollingJob = scheduler.scheduleWithFixedDelay(this::pollAndUpdatePetStatus,
-                        config.refreshIntervalStatus, config.refreshIntervalStatus, TimeUnit.SECONDS);
-                logger.debug("Pet status polling job every {} seconds", config.refreshIntervalStatus);
-            }
-        } else {
-            logger.warn("Invalid setting for status refresh interval");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-invalid-refresh-intervals");
-            return;
+
+        job = petStatusPollingJob;
+        if (job == null || job.isCancelled()) {
+            petStatusPollingJob = scheduler.scheduleWithFixedDelay(this::pollAndUpdatePetStatus,
+                    config.refreshIntervalStatus, config.refreshIntervalStatus, TimeUnit.SECONDS);
+            logger.debug("Pet status polling job every {} seconds", config.refreshIntervalStatus);
         }
     }
 

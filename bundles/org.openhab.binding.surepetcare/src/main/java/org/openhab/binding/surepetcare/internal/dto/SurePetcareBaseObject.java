@@ -16,7 +16,6 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -33,7 +32,7 @@ public class SurePetcareBaseObject {
     public ZonedDateTime updatedAt = ZonedDateTime.now();
 
     public Map<String, String> getThingProperties() {
-        Map<String, String> properties = new HashMap<@NonNull String, @NonNull String>();
+        Map<String, String> properties = new HashMap<String, String>();
         properties.put("id", id.toString());
         properties.put("version", version);
         properties.put("createdAt", createdAt.toString());
