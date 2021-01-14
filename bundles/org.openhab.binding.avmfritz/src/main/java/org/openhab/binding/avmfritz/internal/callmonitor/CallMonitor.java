@@ -120,7 +120,7 @@ public class CallMonitor {
             while (!interrupted) {
                 BufferedReader reader = null;
                 try {
-                    logger.debug("Callmonitor thread [{}] attempting connection to FRITZ!Box on {}:{}.",
+                    logger.debug("Call Monitor thread [{}] attempting connection to FRITZ!Box on {}:{}.",
                             Thread.currentThread().getId(), ip, MONITOR_PORT);
                     socket = new Socket(ip, MONITOR_PORT);
                     reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
