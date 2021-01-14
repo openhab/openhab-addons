@@ -46,7 +46,7 @@ public class HandlerThermostatController extends HandlerBase {
     public static final String INTERFACE = "Alexa.ThermostatController";
     // Channel definitions
     private static final ChannelInfo TARGET_SETPOINT = new ChannelInfo("targetSetpoint" /* propertyName */ ,
-            "targetSetpoint" /* ChannelId */, CHANNEL_TYPE_TEMPERATURE /* Channel Type */ ,
+            "targetSetpoint" /* ChannelId */, CHANNEL_TYPE_TARGETSETPOINT /* Channel Type */ ,
             ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
 
     public HandlerThermostatController(SmartHomeDeviceHandler smartHomeDeviceHandler) {
