@@ -188,6 +188,7 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                         "Failed to update channel " + c.getName() + " on device: " + e.getMessage());
             } catch (InterruptedException e) {
                 logger.debug("Push interrupted. {}", e.getMessage());
+                return;
             }
         }
 
