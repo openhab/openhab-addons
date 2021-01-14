@@ -270,6 +270,8 @@ public class WlanThermoEsp32CommandHandler {
                             return TRIGGER_ALARM_MAX;
                         } else if (channel.getTemp() < channel.getMin()) {
                             return TRIGGER_ALARM_MIN;
+                        } else {
+                            return TRIGGER_NONE;
                         }
                     }
                 }

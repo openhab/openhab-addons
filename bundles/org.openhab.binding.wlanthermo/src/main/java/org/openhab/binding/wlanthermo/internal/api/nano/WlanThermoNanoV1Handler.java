@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wlanthermo.internal.api.nano;
 
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_NONE;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.*;
@@ -117,7 +119,9 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
                         // if we could not obtain a state, try trigger instead
                         try {
                             String trigger = WlanThermoNanoV1CommandHandler.getTrigger(channel.getUID(), data);
-                            triggerChannel(channel.getUID(), trigger);
+                            if (!trigger.equals(TRIGGER_NONE)) {
+                                triggerChannel(channel.getUID(), trigger);
+                            }
                         } catch (WlanThermoUnknownChannelException e1) {
                             logger.debug("{}", e.getMessage());
                         }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wlanthermo.internal.api.esp32;
 
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_NONE;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -141,7 +143,9 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                         // if we could not obtain a state, try trigger instead
                         try {
                             String trigger = WlanThermoEsp32CommandHandler.getTrigger(channel.getUID(), data);
-                            triggerChannel(channel.getUID(), trigger);
+                            if (!trigger.equals(TRIGGER_NONE)) {
+                                triggerChannel(channel.getUID(), trigger);
+                            }
                         } catch (WlanThermoUnknownChannelException e1) {
                             logger.debug("{}", e.getMessage());
                         }

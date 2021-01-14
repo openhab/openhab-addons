@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wlanthermo.internal.api.mini;
 
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_NONE;
+
 import java.net.URISyntaxException;
 import java.util.concurrent.*;
 
@@ -97,7 +99,9 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                         // if we could not obtain a state, try trigger instead
                         try {
                             String trigger = WlanThermoMiniCommandHandler.getTrigger(channel.getUID(), app);
-                            triggerChannel(channel.getUID(), trigger);
+                            if (!trigger.equals(TRIGGER_NONE)) {
+                                triggerChannel(channel.getUID(), trigger);
+                            }
                         } catch (WlanThermoUnknownChannelException e1) {
                             logger.debug("{}", e.getMessage());
                         }

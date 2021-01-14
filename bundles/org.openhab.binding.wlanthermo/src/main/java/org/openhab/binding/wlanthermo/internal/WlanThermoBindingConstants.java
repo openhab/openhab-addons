@@ -80,7 +80,7 @@ public class WlanThermoBindingConstants {
     public static final String CHANNEL_PITMASTER_STATE = "state"; // Nano
     public static final String CHANNEL_PITMASTER_PIDPROFILE = "pid_id"; // Nano
 
-    public static final String TRIGGER_ALARM_OFF = "OFF";
+    public static final String TRIGGER_NONE = "";
     public static final String TRIGGER_ALARM_MIN = "MIN";
     public static final String TRIGGER_ALARM_MAX = "MAX";
 

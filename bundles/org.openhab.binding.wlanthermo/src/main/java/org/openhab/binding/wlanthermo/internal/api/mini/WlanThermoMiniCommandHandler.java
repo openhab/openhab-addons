@@ -161,6 +161,8 @@ public class WlanThermoMiniCommandHandler {
                             return TRIGGER_ALARM_MAX;
                         } else if (data.getTemp() < data.getTempMin()) {
                             return TRIGGER_ALARM_MIN;
+                        } else {
+                            return TRIGGER_NONE;
                         }
                     }
                 }
