@@ -219,6 +219,8 @@
 			<channel id="zigbeeConnected" typeId="zigbeeConnected-channel"/>
 			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 			<channel id="manualModeState" typeId="manualModeState-channel"/>
+			<channel id="plugInstantaneousPower" typeId="plugInstantaneousPower-channel"/>
+			<channel id="plugEnergyDelivered" typeId="plugEnergyDelivered-channel"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -427,6 +429,20 @@
 		<item-type>Switch</item-type>
 		<label>Comfort Mode Active</label>
 		<description>Should the room pre-heat to achieve the desired temperature</description>
+	</channel-type>
+
+	<channel-type id="plugInstantaneousPower-channel">
+		<item-type>Number:Power</item-type>
+		<label>Plug Instantaneous Power</label>
+		<description>Current Power being drawn through the plug</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="plugEnergyDelivered-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Plug Energy Delivered</label>
+		<description>Cumulative energy drawn through the plug</description>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -64,9 +64,12 @@ Values need to be IPv4 addresses in the format `a.b.c.d`.
 This is an optional parameter and multiple values are allowed:  add one value per line in the Main User Interface.
 
 If the `PHONEBOOK` profile shall be used, it is necessary to retrieve the phonebooks from the FritzBox.
-The `phonebookInterval` is uses to set the refresh cycle for phonebooks. It defaults to 600 seconds,
-and it can be set to 0 if phoneooks are not to be used.
+The `phonebookInterval` is used to set the refresh cycle for phonebooks.
+It defaults to 600 seconds, and it can be set to 0 if phonebooks are not used.
 
+Parameters that accept lists (e.g. `macOnline`, `wanBlockIPs`) can contain comments.
+Comments are separated from the value with a '#' (e.g. `192.168.0.77 # Daughter's iPhone`).
+The full string is used for the channel label.
 
 ### `subdevice`, `subdeviceLan`
 
@@ -78,16 +81,13 @@ by examining the SCPD of the root device, the simplest way to obtain it is throu
 Auto discovery may find several sub-devices, each one holding channels as described in the following.
 
 The LAN sub-device, in particular, is also used for presence detection.
-It therefore optionally contains
-a channel for each MAC address (in a format 11:11:11:11:11:11, different than the old v1 version of this binding),
-defined by the parameter `macOnline`.
-This is an optional parameter and multiple values are allowed:  add one value per line in the Main User Interface.
+It therefore optionally contains a channel for each MAC address (in a format 11:11:11:11:11:11, different than the old v1 version of this binding), defined by the parameter `macOnline`.
 
 ## Channels
 
 Channels are grouped according to the subdevice they belong to. 
 
-### fritzbox Bridge channels
+### `fritzbox` bridge channels
 
 Advanced channels appear only if the corresponding parameters are set in the Thing definition.
 
@@ -106,7 +106,11 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | `tamNewMessages`           | `Number`                  |     x    | The number of new messages of the given answering machine.     |
 | `uptime`                   | `Number:Time`             |          | Uptime of the device                                           |
 
-### LAN subdeviceLan channels
+Call lists are provided via the `callList` channel for one or more days (as configured) as JSON.
+The JSON consists of an array of individual calls with the fields `date`, `type`, `localNumber`, `remoteNumber`, `duration`.
+The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2` (missed), `3` (outbound), `10` (rejected).
+
+### LAN `subdeviceLan` channels
 
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
@@ -115,7 +119,10 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | `wifiGuestEnable`          | `Switch`                  |          | Enable/Disable the guest WiFi.                                 |
 | `macOnline`                | `Switch`                  |     x    | Online status of the device with the given MAC                 |
 
-### WANConnection subdevice channels
+Older FritzBox devices may not support 5 GHz WiFi.
+In this case you have to use the `wifi5GHzEnable` channel for switching the guest WiFi.
+
+### WANConnection `subdevice` channels
 
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
@@ -126,7 +133,7 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | `wanIpAddress`             | `String`                  |     x    | WAN IP Address                                                 |
 | `wanPppIpAddress`          | `String`                  |     x    | WAN IP Address (if using PPP)                                  |
 
-### WAN subdevice channels
+### WAN `subdevice` channels
 
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
@@ -149,17 +156,6 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | `wanPhysicalLinkStatus`    | `String`                  |     x    | Link Status                                                    |
 | `wanTotalBytesReceived`    | `Number:DataAmount`       |     x    | Total Bytes Received                                           |
 | `wanTotalBytesSent`        | `Number:DataAmount`       |     x    | Total Bytes Sent                                               |
-
-
-Parameters that accept lists (e.g. `macOnline`, `wanBlockIPs`) can contain comments.
-Comments are separated from the value with a '#' (e.g. `192.168.0.77 # Daughter's iPhone`).
-The full string is used for the channel label.
-
-### Channel `callList`
-
-Call lists are provided for one or more days (as configured) as JSON.
-The JSON consists of an array of individual calls with the fields `date`, `type`, `localNumber`, `remoteNumber`, `duration`.
-The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2` (missed), `3` (outbound), `10` (rejected).
  
 ## `PHONEBOOK` Profile
 
@@ -172,6 +168,7 @@ The default is to use all available phonebooks from the specified thing.
 In case the format of the number in the phonebook and the format of the number from the channel are different (e.g. regarding country prefixes), the `matchCount` parameter can be used.
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
 A `matchCount` of `0` is considered as "match everything".
+Matching is done on normalized versions of the numbers that have all characters except digits, '+' and '*' removed.
 
 ## Rule Action
 
@@ -182,7 +179,8 @@ The phonebooks of a `fritzbox` thing can be used to lookup a number from rules v
 `phonebook` and `matchCount` are optional parameters.
 You can omit one or both of these parameters.
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
-A `matchCount` of `0` is considered as "match everything" and is used as default if no other value is given.
+A `matchCount` of `0` is considered as "match everything" and is used as default if no other value is given. 
+As in the phonebook profile, matching is done on normalized versions of the numbers that have all characters except digits, '+' and '*' removed.
 The return value is either the phonebook entry (if found) or the input number.
 
 Example (use all phonebooks, match 5 digits from right):

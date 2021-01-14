@@ -31,6 +31,8 @@ public class SmartPlugDTO {
     private String targetState;
     private Integer debounceCount;
     private String overrideState;
+    private Integer currentSummationDelivered;
+    private Integer instantaneousDemand;
 
     public Integer getId() {
         return id;
@@ -74,5 +76,13 @@ public class SmartPlugDTO {
 
     public String getMode() {
         return mode;
+    }
+
+    public Integer getCurrentSummationDelivered() {
+        return currentSummationDelivered;
+    }
+
+    public Integer getInstantaneousDemand() {
+        return instantaneousDemand;
     }
 }

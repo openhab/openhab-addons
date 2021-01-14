@@ -10,21 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter.thirdgeneration;
+package org.openhab.binding.deconz.internal.dto;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ThirdGenerationChannelDatatypes} enumeration contains the data types provided by the device
+ * The {@link SensorUpdateConfig} is send to the Rest API to configure presence sensors.
  *
- * @author René Stakemeier - Initial contribution
+ * @author Christoph Weitkamp - Initial contribution
  */
-enum ThirdGenerationChannelDatatypes {
-    INTEGER,
-    PERCEMTAGE,
-    KILOGRAM,
-    SECONDS,
-    KILOWATT_HOUR,
-    WATT,
-    AMPERE,
-    AMPERE_HOUR,
-    VOLT
+@NonNullByDefault
+public class SensorUpdateConfig {
+    public @Nullable Boolean on;
 }

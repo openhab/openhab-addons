@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter.thirdgeneration;
+package org.openhab.binding.kostalinverter.internal.thirdgeneration;
 
-import static org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationBindingConstants.*;
+import static org.openhab.binding.kostalinverter.internal.thirdgeneration.ThirdGenerationBindingConstants.*;
 
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;

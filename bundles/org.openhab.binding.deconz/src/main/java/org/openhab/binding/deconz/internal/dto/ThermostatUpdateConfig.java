@@ -17,12 +17,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 
 /**
- * The {@link ThermostatConfig} is send to the Rest API to configure Thermostat.
+ * The {@link ThermostatUpdateConfig} is send to the Rest API to configure Thermostat.
  *
  * @author Lukas Agethen - Initial contribution
  */
 @NonNullByDefault
-public class ThermostatConfig {
+public class ThermostatUpdateConfig {
     public @Nullable Integer heatsetpoint;
     public @Nullable ThermostatMode mode;
     public @Nullable Integer offset;
