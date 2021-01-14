@@ -102,9 +102,10 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
         }
 
         // third generation
-        if (SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS.containsKey(thing.getThingTypeUID())) {
-            return new ThirdGenerationHandler(thing, httpClient,
-                    SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS.get(thing.getThingTypeUID()));
+        ThirdGenerationInverterTypes inverterType = SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS
+                .get(thing.getThingTypeUID());
+        if (inverterType != null) {
+            return new ThirdGenerationHandler(thing, httpClient, inverterType);
         }
         return null;
     }
