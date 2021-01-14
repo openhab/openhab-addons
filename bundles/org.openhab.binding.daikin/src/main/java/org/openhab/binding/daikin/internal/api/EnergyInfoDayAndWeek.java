@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Holds information from the get_week_power_ex call.
  *
- * @author Wouter Denayer - Added to support for weekly & daily energy reading
+ * @author Wouter Denayer - Initial contribution
  *
  */
 @NonNullByDefault
@@ -42,7 +42,6 @@ public class EnergyInfoDayAndWeek {
     }
 
     public static EnergyInfoDayAndWeek parse(String response) {
-
         EnergyInfoDayAndWeek info = new EnergyInfoDayAndWeek();
 
         logger.trace("Parsing string: \"{}\"", response);
@@ -59,12 +58,10 @@ public class EnergyInfoDayAndWeek {
                 }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
 
         if (responseMap.get("ret") != null && ("OK".equals(responseMap.get("ret")))) {
-
             Optional<Integer> dayOfWeek = Optional.ofNullable(responseMap.get("s_dayw"))
                     .flatMap(value -> InfoParser.parseInt(value));
 
             if (dayOfWeek.isPresent()) {
-
                 // Daikin API week starts on Sunday, ours on Monday
                 int thisWeekLastDayIndex = (dayOfWeek.get().intValue() == 0) ? 7 : dayOfWeek.get().intValue();
 
