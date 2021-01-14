@@ -160,6 +160,32 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
         }
     }
 
+    private boolean doPost(String endpoint, String json) throws InterruptedException {
+        try {
+            URI uri = config.getUri(endpoint);
+            int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
+                    .timeout(5, TimeUnit.SECONDS).send().getStatus();
+            if (status == 401) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
+                return false;
+            } else if (status != 200) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to update channel on device, Statuscode " + status + " on URI " + uri.toString());
+                logger.debug("Payload sent: {}", json);
+                //Still continue to try next channel
+                return true;
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+                return true;
+            }
+        } catch (TimeoutException | ExecutionException | URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Failed to update channel on device: " + e.getMessage());
+            return false;
+        }
+    }
+
     private void push() {
         if (data == null || this.thing.getStatus() != ThingStatus.ONLINE) {
             return;
@@ -169,23 +195,9 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
         for (org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Channel c : data.getChannel()) {
             try {
                 String json = gson.toJson(c);
-                URI uri = config.getUri("/setchannels");
-                int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
-                        .timeout(5, TimeUnit.SECONDS).send().getStatus();
-                if (status == 401) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
+                if (!doPost("/setchannels", json)) {
                     break;
-                } else if (status != 200) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
-                            + c.getName() + " on device, Statuscode " + status + " on URI " + uri.toString());
-                    logger.debug("Payload sent: {}", json);
-                } else {
-                    updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (TimeoutException | ExecutionException | URISyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to update channel " + c.getName() + " on device: " + e.getMessage());
             } catch (InterruptedException e) {
                 logger.debug("Push interrupted. {}", e.getMessage());
                 return;
@@ -195,23 +207,7 @@ public class WlanThermoNanoV1Handler extends BaseThingHandler {
         // push update for pitmaster channels
         try {
             String json = gson.toJson(data.getPitmaster().getPm());
-            URI uri = config.getUri("/setpitmaster");
-            int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
-                    .timeout(5, TimeUnit.SECONDS).send().getStatus();
-            if (status == 401) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
-            } else if (status != 200) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to update pitmaster channel on device, Statuscode " + status + " on URI "
-                                + uri.toString());
-                logger.debug("Payload sent: {}", json);
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        } catch (TimeoutException | ExecutionException | URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Failed to update pitmaster channel on device: " + e.getMessage());
+            doPost("/setpitmaster", json);
         } catch (InterruptedException e) {
             logger.debug("Push interrupted. {}", e.getMessage());
         }
