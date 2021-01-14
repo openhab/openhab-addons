@@ -13,6 +13,7 @@
 package org.openhab.binding.webthing.internal.client;
 
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,14 +49,15 @@ public class Mocks {
         when(getContentResponse.getStatus()).thenReturn(getResponse);
         when(getContentResponse.getContentAsString()).thenReturn(responseContent);
         when(getRequest.send()).thenReturn(getContentResponse);
+        when(getRequest.accept("application/json")).thenReturn(getRequest);
         when(request.timeout(30, TimeUnit.SECONDS)).thenReturn(getRequest);
 
         // POST request -> request.method("PUT").content(new StringContentProvider(json)).timeout(30,
         // TimeUnit.SECONDS).send();
         if (requestContent != null) {
             var postRequest = mock(Request.class);
-            when(postRequest.content(argThat((ContentProvider content) -> bufToString(content).equals(requestContent))))
-                    .thenReturn(postRequest);
+            when(postRequest.content(argThat((ContentProvider content) -> bufToString(content).equals(requestContent)),
+                    eq("application/json"))).thenReturn(postRequest);
             when(postRequest.timeout(30, TimeUnit.SECONDS)).thenReturn(postRequest);
 
             var postContentResponse = mock(ContentResponse.class);

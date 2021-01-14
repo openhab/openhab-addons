@@ -173,7 +173,8 @@ public class ConsumedThingImpl implements ConsumedThing {
         if (optionalPropertyUri.isPresent()) {
             var propertyUri = optionalPropertyUri.get();
             try {
-                var response = httpClient.newRequest(propertyUri).timeout(30, TimeUnit.SECONDS).send();
+                var response = httpClient.newRequest(propertyUri).timeout(30, TimeUnit.SECONDS)
+                        .accept("application/json").send();
                 if (response.getStatus() < 200 || response.getStatus() >= 300) {
                     onError("WebThing " + webThingURI + " disconnected");
                     throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ")");
@@ -220,7 +221,8 @@ public class ConsumedThingImpl implements ConsumedThing {
                         Map<String, Object> payload = Map.of(propertyName, newValue);
                         var json = gson.toJson(payload);
                         var response = httpClient.newRequest(propertyUri).method("PUT")
-                                .content(new StringContentProvider(json)).timeout(30, TimeUnit.SECONDS).send();
+                                .content(new StringContentProvider(json), "application/json")
+                                .timeout(30, TimeUnit.SECONDS).send();
                         if (response.getStatus() < 200 || response.getStatus() >= 300) {
                             onError("WebThing " + webThingURI + "could not write " + propertyName + " (" + propertyUri
                                     + ") with " + newValue);
