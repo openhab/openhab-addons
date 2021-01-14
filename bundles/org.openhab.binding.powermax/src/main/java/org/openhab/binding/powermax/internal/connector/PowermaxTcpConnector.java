@@ -70,16 +70,16 @@ public class PowermaxTcpConnector extends PowermaxConnector {
 
             setConnected(true);
         } catch (UnknownHostException e) {
-            logger.debug("open(): Unknown Host Exception: {}", e.getMessage(), e);
+            logger.warn("open(): Unknown Host Exception: {}", e.getMessage(), e);
             setConnected(false);
         } catch (SocketException e) {
-            logger.debug("open(): Socket Exception: {}", e.getMessage(), e);
+            logger.warn("open(): Socket Exception: {}", e.getMessage(), e);
             setConnected(false);
         } catch (IOException e) {
-            logger.debug("open(): IO Exception: {}", e.getMessage(), e);
+            logger.warn("open(): IO Exception: {}", e.getMessage(), e);
             setConnected(false);
         } catch (Exception e) {
-            logger.debug("open(): Exception: {}", e.getMessage(), e);
+            logger.warn("open(): Exception: {}", e.getMessage(), e);
             setConnected(false);
         }
     }

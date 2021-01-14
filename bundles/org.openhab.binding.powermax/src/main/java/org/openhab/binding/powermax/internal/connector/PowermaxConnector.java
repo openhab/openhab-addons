@@ -106,14 +106,25 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
         }
     }
 
+    /**
+     * Handles a communication failure
+     */
+    public void handleCommunicationFailure() {
+        close();
+
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onCommunicationFailure();
+        }
+    }
+
     @Override
     public void sendMessage(byte[] data) {
         try {
             output.write(data);
             output.flush();
         } catch (IOException e) {
-            logger.debug("sendMessage(): Writing error: {}", e.getMessage(), e);
-            setConnected(false);
+            logger.warn("sendMessage(): Writing error: {}", e.getMessage(), e);
+            handleCommunicationFailure();
         }
     }
 

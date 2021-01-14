@@ -50,7 +50,7 @@ public class PowermaxReaderThread extends Thread {
 
     @Override
     public void run() {
-        logger.debug("Data listener started");
+        logger.info("Data listener started");
 
         byte[] readDataBuffer = new byte[READ_BUFFER_SIZE];
         byte[] dataBuffer = new byte[MAX_MSG_SIZE];
@@ -128,10 +128,14 @@ public class PowermaxReaderThread extends Thread {
             Thread.currentThread().interrupt();
             logger.debug("Interrupted via InterruptedIOException");
         } catch (IOException e) {
-            logger.debug("Reading failed: {}", e.getMessage(), e);
+            logger.warn("Reading failed: {}", e.getMessage(), e);
+            connector.handleCommunicationFailure();
+        } catch (Exception e) {
+            logger.warn("Error reading or processing message: {}", e.getMessage(), e);
+            connector.handleCommunicationFailure();
         }
 
-        logger.debug("Data listener stopped");
+        logger.info("Data listener stopped");
     }
 
     /**

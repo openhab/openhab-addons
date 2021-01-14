@@ -27,6 +27,7 @@ import org.openhab.binding.powermax.internal.config.PowermaxIpConfiguration;
 import org.openhab.binding.powermax.internal.config.PowermaxSerialConfiguration;
 import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
 import org.openhab.binding.powermax.internal.message.PowermaxCommManager;
+import org.openhab.binding.powermax.internal.message.PowermaxSendType;
 import org.openhab.binding.powermax.internal.state.PowermaxArmMode;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettingsListener;
@@ -64,6 +65,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     private final TimeZoneProvider timeZoneProvider;
 
     private static final long ONE_MINUTE = TimeUnit.MINUTES.toMillis(1);
+    private static final long FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5);
 
     /** Default delay in milliseconds to reset a motion detection */
     private static final long DEFAULT_MOTION_OFF_DELAY = TimeUnit.MINUTES.toMillis(3);
@@ -252,21 +254,26 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     }
 
     /*
-     * Check that we receive a keep alive message during the last minute
+     * Check that we're actively communicating with the panel
      */
     private void checkKeepAlive() {
         long now = System.currentTimeMillis();
         if (Boolean.TRUE.equals(currentState.powerlinkMode.getValue())
                 && (currentState.lastKeepAlive.getValue() != null)
                 && ((now - currentState.lastKeepAlive.getValue()) > ONE_MINUTE)) {
-            // Let Powermax know we are alive
+            // In Powerlink mode: let Powermax know we are alive
             commManager.sendRestoreMessage();
             currentState.lastKeepAlive.setValue(now);
+        } else if (!Boolean.TRUE.equals(currentState.downloadMode.getValue())
+                && (currentState.lastMessageReceived.getValue() != null)
+                && ((now - currentState.lastMessageReceived.getValue()) > FIVE_MINUTES)) {
+            // In Standard mode: ping the panel every so often to detect disconnects
+            commManager.sendMessage(PowermaxSendType.STATUS);
         }
     }
 
     private void tryReconnect() {
-        logger.debug("trying to reconnect...");
+        logger.info("Trying to connect or reconnect...");
         closeConnection();
         currentState = commManager.createNewState();
         if (openConnection()) {
@@ -279,7 +286,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 commManager.startDownload();
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Reconnection failed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection failed");
         }
     }
 
@@ -474,6 +481,11 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
     }
 
+    @Override
+    public void onCommunicationFailure() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Lost connection");
+    }
+
     private void processPanelSettings() {
         if (commManager.processPanelSettings(Boolean.TRUE.equals(currentState.powerlinkMode.getValue()))) {
             for (PowermaxPanelSettingsListener listener : listeners) {
@@ -481,7 +493,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             }
             remainingDownloadAttempts = 0;
         } else {
-            logger.info("Powermax alarm binding: setup download failed!");
+            logger.warn("Powermax alarm binding: setup download failed!");
             for (PowermaxPanelSettingsListener listener : listeners) {
                 listener.onPanelSettingsUpdated(null);
             }
@@ -489,10 +501,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
         updatePropertiesFromPanelSettings();
         if (Boolean.TRUE.equals(currentState.powerlinkMode.getValue())) {
-            logger.debug("Powermax alarm binding: running in Powerlink mode");
+            logger.info("Powermax alarm binding: running in Powerlink mode");
             commManager.sendRestoreMessage();
         } else {
-            logger.debug("Powermax alarm binding: running in Standard mode");
+            logger.info("Powermax alarm binding: running in Standard mode");
             commManager.getInfosWhenInStandardMode();
         }
     }

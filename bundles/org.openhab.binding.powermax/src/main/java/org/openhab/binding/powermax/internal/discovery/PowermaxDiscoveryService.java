@@ -166,7 +166,7 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService
                 name = "Alarm Zone " + zoneNumber;
             }
             name = sensorType + " " + name;
-            logger.debug("Adding new Powermax alarm zone {} ({}) to inbox", thingUID, name);
+            logger.info("Adding new Powermax alarm zone {} ({}) to inbox", thingUID, name);
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(PowermaxZoneConfiguration.ZONE_NUMBER, zoneNumber);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)

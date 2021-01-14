@@ -87,7 +87,7 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
                     serialPort.addEventListener(this);
                     serialPort.notifyOnDataAvailable(true);
                 } catch (TooManyListenersException e) {
-                    logger.debug("Too Many Listeners Exception: {}", e.getMessage(), e);
+                    logger.warn("Too Many Listeners Exception: {}", e.getMessage(), e);
                 }
 
                 setReaderThread(new PowermaxReaderThread(this, readerThreadName));
@@ -95,20 +95,20 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
 
                 setConnected(true);
             } else {
-                logger.debug("open(): No Such Port: {}", serialPortName);
+                logger.warn("open(): No Such Port: {}", serialPortName);
                 setConnected(false);
             }
         } catch (PortInUseException e) {
-            logger.debug("open(): Port in Use Exception: {}", e.getMessage(), e);
+            logger.warn("open(): Port in Use Exception: {}", e.getMessage(), e);
             setConnected(false);
         } catch (UnsupportedCommOperationException e) {
-            logger.debug("open(): Unsupported Comm Operation Exception: {}", e.getMessage(), e);
+            logger.warn("open(): Unsupported Comm Operation Exception: {}", e.getMessage(), e);
             setConnected(false);
         } catch (UnsupportedEncodingException e) {
-            logger.debug("open(): Unsupported Encoding Exception: {}", e.getMessage(), e);
+            logger.warn("open(): Unsupported Encoding Exception: {}", e.getMessage(), e);
             setConnected(false);
         } catch (IOException e) {
-            logger.debug("open(): IO Exception: {}", e.getMessage(), e);
+            logger.warn("open(): IO Exception: {}", e.getMessage(), e);
             setConnected(false);
         }
     }
