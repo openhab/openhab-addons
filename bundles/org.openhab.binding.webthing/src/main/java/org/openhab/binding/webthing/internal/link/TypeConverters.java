@@ -128,7 +128,7 @@ class TypeConverters {
 
         @Override
         public Object toPropertyValue(State state) {
-            return ((PercentType) state).toBigDecimal().intValue();
+            return ((DecimalType) state).toBigDecimal().intValue();
         }
     }
 
