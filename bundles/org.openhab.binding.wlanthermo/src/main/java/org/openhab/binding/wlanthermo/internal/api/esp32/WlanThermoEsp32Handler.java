@@ -125,11 +125,11 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 int tempChannels = data.getChannel().size();
 
                 // Update properties
-                properties.put(WlanThermoBindingConstants.PROPERTY_MODEL, settings.getDevice().getDevice());
-                properties.put(WlanThermoBindingConstants.PROPERTY_SERIAL, settings.getDevice().getSerial());
-                properties.put(WlanThermoBindingConstants.PROPERTY_ESP32_BT_ENABLED,
+                properties.putIfAbsent(WlanThermoBindingConstants.PROPERTY_MODEL, settings.getDevice().getDevice());
+                properties.putIfAbsent(WlanThermoBindingConstants.PROPERTY_SERIAL, settings.getDevice().getSerial());
+                properties.putIfAbsent(WlanThermoBindingConstants.PROPERTY_ESP32_BT_ENABLED,
                         settings.getFeatures().getBluetooth().toString());
-                properties.put(WlanThermoBindingConstants.PROPERTY_ESP32_PM_ENABLED, pmEnabled.toString());
+                properties.putIfAbsent(WlanThermoBindingConstants.PROPERTY_ESP32_PM_ENABLED, pmEnabled.toString());
                 properties.put(WlanThermoBindingConstants.PROPERTY_ESP32_TEMP_CHANNELS, String.valueOf(tempChannels));
                 properties.put(WlanThermoBindingConstants.PROPERTY_ESP32_PM_CHANNELS, String.valueOf(pmChannels));
                 updateProperties(properties);
