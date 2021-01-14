@@ -216,10 +216,10 @@ public class WlanThermoNanoV1CommandHandler {
                 Pm pm = data.getPitmaster().getPm().get(0);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PITMASTER_CHANNEL_ID:
-                        pm.setChannel(((QuantityType<?>) command).intValue());
+                        pm.setChannel(((DecimalType) command).intValue());
                         return true;
                     case CHANNEL_PITMASTER_PIDPROFILE:
-                        pm.setPid(((QuantityType<?>) command).intValue());
+                        pm.setPid(((DecimalType) command).intValue());
                         return true;
                     case CHANNEL_PITMASTER_SETPOINT:
                         pm.setSet(((QuantityType<?>) command).toUnit(unit).doubleValue());
