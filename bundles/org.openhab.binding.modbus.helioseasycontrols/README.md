@@ -183,6 +183,7 @@ public void setBypassFrom(int day, int month)
 ```
 
 *Parameters:*
+
 * *day:* The day from when the bypass should be active
 * *month:* The month from when the bypass should be active
 
@@ -192,6 +193,7 @@ public void setBypassTo(int day, int month)
 ```
 
 *Parameters:*
+
 * *day:* The day until when the bypass should be active
 * *month:* The month until when the bypass should be active
 
@@ -201,6 +203,7 @@ public Map<String, Object> getErrorMessages()
 ```
 
 *Return values:*
+
 * *errorMessages:* A `List<String>` object containing all error messages
 
 
@@ -209,6 +212,7 @@ public Map<String, Object> getWarningMessages()
 ```
 
 *Return values:*
+
 * *warningMessages:* A `List<String>` object containing all warning messages
 
 
@@ -217,6 +221,7 @@ public Map<String, Object> getInfoMessages()
 ```
 
 *Return values:*
+
 * *infoMessages:* A `List<String>` object containing all info messages
 
 
@@ -225,6 +230,7 @@ public Map<String, Object> getStatusMessages()
 ```
 
 *Return values:*
+
 * *statusMessages:* A `List<String>` object containing all status messages
 
 
@@ -233,6 +239,7 @@ public Map<String, Object> getMessages()
 ```
 
 *Return values:*
+
 * *errorMessages:* A `List<String>` object containing all error messages
 * *warningMessages:* A `List<String>` object containing all warning messages
 * *infoMessages:* A `List<String>` object containing all info messages
@@ -326,6 +333,7 @@ Errors, warnings and infos of the device are provided in a bit encoded way. I.e.
 Also status flags are provided this way. For details please refer to the manufacturer's [specification](https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te).
 
 Based on that concept, errors, warnings and infos are provided in 3 different ways:
+
 * As an unsigned integer value with the decimal representation of the encoded bits
 * The total number of encoded errors, warning or infos
 * The bit encoded as a string

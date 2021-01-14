@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.modbus.helioseasycontrols.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -137,54 +139,38 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getErrorMessages.label", description = "@text/action.getErrorMessages.description")
-    public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") Map<String, Object> getErrorMessages() {
-        Map<String, Object> messages = new HashMap<>();
-        if (handler != null) {
-            messages.put("errorMessages", handler.getErrorMessages());
-        }
-        return messages;
+    public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") List<String> getErrorMessages() {
+        return (handler != null) ? handler.getErrorMessages() : new ArrayList<String>();
     }
 
-    public static Map<String, Object> getErrorMessages(ThingActions actions) {
+    public static List<String> getErrorMessages(ThingActions actions) {
         return ((HeliosEasyControlsActions) actions).getErrorMessages();
     }
 
     @RuleAction(label = "@text/action.getWarningMessages.label", description = "@text/action.getWarningMessages.description")
-    public @ActionOutput(name = "warningMessages", type = "java.util.List<String>") Map<String, Object> getWarningMessages() {
-        Map<String, Object> messages = new HashMap<>();
-        if (handler != null) {
-            messages.put("warningMessages", handler.getWarningMessages());
-        }
-        return messages;
+    public @ActionOutput(name = "warningMessages", type = "java.util.List<String>") List<String> getWarningMessages() {
+        return (handler != null) ? handler.getWarningMessages() : new ArrayList<String>();
     }
 
-    public static Map<String, Object> getWarningMessages(ThingActions actions) {
+    public static List<String> getWarningMessages(ThingActions actions) {
         return ((HeliosEasyControlsActions) actions).getWarningMessages();
     }
 
     @RuleAction(label = "@text/action.getInfoMessages.label", description = "@text/action.getInfoMessages.description")
-    public @ActionOutput(name = "infoMessages", type = "java.util.List<String>") Map<String, Object> getInfoMessages() {
-        Map<String, Object> messages = new HashMap<>();
-        if (handler != null) {
-            messages.put("infoMessages", handler.getInfoMessages());
-        }
-        return messages;
+    public @ActionOutput(name = "infoMessages", type = "java.util.List<String>") List<String> getInfoMessages() {
+        return (handler != null) ? handler.getInfoMessages() : new ArrayList<String>();
     }
 
-    public static Map<String, Object> getInfoMessages(ThingActions actions) {
+    public static List<String> getInfoMessages(ThingActions actions) {
         return ((HeliosEasyControlsActions) actions).getInfoMessages();
     }
 
     @RuleAction(label = "@text/action.getStatusMessages.label", description = "@text/action.getStatusMessages.description")
-    public @ActionOutput(name = "statusMessages", type = "java.util.List<String>") Map<String, Object> getStatusMessages() {
-        Map<String, Object> messages = new HashMap<>();
-        if (handler != null) {
-            messages.put("statusMessages", handler.getStatusMessages());
-        }
-        return messages;
+    public @ActionOutput(name = "statusMessages", type = "java.util.List<String>") List<String> getStatusMessages() {
+        return (handler != null) ? handler.getStatusMessages() : new ArrayList<String>();
     }
 
-    public static Map<String, Object> getStatusMessages(ThingActions actions) {
+    public static List<String> getStatusMessages(ThingActions actions) {
         return ((HeliosEasyControlsActions) actions).getStatusMessages();
     }
 

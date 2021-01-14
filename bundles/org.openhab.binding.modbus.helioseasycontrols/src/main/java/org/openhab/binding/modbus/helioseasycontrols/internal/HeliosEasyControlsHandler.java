@@ -102,8 +102,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     private int infos = 0;
     private String statusFlags = "";
 
-    private class BypassDate {
-        private final int[] MONTH_MAX_DAYS = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    private static class BypassDate {
+        private static final int[] MONTH_MAX_DAYS = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
         // initialization to avoid issues when updating before all variables were read
         private int month = 1;
