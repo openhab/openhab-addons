@@ -27,7 +27,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -131,31 +130,31 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         setRefreshIntervall(config.refreshInterval);
         setAuthToken(config.authToken);
 
-        @Nullable
-        String property = getThing().getProperties().get(Thing.PROPERTY_MODEL_ID);
-        if (MODEL_ID_CANVAS.equals(property)) {
+        Map<String, String> properties = getThing().getProperties();
+        String propertyModelId = properties.get(Thing.PROPERTY_MODEL_ID);
+        if (MODEL_ID_CANVAS.equals(propertyModelId)) {
             config.deviceType = DEVICE_TYPE_CANVAS;
         } else {
             config.deviceType = DEVICE_TYPE_LIGHTPANELS;
         }
         setDeviceType(config.deviceType);
 
+        String propertyFirmwareVersion = properties.get(Thing.PROPERTY_FIRMWARE_VERSION);
+
         try {
-            Map<String, String> properties = getThing().getProperties();
-            if (StringUtils.isEmpty(getAddress()) || StringUtils.isEmpty(String.valueOf(getPort()))) {
+            if (config.address.isEmpty() || String.valueOf(config.port).isEmpty()) {
                 logger.warn("No IP address and port configured for the Nanoleaf controller");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noIp");
                 stopAllJobs();
-            } else if (!StringUtils.isEmpty(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))
-                    && !OpenAPIUtils.checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID),
-                            properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+            } else if (propertyFirmwareVersion != null && !propertyFirmwareVersion.isEmpty() && !OpenAPIUtils
+                    .checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID), propertyFirmwareVersion)) {
                 logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
-                        properties.get(Thing.PROPERTY_FIRMWARE_VERSION), API_MIN_FW_VER_LIGHTPANELS);
+                        propertyFirmwareVersion, API_MIN_FW_VER_LIGHTPANELS);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.nanoleaf.controller.incompatibleFirmware");
                 stopAllJobs();
-            } else if (StringUtils.isEmpty(getAuthToken())) {
+            } else if (config.authToken == null || config.authToken.isEmpty()) {
                 logger.debug("No token found. Start pairing background job");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noToken");
@@ -270,11 +269,11 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     public NanoleafControllerConfig getControllerConfig() {
         NanoleafControllerConfig config = new NanoleafControllerConfig();
-        config.address = this.getAddress();
-        config.port = this.getPort();
-        config.refreshInterval = this.getRefreshIntervall();
-        config.authToken = this.getAuthToken();
-        config.deviceType = this.getDeviceType();
+        config.address = Objects.requireNonNullElse(getAddress(), "");
+        config.port = getPort();
+        config.refreshInterval = getRefreshIntervall();
+        config.authToken = getAuthToken();
+        config.deviceType = Objects.requireNonNullElse(getDeviceType(), "");
         return config;
     }
 
@@ -294,7 +293,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startUpdateJob() {
-        if (StringUtils.isNotEmpty(getAuthToken())) {
+        String localAuthToken = getAuthToken();
+        if (localAuthToken != null && !localAuthToken.isEmpty()) {
             if (updateJob == null || updateJob.isCancelled()) {
                 logger.debug("Start controller status job, repeat every {} sec", getRefreshIntervall());
                 updateJob = scheduler.scheduleWithFixedDelay(this::runUpdate, 0, getRefreshIntervall(),
@@ -342,7 +342,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             logger.debug("Starting TouchJob for Panel {}", this.getThing().getUID());
         }
 
-        if (StringUtils.isNotEmpty(getAuthToken())) {
+        String localAuthToken = getAuthToken();
+        if (localAuthToken != null && !localAuthToken.isEmpty()) {
             if (touchJob == null || touchJob.isCancelled()) {
                 logger.debug("Starting Touchjob now");
                 touchJob = scheduler.schedule(this::runTouchDetection, 0, TimeUnit.SECONDS);
@@ -374,7 +375,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             logger.warn("Status update unauthorized: {}", nae.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.invalidToken");
-            if (StringUtils.isEmpty(getAuthToken())) {
+            String localAuthToken = getAuthToken();
+            if (localAuthToken == null || localAuthToken.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noToken");
             }
@@ -391,7 +393,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private void runPairing() {
         logger.debug("Run pairing job");
         try {
-            if (StringUtils.isNotEmpty(getAuthToken())) {
+            String localAuthToken = getAuthToken();
+            if (localAuthToken != null && !localAuthToken.isEmpty()) {
                 if (pairingJob != null) {
                     pairingJob.cancel(false);
                 }
@@ -409,20 +412,19 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                         authTokenResponse.getStatus());
             } else {
                 // get auth token from response
-                @Nullable
-                AuthToken authToken = gson.fromJson(authTokenResponse.getContentAsString(), AuthToken.class);
-
-                if (StringUtils.isNotEmpty(authToken.getAuthToken())) {
+                AuthToken authTokenObject = gson.fromJson(authTokenResponse.getContentAsString(), AuthToken.class);
+                localAuthToken = authTokenObject.getAuthToken();
+                if (localAuthToken != null && !localAuthToken.isEmpty()) {
                     logger.debug("Pairing succeeded.");
 
                     // Update and save the auth token in the thing configuration
                     Configuration config = editConfiguration();
-                    config.put(NanoleafControllerConfig.AUTH_TOKEN, authToken.getAuthToken());
+                    config.put(NanoleafControllerConfig.AUTH_TOKEN, localAuthToken);
                     updateConfiguration(config);
 
                     updateStatus(ThingStatus.ONLINE);
                     // Update local field
-                    setAuthToken(authToken.getAuthToken());
+                    setAuthToken(localAuthToken);
 
                     stopPairingJob();
                     startUpdateJob();
@@ -466,7 +468,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 logger.warn("Panel discovery unauthorized: {}", nue.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.nanoleaf.controller.invalidToken");
-                if (StringUtils.isEmpty(getAuthToken())) {
+                String localAuthToken = getAuthToken();
+                if (localAuthToken == null || localAuthToken.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "@text/error.nanoleaf.controller.noToken");
                 }
@@ -824,8 +827,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         OpenAPIUtils.sendOpenAPIRequest(setNewRhythmRequest);
     }
 
-    private String getAddress() {
-        return StringUtils.defaultString(this.address);
+    private @Nullable String getAddress() {
+        return address;
     }
 
     private void setAddress(String address) {
@@ -848,16 +851,16 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         this.refreshIntervall = refreshIntervall;
     }
 
-    private String getAuthToken() {
-        return StringUtils.defaultString(authToken);
+    private @Nullable String getAuthToken() {
+        return authToken;
     }
 
     private void setAuthToken(@Nullable String authToken) {
         this.authToken = authToken;
     }
 
-    private String getDeviceType() {
-        return StringUtils.defaultString(deviceType);
+    private @Nullable String getDeviceType() {
+        return deviceType;
     }
 
     private void setDeviceType(String deviceType) {
