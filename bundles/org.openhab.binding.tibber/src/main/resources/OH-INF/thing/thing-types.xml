@@ -10,6 +10,7 @@
 		<channels>
 			<channel id="current_total" typeId="price"/>
 			<channel id="current_startsAt" typeId="timestamp"/>
+			<channel id="current_level" typeId="level"/>
 			<channel id="daily_from" typeId="timestamp"/>
 			<channel id="daily_to" typeId="timestamp"/>
 			<channel id="daily_cost" typeId="cost"/>
@@ -67,6 +68,11 @@
 		<label>Current Total Price</label>
 		<description>Total Price: Energy + Tax</description>
 		<state pattern="%.3f"></state>
+	</channel-type>
+	<channel-type id="level">
+		<item-type>String</item-type>
+		<label>Price Level</label>
+		<description>Current price level</description>
 	</channel-type>
 	<channel-type id="cost">
 		<item-type>Number:Dimensionless</item-type>
