@@ -37,6 +37,8 @@ This is very easy and you will find good documentation on it on the
 
 ## Configuration
 
+This service can be configured in the file `services/influxdb.cfg`.
+
 | Property                           | Default                 | Required | Description                              |
 |------------------------------------|-------------------------|----------|------------------------------------------|
 | version                            | V1                      | No       | InfluxDB database version V1 for 1.X and V2 for 2.x|
