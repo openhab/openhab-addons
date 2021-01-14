@@ -106,8 +106,14 @@ public class ConsumedThingImpl implements ConsumedThing {
                 Duration.ofSeconds(20));
 
         // opens a websocket downstream to be notified if a property value will be changed
-        this.websocketDownstream = webSocketConnectionFactory.create(this.getEventStreamUri(), executor, this::onError,
-                pingPeriod);
+        var optionalEventStreamUri = this.description.getEventStreamUri();
+        if (optionalEventStreamUri.isPresent()) {
+            this.websocketDownstream = webSocketConnectionFactory.create(optionalEventStreamUri.get(), executor,
+                    this::onError, pingPeriod);
+        } else {
+            throw new IOException("WebThing " + webThingURI + " does not support websocket uri. WebThing description: "
+                    + this.description);
+        }
     }
 
     private Optional<URI> getPropertyUri(String propertyName) {
@@ -121,20 +127,6 @@ public class ConsumedThingImpl implements ConsumedThing {
             }
         }
         return Optional.empty();
-    }
-
-    private URI getEventStreamUri() throws IOException {
-        for (var link : this.description.links) {
-            var href = link.href;
-            if (href != null) {
-                var rel = Optional.ofNullable(link.rel).orElse("<undefined>");
-                if (rel.equals("alternate")) {
-                    return URI.create(href);
-                }
-            }
-        }
-        throw new IOException("WebThing " + webThingURI + " does not support websocket uri. WebThing description: "
-                + this.description);
     }
 
     @Override

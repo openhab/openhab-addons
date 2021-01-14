@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.webthing.internal.client.dto;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,7 +37,31 @@ public class WebThingDescription {
 
     public List<Link> links = List.of();
 
+    /**
+     * convenience method to read properties
+     * 
+     * @param propertyName the property name to read
+     * @return the property value
+     */
     public Optional<Property> getProperty(String propertyName) {
         return Optional.ofNullable(properties.get(propertyName));
+    }
+
+    /**
+     * convenience method to read the event stream uri
+     * 
+     * @return the optional event stream uri
+     */
+    public Optional<URI> getEventStreamUri() {
+        for (var link : this.links) {
+            var href = link.href;
+            if ((href != null) && href.startsWith("ws")) {
+                var rel = Optional.ofNullable(link.rel).orElse("<undefined>");
+                if (rel.equals("alternate")) {
+                    return Optional.of(URI.create(href));
+                }
+            }
+        }
+        return Optional.empty();
     }
 }
