@@ -293,7 +293,7 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="sensorMotionn">
+	<channel-type id="sensorMotion">
 		<item-type>Switch</item-type>
 		<label>Motion</label>
 		<description>ON: Motion detected</description>

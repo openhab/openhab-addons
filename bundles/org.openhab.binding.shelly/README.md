@@ -312,7 +312,7 @@ Depending on the device type and firmware release channels might be not availabl
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see general notes on channels                       |
 |          |button       |Trigger  |yes      |Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                    |
 |          |lastEvent    |String   |yes      |Last event type (S/SS/SSS/L)                                                     |
-|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |eventCount   |String   |yes      |Event counter for                                                                |
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
@@ -330,11 +330,11 @@ Depending on the device type and firmware release channels might be not availabl
 |          |input1       |Switch   |yes      |ON: Input/Button for input 1 is powered, see general notes on channels           |
 |          |button1      |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |          |lastEvent1   |String   |yes      |Last event type (S/SS/SSS/L) for input 1                                         |
-|          |eventCount1  |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |eventCount1  |String   |yes      |Event counter for input 1                                                        |
 |          |input2       |Switch   |yes      |ON: Input/Button for channel 2 is powered, see general notes on channels         |
 |          |button2      |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |          |lastEvent2   |String   |yes      |Last event type (S/SS/SSS/L) for input 2                                         |
-|          |eventCount2  |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |eventCount2  |String   |yes      |Event counter for input 2                                                        |
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
@@ -376,7 +376,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see general notes on channels                       |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |          |lastEvent    |String   |yes      |Last event type (S/SS/SSS/L)                                                     |
-|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |eventCount   |String   |yes      |Event counter for                                                                |
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
@@ -395,7 +395,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 
 ### Shelly 3EM (thing-type: shellyem3)
 
-Please note: The product is called Shelly 3EM whereas the device propagates the service under shellyem3. 
+*Please note*: The product is called Shelly 3EM whereas the device propagates the service under shellyem3. 
 The Thing id is derived from the service name, so that's the reason why the Thing is named shelly**em3** and not shelly3em.
 
 |Group     |Channel      |Type     |read-only|Description                                                                      |
@@ -405,7 +405,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see general notes on channels                       |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |          |lastEvent    |String   |yes      |Last event type (S/SS/SSS/L)                                                     |
-|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |eventCount   |String   |yes      |Event counter for                                                                |
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
@@ -547,11 +547,11 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |input1       |Switch   |yes      |ON: Input/Button for input 1 is powered, see general notes on channels           |
 |          |button1      |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |          |lastEvent1   |String   |yes      |Last event type (S/SS/SSS/L) for input 1                                         |
-|          |eventCount1  |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |eventCount1  |String   |yes      |Event counter for input 1                                                        |
 |          |input2       |Switch   |yes      |ON: Input/Button for channel 2 is powered, see general notes on channels         |
 |          |button2      |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |          |lastEvent2   |String   |yes      |Last event type (S/SS/SSS/L) for input 2                                         |
-|          |eventCount2  |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |eventCount2  |String   |yes      |Event counter for input 2                                                        |
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
@@ -576,7 +576,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |          |input3       |Switch   |yes      |State of Input 3                                                       |
 |          |button       |Trigger  |yes      |Event trigger: Event trigger, see section Button Events                |
 |          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
-|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.  |
+|          |eventCount   |Number   |yes      |Number of button events                                                |
 
 ### Shelly UNI - Low voltage sensor/actor: shellyuni)
 
@@ -593,7 +593,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |          |input2       |Switch   |yes      |State of Input 2                                                            |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                    |
 |          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                             |
-|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.       |
+|          |eventCount   |Number   |yes      |Number of button events                                                     |
 
 ### Shelly Bulb (thing-type: shellybulb)
 
@@ -621,7 +621,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |          |brightness   |Dimmer   |         |Brightness: 0..100% or 0..100                                          |
 
 Note: The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
-Beside channel `hsb` the binding also offers the `white` channel (hsb as only RGB values).
+Therere for the binding offers beside channel `hsb` also the `white` channel.
 Or control each color separately with channels `red`, `blue`, `green` (those are advanced channels).
 
 
@@ -666,7 +666,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
 |color     |             |         |         |Color settings: only valid in COLOR mode                               |
-|          |hsb          |HSB      |r/w      |Represents the color picker (HSBType), control r/g/b, but not white    |
+|          |hsb          |HSB      |r/w      |Represents the color picker (HSBType), control r/g/b, bight not white  |
 |          |full         |String   |r/w      |Set Red / Green / Blue / Yellow / White mode and switch mode           |
 |          |             |         |r/w      |Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w" | 
 |          |red          |Dimmer   |r/w      |Red brightness: 0..100% or 0..255 (control only the red channel)       |
@@ -741,7 +741,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts (all channels)                      |
 
-Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
+*Please note* that the settings of channel group color are only valid in color mode and vice versa for white mode.
 The current firmware doesn't support the timestamp report for the meters. 
 The binding emulates this by using the system time on every update.
 
@@ -765,7 +765,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
 
-`Please Note:` If you have connected an USB cable to the H&T, but channel charger is off make sure that "Use external power supply" settings is activated in the Shelly App's device settings.
+*Please Note:* If you have connected an USB cable to the H&T, but channel charger is off make sure that "Use external power supply" settings is activated in the Shelly App's device settings.
 
 ### Shelly Flood (thing-type: shellyflood)
 
@@ -796,7 +796,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |status    |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
-|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.  |
+|          |eventCount   |Number   |yes      |Number of button events                                                |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels             |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED, DOUBLE_PRESSED...            |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any value changed)                       |
