@@ -47,8 +47,7 @@ import com.google.gson.*;
  */
 @NonNullByDefault
 public class RateLimitedHttpClient {
-    private final Logger logger = LoggerFactory.getLogger(RefreshingUrlCache.class);
-    private final JsonParser jsonParser = new JsonParser();
+    private final Logger logger = LoggerFactory.getLogger(RateLimitedHttpClient.class);
     private static final int MAX_QUEUE_SIZE = 1000; // maximum queue size
     private Thing thing;
     private final ScheduledExecutorService scheduler;
