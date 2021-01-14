@@ -210,7 +210,7 @@ public class WlanThermoNanoV1CommandHandler {
                         }
                 }
             }
-        } else if (channelUID.getId().equals(CHANNEL_PITMASTER_1)) {
+        } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_1)) {
             if (data.getPitmaster() != null && data.getPitmaster().getPm() != null
                     && data.getPitmaster().getPm().size() > 0) {
                 Pm pm = data.getPitmaster().getPm().get(0);
