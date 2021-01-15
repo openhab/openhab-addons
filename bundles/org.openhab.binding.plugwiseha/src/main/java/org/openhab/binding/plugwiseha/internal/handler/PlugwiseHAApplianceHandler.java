@@ -39,7 +39,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -53,6 +52,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tec.uom.se.unit.Units;
 
 /**
  * The {@link PlugwiseHAApplianceHandler} class is responsible for handling
@@ -330,7 +331,8 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_VALVEPOSITION_CHANNEL:
                 if (entity.getValvePosition().isPresent()) {
-                    state = new QuantityType<Dimensionless>(entity.getValvePosition().get(), Units.PERCENT);
+                    state = new QuantityType<Dimensionless>((int) (entity.getValvePosition().get() * 100),
+                            Units.PERCENT);
                 }
                 break;
             case APPLIANCE_WATERPRESSURE_CHANNEL:

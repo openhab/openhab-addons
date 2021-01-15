@@ -45,8 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Leo Siepel - finish initial contribution
  */
 @NonNullByDefault
-public class PlugwiseHADiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService {
+public class PlugwiseHADiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHADiscoveryService.class);
     private static final int TIMEOUT_SECONDS = 5;
