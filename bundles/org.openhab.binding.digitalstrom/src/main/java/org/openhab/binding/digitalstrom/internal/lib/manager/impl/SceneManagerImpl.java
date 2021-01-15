@@ -288,7 +288,9 @@ public class SceneManagerImpl implements SceneManager {
             InternalScene oldScene = this.internalSceneMap.get(intScene.getID());
             String oldSceneName = this.internalSceneMap.get(intScene.getID()).getSceneName();
             String newSceneName = intScene.getSceneName();
-            if ((oldSceneName.contains("Zone:") && oldSceneName.contains("Group:") && oldSceneName.contains("Scene:"))
+            if (oldScene != null
+                    && (oldSceneName.contains("Zone:") && oldSceneName.contains("Group:")
+                            && oldSceneName.contains("Scene:"))
                     && !(newSceneName.contains("Zone:") && newSceneName.contains("Group:")
                             && newSceneName.contains("Scene:"))) {
                 oldScene.setSceneName(newSceneName);

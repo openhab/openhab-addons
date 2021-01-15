@@ -256,8 +256,9 @@ public class DigitalSTROMHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof BridgeHandler) {
             String uid = thingHandler.getThing().getUID().getAsString();
-            if (discoveryServiceManagers.get(uid) != null) {
-                discoveryServiceManagers.get(uid).unregisterDiscoveryServices(bundleContext);
+            DiscoveryServiceManager discoveryServiceManager = discoveryServiceManagers.get(uid);
+            if (discoveryServiceManager != null) {
+                discoveryServiceManager.unregisterDiscoveryServices(bundleContext);
                 discoveryServiceManagers.remove(uid);
             }
         }
