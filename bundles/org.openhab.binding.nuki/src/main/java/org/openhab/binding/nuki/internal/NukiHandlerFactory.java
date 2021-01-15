@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
+import org.openhab.binding.nuki.internal.handler.NukiOpenerHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Markus Katter - Initial contribution
+ * @author Alexander Koch - Add Nuki Opener Support
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nuki")
 @NonNullByDefault
@@ -85,6 +87,8 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             return nukiBridgeHandler;
         } else if (NukiBindingConstants.THING_TYPE_SMARTLOCK_UIDS.contains(thingTypeUID)) {
             return new NukiSmartLockHandler(thing);
+        } else if (NukiBindingConstants.THING_TYPE_OPENER_UIDS.contains(thingTypeUID)) {
+            return new NukiOpenerHandler(thing);
         }
         logger.trace("No valid Handler found for Thing[{}]!", thingTypeUID);
         return null;

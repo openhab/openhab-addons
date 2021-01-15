@@ -35,6 +35,7 @@ import org.openhab.binding.nuki.internal.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.dto.BridgeApiLockStateRequestDto;
 import org.openhab.binding.nuki.internal.dto.NukiHttpServerStatusResponseDto;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
+import org.openhab.binding.nuki.internal.handler.NukiOpenerHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -48,6 +49,7 @@ import com.google.gson.Gson;
  *
  * @author Markus Katter - Initial contribution
  * @contributer Christian Hoefler - Door sensor integration
+ * @author Alexander Koch - Add Nuki Opener Support
  */
 public class NukiApiServlet extends HttpServlet {
 
@@ -138,38 +140,75 @@ public class NukiApiServlet extends HttpServlet {
                         ? (String) thing.getConfiguration().get(NukiBindingConstants.CONFIG_NUKI_ID)
                         : null;
                 if (nukiIdThing != null && nukiIdThing.equals(nukiId)) {
-                    logger.debug("Processing ThingUID[{}] - nukiId[{}]", thing.getUID(), nukiId);
-                    NukiSmartLockHandler nsh = getSmartLockHandler(thing);
-                    if (nsh == null) {
-                        logger.debug("Could not update channels for ThingUID[{}] because Handler is null!",
-                                thing.getUID());
+                    logger.debug("Processing ThingUID[{}] - nukiId[{}] - Thing Type UID[{}]", thing.getUID(), nukiId,
+                            thing.getThingTypeUID());
+                    if (thing.getThingTypeUID().equals(NukiBindingConstants.THING_TYPE_SMARTLOCK)) {
+                        NukiSmartLockHandler nsh = getSmartLockHandler(thing);
+                        if (nsh == null) {
+                            logger.debug("Could not update channels for ThingUID[{}] because Handler is null!",
+                                    thing.getUID());
+                            break;
+                        }
+                        Channel channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK);
+                        if (channel != null) {
+                            State state = bridgeApiLockStateRequestDto
+                                    .getState() == NukiBindingConstants.LOCK_STATES_LOCKED ? OnOffType.ON
+                                            : OnOffType.OFF;
+                            nsh.handleApiServletUpdate(channel.getUID(), state);
+                        }
+                        channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_STATE);
+                        if (channel != null) {
+                            State state = new DecimalType(bridgeApiLockStateRequestDto.getState());
+                            nsh.handleApiServletUpdate(channel.getUID(), state);
+                        }
+                        channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_LOW_BATTERY);
+                        if (channel != null) {
+                            State state = bridgeApiLockStateRequestDto.isBatteryCritical() ? OnOffType.ON
+                                    : OnOffType.OFF;
+                            nsh.handleApiServletUpdate(channel.getUID(), state);
+                        }
+                        channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_DOOR_STATE);
+                        if (channel != null) {
+                            State state = new DecimalType(bridgeApiLockStateRequestDto.getDoorsensorState());
+                            nsh.handleApiServletUpdate(channel.getUID(), state);
+                        }
+                        setHeaders(response);
+                        response.getWriter().println(gson.toJson(new NukiHttpServerStatusResponseDto("OK")));
+                        return;
+                    } else if (thing.getThingTypeUID().equals(NukiBindingConstants.THING_TYPE_OPENER)) {
+                        NukiOpenerHandler nsh = getOpenerHandler(thing);
+                        if (nsh == null) {
+                            logger.debug("Could not update channels for ThingUID[{}] because Handler is null!",
+                                    thing.getUID());
+                            break;
+                        }
+                        Channel channel = thing.getChannel(NukiBindingConstants.CHANNEL_OPENER_LOCK);
+                        if (channel != null) {
+                            State state = bridgeApiLockStateRequestDto
+                                    .getState() == NukiBindingConstants.OPENER_STATES_ONLINE ? OnOffType.ON
+                                            : OnOffType.OFF;
+                            nsh.handleApiServletUpdate(channel.getUID(), state);
+                        }
+                        channel = thing.getChannel(NukiBindingConstants.CHANNEL_OPENER_STATE);
+                        if (channel != null) {
+                            State state = new DecimalType(bridgeApiLockStateRequestDto.getState());
+                            nsh.handleApiServletUpdate(channel.getUID(), state);
+                        }
+                        channel = thing.getChannel(NukiBindingConstants.CHANNEL_OPENER_LOW_BATTERY);
+                        if (channel != null) {
+                            State state = bridgeApiLockStateRequestDto.isBatteryCritical() ? OnOffType.ON
+                                    : OnOffType.OFF;
+                            nsh.handleApiServletUpdate(channel.getUID(), state);
+                        }
+                        setHeaders(response);
+                        response.getWriter().println(gson.toJson(new NukiHttpServerStatusResponseDto("OK")));
+                        return;
+                    } else {
+                        logger.debug(
+                                "Could not update channels for ThingUID[{}] because of unexpected ThingTypeUID[{}]!",
+                                thing.getUID(), thing.getThingTypeUID());
                         break;
                     }
-                    Channel channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK);
-                    if (channel != null) {
-                        State state = bridgeApiLockStateRequestDto.getState() == NukiBindingConstants.LOCK_STATES_LOCKED
-                                ? OnOffType.ON
-                                : OnOffType.OFF;
-                        nsh.handleApiServletUpdate(channel.getUID(), state);
-                    }
-                    channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_STATE);
-                    if (channel != null) {
-                        State state = new DecimalType(bridgeApiLockStateRequestDto.getState());
-                        nsh.handleApiServletUpdate(channel.getUID(), state);
-                    }
-                    channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_LOW_BATTERY);
-                    if (channel != null) {
-                        State state = bridgeApiLockStateRequestDto.isBatteryCritical() ? OnOffType.ON : OnOffType.OFF;
-                        nsh.handleApiServletUpdate(channel.getUID(), state);
-                    }
-                    channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_DOOR_STATE);
-                    if (channel != null) {
-                        State state = new DecimalType(bridgeApiLockStateRequestDto.getDoorsensorState());
-                        nsh.handleApiServletUpdate(channel.getUID(), state);
-                    }
-                    setHeaders(response);
-                    response.getWriter().println(gson.toJson(new NukiHttpServerStatusResponseDto("OK")));
-                    return;
                 }
             }
         }
@@ -207,6 +246,16 @@ public class NukiApiServlet extends HttpServlet {
         NukiSmartLockHandler nsh = (NukiSmartLockHandler) thing.getHandler();
         if (nsh == null) {
             logger.debug("Could not get NukiSmartLockHandler for ThingUID[{}]!", thing.getUID());
+            return null;
+        }
+        return nsh;
+    }
+
+    private NukiOpenerHandler getOpenerHandler(Thing thing) {
+        logger.trace("getOpenerHandler(...) from thing[{}]", thing.getUID());
+        NukiOpenerHandler nsh = (NukiOpenerHandler) thing.getHandler();
+        if (nsh == null) {
+            logger.debug("Could not get NukiOpenerHandler for ThingUID[{}]!", thing.getUID());
             return null;
         }
         return nsh;

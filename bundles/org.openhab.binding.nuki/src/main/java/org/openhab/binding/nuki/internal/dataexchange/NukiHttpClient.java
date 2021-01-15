@@ -42,6 +42,7 @@ import com.google.gson.Gson;
  * The {@link NukiHttpClient} class is responsible for getting data from the Nuki Bridge.
  *
  * @author Markus Katter - Initial contribution
+ * @author Alexander Koch - Add Nuki Opener Support
  */
 public class NukiHttpClient {
 
@@ -170,9 +171,63 @@ public class NukiHttpClient {
         }
     }
 
+    public BridgeLockStateResponse getBridgeOpenerState(String nukiId) {
+        logger.debug("getBridgeOpenerState({}) in thread {}", nukiId, Thread.currentThread().getId());
+        long timestampSecs = Instant.now().getEpochSecond();
+        if (this.bridgeLockStateResponseCache != null
+                && timestampSecs < this.bridgeLockStateResponseCache.getCreated().getEpochSecond() + CACHE_PERIOD) {
+            logger.debug("Returning LockState from cache - now[{}]<created[{}]+cachePeriod[{}]", timestampSecs,
+                    this.bridgeLockStateResponseCache.getCreated().getEpochSecond(), CACHE_PERIOD);
+            return bridgeLockStateResponseCache;
+        } else {
+            logger.debug("Requesting LockState from Bridge.");
+        }
+        String uri = prepareUri(NukiBindingConstants.URI_LOCKSTATE_OPENER, nukiId);
+        try {
+            ContentResponse contentResponse = executeRequest(uri);
+            int status = contentResponse.getStatus();
+            String response = contentResponse.getContentAsString();
+            logger.debug("getBridgeLockState status[{}] response[{}]", status, response);
+            if (status == HttpStatus.OK_200) {
+                BridgeApiLockStateDto bridgeApiLockStateDto = gson.fromJson(response, BridgeApiLockStateDto.class);
+                logger.debug("getBridgeLockState OK");
+                return bridgeLockStateResponseCache = new BridgeLockStateResponse(status, contentResponse.getReason(),
+                        bridgeApiLockStateDto);
+            } else {
+                logger.debug("Could not get Lock State! Status[{}] - Response[{}]", status, response);
+                return new BridgeLockStateResponse(status, contentResponse.getReason(), null);
+            }
+        } catch (Exception e) {
+            logger.debug("Could not get Bridge Lock State! Exception[{}]", e.getMessage());
+            return new BridgeLockStateResponse(handleException(e));
+        }
+    }
+
     public BridgeLockActionResponse getBridgeLockAction(String nukiId, int lockAction) {
         logger.debug("getBridgeLockAction({}, {}) in thread {}", nukiId, lockAction, Thread.currentThread().getId());
         String uri = prepareUri(NukiBindingConstants.URI_LOCKACTION, nukiId, Integer.toString(lockAction));
+        try {
+            ContentResponse contentResponse = executeRequest(uri);
+            int status = contentResponse.getStatus();
+            String response = contentResponse.getContentAsString();
+            logger.debug("getBridgeLockAction status[{}] response[{}]", status, response);
+            if (status == HttpStatus.OK_200) {
+                BridgeApiLockActionDto bridgeApiLockActionDto = gson.fromJson(response, BridgeApiLockActionDto.class);
+                logger.debug("getBridgeLockAction OK");
+                return new BridgeLockActionResponse(status, contentResponse.getReason(), bridgeApiLockActionDto);
+            } else {
+                logger.debug("Could not execute Lock Action! Status[{}] - Response[{}]", status, response);
+                return new BridgeLockActionResponse(status, contentResponse.getReason(), null);
+            }
+        } catch (Exception e) {
+            logger.debug("Could not execute Lock Action! Exception[{}]", e.getMessage());
+            return new BridgeLockActionResponse(handleException(e));
+        }
+    }
+
+    public BridgeLockActionResponse getBridgeOpenerAction(String nukiId, int lockAction) {
+        logger.debug("getBridgeLockAction({}, {}) in thread {}", nukiId, lockAction, Thread.currentThread().getId());
+        String uri = prepareUri(NukiBindingConstants.URI_LOCKACTION_OPENER, nukiId, Integer.toString(lockAction));
         try {
             ContentResponse contentResponse = executeRequest(uri);
             int status = contentResponse.getStatus();
