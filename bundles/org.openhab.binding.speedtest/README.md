@@ -1,56 +1,47 @@
 # speedtest Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding simplifies the addition of network speed tests from your openHAB instance.   Simply put, it's a wrapper around Ookla's SpeedTest ( https://www.speedtest.net/apps/cli ).  
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+You MUST have the Ookla cli application installed on your machine prior to using this.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Single thing, the Speedtest Thing.   
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+For this binding to work, you MUST install Ookla's speedtest, this will not work with other versions of "speedtest-cli" or packaged speedtest varieties.   
 
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+To install Ookla's version of speedtest, head to https://www.speedtest.net/apps/cli and follow the instructions for your Operating System.   
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Linux based systems will assume a default install location of /usr/bin/speedtest .  If your environment is different, just enter the path in the Thing config.  
 
 ## Thing Configuration
+| config option  |  description                  |
+|----------|------------------------------|
+| Refresh Rate  | This will change the refresh rate(or how often) the binding checks the speed  |
+| Speedtest Path  | This is the full URL to the speedtest executable ** |
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+** You must also check that you have permission as the user that openhab is running under to access and run this.   
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| server  | String | The remote server that the check was run against  |
+| ping_jitter  | Number | Ping jitter when the test was run  |
+| ping_latency  | Number | Ping latency when the test was run |
+| download_bandwidth  | Number | Download bandwidth in MB/s  |
+| download_bytes  | Number | The remote server that the check was run against  |
+| download_elapsed  | Number | The remote server that the check was run against  |
+| upload_bandwidth  | Number | Upload bandwidth in MB/s |
+| upload_bytes  | Number | How many bytes were used during the test  |
+| upload_elapsed  | Number | The elapsed time the upload portion took  |
+| isp  | String | Your ISP as calculated by Ookla  |
+| interface_internalIp  | String | The IP of the internal interface that was used for the test  |
+| interface_externalIp  | String | The IP of the external interface that was used for the test |
+| result_url  | String | The URL of your results of the test on Ookla |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Setup intended to be done through the Main UI.   
