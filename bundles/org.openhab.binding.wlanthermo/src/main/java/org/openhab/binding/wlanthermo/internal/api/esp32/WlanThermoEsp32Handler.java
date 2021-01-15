@@ -197,7 +197,7 @@ public class WlanThermoEsp32Handler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to update channel on device, Statuscode " + status + " on URI " + uri.toString());
                 logger.debug("Payload sent: {}", json);
-                //Still continue to try next channel
+                // Still continue to try next channel
                 return true;
             } else {
                 updateStatus(ThingStatus.ONLINE);
