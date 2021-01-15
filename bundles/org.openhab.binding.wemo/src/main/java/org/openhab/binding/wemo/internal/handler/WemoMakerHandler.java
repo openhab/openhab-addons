@@ -13,6 +13,7 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -25,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
@@ -55,7 +56,7 @@ import org.xml.sax.InputSource;
  *
  * @author Hans-Jörg Merk - Initial contribution
  */
-
+@NonNullByDefault
 public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(WemoMakerHandler.class);
@@ -64,12 +65,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private UpnpIOService service;
 
-    /**
-     * The default refresh interval in Seconds.
-     */
-    private final int DEFAULT_REFRESH_INTERVAL = 15;
-
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     private final Runnable refreshRunnable = new Runnable() {
 
@@ -87,15 +83,10 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
         super(thing);
 
+        this.service = upnpIOService;
         this.wemoHttpCaller = wemoHttpcaller;
 
         logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
-
-        if (upnpIOService != null) {
-            this.service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
     }
 
     @Override
@@ -115,10 +106,11 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     public void dispose() {
         logger.debug("WeMoMakerHandler disposed.");
 
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
         }
+        refreshJob = null;
     }
 
     @Override
@@ -150,11 +142,15 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                             + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
                             + "</s:Envelope>";
 
-                    String wemoURL = getWemoURL("basicevent");
+                    URL descriptorURL = service.getDescriptorURL(this);
+                    String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
                     if (wemoURL != null) {
-                        @SuppressWarnings("unused")
-                        String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                        if (wemoHttpCaller != null) {
+                            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
                     }
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}' ", command, getThing().getUID(), e);
@@ -172,16 +168,15 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     }
 
     private synchronized void onUpdate() {
-        if (service.isRegistered(this)) {
-            if (refreshJob == null || refreshJob.isCancelled()) {
-                Configuration config = getThing().getConfiguration();
-                int refreshInterval = DEFAULT_REFRESH_INTERVAL;
-                Object refreshConfig = config.get("refresh");
-                if (refreshConfig != null) {
-                    refreshInterval = ((BigDecimal) refreshConfig).intValue();
-                }
-                refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+        ScheduledFuture<?> job = refreshJob;
+        if (job == null || job.isCancelled()) {
+            Configuration config = getThing().getConfiguration();
+            int refreshInterval = DEFAULT_REFRESH_INTERVALL_SECONDS;
+            Object refreshConfig = config.get("refresh");
+            if (refreshConfig != null) {
+                refreshInterval = ((BigDecimal) refreshConfig).intValue();
             }
+            refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -193,7 +188,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo Maker.
      */
-    @SuppressWarnings("null")
     protected void updateWemoState() {
         String action = "GetAttributes";
         String actionService = "deviceevent";
@@ -205,8 +199,11 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            String wemoURL = getWemoURL(actionService);
+            URL descriptorURL = service.getDescriptorURL(this);
+            String wemoURL = getWemoURL(descriptorURL, actionService);
+
             if (wemoURL != null) {
+<<<<<<< HEAD
                 String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                 if (wemoCallResponse != null) {
                     try {
@@ -254,40 +251,74 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                                 case "Switch":
                                     State relayState = attributeValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
                                     if (relayState != null) {
+=======
+                if (wemoHttpCaller != null) {
+                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    if (wemoCallResponse != null) {
+                        try {
+                            String stringParser = substringBetween(wemoCallResponse, "<attributeList>",
+                                    "</attributeList>");
+                            logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());
+                            logger.trace("'{}'", stringParser);
+
+                            // Due to Belkins bad response formatting, we need to run this twice.
+                            stringParser = unescapeXml(stringParser);
+                            stringParser = unescapeXml(stringParser);
+                            logger.trace("Maker response '{}' for device '{}' received", stringParser,
+                                    getThing().getUID());
+
+                            stringParser = "<data>" + stringParser + "</data>";
+
+                            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                            DocumentBuilder db = dbf.newDocumentBuilder();
+                            InputSource is = new InputSource();
+                            is.setCharacterStream(new StringReader(stringParser));
+
+                            Document doc = db.parse(is);
+                            NodeList nodes = doc.getElementsByTagName("attribute");
+
+                            // iterate the attributes
+                            for (int i = 0; i < nodes.getLength(); i++) {
+                                Element element = (Element) nodes.item(i);
+
+                                NodeList deviceIndex = element.getElementsByTagName("name");
+                                Element line = (Element) deviceIndex.item(0);
+                                String attributeName = getCharacterDataFromElement(line);
+                                logger.trace("attributeName: {}", attributeName);
+
+                                NodeList deviceID = element.getElementsByTagName("value");
+                                line = (Element) deviceID.item(0);
+                                String attributeValue = getCharacterDataFromElement(line);
+                                logger.trace("attributeValue: {}", attributeValue);
+
+                                switch (attributeName) {
+                                    case "Switch":
+                                        State relayState = attributeValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
+>>>>>>> f07dd8582... [wemo] add annotations and remove usage of apache.commons.*
                                         logger.debug("New relayState '{}' for device '{}' received", relayState,
                                                 getThing().getUID());
                                         updateState(CHANNEL_RELAY, relayState);
-                                    }
-                                    break;
-                                case "Sensor":
-                                    State sensorState = attributeValue.equals("1") ? OnOffType.OFF : OnOffType.ON;
-                                    if (sensorState != null) {
+                                        break;
+                                    case "Sensor":
+                                        State sensorState = attributeValue.equals("1") ? OnOffType.OFF : OnOffType.ON;
                                         logger.debug("New sensorState '{}' for device '{}' received", sensorState,
                                                 getThing().getUID());
                                         updateState(CHANNEL_SENSOR, sensorState);
-                                    }
-                                    break;
+                                        break;
+                                }
                             }
+                        } catch (Exception e) {
+                            logger.error("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(),
+                                    e);
                         }
-                    } catch (Exception e) {
-                        logger.error("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(), e);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
         } catch (Exception e) {
             logger.error("Failed to get attributes for device '{}'", getThing().getUID(), e);
         }
-    }
-
-    public String getWemoURL(String actionService) {
-        URL descriptorURL = service.getDescriptorURL(this);
-        String wemoURL = null;
-        if (descriptorURL != null) {
-            String deviceURL = StringUtils.substringBefore(descriptorURL.toString(), "/setup.xml");
-            wemoURL = deviceURL + "/upnp/control/" + actionService + "1";
-            return wemoURL;
-        }
-        return null;
     }
 
     public static String getCharacterDataFromElement(Element e) {
@@ -304,10 +335,10 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
+    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
     }
 }
