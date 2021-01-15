@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="speedtest"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	
+	<thing-type id="speedtest">
+		<label>Speedtest Binding</label>
+		<description>Speedtest Binding</description>
+        
+        <channels>
+            <channel id="server" typeId="server"/>
+            
+            <channel id="ping_jitter" typeId="ping_jitter"/>
+            <channel id="ping_latency" typeId="ping_latency"/>
+            
+            <channel id="download_bandwidth" typeId="download_bandwidth"/>
+            <channel id="download_bytes" typeId="download_bytes"/>
+            <channel id="download_elapsed" typeId="download_elapsed"/>
+            
+            <channel id="upload_bandwidth" typeId="upload_bandwidth"/>
+            <channel id="upload_bytes" typeId="upload_bytes"/>
+            <channel id="upload_elapsed" typeId="upload_elapsed"/>
+            
+            <channel id="isp" typeId="isp"/>
+            
+            <channel id="interface_internalIp" typeId="interface_internalIp"/>
+            <channel id="interface_externalIp" typeId="interface_externalIp"/>
+            
+            <channel id="result_url" typeId="result_url"/>
+        </channels>
+		<config-description>
+            <parameter-group name="config-info">
+                <label>Speedtest Configuration</label>
+            </parameter-group>
+            <parameter name="refreshInterval" type="integer" required="true" groupName="config-info">
+                <label>Refresh Rate</label>
+                <description>How often to test network speed</description>
+                <options>
+                    <option value="15">15 minutes</option>
+                    <option value="30">30 minutes</option>
+                    <option value="60">Every Hour</option>
+                    <option value="360">Every 6 Hours</option>
+                    <option value="720">Every 12 Hours</option>
+                    <option value="1440">Once a Day</option>
+                </options>
+                <default>60</default>
+            </parameter>
+            <parameter name="execPath" type="text" required="false" groupName="config-info">
+                <label>Speedtest Path</label>
+                <description>The path of the Ookla Speedtest executable, Linux machines may leave this blank and it defaults to /usr/bin/speedtest</description>
+            </parameter>
+		</config-description>
+	</thing-type>
+    <channel-type id="server">
+        <item-type>String</item-type>
+        <label>Server</label>
+        <description>Server Used</description>
+        <state readOnly="true"></state>
+    </channel-type>	
+    <channel-type id="ping_jitter">
+        <item-type>Number</item-type>
+        <label>Jitter</label>
+        <description>Ping Jitter</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="ping_latency">
+        <item-type>Number</item-type>
+        <label>Latency</label>
+        <description>Ping latency</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="download_bandwidth">
+        <item-type>Number</item-type>
+        <label>Download Bandwidth</label>
+        <description>Download bandwidth</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="download_bytes">
+        <item-type>Number</item-type>
+        <label>Download Bytes</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="download_elapsed">
+        <item-type>Number</item-type>
+        <label>Download Elapsed Time</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="upload_bandwidth">
+        <item-type>Number</item-type>
+        <label>Upload Bandwidth</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="upload_bytes">
+        <item-type>Number</item-type>
+        <label>Upload Bytes</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="upload_elapsed">
+        <item-type>Number</item-type>
+        <label>Upload Elapsed Time</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>    
+    <channel-type id="isp">
+        <item-type>String</item-type>
+        <label>ISP</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>    
+    <channel-type id="interface_internalIp">
+        <item-type>String</item-type>
+        <label>Interface Internal</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>  
+    <channel-type id="interface_externalIp">
+        <item-type>String</item-type>
+        <label>Interface External</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="result_url">
+        <item-type>String</item-type>
+        <label>Result URL</label>
+        <description></description>
+        <state readOnly="true"></state>
+    </channel-type>          
+
+</thing:thing-descriptions>
