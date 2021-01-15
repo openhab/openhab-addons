@@ -344,9 +344,16 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
             URL descriptorURL = service.getDescriptorURL(this);
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
+            if (wemoURL != null) {
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoCallResponse != null) {
+                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
+
+                    String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
+
                     // Due to Belkins bad response formatting, we need to run this twice.
-                    stringParser = StringEscapeUtils.unescapeXml(stringParser);
-                    stringParser = StringEscapeUtils.unescapeXml(stringParser);
+                    stringParser = unescapeXml(stringParser);
+                    stringParser = unescapeXml(stringParser);
 
                     logger.trace("AirPurifier response '{}' for device '{}' received", stringParser,
                             getThing().getUID());

@@ -200,16 +200,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
             if (wemoURL != null) {
-                String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    try {
-                        String stringParser = StringUtils.substringBetween(wemoCallResponse, "<attributeList>",
-                                "</attributeList>");
-
-                        // Due to Belkins bad response formatting, we need to run this twice.
-                        stringParser = StringEscapeUtils.unescapeXml(stringParser);
-                        stringParser = StringEscapeUtils.unescapeXml(stringParser);
-
                 String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                 if (wemoCallResponse != null) {
                     try {

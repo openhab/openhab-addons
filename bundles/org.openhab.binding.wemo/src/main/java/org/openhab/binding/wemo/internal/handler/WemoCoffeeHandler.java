@@ -271,6 +271,19 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
             URL descriptorURL = service.getDescriptorURL(this);
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
+            if (wemoURL != null) {
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoCallResponse != null) {
+                    try {
+                        String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
+
+                        // Due to Belkins bad response formatting, we need to run this twice.
+                        stringParser = unescapeXml(stringParser);
+                        stringParser = unescapeXml(stringParser);
+
+                        logger.trace("CoffeeMaker response '{}' for device '{}' received", stringParser,
+                                getThing().getUID());
+
                         stringParser = "<data>" + stringParser + "</data>";
 
                         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -305,6 +318,8 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                             switch (attributeName) {
                                 case "Mode":
                                     State newMode = new StringType("Brewing");
+                                    State newAttributeValue;
+
                                     switch (attributeValue) {
                                         case "0":
                                             updateState(CHANNEL_STATE, OnOffType.ON);
@@ -354,6 +369,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                                     }
                                     break;
                                 case "ModeTime":
+<<<<<<< HEAD
                                     if (attributeValue != null) {
                                         State newAttributeValue = new DecimalType(attributeValue);
             if (wemoURL != null) {
@@ -569,6 +585,10 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                                             updateState(CHANNEL_COFFEEMODE, newMode);
                                             break;
                                     }
+=======
+                                    newAttributeValue = new DecimalType(attributeValue);
+                                    updateState(CHANNEL_MODETIME, newAttributeValue);
+>>>>>>> 119aa67e1... [wemo] add annotations and remove usage of apache.commons.*
                                     break;
                                 case "ModeTime":
                                     newAttributeValue = new DecimalType(attributeValue);
