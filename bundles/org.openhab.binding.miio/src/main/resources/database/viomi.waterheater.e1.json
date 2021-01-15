@@ -1,0 +1,144 @@
+{
+	"deviceMapping": {
+		"id": [
+			"viomi.waterheater.e1"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "washStatus",
+				"friendlyName": "Wash Status",
+				"channel": "washStatus",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_washStatus",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "velocity",
+				"friendlyName": "Velocity",
+				"channel": "velocity",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_velocity",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "waterTemp",
+				"friendlyName": "Water Temperature",
+				"channel": "waterTemp",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_temp",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "targetTemp",
+				"friendlyName": "Target Temperature",
+				"channel": "targetTemp",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_temp",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "errStatus",
+				"friendlyName": "Error Status",
+				"channel": "errStatus",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "hotWater",
+				"friendlyName": "Hot Water",
+				"channel": "hotWater",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_hotWater",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "needClean",
+				"friendlyName": "Need Clean",
+				"channel": "needClean",
+				"type": "Switch",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "modeType",
+				"friendlyName": "Mode",
+				"channel": "modeType",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_mode",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "appointStart",
+				"friendlyName": "Appoint Start",
+				"channel": "appointStart",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_appointStart",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "appointEnd",
+				"friendlyName": "Appoint End",
+				"channel": "appointEnd",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_appointEnd",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
+		],
+		"experimental": true
+	}
+}
