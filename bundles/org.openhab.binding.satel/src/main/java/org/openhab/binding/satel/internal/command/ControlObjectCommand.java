@@ -16,7 +16,6 @@ import java.util.BitSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
@@ -47,7 +46,7 @@ public class ControlObjectCommand extends ControlCommand {
      */
     public ControlObjectCommand(ControlType controlType, byte[] objects, String userCode,
             ScheduledExecutorService scheduler) {
-        super(controlType.getControlCommand(), ArrayUtils.addAll(userCodeToBytes(userCode), objects));
+        super(controlType.getControlCommand(), objects, userCode);
         this.controlType = controlType;
         this.scheduler = scheduler;
     }

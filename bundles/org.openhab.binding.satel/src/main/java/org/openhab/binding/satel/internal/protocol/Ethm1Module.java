@@ -22,8 +22,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.satel.internal.util.StringUtils;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
