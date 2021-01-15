@@ -13,13 +13,13 @@
 package org.openhab.binding.opensprinkler.internal.discovery;
 
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DISCOVERY_DEFAULT_IP_TIMEOUT_RATE;
-import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.slf4j.Logger;
@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class OpenSprinklerDiscoveryJob implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryJob.class);
 
@@ -60,14 +61,10 @@ public class OpenSprinklerDiscoveryJob implements Runnable {
     private boolean hasOpenSprinklerDevice(String ip) {
         try {
             InetAddress address = InetAddress.getByName(ip);
-
-            if (canEstablishConnection(address, DEFAULT_API_PORT)) {
-                OpenSprinklerHttpInterfaceConfig config = new OpenSprinklerHttpInterfaceConfig();
+            OpenSprinklerHttpInterfaceConfig config = new OpenSprinklerHttpInterfaceConfig();
+            if (canEstablishConnection(address, config.port)) {
                 config.hostname = ip;
-                config.port = DEFAULT_API_PORT;
-                config.password = DEFAULT_ADMIN_PASSWORD;
                 OpenSprinklerApi openSprinkler = discoveryClass.getApiFactory().getHttpApi(config);
-
                 return (openSprinkler != null);
             } else {
                 logger.trace("No OpenSprinkler device found at IP address ({})", ip);

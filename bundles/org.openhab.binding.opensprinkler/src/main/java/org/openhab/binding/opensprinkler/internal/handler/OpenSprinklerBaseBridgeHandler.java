@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * @author Chris Graham - Initial contribution
  * @author Florian Schmidt - Refactoring
  */
 @NonNullByDefault
@@ -65,8 +66,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
     private void refreshStations() {
         if (openSprinklerDevice != null) {
             if (openSprinklerDevice.isManualModeEnabled()) {
-                updateStatus(ThingStatus.ONLINE);
-
+                // updateStatus(ThingStatus.ONLINE);
                 this.getThing().getThings().forEach(thing -> {
                     OpenSprinklerBaseHandler handler = (OpenSprinklerBaseHandler) thing.getHandler();
                     if (handler != null) {
@@ -87,7 +87,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
             try {
                 openSprinklerDevice.leaveManualMode();
             } catch (CommunicationApiException e) {
-                logger.error("Could not close connection on teardown.", e);
+                logger.warn("Could not close connection on teardown. {}", e.getMessage());
             }
             openSprinklerDevice = null;
         }

@@ -14,6 +14,7 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
@@ -24,7 +25,9 @@ import org.openhab.binding.opensprinkler.internal.model.StationProgram;
  * controllable on the OpenSprinkler API interface.
  *
  * @author Chris Graham - Initial contribution
+ * @author Florian Schmidt - Refactoring
  */
+@NonNullByDefault
 public interface OpenSprinklerApi {
     /**
      * Whether the device entered manual mode and accepts API requests to control the stations.

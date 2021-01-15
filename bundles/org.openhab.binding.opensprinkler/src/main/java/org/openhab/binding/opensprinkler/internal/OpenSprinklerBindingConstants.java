@@ -25,6 +25,31 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class OpenSprinklerBindingConstants {
     public static final String BINDING_ID = "opensprinkler";
+    public static final String DEFAULT_ADMIN_PASSWORD = "opendoor";
+    public static final int DEFAULT_STATION_COUNT = 8;
+    public static final String HTTP_REQUEST_URL_PREFIX = "http://";
+    public static final String HTTPS_REQUEST_URL_PREFIX = "https://";
+    public static final String CMD_ENABLE_MANUAL_MODE = "mm=1";
+    public static final String CMD_DISABLE_MANUAL_MODE = "mm=0";
+    public static final String CMD_PASSWORD = "pw=";
+    public static final String CMD_STATION = "sid=";
+    public static final String CMD_STATION_ENABLE = "en=1";
+    public static final String CMD_STATION_DISABLE = "en=0";
+    public static final String CMD_STATUS_INFO = "jc";
+    public static final String CMD_OPTIONS_INFO = "jo";
+    public static final String CMD_STATION_INFO = "js";
+    public static final String CMD_STATION_CONTROL = "cm";
+    public static final String JSON_OPTION_FIRMWARE_VERSION = "fwv";
+    public static final String JSON_OPTION_RAINSENSOR = "rs";
+    public static final String JSON_OPTION_STATION = "sn";
+    public static final String JSON_OPTION_STATION_COUNT = "nstations";
+    public static final String JSON_OPTION_RESULT = "result";
+    public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 10;
+    public static final int DEFAULT_REFRESH_RATE = 60;
+    public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
+    public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
+    public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
+    public static final int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE = 750;
 
     // List of all Thing ids
     public static final String HTTP_BRIDGE = "http";
@@ -36,13 +61,6 @@ public class OpenSprinklerBindingConstants {
     public static final ThingTypeUID OPENSPRINKLER_HTTP_BRIDGE = new ThingTypeUID(BINDING_ID, HTTP_BRIDGE);
     public static final ThingTypeUID OPENSPRINKLER_STATION = new ThingTypeUID(BINDING_ID, STATION_THING);
     public static final ThingTypeUID OPENSPRINKLER_DEVICE = new ThingTypeUID(BINDING_ID, DEVICE_THING);
-
-    public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 30;
-    public static final int DEFAULT_REFRESH_RATE = 60;
-    public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
-    public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
-    public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
-    public static final int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE = 750;
 
     // List of all Channel ids
     public static final String SENSOR_RAIN = "rainsensor";

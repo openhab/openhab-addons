@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * @author Chris Graham - Initial contribution
  * @author Florian Schmidt - Refactoring
  */
 @NonNullByDefault
@@ -58,7 +59,6 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create API connection to the OpenSprinkler device. Error received: " + exp);
-
             return;
         }
 
@@ -72,14 +72,12 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
         }
 
         if (openSprinklerDevice.isManualModeEnabled()) {
-            updateStatus(ThingStatus.ONLINE);
+            // updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not initialize the connection to the OpenSprinkler.");
-
             return;
         }
-
         super.initialize();
     }
 

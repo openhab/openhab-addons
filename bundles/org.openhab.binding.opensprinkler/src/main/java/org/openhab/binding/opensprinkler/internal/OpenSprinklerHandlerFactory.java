@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
 import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerDeviceHandler;
 import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerHttpBridgeHandler;
@@ -40,6 +42,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Florian Schmidt - Split channels to their own things
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.opensprinkler")
+@NonNullByDefault
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_HTTP_BRIDGE, OPENSPRINKLER_STATION, OPENSPRINKLER_DEVICE));
@@ -56,7 +59,7 @@ public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(OPENSPRINKLER_HTTP_BRIDGE)) {

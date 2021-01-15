@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Indicates, that a device is missing a sensor to measure the current draw of itself.
  *
- * @author Florian Schmidt - Initial contribution
+ * @author Chris Graham - Initial contribution
+ * @author Florian Schmidt - Refactoring
  */
+@NonNullByDefault
 public class NoCurrentDrawSensorException extends Exception {
     private static final long serialVersionUID = 2251925316743442346L;
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
@@ -23,6 +24,7 @@ import org.openhab.binding.opensprinkler.internal.util.Hash;
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 class OpenSprinklerHttpApiV213 extends OpenSprinklerHttpApiV210 {
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the OpenSprinkler

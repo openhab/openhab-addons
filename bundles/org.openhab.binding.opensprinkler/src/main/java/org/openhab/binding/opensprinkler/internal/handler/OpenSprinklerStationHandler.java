@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 
 import javax.measure.quantity.Time;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
@@ -39,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * @author Chris Graham - Initial contribution
  * @author Florian Schmidt - Refactoring
  */
 @NonNullByDefault
@@ -186,7 +186,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     }
 
     @Override
-    protected void updateChannel(@NonNull ChannelUID channel) {
+    protected void updateChannel(ChannelUID channel) {
         OnOffType currentDeviceState = getStationState(this.getStationIndex());
         QuantityType<Time> remainingWaterTime = getRemainingWaterTime(config.stationIndex);
         switch (channel.getIdWithoutGroup()) {

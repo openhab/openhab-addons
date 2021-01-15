@@ -13,7 +13,6 @@
 package org.openhab.binding.opensprinkler.internal.discovery;
 
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
-import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -32,6 +31,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.net.util.SubnetUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -51,11 +52,13 @@ import org.slf4j.LoggerFactory;
  * @author Chris Graham - Initial contribution
  */
 @Component(service = DiscoveryService.class, configurationPid = "discovery.opensprinkler")
+@NonNullByDefault
 public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_HTTP_BRIDGE));
 
+    @Nullable
     private ExecutorService discoverySearchPool;
     private OpenSprinklerApiFactory apiFactory;
 
@@ -103,14 +106,11 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
      */
     public void submitDiscoveryResults(String ip) {
         ThingUID uid = new ThingUID(OPENSPRINKLER_HTTP_BRIDGE, ip.replace('.', '_'));
-
         HashMap<String, Object> properties = new HashMap<>();
-
         properties.put("hostname", ip);
-        properties.put("port", DEFAULT_API_PORT);
+        properties.put("port", 80);
         properties.put("password", DEFAULT_ADMIN_PASSWORD);
-        properties.put("refresh", DEFAULT_REFRESH_RATE);
-
+        properties.put("refresh", 60);
         thingDiscovered(
                 DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("OpenSprinkler").build());
     }

@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
-import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.DataFormatErrorApiException;
@@ -37,6 +38,7 @@ import org.openhab.binding.opensprinkler.internal.util.Parse;
  * @author Chris Graham - Initial contribution
  * @author Florian Schmidt - Refactor class visibility
  */
+@NonNullByDefault
 class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the OpenSprinkler

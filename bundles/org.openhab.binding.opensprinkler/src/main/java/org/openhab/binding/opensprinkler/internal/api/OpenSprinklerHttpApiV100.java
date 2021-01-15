@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
-import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -34,6 +36,8 @@ import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterf
 import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -45,7 +49,9 @@ import com.google.gson.annotations.SerializedName;
  * @author Chris Graham - Initial contribution
  * @author Florian Schmidt - Allow https URLs and basic auth
  */
+@NonNullByDefault
 class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final String hostname;
     protected final int port;
     protected final String password;
@@ -72,18 +78,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      * @param basicPassword only needed if basic auth is required
      * @throws Exception
      */
-    OpenSprinklerHttpApiV100(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config)
-            throws GeneralApiException {
-        if (config.hostname == null) {
-            throw new GeneralApiException("The given url is null.");
-        }
-        if (config.port < 1 || config.port > 65535) {
-            throw new GeneralApiException("The given port is invalid.");
-        }
-        if (config.password == null) {
-            throw new GeneralApiException("The given password is null.");
-        }
-
+    OpenSprinklerHttpApiV100(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config) {
         if (config.hostname.startsWith(HTTP_REQUEST_URL_PREFIX)
                 || config.hostname.startsWith(HTTPS_REQUEST_URL_PREFIX)) {
             this.hostname = config.hostname;
@@ -104,29 +99,27 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public void enterManualMode() throws CommunicationApiException {
+        logger.debug("Entering ManualMode");
         try {
             http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_ENABLE_MANUAL_MODE);
         } catch (Exception exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-
         this.firmwareVersion = getFirmwareVersion();
         this.numberOfStations = getNumberOfStations();
-
         isInManualMode = true;
     }
 
     @Override
     public void leaveManualMode() throws CommunicationApiException {
-        isInManualMode = false;
-
         try {
             http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_DISABLE_MANUAL_MODE);
         } catch (Exception exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
+        isInManualMode = false;
     }
 
     @Override
@@ -157,20 +150,17 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
         String returnContent;
-
         if (station < 0 || station >= numberOfStations) {
             throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
                     + " but station " + station + " was requested for a status update.");
         }
-
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + "sn" + station, null);
         } catch (Exception exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-
-        return returnContent != null && returnContent.equals("1");
+        return returnContent.equals("1");
     }
 
     @Override
@@ -185,7 +175,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public int currentDraw() throws CommunicationApiException, NoCurrentDrawSensorException {
         JcResponse info = statusInfo();
-        if (info.curr == null) {
+        if (info == null || info.curr == null) {
+            logger.debug("NoCurrentDrawSensorException:{}", info);
             throw new NoCurrentDrawSensorException();
         }
         return info.curr;
@@ -251,37 +242,33 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                 .get(station);
     }
 
-    private JcResponse statusInfo() throws CommunicationApiException {
+    private @Nullable JcResponse statusInfo() throws CommunicationApiException {
         String returnContent;
-
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATUS_INFO, getRequestRequiredOptions());
         } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-
         JcResponse resp = gson.fromJson(returnContent, JcResponse.class);
         return resp;
     }
 
     private static class JcResponse {
-        public List<List<Integer>> ps;
+        public @Nullable List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
-        public Integer curr;
+        public @Nullable Integer curr;
     }
 
-    private JoResponse getOptions() throws CommunicationApiException {
+    private @Nullable JoResponse getOptions() throws CommunicationApiException {
         String returnContent;
-
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_OPTIONS_INFO, getRequestRequiredOptions());
         } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-
         JoResponse resp = gson.fromJson(returnContent, JoResponse.class);
         return resp;
     }
@@ -318,15 +305,14 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
          * @return String contents of the response for the GET request.
          * @throws Exception
          */
-        public String sendHttpGet(String url, String urlParameters) throws CommunicationApiException {
+        public String sendHttpGet(String url, @Nullable String urlParameters) throws CommunicationApiException {
             String location = null;
-
             if (urlParameters != null) {
                 location = url + "?" + urlParameters;
             } else {
                 location = url;
             }
-
+            logger.debug("sending GET:{}", location);
             ContentResponse response;
             try {
                 response = withGeneralProperties(httpClient.newRequest(location)).method(HttpMethod.GET).send();
@@ -338,13 +324,12 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                 throw new CommunicationApiException(
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
             }
-
             return response.getContentAsString();
         }
 
         private Request withGeneralProperties(Request request) {
             request.header(HttpHeader.USER_AGENT, USER_AGENT);
-            if (basicUsername != null && basicPassword != null) {
+            if (!basicUsername.isEmpty() && !basicPassword.isEmpty()) {
                 String encoded = Base64.getEncoder()
                         .encodeToString((basicUsername + ":" + basicPassword).getBytes(StandardCharsets.UTF_8));
                 request.header(HttpHeader.AUTHORIZATION, "Basic " + encoded);
@@ -370,12 +355,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
             }
-
             if (response.getStatus() != HTTP_OK_CODE) {
                 throw new CommunicationApiException(
                         "Error sending HTTP POST request to " + url + ". Got response code: " + response.getStatus());
             }
-
             return response.getContentAsString();
         }
     }
