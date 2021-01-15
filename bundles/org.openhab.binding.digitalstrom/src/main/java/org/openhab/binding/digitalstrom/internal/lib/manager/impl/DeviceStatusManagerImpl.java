@@ -337,7 +337,6 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                                     "Can't find device in trashDevices, add Device with dSID: {} to the StructureManager!",
                                     currentDeviceDSID);
                         }
-                        ;
                     }
                     if (deviceDiscovery != null) {
                         // only informs discovery, if the device is a output or a sensor device
