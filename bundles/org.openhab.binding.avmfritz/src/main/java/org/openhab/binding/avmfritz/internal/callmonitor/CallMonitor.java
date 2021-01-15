@@ -92,15 +92,6 @@ public class CallMonitor {
 
     public class CallMonitorThread extends Thread {
 
-        private class CallMonitorThreadExceptionHandler implements Thread.UncaughtExceptionHandler {
-            @Override
-            public void uncaughtException(@Nullable Thread thread, @Nullable Throwable throwable) {
-                logger.debug("Lost connection to FRITZ!Box because of an uncaught exception: ", throwable);
-                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String.format(
-                        "Lost connection to FRITZ!Box: %s", throwable == null ? "null" : throwable.getMessage()));
-            }
-        }
-
         // Socket to connect
         private @Nullable Socket socket;
 
@@ -112,7 +103,9 @@ public class CallMonitor {
 
         public CallMonitorThread(String threadName) {
             super(threadName);
-            setUncaughtExceptionHandler(new CallMonitorThreadExceptionHandler());
+            setUncaughtExceptionHandler((thread, throwable) -> {
+                logger.warn("Lost connection to FRITZ!Box because of an uncaught exception: ", throwable);
+            });
         }
 
         @Override
