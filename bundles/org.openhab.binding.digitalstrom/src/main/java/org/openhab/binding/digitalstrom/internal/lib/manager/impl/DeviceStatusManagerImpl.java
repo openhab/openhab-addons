@@ -320,19 +320,24 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                                 currentDevice.getDSID());
                     } else {
                         logger.debug("Search device in trashDevices.");
-                        trashDevices.stream().filter(d -> d.getDevice().equals(currentDevice)).findAny()
-                                .ifPresentOrElse(trashDevice -> {
-                                    logger.debug(
-                                            "Found device in trashDevices, add TrashDevice with dSID {} to the StructureManager!",
-                                            currentDeviceDSID);
-                                    trashDevices.remove(trashDevice);
-                                    strucMan.addDeviceToStructure(trashDevice.getDevice());
-                                }, () -> {
-                                    strucMan.addDeviceToStructure(currentDevice);
-                                    logger.debug(
-                                            "Can't find device in trashDevices, add Device with dSID: {} to the StructureManager!",
-                                            currentDeviceDSID);
-                                });
+                        boolean found = trashDevices.removeIf(trashDevice -> {
+                            if (trashDevice.getDevice().equals(currentDevice)) {
+                                logger.debug(
+                                        "Found device in trashDevices, add TrashDevice with dSID {} to the StructureManager!",
+                                        currentDeviceDSID);
+                                strucMan.addDeviceToStructure(trashDevice.getDevice());
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                        if (!found) {
+                            strucMan.addDeviceToStructure(currentDevice);
+                            logger.debug(
+                                    "Can't find device in trashDevices, add Device with dSID: {} to the StructureManager!",
+                                    currentDeviceDSID);
+                        }
+                        ;
                     }
                     if (deviceDiscovery != null) {
                         // only informs discovery, if the device is a output or a sensor device
@@ -385,11 +390,14 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
             }
 
             if (!trashDevices.isEmpty() && (lastBinCheck + config.getBinCheckTime() < System.currentTimeMillis())) {
-                trashDevices.stream().filter(d -> d.isTimeToDelete(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)))
-                        .forEach(trashDevice -> {
-                            trashDevices.remove(trashDevice);
-                            logger.debug("Deleted trashDevice: {}", trashDevice.getDevice().getDSID().getValue());
-                        });
+                trashDevices.removeIf(trashDevice -> {
+                    if (trashDevice.isTimeToDelete(Calendar.getInstance().get(Calendar.DAY_OF_YEAR))) {
+                        logger.debug("Deleted trashDevice: {}", trashDevice.getDevice().getDSID().getValue());
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
                 lastBinCheck = System.currentTimeMillis();
             }
         }
