@@ -21,7 +21,7 @@ import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.WarningSe
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * @author Connor Petty - Initial contribution
@@ -52,7 +52,7 @@ public class GoveeHygrometerConfiguration {
     public @Nullable QuantityType<Dimensionless> getHumidityCalibration() {
         var humCali = humidityCalibration;
         if (humCali != null) {
-            return new QuantityType<>(humCali, SmartHomeUnits.PERCENT);
+            return new QuantityType<>(humCali, Units.PERCENT);
         }
         return null;
     }
@@ -68,8 +68,8 @@ public class GoveeHygrometerConfiguration {
     public WarningSettingsDTO<Dimensionless> getHumidityWarningSettings() {
         WarningSettingsDTO<Dimensionless> humWarnSettings = new WarningSettingsDTO<>();
         humWarnSettings.enableAlarm = OnOffType.from(humidityWarningAlarm);
-        humWarnSettings.min = new QuantityType<>(humidityWarningMin, SmartHomeUnits.PERCENT);
-        humWarnSettings.max = new QuantityType<>(humidityWarningMax, SmartHomeUnits.PERCENT);
+        humWarnSettings.min = new QuantityType<>(humidityWarningMin, Units.PERCENT);
+        humWarnSettings.max = new QuantityType<>(humidityWarningMax, Units.PERCENT);
         return humWarnSettings;
     }
 }

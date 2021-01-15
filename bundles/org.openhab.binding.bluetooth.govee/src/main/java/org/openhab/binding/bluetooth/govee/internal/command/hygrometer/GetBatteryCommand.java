@@ -19,7 +19,7 @@ import javax.measure.quantity.Dimensionless;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * @author Connor Petty - Initial Contribution
@@ -46,7 +46,7 @@ public class GetBatteryCommand extends GetCommand {
         }
         if (data != null) {
             int value = data[0] & 0xFF;
-            resultHandler.complete(new QuantityType<Dimensionless>(value, SmartHomeUnits.PERCENT));
+            resultHandler.complete(new QuantityType<Dimensionless>(value, Units.PERCENT));
         } else {
             resultHandler.complete(null);
         }

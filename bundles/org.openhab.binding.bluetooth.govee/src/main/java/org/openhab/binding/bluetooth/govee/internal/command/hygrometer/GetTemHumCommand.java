@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * @author Connor Petty - Initial Contribution
@@ -53,7 +53,7 @@ public class GetTemHumCommand extends GetCommand {
 
             TemHumDTO temhum = new TemHumDTO();
             temhum.temperature = new QuantityType<>(temp / 100.0, SIUnits.CELSIUS);
-            temhum.humidity = new QuantityType<>(hum / 100.0, SmartHomeUnits.PERCENT);
+            temhum.humidity = new QuantityType<>(hum / 100.0, Units.PERCENT);
             resultHandler.complete(temhum);
         } else {
             resultHandler.complete(null);

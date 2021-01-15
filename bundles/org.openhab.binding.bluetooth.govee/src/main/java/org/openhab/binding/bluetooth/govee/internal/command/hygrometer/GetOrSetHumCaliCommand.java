@@ -21,7 +21,7 @@ import javax.measure.quantity.Dimensionless;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * @author Connor Petty - Initial Contribution
@@ -57,7 +57,7 @@ public class GetOrSetHumCaliCommand extends GoveeCommand {
     }
 
     private static short convertQuantity(QuantityType<Dimensionless> quantity) {
-        var percentQuantity = quantity.toUnit(SmartHomeUnits.PERCENT);
+        var percentQuantity = quantity.toUnit(Units.PERCENT);
         if (percentQuantity == null) {
             throw new IllegalArgumentException("Unable to convert quantity to percent");
         }
@@ -80,7 +80,7 @@ public class GetOrSetHumCaliCommand extends GoveeCommand {
         }
         if (data != null) {
             short hum = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).getShort();
-            resultHandler.complete(new QuantityType<>(hum / 100.0, SmartHomeUnits.PERCENT));
+            resultHandler.complete(new QuantityType<>(hum / 100.0, Units.PERCENT));
         } else {
             resultHandler.complete(null);
         }

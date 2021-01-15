@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * @author Connor Petty - Initial Contribution
@@ -56,7 +56,7 @@ public class GetOrSetHumWarningCommand extends GoveeCommand {
     }
 
     private static short convertQuantity(QuantityType<Dimensionless> quantity) {
-        var percentQuantity = quantity.toUnit(SmartHomeUnits.PERCENT);
+        var percentQuantity = quantity.toUnit(Units.PERCENT);
         if (percentQuantity == null) {
             throw new IllegalArgumentException("Unable to convert quantity to percent");
         }
@@ -86,8 +86,8 @@ public class GetOrSetHumWarningCommand extends GoveeCommand {
 
             ByteBuffer buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
             result.enableAlarm = OnOffType.from(buffer.get() == 1);
-            result.min = new QuantityType<Dimensionless>(buffer.getShort() / 100.0, SmartHomeUnits.PERCENT);
-            result.max = new QuantityType<Dimensionless>(buffer.getShort() / 100.0, SmartHomeUnits.PERCENT);
+            result.min = new QuantityType<Dimensionless>(buffer.getShort() / 100.0, Units.PERCENT);
+            result.max = new QuantityType<Dimensionless>(buffer.getShort() / 100.0, Units.PERCENT);
 
             resultHandler.complete(result);
         } else {

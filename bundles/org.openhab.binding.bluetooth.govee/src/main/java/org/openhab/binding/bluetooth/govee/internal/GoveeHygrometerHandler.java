@@ -51,7 +51,7 @@ import org.openhab.binding.bluetooth.util.RetryFuture;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -386,10 +386,10 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
 
         TemHumDTO temhum = new TemHumDTO();
         temhum.temperature = new QuantityType<>(tem / 100.0, SIUnits.CELSIUS);
-        temhum.humidity = new QuantityType<>(hum / 100.0, SmartHomeUnits.PERCENT);
+        temhum.humidity = new QuantityType<>(hum / 100.0, Units.PERCENT);
         updateTemperatureAndHumidity(temhum, null);
 
-        updateBattery(new QuantityType<>(battery, SmartHomeUnits.PERCENT), null);
+        updateBattery(new QuantityType<>(battery, Units.PERCENT), null);
     }
 
     @Override
