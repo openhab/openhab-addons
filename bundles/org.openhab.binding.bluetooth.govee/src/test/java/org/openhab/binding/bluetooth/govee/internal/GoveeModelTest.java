@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.govee.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.MockBluetoothAdapter;
@@ -20,9 +21,10 @@ import org.openhab.binding.bluetooth.TestUtils;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 
 /**
- * @author cpetty
+ * @author Connor Petty - Initial contribution
  *
  */
+@NonNullByDefault
 class GoveeModelTest {
 
     // the participant is stateless so this is fine.
