@@ -58,7 +58,7 @@
         <description>Server Used</description>
         <state readOnly="true"></state>
     </channel-type>	
-    <channel-type id="ping_jitter">
+    <channel-type id="ping_jitter" advanced="true">
         <item-type>Number</item-type>
         <label>Jitter</label>
         <description>Ping Jitter</description>
@@ -76,13 +76,13 @@
         <description>Download bandwidth</description>
         <state readOnly="true"></state>
     </channel-type>
-    <channel-type id="download_bytes">
+    <channel-type id="download_bytes" advanced="true">
         <item-type>Number</item-type>
         <label>Download Bytes</label>
         <description></description>
         <state readOnly="true"></state>
     </channel-type>
-    <channel-type id="download_elapsed">
+    <channel-type id="download_elapsed" advanced="true">
         <item-type>Number</item-type>
         <label>Download Elapsed Time</label>
         <description></description>
@@ -94,13 +94,13 @@
         <description></description>
         <state readOnly="true"></state>
     </channel-type>
-    <channel-type id="upload_bytes">
+    <channel-type id="upload_bytes" advanced="true">
         <item-type>Number</item-type>
         <label>Upload Bytes</label>
         <description></description>
         <state readOnly="true"></state>
     </channel-type>
-    <channel-type id="upload_elapsed">
+    <channel-type id="upload_elapsed" advanced="true">
         <item-type>Number</item-type>
         <label>Upload Elapsed Time</label>
         <description></description>
@@ -112,13 +112,13 @@
         <description></description>
         <state readOnly="true"></state>
     </channel-type>    
-    <channel-type id="interface_internalIp">
+    <channel-type id="interface_internalIp" advanced="true">
         <item-type>String</item-type>
         <label>Interface Internal</label>
         <description></description>
         <state readOnly="true"></state>
     </channel-type>  
-    <channel-type id="interface_externalIp">
+    <channel-type id="interface_externalIp" advanced="true">
         <item-type>String</item-type>
         <label>Interface External</label>
         <description></description>

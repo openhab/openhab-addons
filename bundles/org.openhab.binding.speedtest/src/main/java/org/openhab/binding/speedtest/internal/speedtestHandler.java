@@ -114,7 +114,7 @@ public class speedtestHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.ONLINE);
         isRunning = true;
-        onUpdate();
+        onUpdate(); // Setup the scheduler
     }
 
     /**
@@ -182,18 +182,19 @@ public class speedtestHandler extends BaseThingHandler {
      * Get the speedtest data and convert it from JSON and send it to update the channels.
      */
     private void getSpeed() {
+        logger.debug("Getting Speed Measurement");
         String speedOutput = executeCmd(speedTestCommand + " -f json --accept-license");
         ResultContainer tmpCont = GSON.fromJson(speedOutput, ResultContainer.class);
         if (tmpCont != null) {
             updateChannels(tmpCont);
         }
-
     }
 
     /*
      * Update the channels
      */
     private void updateChannels(ResultContainer results) {
+        logger.debug("Updating channels");
         String serverTxt = "";
         serverTxt += results.getServer().getName();
         serverTxt += " (" + results.getServer().getId().toString() + ") ";
