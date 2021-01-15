@@ -65,26 +65,25 @@ Optional configuration is the refresh interval and the deviceID. Note that the d
 The configuration for model is automatically retrieved from the device in normal operation. 
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
 
-| Parameter       | Type    | Required | Description                                                       |
-|-----------------|---------|----------|-------------------------------------------------------------------|
-| host            | text    | true     | Device IP address                                                 |
-| token           | text    | true     | Token for communication (in Hex)                                  |
-| deviceId        | text    | true     | Device ID number for communication (in Hex)                       |
-| model           | text    | false    | Device model string, used to determine the subtype                |
-| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled) |
-| timeout         | integer | false    | Timeout time in milliseconds                                      |
+| Parameter       | Type    | Required | Description                                                         |
+|-----------------|---------|----------|---------------------------------------------------------------------|
+| host            | text    | true     | Device IP address                                                   |
+| token           | text    | true     | Token for communication (in Hex)                                    |
+| deviceId        | text    | true     | Device ID number for communication (in Hex)                         |
+| model           | text    | false    | Device model string, used to determine the subtype                  |
+| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled)   |
+| timeout         | integer | false    | Timeout time in milliseconds                                        |
+| communication   | test    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+
+Note: Suggest to use the cloud communication only for devices that require it. It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 
 ### Example Thing file
 
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb" ]` 
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb", communication="direct"  ]` 
 
 or in case of unknown models include the model information of a similar device that is supported:
 
-`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4" ]`
-
-# Mi IO Devices
-
-!!!devices
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4", communication="cloud"]`
 
 # Advanced: Unsupported devices
 
@@ -115,7 +114,7 @@ After validation, please share the logfile and json files on the openHAB forum o
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
+The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
 During the start of the binding the exact path used in your system will be printed in the debug log. 
 Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …`
 If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
@@ -152,6 +151,7 @@ Alternatively as described above, double check for multiple connections for sing
 _Your device is on a different subnet?_
 This is in most cases not working. 
 Firmware of the device don't accept commands coming from other subnets.
+Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
 The most common problem is a wrong userId/password. Try to fix your userId/password.
@@ -164,6 +164,9 @@ This won't work, the Roborock app is using a different communication method.
 Reset your vacuum and connect it to the Xiaomi MiHome app. 
 This will change the communication method and the Mi IO binding can communicate with the vacuum.
 
+# Mi IO Devices
+
+!!!devices
 
 # Channels
 
@@ -177,10 +180,11 @@ All devices have available the following channels (marked as advanced) besides t
 | network#bssid    | String  | Network BSSID                       |
 | network#rssi     | Number  | Network RSSI                        |
 | network#life     | Number  | Network Life                        |
-| actions#commands | String  | send commands. see below            |
+| actions#commands | String  | send commands direct. see below     |
+| actions#rpc      | String  | send commands via cloud. see below  |
 
-note: the ADVANCED  `actions#commands` channel can be used to send commands that are not automated via the binding. This is available for all devices
-e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
+note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
+e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
 
 
 !!!channelList

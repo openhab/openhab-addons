@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,14 +94,14 @@ public class RemoteSensor {
                             reader.nextDouble(), ImperialUnits.FAHRENHEIT);
                 } else if (("humidity" + sensorNumber).equals(name)) {
                     handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_HUMIDITY, reader.nextDouble(),
-                            SmartHomeUnits.PERCENT);
+                            Units.PERCENT);
                 } else if (("soiltemp" + sensorNumber).equals(name)) {
                     handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_SOIL_TEMPERATURE, reader.nextDouble(),
                             ImperialUnits.FAHRENHEIT);
                 } else if (("soilhum" + sensorNumber).equals(name)) {
                     Double soilMoisture = reader.nextDouble();
                     handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_SOIL_MOISTURE, soilMoisture,
-                            SmartHomeUnits.PERCENT);
+                            Units.PERCENT);
                     handler.updateString(CHGRP_REMOTE_SENSOR + sensorNumber, CH_SOIL_MOISTURE_LEVEL,
                             convertSoilMoistureToString(soilMoisture));
                 } else if (("batt" + sensorNumber).equals(name)) {

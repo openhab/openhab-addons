@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -45,13 +46,15 @@ public class MadokaMessage {
         values = new HashMap<>();
     }
 
-    public static byte[] createRequest(BRC1HCommand command, MadokaValue... parameters) {
+    public static byte[][] createRequest(BRC1HCommand command, MadokaValue... parameters) {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             DataOutputStream request = new DataOutputStream(output);
 
-            // Message Length - Computed in the end
-            request.writeByte(0);
+            // Chunk ID
+            // request.writeByte(0);
+
+            // Message Length - Computed in the end - left at 0 for now
             request.writeByte(0);
 
             // Command ID, coded on 3 bytes
@@ -70,10 +73,25 @@ public class MadokaMessage {
             }
 
             // Finally, compute array size
-            byte[] ret = output.toByteArray();
-            ret[1] = (byte) (ret.length - 1);
+            byte[] payload = output.toByteArray();
+            payload[0] = (byte) (payload.length);
 
-            return ret;
+            // Now, split in chunks
+            byte[][] chunks = new byte[(int) Math.ceil(payload.length / 19.)][0];
+
+            ByteArrayInputStream left = new ByteArrayInputStream(payload);
+            int chunkId = 0;
+            while (left.available() > 0) {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                DataOutputStream chunk = new DataOutputStream(bos);
+                chunk.writeByte(chunkId);
+                chunk.write(left.readNBytes(19));
+
+                chunk.flush();
+                chunks[chunkId++] = bos.toByteArray();
+            }
+
+            return chunks;
         } catch (IOException e) {
             logger.info("Error while building request", e);
             throw new RuntimeException(e);
@@ -105,7 +123,13 @@ public class MadokaMessage {
 
             mv = new MadokaValue();
             mv.setId(msg[i]);
-            mv.setSize(Byte.toUnsignedInt(msg[i + 1]));
+
+            if (Byte.toUnsignedInt(msg[i + 1]) == 0xff) {
+                // Specific case - msg length 0xFF. See GetOperationHousCommand
+                mv.setSize(0);
+            } else {
+                mv.setSize(Byte.toUnsignedInt(msg[i + 1]));
+            }
 
             if ((i + 1 + mv.getSize()) >= msg.length) {
                 throw new MadokaParsingException("Truncated message detected while parsing response value content");

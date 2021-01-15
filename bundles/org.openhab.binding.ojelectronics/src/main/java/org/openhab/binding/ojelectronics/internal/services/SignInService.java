@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,13 +22,13 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.ojelectronics.internal.common.OJGSonBuilder;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
+import org.openhab.binding.ojelectronics.internal.models.RequestModelBase;
 import org.openhab.binding.ojelectronics.internal.models.userprofile.PostSignInQueryModel;
 import org.openhab.binding.ojelectronics.internal.models.userprofile.PostSignInResponseModel;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Handles the sign in process.
@@ -38,7 +38,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class SignInService {
 
-    private final Gson gson = createGson();
+    private final Gson gson = OJGSonBuilder.getGSon();
 
     private final HttpClient httpClient;
     private final OJElectronicsBridgeConfiguration config;
@@ -79,7 +79,7 @@ public class SignInService {
                 }
                 PostSignInResponseModel signInModel = gson.fromJson(getContentAsString(),
                         PostSignInResponseModel.class);
-                if (signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
+                if (signInModel == null || signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
                     unauthorized.run();
                     return;
                 }
@@ -88,12 +88,8 @@ public class SignInService {
         });
     }
 
-    private Gson createGson() {
-        return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).setPrettyPrinting().create();
-    }
-
-    private PostSignInQueryModel getPostSignInQueryModel() {
-        return new PostSignInQueryModel().withApiKey(config.apiKey).withClientSWVersion(config.softwareVersion)
-                .withCustomerId(config.customerId).withUserName(config.userName).withPassword(config.password);
+    private RequestModelBase getPostSignInQueryModel() {
+        return new PostSignInQueryModel().withClientSWVersion(config.softwareVersion).withCustomerId(config.customerId)
+                .withUserName(config.userName).withPassword(config.password).withApiKey(config.apiKey);
     }
 }

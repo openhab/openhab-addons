@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.persistence.mapdb.internal.StateTypeAdapter;
 
@@ -59,11 +59,10 @@ public class StateTypeAdapterTest {
             PercentType.valueOf("0.0000001"), PercentType.valueOf("12"), PercentType.valueOf("99.999"));
 
     private static final List<QuantityType<?>> QUANTITY_TYPE_VALUES = List.of(QuantityType.valueOf("0 W"),
-            QuantityType.valueOf("1 kW"), QuantityType.valueOf(20, SmartHomeUnits.AMPERE),
+            QuantityType.valueOf("1 kW"), QuantityType.valueOf(20, Units.AMPERE),
             new QuantityType<>(new BigDecimal("21.23"), SIUnits.CELSIUS),
             new QuantityType<>(new BigDecimal("75"), ImperialUnits.MILES_PER_HOUR),
-            QuantityType.valueOf(1000, SmartHomeUnits.KELVIN),
-            QuantityType.valueOf(100, SmartHomeUnits.METRE_PER_SQUARE_SECOND));
+            QuantityType.valueOf(1000, Units.KELVIN), QuantityType.valueOf(100, Units.METRE_PER_SQUARE_SECOND));
 
     private static final List<StringType> STRING_TYPE_VALUES = List.of(StringType.valueOf("test"),
             StringType.valueOf("a b c 1 2 3"), StringType.valueOf(""), StringType.valueOf("@@@###   @@@"));

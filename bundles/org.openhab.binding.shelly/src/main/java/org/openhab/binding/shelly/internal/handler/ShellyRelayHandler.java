@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -179,8 +179,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             api.setRelayTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
         }
         updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", power);
-        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
-                new Double(power == OnOffType.ON ? brightness : 0), DIGITS_NONE, SmartHomeUnits.PERCENT));
+        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
+                toQuantityType(new Double(power == OnOffType.ON ? brightness : 0), DIGITS_NONE, Units.PERCENT));
     }
 
     @Override
@@ -333,16 +333,16 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     }
                     if ((rstatus.extHumidity != null) && (rstatus.extHumidity.sensor1 != null)) {
                         updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM, toQuantityType(
-                                getDouble(rstatus.extHumidity.sensor1.hum), DIGITS_PERCENT, SmartHomeUnits.PERCENT));
+                                getDouble(rstatus.extHumidity.sensor1.hum), DIGITS_PERCENT, Units.PERCENT));
                     }
 
                     // Update Auto-ON/OFF timer
                     ShellySettingsRelay rsettings = profile.settings.relays.get(i);
                     if (rsettings != null) {
                         updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
-                                toQuantityType(getDouble(rsettings.autoOn), SmartHomeUnits.SECOND));
+                                toQuantityType(getDouble(rsettings.autoOn), Units.SECOND));
                         updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
-                                toQuantityType(getDouble(rsettings.autoOff), SmartHomeUnits.SECOND));
+                                toQuantityType(getDouble(rsettings.autoOff), Units.SECOND));
                     }
 
                     // Update input(s) state
@@ -374,9 +374,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     if (state.equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
                         int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
-                                toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), SmartHomeUnits.PERCENT));
+                                toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
-                                toQuantityType(new Double(pos), SmartHomeUnits.PERCENT));
+                                toQuantityType(new Double(pos), Units.PERCENT));
                         scheduledUpdates = 1; // one more poll and then stop
                     }
 
@@ -422,20 +422,20 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 // When the device's brightness is > 0 we send the new value to the channel and a ON command
                 if (dimmer.ison) {
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
-                            new Double(getInteger(dimmer.brightness)), DIGITS_NONE, SmartHomeUnits.PERCENT));
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                            toQuantityType(new Double(getInteger(dimmer.brightness)), DIGITS_NONE, Units.PERCENT));
                 } else {
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.OFF);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                            toQuantityType(new Double(0), DIGITS_NONE, SmartHomeUnits.PERCENT));
+                            toQuantityType(new Double(0), DIGITS_NONE, Units.PERCENT));
                 }
 
                 ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
                 if (dsettings != null) {
                     updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
-                            toQuantityType(getDouble(dsettings.autoOn), SmartHomeUnits.SECOND));
+                            toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
                     updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
-                            toQuantityType(getDouble(dsettings.autoOff), SmartHomeUnits.SECOND));
+                            toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
                 }
 
                 updated |= updateInputs(groupName, orgStatus, l);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -218,7 +218,7 @@ public class VigiCruesHandler extends BaseThingHandler {
                     updateRelativeMeasure(RELATIVE_HEIGHT, referenceHeights, height);
                 });
                 field.getFlow().ifPresent(flow -> {
-                    updateQuantity(FLOW, flow, SmartHomeUnits.CUBICMETRE_PER_SECOND);
+                    updateQuantity(FLOW, flow, Units.CUBICMETRE_PER_SECOND);
                     updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
                 });
                 field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
@@ -245,7 +245,7 @@ public class VigiCruesHandler extends BaseThingHandler {
     private void updateRelativeMeasure(String channelId, List<QuantityType<?>> reference, double value) {
         if (reference.size() > 0) {
             double percent = value / reference.get(0).doubleValue() * 100;
-            updateQuantity(channelId, percent, SmartHomeUnits.PERCENT);
+            updateQuantity(channelId, percent, Units.PERCENT);
         }
     }
 

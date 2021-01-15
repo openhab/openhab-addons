@@ -64,7 +64,8 @@
 		<service deviceType="urn:dslforum-org:device:InternetGatewayDevice:1"
 			serviceId="urn:X_AVM-DE_HostFilter-com:serviceId:X_AVM-DE_HostFilter1"/>
 		<getAction name="GetWANAccessByIP" argument="NewDisallow">
-			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"/>
+			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"
+				pattern="([1-9]\d{0,2}\.){3}[1-9]\d{0,2}(\s*#.*)*"/>
 		</getAction>
 		<setAction name="DisallowWANAccessByIP" argument="NewDisallow">
 			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"/>
@@ -106,6 +107,14 @@
 			<parameter name="CallDays" thingParameter="outboundCallDays" pattern="[0-9]+" internalOnly="true"/>
 		</getAction>
 	</channel>
+	<channel name="callList" label="Call List" description="Call list in JSON format for the given number of days.">
+		<item type="String"/>
+		<service deviceType="urn:dslforum-org:device:InternetGatewayDevice:1"
+			serviceId="urn:X_AVM-DE_OnTel-com:serviceId:X_AVM-DE_OnTel1"/>
+		<getAction name="GetCallList" argument="NewCallListURL" postProcessor="processCallListJSON">
+			<parameter name="CallDays" thingParameter="callListDays" pattern="[0-9]+" internalOnly="true"/>
+		</getAction>
+	</channel>
 
 	<!-- LAN Device -->
 	<channel name="wifi24GHzEnable" label="WiFi 2.4 GHz" description="Enable/Disable the 2.4 GHz WiFi device.">
@@ -133,7 +142,8 @@
 		<item type="Switch"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1" serviceId="urn:LanDeviceHosts-com:serviceId:Hosts1"/>
 		<getAction name="GetSpecificHostEntry" argument="NewActive">
-			<parameter name="NewMACAddress" thingParameter="macOnline" pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}"/>
+			<parameter name="NewMACAddress" thingParameter="macOnline"
+				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
 	</channel>
 
@@ -176,57 +186,81 @@
 	</channel>
 	<channel name="dslEnable" label="DSL Enable">
 		<item type="Switch"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewEnable"/>
 	</channel>
 	<channel name="dslStatus" label="DSL Status">
 		<item type="Switch"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewStatus"/>
 	</channel>
+	<channel name="dslDownstreamMaxRate" label="DSL Max Downstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
+		<getAction name="GetInfo" argument="NewDownstreamMaxRate"/>
+	</channel>
+	<channel name="dslUpstreamMaxRate" label="DSL Max Upstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
+		<getAction name="GetInfo" argument="NewUpstreamMaxRate"/>
+	</channel>
+	<channel name="dslDownstreamCurrRate" label="DSL Curr. Downstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
+		<getAction name="GetInfo" argument="NewDownstreamCurrRate"/>
+	</channel>
+	<channel name="dslUpstreamCurrRate" label="DSL Curr. Upstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
+		<getAction name="GetInfo" argument="NewUpstreamCurrRate"/>
+	</channel>
 	<channel name="dslDownstreamNoiseMargin" label="DSL Downstream Noise Margin">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewDownstreamNoiseMargin"/>
 	</channel>
 	<channel name="dslUpstreamNoiseMargin" label="DSL Upstream Noise Margin">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewUpstreamNoiseMargin"/>
 	</channel>
-	<channel name="dslDownstreamNoiseMargin" label="DSL Downstream Attenuation">
+	<channel name="dslDownstreamAttenuation" label="DSL Downstream Attenuation">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewDownstreamAttenuation"/>
 	</channel>
-	<channel name="dslUpstreamNoiseMargin" label="DSL Upstream Attenuation">
+	<channel name="dslUpstreamAttenuation" label="DSL Upstream Attenuation">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewUpstreamAttenuation"/>
 	</channel>
 	<channel name="dslFECErrors" label="DSL FEC Errors">
 		<item type="Number:Dimensionless"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetStatisticsTotal" argument="NewFECErrors"/>
 	</channel>
 	<channel name="dslHECErrors" label="DSL HEC Errors">
 		<item type="Number:Dimensionless"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetStatisticsTotal" argument="NewHECErrors"/>
 	</channel>
 	<channel name="dslCRCErrors" label="DSL CRC Errors">
 		<item type="Number:Dimensionless"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
-		<getAction name="GetStatisticsTotal" argument="NeCRCErrors"/>
+		<getAction name="GetStatisticsTotal" argument="NewCRCErrors"/>
 	</channel>
 
 	<!-- WAN Connection device -->
@@ -236,10 +270,22 @@
 			serviceId="urn:WANIPConnection-com:serviceId:WANIPConnection1"/>
 		<getAction name="GetInfo" argument="NewExternalIPAddress"/>
 	</channel>
+	<channel name="wanPppIpAddress" label="WAN PPP-IP Address">
+		<item type="String"/>
+		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
+			serviceId="urn:WANPPPConnection-com:serviceId:WANPPPConnection1"/>
+		<getAction name="GetInfo" argument="NewExternalIPAddress"/>
+	</channel>
 	<channel name="wanConnectionStatus" label="Connection Status">
 		<item type="String"/>
 		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
 			serviceId="urn:WANIPConnection-com:serviceId:WANIPConnection1"/>
+		<getAction name="GetInfo" argument="NewConnectionStatus"/>
+	</channel>
+	<channel name="wanPppConnectionStatus" label="Connection Status">
+		<item type="String"/>
+		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
+			serviceId="urn:WANPPPConnection-com:serviceId:WANPPPConnection1"/>
 		<getAction name="GetInfo" argument="NewConnectionStatus"/>
 	</channel>
 	<channel name="uptime" label="Uptime">
@@ -248,6 +294,10 @@
 			serviceId="urn:WANIPConnection-com:serviceId:WANIPConnection1"/>
 		<getAction name="GetInfo" argument="NewUptime"/>
 	</channel>
-
-
+	<channel name="pppUptime" label="Uptime">
+		<item type="Number:Time" unit="s" statePattern="%d s"/>
+		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
+			serviceId="urn:WANPPPConnection-com:serviceId:WANPPPConnection1"/>
+		<getAction name="GetInfo" argument="NewUptime"/>
+	</channel>
 </channels>

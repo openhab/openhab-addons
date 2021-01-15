@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Enum for all specific sensor data returned by the Foobot device.
@@ -33,10 +33,10 @@ import org.openhab.core.library.unit.SmartHomeUnits;
 @NonNullByDefault
 public enum FoobotSensor {
     TIME("time", "time", null),
-    PM("pm", "pm", SmartHomeUnits.MICROGRAM_PER_CUBICMETRE),
+    PM("pm", "pm", Units.MICROGRAM_PER_CUBICMETRE),
     TEMPERATURE("temperature", "tmp", "C", SIUnits.CELSIUS, ImperialUnits.FAHRENHEIT),
     HUMIDITY("humidity", "hum", null),
-    CO2("co2", "co2", SmartHomeUnits.PARTS_PER_MILLION),
+    CO2("co2", "co2", Units.PARTS_PER_MILLION),
     VOC("voc", "voc", null),
     GPI("gpi", "allpollu", null);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -67,15 +66,10 @@ public class HikvisionHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = "";
-        int debounce = 3;
         try {
-            content = msg.toString();
-            if (content.isEmpty()) {
-                return;
-            }
+            int debounce = 3;
+            String content = msg.toString();
             logger.trace("HTTP Result back from camera is \t:{}:", content);
-
             if (content.contains("--boundary")) {// Alarm checking goes in here//
                 if (content.contains("<EventNotificationAlert version=\"")) {
                     if (content.contains("hannelID>" + nvrChannel + "</")) {// some camera use c or <dynChannelID>
@@ -114,7 +108,8 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             countDown();
                             countDown();
                         }
-                    } else if (content.contains("<channelID>0</channelID>")) {// NVR uses channel 0 to say all channels
+                    } else if (content.contains("<channelID>0</channelID>")) {// NVR uses channel 0 to say all
+                                                                              // channels
                         if (content.contains("<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
                             if (vmdCount > 1) {
                                 vmdCount = 1;

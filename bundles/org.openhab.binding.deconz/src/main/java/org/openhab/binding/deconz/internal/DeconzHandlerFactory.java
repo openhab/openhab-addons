@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,14 +55,17 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
     private final WebSocketFactory webSocketFactory;
     private final HttpClientFactory httpClientFactory;
     private final StateDescriptionProvider stateDescriptionProvider;
+    private final CommandDescriptionProvider commandDescriptionProvider;
 
     @Activate
     public DeconzHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
             final @Reference HttpClientFactory httpClientFactory,
-            final @Reference StateDescriptionProvider stateDescriptionProvider) {
+            final @Reference StateDescriptionProvider stateDescriptionProvider,
+            final @Reference CommandDescriptionProvider commandDescriptionProvider) {
         this.webSocketFactory = webSocketFactory;
         this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
@@ -85,13 +88,13 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
             return new DeconzBridgeHandler((Bridge) thing, webSocketFactory,
                     new AsyncHttpClient(httpClientFactory.getCommonHttpClient()), gson);
         } else if (LightThingHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
-            return new LightThingHandler(thing, gson, stateDescriptionProvider);
+            return new LightThingHandler(thing, gson, stateDescriptionProvider, commandDescriptionProvider);
         } else if (SensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SensorThingHandler(thing, gson);
         } else if (SensorThermostatThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SensorThermostatThingHandler(thing, gson);
         } else if (GroupThingHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
-            return new GroupThingHandler(thing, gson);
+            return new GroupThingHandler(thing, gson, commandDescriptionProvider);
         }
 
         return null;

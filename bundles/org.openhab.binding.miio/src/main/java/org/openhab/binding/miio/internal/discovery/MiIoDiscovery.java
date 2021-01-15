@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,14 +20,19 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.Message;
+import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.cloud.CloudDeviceDTO;
@@ -37,6 +42,8 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -58,6 +65,9 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private static final long SEARCH_INTERVAL = 600;
     private static final int BUFFER_LENGTH = 1024;
     private static final int DISCOVERY_TIME = 10;
+    private static final String DISABLED = "disabled";
+    private static final String SUPPORTED = "supportedonly";
+    private static final String ALL = "all";
 
     private @Nullable ScheduledFuture<?> miIoDiscoveryJob;
     protected @Nullable DatagramSocket clientSocket;
@@ -66,11 +76,42 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
     private final CloudConnector cloudConnector;
+    private Map<String, String> cloudDevices = new ConcurrentHashMap<>();
+    private @Nullable Configuration miioConfig;
 
     @Activate
-    public MiIoDiscovery(@Reference CloudConnector cloudConnector) throws IllegalArgumentException {
+    public MiIoDiscovery(@Reference CloudConnector cloudConnector, @Reference ConfigurationAdmin configAdmin)
+            throws IllegalArgumentException {
         super(DISCOVERY_TIME);
         this.cloudConnector = cloudConnector;
+        try {
+            miioConfig = configAdmin.getConfiguration("binding.miio");
+        } catch (IOException | SecurityException e) {
+            logger.debug("Error getting configuration: {}", e.getMessage());
+        }
+    }
+
+    private String getCloudDiscoveryMode() {
+        if (miioConfig != null) {
+            try {
+                Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
+                String cloudDiscoveryModeConfig;
+                if (properties == null) {
+                    cloudDiscoveryModeConfig = DISABLED;
+                } else {
+                    cloudDiscoveryModeConfig = (String) properties.get("cloudDiscoveryMode");
+                    if (cloudDiscoveryModeConfig == null) {
+                        cloudDiscoveryModeConfig = DISABLED;
+                    } else {
+                        cloudDiscoveryModeConfig = cloudDiscoveryModeConfig.toLowerCase();
+                    }
+                }
+                return Set.of(SUPPORTED, ALL).contains(cloudDiscoveryModeConfig) ? cloudDiscoveryModeConfig : DISABLED;
+            } catch (ClassCastException | SecurityException e) {
+                logger.debug("Error getting cloud discovery configuration: {}", e.getMessage());
+            }
+        }
+        return DISABLED;
     }
 
     @Override
@@ -80,7 +121,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start Xiaomi Mi IO background discovery");
+        logger.debug("Start Xiaomi Mi IO background discovery with cloudDiscoveryMode: {}", getCloudDiscoveryMode());
         final @Nullable ScheduledFuture<?> miIoDiscoveryJob = this.miIoDiscoveryJob;
         if (miIoDiscoveryJob == null || miIoDiscoveryJob.isCancelled()) {
             this.miIoDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 0, SEARCH_INTERVAL,
@@ -111,7 +152,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Start Xiaomi Mi IO discovery");
+        String cloudDiscoveryMode = getCloudDiscoveryMode();
+        logger.debug("Start Xiaomi Mi IO discovery with cloudDiscoveryMode: {}", cloudDiscoveryMode);
+        if (!cloudDiscoveryMode.contentEquals(DISABLED)) {
+            cloudDiscovery();
+        }
         final DatagramSocket clientSocket = getSocket();
         if (clientSocket != null) {
             logger.debug("Discovery using socket on port {}", clientSocket.getLocalPort());
@@ -133,36 +178,73 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         }
     }
 
+    private void cloudDiscovery() {
+        String cloudDiscoveryMode = getCloudDiscoveryMode();
+        cloudDevices.clear();
+        if (cloudConnector.isConnected()) {
+            List<CloudDeviceDTO> dv = cloudConnector.getDevicesList();
+            for (CloudDeviceDTO device : dv) {
+                String id = Utils.toHEX(device.getDid());
+                if (cloudDiscoveryMode.contentEquals(SUPPORTED)) {
+                    if (MiIoDevices.getType(device.getModel()).getThingType().equals(THING_TYPE_UNSUPPORTED)) {
+                        logger.warn("Discovered from cloud, but ignored because not supported: {} {}", id, device);
+                    }
+                }
+                if (device.getIsOnline()) {
+                    logger.debug("Discovered from cloud: {} {}", id, device);
+                    cloudDevices.put(id, device.getLocalip());
+                    String token = device.getToken();
+                    String label = device.getName() + " " + id + " (" + device.getDid() + ")";
+                    String country = device.getServer();
+                    boolean isOnline = device.getIsOnline();
+                    String ip = device.getLocalip();
+                    submitDiscovery(ip, token, id, label, country, isOnline);
+                } else {
+                    logger.debug("Discovered from cloud, but ignored because not online: {} {}", id, device);
+                }
+            }
+        }
+    }
+
     private void discovered(String ip, byte[] response) {
         logger.trace("Discovery responses from : {}:{}", ip, Utils.getSpacedHex(response));
         Message msg = new Message(response);
         String token = Utils.getHex(msg.getChecksum());
         String id = Utils.getHex(msg.getDeviceId());
-        String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+        String label = "Xiaomi Mi Device " + id + " (" + Utils.fromHEX(id) + ")";
         String country = "";
         boolean isOnline = false;
+        if (ip.equals(cloudDevices.get(id))) {
+            logger.debug("Skipped adding local found {}. Already discovered by cloud.", label);
+            return;
+        }
         if (cloudConnector.isConnected()) {
             cloudConnector.getDevicesList();
             CloudDeviceDTO cloudInfo = cloudConnector.getDeviceInfo(id);
             if (cloudInfo != null) {
                 logger.debug("Cloud Info: {}", cloudInfo);
                 token = cloudInfo.getToken();
-                label = cloudInfo.getName() + " " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+                label = cloudInfo.getName() + " " + id + " (" + Utils.fromHEX(id) + ")";
                 country = cloudInfo.getServer();
                 isOnline = cloudInfo.getIsOnline();
             }
         }
+        submitDiscovery(ip, token, id, label, country, isOnline);
+    }
+
+    private void submitDiscovery(String ip, String token, String id, String label, String country, boolean isOnline) {
         ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
-        logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
         DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
                 .withProperty(PROPERTY_DID, id);
         if (IGNORED_TOKENS.contains(token)) {
+            logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Utils.fromHEX(id), ip, uid);
             logger.debug(
                     "No token discovered for device {}. For options how to get the token, check the binding readme.",
                     id);
             dr = dr.withRepresentationProperty(PROPERTY_DID).withLabel(label);
         } else {
-            logger.debug("Discovered token for device {}: {}", id, token);
+            logger.debug("Discovered Mi Device {} ({}) at {} as {} with token {}", id, Utils.fromHEX(id), ip, uid,
+                    token);
             dr = dr.withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(PROPERTY_DID)
                     .withLabel(label + " with token");
         }

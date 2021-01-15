@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.swagger.client.api.ThermostatApi;
-import io.swagger.client.model.NAMeasureResponse;
 import io.swagger.client.model.NASetpoint;
 import io.swagger.client.model.NAThermProgram;
 import io.swagger.client.model.NAThermostat;
@@ -80,18 +79,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
 
     @Override
     public void updateChannels(Object moduleObject) {
-        if (isRefreshRequired()) {
-            measurableChannels.getMeasuredChannels().ifPresent(csvParams -> {
-                getApi().ifPresent(api -> {
-                    NAMeasureResponse measures = api.getmeasure(getParentId(), "max", csvParams, getId(), null, null, 1,
-                            true, true);
-                    measurableChannels.setMeasures(measures);
-                });
-            });
-            setRefreshRequired(false);
-        }
         super.updateChannels(moduleObject);
-
         getModule().ifPresent(this::updateStateDescription);
     }
 

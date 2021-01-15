@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.miio.internal;
 
+import static org.openhab.core.library.unit.MetricPrefix.MILLI;
+
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -22,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Enum of the units used in the miio protocol
@@ -33,31 +36,62 @@ import org.openhab.core.library.unit.SmartHomeUnits;
 @NonNullByDefault
 public enum MiIoQuantiyTypes {
 
-    CELCIUS(SIUnits.CELSIUS),
+    CELCIUS(SIUnits.CELSIUS, "C"),
     FAHRENHEIT(ImperialUnits.FAHRENHEIT),
-    SECOND(SmartHomeUnits.SECOND),
-    MINUTE(SmartHomeUnits.MINUTE),
-    HOUR(SmartHomeUnits.HOUR),
-    SECONDS(SmartHomeUnits.SECOND),
-    MINUTES(SmartHomeUnits.MINUTE),
-    HOURS(SmartHomeUnits.HOUR),
-    AMPERE(SmartHomeUnits.AMPERE),
-    WATT(SmartHomeUnits.WATT);
+    KELVIN(Units.KELVIN, "K"),
+    PASCAL(SIUnits.PASCAL),
+    SECOND(Units.SECOND, "seconds"),
+    MINUTE(Units.MINUTE, "minutes"),
+    HOUR(Units.HOUR, "hours"),
+    DAY(Units.DAY, "days"),
+    AMPERE(Units.AMPERE),
+    MILLI_AMPERE(MILLI(Units.AMPERE), "mA"),
+    VOLT(Units.VOLT),
+    WATT(Units.WATT),
+    LITRE(Units.LITRE, "liter"),
+    LUX(Units.LUX),
+    RADIANS(Units.RADIAN, "radians"),
+    KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh", "kWH"),
+    SQUARE_METRE(SIUnits.SQUARE_METRE, "square_meter", "squaremeter"),
+    PERCENT(Units.PERCENT),
+    KGM3(Units.KILOGRAM_PER_CUBICMETRE, "kilogram_per_cubicmeter"),
+    UGM3(Units.MICROGRAM_PER_CUBICMETRE, "microgram_per_cubicmeter"),
+    PPM(Units.PARTS_PER_MILLION, "parts_per_million");
 
     private final Unit<?> unit;
+    private final String[] aliasses;
 
     private static Map<String, Unit<?>> stringMap = Arrays.stream(values())
             .collect(Collectors.toMap(Enum::toString, MiIoQuantiyTypes::getUnit));
 
-    private MiIoQuantiyTypes(Unit<?> unit) {
+    private static Map<String, Unit<?>> aliasMap() {
+        Map<String, Unit<?>> aliassesMap = new HashMap<>();
+        for (MiIoQuantiyTypes miIoQuantiyType : values()) {
+            for (String alias : miIoQuantiyType.getAliasses()) {
+                aliassesMap.put(alias.toLowerCase(), miIoQuantiyType.getUnit());
+            }
+        }
+        return aliassesMap;
+    }
+
+    private MiIoQuantiyTypes(Unit<?> unit, String... aliasses) {
         this.unit = unit;
+        this.aliasses = aliasses;
     }
 
     public Unit<?> getUnit() {
         return unit;
     }
 
+    public String[] getAliasses() {
+        return aliasses;
+    }
+
     public static @Nullable Unit<?> get(String unitName) {
-        return stringMap.get(unitName.toUpperCase());
+        Unit<?> unit = stringMap.get(unitName.toUpperCase());
+        if (unit == null) {
+            unit = aliasMap().get(unitName.toLowerCase());
+        }
+        return unit;
     }
 }

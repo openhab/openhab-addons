@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -333,25 +334,25 @@ public class RRMapFileParser {
         pw.printf("Charger pos:\tX: %.0f\tY: %.0f\r\n", getChargerX(), getChargerY());
         pw.printf("Robo pos:\tX: %.0f\tY: %.0f\tAngle: %d\r\n", getRoboX(), getRoboY(), getRoboA());
         pw.printf("Goto:\tX: %.0f\tY: %.0f\r\n", getGotoX(), getGotoY());
-        for (Integer area : areas.keySet()) {
-            pw.print(area == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t");
-            pw.printf("%d\r\n", areas.get(area).size());
-            printAreaDetails(areas.get(area), pw);
+        for (Entry<Integer, ArrayList<float[]>> area : areas.entrySet()) {
+            pw.print(area.getKey() == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t");
+            pw.printf("%d\r\n", area.getValue().size());
+            printAreaDetails(area.getValue(), pw);
         }
         pw.printf("Walls:\t%d\r\n", walls.size());
         printAreaDetails(walls, pw);
         pw.printf("Zones:\t%d\r\n", zones.size());
         printAreaDetails(zones, pw);
-        for (Integer obstacleType : obstacles.keySet()) {
-            pw.printf("Obstacles Type (%d):\t%d\r\n", obstacleType, obstacles.get(obstacleType).size());
-            printObstacleDetails(obstacles.get(obstacleType), pw);
+        for (Entry<Integer, ArrayList<int[]>> obstacleType : obstacles.entrySet()) {
+            pw.printf("Obstacles Type (%d):\t%d\r\n", obstacleType.getKey(), obstacleType.getValue().size());
+            printObstacleDetails(obstacleType.getValue(), pw);
         }
         pw.printf("Blocks:\t%d\r\n", blocks.length);
         pw.print("Paths:");
-        for (Integer p : pathsDetails.keySet()) {
-            pw.printf("\r\nPath type:\t%d", p);
-            for (String detail : pathsDetails.get(p).keySet()) {
-                pw.printf("   %s: %d", detail, pathsDetails.get(p).get(detail));
+        for (Entry<Integer, Map<String, Integer>> pathDetail : pathsDetails.entrySet()) {
+            pw.printf("\r\nPath type:\t%d", pathDetail.getKey());
+            for (String detail : pathDetail.getValue().keySet()) {
+                pw.printf("   %s: %d", detail, pathDetail.getValue().get(detail));
             }
         }
         pw.println();

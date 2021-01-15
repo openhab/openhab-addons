@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -113,8 +113,7 @@ public class ValloxMVHandler extends BaseThingHandler {
             } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_TEMPERATURE.contains(channelUID.getId())) {
                 if (command instanceof QuantityType) {
                     // Convert temperature to centiKelvin (= (Celsius * 100) + 27315 )
-                    QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)
-                            .toUnit(SmartHomeUnits.KELVIN);
+                    QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command).toUnit(Units.KELVIN);
                     if (quantity == null) {
                         return;
                     }

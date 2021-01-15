@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,10 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.openweathermap.internal.discovery.OpenWeatherMapDiscoveryService;
-import org.openhab.binding.openweathermap.internal.handler.AbstractOpenWeatherMapHandler;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapUVIndexHandler;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeatherAndForecastHandler;
+import org.openhab.binding.openweathermap.internal.handler.*;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
@@ -100,6 +97,10 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
             return new OpenWeatherMapWeatherAndForecastHandler(thing, timeZoneProvider);
         } else if (THING_TYPE_UVINDEX.equals(thingTypeUID)) {
             return new OpenWeatherMapUVIndexHandler(thing, timeZoneProvider);
+        } else if (THING_TYPE_ONECALL_WEATHER_AND_FORECAST.equals(thingTypeUID)) {
+            return new OpenWeatherMapOneCallHandler(thing, timeZoneProvider);
+        } else if (THING_TYPE_ONECALL_HISTORY.equals(thingTypeUID)) {
+            return new OpenWeatherMapOneCallHistoryHandler(thing, timeZoneProvider);
         }
 
         return null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,18 +49,19 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class DSMRSerialAutoDeviceTest {
 
     private static final String DUMMY_PORTNAME = "/dev/dummy-serial";
     private static final String TELEGRAM_NAME = "dsmr_50";
 
-    private @Mock SerialPortIdentifier mockIdentifier;
-    private @Mock ScheduledExecutorService scheduler;
-    private @Mock SerialPort mockSerialPort;
+    private @NonNullByDefault({}) @Mock SerialPortIdentifier mockIdentifier;
+    private @NonNullByDefault({}) @Mock ScheduledExecutorService scheduler;
+    private @NonNullByDefault({}) @Mock SerialPort mockSerialPort;
 
-    private SerialPortManager serialPortManager = new SerialPortManager() {
+    private final SerialPortManager serialPortManager = new SerialPortManager() {
         @Override
-        public SerialPortIdentifier getIdentifier(String name) {
+        public @Nullable SerialPortIdentifier getIdentifier(String name) {
             assertEquals(DUMMY_PORTNAME, name, "Expect the passed serial port name");
             return mockIdentifier;
         }
@@ -68,7 +71,7 @@ public class DSMRSerialAutoDeviceTest {
             return Stream.empty();
         }
     };
-    private SerialPortEventListener serialPortEventListener;
+    private @NonNullByDefault({}) SerialPortEventListener serialPortEventListener;
 
     @BeforeEach
     public void setUp() throws PortInUseException, TooManyListenersException {
@@ -81,7 +84,7 @@ public class DSMRSerialAutoDeviceTest {
     @Test
     public void testHandlingDataAndRestart() throws IOException, PortInUseException {
         mockValidSerialPort();
-        AtomicReference<P1Telegram> telegramRef = new AtomicReference<>(null);
+        AtomicReference<@Nullable P1Telegram> telegramRef = new AtomicReference<>(null);
         DSMREventListener listener = new DSMREventListener() {
             @Override
             public void handleTelegramReceived(P1Telegram telegram) {
@@ -114,7 +117,7 @@ public class DSMRSerialAutoDeviceTest {
 
     @Test
     public void testHandleError() throws IOException, PortInUseException {
-        AtomicReference<DSMRConnectorErrorEvent> eventRef = new AtomicReference<>(null);
+        AtomicReference<@Nullable DSMRConnectorErrorEvent> eventRef = new AtomicReference<>(null);
         DSMREventListener listener = new DSMREventListener() {
             @Override
             public void handleTelegramReceived(P1Telegram telegram) {

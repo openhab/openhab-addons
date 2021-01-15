@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,25 +12,16 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
-import java.io.IOException;
-
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
-import org.openhab.binding.fronius.internal.api.BaseFroniusResponse;
 import org.openhab.binding.fronius.internal.api.InverterRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.PowerFlowRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.ValueUnit;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link FroniusSymoInverterHandler} is responsible for updating the data, which are
@@ -41,16 +32,13 @@ import com.google.gson.JsonSyntaxException;
  */
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
-    private static final int API_TIMEOUT = 5000;
     private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterHandler.class);
     private InverterRealtimeResponse inverterRealtimeResponse;
     private PowerFlowRealtimeResponse powerFlowResponse;
     private FroniusBaseDeviceConfiguration config;
-    private final Gson gson;
 
     public FroniusSymoInverterHandler(Thing thing) {
         super(thing);
-        gson = new Gson();
     }
 
     @Override
@@ -147,54 +135,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config) {
         inverterRealtimeResponse = getRealtimeData(bridgeConfiguration.hostname, config.deviceId);
         powerFlowResponse = getPowerFlowRealtime(bridgeConfiguration.hostname);
-    }
-
-    /**
-     *
-     * @param type response class type
-     * @param url to request
-     * @return the object representation of the json response
-     */
-    private <T extends BaseFroniusResponse> T collectDataFormUrl(Class<T> type, String url) {
-        T result = null;
-        boolean resultOk = false;
-        String errorMsg = null;
-
-        try {
-            logger.debug("URL = {}", url);
-            String response = HttpUtil.executeUrl("GET", url, API_TIMEOUT);
-
-            if (response != null) {
-                logger.debug("aqiResponse = {}", response);
-                result = gson.fromJson(response, type);
-            }
-
-            if (result == null) {
-                errorMsg = "no data returned";
-            } else {
-                if (result.getHead().getStatus().getCode() == 0) {
-                    resultOk = true;
-                } else {
-                    errorMsg = result.getHead().getStatus().getReason();
-                }
-            }
-            if (!resultOk) {
-                logger.debug("Error in fronius response: {}", errorMsg);
-            }
-        } catch (JsonSyntaxException e) {
-            errorMsg = "Configuration is incorrect";
-            logger.debug("Error running fronius request: {}", errorMsg);
-        } catch (IOException | IllegalStateException e) {
-            logger.debug("Error running fronius request: {}", e.getMessage());
-        }
-
-        // Update the thing status
-        if (resultOk) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
-        }
-        return resultOk ? result : null;
     }
 
     /**

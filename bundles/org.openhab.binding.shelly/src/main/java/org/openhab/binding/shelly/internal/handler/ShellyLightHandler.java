@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -148,7 +148,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", col.power);
                         updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
                                 toQuantityType(new Double(col.power == OnOffType.ON ? col.brightness : 0), DIGITS_NONE,
-                                        SmartHomeUnits.PERCENT));
+                                        Units.PERCENT));
                         update = false;
                         break;
                     }
@@ -387,7 +387,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
                 updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType(col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : new Double(0),
-                                DIGITS_NONE, SmartHomeUnits.PERCENT));
+                                DIGITS_NONE, Units.PERCENT));
 
                 if ((profile.isBulb || profile.isDuo) && (light.temp != null)) {
                     col.setTemp(getInteger(light.temp));

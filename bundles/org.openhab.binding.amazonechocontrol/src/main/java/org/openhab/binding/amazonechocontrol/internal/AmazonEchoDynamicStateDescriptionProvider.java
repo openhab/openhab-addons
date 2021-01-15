@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,7 @@ package org.openhab.binding.amazonechocontrol.internal;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -106,17 +102,13 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             if (bluetoothState == null) {
                 return null;
             }
-            PairedDevice[] pairedDeviceList = bluetoothState.pairedDeviceList;
-            if (pairedDeviceList == null) {
+            List<PairedDevice> pairedDeviceList = bluetoothState.getPairedDeviceList();
+            if (pairedDeviceList.isEmpty()) {
                 return null;
             }
-
             List<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             for (PairedDevice device : pairedDeviceList) {
-                if (device == null) {
-                    continue;
-                }
                 final String value = device.address;
                 if (value != null && device.friendlyName != null) {
                     options.add(new StateOption(value, device.friendlyName));
@@ -160,8 +152,8 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return null;
             }
 
-            JsonNotificationSound[] notificationSounds = handler.findAlarmSounds();
-            if (notificationSounds == null) {
+            List<JsonNotificationSound> notificationSounds = handler.findAlarmSounds();
+            if (notificationSounds.isEmpty()) {
                 return null;
             }
 
@@ -169,9 +161,8 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             options.add(new StateOption("", ""));
 
             for (JsonNotificationSound notificationSound : notificationSounds) {
-                if (notificationSound != null && notificationSound.folder == null
-                        && notificationSound.providerId != null && notificationSound.id != null
-                        && notificationSound.displayName != null) {
+                if (notificationSound.folder == null && notificationSound.providerId != null
+                        && notificationSound.id != null && notificationSound.displayName != null) {
                     String providerSoundId = notificationSound.providerId + ":" + notificationSound.id;
                     options.add(new StateOption(providerSoundId, notificationSound.displayName));
                 }
@@ -197,8 +188,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             options.add(new StateOption("", ""));
             for (Device device : devices) {
                 final String value = device.serialNumber;
-                if (value != null && device.capabilities != null
-                        && Arrays.asList(device.capabilities).contains("FLASH_BRIEFING")) {
+                if (value != null && device.getCapabilities().contains("FLASH_BRIEFING")) {
                     options.add(new StateOption(value, device.accountName));
                 }
             }
@@ -210,7 +200,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return null;
             }
             List<JsonMusicProvider> musicProviders = handler.findMusicProviders();
-            if (musicProviders == null) {
+            if (musicProviders.isEmpty()) {
                 return null;
             }
 

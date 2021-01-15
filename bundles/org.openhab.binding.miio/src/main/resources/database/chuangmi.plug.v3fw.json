@@ -14,12 +14,15 @@
 				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				],
 				"readmeComment": "If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware"
 			},
@@ -43,11 +46,15 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"channelType": "temperatureC",
-				"unit": "CELCIUS",
 				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
-				"ChannelGroup": "",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "wifi_led",

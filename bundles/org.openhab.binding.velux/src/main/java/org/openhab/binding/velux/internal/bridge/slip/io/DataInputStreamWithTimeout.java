@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,124 +12,222 @@
  */
 package org.openhab.binding.velux.internal.bridge.slip.io;
 
-import java.io.DataInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.Queue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This is an extension of {@link java.io.DataInputStream}, which adds timeouts to receive operation.
- * <P>
- * A data input stream lets an application read primitive Java data
- * types from an underlying input stream in a machine-independent
- * way. An application uses a data output stream to write data that
- * can later be read by a data input stream.
- * <p>
- * For an in-depth discussion, see:
- * https://stackoverflow.com/questions/804951/is-it-possible-to-read-from-a-inputstream-with-a-timeout
+ * This is an wrapper around {@link java.io.InputStream} to support socket receive operations.
+ *
+ * It implements a secondary polling thread to asynchronously read bytes from the socket input stream into a buffer. And
+ * it parses the bytes into SLIP messages, which are placed on a message queue. Callers can access the SLIP messages in
+ * this queue independently from the polling thread.
  *
  * @author Guenther Schreiner - Initial contribution.
+ * @author Andrew Fiddian-Green - Complete rewrite using asynchronous polling thread.
  */
 @NonNullByDefault
-class DataInputStreamWithTimeout extends DataInputStream {
+class DataInputStreamWithTimeout implements Closeable {
 
-    /*
-     * ***************************
-     * ***** Private Objects *****
-     */
+    private static final int QUEUE_SIZE = 512;
+    private static final int BUFFER_SIZE = 512;
+    private static final int SLEEP_INTERVAL_MSECS = 50;
 
-    /**
-     * Executor for asynchronous read command
-     */
-    ExecutorService executor = Executors.newFixedThreadPool(2);
+    // special character that marks the first and last byte of a slip message
+    private static final byte SLIP_MARK = (byte) 0xc0;
 
-    /**
-     * Creates a DataInputStreamWithTimeout that uses the specified
-     * underlying DataInputStream.
-     *
-     * @param in the specified input stream
-     */
-    public DataInputStreamWithTimeout(InputStream in) {
-        super(in);
+    private final Logger logger = LoggerFactory.getLogger(DataInputStreamWithTimeout.class);
+
+    private final Queue<byte[]> slipMessageQueue = new ConcurrentLinkedQueue<>();
+
+    private InputStream inputStream;
+
+    private @Nullable String pollException = null;
+    private @Nullable Poller pollRunner = null;
+    private ExecutorService executor;
+
+    private class Poller implements Callable<Boolean> {
+
+        private boolean interrupted = false;
+
+        public void interrupt() {
+            interrupted = true;
+        }
+
+        /**
+         * Task that loops to read bytes from {@link InputStream} and build SLIP packets from them. The SLIP packets are
+         * placed in a {@link ConcurrentLinkedQueue}. It loops continuously until 'interrupt()' or 'Thread.interrupt()'
+         * are called when terminates early after the next socket read timeout.
+         */
+        @Override
+        public Boolean call() throws Exception {
+            byte[] buf = new byte[BUFFER_SIZE];
+            byte byt;
+            int i = 0;
+
+            // clean start, no exception, empty queue
+            pollException = null;
+            slipMessageQueue.clear();
+
+            // loop forever or until internally or externally interrupted
+            while ((!interrupted) && (!Thread.interrupted())) {
+                try {
+                    buf[i] = byt = (byte) inputStream.read();
+                    if (byt == SLIP_MARK) {
+                        if (i > 0) {
+                            // the minimal slip message is 7 bytes [MM PP LL CC CC KK MM]
+                            if ((i > 5) && (buf[0] == SLIP_MARK)) {
+                                slipMessageQueue.offer(Arrays.copyOfRange(buf, 0, i + 1));
+                                if (slipMessageQueue.size() > QUEUE_SIZE) {
+                                    logger.warn("pollRunner() => slip message queue overflow => PLEASE REPORT !!");
+                                    slipMessageQueue.poll();
+                                }
+                            }
+                            i = 0;
+                            buf[0] = SLIP_MARK;
+                            continue;
+                        }
+                    }
+                    if (++i >= BUFFER_SIZE) {
+                        i = 0;
+                    }
+                } catch (SocketTimeoutException e) {
+                    // socket read time outs are OK => keep on polling
+                    continue;
+                } catch (IOException e) {
+                    // any other exception => stop polling
+                    String msg = e.getMessage();
+                    pollException = msg != null ? msg : "Generic IOException";
+                    logger.debug("pollRunner() stopping '{}'", pollException);
+                    break;
+                }
+            }
+
+            // we only get here if shutdown or an error occurs so free ourself so we can be recreated again
+            pollRunner = null;
+            return true;
+        }
     }
 
     /**
-     * Reads up to <code>len</code> bytes of data from the contained
-     * input stream into an array of bytes. An attempt is made to read
-     * as many as <code>len</code> bytes, but a smaller number may be read,
-     * possibly zero. The number of bytes actually read is returned as an
-     * integer.
+     * Check if there was an exception on the polling loop task and if so, throw it back on the caller thread.
      *
-     * <p>
-     * This method blocks until input data is available, end of file is
-     * detected, or an exception is thrown <B>until</B> the given timeout.
-     *
-     * <p>
-     * If <code>len</code> is zero, then no bytes are read and
-     * <code>0</code> is returned; otherwise, there is an attempt to read at
-     * least one byte. If no byte is available because the stream is at end of
-     * file, the value <code>-1</code> is returned; otherwise, at least one
-     * byte is read and stored into <code>b</code>.
-     *
-     * <p>
-     * The first byte read is stored into element <code>b[off]</code>, the
-     * next one into <code>b[off+1]</code>, and so on. The number of bytes read
-     * is, at most, equal to <code>len</code>. Let <i>k</i> be the number of
-     * bytes actually read; these bytes will be stored in elements
-     * <code>b[off]</code> through <code>b[off+</code><i>k</i><code>-1]</code>,
-     * leaving elements <code>b[off+</code><i>k</i><code>]</code> through
-     * <code>b[off+len-1]</code> unaffected.
-     *
-     * <p>
-     * In every case, elements <code>b[0]</code> through
-     * <code>b[off]</code> and elements <code>b[off+len]</code> through
-     * <code>b[b.length-1]</code> are unaffected.
-     *
-     * @param b the buffer into which the data is read.
-     * @param off the start offset in the destination array <code>b</code>
-     * @param len the maximum number of bytes read.
-     * @param timeoutMSecs the maximum duration of this read before throwing a TimeoutException.
-     * @return the total number of bytes read into the buffer, or
-     *         <code>-1</code> if there is no more data because the end
-     *         of the stream has been reached.
-     * @exception NullPointerException If <code>b</code> is <code>null</code>.
-     * @exception IndexOutOfBoundsException If <code>off</code> is negative,
-     *                <code>len</code> is negative, or <code>len</code> is greater than
-     *                <code>b.length - off</code>
-     * @exception IOException if the first byte cannot be read for any reason
-     *                other than end of file, the stream has been closed and the underlying
-     *                input stream does not support reading after close, or another I/O
-     *                error occurs. Additionally it will occur when the timeout happens.
-     * @see java.io.DataInputStream#read
+     * @throws IOException
      */
-    public synchronized int read(byte b[], int off, int len, int timeoutMSecs) throws IOException {
-        // Definition of Method which encapsulates the Read of data
-        Callable<Integer> readTask = new Callable<Integer>() {
-            @Override
-            public Integer call() throws IOException {
-                return in.read(b, off, len);
-            }
-        };
-        try {
-            Future<Integer> future = executor.submit(readTask);
-            return future.get(timeoutMSecs, TimeUnit.MILLISECONDS);
-        } catch (RejectedExecutionException e) {
-            throw new IOException("executor failed", e);
-        } catch (ExecutionException e) {
-            throw new IOException("execution failed", e);
-        } catch (InterruptedException e) {
-            throw new IOException("read interrupted", e);
-        } catch (TimeoutException e) {
-            throw new IOException("read timeout", e);
+    private void throwIfPollException() throws IOException {
+        if (pollException != null) {
+            logger.debug("passPollException() polling loop exception {}", pollException);
+            throw new IOException(pollException);
         }
+    }
+
+    /**
+     * Creates a {@link DataInputStreamWithTimeout} as a wrapper around the specified underlying {@link InputStream}
+     *
+     * @param stream the specified input stream
+     * @param bridge the actual Bridge Thing instance
+     */
+    public DataInputStreamWithTimeout(InputStream stream, VeluxBridgeHandler bridge) {
+        inputStream = stream;
+        executor = Executors.newSingleThreadExecutor(bridge.getThreadFactory());
+    }
+
+    /**
+     * Overridden method of {@link Closeable} interface. Stops the polling thread.
+     *
+     * @throws IOException
+     */
+    @Override
+    public void close() throws IOException {
+        stopPolling();
+    }
+
+    /**
+     * Reads and removes the next available SLIP message from the queue. If the queue is empty, continue polling
+     * until either a message is found, or the timeout expires.
+     *
+     * @param timeoutMSecs the timeout period in milliseconds.
+     * @return the next SLIP message if there is one on the queue, or any empty byte[] array if not.
+     * @throws IOException
+     */
+    public synchronized byte[] readSlipMessage(int timeoutMSecs) throws IOException {
+        startPolling();
+        int i = (timeoutMSecs / SLEEP_INTERVAL_MSECS) + 1;
+        while (i-- >= 0) {
+            try {
+                byte[] slip = slipMessageQueue.remove();
+                logger.trace("readSlipMessage() => return slip message");
+                return slip;
+            } catch (NoSuchElementException e) {
+                // queue empty, wait and continue
+            }
+            throwIfPollException();
+            try {
+                Thread.sleep(SLEEP_INTERVAL_MSECS);
+            } catch (InterruptedException e) {
+                logger.debug("readSlipMessage() => thread interrupt");
+                throw new IOException("Thread Interrupted");
+            }
+        }
+        logger.debug("readSlipMessage() => no slip message after {}mS => time out", timeoutMSecs);
+        return new byte[0];
+    }
+
+    /**
+     * Get the number of incoming messages in the queue
+     *
+     * @return the number of incoming messages in the queue
+     */
+    public int available() {
+        int size = slipMessageQueue.size();
+        logger.trace("available() => slip message count {}", size);
+        return size;
+    }
+
+    /**
+     * Clear the queue
+     */
+    public void flush() {
+        logger.trace("flush() called");
+        slipMessageQueue.clear();
+    }
+
+    /**
+     * Start the polling task
+     */
+    private void startPolling() {
+        Poller pollRunner = this.pollRunner;
+        if (pollRunner == null) {
+            logger.trace("startPolling()");
+            pollRunner = this.pollRunner = new Poller();
+            executor.submit(pollRunner);
+        }
+    }
+
+    /**
+     * Stop the polling task
+     */
+    private void stopPolling() {
+        Poller pollRunner = this.pollRunner;
+        if (pollRunner != null) {
+            logger.trace("stopPolling()");
+            pollRunner.interrupt();
+            this.pollRunner = null;
+        }
+        executor.shutdown();
     }
 }

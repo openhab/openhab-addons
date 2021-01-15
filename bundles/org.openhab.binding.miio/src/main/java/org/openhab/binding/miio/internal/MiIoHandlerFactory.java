@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
@@ -52,11 +53,12 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
     private CloudConnector cloudConnector;
     private ChannelTypeRegistry channelTypeRegistry;
+    private BasicChannelTypeProvider basicChannelTypeProvider;
 
     @Activate
     public MiIoHandlerFactory(@Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference MiIoDatabaseWatchService miIoDatabaseWatchService, @Reference CloudConnector cloudConnector,
-            Map<String, Object> properties) {
+            @Reference BasicChannelTypeProvider basicChannelTypeProvider, Map<String, Object> properties) {
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.cloudConnector = cloudConnector;
         @Nullable
@@ -68,6 +70,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         cloudConnector.setCredentials(username, password, country);
         scheduler.submit(() -> cloudConnector.isConnected());
         this.channelTypeRegistry = channelTypeRegistry;
+        this.basicChannelTypeProvider = basicChannelTypeProvider;
     }
 
     @Override
@@ -79,14 +82,15 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_MIIO)) {
-            return new MiIoGenericHandler(thing, miIoDatabaseWatchService);
+            return new MiIoGenericHandler(thing, miIoDatabaseWatchService, cloudConnector);
         }
         if (thingTypeUID.equals(THING_TYPE_BASIC)) {
-            return new MiIoBasicHandler(thing, miIoDatabaseWatchService, channelTypeRegistry);
+            return new MiIoBasicHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
+                    basicChannelTypeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
         }
-        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService);
+        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector);
     }
 }

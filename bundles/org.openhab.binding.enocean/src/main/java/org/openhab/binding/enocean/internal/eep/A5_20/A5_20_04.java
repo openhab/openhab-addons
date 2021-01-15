@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -222,10 +222,10 @@ public class A5_20_04 extends A5_20 {
         boolean fl = getBit(getDB_0Value(), 0);
 
         if (!fl) {
-            return new QuantityType<>(-1, SmartHomeUnits.ONE);
+            return new QuantityType<>(-1, Units.ONE);
         }
 
-        return new QuantityType<>(getDB_1Value(), SmartHomeUnits.ONE);
+        return new QuantityType<>(getDB_1Value(), Units.ONE);
     }
 
     private State getMeasurementControl() {
@@ -262,6 +262,6 @@ public class A5_20_04 extends A5_20 {
     }
 
     private State getValvePosition() {
-        return new QuantityType<>(getDB_3Value(), SmartHomeUnits.PERCENT);
+        return new QuantityType<>(getDB_3Value(), Units.PERCENT);
     }
 }

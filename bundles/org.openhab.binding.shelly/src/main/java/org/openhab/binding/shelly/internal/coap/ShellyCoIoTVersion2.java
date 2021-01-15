@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +113,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "1103": // roller_0: S, rollerPos, 0-100, unknown -1
                 int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min((int) value, SHELLY_MAX_ROLLER_POS));
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
-                        toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), SmartHomeUnits.PERCENT));
+                        toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
                 break;
             case "1105": // S, valvle, closed/opened/not_connected/failure/closing/opening/checking or unbknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE, getStringType(s.valueStr));
@@ -192,7 +192,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "4102": // roller_0: P, rollerPower, W, 0-2300, unknown -1
             case "4202": // roller_1: P, rollerPower, W, 0-2300, unknown -1
                 updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                        toQuantityType(s.value, DIGITS_WATT, Units.WATT));
                 updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
                 break;
 
@@ -207,28 +207,28 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "4306": // emeter_2: E, energy, Wh, U32
                 double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
                 updateChannel(updates, mGroup, CHANNEL_METER_TOTALKWH,
-                        toQuantityType(total, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                        toQuantityType(total, DIGITS_KWH, Units.KILOWATT_HOUR));
                 break;
 
             case "4107": // emeter_0: E, energyReturned, Wh, U32, -1
             case "4207": // emeter_1: E, energyReturned, Wh, U32, -1
             case "4307": // emeter_2: E, energyReturned, Wh, U32, -1
                 updateChannel(updates, mGroup, CHANNEL_EMETER_TOTALRET,
-                        toQuantityType(getDouble(s.value) / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                        toQuantityType(getDouble(s.value) / 1000, DIGITS_KWH, Units.KILOWATT_HOUR));
                 break;
 
             case "4108": // emeter_0: V, voltage, 0-265V, U32, -1
             case "4208": // emeter_1: V, voltage, 0-265V, U32, -1
             case "4308": // emeter_2: V, voltage, 0-265V, U32, -1
                 updateChannel(updates, mGroup, CHANNEL_EMETER_VOLTAGE,
-                        toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                        toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.VOLT));
                 break;
 
             case "4109": // emeter_0: A, current, 0/120A, -1
             case "4209": // emeter_1: A, current, 0/120A, -1
             case "4309": // emeter_2: A, current, 0/120A, -1
                 updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
-                        toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.AMPERE));
+                        toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.AMPERE));
                 break;
 
             case "4110": // emeter_0: S, powerFactor, 0/1, -1

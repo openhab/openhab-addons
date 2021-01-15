@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,14 +20,14 @@ import javax.measure.quantity.Dimensionless;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.core.library.dimension.Density;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 import tec.uom.se.format.SimpleUnitFormat;
 import tec.uom.se.function.RationalConverter;
 import tec.uom.se.unit.ProductUnit;
 import tec.uom.se.unit.TransformedUnit;
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link AirthingsBindingConstants} class defines common constants, which are
@@ -51,10 +51,10 @@ public class AirthingsBindingConstants {
     public static final String CHANNEL_ID_RADON_ST_AVG = "radon_st_avg";
     public static final String CHANNEL_ID_RADON_LT_AVG = "radon_lt_avg";
 
-    public static final Unit<Dimensionless> PARTS_PER_BILLION = new TransformedUnit<>(SmartHomeUnits.ONE,
+    public static final Unit<Dimensionless> PARTS_PER_BILLION = new TransformedUnit<>(Units.ONE,
             new RationalConverter(BigInteger.ONE, BigInteger.valueOf(1000000000)));
     public static final Unit<Density> BECQUEREL_PER_CUBIC_METRE = new ProductUnit<>(
-            Units.BECQUEREL.divide(Units.CUBIC_METRE));
+            Units.BECQUEREL.divide(SIUnits.CUBIC_METRE));
 
     static {
         SimpleUnitFormat.getInstance().label(PARTS_PER_BILLION, "ppb");

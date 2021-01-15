@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
 import org.openhab.binding.ambientweather.internal.model.EventDataJson;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link Ws2902aProcessor} is responsible for updating
@@ -61,16 +61,16 @@ public class Ws2902aProcessor extends AbstractProcessor {
         handler.updateQuantity(channelGroupId, CH_TEMPERATURE, data.tempf, ImperialUnits.FAHRENHEIT);
         handler.updateQuantity(channelGroupId, CH_FEELING_TEMPERATURE, data.feelsLike, ImperialUnits.FAHRENHEIT);
         handler.updateQuantity(channelGroupId, CH_DEW_POINT, data.dewPoint, ImperialUnits.FAHRENHEIT);
-        handler.updateQuantity(channelGroupId, CH_HUMIDITY, data.humidity, SmartHomeUnits.PERCENT);
+        handler.updateQuantity(channelGroupId, CH_HUMIDITY, data.humidity, Units.PERCENT);
         handler.updateQuantity(channelGroupId, CH_PRESSURE_ABSOLUTE, data.baromabsin, ImperialUnits.INCH_OF_MERCURY);
         handler.updateQuantity(channelGroupId, CH_PRESSURE_RELATIVE, data.baromrelin, ImperialUnits.INCH_OF_MERCURY);
         handler.updateQuantity(channelGroupId, CH_WIND_SPEED, data.windspeedmph, ImperialUnits.MILES_PER_HOUR);
-        handler.updateQuantity(channelGroupId, CH_WIND_DIRECTION_DEGREES, data.winddir, SmartHomeUnits.DEGREE_ANGLE);
+        handler.updateQuantity(channelGroupId, CH_WIND_DIRECTION_DEGREES, data.winddir, Units.DEGREE_ANGLE);
         handler.updateQuantity(channelGroupId, CH_WIND_GUST, data.windgustmph, ImperialUnits.MILES_PER_HOUR);
         handler.updateQuantity(channelGroupId, CH_WIND_GUST_MAX_DAILY, data.maxdailygust, ImperialUnits.MILES_PER_HOUR);
-        handler.updateQuantity(channelGroupId, CH_SOLAR_RADIATION, data.solarradiation, SmartHomeUnits.IRRADIANCE);
+        handler.updateQuantity(channelGroupId, CH_SOLAR_RADIATION, data.solarradiation, Units.IRRADIANCE);
         handler.updateNumber(channelGroupId, CH_UV_INDEX, data.uv);
-        handler.updateQuantity(channelGroupId, CH_RAIN_HOURLY_RATE, data.hourlyrainin, SmartHomeUnits.INCHES_PER_HOUR);
+        handler.updateQuantity(channelGroupId, CH_RAIN_HOURLY_RATE, data.hourlyrainin, Units.INCHES_PER_HOUR);
         handler.updateQuantity(channelGroupId, CH_RAIN_DAY, data.dailyrainin, ImperialUnits.INCH);
         handler.updateQuantity(channelGroupId, CH_RAIN_WEEK, data.weeklyrainin, ImperialUnits.INCH);
         handler.updateQuantity(channelGroupId, CH_RAIN_MONTH, data.monthlyrainin, ImperialUnits.INCH);
@@ -93,7 +93,7 @@ public class Ws2902aProcessor extends AbstractProcessor {
 
         // Update indoor sensor channels
         handler.updateQuantity(CHGRP_INDOOR_SENSOR, CH_TEMPERATURE, data.tempinf, ImperialUnits.FAHRENHEIT);
-        handler.updateQuantity(CHGRP_INDOOR_SENSOR, CH_HUMIDITY, data.humidityin, SmartHomeUnits.PERCENT);
+        handler.updateQuantity(CHGRP_INDOOR_SENSOR, CH_HUMIDITY, data.humidityin, Units.PERCENT);
         handler.updateString(CHGRP_INDOOR_SENSOR, CH_BATTERY_INDICATOR, NOT_APPLICABLE);
     }
 }

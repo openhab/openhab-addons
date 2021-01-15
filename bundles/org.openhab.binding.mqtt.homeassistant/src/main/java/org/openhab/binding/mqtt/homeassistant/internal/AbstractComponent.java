@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 
 /**
- * A HomeAssistant component is comparable to an ESH channel group.
+ * A HomeAssistant component is comparable to a channel group.
  * It has a name and consists of multiple channels.
  *
  * @author David Graeff - Initial contribution
@@ -61,7 +61,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     protected boolean configSeen;
 
     /**
-     * Provide a thingUID and HomeAssistant topic ID to determine the ESH channel group UID and type.
+     * Provide a thingUID and HomeAssistant topic ID to determine the channel group UID and type.
      *
      * @param thing A ThingUID
      * @param haID A HomeAssistant topic ID
@@ -147,14 +147,14 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     }
 
     /**
-     * Each HomeAssistant component corresponds to an ESH Channel Group Type.
+     * Each HomeAssistant component corresponds to a Channel Group Type.
      */
     public ChannelGroupTypeUID groupTypeUID() {
         return channelGroupTypeUID;
     }
 
     /**
-     * The unique id of this component within the ESH framework.
+     * The unique id of this component.
      */
     public ChannelGroupUID uid() {
         return channelGroupUID;
@@ -168,7 +168,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     }
 
     /**
-     * Each component consists of multiple ESH Channels.
+     * Each component consists of multiple Channels.
      */
     public Map<String, CChannel> channelTypes() {
         return channels;
@@ -176,7 +176,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
 
     /**
      * Return a components channel. A HomeAssistant MQTT component consists of multiple functions
-     * and those are mapped to one or more ESH channels. The channel IDs are constants within the
+     * and those are mapped to one or more channels. The channel IDs are constants within the
      * derived Component, like the {@link ComponentSwitch#switchChannelID}.
      *
      * @param channelID The channel ID

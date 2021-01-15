@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.opensprinkler.internal.handler;
 
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
-import static org.openhab.core.library.unit.SmartHomeUnits.PERCENT;
+import static org.openhab.core.library.unit.Units.PERCENT;
 
 import javax.measure.quantity.ElectricCurrent;
 
@@ -23,7 +23,7 @@ import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApi
 import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -62,7 +62,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     break;
                 case SENSOR_CURRENT_DRAW:
                     updateState(channel,
-                            new QuantityType<ElectricCurrent>(getApi().currentDraw(), MILLI(SmartHomeUnits.AMPERE)));
+                            new QuantityType<ElectricCurrent>(getApi().currentDraw(), MILLI(Units.AMPERE)));
                     break;
                 default:
                     logger.debug("Not updating unknown channel {}", channel);

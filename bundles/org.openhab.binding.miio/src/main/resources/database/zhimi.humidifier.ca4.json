@@ -20,6 +20,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -37,6 +41,9 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
@@ -56,11 +63,16 @@
 				"piid": 9,
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "target_humidity",
@@ -88,9 +100,10 @@
 				"channelType": "waterlevel",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"transformation": "tankLevel",
-				"actions": []
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "water"
 			},
 			{
 				"property": "led_brightness",
@@ -98,8 +111,7 @@
 				"piid": 2,
 				"friendlyName": "LED Brightness",
 				"channel": "bright",
-				"channelType": "humidifierLedBrightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -107,6 +119,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -151,11 +168,12 @@
 				"channel": "usedhours",
 				"channelType": "usedhours",
 				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"unit": "hours",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "power_time",
@@ -165,11 +183,12 @@
 				"channel": "powerhours",
 				"channelType": "powerhours",
 				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"unit": "hours",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "speed_level",
@@ -203,9 +222,15 @@
 				"channel": "temperature",
 				"channelType": "temperatureC",
 				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "child_lock",

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,9 +21,9 @@ import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.bridge.VeluxBridge;
-import org.openhab.binding.velux.internal.bridge.VeluxBridgeInstance;
 import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +84,7 @@ public class JsonVeluxBridge extends VeluxBridge {
      *
      * @param bridgeInstance refers to the binding-wide instance for dealing for common informations.
      */
-    public JsonVeluxBridge(VeluxBridgeInstance bridgeInstance) {
+    public JsonVeluxBridge(VeluxBridgeHandler bridgeInstance) {
         super(bridgeInstance);
         logger.trace("JsonVeluxBridge(constructor) called.");
         bridgeAPI = new JsonBridgeAPI(bridgeInstance);

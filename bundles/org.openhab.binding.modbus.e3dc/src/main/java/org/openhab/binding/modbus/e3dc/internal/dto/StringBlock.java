@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,9 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
+import org.openhab.core.io.transport.modbus.ValueBuffer;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
-import org.openhab.io.transport.modbus.ValueBuffer;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link StringBlock} Data object for E3DC Info Block
@@ -47,15 +47,15 @@ public class StringBlock implements Data {
     public StringBlock(byte[] bArray) {
         ValueBuffer wrap = ValueBuffer.wrap(bArray);
         // straight forward - for each String the values Volt, Ampere and then Watt. All unt16 = 2 bytes values
-        string1Volt = QuantityType.valueOf(wrap.getUInt16(), SmartHomeUnits.VOLT);
-        string2Volt = QuantityType.valueOf(wrap.getUInt16(), SmartHomeUnits.VOLT);
-        string3Volt = QuantityType.valueOf(wrap.getUInt16(), SmartHomeUnits.VOLT);
+        string1Volt = QuantityType.valueOf(wrap.getUInt16(), Units.VOLT);
+        string2Volt = QuantityType.valueOf(wrap.getUInt16(), Units.VOLT);
+        string3Volt = QuantityType.valueOf(wrap.getUInt16(), Units.VOLT);
         // E3DC Modbus Spec chapter 3.1.2, page 16 - Ampere values shall be handled with factor 0.01
-        string1Ampere = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.01), SmartHomeUnits.AMPERE);
-        string2Ampere = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.01), SmartHomeUnits.AMPERE);
-        string3Ampere = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.01), SmartHomeUnits.AMPERE);
-        string1Watt = QuantityType.valueOf(wrap.getUInt16(), SmartHomeUnits.WATT);
-        string2Watt = QuantityType.valueOf(wrap.getUInt16(), SmartHomeUnits.WATT);
-        string3Watt = QuantityType.valueOf(wrap.getUInt16(), SmartHomeUnits.WATT);
+        string1Ampere = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.01), Units.AMPERE);
+        string2Ampere = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.01), Units.AMPERE);
+        string3Ampere = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.01), Units.AMPERE);
+        string1Watt = QuantityType.valueOf(wrap.getUInt16(), Units.WATT);
+        string2Watt = QuantityType.valueOf(wrap.getUInt16(), Units.WATT);
+        string3Watt = QuantityType.valueOf(wrap.getUInt16(), Units.WATT);
     }
 }

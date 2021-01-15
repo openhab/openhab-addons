@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +75,11 @@ public class ShellyCoIoTProtocol {
         switch (sen.type.toLowerCase()) {
             case "b": // BatteryLevel +
                 updateChannel(updates, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                        toQuantityType(s.value, DIGITS_PERCENT, SmartHomeUnits.PERCENT));
+                        toQuantityType(s.value, DIGITS_PERCENT, Units.PERCENT));
                 break;
             case "h" /* Humidity */:
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
-                        toQuantityType(s.value, DIGITS_PERCENT, SmartHomeUnits.PERCENT));
+                        toQuantityType(s.value, DIGITS_PERCENT, Units.PERCENT));
                 break;
             case "m" /* Motion */:
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
@@ -87,7 +87,7 @@ public class ShellyCoIoTProtocol {
                 break;
             case "l": // Luminosity +
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
-                        toQuantityType(s.value, DIGITS_LUX, SmartHomeUnits.LUX));
+                        toQuantityType(s.value, DIGITS_LUX, Units.LUX));
                 break;
             case "s": // CatchAll
                 switch (sen.desc.toLowerCase()) {
@@ -110,9 +110,9 @@ public class ShellyCoIoTProtocol {
                         // work around: Roller reports 101% instead max 100
                         double pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(s.value, SHELLY_MAX_ROLLER_POS));
                         updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
-                                toQuantityType(SHELLY_MAX_ROLLER_POS - pos, SmartHomeUnits.PERCENT));
+                                toQuantityType(SHELLY_MAX_ROLLER_POS - pos, Units.PERCENT));
                         updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
-                                toQuantityType(pos, SmartHomeUnits.PERCENT));
+                                toQuantityType(pos, Units.PERCENT));
                         break;
                     case "flood":
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -251,7 +251,7 @@ public class ShellyCoIoTProtocol {
             }
             if (brightness != -1) {
                 updateChannel(updates, group, channel + "$Value",
-                        toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, SmartHomeUnits.PERCENT));
+                        toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
             }
         } else if (profile.hasRelays) {
             group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + id;

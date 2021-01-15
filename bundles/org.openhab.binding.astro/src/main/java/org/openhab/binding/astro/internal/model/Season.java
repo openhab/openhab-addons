@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import javax.measure.quantity.Time;
 
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Holds the season dates of the year and the current name.
@@ -109,7 +109,7 @@ public class Season {
      * Returns the next season.
      */
     public Calendar getNextSeason() {
-        return DateTimeUtils.getNext(spring, summer, autumn, winter);
+        return DateTimeUtils.getNextFromToday(spring, summer, autumn, winter);
     }
 
     /**
@@ -129,7 +129,7 @@ public class Season {
     public QuantityType<Time> getTimeLeft() {
         Calendar now = Calendar.getInstance();
         Calendar next = getNextSeason();
-        return new QuantityType<>(next.getTimeInMillis() - now.getTimeInMillis(), MILLI(SmartHomeUnits.SECOND))
-                .toUnit(SmartHomeUnits.DAY);
+        return new QuantityType<>(next.getTimeInMillis() - now.getTimeInMillis(), MILLI(Units.SECOND))
+                .toUnit(Units.DAY);
     }
 }

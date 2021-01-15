@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,18 +16,17 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.openhab.binding.deconz.internal.Util.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.CommandDescriptionProvider;
 import org.openhab.binding.deconz.internal.StateDescriptionProvider;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.ChannelUID;
@@ -35,11 +34,9 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.StateDescription;
-import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.openhab.core.types.UnDefType;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +57,7 @@ import com.google.gson.Gson;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
+public class LightThingHandler extends DeconzBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
             THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT,
             THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE, THING_TYPE_DOORLOCK);
@@ -71,6 +68,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
 
     private final StateDescriptionProvider stateDescriptionProvider;
+    private final CommandDescriptionProvider commandDescriptionProvider;
 
     private long lastCommandExpireTimestamp = 0;
     private boolean needsPropertyUpdate = false;
@@ -80,14 +78,17 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
      */
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
+    private String colorMode = "";
 
     // set defaults, we can override them later if we receive better values
     private int ctMax = ZCL_CT_MAX;
     private int ctMin = ZCL_CT_MIN;
 
-    public LightThingHandler(Thing thing, Gson gson, StateDescriptionProvider stateDescriptionProvider) {
+    public LightThingHandler(Thing thing, Gson gson, StateDescriptionProvider stateDescriptionProvider,
+            CommandDescriptionProvider commandDescriptionProvider) {
         super(thing, gson, ResourceType.LIGHTS);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
     @Override
@@ -115,6 +116,9 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 needsPropertyUpdate = true;
             }
         }
+        ThingConfig thingConfig = getConfigAs(ThingConfig.class);
+        colorMode = thingConfig.colormode;
+
         super.initialize();
     }
 
@@ -131,11 +135,29 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
         switch (channelUID.getId()) {
             case CHANNEL_ALERT:
-                if (command instanceof OnOffType) {
-                    newLightState.alert = command == OnOffType.ON ? "alert" : "none";
+                if (command instanceof StringType) {
+                    newLightState.alert = command.toString();
                 } else {
                     return;
                 }
+                break;
+            case CHANNEL_EFFECT:
+                if (command instanceof StringType) {
+                    // effect command only allowed for lights that are turned on
+                    newLightState.on = true;
+                    newLightState.effect = command.toString();
+                } else {
+                    return;
+                }
+                break;
+            case CHANNEL_EFFECT_SPEED:
+                if (command instanceof DecimalType) {
+                    newLightState.on = true;
+                    newLightState.effectSpeed = Util.constrainToRange(((DecimalType) command).intValue(), 0, 10);
+                } else {
+                    return;
+                }
+                break;
             case CHANNEL_SWITCH:
             case CHANNEL_LOCK:
                 if (command instanceof OnOffType) {
@@ -161,8 +183,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                     }
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
-
-                    if ("xy".equals(lightStateCache.colormode)) {
+                    if ("xy".equals(colorMode)) {
                         PercentType[] xy = hsbCommand.toXY();
                         if (xy.length < 2) {
                             logger.warn("Failed to convert {} to xy-values", command);
@@ -245,39 +266,93 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     }
 
     @Override
-    protected @Nullable LightMessage parseStateResponse(AsyncHttpClient.Result r) {
-        if (r.getResponseCode() == 403) {
-            return null;
-        } else if (r.getResponseCode() == 200) {
-            LightMessage lightMessage = gson.fromJson(r.getBody(), LightMessage.class);
-            if (needsPropertyUpdate) {
-                // if we did not receive an ctmin/ctmax, then we probably don't need it
-                needsPropertyUpdate = false;
-
-                Integer ctmax = lightMessage.ctmax;
-                Integer ctmin = lightMessage.ctmin;
-                if (ctmin != null && ctmax != null) {
-                    Map<String, String> properties = new HashMap<>(thing.getProperties());
-                    properties.put(PROPERTY_CT_MAX,
-                            Integer.toString(Util.constrainToRange(ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
-                    properties.put(PROPERTY_CT_MIN,
-                            Integer.toString(Util.constrainToRange(ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
-                    updateProperties(properties);
-                }
-            }
-            return lightMessage;
-        } else {
-            throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
-        }
-    }
-
-    @Override
-    protected void processStateResponse(@Nullable LightMessage stateResponse) {
-        if (stateResponse == null) {
+    protected void processStateResponse(DeconzBaseMessage stateResponse) {
+        if (!(stateResponse instanceof LightMessage)) {
             return;
         }
 
-        messageReceived(config.id, stateResponse);
+        LightMessage lightMessage = (LightMessage) stateResponse;
+
+        if (needsPropertyUpdate) {
+            // if we did not receive an ctmin/ctmax, then we probably don't need it
+            needsPropertyUpdate = false;
+
+            Integer ctmax = lightMessage.ctmax;
+            Integer ctmin = lightMessage.ctmin;
+            if (ctmin != null && ctmax != null) {
+                Map<String, String> properties = new HashMap<>(thing.getProperties());
+                properties.put(PROPERTY_CT_MAX, Integer.toString(Util.constrainToRange(ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
+                properties.put(PROPERTY_CT_MIN, Integer.toString(Util.constrainToRange(ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
+                updateProperties(properties);
+            }
+        }
+
+        LightState lightState = lightMessage.state;
+        if (lightState != null && lightState.effect != null) {
+            checkAndUpdateEffectChannels(lightMessage);
+        }
+
+        messageReceived(config.id, lightMessage);
+    }
+
+    private enum EffectLightModel {
+        LIDL_MELINARA,
+        TINT_MUELLER,
+        UNKNOWN;
+    }
+
+    private void checkAndUpdateEffectChannels(LightMessage lightMessage) {
+        EffectLightModel model = EffectLightModel.UNKNOWN;
+        // try to determine which model we have
+        if (lightMessage.manufacturername.equals("_TZE200_s8gkrkxk")) {
+            // the LIDL Melinara string does not report a proper model name
+            model = EffectLightModel.LIDL_MELINARA;
+        } else if (lightMessage.manufacturername.equals("MLI")) {
+            model = EffectLightModel.TINT_MUELLER;
+        } else {
+            logger.info("Could not determine effect light type for thing {}, please request adding support on GitHub.",
+                    thing.getUID());
+        }
+
+        ChannelUID effectChannelUID = new ChannelUID(thing.getUID(), CHANNEL_EFFECT);
+        ChannelUID effectSpeedChannelUID = new ChannelUID(thing.getUID(), CHANNEL_EFFECT_SPEED);
+
+        if (thing.getChannel(CHANNEL_EFFECT) == null) {
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withChannel(
+                    ChannelBuilder.create(effectChannelUID, "String").withType(CHANNEL_EFFECT_TYPE_UID).build());
+            if (model == EffectLightModel.LIDL_MELINARA) {
+                // additional channels
+                thingBuilder.withChannel(ChannelBuilder.create(effectSpeedChannelUID, "Number")
+                        .withType(CHANNEL_EFFECT_SPEED_TYPE_UID).build());
+            }
+            updateThing(thingBuilder.build());
+        }
+
+        switch (model) {
+            case LIDL_MELINARA:
+                List<String> options = List.of("none", "steady", "snow", "rainbow", "snake", "tinkle", "fireworks",
+                        "flag", "waves", "updown", "vintage", "fading", "collide", "strobe", "sparkles", "carnival",
+                        "glow");
+                commandDescriptionProvider.setDescription(effectChannelUID,
+                        CommandDescriptionBuilder.create().withCommandOptions(toCommandOptionList(options)).build());
+                break;
+            case TINT_MUELLER:
+                options = List.of("none", "colorloop", "sunset", "party", "worklight", "campfire", "romance",
+                        "nightlight");
+                commandDescriptionProvider.setDescription(effectChannelUID,
+                        CommandDescriptionBuilder.create().withCommandOptions(toCommandOptionList(options)).build());
+                break;
+            default:
+                options = List.of("none", "colorloop");
+                commandDescriptionProvider.setDescription(effectChannelUID,
+                        CommandDescriptionBuilder.create().withCommandOptions(toCommandOptionList(options)).build());
+
+        }
+    }
+
+    private List<CommandOption> toCommandOptionList(List<String> options) {
+        return options.stream().map(c -> new CommandOption(c, c)).collect(Collectors.toList());
     }
 
     private void valueUpdated(String channelId, LightState newState) {
@@ -288,7 +363,10 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
         switch (channelId) {
             case CHANNEL_ALERT:
-                updateState(channelId, "alert".equals(newState.alert) ? OnOffType.ON : OnOffType.OFF);
+                String alert = newState.alert;
+                if (alert != null) {
+                    updateState(channelId, new StringType(alert));
+                }
                 break;
             case CHANNEL_SWITCH:
             case CHANNEL_LOCK:
@@ -327,6 +405,19 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 if (bri != null) {
                     updateState(channelId, toPercentType(bri));
                 }
+                break;
+            case CHANNEL_EFFECT:
+                String effect = newState.effect;
+                if (effect != null) {
+                    updateState(channelId, new StringType(effect));
+                }
+                break;
+            case CHANNEL_EFFECT_SPEED:
+                Integer effectSpeed = newState.effectSpeed;
+                if (effectSpeed != null) {
+                    updateState(channelId, new DecimalType(effectSpeed));
+                }
+                break;
             default:
         }
     }
@@ -343,6 +434,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                     // skip for SKIP_UPDATE_TIMESPAN after last command if lightState is different from command
                     logger.trace("Ignoring differing update after last command until {}", lastCommandExpireTimestamp);
                     return;
+                }
+                if (colorMode.isEmpty()) {
+                    String cmode = lightState.colormode;
+                    if (cmode != null && ("hs".equals(cmode) || "xy".equals(cmode))) {
+                        // only set the color mode if it is hs or xy, not ct
+                        colorMode = cmode;
+                    }
                 }
                 lightStateCache = lightState;
                 if (Boolean.TRUE.equals(lightState.reachable)) {

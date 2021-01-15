@@ -229,7 +229,7 @@ The binding provides the following properties:
 | co2ControlStatus                 | CO2 control status (0 = off, 1 = stepped, 2 = stepless)                                                                          | 
 | vocControlStatus                 | VOC control status (0 = off, 1 = stepped, 2 = stepless)                                                                          | 
 | dateFormat                       | Date format (0 = dd.mm.yyyy, 1 = mm.dd.yyyy, 2 = yyyy.mm.dd)                                                                     | 
-| heatExchangerType                | Heat exchanger type (0 = plastic, 1 = aluminium, 2 = enthalpy)                                                                   | 
+| heatExchangerType                | Heat exchanger type (1 = plastic, 2 = aluminium, 3 = enthalpy)                                                                   | 
 | serNo                            | Serial number                                                                                                                    | 
 | prodCode                         | Production Code                                                                                                                  | 
 | vhzType                          | Pre-heater type (1 = EH-Basis, 2 EH-ERW, 3 = SEWT, 4 = LEWT)                                                                     | 
@@ -297,15 +297,15 @@ Number:Dimensionless KWL_Stage_Percent   "KWL fan stage [%d %unit%]"            
 
 // Party mode
 Switch KWL_Party_Mode                    "Party mode"                                <parents>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeStatus"}
-Number KWL_Party_Mode_Duration           "Party mode duration"                       <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeDuration"}
+Number:Time KWL_Party_Mode_Duration      "Party mode duration [%d %unit%]"           <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeDuration"}
 Number KWL_Party_Mode_Stage              "Party mode fan stage"                      <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeFanStage"}
-Number KWL_Party_Mode_Remaining          "Party mode remaining time [%d min]"        <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeRemainingTime"}
+Number:Time KWL_Party_Mode_Remaining     "Party mode remaining time [%d %unit%]"     <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeRemainingTime"}
 
 // Standby mode
 Switch KWL_Standby_Mode                  "Standby mode"                              <fan_off>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeStatus"}
-Number KWL_Standby_Mode_Duration         "Standby mode duration"                     <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeDuration"}
+Number:Time KWL_Standby_Mode_Duration    "Standby mode duration [%d %unit%]"         <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeDuration"}
 Number KWL_Standby_Mode_Stage            "Standby mode fan stage"                    <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeFanStage"}
-Number KWL_Standby_Mode_Remaining        "Standby mode remaining time [%d min]"      <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeRemainingTime"}
+Number:Time KWL_Standby_Mode_Remaining   "Standby mode remaining time [%d %unit%]"   <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeRemainingTime"}
 
 // Status infos
 Number:Temperature KWL_Temp_Outide_Air   "Temperature outside air [%.1f °C]"         <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureOutsideAir"}
@@ -315,7 +315,7 @@ Number:Temperature KWL_Temp_Extract_Air  "Temperature extract air [%.1f °C]"   
 Number KWL_Supply_Air_RPM                "RPM supply air [%d]"                       <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#supplyAirRpm"}
 Number KWL_Extract_Air_RPM               "RPM extract air [%d]"                      <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#extractAirRpm"}
 Number KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:unitConfig#filterChange"}
-Number KWL_Filter_Change_Remaining       "Filter change [%d %unit%]"                    <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
+Number:Time KWL_Filter_Change_Remaining  "Filter change [%d %unit%]"                 <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
 
 Number KWL_Errors                        "Number errors [%d]"                        <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfErrors"}
 String KWL_Errors_String                 "Error messages [%s]"                       <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#errorsMsg"}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,6 +35,7 @@ import org.openhab.core.storage.StorageService;
 import org.openhab.io.homekit.Homekit;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -44,46 +47,88 @@ import org.slf4j.LoggerFactory;
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.server.impl.HomekitRoot;
 import io.github.hapjava.server.impl.HomekitServer;
+import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
 
 /**
  * Provides access to openHAB items via the HomeKit API
  *
  * @author Andy Lintner - Initial contribution
  */
-@Component(service = { Homekit.class }, configurationPid = "org.openhab.homekit", property = {
+@Component(service = { Homekit.class }, configurationPid = HomekitSettings.CONFIG_PID, property = {
         Constants.SERVICE_PID + "=org.openhab.homekit", "port:Integer=9123" })
 @ConfigurableService(category = "io", label = "HomeKit Integration", description_uri = "io:homekit")
 @NonNullByDefault
 public class HomekitImpl implements Homekit {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
-    private final NetworkAddressService networkAddressService;
-    private final HomekitChangeListener changeListener;
 
+    private final NetworkAddressService networkAddressService;
+    private final ConfigurationAdmin configAdmin;
+
+    private HomekitAuthInfoImpl authInfo;
     private HomekitSettings settings;
     private @Nullable InetAddress networkInterface;
     private @Nullable HomekitServer homekitServer;
     private @Nullable HomekitRoot bridge;
-    private final HomekitAuthInfoImpl authInfo;
+    private final HomekitChangeListener changeListener;
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
-            @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
-            @Reference MetadataRegistry metadataRegistry) throws IOException, InvalidAlgorithmParameterException {
+            @Reference NetworkAddressService networkAddressService, @Reference MetadataRegistry metadataRegistry,
+            @Reference ConfigurationAdmin configAdmin, Map<String, Object> properties)
+            throws IOException, InvalidAlgorithmParameterException {
         this.networkAddressService = networkAddressService;
-        this.settings = processConfig(config);
+        this.configAdmin = configAdmin;
+        this.settings = processConfig(properties);
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
-        authInfo = new HomekitAuthInfoImpl(storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY), settings.pin);
-        startHomekitServer();
+        try {
+            authInfo = new HomekitAuthInfoImpl(storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY), settings.pin,
+                    settings.setupId);
+            startHomekitServer();
+        } catch (IOException | InvalidAlgorithmParameterException e) {
+            logger.warn("Cannot activate HomeKit binding. {}", e.getMessage());
+            throw e;
+        }
     }
 
-    private HomekitSettings processConfig(Map<String, Object> config) {
-        HomekitSettings settings = (new Configuration(config)).as(HomekitSettings.class);
-        settings.process();
+    private HomekitSettings processConfig(Map<String, Object> properties) {
+        HomekitSettings settings = (new Configuration(properties)).as(HomekitSettings.class);
+        org.osgi.service.cm.Configuration config = null;
+        Dictionary<String, Object> props = null;
+        try {
+            config = configAdmin.getConfiguration(HomekitSettings.CONFIG_PID);
+            props = config.getProperties();
+        } catch (IOException e) {
+            logger.warn("Cannot retrieve config admin {}", e.getMessage());
+        }
+
+        if (props == null) { // if null, the configuration is new
+            props = new Hashtable<>();
+        }
         if (settings.networkInterface == null) {
             settings.networkInterface = networkAddressService.getPrimaryIpv4HostAddress();
+            props.put("networkInterface", settings.networkInterface);
+        }
+        if (settings.setupId == null) { // generate setupId very first time
+            settings.setupId = HAPSetupCodeUtils.generateSetupId();
+            props.put("setupId", settings.setupId);
+        }
+
+        // QR Code setup URI is always generated from PIN, setup ID and accessory category (1 = bridge)
+        String setupURI = HAPSetupCodeUtils.getSetupURI(settings.pin.replaceAll("-", ""), settings.setupId, 1);
+        if ((settings.qrCode == null) || (!settings.qrCode.equals(setupURI))) { // QR code was changed
+            settings.qrCode = setupURI;
+            props.put("qrCode", settings.qrCode);
+        }
+
+        if (config != null) {
+            try {
+                config.updateIfDifferent(props);
+            } catch (IOException e) {
+                logger.warn("Cannot update configuration {}", e.getMessage());
+            }
         }
         return settings;
     }
@@ -98,10 +143,12 @@ public class HomekitImpl implements Homekit {
                 // the HomeKit server settings changed. we do a complete re-init
                 stopHomekitServer();
                 startHomekitServer();
-            } else if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)) {
-                // we change the root bridge only
-                stopBridge();
-                startBridge();
+            } else if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)
+                    || !oldSettings.setupId.equals(settings.setupId)) {
+                stopHomekitServer();
+                authInfo.setPin(settings.pin);
+                authInfo.setSetupId(settings.setupId);
+                startHomekitServer();
             }
         } catch (IOException e) {
             logger.warn("Could not initialize HomeKit connector: {}", e.getMessage());
@@ -126,7 +173,7 @@ public class HomekitImpl implements Homekit {
             changeListener.setBridge(bridge);
             this.bridge = bridge;
             bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
-
+            bridge.refreshAuthInfo();
             final int lastAccessoryCount = changeListener.getLastAccessoryCount();
             int currentAccessoryCount = changeListener.getAccessories().size();
             if (currentAccessoryCount < lastAccessoryCount) {

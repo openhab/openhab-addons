@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,6 +104,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
     private Thing feedThing;
     private FeedHandler feedHandler;
     private ChannelUID channelUID;
+    private HttpService httpService;
 
     /**
      * This class is used as a mock for HTTP web server, serving XML feed content.
@@ -168,16 +169,17 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
         unregisterFeedTestServlet();
 
-        // Wait for FeedHandler to be unregistered
-        waitForAssert(() -> {
-            feedHandler = (FeedHandler) feedThing.getHandler();
-            assertThat(feedHandler, is(nullValue()));
-        });
+        if (feedThing != null) {
+            // Wait for FeedHandler to be unregistered
+            waitForAssert(() -> {
+                feedHandler = (FeedHandler) feedThing.getHandler();
+                assertThat(feedHandler, is(nullValue()));
+            });
+        }
     }
 
-    private void registerFeedTestServlet() {
-        HttpService httpService = getService(HttpService.class);
-        assertThat(httpService, is(notNullValue()));
+    private synchronized void registerFeedTestServlet() {
+        waitForAssert(() -> assertThat(httpService = getService(HttpService.class), is(notNullValue())));
         servlet = new FeedServiceMock(DEFAULT_MOCK_CONTENT);
         try {
             httpService.registerServlet(MOCK_SERVLET_PATH, servlet, null, null);
@@ -186,10 +188,12 @@ public class FeedHandlerTest extends JavaOSGiTest {
         }
     }
 
-    private void unregisterFeedTestServlet() {
-        HttpService httpService = getService(HttpService.class);
-        assertThat(httpService, is(notNullValue()));
-        httpService.unregister(MOCK_SERVLET_PATH);
+    private synchronized void unregisterFeedTestServlet() {
+        waitForAssert(() -> assertThat(httpService = getService(HttpService.class), is(notNullValue())));
+        try {
+            httpService.unregister(MOCK_SERVLET_PATH);
+        } catch (IllegalArgumentException ignore) {
+        }
         servlet = null;
     }
 

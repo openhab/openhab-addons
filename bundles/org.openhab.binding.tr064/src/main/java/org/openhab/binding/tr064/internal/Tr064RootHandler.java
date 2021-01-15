@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYP
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +39,12 @@ import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDDeviceType;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDServiceType;
 import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDActionType;
 import org.openhab.binding.tr064.internal.phonebook.Phonebook;
+import org.openhab.binding.tr064.internal.phonebook.PhonebookActions;
 import org.openhab.binding.tr064.internal.phonebook.PhonebookProvider;
 import org.openhab.binding.tr064.internal.phonebook.Tr064PhonebookImpl;
+import org.openhab.binding.tr064.internal.soap.SOAPConnector;
+import org.openhab.binding.tr064.internal.soap.SOAPRequest;
+import org.openhab.binding.tr064.internal.soap.SOAPValueConverter;
 import org.openhab.binding.tr064.internal.util.SCPDUtil;
 import org.openhab.binding.tr064.internal.util.Util;
 import org.openhab.core.cache.ExpiringCacheMap;
@@ -74,25 +79,30 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
     private @Nullable SCPDUtil scpdUtil;
     private SOAPConnector soapConnector;
-    private String endpointBaseURL = "http://fritz.box:49000";
+    private String endpointBaseURL = "";
 
     private final Map<ChannelUID, Tr064ChannelConfig> channels = new HashMap<>();
     // caching is used to prevent excessive calls to the same action
-    private final ExpiringCacheMap<ChannelUID, State> stateCache = new ExpiringCacheMap<>(2000);
-    private Collection<Phonebook> phonebooks = Collections.emptyList();
+    private final ExpiringCacheMap<ChannelUID, State> stateCache = new ExpiringCacheMap<>(Duration.ofMillis(2000));
+    private Collection<Phonebook> phonebooks = List.of();
 
     private @Nullable ScheduledFuture<?> connectFuture;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> phonebookFuture;
 
+    private boolean communicationEstablished = false;
+
     Tr064RootHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
-        soapConnector = new SOAPConnector(httpClient, endpointBaseURL);
+        this.soapConnector = new SOAPConnector(httpClient, endpointBaseURL);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!communicationEstablished) {
+            logger.debug("Tried to process command, but thing is not yet ready: {} to {}", channelUID, command);
+        }
         Tr064ChannelConfig channelConfig = channels.get(channelUID);
         if (channelConfig == null) {
             logger.trace("Channel {} not supported.", channelUID);
@@ -126,6 +136,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
         }
 
         endpointBaseURL = "http://" + config.host + ":49000";
+        soapConnector = new SOAPConnector(httpClient, endpointBaseURL);
         updateStatus(ThingStatus.UNKNOWN);
 
         connectFuture = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0, RETRY_INTERVAL, TimeUnit.SECONDS);
@@ -155,6 +166,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
                 updateThing(thingBuilder.build());
             }
 
+            communicationEstablished = true;
             installPolling();
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         }
@@ -170,6 +182,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
     @Override
     public void dispose() {
+        communicationEstablished = false;
         removeConnectScheduler();
         uninstallPolling();
         stateCache.clear();
@@ -211,8 +224,8 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
                 this.deviceType = device.getDeviceType();
 
                 // try to get security (https) port
-                SOAPMessage soapResponse = soapConnector.doSOAPRequest(deviceService, "GetSecurityPort",
-                        Collections.emptyMap());
+                SOAPMessage soapResponse = soapConnector
+                        .doSOAPRequest(new SOAPRequest(deviceService, "GetSecurityPort"));
                 if (!soapResponse.getSOAPBody().hasFault()) {
                     SOAPValueConverter soapValueConverter = new SOAPValueConverter(httpClient);
                     soapValueConverter.getStateFromSOAPValue(soapResponse, "NewSecurityPort", null)
@@ -237,8 +250,8 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
                                 "Could not get service definition for 'urn:DeviceInfo-com:serviceId:DeviceInfo1'"))
                         .getActionList().stream().filter(action -> action.getName().equals("GetInfo")).findFirst()
                         .orElseThrow(() -> new SCPDException("Action 'GetInfo' not found"));
-                SOAPMessage soapResponse1 = soapConnector.doSOAPRequest(deviceService, getInfoAction.getName(),
-                        Collections.emptyMap());
+                SOAPMessage soapResponse1 = soapConnector
+                        .doSOAPRequest(new SOAPRequest(deviceService, getInfoAction.getName()));
                 SOAPValueConverter soapValueConverter = new SOAPValueConverter(httpClient);
                 Map<String, String> properties = editProperties();
                 PROPERTY_ARGUMENTS.forEach(argumentName -> getInfoAction.getArgumentList().stream()
@@ -265,7 +278,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
      */
     public List<SCPDDeviceType> getAllSubDevices() {
         final SCPDUtil scpdUtil = this.scpdUtil;
-        return (scpdUtil == null) ? Collections.emptyList() : scpdUtil.getAllSubDevices();
+        return (scpdUtil == null) ? List.of() : scpdUtil.getAllSubDevices();
     }
 
     /**
@@ -323,8 +336,8 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
                 .map(phonebookList -> Arrays.stream(phonebookList.toString().split(","))).orElse(Stream.empty())
                 .map(index -> {
                     try {
-                        SOAPMessage soapMessageURL = soapConnector.doSOAPRequest(scpdService, "GetPhonebook",
-                                Map.of("NewPhonebookID", index));
+                        SOAPMessage soapMessageURL = soapConnector.doSOAPRequest(
+                                new SOAPRequest(scpdService, "GetPhonebook", Map.of("NewPhonebookID", index)));
                         return soapValueConverter.getStateFromSOAPValue(soapMessageURL, "NewPhonebookURL", null)
                                 .map(url -> (Phonebook) new Tr064PhonebookImpl(httpClient, url.toString()));
                     } catch (Tr064CommunicationException e) {
@@ -346,12 +359,12 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
         phonebooks = scpdService.map(service -> {
             try {
-                return processPhonebookList(
-                        soapConnector.doSOAPRequest(service, "GetPhonebookList", Collections.emptyMap()), service);
+                return processPhonebookList(soapConnector.doSOAPRequest(new SOAPRequest(service, "GetPhonebookList")),
+                        service);
             } catch (Tr064CommunicationException e) {
                 return Collections.<Phonebook> emptyList();
             }
-        }).orElse(Collections.emptyList());
+        }).orElse(List.of());
 
         if (phonebooks.isEmpty()) {
             logger.warn("Could not get phonebooks for thing {}", thing.getUID());
@@ -381,6 +394,6 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(Tr064DiscoveryService.class);
+        return Set.of(Tr064DiscoveryService.class, PhonebookActions.class);
     }
 }

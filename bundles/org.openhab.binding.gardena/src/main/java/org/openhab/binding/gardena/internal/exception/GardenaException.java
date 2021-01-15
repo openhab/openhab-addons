@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,15 @@ package org.openhab.binding.gardena.internal.exception;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * Exception if something happens in the communication to Gardena Smart Home.
+ * Exception if something happens in the communication to Gardena smart system.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaException extends IOException {
 
     private static final long serialVersionUID = 8568935118878542270L;
@@ -31,7 +35,7 @@ public class GardenaException extends IOException {
         super(ex);
     }
 
-    public GardenaException(String message, Throwable cause) {
+    public GardenaException(@Nullable String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -74,7 +74,7 @@ public class LightLevelHandler extends HueSensorHandler {
             // calculate lux, according to
             // https://developers.meethue.com/documentation/supported-sensors#clip_zll_lightlevel
             double lux = Math.pow(10, (value.subtract(BigDecimal.ONE).divide(new BigDecimal(10000))).doubleValue());
-            updateState(CHANNEL_ILLUMINANCE, new QuantityType<>(lux, SmartHomeUnits.LUX));
+            updateState(CHANNEL_ILLUMINANCE, new QuantityType<>(lux, Units.LUX));
         }
 
         Object dark = sensor.getState().get(STATE_DARK);

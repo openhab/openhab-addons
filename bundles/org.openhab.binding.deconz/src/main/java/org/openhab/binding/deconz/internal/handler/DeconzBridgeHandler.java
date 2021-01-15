@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,7 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.openhab.binding.deconz.internal.Util.buildUrl;
 
 import java.net.SocketTimeoutException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
@@ -34,6 +31,7 @@ import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnectionListener;
+import org.openhab.core.cache.ExpiringCacheAsync;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -64,7 +62,6 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_TYPE);
 
     private final Logger logger = LoggerFactory.getLogger(DeconzBridgeHandler.class);
-    private @Nullable ThingDiscoveryService thingDiscoveryService;
     private final WebSocketConnection websocket;
     private final AsyncHttpClient http;
     private DeconzBridgeConfig config = new DeconzBridgeConfig();
@@ -73,7 +70,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private int websocketPort = 0;
     /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
     private boolean ignoreConfigurationUpdate;
-    private boolean websocketReconnect = false;
+    private boolean thingDisposing = false;
+
+    private final ExpiringCacheAsync<Optional<BridgeFullState>> fullStateCache = new ExpiringCacheAsync<>(1000);
 
     /** The poll frequency for the API Key verification */
     private static final int POLL_FREQUENCY_SEC = 10;
@@ -93,7 +92,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ThingDiscoveryService.class);
+        return Set.of(ThingDiscoveryService.class);
     }
 
     @Override
@@ -124,13 +123,17 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * @param r The response
      */
     private void parseAPIKeyResponse(AsyncHttpClient.Result r) {
+        if (thingDisposing) {
+            // discard response if thing handler is already disposing
+            return;
+        }
         if (r.getResponseCode() == 403) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Allow authentification for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
+                    "Allow authentication for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
             stopTimer();
-            scheduledFuture = scheduler.schedule(() -> requestApiKey(), POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+            scheduledFuture = scheduler.schedule(this::requestApiKey, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
         } else if (r.getResponseCode() == 200) {
-            ApiKeyMessage[] response = gson.fromJson(r.getBody(), ApiKeyMessage[].class);
+            ApiKeyMessage[] response = Objects.requireNonNull(gson.fromJson(r.getBody(), ApiKeyMessage[].class));
             if (response.length == 0) {
                 throw new IllegalStateException("Authorisation request response is empty");
             }
@@ -139,65 +142,69 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             configuration.put(CONFIG_APIKEY, config.apikey);
             updateConfiguration(configuration);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for configuration");
-            requestFullState(true);
+            initializeBridgeState();
         } else {
             throw new IllegalStateException("Unknown status code for authorisation request");
         }
     }
 
     /**
-     * Parses the response message to the REST API for retrieving the full bridge state with all sensors and switches
-     * and configuration.
+     * get the full state of the bridge from the cache
      *
-     * @param r The response
+     * @return a CompletableFuture that returns an Optional of the bridge full state
      */
-    private @Nullable BridgeFullState parseBridgeFullStateResponse(AsyncHttpClient.Result r) {
-        if (r.getResponseCode() == 403) {
-            return null;
-        } else if (r.getResponseCode() == 200) {
-            return gson.fromJson(r.getBody(), BridgeFullState.class);
-        } else {
-            throw new IllegalStateException("Unknown status code for full state request");
+    public CompletableFuture<Optional<BridgeFullState>> getBridgeFullState() {
+        return fullStateCache.getValue(this::refreshFullStateCache);
+    }
+
+    /**
+     * refresh the full bridge state (used for initial processing and state-lookup)
+     *
+     * @return Completable future with an Optional of the BridgeFullState
+     */
+    private CompletableFuture<Optional<BridgeFullState>> refreshFullStateCache() {
+        logger.trace("{} starts refreshing the fullStateCache", thing.getUID());
+        if (config.apikey == null || thingDisposing) {
+            return CompletableFuture.completedFuture(Optional.empty());
         }
+        String url = buildUrl(config.getHostWithoutPort(), config.httpPort, config.apikey);
+        return http.get(url, config.timeout).thenApply(r -> {
+            if (r.getResponseCode() == 403) {
+                return Optional.ofNullable((BridgeFullState) null);
+            } else if (r.getResponseCode() == 200) {
+                return Optional.ofNullable(gson.fromJson(r.getBody(), BridgeFullState.class));
+            } else {
+                throw new IllegalStateException("Unknown status code for full state request");
+            }
+        }).handle((v, t) -> {
+            if (t == null) {
+                return v;
+            } else if (t instanceof SocketTimeoutException || t instanceof TimeoutException
+                    || t instanceof CompletionException) {
+                logger.debug("Get full state failed", t);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, t.getMessage());
+            }
+            return Optional.empty();
+        });
     }
 
     /**
      * Perform a request to the REST API for retrieving the full bridge state with all sensors and switches
      * and configuration.
      */
-    public void requestFullState(boolean isInitialRequest) {
-        if (config.apikey == null) {
-            return;
-        }
-        String url = buildUrl(config.getHostWithoutPort(), config.httpPort, config.apikey);
-        http.get(url, config.timeout).thenApply(this::parseBridgeFullStateResponse).exceptionally(e -> {
-            if (e instanceof SocketTimeoutException || e instanceof TimeoutException
-                    || e instanceof CompletionException) {
-                logger.debug("Get full state failed", e);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-            return null;
-        }).whenComplete((value, error) -> {
-            final ThingDiscoveryService thingDiscoveryService = this.thingDiscoveryService;
-            if (thingDiscoveryService != null) {
-                // Hand over sensors to discovery service
-                thingDiscoveryService.stateRequestFinished(value);
-            }
-        }).thenAccept(fullState -> {
-            if (fullState == null) {
-                if (isInitialRequest) {
-                    scheduledFuture = scheduler.schedule(() -> requestFullState(true), POLL_FREQUENCY_SEC,
-                            TimeUnit.SECONDS);
-                }
+    public void initializeBridgeState() {
+        getBridgeFullState().thenAccept(fullState -> fullState.ifPresentOrElse(state -> {
+            if (thingDisposing) {
+                // discard response if thing handler is already disposing
                 return;
             }
-            if (fullState.config.name.isEmpty()) {
+            if (state.config.name.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         "You are connected to a HUE bridge, not a deCONZ software!");
                 return;
             }
-            if (fullState.config.websocketport == 0) {
+            if (state.config.websocketport == 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         "deCONZ software too old. No websocket support!");
                 return;
@@ -205,37 +212,41 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
             // Add some information about the bridge
             Map<String, String> editProperties = editProperties();
-            editProperties.put("apiversion", fullState.config.apiversion);
-            editProperties.put("swversion", fullState.config.swversion);
-            editProperties.put("fwversion", fullState.config.fwversion);
-            editProperties.put("uuid", fullState.config.uuid);
-            editProperties.put("zigbeechannel", String.valueOf(fullState.config.zigbeechannel));
-            editProperties.put("ipaddress", fullState.config.ipaddress);
+            editProperties.put("apiversion", state.config.apiversion);
+            editProperties.put("swversion", state.config.swversion);
+            editProperties.put("fwversion", state.config.fwversion);
+            editProperties.put("uuid", state.config.uuid);
+            editProperties.put("zigbeechannel", String.valueOf(state.config.zigbeechannel));
+            editProperties.put("ipaddress", state.config.ipaddress);
             ignoreConfigurationUpdate = true;
             updateProperties(editProperties);
             ignoreConfigurationUpdate = false;
 
             // Use requested websocket port if no specific port is given
-            websocketPort = config.port == 0 ? fullState.config.websocketport : config.port;
-            websocketReconnect = true;
+            websocketPort = config.port == 0 ? state.config.websocketport : config.port;
             startWebsocket();
-        }).exceptionally(e -> {
+        }, () -> {
+            // initial response was empty, re-trying in POLL_FREQUENCY_SEC seconds
+            if (!thingDisposing) {
+                scheduledFuture = scheduler.schedule(this::initializeBridgeState, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+            }
+        })).exceptionally(e -> {
             if (e != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
             }
-            logger.warn("Full state parsing failed", e);
+            logger.warn("Initial full state parsing failed", e);
             return null;
         });
     }
 
     /**
      * Starts the websocket connection.
-     * {@link #requestFullState} need to be called first to obtain the websocket port.
+     * {@link #initializeBridgeState} need to be called first to obtain the websocket port.
      */
     private void startWebsocket() {
-        if (websocket.isConnected() || websocketPort == 0) {
+        if (websocket.isConnected() || websocketPort == 0 || thingDisposing) {
             return;
         }
 
@@ -249,11 +260,11 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * Perform a request to the REST API for generating an API key.
      *
      */
-    private CompletableFuture<?> requestApiKey() {
+    private void requestApiKey() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
         stopTimer();
         String url = buildUrl(config.getHostWithoutPort(), config.httpPort);
-        return http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
+        http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
                 .exceptionally(e -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     logger.warn("Authorisation failed", e);
@@ -263,34 +274,21 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Start initializing bridge {}", thing.getUID());
+        thingDisposing = false;
         config = getConfigAs(DeconzBridgeConfig.class);
         if (config.apikey == null) {
             requestApiKey();
         } else {
-            requestFullState(true);
+            initializeBridgeState();
         }
     }
 
     @Override
     public void dispose() {
-        websocketReconnect = false;
+        thingDisposing = true;
         stopTimer();
         websocket.close();
-    }
-
-    @Override
-    public void connectionError(@Nullable Throwable e) {
-        if (e != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown reason");
-        }
-        stopTimer();
-        // Wait for POLL_FREQUENCY_SEC after a connection error before trying again
-        if (websocketReconnect) {
-            scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
-        }
     }
 
     @Override
@@ -302,9 +300,10 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     @Override
     public void connectionLost(String reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        if (websocketReconnect) {
-            startWebsocket();
-        }
+
+        stopTimer();
+        // Wait for POLL_FREQUENCY_SEC after a connection was closed before trying again
+        scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
     }
 
     /**
@@ -315,25 +314,17 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     }
 
     /**
-     * Return the http connection.
-     */
-    public AsyncHttpClient getHttp() {
-        return http;
-    }
-
-    /**
-     * Return the bridge configuration.
-     */
-    public DeconzBridgeConfig getBridgeConfig() {
-        return config;
-    }
-
-    /**
-     * Called by the {@link ThingDiscoveryService}. Informs the bridge handler about the service.
+     * Send an object to the gateway
      *
-     * @param thingDiscoveryService The service
+     * @param endPoint the endpoint (e.g. "lights/2/state")
+     * @param object the object (or null if no object)
+     * @return CompletableFuture of the result
      */
-    public void setDiscoveryService(ThingDiscoveryService thingDiscoveryService) {
-        this.thingDiscoveryService = thingDiscoveryService;
+    public CompletableFuture<AsyncHttpClient.Result> sendObject(String endPoint, @Nullable Object object) {
+        String json = object == null ? null : gson.toJson(object);
+        String url = buildUrl(config.host, config.httpPort, config.apikey, endPoint);
+        logger.trace("Sending {} via {}", json, url);
+
+        return http.put(url, json, config.timeout);
     }
 }

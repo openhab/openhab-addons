@@ -27,7 +27,7 @@ No binding configuration is required.
 | currentTemperatureOffset | Decimal    | Offset in Celsius for the current temperature value received from the device.                 |
 
 The Air Conditioner's IP address is mandatory, all other parameters are optional. 
-If the broadcast is not set (default) it will be derived from openHAB's network setting (PaperUI:Configuration:System:Network Settings). 
+If the broadcast is not set (default) it will be derived from openHAB's network setting (Check Network Settings in the openHAB UI).
 Only change this if you have a good reason to.
 
 ## Channels

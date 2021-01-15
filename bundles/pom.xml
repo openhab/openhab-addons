@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -19,13 +19,14 @@
   <modules>
     <!-- automation -->
     <module>org.openhab.automation.groovyscripting</module>
+    <module>org.openhab.automation.jythonscripting</module>
+    <module>org.openhab.automation.pidcontroller</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.imperihome</module>
     <module>org.openhab.io.neeo</module>
     <module>org.openhab.io.openhabcloud</module>
-    <module>org.openhab.io.transport.modbus</module>
     <!-- transformations -->
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
@@ -59,6 +60,7 @@
     <module>org.openhab.binding.bluetooth.bluez</module>
     <module>org.openhab.binding.bluetooth.blukii</module>
     <module>org.openhab.binding.bluetooth.daikinmadoka</module>
+    <module>org.openhab.binding.bluetooth.enoceanble</module>
     <module>org.openhab.binding.bluetooth.generic</module>
     <module>org.openhab.binding.bluetooth.govee</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
@@ -96,6 +98,7 @@
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enturno</module>
+    <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.binding.etherrain</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.exec</module>
@@ -110,7 +113,9 @@
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
     <module>org.openhab.binding.gce</module>
+    <module>org.openhab.binding.generacmobilelink</module>
     <module>org.openhab.binding.goecharger</module>
+    <module>org.openhab.binding.gpio</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
@@ -137,6 +142,7 @@
     <module>org.openhab.binding.ipcamera</module>
     <module>org.openhab.binding.intesis</module>
     <module>org.openhab.binding.ipp</module>
+    <module>org.openhab.binding.irobot</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.ism8</module>
     <module>org.openhab.binding.jablotron</module>
@@ -234,6 +240,7 @@
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
+    <module>org.openhab.binding.pushover</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.revogi</module>
@@ -281,6 +288,7 @@
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.tibber</module>
+    <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>

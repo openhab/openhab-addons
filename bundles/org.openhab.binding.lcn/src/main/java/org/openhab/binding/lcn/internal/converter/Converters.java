@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.lcn.internal.converter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Holds all Converter objects.
@@ -34,12 +34,12 @@ public class Converters {
 
     static {
         TEMPERATURE = new ValueConverter(SIUnits.CELSIUS, n -> (n - 1000) / 10d, h -> Math.round(h * 10) + 1000);
-        LIGHT = new ValueConverter(SmartHomeUnits.LUX, Converters::lightToHumanReadable, Converters::lightToNative);
-        CO2 = new ValueConverter(SmartHomeUnits.PARTS_PER_MILLION, n -> (double) n, Math::round);
-        CURRENT = new ValueConverter(SmartHomeUnits.AMPERE, n -> n / 100d, h -> Math.round(h * 100));
-        VOLTAGE = new ValueConverter(SmartHomeUnits.VOLT, n -> n / 400d, h -> Math.round(h * 400));
-        ANGLE = new ValueConverter(SmartHomeUnits.DEGREE_ANGLE, n -> (n - 1000) / 10d, Converters::angleToNative);
-        WINDSPEED = new ValueConverter(SmartHomeUnits.METRE_PER_SECOND, n -> n / 10d, h -> Math.round(h * 10));
+        LIGHT = new ValueConverter(Units.LUX, Converters::lightToHumanReadable, Converters::lightToNative);
+        CO2 = new ValueConverter(Units.PARTS_PER_MILLION, n -> (double) n, Math::round);
+        CURRENT = new ValueConverter(Units.AMPERE, n -> n / 100d, h -> Math.round(h * 100));
+        VOLTAGE = new ValueConverter(Units.VOLT, n -> n / 400d, h -> Math.round(h * 400));
+        ANGLE = new ValueConverter(Units.DEGREE_ANGLE, n -> (n - 1000) / 10d, Converters::angleToNative);
+        WINDSPEED = new ValueConverter(Units.METRE_PER_SECOND, n -> n / 10d, h -> Math.round(h * 10));
         IDENTITY = new ValueConverter(null, n -> (double) n, Math::round);
     }
 

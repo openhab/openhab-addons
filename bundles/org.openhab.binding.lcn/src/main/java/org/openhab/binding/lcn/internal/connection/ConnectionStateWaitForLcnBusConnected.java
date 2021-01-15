@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,21 +48,28 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
 
     @Override
     public void onPckMessageReceived(String data) {
+        switch (data) {
+            case LcnDefs.LCNCONNSTATE_DISCONNECTED:
+                cancelLegacyTimer();
+                connection.getCallback().onOffline("LCN bus not connected to LCN-PCHK/PKE");
+                break;
+            case LcnDefs.LCNCONNSTATE_CONNECTED:
+                cancelLegacyTimer();
+                connection.getCallback().onOnline();
+                nextState(ConnectionStateSendDimMode::new);
+                break;
+            case LcnDefs.INSUFFICIENT_LICENSES:
+                cancelLegacyTimer();
+                handleConnectionFailed(
+                        new LcnException("LCN-PCHK/PKE has not enough licenses to handle this connection"));
+                break;
+        }
+    }
+
+    private void cancelLegacyTimer() {
         ScheduledFuture<?> localLegacyTimer = legacyTimer;
-        if (data.equals(LcnDefs.LCNCONNSTATE_DISCONNECTED)) {
-            if (localLegacyTimer != null) {
-                localLegacyTimer.cancel(true);
-            }
-            connection.getCallback().onOffline("LCN bus not connected to LCN-PCHK/PKE");
-        } else if (data.equals(LcnDefs.LCNCONNSTATE_CONNECTED)) {
-            if (localLegacyTimer != null) {
-                localLegacyTimer.cancel(true);
-            }
-            connection.getCallback().onOnline();
-            nextState(ConnectionStateSendDimMode::new);
-        } else if (data.equals(LcnDefs.INSUFFICIENT_LICENSES)) {
-            context.handleConnectionFailed(
-                    new LcnException("LCN-PCHK/PKE has not enough licenses to handle this connection"));
+        if (localLegacyTimer != null) {
+            localLegacyTimer.cancel(true);
         }
     }
 }

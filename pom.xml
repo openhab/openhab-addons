@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.1.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -68,14 +68,15 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <ohc.version>${project.version}</ohc.version>
-    <bnd.version>5.1.2</bnd.version>
+    <ohc.version>3.1.0-SNAPSHOT</ohc.version>
+    <bnd.version>5.2.0</bnd.version>
     <karaf.version>4.2.7</karaf.version>
     <sat.version>0.10.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage/>
     <bnd.exportpackage/>
+    <bnd.fixupmessages/>
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
@@ -151,9 +152,11 @@ Import-Package: \\
   !*.impl.*, \\
   org.openhab.*, \\
   ${bnd.exportpackage}
+-noimportjava: true
 -sources: false
 -contract: *
--includeresource: ${bnd.includeresource}]]></bnd>
+-includeresource: ${bnd.includeresource}
+-fixupmessages: ${bnd.fixupmessages}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
           </configuration>
@@ -410,7 +413,7 @@ Import-Package: \\
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2020</year>
+              <year>2021</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>
@@ -715,6 +718,33 @@ Import-Package: \\
             <artifactId>sat-plugin</artifactId>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>with-bnd-resolver-resolve</id>
+      <activation>
+        <property>
+          <name>withResolver</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>biz.aQute.bnd</groupId>
+              <artifactId>bnd-resolver-maven-plugin</artifactId>
+              <version>${bnd.version}</version>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>resolve</goal>
+                  </goals>
+                  <phase>package</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
   </profiles>

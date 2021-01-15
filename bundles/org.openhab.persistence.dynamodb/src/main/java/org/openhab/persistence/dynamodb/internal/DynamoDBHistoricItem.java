@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,9 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import java.text.DateFormat;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
@@ -26,6 +27,10 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class DynamoDBHistoricItem implements HistoricItem {
+    private static final ZoneId UTC = ZoneId.of("UTC");
+    private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern(DynamoDBItem.DATE_FORMAT)
+            .withZone(UTC);
+
     private final String name;
     private final State state;
     private final ZonedDateTime timestamp;
@@ -53,6 +58,6 @@ public class DynamoDBHistoricItem implements HistoricItem {
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
+        return name + ": " + DATEFORMATTER.format(timestamp) + ": " + state.toString();
     }
 }

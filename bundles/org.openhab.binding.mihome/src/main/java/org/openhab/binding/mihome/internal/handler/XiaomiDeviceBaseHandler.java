@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import javax.measure.quantity.Time;
 import org.openhab.binding.mihome.internal.XiaomiItemUpdateListener;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -73,9 +73,9 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
 
     protected static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
     protected static final Unit<Pressure> PRESSURE_UNIT = KILO(SIUnits.PASCAL);
-    protected static final Unit<Dimensionless> PERCENT_UNIT = SmartHomeUnits.PERCENT;
-    protected static final Unit<Angle> ANGLE_UNIT = SmartHomeUnits.DEGREE_ANGLE;
-    protected static final Unit<Time> TIME_UNIT = MILLI(SmartHomeUnits.SECOND);
+    protected static final Unit<Dimensionless> PERCENT_UNIT = Units.PERCENT;
+    protected static final Unit<Angle> ANGLE_UNIT = Units.DEGREE_ANGLE;
+    protected static final Unit<Time> TIME_UNIT = MILLI(Units.SECOND);
 
     private static final String REMOVE_DEVICE = "remove_device";
     private static final long ONLINE_TIMEOUT_MILLIS = TimeUnit.HOURS.toMillis(2);

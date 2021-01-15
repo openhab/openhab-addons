@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,6 +123,11 @@ public class LcnModuleActions implements ThingActions {
 
             if (text == null) {
                 text = new String();
+            }
+
+            // some LCN-GTxD don't display the text if it fits exactly in one chunk. Observed with GT10D 8.0.
+            if (text.getBytes(LcnDefs.LCN_ENCODING).length % DYN_TEXT_CHUNK_LENGTH == 0) {
+                text += " ";
             }
 
             // convert String to bytes to split the data every 12 bytes, because a unicode character can take more than

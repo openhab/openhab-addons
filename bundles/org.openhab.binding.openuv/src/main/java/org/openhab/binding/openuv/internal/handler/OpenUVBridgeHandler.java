@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,16 +54,14 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
-
     private static final String QUERY_URL = "https://api.openuv.io/api/v1/uv?lat=%s&lng=%s&alt=%s";
-
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
+    private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
     private final Properties header = new Properties();
     private final Gson gson;
-
     private final LocationProvider locationProvider;
+
     private @Nullable ScheduledFuture<?> reconnectJob;
 
     public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, Gson gson) {
@@ -79,10 +77,10 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
         if (config.apikey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'apikey' must be configured.");
-        } else {
-            header.put("x-access-token", config.apikey);
-            initiateConnexion();
+            return;
         }
+        header.put("x-access-token", config.apikey);
+        initiateConnexion();
     }
 
     @Override
@@ -98,13 +96,13 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             initiateConnexion();
-        } else {
-            logger.debug("The OpenUV bridge only handles Refresh command and not '{}'", command);
+            return;
         }
+        logger.debug("The OpenUV bridge only handles Refresh command and not '{}'", command);
     }
 
     private void initiateConnexion() {
-        // Check if the provided api key is valid for use with the OpenUV service
+        // Just checking if the provided api key is a valid one by making a fake call
         getUVData("0", "0", "0");
     }
 
@@ -113,11 +111,13 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
             String jsonData = HttpUtil.executeUrl("GET", String.format(QUERY_URL, latitude, longitude, altitude),
                     header, null, null, REQUEST_TIMEOUT_MS);
             OpenUVResponse uvResponse = gson.fromJson(jsonData, OpenUVResponse.class);
-            if (uvResponse.getError() == null) {
-                updateStatus(ThingStatus.ONLINE);
-                return uvResponse.getResult();
-            } else {
-                throw new OpenUVException(uvResponse.getError());
+            if (uvResponse != null) {
+                String error = uvResponse.getError();
+                if (error == null) {
+                    updateStatus(ThingStatus.ONLINE);
+                    return uvResponse.getResult();
+                }
+                throw new OpenUVException(error);
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -133,10 +133,10 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
                 reconnectJob = scheduler.schedule(this::initiateConnexion,
                         Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES);
-            } else if (e.isApiKeyError()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE,
+                        e.isApiKeyError() ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.NONE,
+                        e.getMessage());
             }
         }
         return null;
