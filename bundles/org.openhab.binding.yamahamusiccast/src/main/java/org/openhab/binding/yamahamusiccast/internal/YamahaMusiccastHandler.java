@@ -73,7 +73,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     private @NonNullByDefault({}) YamahaMusiccastConfiguration config;
     private @NonNullByDefault({}) String httpResponse;
 
-    JsonParser parser = new JsonParser();
+    private JsonParser parser = new JsonParser();
     String tmpString = "";
     int tmpInteger = 0;
     int volumePercent = 0;
