@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
 import javax.ws.rs.ProcessingException;
@@ -37,8 +39,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants.EventKeys;
@@ -474,12 +474,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(@NonNull ThingStatus status) {
+    protected void updateStatus(ThingStatus status) {
         super.updateStatus(status);
     }
 
     @Override
-    protected void updateStatus(@NonNull ThingStatus status, @NonNull ThingStatusDetail statusDetail) {
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
         super.updateStatus(status, statusDetail);
     }
 
@@ -991,7 +991,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     eventClient = clientBuilder.build()
                             .register(new Authenticator((String) getConfig().get(CONFIG_USERNAME), vehicle.tokens[0]));
                     eventTarget = eventClient.target(URI_EVENT).path(vehicle.vehicle_id + "/").queryParam("values",
-                            StringUtils.join(EventKeys.values(), ',', 1, EventKeys.values().length));
+                            Arrays.asList(EventKeys.values()).stream().skip(1).map(Enum::toString)
+                                    .collect(Collectors.joining(",")));
                     eventResponse = eventTarget.request(MediaType.TEXT_PLAIN_TYPE).get();
 
                     logger.debug("Event Stream: Establishing the event stream: Response: {}:{}",
