@@ -40,7 +40,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.discovery.TeslaVehicleDiscoveryService;
 import org.openhab.binding.tesla.internal.protocol.TokenRequest;
@@ -223,7 +222,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
             for (Vehicle vehicle : vehicleArray) {
                 String responseString = invokeAndParse(vehicle.id, VEHICLE_CONFIG, null, dataRequestTarget);
-                if (StringUtils.isBlank(responseString)) {
+                if (responseString == null || responseString.isBlank()) {
                     continue;
                 }
                 VehicleConfig vehicleConfig = gson.fromJson(responseString, VehicleConfig.class);
@@ -274,8 +273,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         if (hasExpired) {
             String username = (String) getConfig().get(CONFIG_USERNAME);
             String refreshToken = (String) getConfig().get(CONFIG_REFRESHTOKEN);
-            if (refreshToken == null || StringUtils.isEmpty(refreshToken)) {
-                if (!StringUtils.isEmpty(username)) {
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                if (username != null && !username.isEmpty()) {
                     String password = (String) getConfig().get(CONFIG_PASSWORD);
                     return authenticate(username, password);
                 } else {
@@ -310,13 +309,13 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                     updateConfiguration(configuration);
                 }
 
-                if (!StringUtils.isEmpty(tokenResponse.access_token)) {
+                if (tokenResponse.access_token != null && !tokenResponse.access_token.isEmpty()) {
                     this.logonToken = tokenResponse;
                     logger.trace("Access Token is {}", logonToken.access_token);
                 }
                 return new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             } else if (response.getStatus() == 401) {
-                if (!StringUtils.isEmpty(username)) {
+                if (username != null && !username.isEmpty()) {
                     String password = (String) getConfig().get(CONFIG_PASSWORD);
                     return authenticate(username, password);
                 } else {
@@ -350,8 +349,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 if (response.getStatus() == 200 && response.hasEntity()) {
                     String responsePayLoad = response.readEntity(String.class);
                     TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
-
-                    if (StringUtils.isNotEmpty(tokenResponse.access_token)) {
+                    if (tokenResponse.token_type != null && !tokenResponse.access_token.isEmpty()) {
                         this.logonToken = tokenResponse;
                         Configuration cfg = editConfiguration();
                         cfg.put(TeslaBindingConstants.CONFIG_REFRESHTOKEN, logonToken.refresh_token);
