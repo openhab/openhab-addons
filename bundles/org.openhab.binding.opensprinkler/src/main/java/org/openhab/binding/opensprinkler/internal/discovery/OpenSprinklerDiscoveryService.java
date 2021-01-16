@@ -14,25 +14,19 @@ package org.openhab.binding.opensprinkler.internal.discovery;
 
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -58,8 +52,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_HTTP_BRIDGE));
 
-    @Nullable
-    private ExecutorService discoverySearchPool;
+    private ExecutorService discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE);
     private OpenSprinklerApiFactory apiFactory;
 
     @Activate
@@ -80,22 +73,13 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting discovery of OpenSprinkler devices.");
-
         try {
-            List<String> ipList = getIpAddressScanList();
-
-            discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE);
-
-            for (String ip : ipList) {
-                discoverySearchPool.execute(new OpenSprinklerDiscoveryJob(this, ip));
-            }
-
+            IpAddressScan();
             discoverySearchPool.shutdown();
         } catch (Exception exp) {
             logger.debug("OpenSprinkler discovery service encountered an error while scanning for devices: {}",
                     exp.getMessage());
         }
-
         logger.debug("Completed discovery of OpenSprinkler devices.");
     }
 
@@ -111,43 +95,37 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
         properties.put("port", 80);
         properties.put("password", DEFAULT_ADMIN_PASSWORD);
         properties.put("refresh", 60);
-        thingDiscovered(
-                DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("OpenSprinkler").build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("OpenSprinkler @" + ip)
+                .build());
     }
 
-    /**
-     * Provide a string list of all the IP addresses associated with the network interfaces on
-     * this machine.
-     *
-     * @return String list of IP addresses.
-     * @throws UnknownHostException
-     * @throws SocketException
-     */
-    private List<String> getIpAddressScanList() throws UnknownHostException, SocketException {
-        List<String> results = new ArrayList<>();
-
-        InetAddress localHost = InetAddress.getLocalHost();
-        NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localHost);
-
-        for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
-            InetAddress ipAddress = address.getAddress();
-
-            String cidrSubnet = ipAddress.getHostAddress() + "/" + address.getNetworkPrefixLength();
-
-            /* Apache Subnet Utils only supports IP v4 for creating string list of IP's */
-            if (ipAddress instanceof Inet4Address) {
-                logger.debug("Found interface IPv4 address to scan: {}", cidrSubnet);
-
-                SubnetUtils utils = new SubnetUtils(cidrSubnet);
-
-                results.addAll(Arrays.asList(utils.getInfo().getAllAddresses()));
-            } else if (ipAddress instanceof Inet6Address) {
-                logger.debug("Found interface IPv6 address to scan: {}", cidrSubnet);
-            } else {
-                logger.debug("Found interface unknown IP type address to scan: {}", cidrSubnet);
+    private void IpAddressScan() {
+        String ipAddress;
+        try {
+            for (Enumeration<NetworkInterface> enumNetworks = NetworkInterface.getNetworkInterfaces(); enumNetworks
+                    .hasMoreElements();) {
+                NetworkInterface networkInterface = enumNetworks.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr
+                        .hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress.isSiteLocalAddress()) {
+                        ipAddress = inetAddress.getHostAddress().toString();
+                        String temp = ipAddress.substring(0, ipAddress.lastIndexOf("."));
+                        for (int i = 1; i < 254; i++) {
+                            String host = temp + "." + i;
+                            try {
+                                // Try to reach each IP with a timeout of 300ms which is enough for local network
+                                if (InetAddress.getByName(host).isReachable(300)) {
+                                    logger.trace("Reachable:{}", host);
+                                    discoverySearchPool.execute(new OpenSprinklerDiscoveryJob(this, host));
+                                }
+                            } catch (IOException e) {
+                            }
+                        }
+                    }
+                }
             }
+        } catch (SocketException ex) {
         }
-
-        return results;
     }
 }
