@@ -6,7 +6,7 @@
 
 	<!-- Bridge -->
 	<bridge-type id="bridge">
-		<label>Yamaha MusicCast Virtual Bridge</label>
+		<label>Virtual Bridge</label>
 		<description>Virtual Bridge to receive updates</description>
 	</bridge-type>
 

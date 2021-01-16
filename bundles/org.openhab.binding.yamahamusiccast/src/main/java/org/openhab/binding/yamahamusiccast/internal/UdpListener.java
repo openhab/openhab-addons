@@ -18,6 +18,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -79,8 +80,9 @@ public class UdpListener extends Thread {
             try {
                 socket.receive(packet);
                 String received = new String(packet.getData(), 0, packet.getLength());
-                logger.debug("YXC - Received packet: {}", received);
-                bridgeHandler.handleUDPEvent(received);
+                String trackingID = UUID.randomUUID().toString().replace("-", "").substring(0, 32);
+                logger.debug("YXC - Received packet: {} (Tracking: {})", received, trackingID);
+                bridgeHandler.handleUDPEvent(received, trackingID);
             } catch (SocketTimeoutException e) {
                 // Nothing to do on socket timeout
             } catch (IOException e) {

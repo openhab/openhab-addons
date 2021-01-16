@@ -22,6 +22,6 @@ import org.eclipse.jdt.annotation.*;
 @NonNullByDefault
 public class YamahaMusiccastConfiguration {
 
-    public @Nullable String configHost;
-    public @Nullable Boolean configSyncVolume;
+    public @Nullable String host;
+    public @Nullable Boolean syncVolume;
 }

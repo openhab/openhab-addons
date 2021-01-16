@@ -10,10 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yamahamusiccast.internal.model;
+package org.openhab.binding.yamahamusiccast.internal.dto;
 
 import org.eclipse.jdt.annotation.*;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,75 +21,74 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Lennert Coopman - Initial contribution
  */
-@NonNullByDefault
+
 public class UdpMessage {
 
     @SerializedName("device_id")
-    private @Nullable String deviceId;
+    private String deviceId;
 
-    public @Nullable String getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
     @SerializedName("main")
-    private @Nullable Zone main;
+    private Zone main;
     @SerializedName("zone2")
-    private @Nullable Zone zone2;
+    private Zone zone2;
     @SerializedName("zone3")
-    private @Nullable Zone zone3;
+    private Zone zone3;
     @SerializedName("zone4")
-    private @Nullable Zone zone4;
+    private Zone zone4;
     @SerializedName("netusb")
-    private @Nullable NetUSB netusb;
+    private NetUSB netusb;
 
-    public @Nullable Zone getMain() {
+    public Zone getMain() {
         return main;
     }
 
-    public @Nullable Zone getZone2() {
+    public Zone getZone2() {
         return zone2;
     }
 
-    public @Nullable Zone getZone3() {
+    public Zone getZone3() {
         return zone3;
     }
 
-    public @Nullable Zone getZone4() {
+    public Zone getZone4() {
         return zone4;
     }
 
-    public @Nullable NetUSB getNetUSB() {
+    public NetUSB getNetUSB() {
         return netusb;
     }
 
-    @NonNullByDefault
     public class Zone {
         @SerializedName("power")
-        private @Nullable String power;
+        private String power;
         @SerializedName("volume")
         private int volume = 0;
         @SerializedName("mute")
-        private @Nullable String mute;
+        private String mute;
         @SerializedName("input")
-        private @Nullable String input;
+        private String input;
         @SerializedName("status_updated")
-        private @Nullable String statusUpdated;
+        private String statusUpdated;
 
-        public @Nullable String getPower() {
+        public String getPower() {
             if (power == null) {
                 power = "";
             }
             return power;
         }
 
-        public @Nullable String getMute() {
+        public String getMute() {
             if (mute == null) {
                 mute = "";
             }
             return mute;
         }
 
-        public @Nullable String getInput() {
+        public String getInput() {
             if (input == null) {
                 input = "";
             }
@@ -101,7 +99,7 @@ public class UdpMessage {
             return volume;
         }
 
-        public @Nullable String getstatusUpdated() {
+        public String getstatusUpdated() {
             if (statusUpdated == null) {
                 statusUpdated = "";
             }
@@ -109,18 +107,17 @@ public class UdpMessage {
         }
     }
 
-    @NonNullByDefault
     public class NetUSB {
         @SerializedName("preset_control")
-        private @Nullable PresetControl presetControl;
+        private PresetControl presetControl;
         @SerializedName("play_info_updated")
-        private @Nullable String playInfoUpdated;
+        private String playInfoUpdated;
 
-        public @Nullable PresetControl getPresetControl() {
+        public PresetControl getPresetControl() {
             return presetControl;
         }
 
-        public @Nullable String getPlayInfoUpdated() {
+        public String getPlayInfoUpdated() {
             if (playInfoUpdated == null) {
                 playInfoUpdated = "";
             }
@@ -128,23 +125,22 @@ public class UdpMessage {
         }
     }
 
-    @NonNullByDefault
     public class PresetControl {
         @SerializedName("type")
-        private @Nullable String type;
+        private String type;
         @SerializedName("num")
         private int num = 1;
         @SerializedName("result")
-        private @Nullable String result;
+        private String result;
 
-        public @Nullable String getType() {
+        public String getType() {
             if (type == null) {
                 type = "";
             }
             return type;
         }
 
-        public @Nullable String getResult() {
+        public String getResult() {
             if (result == null) {
                 result = "";
             }

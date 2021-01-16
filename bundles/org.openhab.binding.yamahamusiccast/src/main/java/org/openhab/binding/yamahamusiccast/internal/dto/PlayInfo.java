@@ -10,10 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yamahamusiccast.internal.model;
+package org.openhab.binding.yamahamusiccast.internal.dto;
 
 import org.eclipse.jdt.annotation.*;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,62 +21,83 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Lennert Coopman - Initial contribution
  */
-@NonNullByDefault
+
 public class PlayInfo {
 
     @SerializedName("response_code")
-    private @Nullable String responseCode;
+    private String responseCode;
 
     @SerializedName("playback")
-    private @Nullable String playback;
+    private String playback;
 
     @SerializedName("artist")
-    private @Nullable String artist;
+    private String artist;
 
     @SerializedName("track")
-    private @Nullable String track;
+    private String track;
 
     @SerializedName("album")
-    private @Nullable String album;
+    private String album;
 
     @SerializedName("albumart_url")
-    private @Nullable String albumarturl;
+    private String albumarturl;
 
     @SerializedName("repeat")
-    private @Nullable String repeat;
+    private String repeat;
 
     @SerializedName("shuffle")
-    private @Nullable String shuffle;
+    private String shuffle;
 
-    public @Nullable String getResponseCode() {
+    public String getResponseCode() {
         return responseCode;
     }
 
-    public @Nullable String getPlayback() {
+    public String getPlayback() {
+        if (playback == null) {
+            playback = "";
+        }
         return playback;
     }
 
-    public @Nullable String getArtist() {
+    public String getArtist() {
+        if (artist == null) {
+            artist = "";
+        }
         return artist;
     }
 
-    public @Nullable String getTrack() {
+    public String getTrack() {
+        if (track == null) {
+            track = "";
+        }
         return track;
     }
 
-    public @Nullable String getAlbum() {
+    public String getAlbum() {
+        if (album == null) {
+            album = "";
+        }
         return album;
     }
 
-    public @Nullable String getAlbumArtUrl() {
+    public String getAlbumArtUrl() {
+        if (albumarturl == null) {
+            albumarturl = "";
+        }
         return albumarturl;
     }
 
-    public @Nullable String getRepeat() {
+    public String getRepeat() {
+        if (repeat == null) {
+            repeat = "";
+        }
         return repeat;
     }
 
-    public @Nullable String getShuffle() {
+    public String getShuffle() {
+        if (shuffle == null) {
+            shuffle = "";
+        }
         return shuffle;
     }
 }

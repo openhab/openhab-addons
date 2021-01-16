@@ -10,10 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yamahamusiccast.internal.model;
+package org.openhab.binding.yamahamusiccast.internal.dto;
 
 import org.eclipse.jdt.annotation.*;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,27 +21,32 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Lennert Coopman - Initial contribution
  */
-@NonNullByDefault
 public class DeviceInfo {
 
     @SerializedName("response_code")
-    private @Nullable String responseCode;
+    private String responseCode;
 
     @SerializedName("model_name")
-    private @Nullable String modelName;
+    private String modelName;
 
     @SerializedName("device_id")
-    private @Nullable String deviceId;
+    private String deviceId;
 
-    public @Nullable String getResponseCode() {
+    public String getResponseCode() {
         return responseCode;
     }
 
-    public @Nullable String getModelName() {
+    public String getModelName() {
+        if (modelName == null) {
+            modelName = "";
+        }
         return modelName;
     }
 
-    public @Nullable String getDeviceId() {
+    public String getDeviceId() {
+        if (deviceId == null) {
+            deviceId = "";
+        }
         return deviceId;
     }
 }
