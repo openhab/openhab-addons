@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,12 +66,11 @@ public class HomeConnectDryerHandler extends AbstractHomeConnectThingHandler {
 
     private static final List<String> INACTIVE_STATE = Arrays.asList(OPERATION_STATE_INACTIVE, OPERATION_STATE_READY);
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(HomeConnectDryerHandler.class);
 
     public HomeConnectDryerHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(thing, dynamicStateDescriptionProvider);
-        logger = LoggerFactory.getLogger(HomeConnectDryerHandler.class);
     }
 
     @Override

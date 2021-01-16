@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,8 @@ public class HomeConnectApiClient {
     private static final String ACCEPT = "Accept";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String BSH_JSON_V1 = "application/vnd.bsh.sdk.v1+json";
-    private static final String BASE_PATH = "/api/homeappliances/";
+    private static final String BASE = "/api/homeappliances";
+    private static final String BASE_PATH = BASE + "/";
     private static final MediaType BSH_JSON_V1_MEDIA_TYPE = requireNonNull(MediaType.parse(BSH_JSON_V1));
     private static final int REQUEST_READ_TIMEOUT = 30;
     private static final int VALUE_TYPE_STRING = 0;
@@ -103,7 +104,7 @@ public class HomeConnectApiClient {
     private static final int VALUE_TYPE_BOOLEAN = 2;
     private static final int COMMUNICATION_QUEUE_SIZE = 50;
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(HomeConnectApiClient.class);
     private final OkHttpClient client;
     private final String apiUrl;
     private final Map<String, List<AvailableProgramOption>> availableProgramOptionsCache;
@@ -118,7 +119,6 @@ public class HomeConnectApiClient {
         availableProgramOptionsCache = new ConcurrentHashMap<>();
         apiUrl = simulated ? API_SIMULATOR_BASE_URL : API_BASE_URL;
         client = OkHttpHelper.builder(true).readTimeout(REQUEST_READ_TIMEOUT, TimeUnit.SECONDS).build();
-        logger = LoggerFactory.getLogger(HomeConnectApiClient.class);
         jsonParser = new JsonParser();
         communicationQueue = new CircularQueue<>(COMMUNICATION_QUEUE_SIZE);
         if (apiRequestHistory != null) {
@@ -134,7 +134,7 @@ public class HomeConnectApiClient {
      * @throws AuthorizationException oAuth authorization exception
      */
     public List<HomeAppliance> getHomeAppliances() throws CommunicationException, AuthorizationException {
-        Request request = createGetRequest(BASE_PATH);
+        Request request = createGetRequest(BASE);
         try (Response response = client.newCall(request).execute()) {
             checkResponseCode(HTTP_OK, request, response, null, null);
 

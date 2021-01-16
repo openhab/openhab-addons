@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,7 +118,7 @@ public class HomeConnectServlet extends HttpServlet {
     private static final DateTimeFormatter FILE_EXPORT_DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm");
     private static final long serialVersionUID = -2449763690208703307L;
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(HomeConnectServlet.class);
     private final HttpService httpService;
     private final TemplateEngine templateEngine;
     private final Set<HomeConnectBridgeHandler> bridgeHandlers;
@@ -126,7 +126,6 @@ public class HomeConnectServlet extends HttpServlet {
 
     @Activate
     public HomeConnectServlet(@Reference HttpService httpService) {
-        logger = LoggerFactory.getLogger(HomeConnectServlet.class);
         bridgeHandlers = new CopyOnWriteArraySet<>();
         gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, (JsonSerializer<ZonedDateTime>) (src,
                 typeOfSrc, context) -> new JsonPrimitive(src.format(DateTimeFormatter.ISO_DATE_TIME))).create();
@@ -134,7 +133,7 @@ public class HomeConnectServlet extends HttpServlet {
 
         // register servlet
         try {
-            logger.info("Initialize log viewer servlet ({})", SERVLET_PATH);
+            logger.info("Initialize Home Connect configuration servlet ({})", SERVLET_PATH);
             httpService.registerServlet(SERVLET_PATH, this, null, httpService.createDefaultHttpContext());
             httpService.registerResources(ASSETS_PATH, "assets", null);
         } catch (NamespaceException e) {
@@ -164,7 +163,7 @@ public class HomeConnectServlet extends HttpServlet {
     @Deactivate
     protected void dispose() {
         try {
-            logger.info("Unregister Home Connect servlet ({}).", SERVLET_PATH);
+            logger.info("Unregister Home Connect configuration servlet ({}).", SERVLET_PATH);
             httpService.unregister(SERVLET_PATH);
             httpService.unregister(ASSETS_PATH);
         } catch (IllegalArgumentException e) {

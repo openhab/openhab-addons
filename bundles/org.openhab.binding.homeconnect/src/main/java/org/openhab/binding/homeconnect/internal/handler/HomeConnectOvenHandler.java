@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     private static final int CAVITY_TEMPERATURE_SCHEDULER_INITIAL_DELAY = 30;
     private static final int CAVITY_TEMPERATURE_SCHEDULER_PERIOD = 90;
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(HomeConnectOvenHandler.class);
     private final ScheduledExecutorService scheduler;
 
     private @Nullable ScheduledFuture<?> cavityTemperatureFuture;
@@ -104,7 +104,6 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     public HomeConnectOvenHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(thing, dynamicStateDescriptionProvider);
-        logger = LoggerFactory.getLogger(HomeConnectOvenHandler.class);
         scheduler = ThreadPoolManager.getScheduledPool(getClass().getSimpleName());
         manuallyUpdateCavityTemperature = true;
     }

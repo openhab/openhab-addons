@@ -140,7 +140,7 @@ If you prefer to configure everything via file instead of openHAB UI, here are s
 ### things/homeconnect.things
 
 ```
-Bridge homeconnect:api_bridge:api_bridge1 "Home Connect API" [ clientId="1234", clientSecret="1234", simulator=false] {
+Bridge homeconnect:api_bridge:api_bridge_at_home "Home Connect API" [ clientId="1234", clientSecret="1234", simulator=false] {
     // Thing configurations
     Thing dishwasher dishwasher1 "Dishwasher"  [ haId="SIEMENS-HCS02DWH1-6F2FC400C1EA4A" ]
     Thing washer washer1 "Washer"  [ haId="SIEMENS-HCS03WCH1-1F35EC2BE34A0F" ]
@@ -157,19 +157,19 @@ Bridge homeconnect:api_bridge:api_bridge1 "Home Connect API" [ clientId="1234", 
 
 ### items/homeconnect.items
 
-The channel parameter uses the following syntax: `homeconnect:<thing type id>:<bridge id>:<thing id>:<channel type id>`. For example: `homeconnect:dishwasher:simulator_api_bridge:dishwasher1:power_state`
+The channel parameter uses the following syntax: `homeconnect:<thing type id>:<bridge id>:<thing id>:<channel type id>`. For example: `homeconnect:dishwasher:api_bridge_at_home:dishwasher1:power_state`
 
 ```
 // dishwasher
-Switch                 DishwasherSimulator_PowerState                  "Power State"                       {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:power_state"}
-Contact                DishwasherSimulator_DoorState                   "Door State"                        {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:door_state"}
-String                 DishwasherSimulator_OperationState              "Operation State"                   {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:operation_state"}
-Switch                 DishwasherSimulator_RemoteStartAllowanceState   "Remote Start Allowance State"      {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:remote_start_allowance_state"}
-Switch                 DishwasherSimulator_RemoteControlActiveState    "Remote Control Activation State"   {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:remote_control_active_state"}
-String                 DishwasherSimulator_SelectedProgramState        "Selected Program"                  {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:selected_program_state"}
-String                 DishwasherSimulator_ActiveProgramState          "Active Program"                    {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:active_program_state"}
-Number:Time            DishwasherSimulator_RemainingProgramTimeState   "Remaining program time"            {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:remaining_program_time_state"}
-Number:Dimensionless   DishwasherSimulator_ProgramProgressState        "Progress State"                    {channel="homeconnect:dishwasher:simulator_api_bridge:dishwasher1:program_progress_state"}
+Switch                 Dishwasher_PowerState                  "Power State"                       {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:power_state"}
+Contact                Dishwasher_DoorState                   "Door State"                        {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:door_state"}
+String                 Dishwasher_OperationState              "Operation State"                   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:operation_state"}
+Switch                 Dishwasher_RemoteStartAllowanceState   "Remote Start Allowance State"      {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_start_allowance_state"}
+Switch                 Dishwasher_RemoteControlActiveState    "Remote Control Activation State"   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_control_active_state"}
+String                 Dishwasher_SelectedProgramState        "Selected Program"                  {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:selected_program_state"}
+String                 Dishwasher_ActiveProgramState          "Active Program"                    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:active_program_state"}
+Number:Time            Dishwasher_RemainingProgramTimeState   "Remaining program time"            {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remaining_program_time_state"}
+Number:Dimensionless   Dishwasher_ProgramProgressState        "Progress State"                    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:program_progress_state"}
 ```
 
 ## Home Connect Console
