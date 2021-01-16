@@ -74,6 +74,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     protected UpnpIOService service;
+    private WemoHttpCall wemoCall;
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -95,11 +96,11 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         }
     };
 
-    public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemohttpCaller) {
+    public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing);
 
         this.service = upnpIOService;
-        this.wemoHttpCaller = wemohttpCaller;
+        this.wemoCall = wemoHttpCaller;
 
         logger.debug("Creating a WemoHandler for thing '{}'", getThing().getUID());
     }
@@ -164,11 +165,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
                     if (wemoURL != null) {
-                        if (wemoHttpCaller != null) {
-                            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        }
+                        wemoCall.executeCall(wemoURL, soapHeader, content);
                     }
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
@@ -410,21 +407,16 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
             if (wemoURL != null) {
-                if (wemoHttpCaller != null) {
-                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
-                                getThing().getUID());
-                        if (variable.equals("InsightParams")) {
-                            value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
-                        } else {
-                            value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                        }
-                        logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
-                        this.onValueReceived(variable, value, actionService + "1");
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoCallResponse != null) {
+                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
+                    if (variable.equals("InsightParams")) {
+                        value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
+                    } else {
+                        value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
                     }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                    this.onValueReceived(variable, value, actionService + "1");
                 }
             }
         } catch (Exception e) {

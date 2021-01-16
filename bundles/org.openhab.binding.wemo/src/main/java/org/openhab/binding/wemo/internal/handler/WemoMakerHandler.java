@@ -64,6 +64,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MAKER);
 
     private UpnpIOService service;
+    private WemoHttpCall wemoCall;
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -84,7 +85,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
         super(thing);
 
         this.service = upnpIOService;
-        this.wemoHttpCaller = wemoHttpcaller;
+        this.wemoCall = wemoHttpcaller;
 
         logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
     }
@@ -146,11 +147,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                     String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
                     if (wemoURL != null) {
-                        if (wemoHttpCaller != null) {
-                            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        }
+                        wemoCall.executeCall(wemoURL, soapHeader, content);
                     }
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}' ", command, getThing().getUID(), e);
@@ -203,7 +200,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
             if (wemoURL != null) {
-<<<<<<< HEAD
                 String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                 if (wemoCallResponse != null) {
                     try {
@@ -214,6 +210,16 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                         stringParser = StringEscapeUtils.unescapeXml(stringParser);
                         stringParser = StringEscapeUtils.unescapeXml(stringParser);
 
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoCallResponse != null) {
+                    try {
+                        String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
+                        logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());
+                        logger.trace("'{}'", stringParser);
+
+                        // Due to Belkins bad response formatting, we need to run this twice.
+                        stringParser = unescapeXml(stringParser);
+                        stringParser = unescapeXml(stringParser);
                         logger.trace("Maker response '{}' for device '{}' received", stringParser, getThing().getUID());
 
                         stringParser = "<data>" + stringParser + "</data>";
@@ -251,7 +257,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                                 case "Switch":
                                     State relayState = attributeValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
                                     if (relayState != null) {
-=======
                 if (wemoHttpCaller != null) {
                     String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
@@ -294,7 +299,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                                 switch (attributeName) {
                                     case "Switch":
                                         State relayState = attributeValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
->>>>>>> f07dd8582... [wemo] add annotations and remove usage of apache.commons.*
                                         logger.debug("New relayState '{}' for device '{}' received", relayState,
                                                 getThing().getUID());
                                         updateState(CHANNEL_RELAY, relayState);
@@ -306,14 +310,21 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                                         updateState(CHANNEL_SENSOR, sensorState);
                                         break;
                                 }
+                                    logger.debug("New relayState '{}' for device '{}' received", relayState,
+                                            getThing().getUID());
+                                    updateState(CHANNEL_RELAY, relayState);
+                                    break;
+                                case "Sensor":
+                                    State sensorState = attributeValue.equals("1") ? OnOffType.OFF : OnOffType.ON;
+                                    logger.debug("New sensorState '{}' for device '{}' received", sensorState,
+                                            getThing().getUID());
+                                    updateState(CHANNEL_SENSOR, sensorState);
+                                    break;
                             }
-                        } catch (Exception e) {
-                            logger.error("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(),
-                                    e);
                         }
+                    } catch (Exception e) {
+                        logger.error("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(), e);
                     }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
         } catch (Exception e) {

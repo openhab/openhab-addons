@@ -58,6 +58,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     private UpnpIOService service;
+    private WemoHttpCall wemoCall;
 
     private @Nullable WemoBridgeHandler wemoBridgeHandler;
 
@@ -101,7 +102,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         super(thing);
 
         this.service = upnpIOService;
-        this.wemoHttpCaller = wemoHttpcaller;
+        this.wemoCall = wemoHttpcaller;
     }
 
     @Override
@@ -254,17 +255,13 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                 String wemoURL = getWemoURL(descriptorURL, "bridge");
 
                 if (wemoURL != null && capability != null && value != null) {
-                    if (wemoHttpCaller != null) {
-                        String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                        if (wemoCallResponse != null) {
-                            if (capability.equals("10008")) {
-                                OnOffType binaryState = null;
-                                binaryState = value.equals("0") ? OnOffType.OFF : OnOffType.ON;
-                                updateState(CHANNEL_STATE, binaryState);
-                            }
+                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (wemoCallResponse != null) {
+                        if (capability.equals("10008")) {
+                            OnOffType binaryState = null;
+                            binaryState = value.equals("0") ? OnOffType.OFF : OnOffType.ON;
+                            updateState(CHANNEL_STATE, binaryState);
                         }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     }
                 }
             } catch (Exception e) {
@@ -300,32 +297,28 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             String wemoURL = getWemoURL(descriptorURL, "bridge");
 
             if (wemoURL != null) {
-                if (wemoHttpCaller != null) {
-                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        wemoCallResponse = unescapeXml(wemoCallResponse);
-                        String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
-                        logger.trace("wemoNewLightState = {}", response);
-                        String[] splitResponse = response.split(",");
-                        if (splitResponse[0] != null) {
-                            OnOffType binaryState = null;
-                            binaryState = splitResponse[0].equals("0") ? OnOffType.OFF : OnOffType.ON;
-                            updateState(CHANNEL_STATE, binaryState);
-                        }
-                        if (splitResponse[1] != null) {
-                            String splitBrightness[] = splitResponse[1].split(":");
-                            if (splitBrightness[0] != null) {
-                                int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
-                                int newBrightness = Math.round(newBrightnessValue * 100 / 255);
-                                logger.trace("newBrightness = {}", newBrightness);
-                                State newBrightnessState = new PercentType(newBrightness);
-                                updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
-                                currentBrightness = newBrightness;
-                            }
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoCallResponse != null) {
+                    wemoCallResponse = unescapeXml(wemoCallResponse);
+                    String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
+                    logger.trace("wemoNewLightState = {}", response);
+                    String[] splitResponse = response.split(",");
+                    if (splitResponse[0] != null) {
+                        OnOffType binaryState = null;
+                        binaryState = splitResponse[0].equals("0") ? OnOffType.OFF : OnOffType.ON;
+                        updateState(CHANNEL_STATE, binaryState);
+                    }
+                    if (splitResponse[1] != null) {
+                        String splitBrightness[] = splitResponse[1].split(":");
+                        if (splitBrightness[0] != null) {
+                            int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
+                            int newBrightness = Math.round(newBrightnessValue * 100 / 255);
+                            logger.trace("newBrightness = {}", newBrightness);
+                            State newBrightnessState = new PercentType(newBrightness);
+                            updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
+                            currentBrightness = newBrightness;
                         }
                     }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
         } catch (Exception e) {
