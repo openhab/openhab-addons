@@ -25,5 +25,5 @@ public class OpenSprinklerStationConfig {
     /**
      * The index of the station the thing is configured to control, starting with 0.
      */
-    public int stationIndex = -1;
+    public int stationIndex = 0;
 }

@@ -61,6 +61,7 @@ public class OpenSprinklerApiFactory {
 
         OpenSprinklerApi lowestSupportedApi = new OpenSprinklerHttpApiV100(this.httpClient, config);
         try {
+            lowestSupportedApi.refresh();
             version = lowestSupportedApi.getFirmwareVersion();
         } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(

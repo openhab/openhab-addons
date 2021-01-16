@@ -44,7 +44,7 @@ public class OpenSprinklerBindingConstants {
     public static final String JSON_OPTION_STATION = "sn";
     public static final String JSON_OPTION_STATION_COUNT = "nstations";
     public static final String JSON_OPTION_RESULT = "result";
-    public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 10;
+    public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 15;
     public static final int DEFAULT_REFRESH_RATE = 60;
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;

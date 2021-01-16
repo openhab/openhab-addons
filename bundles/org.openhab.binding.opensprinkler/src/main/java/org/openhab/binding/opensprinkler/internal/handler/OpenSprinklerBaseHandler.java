@@ -50,19 +50,19 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
     protected @Nullable OpenSprinklerApi getApi() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No bridge selected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No HTTP Bridge thing selected");
             return null;
         }
         BridgeHandler handler = bridge.getHandler();
-        if (!(handler instanceof OpenSprinklerBaseBridgeHandler)) {
+        if (!(handler instanceof OpenSprinklerHttpBridgeHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "Bridge is not a valid OpenSprinklerBaseBridgeHandler");
             return null;
         }
         try {
-            return ((OpenSprinklerBaseBridgeHandler) handler).getApi();
+            return ((OpenSprinklerHttpBridgeHandler) handler).getApi();
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return null;
         }
     }
@@ -74,6 +74,11 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
         if (getApi() != null) {
             updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.ONLINE);
     }
 
     protected abstract void updateChannel(ChannelUID uid);

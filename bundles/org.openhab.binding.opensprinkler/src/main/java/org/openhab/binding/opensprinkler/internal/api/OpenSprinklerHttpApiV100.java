@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
-import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 import org.slf4j.Logger;
@@ -57,10 +57,14 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected final String password;
     protected final String basicUsername;
     protected final String basicPassword;
+    public boolean isAnswering = true;
+    @Nullable
+    JcResponse jcReply;
+    @Nullable
+    JoResponse joReply;
 
     protected int firmwareVersion = -1;
     protected int numberOfStations = DEFAULT_STATION_COUNT;
-
     protected boolean isInManualMode = false;
 
     private final Gson gson = new Gson();
@@ -93,13 +97,24 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
+    public boolean isAnswering() {
+        return isAnswering;
+    }
+
+    @Override
     public boolean isManualModeEnabled() {
         return isInManualMode;
     }
 
     @Override
+    public void refresh() throws CommunicationApiException {
+        jcReply = statusInfo();
+        joReply = getOptions();
+    }
+
+    @Override
     public void enterManualMode() throws CommunicationApiException {
-        logger.debug("Entering ManualMode");
+        logger.debug("Trying to enter ManualMode");
         try {
             http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_ENABLE_MANUAL_MODE);
         } catch (Exception exp) {
@@ -164,28 +179,34 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public boolean isRainDetected() throws CommunicationApiException {
-        if (statusInfo().rs == 1) {
+    public boolean isRainDetected() {
+        JcResponse localReply = jcReply;
+        if (localReply != null && localReply.rs == 1) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override
-    public int currentDraw() throws CommunicationApiException, NoCurrentDrawSensorException {
-        JcResponse info = statusInfo();
-        if (info == null || info.curr == null) {
-            logger.debug("NoCurrentDrawSensorException:{}", info);
-            throw new NoCurrentDrawSensorException();
+    public int currentDraw() {
+        JcResponse localReply = jcReply;
+        if (localReply != null) {
+            if (localReply.curr != null) {
+                return localReply.curr;
+            } else {
+                return -1;// Sensor not supported
+            }
         }
-        return info.curr;
+        return 0;
     }
 
     @Override
-    public int waterLevel() throws CommunicationApiException {
-        JoResponse info = getOptions();
-        return info.wl;
+    public int waterLevel() {
+        JoResponse localReply = joReply;
+        if (localReply != null) {
+            return localReply.wl;
+        }
+        return 0;
     }
 
     @Override
@@ -205,16 +226,14 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public int getFirmwareVersion() throws CommunicationApiException {
-
-        try {
-            JoResponse info = getOptions();
-            this.firmwareVersion = info.fwv;
-        } catch (Exception exp) {
-            this.firmwareVersion = -1;
+    public int getFirmwareVersion() {
+        JoResponse localReply = joReply;
+        if (localReply != null) {
+            if (localReply.fwv > 0) {
+                firmwareVersion = localReply.fwv;
+            }
         }
-
-        return this.firmwareVersion;
+        return firmwareVersion;
     }
 
     /**
@@ -237,9 +256,12 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public StationProgram retrieveProgram(int station) throws CommunicationApiException {
-        JcResponse resp = statusInfo();
-        return resp.ps.stream().map(values -> new StationProgram(values.get(1))).collect(Collectors.toList())
-                .get(station);
+        JcResponse localReply = jcReply;
+        if (localReply != null && localReply.ps != null) {
+            return localReply.ps.stream().map(values -> new StationProgram(values.get(1))).collect(Collectors.toList())
+                    .get(station);
+        }
+        return new StationProgram(0);
     }
 
     private @Nullable JcResponse statusInfo() throws CommunicationApiException {
@@ -312,18 +334,21 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             } else {
                 location = url;
             }
-            logger.debug("sending GET:{}", location);
             ContentResponse response;
             try {
-                response = withGeneralProperties(httpClient.newRequest(location)).method(HttpMethod.GET).send();
+                response = withGeneralProperties(httpClient.newRequest(location)).method(HttpMethod.GET)
+                        .timeout(4, TimeUnit.SECONDS).send();
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                isAnswering = false;
                 throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
             }
 
             if (response.getStatus() != HTTP_OK_CODE) {
+                isAnswering = false;
                 throw new CommunicationApiException(
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
             }
+            isAnswering = true;
             return response.getContentAsString();
         }
 

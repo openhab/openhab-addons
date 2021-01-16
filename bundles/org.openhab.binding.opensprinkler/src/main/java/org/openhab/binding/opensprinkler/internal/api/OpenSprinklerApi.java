@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
-import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 
 /**
@@ -92,16 +91,16 @@ public interface OpenSprinklerApi {
      * @return True if rain is detected, false if not or cannot determine.
      * @throws Exception
      */
-    public abstract boolean isRainDetected() throws CommunicationApiException;
+    public abstract boolean isRainDetected();
 
     /**
      * Returns the current draw of all connected zones of the OpenSprinkler device in milliamperes.
      *
      * @return current draw in milliamperes
      * @throws CommunicationApiException
-     * @throws
+     * @throws NoCurrentDrawSensorException
      */
-    public abstract int currentDraw() throws CommunicationApiException, NoCurrentDrawSensorException;
+    public abstract int currentDraw();
 
     /**
      * Returns the water level in %.
@@ -110,7 +109,7 @@ public interface OpenSprinklerApi {
      * @throws CommunicationApiException
      * @throws
      */
-    public abstract int waterLevel() throws CommunicationApiException;
+    public abstract int waterLevel();
 
     /**
      * Returns the number of total stations that are controllable from the OpenSprinkler
@@ -128,4 +127,8 @@ public interface OpenSprinklerApi {
      * @throws Exception
      */
     public abstract int getFirmwareVersion() throws CommunicationApiException;
+
+    public abstract boolean isAnswering();
+
+    void refresh() throws CommunicationApiException;
 }

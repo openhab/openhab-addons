@@ -45,10 +45,8 @@ import org.slf4j.LoggerFactory;
 public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerStationHandler.class);
 
-    @Nullable
-    private OpenSprinklerStationConfig config;
-    @Nullable
-    private BigDecimal nextDurationTime;
+    private OpenSprinklerStationConfig config = new OpenSprinklerStationConfig();
+    private BigDecimal nextDurationTime = BigDecimal.ZERO;
 
     public OpenSprinklerStationHandler(Thing thing) {
         super(thing);
@@ -57,6 +55,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     @Override
     public void initialize() {
         config = getConfig().as(OpenSprinklerStationConfig.class);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -101,13 +100,13 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         }
         try {
             if (command == OnOffType.ON) {
-                api.openStation(this.getStationIndex(), nextStationDuration());
+                api.openStation(config.stationIndex, nextStationDuration());
             } else {
-                api.closeStation(this.getStationIndex());
+                api.closeStation(config.stationIndex);
             }
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not control the station channel " + (this.getStationIndex() + 1)
+                    "Could not control the station channel " + (config.stationIndex + 1)
                             + " for the OpenSprinkler. Error: " + exp.getMessage());
         }
     }
@@ -187,7 +186,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     @Override
     protected void updateChannel(ChannelUID channel) {
-        OnOffType currentDeviceState = getStationState(this.getStationIndex());
+        OnOffType currentDeviceState = getStationState(config.stationIndex);
         QuantityType<Time> remainingWaterTime = getRemainingWaterTime(config.stationIndex);
         switch (channel.getIdWithoutGroup()) {
             case STATION_STATE:
@@ -221,13 +220,5 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     private @Nullable BigDecimal nextDurationValue() {
         return nextDurationTime;
-    }
-
-    private int getStationIndex() {
-        OpenSprinklerStationConfig config = this.config;
-        if (config == null) {
-            throw new IllegalStateException();
-        }
-        return config.stationIndex;
     }
 }
