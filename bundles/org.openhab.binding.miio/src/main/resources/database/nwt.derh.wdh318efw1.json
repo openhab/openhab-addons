@@ -55,7 +55,7 @@
 				]
 			},
 			{
-				"property": "fan_st",
+				"property": "fan_speed",
 				"friendlyName": "Fan Speed",
 				"channel": "fanspeed",
 				"type": "Number",
@@ -66,6 +66,10 @@
 						"command": "set_fan_level",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "fan_box",
+				"tags": [
+					"Setpoint"
 				]
 			},
 			{
@@ -168,7 +172,7 @@
 				"actions": []
 			},
 			{
-				"property": "fan_speed",
+				"property": "fan_st",
 				"friendlyName": "Fan St",
 				"channel": "fanst",
 				"type": "Number",
