@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mytest"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="egate">
+		<label>Dominoswiss EGate Server</label>
+		<description>This is a Dominoswiss EGate Server instance.</description>
+		<channels>
+			<channel id="getconfig" typeId="getconfig"/>
+		</channels>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP or Host Name (192.168.1.100, 1318) localhost 5500</label>
+				<description>The IP or host name of the Dominoswiss EGate Server</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true" min="1" max="65335">
+				<label>Dominoswiss EGat Web Port</label>
+				<description>Port interface of the Dominoswiss EGate Server</description>
+				<default>1318</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="blind">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="egate"/>
+		</supported-bridge-type-refs>
+		<label>Blinds controlled by Dominoswiss</label>
+		<description>Provides various controlcommands for Dominoswiss receivers</description>
+		<channels>
+			<channel id="pulseup" typeId="pulseup"/>
+			<channel id="pulsedown" typeId="pulsedown"/>
+			<channel id="continuousup" typeId="continuousup"/>
+			<channel id="continuousdown" typeId="continuousdown"/>
+			<channel id="stop" typeId="stop"/>
+			<channel id="shutter" typeId="shutter"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="tiltup" typeId="tiltup"/>
+			<channel id="tiltdown" typeId="tiltdown"/>
+		</channels>
+		<properties>
+			<property name="vendor">Dominoswiss</property>
+			<property name="modelId"></property>
+			<property name="name"></property>
+			<property name="id"></property>
+		</properties>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>ID Address</label>
+				<description>Blinds are identified by their ID address</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="pulseup">
+		<item-type>Number</item-type>
+		<label>PulseUp</label>
+		<description>Send one pulse up</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pulsedown">
+		<item-type>Number</item-type>
+		<label>PulseDown</label>
+		<description>Send one pulse down</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="continuousup">
+		<item-type>Number</item-type>
+		<label>ContinuousUp</label>
+		<description>Send Continuous Up command to blind</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="continuousdown">
+		<item-type>Number</item-type>
+		<label>ContinousDown</label>
+		<description>Send Continuous Down command to blind</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="stop">
+		<item-type>Number</item-type>
+		<label>Stop</label>
+		<description>Send Stop impulse to stop the blinds</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="shutter">
+		<item-type>UpDownType</item-type>
+		<label>shutter</label>
+		<description>handle the commands up/down/stop </description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tilt">
+		<item-type>UpDownType</item-type>
+		<label>shutter</label>
+		<description>handle the commands tiltup/tiltdown/stop </description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="tiltup">
+		<item-type>Number</item-type>
+		<label>TiltUp</label>
+		<description>handle the command for 3 tilts up </description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tiltdown">
+		<item-type>Number</item-type>
+		<label>TiltDown</label>
+		<description>handle the command for 3 tilts down </description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="getconfig">
+		<item-type>Number</item-type>
+		<label>getconfig</label>
+		<description>getconfig of egate server </description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
