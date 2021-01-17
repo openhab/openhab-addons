@@ -151,7 +151,7 @@ From all possible sensor channels (temperatureX, switchX, etc.) only one shall b
 | resistorX            | Number:ElectricResistance | Writable resistance value for the virtual input for sensor 'x'.  |
 | switchX              | Switch                    | Writable switch state for the virtual input for sensor 'x'.      |
 | BasTempAdjustmentX   | Number:Temperature        | Writable temperature adjustment for the virtual room control module BAS on the for the virtual input for sensor 'x'. Use together with BasModeX, not effective if BasModeX is OFF or Party.           |
-| BasModeX             | Number                    | Writable heating circuit mode for the virtual room control module BAS on the for the virtual input for sensor 'x'. Use together with BasTempAdjustmentX. 0: OFF, 1: Summer, 2: Night, 3: Party, 4: Automatic.|
+| BasModeX             | Number                    | Writable heating circuit mode for the virtual room control module BAS on the for the virtual input for sensor 'x'. Use together with BasTempAdjustmentX.|
 
 
 
