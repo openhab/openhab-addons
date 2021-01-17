@@ -39,11 +39,7 @@ class OpenSprinklerHttpApiV213 extends OpenSprinklerHttpApiV210 {
      */
     OpenSprinklerHttpApiV213(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config)
             throws GeneralApiException {
-        super(httpClient, withHashedPassword(config));
-    }
-
-    private static OpenSprinklerHttpInterfaceConfig withHashedPassword(final OpenSprinklerHttpInterfaceConfig config) {
-        config.password = Hash.getMD5Hash(config.password);
-        return config;
+        super(httpClient, config);
+        this.password = Hash.getMD5Hash(config.password);
     }
 }
