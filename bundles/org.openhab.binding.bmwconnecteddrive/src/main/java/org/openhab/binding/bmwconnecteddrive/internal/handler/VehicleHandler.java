@@ -249,11 +249,9 @@ public class VehicleHandler extends VehicleChannelHandler {
                         switch (id) {
                             case CHARGE_PROFILE_CLIMATE:
                                 wp.climatizationEnabled = OnOffType.ON.equals(command) ? true : false;
-                                updateState(chargeProfileClimate, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER1_ENABLED:
                                 wp.timer1.timerEnabled = OnOffType.ON.equals(command) ? true : false;
-                                updateState(timer1Enabled, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER1_DAYS_MON:
                                 if (OnOffType.ON.equals(command)) {
@@ -262,7 +260,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer1.dayOff(Day.MONDAY);
                                 }
                                 updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                updateState(timer1DaysMon, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER1_DAYS_TUE:
                                 if (OnOffType.ON.equals(command)) {
@@ -271,7 +268,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer1.dayOff(Day.TUESDAY);
                                 }
                                 updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                updateState(timer1DaysTue, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER1_DAYS_WED:
                                 if (OnOffType.ON.equals(command)) {
@@ -280,7 +276,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer1.dayOff(Day.WEDNESDAY);
                                 }
                                 updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                updateState(timer1DaysWed, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER1_DAYS_THU:
                                 if (OnOffType.ON.equals(command)) {
@@ -289,7 +284,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer1.dayOff(Day.THURSDAY);
                                 }
                                 updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                updateState(timer1DaysThu, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER1_DAYS_FRI:
                                 if (OnOffType.ON.equals(command)) {
@@ -298,7 +292,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer1.dayOff(Day.FRIDAY);
                                 }
                                 updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                updateState(timer1DaysFri, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER1_DAYS_SAT:
                                 if (OnOffType.ON.equals(command)) {
@@ -307,7 +300,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer1.dayOff(Day.SATURDAY);
                                 }
                                 updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                updateState(timer1DaysSat, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER1_DAYS_SUN:
                                 if (OnOffType.ON.equals(command)) {
@@ -316,11 +308,9 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer1.dayOff(Day.SUNDAY);
                                 }
                                 updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                updateState(timer1DaysSun, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER2_ENABLED:
                                 wp.timer2.timerEnabled = OnOffType.ON.equals(command) ? true : false;
-                                updateState(timer2Enabled, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER2_DAYS_MON:
                                 if (OnOffType.ON.equals(command)) {
@@ -329,7 +319,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer2.dayOff(Day.MONDAY);
                                 }
                                 updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                updateState(timer2DaysMon, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER2_DAYS_TUE:
                                 if (OnOffType.ON.equals(command)) {
@@ -338,7 +327,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer2.dayOff(Day.TUESDAY);
                                 }
                                 updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                updateState(timer2DaysTue, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER2_DAYS_WED:
                                 if (OnOffType.ON.equals(command)) {
@@ -347,7 +335,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer2.dayOff(Day.WEDNESDAY);
                                 }
                                 updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                updateState(timer2DaysWed, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER2_DAYS_THU:
                                 if (OnOffType.ON.equals(command)) {
@@ -356,7 +343,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer2.dayOff(Day.THURSDAY);
                                 }
                                 updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                updateState(timer2DaysThu, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER2_DAYS_FRI:
                                 if (OnOffType.ON.equals(command)) {
@@ -365,7 +351,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer2.dayOff(Day.FRIDAY);
                                 }
                                 updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                updateState(timer2DaysFri, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER2_DAYS_SAT:
                                 if (OnOffType.ON.equals(command)) {
@@ -374,7 +359,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer2.dayOff(Day.SATURDAY);
                                 }
                                 updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                updateState(timer2DaysSat, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER2_DAYS_SUN:
                                 if (OnOffType.ON.equals(command)) {
@@ -383,7 +367,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer2.dayOff(Day.SUNDAY);
                                 }
                                 updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                updateState(timer2DaysSun, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER3_ENABLED:
                                 wp.timer3.timerEnabled = OnOffType.ON.equals(command) ? true : false;
@@ -395,7 +378,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer3.dayOff(Day.MONDAY);
                                 }
                                 updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                updateState(timer3DaysMon, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER3_DAYS_TUE:
                                 if (OnOffType.ON.equals(command)) {
@@ -404,7 +386,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer3.dayOff(Day.TUESDAY);
                                 }
                                 updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                updateState(timer3DaysTue, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER3_DAYS_WED:
                                 if (OnOffType.ON.equals(command)) {
@@ -413,7 +394,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer3.dayOff(Day.WEDNESDAY);
                                 }
                                 updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                updateState(timer3DaysWed, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER3_DAYS_THU:
                                 if (OnOffType.ON.equals(command)) {
@@ -422,7 +402,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer3.dayOff(Day.THURSDAY);
                                 }
                                 updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                updateState(timer3DaysThu, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER3_DAYS_FRI:
                                 if (OnOffType.ON.equals(command)) {
@@ -431,7 +410,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer3.dayOff(Day.FRIDAY);
                                 }
                                 updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                updateState(timer3DaysFri, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER3_DAYS_SAT:
                                 if (OnOffType.ON.equals(command)) {
@@ -440,7 +418,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer3.dayOff(Day.SATURDAY);
                                 }
                                 updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                updateState(timer3DaysSat, (OnOffType) command);
                                 break;
                             case CHARGE_TIMER3_DAYS_SUN:
                                 if (OnOffType.ON.equals(command)) {
@@ -449,7 +426,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     wp.timer3.dayOff(Day.SUNDAY);
                                 }
                                 updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                updateState(timer3DaysSun, (OnOffType) command);
                                 break;
                         }
                     }
@@ -460,53 +436,43 @@ public class VehicleHandler extends VehicleChannelHandler {
                                 wp.preferredChargingWindow.setStartHour(numberCommand);
                                 updateState(chargeWindowStart,
                                         StringType.valueOf(wp.preferredChargingWindow.startTime));
-                                updateState(chargeWindowStartHour, (DecimalType) command);
                                 break;
                             case CHARGE_WINDOW_START_MINUTE:
                                 wp.preferredChargingWindow.setStartMinute(numberCommand);
                                 updateState(chargeWindowStart,
                                         StringType.valueOf(wp.preferredChargingWindow.startTime));
-                                updateState(chargeWindowStartMinute, (DecimalType) command);
                                 break;
                             case CHARGE_WINDOW_END_HOUR:
                                 wp.preferredChargingWindow.setEndHour(numberCommand);
                                 updateState(chargeWindowEnd, StringType.valueOf(wp.preferredChargingWindow.endTime));
-                                updateState(chargeWindowEndHour, (DecimalType) command);
                                 break;
                             case CHARGE_WINDOW_END_MINUTE:
                                 wp.preferredChargingWindow.setEndMinute(numberCommand);
                                 updateState(chargeWindowEnd, StringType.valueOf(wp.preferredChargingWindow.endTime));
-                                updateState(chargeWindowEndMinute, (DecimalType) command);
                                 break;
                             case CHARGE_TIMER1_DEPARTURE_HOUR:
                                 wp.timer1.setDepartureHour(numberCommand);
                                 updateState(timer1Departure, StringType.valueOf(wp.timer1.departureTime));
-                                updateState(timer1DepartureHour, (DecimalType) command);
                                 break;
                             case CHARGE_TIMER1_DEPARTURE_MINUTE:
                                 wp.timer1.setDepartureMinute(numberCommand);
                                 updateState(timer1Departure, StringType.valueOf(wp.timer1.departureTime));
-                                updateState(timer1DepartureMinute, (DecimalType) command);
                                 break;
                             case CHARGE_TIMER2_DEPARTURE_HOUR:
                                 wp.timer2.setDepartureHour(numberCommand);
                                 updateState(timer2Departure, StringType.valueOf(wp.timer2.departureTime));
-                                updateState(timer2DepartureHour, (DecimalType) command);
                                 break;
                             case CHARGE_TIMER2_DEPARTURE_MINUTE:
                                 wp.timer2.setDepartureMinute(numberCommand);
                                 updateState(timer2Departure, StringType.valueOf(wp.timer2.departureTime));
-                                updateState(timer2DepartureMinute, (DecimalType) command);
                                 break;
                             case CHARGE_TIMER3_DEPARTURE_HOUR:
                                 wp.timer3.setDepartureHour(numberCommand);
                                 updateState(timer3Departure, StringType.valueOf(wp.timer3.departureTime));
-                                updateState(timer3DepartureHour, (DecimalType) command);
                                 break;
                             case CHARGE_TIMER3_DEPARTURE_MINUTE:
                                 wp.timer3.setDepartureMinute(numberCommand);
                                 updateState(timer3Departure, StringType.valueOf(wp.timer3.departureTime));
-                                updateState(timer3DepartureMinute, (DecimalType) command);
                                 break;
                         }
                     }
