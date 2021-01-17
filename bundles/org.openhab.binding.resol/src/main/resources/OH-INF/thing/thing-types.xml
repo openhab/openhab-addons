@@ -20,7 +20,7 @@
 
 		<label>Emulated EM Device</label>
 		<description>Emulation of an Extension Module (EM) device which can be connected through the VBUS to Resol controllers
-			which support the EM devices.</description>
+			which support the EM devices. Replaces a physically available EM by openHAB.</description>
 		<channels>
 			<channel id="relay_1" typeId="relay"/>
 			<channel id="relay_2" typeId="relay"/>
@@ -128,7 +128,7 @@
 		<item-type>Number</item-type>
 		<label>Operating Mode</label>
 		<description>Virtual operating mode of the heating circuit controlled by the emulated BAS (RCP12 room control unit).</description>
-		<state pattern="%d" readOnly="false" min="0" max="3" step="1"/>
+		<state pattern="%d" readOnly="false" min="0" max="4" step="1"/>
 	</channel-type>
 
 </thing:thing-descriptions>

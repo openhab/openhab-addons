@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ResolDiscoveryService} class handles the discovery of things.
- * with broadcasting and put it to inbox, if found.
  *
  *
  * @author Raphael Mack - Initial contribution

@@ -48,7 +48,6 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.trace("Start discovery of Resol VBus-LAN Adapter");
         scheduler.execute(this::searchRunnable);
     }
 

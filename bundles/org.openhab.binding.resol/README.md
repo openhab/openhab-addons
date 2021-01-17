@@ -114,7 +114,7 @@ The channels supported for your device can be seen in the UI or in the logs if D
 | error_mask                        | Number                   | Bitmask for the different errors                   |
 | error_sensor_line_broken          | Number                   | Sensor line broken status (details for Error_mask) |
 | error_sensor_line_short-circuited | Number                   | Sensor short circuit status (details for Error_mask) |
-| flow_rate_sensor_x                | Number:VolumetricFlowRate| of sensor 'x'                                      |
+| flow_rate_sensor_x                | Number:VolumetricFlowRate| Flow rate of sensor 'x'                            |
 | flow_set_temperature              | Number:Temperature       | Heating circuit set temperature                    |
 | operating_state                   | Number                   | Heating circuit operating state                    |
 | heat_quantity                     | Number:Energy            | Total heat quantity (of a HQM)                     |
