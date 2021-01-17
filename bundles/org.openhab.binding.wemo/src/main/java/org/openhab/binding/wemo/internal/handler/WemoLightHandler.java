@@ -99,7 +99,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     };
 
     public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing);
+        super(thing, wemoHttpcaller);
 
         this.service = upnpIOService;
         this.wemoCall = wemoHttpcaller;

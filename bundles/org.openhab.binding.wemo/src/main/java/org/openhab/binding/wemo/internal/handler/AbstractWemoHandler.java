@@ -13,7 +13,6 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -24,13 +23,10 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 @NonNullByDefault
 public abstract class AbstractWemoHandler extends BaseThingHandler {
 
-    public AbstractWemoHandler(Thing thing) {
+    protected WemoHttpCall wemoHttpCaller;
+
+    public AbstractWemoHandler(Thing thing, WemoHttpCall wemoHttpCaller) {
         super(thing);
-    }
-
-    protected @Nullable WemoHttpCall wemoHttpCaller;
-
-    public void setWemoHttpCaller(WemoHttpCall wemoHttpCaller) {
         this.wemoHttpCaller = wemoHttpCaller;
     }
 }

@@ -98,10 +98,10 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         }
     };
 
-    public WemoCoffeeHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing);
+    public WemoCoffeeHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+        super(thing, wemoHttpCaller);
 
-        this.wemoCall = wemoHttpcaller;
+        this.wemoCall = wemoHttpCaller;
         this.service = upnpIOService;
 
         logger.debug("Creating a WemoCoffeeHandler V0.4 for thing '{}'", getThing().getUID());

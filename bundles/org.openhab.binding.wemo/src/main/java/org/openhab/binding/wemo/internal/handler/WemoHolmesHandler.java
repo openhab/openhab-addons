@@ -90,7 +90,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     };
 
     public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing);
+        super(thing, wemoHttpCaller);
 
         this.service = upnpIOService;
         this.wemoCall = wemoHttpCaller;

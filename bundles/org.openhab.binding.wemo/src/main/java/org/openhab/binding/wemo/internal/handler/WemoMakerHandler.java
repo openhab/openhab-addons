@@ -82,7 +82,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     };
 
     public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing);
+        super(thing, wemoHttpcaller);
 
         this.service = upnpIOService;
         this.wemoCall = wemoHttpcaller;

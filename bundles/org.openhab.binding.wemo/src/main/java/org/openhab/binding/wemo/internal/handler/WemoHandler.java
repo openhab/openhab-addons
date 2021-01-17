@@ -97,7 +97,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     };
 
     public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing);
+        super(thing, wemoHttpCaller);
 
         this.service = upnpIOService;
         this.wemoCall = wemoHttpCaller;

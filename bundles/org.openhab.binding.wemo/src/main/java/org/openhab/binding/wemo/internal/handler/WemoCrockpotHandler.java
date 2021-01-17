@@ -75,7 +75,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
     };
 
     public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing);
+        super(thing, wemoHttpCaller);
 
         this.wemoCall = wemoHttpCaller;
         this.service = upnpIOService;
