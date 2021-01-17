@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * https://customer.bmwgroup.com/one/app/oauth.js
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Norbert Truchsess - contributor
  */
 @NonNullByDefault
 public class ConnectedDriveProxy {
@@ -121,9 +122,8 @@ public class ConnectedDriveProxy {
             req = httpClient.POST(completeUrl.toString());
             if (params.isPresent()) {
                 String urlEncodedParameter = UrlEncoded.encode(params.get(), Charset.defaultCharset(), false);
-                req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
-                req.header(CONTENT_LENGTH, Integer.toString(urlEncodedParameter.length()));
-                req.content(new StringContentProvider(urlEncodedParameter));
+                req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, urlEncodedParameter,
+                        Charset.defaultCharset()));
             }
         } else {
             if (params.isPresent()) {

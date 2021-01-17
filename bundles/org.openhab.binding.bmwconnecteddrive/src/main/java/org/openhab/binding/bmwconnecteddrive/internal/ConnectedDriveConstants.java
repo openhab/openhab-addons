@@ -22,6 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Norbert Truchsess - contributor
  */
 @NonNullByDefault
 public class ConnectedDriveConstants {
@@ -47,7 +48,7 @@ public class ConnectedDriveConstants {
 
         private final String type;
 
-        VehicleType(String s) {
+        private VehicleType(String s) {
             type = s;
         }
 
@@ -55,6 +56,35 @@ public class ConnectedDriveConstants {
         public String toString() {
             return type;
         }
+    }
+
+    public enum Day {
+        MONDAY,
+        TUESDAY,
+        WEDNESDAY,
+        THURSDAY,
+        FRIDAY,
+        SATURDAY,
+        SUNDAY
+    }
+
+    public enum ChargingMode {
+        IMMEDIATE_CHARGING,
+        DELAYED_CHARGING
+    }
+
+    public enum ChargingPreference {
+        CHARGING_WINDOW
+    }
+
+    public enum ChargeControlVersion {
+        REMOTE,
+        EDIT
+    }
+
+    public enum ChargeControlCommand {
+        CANCEL,
+        SEND
     }
 
     public static final Set<String> FUEL_VEHICLES = Set.of(VehicleType.CONVENTIONAL.toString(),
@@ -126,16 +156,49 @@ public class ConnectedDriveConstants {
     public static final String CHARGE_PROFILE_CLIMATE = "profile-climate";
     public static final String CHARGE_PROFILE_MODE = "profile-mode";
     public static final String CHARGE_WINDOW_START = "window-start";
+    public static final String CHARGE_WINDOW_START_HOUR = "window-start-hour";
+    public static final String CHARGE_WINDOW_START_MINUTE = "window-start-minute";
     public static final String CHARGE_WINDOW_END = "window-end";
+    public static final String CHARGE_WINDOW_END_HOUR = "window-end-hour";
+    public static final String CHARGE_WINDOW_END_MINUTE = "window-end-minute";
     public static final String CHARGE_TIMER1_DEPARTURE = "timer1-departure";
+    public static final String CHARGE_TIMER1_DEPARTURE_HOUR = "timer1-departure-hour";
+    public static final String CHARGE_TIMER1_DEPARTURE_MINUTE = "timer1-departure-minute";
     public static final String CHARGE_TIMER1_DAYS = "timer1-days";
+    public static final String CHARGE_TIMER1_DAYS_MON = "timer1-days-monday";
+    public static final String CHARGE_TIMER1_DAYS_TUE = "timer1-days-tuesday";
+    public static final String CHARGE_TIMER1_DAYS_WED = "timer1-days-wednesday";
+    public static final String CHARGE_TIMER1_DAYS_THU = "timer1-days-thursday";
+    public static final String CHARGE_TIMER1_DAYS_FRI = "timer1-days-friday";
+    public static final String CHARGE_TIMER1_DAYS_SAT = "timer1-days-saturday";
+    public static final String CHARGE_TIMER1_DAYS_SUN = "timer1-days-sunday";
     public static final String CHARGE_TIMER1_ENABLED = "timer1-enabled";
     public static final String CHARGE_TIMER2_DEPARTURE = "timer2-departure";
+    public static final String CHARGE_TIMER2_DEPARTURE_HOUR = "timer2-departure-hour";
+    public static final String CHARGE_TIMER2_DEPARTURE_MINUTE = "timer2-departure-minute";
     public static final String CHARGE_TIMER2_DAYS = "timer2-days";
+    public static final String CHARGE_TIMER2_DAYS_MON = "timer2-days-monday";
+    public static final String CHARGE_TIMER2_DAYS_TUE = "timer2-days-tuesday";
+    public static final String CHARGE_TIMER2_DAYS_WED = "timer2-days-wednesday";
+    public static final String CHARGE_TIMER2_DAYS_THU = "timer2-days-thursday";
+    public static final String CHARGE_TIMER2_DAYS_FRI = "timer2-days-friday";
+    public static final String CHARGE_TIMER2_DAYS_SAT = "timer2-days-saturday";
+    public static final String CHARGE_TIMER2_DAYS_SUN = "timer2-days-sunday";
     public static final String CHARGE_TIMER2_ENABLED = "timer2-enabled";
     public static final String CHARGE_TIMER3_DEPARTURE = "timer3-departure";
-    public static final String CHARGE_TIMER3_ENABLED = "timer3-days";
-    public static final String CHARGE_TIMER3_DAYS = "timer3-enabled";
+    public static final String CHARGE_TIMER3_DEPARTURE_HOUR = "timer3-departure-hour";
+    public static final String CHARGE_TIMER3_DEPARTURE_MINUTE = "timer3-departure-minute";
+    public static final String CHARGE_TIMER3_DAYS = "timer3-days";
+    public static final String CHARGE_TIMER3_DAYS_MON = "timer3-days-monday";
+    public static final String CHARGE_TIMER3_DAYS_TUE = "timer3-days-tuesday";
+    public static final String CHARGE_TIMER3_DAYS_WED = "timer3-days-wednesday";
+    public static final String CHARGE_TIMER3_DAYS_THU = "timer3-days-thursday";
+    public static final String CHARGE_TIMER3_DAYS_FRI = "timer3-days-friday";
+    public static final String CHARGE_TIMER3_DAYS_SAT = "timer3-days-saturday";
+    public static final String CHARGE_TIMER3_DAYS_SUN = "timer3-days-sunday";
+    public static final String CHARGE_TIMER3_ENABLED = "timer3-enabled";
+    public static final String CHARGE_CONTROL_COMMAND = "command";
+    public static final String CHARGE_CONTROL_VERSION = "version";
 
     // Range
     public static final String RANGE_HYBRID = "hybrid";

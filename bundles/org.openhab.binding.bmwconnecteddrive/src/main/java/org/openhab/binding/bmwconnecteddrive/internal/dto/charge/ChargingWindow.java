@@ -12,12 +12,46 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.charge;
 
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileUtils;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+
 /**
  * The {@link ChargingWindow} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Norbert Truchsess - contributor
  */
-public class ChargingWindow {
+public class ChargingWindow implements Cloneable {
     public String startTime;// ":"11:00",
     public String endTime;// ":"17:00"}}
+
+    public void completeChargingWindow() {
+        if (startTime == null) {
+            startTime = Constants.NULL_TIME;
+        }
+        if (endTime == null) {
+            endTime = Constants.NULL_TIME;
+        }
+    }
+
+    public void setStartMinute(int minute) {
+        startTime = ChargeProfileUtils.withMinute(startTime, minute);
+    }
+
+    public void setStartHour(int hour) {
+        startTime = ChargeProfileUtils.withHour(startTime, hour);
+    }
+
+    public void setEndMinute(int minute) {
+        endTime = ChargeProfileUtils.withMinute(endTime, minute);
+    }
+
+    public void setEndHour(int hour) {
+        endTime = ChargeProfileUtils.withHour(endTime, hour);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }
