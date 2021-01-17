@@ -26,6 +26,11 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class CallEvent {
 
+    public static final String CALL_TYPE_CALL = "CALL";
+    public static final String CALL_TYPE_CONNECT = "CONNECT";
+    public static final String CALL_TYPE_RING = "RING";
+    public static final String CALL_TYPE_DISCONNECT = "DISCONNECT";
+
     private final String rawEvent;
     private final String timestamp;
     private final String callType;
@@ -47,26 +52,31 @@ public class CallEvent {
         callType = fields[1];
         id = fields[2];
 
-        if (callType.equals("RING")) {
-            externalNo = fields[3];
-            internalNo = fields[4];
-            connectionType = fields[5];
-        } else if (callType.equals("CONNECT")) {
-            line = fields[3];
-            if (fields.length > 4) {
-                externalNo = fields[4];
-            } else {
-                externalNo = "Unknown";
-            }
-        } else if (callType.equals("CALL")) {
-            line = fields[3];
-            internalNo = fields[4];
-            externalNo = fields[5];
-            connectionType = fields[6];
-        } else if (callType.equals("DISCONNECT")) {
-            // no fields to set
-        } else {
-            throw new IllegalArgumentException("Invalid call type: " + callType);
+        switch (callType) {
+            case CALL_TYPE_RING:
+                externalNo = fields[3];
+                internalNo = fields[4];
+                connectionType = fields[5];
+                break;
+            case CALL_TYPE_CONNECT:
+                line = fields[3];
+                if (fields.length > 4) {
+                    externalNo = fields[4];
+                } else {
+                    externalNo = "Unknown";
+                }
+                break;
+            case CALL_TYPE_CALL:
+                line = fields[3];
+                internalNo = fields[4];
+                externalNo = fields[5];
+                connectionType = fields[6];
+                break;
+            case CALL_TYPE_DISCONNECT:
+                // no fields to set
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid call type: " + callType);
         }
     }
 
