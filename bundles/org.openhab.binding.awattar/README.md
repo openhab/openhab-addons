@@ -73,8 +73,8 @@ All prices are available in each of the following channel groups:
 | channel group | description                  |
 |----------|--------------------------------|
 | current | The prices for the current hour |
-| today00, today01, today02 ... today23 |  Hourly prices for today. `today00` provides the price from 0:0ß to 1:00, today01` from 1:00 to 02:00 and so on. As long as the API is working, this data should always be available |
-| tomorrow00, tomorrow01, ... tomorrow23 | Hourly prices for the next day. They should be available from 14:00 on. |
+| today00, today01, today02 ... today23 |  Hourly prices for today. `today00` provides the price from 0:00 to 1:00, today01` from 1:00 to 02:00 and so on. As long as the API is working, this data should always be available |
+| tomorrow00, tomorrow01, ... tomorrow23 | Hourly prices for the next day. They should be available starting at  14:00. |
 
 
 ### Bestprice Thing
