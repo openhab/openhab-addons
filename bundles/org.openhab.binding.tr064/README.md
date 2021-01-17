@@ -169,6 +169,7 @@ In case the format of the number in the phonebook and the format of the number f
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
 A `matchCount` of `0` is considered as "match everything".
 Matching is done on normalized versions of the numbers that have all characters except digits, '+' and '*' removed.
+There is an optional configuration parameter called `phoneNumberIndex` that should be used when linking to a channel with item type `Call`, which determines which number to be picked, i.e. to or from.
 
 ## Rule Action
 
@@ -216,4 +217,10 @@ The channel are automatically generated and it is simpler to use the Main User I
 Switch PresXX "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_XX_3AXX_3AXX_3AXX_3AXX_3AXX"}
 Switch PresYY "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_YY_3AYY_3AYY_3AYY_3AYY_3AYY"}
 
+```
+
+Example `*.items` file using the `PHONEBOOK` profile for storing the name of a caller in an item. it matches 8 digits from the right of the "from" number (note the escaping of `:` to `_3A`):
+
+```
+Call IncomingCallResolved "Caller name: [%s]" { channel="avmfritz:fritzbox:fritzbox:incoming_call" [profile="transform:PHONEBOOK", phonebook="tr064_3Afritzbox_3AfritzboxTR064", phoneNumberIndex="1", matchCount="8"] }
 ```
