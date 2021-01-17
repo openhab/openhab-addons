@@ -13,6 +13,7 @@
 package org.openhab.binding.wlanthermo.internal.api.nano;
 
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoUtil.requireNonNull;
 
 import java.awt.*;
 import java.math.BigInteger;
@@ -22,7 +23,6 @@ import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wlanthermo.internal.WlanThermoInputException;
 import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
 import org.openhab.binding.wlanthermo.internal.api.nano.dto.data.Channel;
@@ -48,13 +48,9 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class WlanThermoNanoV1CommandHandler {
 
-    public static State getState(ChannelUID channelUID, @Nullable Data data, @Nullable Settings settings)
+    public static State getState(ChannelUID channelUID, Data data, Settings settings)
             throws WlanThermoUnknownChannelException, WlanThermoInputException {
-        if (channelUID.getGroupId() == null || data == null || settings == null) {
-            throw new WlanThermoInputException();
-        }
-
-        String groupId = channelUID.getGroupId();
+        String groupId = requireNonNull(channelUID.getGroupId());
         System system = data.getSystem();
         Unit<Temperature> unit = "F".equals(system.getUnit()) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
         List<Channel> channelList = data.getChannel();
@@ -66,7 +62,7 @@ public class WlanThermoNanoV1CommandHandler {
                 case SYSTEM_CHARGE:
                     return OnOffType.from(system.getCharge());
                 case SYSTEM_RSSI_SIGNALSTRENGTH:
-                    int dbm = system.getRssi();
+                    int dbm = (-1) * system.getRssi();
                     if (dbm >= -80) {
                         return SIGNAL_STRENGTH_4;
                     } else if (dbm >= -95) {
@@ -77,11 +73,11 @@ public class WlanThermoNanoV1CommandHandler {
                         return SIGNAL_STRENGTH_1;
                     }
                 case SYSTEM_RSSI:
-                    return new QuantityType<>(system.getRssi(), Units.DECIBEL_MILLIWATTS);
+                    return new QuantityType<>((-1) * system.getRssi(), Units.DECIBEL_MILLIWATTS);
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList.size() > 0 && channelId <= channelList.size()) {
+            if (channelList.size() > 0 && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -122,7 +118,7 @@ public class WlanThermoNanoV1CommandHandler {
                     case CHANNEL_COLOR_NAME:
                         String colorHex = channel.getColor();
                         if (colorHex != null && !colorHex.isEmpty()) {
-                            return new StringType(UtilNano.toColorName(colorHex));
+                            return new StringType(WlanThermoNanoV1Util.toColorName(colorHex));
                         } else {
                             return UnDefType.UNDEF;
                         }
@@ -151,19 +147,21 @@ public class WlanThermoNanoV1CommandHandler {
         throw new WlanThermoUnknownChannelException(channelUID);
     }
 
-    public static boolean setState(ChannelUID channelUID, Command command, @Nullable Data data) {
-        if (channelUID.getGroupId() == null || data == null || data.getSystem() == null) {
+    public static boolean setState(ChannelUID channelUID, Command command, Data data) {
+        String groupId;
+        try {
+            groupId = requireNonNull(channelUID.getGroupId());
+        } catch (WlanThermoInputException e) {
             return false;
         }
 
-        String groupId = channelUID.getGroupId();
         List<Channel> channelList = data.getChannel();
         System system = data.getSystem();
         Unit<Temperature> unit = "F".equals(system.getUnit()) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
 
         if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList.size() > 0 && channelId <= channelList.size()) {
+            if (channelList.size() > 0 && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
@@ -173,13 +171,21 @@ public class WlanThermoNanoV1CommandHandler {
                         }
                     case CHANNEL_MIN:
                         if (command instanceof QuantityType) {
-                            channel.setMin(((QuantityType<?>) command).toUnit(unit).doubleValue());
-                            return true;
+                            try {
+                                channel.setMin(requireNonNull(((QuantityType<?>) command).toUnit(unit)).doubleValue());
+                                return true;
+                            } catch (WlanThermoInputException ignore) {
+                                return false;
+                            }
                         }
                     case CHANNEL_MAX:
                         if (command instanceof QuantityType) {
-                            channel.setMax(((QuantityType<?>) command).toUnit(unit).doubleValue());
-                            return true;
+                            try {
+                                channel.setMax(requireNonNull(((QuantityType<?>) command).toUnit(unit)).doubleValue());
+                                return true;
+                            } catch (WlanThermoInputException ignore) {
+                                return false;
+                            }
                         }
                     case CHANNEL_ALARM_DEVICE:
                         if (command instanceof OnOffType) {
@@ -205,7 +211,7 @@ public class WlanThermoNanoV1CommandHandler {
                         }
                     case CHANNEL_COLOR_NAME:
                         if (command instanceof StringType) {
-                            channel.setColor(UtilNano.toHex(((StringType) command).toString()));
+                            channel.setColor(WlanThermoNanoV1Util.toHex(((StringType) command).toString()));
                             return true;
                         }
                 }
@@ -222,8 +228,12 @@ public class WlanThermoNanoV1CommandHandler {
                         pm.setPid(((DecimalType) command).intValue());
                         return true;
                     case CHANNEL_PITMASTER_SETPOINT:
-                        pm.setSet(((QuantityType<?>) command).toUnit(unit).doubleValue());
-                        return true;
+                        try {
+                            pm.setSet(requireNonNull(((QuantityType<?>) command).toUnit(unit)).doubleValue());
+                            return true;
+                        } catch (WlanThermoInputException ignore) {
+                            return false;
+                        }
                     case CHANNEL_PITMASTER_STATE:
                         String state = ((StringType) command).toString();
                         if (state.equalsIgnoreCase("off") || state.equalsIgnoreCase("manual")
@@ -237,18 +247,15 @@ public class WlanThermoNanoV1CommandHandler {
         return false;
     }
 
-    public static String getTrigger(ChannelUID channelUID, @Nullable Data data)
+    public static String getTrigger(ChannelUID channelUID, Data data)
             throws WlanThermoUnknownChannelException, WlanThermoInputException {
-        if (channelUID.getGroupId() == null || data == null) {
-            throw new WlanThermoInputException();
-        }
 
-        String groupId = channelUID.getGroupId();
+        String groupId = requireNonNull(channelUID.getGroupId());
         List<Channel> channelList = data.getChannel();
 
         if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;
-            if (channelList.size() > 0 && channelId <= channelList.size()) {
+            if (channelList.size() > 0 && channelId < channelList.size()) {
                 Channel channel = channelList.get(channelId);
                 if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
                     if (channel.getTemp() != 999) {

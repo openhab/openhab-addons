@@ -32,9 +32,6 @@ public class WlanThermoBindingConstants {
     public static final ThingTypeUID THING_TYPE_WLANTHERMO_MINI = new ThingTypeUID(BINDING_ID, "mini");
     public static final ThingTypeUID THING_TYPE_WLANTHERMO_ESP32 = new ThingTypeUID(BINDING_ID, "esp32");
 
-    // ThreadPool
-    public static final String WLANTHERMO_THREAD_POOL = "wlanthermo";
-
     // Properties
     public static final String PROPERTY_MODEL = "model";
     public static final String PROPERTY_SERIAL = "serial";

@@ -16,21 +16,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.HSBType;
+import org.openhab.binding.wlanthermo.internal.WlanThermoUtil;
 
 /**
- * The {@link UtilEsp32} class provides conversion functions for the WlanThermo Nano V3
+ * The {@link WlanThermoEsp32Util} class provides conversion functions for the WlanThermo Nano V3
  *
  * @author Christian Schlipp - Initial contribution
  */
 @NonNullByDefault
-public class UtilEsp32 {
+public class WlanThermoEsp32Util extends WlanThermoUtil {
 
     private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
     private static final String DEFAULT_HEX = "#FFFFFF";
     private static final String DEFAULT_COLORNAME = "undefined";
 
-    private UtilEsp32() {
+    private WlanThermoEsp32Util() {
         // hidden
     }
 
@@ -60,7 +60,7 @@ public class UtilEsp32 {
 
     /**
      * Convert WlanThermo Color Name to Hex
-     * 
+     *
      * @param colorName the WlanThermo color name
      * @return The color as Hex String
      */
@@ -68,22 +68,7 @@ public class UtilEsp32 {
         return COLOR_MAPPINGS.getOrDefault(colorName, DEFAULT_HEX);
     }
 
-    public static String toHex(HSBType hsb) {
-        return "#" + String.format("%02X", hsb.getRed().intValue()) + String.format("%02X", hsb.getGreen().intValue())
-                + String.format("%02X", hsb.getBlue().intValue());
-    }
-
     public static String toColorName(String colorHex) {
-        if (!colorHex.startsWith("#")) {
-            colorHex = "#" + colorHex;
-        }
-
-        for (Map.Entry<String, String> entry : COLOR_MAPPINGS.entrySet()) {
-            if (entry.getValue().equalsIgnoreCase(colorHex)) {
-                return entry.getKey();
-            }
-        }
-
-        return DEFAULT_COLORNAME;
+        return toColorName(colorHex, COLOR_MAPPINGS, DEFAULT_COLORNAME);
     }
 }

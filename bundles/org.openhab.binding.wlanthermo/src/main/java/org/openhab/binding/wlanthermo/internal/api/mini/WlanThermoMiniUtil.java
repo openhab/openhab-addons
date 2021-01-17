@@ -16,18 +16,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.wlanthermo.internal.WlanThermoUtil;
 
 /**
- * The {@link UtilMini} class provides conversion functions for the WlanThermo Mini
+ * The {@link WlanThermoMiniUtil} class provides conversion functions for the WlanThermo Mini
  *
  * @author Christian Schlipp - Initial contribution
  */
 @NonNullByDefault
-public class UtilMini {
+public class WlanThermoMiniUtil extends WlanThermoUtil {
     private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
     private static final String DEFAULT_HEX = "#ffffff";
 
-    private UtilMini() {
+    private WlanThermoMiniUtil() {
         // hidden
     }
 

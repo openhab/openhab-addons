@@ -13,6 +13,7 @@
 package org.openhab.binding.wlanthermo.internal.api.mini;
 
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoUtil.requireNonNull;
 
 import java.awt.*;
 
@@ -20,7 +21,6 @@ import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
 import org.openhab.binding.wlanthermo.internal.WlanThermoInputException;
 import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
@@ -43,13 +43,9 @@ public class WlanThermoMiniCommandHandler {
 
     public static final String ERROR = "er";
 
-    public static State getState(ChannelUID channelUID, @Nullable App app)
+    public static State getState(ChannelUID channelUID, App app)
             throws WlanThermoUnknownChannelException, WlanThermoInputException {
-        if (channelUID.getGroupId() == null || app == null) {
-            throw new WlanThermoInputException();
-        }
-
-        String groupId = channelUID.getGroupId();
+        String groupId = requireNonNull(channelUID.getGroupId());
         Unit<Temperature> unit = "fahrenheit".equals(app.getTempUnit()) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
 
         if (SYSTEM.equals(groupId)) {
@@ -103,7 +99,7 @@ public class WlanThermoMiniCommandHandler {
                             return OnOffType.OFF;
                         }
                     case WlanThermoBindingConstants.CHANNEL_COLOR:
-                        Color c = Color.decode(UtilMini.toHex(data.getColor()));
+                        Color c = Color.decode(WlanThermoMiniUtil.toHex(data.getColor()));
                         return HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
                     case WlanThermoBindingConstants.CHANNEL_COLOR_NAME:
                         return new StringType(data.getColor());
@@ -139,13 +135,9 @@ public class WlanThermoMiniCommandHandler {
         throw new WlanThermoUnknownChannelException(channelUID);
     }
 
-    public static String getTrigger(ChannelUID channelUID, @Nullable App app)
+    public static String getTrigger(ChannelUID channelUID, App app)
             throws WlanThermoUnknownChannelException, WlanThermoInputException {
-        if (channelUID.getGroupId() == null || app == null) {
-            throw new WlanThermoInputException();
-        }
-
-        String groupId = channelUID.getGroupId();
+        String groupId = requireNonNull(channelUID.getGroupId());
 
         if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;

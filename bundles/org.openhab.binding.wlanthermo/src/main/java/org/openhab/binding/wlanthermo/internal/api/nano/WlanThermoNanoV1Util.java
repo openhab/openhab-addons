@@ -16,20 +16,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.wlanthermo.internal.WlanThermoUtil;
 
 /**
- * The {@link UtilNano} class provides conversion functions for the WlanThermo Nano V1+
+ * The {@link WlanThermoNanoV1Util} class provides conversion functions for the WlanThermo Nano V1+
  *
  * @author Christian Schlipp - Initial contribution
  */
 @NonNullByDefault
-public class UtilNano {
+public class WlanThermoNanoV1Util extends WlanThermoUtil {
 
     private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
     private static final String DEFAULT_HEX = "#ffffff";
     private static final String DEFAULT_COLORNAME = "niagara";
 
-    private UtilNano() {
+    private WlanThermoNanoV1Util() {
         // hidden
     }
 
@@ -59,16 +60,6 @@ public class UtilNano {
     }
 
     public static String toColorName(String colorHex) {
-        if (!colorHex.startsWith("#")) {
-            colorHex = "#" + colorHex;
-        }
-
-        for (Map.Entry<String, String> entry : COLOR_MAPPINGS.entrySet()) {
-            if (entry.getValue().equalsIgnoreCase(colorHex)) {
-                return entry.getKey();
-            }
-        }
-
-        return DEFAULT_COLORNAME;
+        return toColorName(colorHex, COLOR_MAPPINGS, DEFAULT_COLORNAME);
     }
 }
