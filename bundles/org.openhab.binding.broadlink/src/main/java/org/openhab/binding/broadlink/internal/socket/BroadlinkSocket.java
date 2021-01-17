@@ -51,7 +51,7 @@ public class BroadlinkSocket {
 
     public static String decodeMAC(byte mac[]) {
         if (mac.length < 6) {
-            throw new RuntimeException("Insufficient MAC bytes provided, cannot decode it");
+            throw new IllegalArgumentException("Insufficient MAC bytes provided, cannot decode it");
         }
 
         StringBuilder sb = new StringBuilder(18);

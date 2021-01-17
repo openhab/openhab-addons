@@ -15,7 +15,6 @@ package org.openhab.binding.broadlink.handler;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.Utils;
@@ -112,7 +111,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             return null;
         }
         String mapFile = (String) thing.getConfiguration().get("mapFilename");
-        if (StringUtils.isEmpty(mapFile)) {
+        if (Utils.isEmpty(mapFile)) {
             thingLogger.logDebug("MAP file is not defined in configuration of thing " + getThing().getLabel());
             return null;
         }
@@ -127,7 +126,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         String value;
         try {
             value = transformService.transform(mapFile, command.toString());
-            if (value == null || StringUtils.isEmpty(value)) {
+            if (value == null || Utils.isEmpty(value)) {
                 thingLogger.logError(String.format("No entry for command '%s' in map file '%s' for thing %s", command,
                         mapFile, getThing().getLabel()));
                 return null;

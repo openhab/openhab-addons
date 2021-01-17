@@ -19,6 +19,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,13 @@ public class Utils {
 
     public static boolean isOffline(Thing thing) {
         return thing.getStatus().equals(ThingStatus.OFFLINE);
+    }
+
+    public static boolean isEmpty(@Nullable String s) {
+        if (s == null) {
+            return true;
+        }
+        return s.isBlank();
     }
 
     public static byte[] slice(byte source[], int from, int to) throws IllegalArgumentException {
