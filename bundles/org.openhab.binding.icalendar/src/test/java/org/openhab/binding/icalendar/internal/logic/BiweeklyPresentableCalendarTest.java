@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -290,7 +291,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:12.3:abc
         Command cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:12.3°C:abc
         Command cmd4 = cmdTags.get(4).getCommand();
@@ -353,7 +354,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:-12.3:abc
         cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:-12.3°C:abc
         cmd4 = cmdTags.get(4).getCommand();
@@ -416,7 +417,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:-0:abc
         cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:0K:abc
         cmd4 = cmdTags.get(4).getCommand();
@@ -541,12 +542,12 @@ public class BiweeklyPresentableCalendarTest {
         // </p><p>BEGIN:Calendar_Test_Number:12.3:abc</p>
         cmd6 = cmdTags.get(6).getCommand();
         assertNotNull(cmd6);
-        assertEquals(QuantityType.class, cmd6.getClass());
+        assertEquals(DecimalType.class, cmd6.getClass());
 
         // <p>END:Calendar_Test_Number:23.4:abc</p>
         cmd7 = cmdTags.get(7).getCommand();
         assertNotNull(cmd7);
-        assertEquals(QuantityType.class, cmd7.getClass());
+        assertEquals(DecimalType.class, cmd7.getClass());
     }
 
     @SuppressWarnings("null")
