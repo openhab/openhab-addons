@@ -30,5 +30,30 @@ public class NovelanHeatpumpBindingConstants {
     public static final ThingTypeUID THING_TYPE_HEATPUMP = new ThingTypeUID(BINDING_ID, "heatpump");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String TEMPERATURE_OUTSIDE = "temperatureOutside";
+    public static final String TEMPERATURE_OUTSIDE_AVG = "temperatureOutsideAvg";
+    public static final String TEMPERATURE_RETURN = "temperatureReturn";
+    public static final String TEMPERATURE_REFERENCE_RETURN = "temperatureReferenceReturn";
+    public static final String TEMPERATURE_SUPPLAY = "temperatureSupplay";
+    public static final String TEMPERATURE_SERVICEWATER_REFERENCE = "temperatureServicewaterReference";
+    public static final String TEMPERATURE_SERVICEWATER = "temperatureServicewater";
+    public static final String STATE = "state";
+    public static final String SIMPLE_STATE = "simpleState";
+    public static final String SIMPLE_STATE_NUM = "simpleStateNum";
+    public static final String EXTENDED_STATE = "extendedState";
+    public static final String TEMPERATURE_SOLAR_COLLECTOR = "temperatureSolarCollector";
+    public static final String TEMPERATURE_PROBE_IN = "temperatureProbeIn";
+    public static final String TEMPERATURE_PROBE_OUT = "temperatureProbeOut";
+    public static final String HOURS_COMPRESSOR1 = "hoursCompressor1";
+    public static final String STARTS_COMPRESSOR1 = "startsCompressor1";
+    public static final String HOURS_COMPRESSOR2 = "hoursCompressor2";
+    public static final String STARTS_COMPRESSOR2 = "startsCompressor2";
+    public static final String HOURS_HEATPUMP = "hoursHeatpump";
+    public static final String HOURS_HEATING = "hoursHeating";
+    public static final String HOURS_WARMWATER = "hoursWarmwater";
+    public static final String HOURS_COOLING = "hoursCooling";
+    public static final String THERMALENERGY_HEATING = "thermalenergyHeating";
+    public static final String THERMALENERGY_WARMWATER = "thermalenergyWarmwater";
+    public static final String THERMALENERGY_POOL = "thermalenergyPool";
+    public static final String THERMALENERGY_TOTAL = "thermalenergyTotal";
 }

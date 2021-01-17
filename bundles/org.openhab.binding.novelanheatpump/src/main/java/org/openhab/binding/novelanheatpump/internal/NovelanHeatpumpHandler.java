@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.novelanheatpump.internal;
 
-import static org.openhab.binding.novelanheatpump.internal.NovelanHeatpumpBindingConstants.CHANNEL_1;
-
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -54,17 +52,10 @@ public class NovelanHeatpumpHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        if (command instanceof RefreshType) {
+            updateAndPublishData();
+        } else {
+            logger.debug("The NovelanHeatpump binding is read-only and can not handle command {}", command);
         }
     }
 
