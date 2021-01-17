@@ -16,12 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.Day;
 import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link Constants} General Constant Definitions
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Norbert Truchsess - contributor
  */
 @NonNullByDefault
 public class Constants {
@@ -37,6 +39,7 @@ public class Constants {
     public static final String UNDEF = UnDefType.UNDEF.toFullString();
     public static final String UTC_APPENDIX = "-01T12:00:00";
     public static final String NULL_DATE = "1900-01-01T00:00:00";
+    public static final String NULL_TIME = "00:00";
     public static final int INT_UNDEF = -1;
 
     // Services to query
@@ -66,13 +69,13 @@ public class Constants {
     @SuppressWarnings("serial")
     public static final Map<String, String> DAYS = new HashMap<String, String>() {
         {
-            put("MONDAY", "Mon");
-            put("TUESDAY", "Tue");
-            put("WEDNESDAY", "Wed");
-            put("THURSDAY", "Thu");
-            put("FRIDAY", "Fri");
-            put("SATURDAY", "Sat");
-            put("SUNDAY", "Sun");
+            put(Day.MONDAY.name(), "Mon");
+            put(Day.TUESDAY.name(), "Tue");
+            put(Day.WEDNESDAY.name(), "Wed");
+            put(Day.THURSDAY.name(), "Thu");
+            put(Day.FRIDAY.name(), "Fri");
+            put(Day.SATURDAY.name(), "Sat");
+            put(Day.SUNDAY.name(), "Sun");
         }
     };
 }
