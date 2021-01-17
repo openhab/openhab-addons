@@ -55,7 +55,7 @@
 	</channel-type>
 
 	<channel-type id="spTemp" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature for the Stove</label>
 		<description>Haas and Sohn Stove Binding to Set the Target Temperature of the Stove as String</description>
 	</channel-type>
