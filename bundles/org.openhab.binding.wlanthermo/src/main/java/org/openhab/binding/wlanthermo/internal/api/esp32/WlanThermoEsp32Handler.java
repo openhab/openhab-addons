@@ -48,7 +48,7 @@ public class WlanThermoEsp32Handler extends WlanThermoHandler {
 
     @Override
     protected boolean setState(ChannelUID channelUID, Command command) {
-        return WlanThermoEsp32CommandHandler.setState(channelUID, command, data);
+        return WlanThermoEsp32CommandHandler.setState(channelUID, command, data, settings);
     }
 
     @Override

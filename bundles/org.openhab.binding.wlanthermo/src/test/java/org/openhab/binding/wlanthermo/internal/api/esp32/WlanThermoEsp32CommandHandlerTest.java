@@ -594,7 +594,8 @@ class WlanThermoEsp32CommandHandlerTest {
     @ParameterizedTest
     @MethodSource("setState")
     void setState(String groupId, String id, Command command, boolean expectedResult) {
-        Assertions.assertDoesNotThrow(() -> Assertions.assertEquals(expectedResult, WlanThermoEsp32CommandHandler
-                .setState(new ChannelUID(THING_UID, groupId, id), command, WlanThermoUtil.requireNonNull(data))));
+        Assertions.assertDoesNotThrow(() -> Assertions.assertEquals(expectedResult,
+                WlanThermoEsp32CommandHandler.setState(new ChannelUID(THING_UID, groupId, id), command,
+                        WlanThermoUtil.requireNonNull(data), WlanThermoUtil.requireNonNull(settings))));
     }
 }

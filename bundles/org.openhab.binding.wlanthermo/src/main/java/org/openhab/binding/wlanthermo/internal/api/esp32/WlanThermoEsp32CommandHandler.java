@@ -136,8 +136,8 @@ public class WlanThermoEsp32CommandHandler {
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PITMASTER_PREFIX.length())) - 1;
-            if (data.getPitmaster() != null && data.getPitmaster().getPm() != null
-                    && data.getPitmaster().getPm().size() > channelId) {
+            if (settings.getFeatures().getPitmaster() && data.getPitmaster() != null
+                    && data.getPitmaster().getPm() != null && data.getPitmaster().getPm().size() > channelId) {
                 Pm pm = data.getPitmaster().getPm().get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PITMASTER_CHANNEL_ID:
@@ -158,7 +158,7 @@ public class WlanThermoEsp32CommandHandler {
         throw new WlanThermoUnknownChannelException(channelUID);
     }
 
-    public static boolean setState(ChannelUID channelUID, Command command, Data data) {
+    public static boolean setState(ChannelUID channelUID, Command command, Data data, Settings settings) {
         String groupId;
         try {
             groupId = requireNonNull(channelUID.getGroupId());
@@ -234,8 +234,8 @@ public class WlanThermoEsp32CommandHandler {
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PITMASTER_PREFIX.length())) - 1;
-            if (data.getPitmaster() != null && data.getPitmaster().getPm() != null
-                    && data.getPitmaster().getPm().size() > channelId) {
+            if (settings.getFeatures().getPitmaster() && data.getPitmaster() != null
+                    && data.getPitmaster().getPm() != null && data.getPitmaster().getPm().size() > channelId) {
                 Pm pm = data.getPitmaster().getPm().get(channelId);
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PITMASTER_CHANNEL_ID:
