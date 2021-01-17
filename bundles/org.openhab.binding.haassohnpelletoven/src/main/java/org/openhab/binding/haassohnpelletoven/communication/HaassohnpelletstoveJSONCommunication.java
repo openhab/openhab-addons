@@ -141,6 +141,7 @@ public class HaassohnpelletstoveJSONCommunication {
                 httpHeader = createHeader(postData);
                 response = HttpUtil.executeUrl("POST", urlStr, httpHeader, targetStream, "application/json", 10000);
                 resultOk = true;
+                logger.debug("Execute POST request with content to {} with header: {}", urlStr, httpHeader.toString());
             } catch (IOException e) {
                 logger.debug("Error processiong POST request {}", urlStr);
                 statusDescr = "Cannot execute command on Stove. Please verify connection and Thing Status";
@@ -153,6 +154,7 @@ public class HaassohnpelletstoveJSONCommunication {
                 httpHeader = createHeader(null);
                 response = HttpUtil.executeUrl("POST", urlStr, httpHeader, null, "", 10000);
                 resultOk = true;
+                logger.debug("Execute POST request to {} with header: {}", urlStr, httpHeader.toString());
             } catch (IOException e) {
                 logger.debug("Error processiong POST request {}", e.getMessage());
                 if (e.getMessage().contains("Authentication challenge without WWW-Authenticate ")) {

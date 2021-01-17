@@ -26,6 +26,7 @@ import org.openhab.binding.haassohnpelletoven.helper.Helper;
 import org.openhab.binding.haassohnpelletoven.validation.IpAddressValidator;
 import org.openhab.binding.haassohnpelletoven.validation.PinValidator;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -66,6 +67,7 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
         serviceCommunication = new HaassohnpelletstoveJSONCommunication();
     }
 
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
@@ -79,22 +81,25 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
             }
 
             if (postData != null) {
+                logger.debug("Executing {} command", CHANNEL_prg);
                 updateOvenData(postData);
             }
-        } else if (channelUID.getId().equals(CHANNEL_isTemp)) {
-            if (command instanceof StringType) {
-                StringType value = (StringType) command;
-
+        } else if (channelUID.getId().equals(CHANNEL_spTemp)) {
+            if (command instanceof QuantityType<?>) {
+                QuantityType<?> value = null;
                 try {
-                    double a = Double.parseDouble(value.toFullString());
+                    value = (QuantityType<?>) command;
+                    double a = value.doubleValue();
 
                     String postdata = "{\"sp_temp\":" + Double.toString(a) + "}";
+                    logger.debug("Executing {} command", CHANNEL_spTemp);
                     updateOvenData(postdata);
 
                 } catch (Exception e) {
                     logger.debug("Error by parsing value: {} Details:{}", value.toString(), e.getMessage());
                 }
-
+            } else {
+                logger.debug("Error. Command is the wrong type: {}", command.toString());
             }
         }
     }
