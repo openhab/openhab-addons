@@ -62,7 +62,7 @@ public class WlanThermoNanoV1CommandHandler {
                 case SYSTEM_CHARGE:
                     return OnOffType.from(system.getCharge());
                 case SYSTEM_RSSI_SIGNALSTRENGTH:
-                    int dbm = (-1) * system.getRssi();
+                    int dbm = system.getRssi();
                     if (dbm >= -80) {
                         return SIGNAL_STRENGTH_4;
                     } else if (dbm >= -95) {
@@ -73,7 +73,7 @@ public class WlanThermoNanoV1CommandHandler {
                         return SIGNAL_STRENGTH_1;
                     }
                 case SYSTEM_RSSI:
-                    return new QuantityType<>((-1) * system.getRssi(), Units.DECIBEL_MILLIWATTS);
+                    return new QuantityType<>(system.getRssi(), Units.DECIBEL_MILLIWATTS);
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PREFIX)) {
             int channelId = Integer.parseInt(groupId.substring(CHANNEL_PREFIX.length())) - 1;

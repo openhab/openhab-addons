@@ -56,7 +56,7 @@ class WlanThermoNanoV1CommandHandlerTest {
             "    \"unit\": \"C\",\n" +
             "    \"soc\": 32,\n" +
             "    \"charge\": false,\n" +
-            "    \"rssi\": 31,\n" +
+            "    \"rssi\": -47,\n" +
             "    \"online\": 0\n" +
             "  },\n" +
             "  \"channel\": [\n" +
@@ -297,7 +297,7 @@ class WlanThermoNanoV1CommandHandlerTest {
                 Arguments.of(SYSTEM, SYSTEM_SOC, new DecimalType(32), null),
                 Arguments.of(SYSTEM, SYSTEM_CHARGE, OnOffType.OFF, null),
                 Arguments.of(SYSTEM, SYSTEM_RSSI_SIGNALSTRENGTH, new DecimalType(4), null),
-                Arguments.of(SYSTEM, SYSTEM_RSSI, new QuantityType<>(-31, Units.DECIBEL_MILLIWATTS), null),
+                Arguments.of(SYSTEM, SYSTEM_RSSI, new QuantityType<>(-47, Units.DECIBEL_MILLIWATTS), null),
 
                 // All channels
                 Arguments.of(CHANNEL_PREFIX + "1", CHANNEL_NAME, new StringType("Kanal 1"), null),
