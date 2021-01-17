@@ -24,12 +24,12 @@
 	<channel-type id="window-start-hour-channel">
 		<item-type>Number</item-type>
 		<label>Charge Window Start Hour</label>
-		<state min="0" max="23" step="1" readOnly="false"/>
+		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="window-start-minute-channel">
 		<item-type>Number</item-type>
 		<label>Charge Window Start Minute</label>
-		<state min="0" max="55" step="5" readOnly="false"/>
+		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="window-end-channel">
 		<item-type>String</item-type>
@@ -38,12 +38,12 @@
 	<channel-type id="window-end-hour-channel">
 		<item-type>Number</item-type>
 		<label>Charge Window End Hour</label>
-		<state min="0" max="23" step="1" readOnly="false"/>
+		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="window-end-minute-channel">
 		<item-type>Number</item-type>
 		<label>Charge Window End Minute</label>
-		<state min="0" max="55" step="5" readOnly="false"/>
+		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-departure-channel">
 		<item-type>String</item-type>
@@ -52,12 +52,12 @@
 	<channel-type id="timer1-departure-hour-channel">
 		<item-type>Number</item-type>
 		<label>Timer 1: Departure Hour</label>
-		<state min="0" max="23" step="1" readOnly="false"/>
+		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-departure-minute-channel">
 		<item-type>Number</item-type>
 		<label>Timer 1: Departure Minute</label>
-		<state min="0" max="55" step="5" readOnly="false"/>
+		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-days-channel">
 		<item-type>String</item-type>
@@ -102,12 +102,12 @@
 	<channel-type id="timer2-departure-hour-channel">
 		<item-type>Number</item-type>
 		<label>Timer 2: Departure Hour</label>
-		<state min="0" max="23" step="1" readOnly="false"/>
+		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer2-departure-minute-channel">
 		<item-type>Number</item-type>
 		<label>Timer 2: Departure Minute</label>
-		<state min="0" max="55" step="5" readOnly="false"/>
+		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer2-days-channel">
 		<item-type>String</item-type>
@@ -152,12 +152,12 @@
 	<channel-type id="timer3-departure-hour-channel">
 		<item-type>Number</item-type>
 		<label>Timer 3: Departure Hour</label>
-		<state min="0" max="23" step="1" readOnly="false"/>
+		<state min="0" max="23" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer3-departure-minute-channel">
 		<item-type>Number</item-type>
 		<label>Timer 3: Departure Minute</label>
-		<state min="0" max="55" step="5" readOnly="false"/>
+		<state min="0" max="55" step="5" pattern="%d" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer3-days-channel">
 		<item-type>String</item-type>
