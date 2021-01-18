@@ -22,7 +22,7 @@ import java.util.Optional;
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.ChargeControlVersion;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.ChargeProfileVersion;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
@@ -200,7 +200,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID timer3DaysSat;
     protected ChannelUID timer3DaysSun;
     protected ChannelUID chargeControl;
-    protected ChannelUID chargeControlVersion;
+    protected ChannelUID chargeProfileVersion;
 
     // Image
     protected ChannelUID imageChannel;
@@ -336,7 +336,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         timer3DaysSat = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_SAT);
         timer3DaysSun = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_SUN);
         chargeControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_CONTROL_COMMAND);
-        chargeControlVersion = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_CONTROL_VERSION);
+        chargeProfileVersion = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_VERSION);
 
         remoteCommandChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_COMMAND);
         remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
@@ -625,13 +625,13 @@ public class VehicleChannelHandler extends BaseThingHandler {
         updateState(timer3DaysSun, OnOffType.from(t3.isDayOn(Day.SUNDAY)));
     }
 
-    protected void updateChargeControlVersion(ChargeControlVersion version) {
-        if (ChargeControlVersion.EDIT.equals(version)) {
+    protected void updateChargeProfileVersion(ChargeProfileVersion version) {
+        if (ChargeProfileVersion.LOCAL.equals(version)) {
             updateState(chargeControl, StringType.valueOf(CHARGE_CONTROL_SEND));
         } else {
             updateState(chargeControl, StringType.valueOf(CHARGE_CONTROL_CANCEL));
         }
-        updateState(chargeControlVersion, StringType.valueOf(version.name()));
+        updateState(chargeProfileVersion, StringType.valueOf(version.name()));
     }
 
     protected void updateDoors(Doors doorState) {

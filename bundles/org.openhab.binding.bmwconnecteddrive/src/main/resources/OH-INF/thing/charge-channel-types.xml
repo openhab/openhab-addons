@@ -207,11 +207,11 @@
 	</channel-type>
 	<channel-type id="charge-version-channel">
 		<item-type>String</item-type>
-		<label>Charge Control Version</label>
+		<label>Charge Profile Version</label>
 		<state readOnly="true">
 			<options>
 				<option value="REMOTE">Vehicle Version</option>
-				<option value="EDIT">Being edited</option>
+				<option value="LOCAL">Being edited</option>
 			</options>
 		</state>
 	</channel-type>

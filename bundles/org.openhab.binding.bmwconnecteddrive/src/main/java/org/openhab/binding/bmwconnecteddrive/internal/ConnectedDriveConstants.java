@@ -77,9 +77,9 @@ public class ConnectedDriveConstants {
         CHARGING_WINDOW
     }
 
-    public enum ChargeControlVersion {
+    public enum ChargeProfileVersion {
         REMOTE,
-        EDIT
+        LOCAL
     }
 
     public static final String CHARGE_CONTROL_CANCEL = "CANCEL";
@@ -196,7 +196,7 @@ public class ConnectedDriveConstants {
     public static final String CHARGE_TIMER3_DAYS_SUN = "timer3-days-sunday";
     public static final String CHARGE_TIMER3_ENABLED = "timer3-enabled";
     public static final String CHARGE_CONTROL_COMMAND = "command";
-    public static final String CHARGE_CONTROL_VERSION = "version";
+    public static final String CHARGE_PROFILE_VERSION = "version";
 
     // Range
     public static final String RANGE_HYBRID = "hybrid";
