@@ -106,10 +106,10 @@ public class VehicleHandler extends VehicleChannelHandler {
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
                 if (chargeProfileEdit.isEmpty()) {
                     chargeProfileCallback.onResponse(chargeProfileCache);
-                    updateChargeControlVersion(ChargeControlVersion.REMOTE);
+                    updateChargeProfileVersion(ChargeProfileVersion.REMOTE);
                 } else {
                     updateChargeProfile(chargeProfileEdit.get());
-                    updateChargeControlVersion(ChargeControlVersion.EDIT);
+                    updateChargeProfileVersion(ChargeProfileVersion.LOCAL);
                 }
             } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
                 imageCallback.onResponse(imageCache);
@@ -902,6 +902,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                         break;
                     default:
                         this.cancelChargeProfileEdit();
+                        break;
                 }
             } else if (command instanceof DecimalType) {
                 final int numberCommand = ((DecimalType) command).intValue();
@@ -948,6 +949,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                         break;
                     default:
                         this.cancelChargeProfileEdit();
+                        break;
                 }
             } else {
                 this.cancelChargeProfileEdit();
@@ -961,7 +963,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         if (cp != null) {
             updateChargeProfile(cp);
         }
-        updateChargeControlVersion(ChargeControlVersion.REMOTE);
+        updateChargeProfileVersion(ChargeProfileVersion.REMOTE);
     }
 
     private void startChargeProfileEdit() {
@@ -972,13 +974,13 @@ public class VehicleHandler extends VehicleChannelHandler {
             } else {
                 chargeProfileEdit = Optional.of(cp.completeChargeProfile());
             }
-            updateChargeControlVersion(ChargeControlVersion.EDIT);
+            updateChargeProfileVersion(ChargeProfileVersion.LOCAL);
         }
     }
 
     private void saveChargeProfileEdit() {
         chargeProfileCache = Optional.of(Converter.getGson().toJson(chargeProfileEdit.get()));
         chargeProfileEdit = Optional.empty();
-        updateChargeControlVersion(ChargeControlVersion.REMOTE);
+        updateChargeProfileVersion(ChargeProfileVersion.REMOTE);
     }
 }
