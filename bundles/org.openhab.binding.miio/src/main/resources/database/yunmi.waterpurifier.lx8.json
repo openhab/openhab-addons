@@ -1,20 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"yunmi.waterpurifier.v1",
-			"yunmi.waterpurifier.v2",
-			"yunmi.waterpurifier.v3",
-			"yunmi.waterpurifier.v4",
-			"yunmi.waterpuri.lx2",
-			"yunmi.waterpuri.lx3",
-			"yunmi.waterpuri.lx4",
-			"yunmi.waterpuri.lx5",
-			"yunmi.waterpuri.lx6",
-			"yunmi.waterpuri.lx7",
-			"yunmi.waterpuri.lx9",
-			"yunmi.waterpuri.lx10",
-			"yunmi.waterpuri.lx11",
-			"yunmi.waterpuri.lx12"
+			"yunmi.waterpuri.lx8"
 		],
 		"channels": [
 			{
@@ -24,21 +11,6 @@
 				"type": "Number",
 				"refresh": true,
 				"actions": []
-			},
-			{
-				"property": "temperature",
-				"friendlyName": "Temperature",
-				"channel": "temperature",
-				"channelType": "temperatureC",
-				"type": "Number:Temperature",
-				"unit": "CELCIUS",
-				"refresh": true,
-				"actions": [],
-				"category": "temperature",
-				"tags": [
-					"Measurement",
-					"Temperature"
-				]
 			},
 			{
 				"property": "rinse",
@@ -222,14 +194,6 @@
 				]
 			},
 			{
-				"property": "tds_out_avg",
-				"friendlyName": "Average TDS out",
-				"channel": "tds_out_avg",
-				"type": "Number",
-				"refresh": true,
-				"actions": []
-			},
-			{
 				"property": "lightMode",
 				"friendlyName": "Light Mode",
 				"channel": "lightMode",
@@ -255,6 +219,6 @@
 				]
 			}
 		],
-		"experimental": true
+		"experimental": false
 	}
 }
