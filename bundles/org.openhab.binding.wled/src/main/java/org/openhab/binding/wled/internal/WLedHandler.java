@@ -69,7 +69,6 @@ public class WLedHandler extends BaseThingHandler {
     private BigDecimal hue65535 = BigDecimal.ZERO;
     private BigDecimal saturation255 = BigDecimal.ZERO;
     private BigDecimal masterBrightness255 = BigDecimal.ZERO;
-    private BigDecimal segmentBrightness255 = BigDecimal.ZERO;
     private HSBType primaryColor = new HSBType();
     private BigDecimal primaryWhite = BigDecimal.ZERO;
     private HSBType secondaryColor = new HSBType();
@@ -326,7 +325,6 @@ public class WLedHandler extends BaseThingHandler {
                     hue65535 = primaryColor.getHue().toBigDecimal().multiply(BIG_DECIMAL_182_04);
                     saturation255 = primaryColor.getSaturation().toBigDecimal().multiply(BIG_DECIMAL_2_55);
                     masterBrightness255 = primaryColor.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55);
-                    segmentBrightness255 = primaryColor.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55);
                     if (primaryColor.getSaturation().intValue() < config.saturationThreshold) {
                         sendWhite();
                     } else if (primaryColor.getSaturation().intValue() == 32 && primaryColor.getHue().intValue() == 36
