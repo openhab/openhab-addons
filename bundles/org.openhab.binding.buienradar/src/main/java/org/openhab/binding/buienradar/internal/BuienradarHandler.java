@@ -76,7 +76,6 @@ public class BuienradarHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         this.config = getConfigAs(BuienradarConfiguration.class);
@@ -127,12 +126,19 @@ public class BuienradarHandler extends BaseThingHandler {
             return;
         }
         try {
-            @SuppressWarnings("null")
             final Optional<List<Prediction>> predictionsOpt = client.getPredictions(location);
             if (!predictionsOpt.isPresent()) {
                 // Did not get a result, retry the retrieval.
-                logger.warn("Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
-                        tries, retryInSeconds);
+                // Buienradar is not a very stable source and returns nothing quite regular
+                if (tries <= 2) {
+                    logger.warn(
+                            "Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
+                            tries, retryInSeconds);
+                } else {
+                    logger.debug(
+                            "Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
+                            tries, retryInSeconds);
+                }
                 scheduler.schedule(() -> refresh(tries - 1, nextRefresh, retryInSeconds * 2), retryInSeconds,
                         TimeUnit.SECONDS);
                 return;
@@ -164,7 +170,6 @@ public class BuienradarHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void dispose() {
         try {
