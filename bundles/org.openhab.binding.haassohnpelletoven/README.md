@@ -24,12 +24,12 @@ Thing oven  [ hostIP="192.168.0.23", hostPIN=1234]
 
 In V0.1 the following channels are yet supported:
 
-| channel  | type   | description                                              |
-|----------|--------|----------------------------------------------------------|
-| prg      | Switch | Turn the Stove On/Off		                               |
-| isTemp   | String | Receives the actual Temperature of the stove	           |
-| spTemp   | String | Receives and Sets the Target Temperature of the stove	   |
-| mode     | String | Receives the actual mode the stove is in          	   |
+| channel  | type               | description                                              |
+|----------|--------------------|----------------------------------------------------------|
+| prg      | Switch 	 	    | Turn the Stove On/Off		                               |
+| isTemp   | Number:Temperature | Receives the actual Temperature of the stove	           |
+| spTemp   | Number:Temperature | Receives and Sets the Target Temperature of the stove	   |
+| mode     | String             | Receives the actual mode the stove is in          	   |
 
 
 ## Full Example
@@ -37,8 +37,8 @@ In V0.1 the following channels are yet supported:
 demo.items:
 
 ```java
-String isTemp { channel="oven:isTemp" }
-String spTemp { channel="oven:spTemp" }
+Number:Temperature isTemp { channel="oven:isTemp" }
+Number:Temperature spTemp { channel="oven:spTemp" }
 String mode   { channel="oven:mode" }
 Switch prg    	{ channel="oven:prg" }
 ```
