@@ -488,6 +488,8 @@
 
     <module>org.openhab.binding.robonect</module>
 
+    <module>org.openhab.binding.roku</module>
+
     <module>org.openhab.binding.rotel</module>
 
     <module>org.openhab.binding.russound</module>
