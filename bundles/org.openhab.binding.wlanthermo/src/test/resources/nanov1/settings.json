@@ -1,0 +1,117 @@
+{
+  "device": {
+    "device": "nano",
+    "serial": "33e8bb",
+    "item": "n2E04o42000",
+    "hw_version": "v2",
+    "sw_version": "v1.0.6",
+    "api_version": "1",
+    "language": "de"
+  },
+  "system": {
+    "time": "1610899506",
+    "unit": "C",
+    "ap": "NANO-AP",
+    "host": "NANO-33e8bb",
+    "language": "de",
+    "version": "v1.0.6",
+    "getupdate": "false",
+    "autoupd": true,
+    "hwversion": "V1+",
+    "god": 0
+  },
+  "hardware": [
+    "V1",
+    "V1+"
+  ],
+  "api": {
+    "version": "1"
+  },
+  "sensors": [
+    "1000K/Maverick",
+    "Fantast-Neu",
+    "Fantast",
+    "100K/iGrill2",
+    "ET-73",
+    "Perfektion",
+    "50K",
+    "Inkbird",
+    "100K6A1B",
+    "Weber_6743",
+    "Santos",
+    "5K3A1B"
+  ],
+  "pid": [
+    {
+      "name": "SSR SousVide",
+      "id": 0,
+      "aktor": 0,
+      "Kp": 104,
+      "Ki": 0.2,
+      "Kd": 0,
+      "DCmmin": 0,
+      "DCmmax": 100,
+      "opl": 0,
+      "tune": 0,
+      "jp": 100
+    },
+    {
+      "name": "TITAN 50x50",
+      "id": 1,
+      "aktor": 1,
+      "Kp": 3.8,
+      "Ki": 0.01,
+      "Kd": 128,
+      "DCmmin": 25,
+      "DCmmax": 100,
+      "opl": 0,
+      "tune": 0,
+      "jp": 70
+    },
+    {
+      "name": "Kamado 50x50",
+      "id": 2,
+      "aktor": 1,
+      "Kp": 7,
+      "Ki": 0.02,
+      "Kd": 630,
+      "DCmmin": 25,
+      "DCmmax": 100,
+      "opl": 0,
+      "tune": 0,
+      "jp": 70
+    }
+  ],
+  "aktor": [
+    "SSR",
+    "FAN",
+    "SERVO"
+  ],
+  "iot": {
+    "PMQhost": "192.168.2.1",
+    "PMQport": 1883,
+    "PMQuser": "",
+    "PMQpass": "",
+    "PMQqos": 0,
+    "PMQon": false,
+    "PMQint": 30,
+    "CLon": false,
+    "CLtoken": "thisisnotatoken",
+    "CLint": 30,
+    "CLurl": "cloud.wlanthermo.de/index.html"
+  },
+  "notes": {
+    "fcm": [],
+    "ext": {
+      "on": 0,
+      "token": "",
+      "id": "",
+      "repeat": 1,
+      "service": 0,
+      "services": [
+        "telegram",
+        "pushover"
+      ]
+    }
+  }
+}
