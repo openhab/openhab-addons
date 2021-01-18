@@ -59,6 +59,7 @@ public enum MiIoDevices {
     NWT_DERH_WDH318EFW1("nwt.derh.wdh318efw1", "WIDETECH WDH318EFW1 Internet Dehumidifier", THING_TYPE_UNSUPPORTED),
     DREAME_VACUUM_MC1808("dreame.vacuum.mc1808", "Mi Robot Vacuum Mop 1C STYTJ01ZHM", THING_TYPE_BASIC),
     DREAME_VACUUM_P2008("dreame.vacuum.p2008", "Dreame Robot Vacuum-Mop F9", THING_TYPE_BASIC),
+    DREAME_VACUUM_P2009("dreame.vacuum.p2009", "Dreame Robot Vacuum D9 ", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MB1("zhimi.airpurifier.mb1", "Mi Air Purifier 2S", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MC1("zhimi.airpurifier.mc1", "Mi Air Purifier 2S", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MC2("zhimi.airpurifier.mc2", "Mi Air Purifier 2H", THING_TYPE_BASIC),
