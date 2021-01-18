@@ -45,7 +45,6 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     protected void updateChannel(ChannelUID channel) {
         OpenSprinklerApi localAPI = getApi();
         if (localAPI == null) {
-            logger.debug("localAPI is null when trying to update a channel.");
             return;
         }
         switch (channel.getIdWithoutGroup()) {

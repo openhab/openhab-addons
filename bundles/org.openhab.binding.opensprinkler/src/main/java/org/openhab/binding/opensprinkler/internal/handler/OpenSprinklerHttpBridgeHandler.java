@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.opensprinkler.internal.handler;
 
-import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_WAIT_BEFORE_INITIAL_REFRESH;
-
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +21,7 @@ import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -63,7 +62,7 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
 
     private void refreshStations() {
         OpenSprinklerApi localApi = openSprinklerDevice;
-        if (localApi != null && localApi.isAnswering() && localApi.isManualModeEnabled()) {
+        if (localApi != null && localApi.isManualModeEnabled()) {
             try {
                 localApi.refresh();
                 this.getThing().getThings().forEach(thing -> {
@@ -75,6 +74,9 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
             } catch (CommunicationApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Could not sync status with the OpenSprinkler.");
+            } catch (UnauthorizedApiException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Unauthorized, check your password is correct");
             }
         } else {
             setupAPI();
@@ -83,20 +85,15 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
 
     @SuppressWarnings("null")
     private void setupAPI() {
-        logger.trace("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Refresh: {}).",
+        logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Refresh: {}).",
                 openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.refresh);
         try {
             openSprinklerDevice = apiFactory.getHttpApi(openSprinklerConfig);
+            openSprinklerDevice.enterManualMode();
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create an API connection to the OpenSprinkler. Error received: " + exp);
             return;
-        }
-        try {
-            openSprinklerDevice.enterManualMode();
-        } catch (CommunicationApiException exp) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not open API connection to the OpenSprinkler device. Error received: " + exp);
         }
         if (openSprinklerDevice.isManualModeEnabled()) {
             updateStatus(ThingStatus.ONLINE);
@@ -115,8 +112,8 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         openSprinklerConfig = getConfig().as(OpenSprinklerHttpInterfaceConfig.class);
-        pollingJob = scheduler.scheduleWithFixedDelay(this::refreshStations, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
-                openSprinklerConfig.refresh, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::refreshStations, 2, openSprinklerConfig.refresh,
+                TimeUnit.SECONDS);
     }
 
     @Override

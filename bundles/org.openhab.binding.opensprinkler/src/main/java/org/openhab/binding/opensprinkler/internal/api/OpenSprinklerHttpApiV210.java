@@ -125,7 +125,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      * @throws Exception
      */
     @Override
-    public void enterManualMode() throws CommunicationApiException {
+    public void enterManualMode() throws CommunicationApiException, UnauthorizedApiException {
         this.firmwareVersion = getFirmwareVersion();
         this.numberOfStations = getNumberOfStations();
         isInManualMode = true;

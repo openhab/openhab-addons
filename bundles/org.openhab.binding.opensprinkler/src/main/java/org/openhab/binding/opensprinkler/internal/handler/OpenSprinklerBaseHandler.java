@@ -23,8 +23,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Chris Graham - Initial contribution
@@ -32,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public OpenSprinklerBaseHandler(Thing thing) {
         super(thing);
@@ -41,7 +38,6 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
-        logger.debug("Bridge Status is {}", bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN);
         }

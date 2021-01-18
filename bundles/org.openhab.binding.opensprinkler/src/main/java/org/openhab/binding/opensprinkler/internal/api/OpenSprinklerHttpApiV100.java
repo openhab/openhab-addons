@@ -33,11 +33,11 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
+import org.openhab.binding.opensprinkler.internal.util.Hash;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -51,24 +51,19 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final String hostname;
     protected final int port;
     protected String password;
     protected final String basicUsername;
     protected final String basicPassword;
-    public boolean isAnswering = true;
     @Nullable
-    JcResponse jcReply;
+    protected JcResponse jcReply;
     @Nullable
-    JoResponse joReply;
-
-    String jsReply = "";
-
+    protected JoResponse joReply;
+    protected String jsReply = "";
     protected int firmwareVersion = -1;
     protected int numberOfStations = DEFAULT_STATION_COUNT;
     protected boolean isInManualMode = false;
-
     private final Gson gson = new Gson();
     protected HttpRequestSender http;
 
@@ -99,29 +94,28 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public boolean isAnswering() {
-        return isAnswering;
-    }
-
-    @Override
     public boolean isManualModeEnabled() {
         return isInManualMode;
     }
 
     @Override
-    public void refresh() throws CommunicationApiException {
+    public void refresh() throws CommunicationApiException, UnauthorizedApiException {
         joReply = getOptions();
         if (firmwareVersion == -1) {
             getFirmwareVersion();
+            if (firmwareVersion >= 213) {
+                password = Hash.getMD5Hash(password);
+            }
         }
         jcReply = statusInfo();
         jsReply = http.sendHttpGet(getBaseUrl() + CMD_STATION_INFO, getRequestRequiredOptions());
+        if (jsReply.equals("{\"result\":2}")) {
+            throw new UnauthorizedApiException("Unauthorized, check your password is correct");
+        }
     }
 
     @Override
-    public void enterManualMode() throws CommunicationApiException {
-        logger.debug("Trying to enter ManualMode");
-        refresh();
+    public void enterManualMode() throws CommunicationApiException, UnauthorizedApiException {
         try {
             http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_ENABLE_MANUAL_MODE);
         } catch (Exception exp) {
@@ -212,15 +206,14 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         if (localReply != null) {
             return localReply.wl;
         }
-        return 0;
+        return 100;
     }
 
     @Override
-    public int getNumberOfStations() throws CommunicationApiException {
+    public int getNumberOfStations() throws CommunicationApiException, UnauthorizedApiException {
         if (jsReply.isEmpty()) {
             refresh();
         }
-        logger.trace("jsReply:{}", jsReply);
         this.numberOfStations = Parse.jsonInt(jsReply, JSON_OPTION_STATION_COUNT);
         return this.numberOfStations;
     }
@@ -334,22 +327,18 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             } else {
                 location = url;
             }
-            logger.trace("Sending GET:{}", location);
             ContentResponse response;
             try {
                 response = withGeneralProperties(httpClient.newRequest(location)).method(HttpMethod.GET)
                         .timeout(4, TimeUnit.SECONDS).send();
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                isAnswering = false;
                 throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
             }
 
             if (response.getStatus() != HTTP_OK_CODE) {
-                isAnswering = false;
                 throw new CommunicationApiException(
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
             }
-            isAnswering = true;
             return response.getContentAsString();
         }
 

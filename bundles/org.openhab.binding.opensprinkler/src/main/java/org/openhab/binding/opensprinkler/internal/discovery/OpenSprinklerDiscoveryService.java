@@ -72,7 +72,6 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Starting discovery of OpenSprinkler devices.");
         try {
             IpAddressScan();
             discoverySearchPool.shutdown();
@@ -81,6 +80,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
                     exp.getMessage());
         }
         logger.debug("Completed discovery of OpenSprinkler devices.");
+        stopScan();
     }
 
     /**
@@ -96,7 +96,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
         properties.put("password", DEFAULT_ADMIN_PASSWORD);
         properties.put("refresh", 60);
         thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("OpenSprinkler @" + ip)
-                .build());
+                .withRepresentationProperty("hostname").build());
     }
 
     private void IpAddressScan() {
@@ -116,7 +116,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
                             try {
                                 // Try to reach each IP with a timeout of 300ms which is enough for local network
                                 if (InetAddress.getByName(host).isReachable(300)) {
-                                    logger.trace("Reachable:{}", host);
+                                    logger.trace("Unknown device was found at:{}", host);
                                     discoverySearchPool.execute(new OpenSprinklerDiscoveryJob(this, host));
                                 }
                             } catch (IOException e) {

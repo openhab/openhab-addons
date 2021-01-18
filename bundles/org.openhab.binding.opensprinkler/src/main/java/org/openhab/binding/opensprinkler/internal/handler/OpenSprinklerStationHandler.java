@@ -95,7 +95,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     private void handleStationStateCommand(OpenSprinklerApi api, Command command) {
         if (!(command instanceof OnOffType)) {
-            logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
+            logger.warn("Received invalid command type for OpenSprinkler station ({}).", command);
             return;
         }
         try {

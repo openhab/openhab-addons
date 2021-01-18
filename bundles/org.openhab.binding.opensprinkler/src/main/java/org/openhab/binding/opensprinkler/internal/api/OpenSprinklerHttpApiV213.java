@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
-import org.openhab.binding.opensprinkler.internal.util.Hash;
 
 /**
  * The {@link OpenSprinklerHttpApiV213} class is used for communicating with
@@ -40,6 +39,5 @@ class OpenSprinklerHttpApiV213 extends OpenSprinklerHttpApiV210 {
     OpenSprinklerHttpApiV213(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config)
             throws GeneralApiException {
         super(httpClient, config);
-        this.password = Hash.getMD5Hash(config.password);
     }
 }

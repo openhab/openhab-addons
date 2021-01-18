@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 
 /**
@@ -40,7 +41,7 @@ public interface OpenSprinklerApi {
      *
      * @throws Exception
      */
-    public abstract void enterManualMode() throws CommunicationApiException;
+    public abstract void enterManualMode() throws CommunicationApiException, UnauthorizedApiException;
 
     /**
      * Disables the manual mode, if it is enabled.
@@ -96,9 +97,7 @@ public interface OpenSprinklerApi {
     /**
      * Returns the current draw of all connected zones of the OpenSprinkler device in milliamperes.
      *
-     * @return current draw in milliamperes
-     * @throws CommunicationApiException
-     * @throws NoCurrentDrawSensorException
+     * @return current draw in milliamperes or -1 if sensor not supported
      */
     public abstract int currentDraw();
 
@@ -106,8 +105,6 @@ public interface OpenSprinklerApi {
      * Returns the water level in %.
      *
      * @return waterLevel in %
-     * @throws CommunicationApiException
-     * @throws
      */
     public abstract int waterLevel();
 
@@ -128,7 +125,5 @@ public interface OpenSprinklerApi {
      */
     public abstract int getFirmwareVersion() throws CommunicationApiException;
 
-    public abstract boolean isAnswering();
-
-    void refresh() throws CommunicationApiException;
+    public void refresh() throws CommunicationApiException, UnauthorizedApiException;
 }

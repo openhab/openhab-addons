@@ -21,8 +21,6 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenSprinklerApiFactory} class is used for creating instances of
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = OpenSprinklerApiFactory.class)
 @NonNullByDefault
 public class OpenSprinklerApiFactory {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private HttpClient httpClient;
 
     @Activate
@@ -65,9 +62,8 @@ public class OpenSprinklerApiFactory {
             version = lowestSupportedApi.getFirmwareVersion();
         } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+                    "Problem fetching the firmware version from the OpenSprinkler: " + exp.getMessage());
         }
-
         if (version >= 210 && version < 213) {
             return new OpenSprinklerHttpApiV210(this.httpClient, config);
         } else if (version >= 213) {
@@ -81,7 +77,6 @@ public class OpenSprinklerApiFactory {
                         "There was a problem in the HTTP communication with the OpenSprinkler API: "
                                 + exp.getMessage());
             }
-            logger.debug("Using API version {}", lowestSupportedApi);
             return lowestSupportedApi;
         }
     }

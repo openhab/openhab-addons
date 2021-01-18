@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="http">
-		<label>OpenSprinkler HTTP Interface</label>
+		<label>OpenSprinkler HTTP Bridge</label>
 		<description>A connection to a stand alone OpenSprinkler device which communicates over HTTP.</description>
 
 		<config-description>
@@ -19,6 +19,7 @@
 				<label>Port</label>
 				<description>Port of the OpenSprinkler Web API interface.</description>
 				<default>80</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>

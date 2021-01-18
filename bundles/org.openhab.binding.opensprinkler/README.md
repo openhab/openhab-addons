@@ -1,21 +1,21 @@
 # OpenSprinkler Binding
 
-This binding allows allows basic control of the OpenSprinkler devices.
-Stations can be controlled to be turned on or off and rain sensor state can be read.
+This binding allows allows basic control of OpenSprinkler devices.
+Stations can be controlled (turned on or off) and rain sensor state can be read.
 
 ## Supported Bridges
 
-*   HTTP (`http`) - The http bridge allows to communicate with an OpenSprinkler device through the network
+* (`http`) - The `OpenSprinkler HTTP Bridge` is required to communicate with an OpenSprinkler device through the network and should be added first.
 
 ## Supported Things
 
-*   OpenSprinkler Station (`station`) - to control a single station of a device, e.g. to turn it on or off
-*   OpenSprinkler Device (`device`) - for getting device-specific infos, e.g. if rain was detected
+* (`station`) - An `OpenSprinkler Station`  is used to control a single station (zone) of a device, e.g. to turn it on or off
+* (`device`) - An `OpenSprinkler Device`  is for getting device-specific information, e.g. if rain was detected
 
 ## Discovery
 
-OpenSprinkler devices can be manually discovered by sending a request to every IP on the network.
-Discovery needs to be run manually as this is a brute force method of finding devices that can saturate network or device available bandwidth.
+OpenSprinkler devices can be discovered by sending a request to every IP on your network.
+Discovery due to this method used is very slow at finding devices, and can saturate network bandwidth.
 
 ## Thing Configuration
 
