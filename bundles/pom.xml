@@ -221,6 +221,7 @@
     <module>org.openhab.binding.nuvo</module>
     <module>org.openhab.binding.nzwateralerts</module>
     <module>org.openhab.binding.oceanic</module>
+    <module>org.openhab.binding.octopusenergy</module>
     <module>org.openhab.binding.ojelectronics</module>
     <module>org.openhab.binding.omnikinverter</module>
     <module>org.openhab.binding.omnilink</module>

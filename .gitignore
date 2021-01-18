@@ -24,3 +24,5 @@ features/**/src/main/feature
 .vscode
 .factorypath
 pom.xml.versionsBackup
+
+bundles/org.openhab.binding.octopusenergy/src/test/java/org/openhab/binding/octopusenergy/internal/OctopusEnergyApiHelperLiveTest.java

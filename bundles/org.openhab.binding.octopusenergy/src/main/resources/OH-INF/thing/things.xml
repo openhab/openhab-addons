@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<thing:thing-descriptions bindingId="octopusenergy"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+
+		<label>Octopus Energy API Bridge</label>
+		<description>The Octopus Energy Cloud API Bridge</description>
+
+		<channels>
+			<channel id="refresh" typeId="refreshType"/>
+			<channel id="lastRefreshTime" typeId="lastRefreshTimeType"/>
+		</channels>
+
+		<config-description>
+
+			<parameter name="accountNumber" type="text" required="true">
+				<label>Account Number</label>
+				<description>The Octopus Energy account number</description>
+			</parameter>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API Key</label>
+				<description>The API key to access the Octopus Energy API</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" unit="m">
+				<label>Refresh Interval Topology</label>
+				<description>Query interval (in minutes) for consumption and price updates</description>
+				<default>15</default>
+			</parameter>
+
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="electricityMeterPoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Octopus Energy Electricity Meter Point</label>
+		<description>An Octopus Energy electricity meter point</description>
+
+		<channels>
+			<channel id="mpan" typeId="mpanType"/>
+			<channel id="currentTariff" typeId="tariffType"/>
+			<channel id="mostRecentConsumptionAmount" typeId="consumptionAmountType"/>
+			<channel id="mostRecentConsumptionStartTime" typeId="consumptionStartTimeType"/>
+			<channel id="mostRecentConsumptionEndTime" typeId="consumptionEndTimeType"/>
+			<channel id="unitPriceWindowStartTime" typeId="unitPriceWindowStartTimeType"/>
+			<channel id="unitPriceWindowEndTime" typeId="unitPriceWindowEndTimeType"/>
+			<channel id="unitPriceWindowMinAmount" typeId="minUnitPriceType"/>
+			<channel id="unitPriceWindowMaxAmount" typeId="maxUnitPriceType"/>
+		</channels>
+
+		<properties>
+			<property name="mpan"/>
+			<property name="profileClass"/>
+			<property name="consumptionStandard"/>
+			<property name="isExport"/>
+		</properties>
+	</thing-type>
+
+	<thing-type id="gasMeterPoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Octopus Energy Gas Meter Point</label>
+		<description>An Octopus Energy gas meter point</description>
+
+		<channels>
+			<channel id="mprn" typeId="mprnType"/>
+			<channel id="currentTariff" typeId="tariffType"/>
+		</channels>
+
+		<properties>
+			<property name="mprn"/>
+			<property name="consumptionStandard"/>
+		</properties>
+	</thing-type>
+
+	<channel-type id="refreshType">
+		<item-type>Switch</item-type>
+		<label>Refresh</label>
+		<description>Allows a manual refresh of the API data when sent an ON command.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="lastRefreshTimeType">
+		<item-type>DateTime</item-type>
+		<label>Last Refresh Time</label>
+		<description>The time consumption and tariff information was last refreshed</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="mpanType">
+		<item-type>String</item-type>
+		<label>MPAN</label>
+		<description>Meter Point Administration Number</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="mprnType">
+		<item-type>String</item-type>
+		<label>MPRN</label>
+		<description>Meter Point Reference Number</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="tariffType">
+		<item-type>String</item-type>
+		<label>Current Tariff</label>
+		<description>The currently applicable tariff</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="consumptionAmountType">
+		<item-type>Number:Energy</item-type>
+		<label>Consumed Energy Amount</label>
+		<description>The amount of energy consumed during the given time window</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="consumptionStartTimeType">
+		<item-type>DateTime</item-type>
+		<label>Consumption Window Start Time</label>
+		<description>The start time of the most recent consumption window</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="consumptionEndTimeType">
+		<item-type>DateTime</item-type>
+		<label>Consumption Window End Time</label>
+		<description>The end time of the most recent consumption window</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="unitPriceWindowStartTimeType">
+		<item-type>DateTime</item-type>
+		<label>Unit Price Window Start Time</label>
+		<description>The start time of the unit price window</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="unitPriceWindowEndTimeType">
+		<item-type>DateTime</item-type>
+		<label>Unit Price Window End Time</label>
+		<description>The end time of the unit price window</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="maxUnitPriceType">
+		<item-type>Number</item-type>
+		<label>Maximum Unit Price (p/kWh)</label>
+		<description>The maximum unit price of energy in GBp per Kilowatt Hour over the available forecast period</description>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="minUnitPriceType">
+		<item-type>Number</item-type>
+		<label>Minimum Unit Price (p/kWh)</label>
+		<description>The minimum unit price of energy in GBp per Kilowatt Hour over the available forecast period</description>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="requestedStartTimeHourType">
+		<item-type>Number</item-type>
+		<label>Requested Activity Start Hour</label>
+		<description>The earliest start time of the optimized activity window (hour)</description>
+		<state min="0" max="23" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="requestedStartTimeMinuteType">
+		<item-type>Number</item-type>
+		<label>Requested Activity Start Minute</label>
+		<description>The earliest start time of the optimized activity window (minute)</description>
+		<state min="0" max="55" step="5" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="requestedEndTimeHourType">
+		<item-type>Number</item-type>
+		<label>Requested Activity End Hour</label>
+		<description>The latest end time of the optimized activity window (hour)</description>
+		<state min="0" max="23" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="requestedEndTimeMinuteType">
+		<item-type>Number</item-type>
+		<label>Requested Activity End Minute</label>
+		<description>The latest end time of the optimized activity window (minute)</description>
+		<state min="0" max="55" step="5" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="requestedDurationType">
+		<item-type>Number:Time</item-type>
+		<label>Duration of the Activity to be optimized</label>
+		<description>The duration of the activity for which the cheapest window is calculated</description>
+		<state readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="optimizedStartTimeType">
+		<item-type>DateTime</item-type>
+		<label>Optimized Activity Start Time</label>
+		<description>The optimized start time of the cheapest activity window</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="optimizedEndTimeType">
+		<item-type>DateTime</item-type>
+		<label>Optimized Activity End Time</label>
+		<description>The end time of the optimized activity window</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+</thing:thing-descriptions>
