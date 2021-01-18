@@ -166,7 +166,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 250 different models.
+Currently the miio binding supports more than 260 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -205,7 +205,7 @@ Currently the miio binding supports more than 250 different models.
 | WIDETECH WDH318EFW1 Internet Dehumidifier | miio:unsupported | nwt.derh.wdh318efw1    | No        |            |
 | Mi Robot Vacuum Mop 1C STYTJ01ZHM | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       | Identified manual actions for execution<br />`action{"did":"battery-start-charge","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-start-sweep","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":3,"aiid":2,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":26,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":27,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":28,"aiid":1,"in":[]}`<br />`action{"did":"clean-start-clean","siid":18,"aiid":1,"in":[]}`<br />`action{"did":"clean-stop-clean","siid":18,"aiid":2,"in":[]}`<br />`action{"did":"remote-start-remote","siid":21,"aiid":1,"in":[1.0, 2.0]}`<br />`action{"did":"remote-stop-remote","siid":21,"aiid":2,"in":[]}`<br />`action{"did":"remote-exit-remote","siid":21,"aiid":3,"in":[]}`<br />`action{"did":"map-map-req","siid":23,"aiid":1,"in":[2.0]}`<br />`action{"did":"audio-position","siid":24,"aiid":1,"in":[]}`<br />`action{"did":"audio-set-voice","siid":24,"aiid":2,"in":[]}`<br />`action{"did":"audio-play-sound","siid":24,"aiid":3,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Dreame Robot Vacuum-Mop F9   | miio:basic       | [dreame.vacuum.p2008](#dreame-vacuum-p2008) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"battery-start-charge","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":9,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":10,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Dreame Robot Vacuum D9       | miio:basic       | [dreame.vacuum.p2009](#dreame-vacuum-p2009) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"battery-start-charge","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":9,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":10,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Dreame Robot Vacuum D9       | miio:basic       | [dreame.vacuum.p2009](#dreame-vacuum-p2009) | Yes       | Identified manual actions for execution not linked in the database >`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br /> |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |            |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | Yes       |            |
 | Mi Air Purifier 2H           | miio:basic       | [zhimi.airpurifier.mc2](#zhimi-airpurifier-mc2) | Yes       |            |
@@ -1091,6 +1091,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | fault            | Number  | Robot Cleaner - Device Fault        |            |
 | battery-level    | Number:Dimensionless | Battery - Battery Level             |            |
 | charging-state   | Number  | Battery - Charging State            | Value mapping ["1"="Charging","2"="Not Charging","5"="Go Charging"] |
+| resetConsumable  | String  | Consumables Reset                   | Value mapping ["mainbrush-cleaner-reset-brush-life"="Reset Main Brush","sidebrush-cleaner-reset-brush-life"="Reset Side Brush","filter-reset-filter-life"="Reset Filter"] |
 | brush-left-time  | Number:Time | Main Cleaning Brush - Brush Left Time |            |
 | brush-life-level | Number:Dimensionless | Main Cleaning Brush - Brush Life Level |            |
 | brush-left-time1 | Number:Time | Side Cleaning Brush - Brush Left Time |            |
@@ -1113,7 +1114,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | enable           | Switch  | Do Not Disturb - Enable             |            |
 | start-time       | String  | Do Not Disturb - Start Time         |            |
 | end-time         | String  | Do Not Disturb - End Time           |            |
-| volume           | Number  | Audio - Volume                      |            |
+| volume           | Number:Dimensionless | Audio - Volume                      |            |
 | voice-packet-id  | String  | Audio - Voice Packet Id             |            |
 | voice-change-state | String  | Audio - Voice Change State          |            |
 | time-zone        | String  | Time - Time Zone                    |            |
@@ -4611,54 +4612,54 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 3" <status>
 Number fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
 Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
-Number fan-level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
+Number fan_level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
 Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number pm2.5-density "Environment - Pm2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2.5-density"}
-Number:Dimensionless relative-humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
+Number pm2.5_density "Environment - Pm2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2.5-density"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Dimensionless filter-life-level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
-Number:Time filter-used-time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-used-time"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
+Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-used-time"}
 Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
 Number:Dimensionless brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
 Switch on1 "Indicator Light - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on1"}
-Switch physical-controls-locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical-controls-locked"}
-String button-pressed "Button - Button_pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button-pressed"}
-Number:Time filter-max-time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-max-time"}
-Number filter-hour-used-debug "Filter Time - Filter Hour Used Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter-hour-used-debug"}
-Number m1-strong "Motor Speed - M1 Strong" (G_airpurifier) {channel="miio:basic:airpurifier:m1-strong"}
-Number m1-high "Motor Speed - M1 High" (G_airpurifier) {channel="miio:basic:airpurifier:m1-high"}
-Number m1-med "Motor Speed - M1 Med" (G_airpurifier) {channel="miio:basic:airpurifier:m1-med"}
-Number m1-med-l "Motor Speed - M1 Med L" (G_airpurifier) {channel="miio:basic:airpurifier:m1-med-l"}
-Number m1-low "Motor Speed - M1 Low" (G_airpurifier) {channel="miio:basic:airpurifier:m1-low"}
-Number m1-silent "Motor Speed - M1 Silent" (G_airpurifier) {channel="miio:basic:airpurifier:m1-silent"}
-Number m1-favorite "Motor Speed - M1 Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:m1-favorite"}
-Number motor1-speed "Motor Speed - Motor1 Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1-speed"}
-Number motor1-set-speed "Motor Speed - Motor1 Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1-set-speed"}
-Number favorite-fan-level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite-fan-level"}
-Number:Time use-time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use-time"}
-Number:Volume purify-volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify-volume"}
-Number average-aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi"}
-Number average-aqi-cnt "Aqi - Average Aqi Cnt" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi-cnt"}
-String aqi-zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-zone"}
-String sensor-state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor-state"}
-Number aqi-goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-goodh"}
-Number aqi-runstate "Aqi - Aqi Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-runstate"}
-Number aqi-state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-state"}
-Number aqi-updata-heartbeat "Aqi - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-updata-heartbeat"}
-String rfid-tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-tag"}
-String rfid-factory-id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-factory-id"}
-String rfid-product-id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-product-id"}
-String rfid-time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-time"}
-String rfid-serial-num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-serial-num"}
-Number app-extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app-extra"}
-Number main-channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main-channel"}
-Number slave-channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave-channel"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical-controls-locked"}
+String button_pressed "Button - Button_pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button-pressed"}
+Number:Time filter_max_time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-max-time"}
+Number filter_hour_used_debug "Filter Time - Filter Hour Used Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter-hour-used-debug"}
+Number m1_strong "Motor Speed - M1 Strong" (G_airpurifier) {channel="miio:basic:airpurifier:m1-strong"}
+Number m1_high "Motor Speed - M1 High" (G_airpurifier) {channel="miio:basic:airpurifier:m1-high"}
+Number m1_med "Motor Speed - M1 Med" (G_airpurifier) {channel="miio:basic:airpurifier:m1-med"}
+Number m1_med_l "Motor Speed - M1 Med L" (G_airpurifier) {channel="miio:basic:airpurifier:m1-med-l"}
+Number m1_low "Motor Speed - M1 Low" (G_airpurifier) {channel="miio:basic:airpurifier:m1-low"}
+Number m1_silent "Motor Speed - M1 Silent" (G_airpurifier) {channel="miio:basic:airpurifier:m1-silent"}
+Number m1_favorite "Motor Speed - M1 Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:m1-favorite"}
+Number motor1_speed "Motor Speed - Motor1 Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1-speed"}
+Number motor1_set_speed "Motor Speed - Motor1 Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1-set-speed"}
+Number favorite_fan_level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite-fan-level"}
+Number:Time use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use-time"}
+Number:Volume purify_volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify-volume"}
+Number average_aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi"}
+Number average_aqi_cnt "Aqi - Average Aqi Cnt" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi-cnt"}
+String aqi_zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-zone"}
+String sensor_state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor-state"}
+Number aqi_goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-goodh"}
+Number aqi_runstate "Aqi - Aqi Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-runstate"}
+Number aqi_state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-state"}
+Number aqi_updata_heartbeat "Aqi - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-updata-heartbeat"}
+String rfid_tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-tag"}
+String rfid_factory_id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-factory-id"}
+String rfid_product_id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-product-id"}
+String rfid_time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-time"}
+String rfid_serial_num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-serial-num"}
+Number app_extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app-extra"}
+Number main_channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main-channel"}
+Number slave_channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave-channel"}
 String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:cola"}
-Switch buttom-door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom-door"}
-Number reboot-cause "Others - Reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot-cause"}
-Number hw-version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw-version"}
-Number i2c-error-count "Others - I2c Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:i2c-error-count"}
-Number manual-level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
+Switch buttom_door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom-door"}
+Number reboot_cause "Others - Reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot-cause"}
+Number hw_version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw-version"}
+Number i2c_error_count "Others - I2c Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:i2c-error-count"}
+Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
 ```
 
 ### Mi Air Purifier 3/3H (zhimi.airpurifier.mb3) item file lines
@@ -4669,55 +4670,55 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 3/3H" <status>
 Number fault "Air Purifier - Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
 Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
-Number fan-level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
+Number fan_level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
 Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number pm2.5-density "Environment - Pm2 5" (G_airpurifier) {channel="miio:basic:airpurifier:pm2.5-density"}
-Number:Dimensionless relative-humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
+Number pm2.5_density "Environment - Pm2 5" (G_airpurifier) {channel="miio:basic:airpurifier:pm2.5-density"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Dimensionless filter-life-level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
-Number:Time filter-used-time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-used-time"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
+Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-used-time"}
 Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
 Number:Dimensionless brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
 Switch on1 "Indicator Light - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on1"}
-Switch physical-controls-locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical-controls-locked"}
-String button-pressed "Button - Button Pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button-pressed"}
-Number filter-max-time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-max-time"}
-Number filter-hour-debug "Filter Time - Filter Hour Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter-hour-debug"}
-Number motor-strong "Motor Speed - Motor Strong" (G_airpurifier) {channel="miio:basic:airpurifier:motor-strong"}
-Number motor-high "Motor Speed - Motor High" (G_airpurifier) {channel="miio:basic:airpurifier:motor-high"}
-Number motor-med "Motor Speed - Motor Med" (G_airpurifier) {channel="miio:basic:airpurifier:motor-med"}
-Number motor-med-l "Motor Speed - Motor Med L" (G_airpurifier) {channel="miio:basic:airpurifier:motor-med-l"}
-Number motor-low "Motor Speed - Motor Low" (G_airpurifier) {channel="miio:basic:airpurifier:motor-low"}
-Number motor-silent "Motor Speed - Motor Silent" (G_airpurifier) {channel="miio:basic:airpurifier:motor-silent"}
-Number motor-favorite "Motor Speed - Motor Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:motor-favorite"}
-Number motor-speed "Motor Speed - Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor-speed"}
-Number motor-set-speed "Motor Speed - Motor Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor-set-speed"}
-Number favorite-fan-level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite-fan-level"}
-Number:Time use-time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use-time"}
-Number:Volume purify-volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify-volume"}
-Number average-aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi"}
-Number average-aqi-cnt "Aqi - Average Aqi Cnt" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi-cnt"}
-String aqi-zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-zone"}
-String sensor-state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor-state"}
-Number aqi-goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-goodh"}
-Number aqi-runstate "Aqi - Aqi Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-runstate"}
-Number aqi-state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-state"}
-Number aqi-updata-heartbeat "Aqi - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-updata-heartbeat"}
-String rfid-tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-tag"}
-String rfid-factory-id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-factory-id"}
-String rfid-product-id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-product-id"}
-String rfid-time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-time"}
-String rfid-serial-num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-serial-num"}
-Number app-extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app-extra"}
-Number main-channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main-channel"}
-Number slave-channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave-channel"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical-controls-locked"}
+String button_pressed "Button - Button Pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button-pressed"}
+Number filter_max_time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-max-time"}
+Number filter_hour_debug "Filter Time - Filter Hour Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter-hour-debug"}
+Number motor_strong "Motor Speed - Motor Strong" (G_airpurifier) {channel="miio:basic:airpurifier:motor-strong"}
+Number motor_high "Motor Speed - Motor High" (G_airpurifier) {channel="miio:basic:airpurifier:motor-high"}
+Number motor_med "Motor Speed - Motor Med" (G_airpurifier) {channel="miio:basic:airpurifier:motor-med"}
+Number motor_med_l "Motor Speed - Motor Med L" (G_airpurifier) {channel="miio:basic:airpurifier:motor-med-l"}
+Number motor_low "Motor Speed - Motor Low" (G_airpurifier) {channel="miio:basic:airpurifier:motor-low"}
+Number motor_silent "Motor Speed - Motor Silent" (G_airpurifier) {channel="miio:basic:airpurifier:motor-silent"}
+Number motor_favorite "Motor Speed - Motor Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:motor-favorite"}
+Number motor_speed "Motor Speed - Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor-speed"}
+Number motor_set_speed "Motor Speed - Motor Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor-set-speed"}
+Number favorite_fan_level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite-fan-level"}
+Number:Time use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use-time"}
+Number:Volume purify_volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify-volume"}
+Number average_aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi"}
+Number average_aqi_cnt "Aqi - Average Aqi Cnt" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi-cnt"}
+String aqi_zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-zone"}
+String sensor_state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor-state"}
+Number aqi_goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-goodh"}
+Number aqi_runstate "Aqi - Aqi Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-runstate"}
+Number aqi_state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-state"}
+Number aqi_updata_heartbeat "Aqi - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-updata-heartbeat"}
+String rfid_tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-tag"}
+String rfid_factory_id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-factory-id"}
+String rfid_product_id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-product-id"}
+String rfid_time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-time"}
+String rfid_serial_num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-serial-num"}
+Number app_extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app-extra"}
+Number main_channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main-channel"}
+Number slave_channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave-channel"}
 String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:cola"}
-Switch buttom-door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom-door"}
-Number reboot-cause "Others - Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot-cause"}
-Number hw-version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw-version"}
-Number iic-error-count "Others - Iic Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:iic-error-count"}
-Number manual-level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
-Number country-code "Others - National Code" (G_airpurifier) {channel="miio:basic:airpurifier:country-code"}
+Switch buttom_door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom-door"}
+Number reboot_cause "Others - Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot-cause"}
+Number hw_version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw-version"}
+Number iic_error_count "Others - Iic Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:iic-error-count"}
+Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
+Number country_code "Others - National Code" (G_airpurifier) {channel="miio:basic:airpurifier:country-code"}
 ```
 
 ### Mi Air Purifier Super (zhimi.airpurifier.sa1) item file lines
@@ -4919,39 +4920,40 @@ Group G_vacuum "Dreame Robot Vacuum D9 " <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
-Number:Dimensionless battery-level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
-Number charging-state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
-Number:Time brush-left-time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
-Number:Dimensionless brush-life-level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
-Number:Time brush-left-time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
-Number:Dimensionless brush-life-level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
-Number:Dimensionless filter-life-level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter-life-level"}
-Number:Time filter-left-time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
-Number work-mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work-mode"}
-Number:Time cleaning-time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning-time"}
-Number:Area cleaning-area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning-area"}
-Number cleaning-mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
-Number mop-mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop-mode"}
-Number waterbox-status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox-status"}
-Number task-status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task-status"}
-Number break-point-restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break-point-restart"}
-Number carpet-press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet-press"}
-String serial-number1 "Vacuum Extend - Serial Number" (G_vacuum) {channel="miio:basic:vacuum:serial-number1"}
-Number:Time clean-rags-tip "Vacuum Extend - Clean Rags Tip" (G_vacuum) {channel="miio:basic:vacuum:clean-rags-tip"}
-Number:Time keep-sweeper-time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {channel="miio:basic:vacuum:keep-sweeper-time"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
+String resetConsumable "Consumables Reset" (G_vacuum) {channel="miio:basic:vacuum:resetConsumable"}
+Number:Time brush_left_time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
+Number:Dimensionless brush_life_level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
+Number:Time brush_left_time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
+Number:Dimensionless brush_life_level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter-life-level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
+Number work_mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work-mode"}
+Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning-time"}
+Number:Area cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning-area"}
+Number cleaning_mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number mop_mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop-mode"}
+Number waterbox_status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox-status"}
+Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task-status"}
+Number break_point_restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break-point-restart"}
+Number carpet_press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet-press"}
+String serial_number1 "Vacuum Extend - Serial Number" (G_vacuum) {channel="miio:basic:vacuum:serial-number1"}
+Number:Time clean_rags_tip "Vacuum Extend - Clean Rags Tip" (G_vacuum) {channel="miio:basic:vacuum:clean-rags-tip"}
+Number:Time keep_sweeper_time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {channel="miio:basic:vacuum:keep-sweeper-time"}
 String faults "Vacuum Extend - Faults" (G_vacuum) {channel="miio:basic:vacuum:faults"}
 Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
-String start-time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start-time"}
-String end-time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end-time"}
-Number volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
-String voice-packet-id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice-packet-id"}
-String voice-change-state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice-change-state"}
-String time-zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
-String timer-clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer-clean"}
-Number first-clean-time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first-clean-time"}
-Number:Time total-clean-time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
-Number total-clean-times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total-clean-times"}
-Number total-clean-area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
+String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start-time"}
+String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end-time"}
+Number:Dimensionless volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+String voice_packet_id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice-packet-id"}
+String voice_change_state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice-change-state"}
+String time_zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String timer_clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer-clean"}
+Number first_clean_time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first-clean-time"}
+Number:Time total_clean_time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
+Number total_clean_times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total-clean-times"}
+Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
 ```
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.mb1) item file lines
@@ -6406,17 +6408,17 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway)" <status>
 Switch on "Power" (G_plug) {channel="miio:basic:plug:on"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
-Number:Duration working-time "Working Time" (G_plug) {channel="miio:basic:plug:working-time"}
+Number:Duration working_time "Working Time" (G_plug) {channel="miio:basic:plug:working-time"}
 Switch on1 "Indicator Light - Switch Status" (G_plug) {channel="miio:basic:plug:on1"}
-Number:Energy power-consumption "Daily Power Consumption" (G_plug) {channel="miio:basic:plug:power-consumption"}
-Number:Current electric-current "Power Consumption - Electric Current" (G_plug) {channel="miio:basic:plug:electric-current"}
+Number:Energy power_consumption "Daily Power Consumption" (G_plug) {channel="miio:basic:plug:power-consumption"}
+Number:Current electric_current "Power Consumption - Electric Current" (G_plug) {channel="miio:basic:plug:electric-current"}
 Number:ElectricPotential voltage "Power Consumption - Voltage" (G_plug) {channel="miio:basic:plug:voltage"}
-Number:Power electric-power "Current Power Consumption - Electric Power" (G_plug) {channel="miio:basic:plug:electric-power"}
-Number:Duration on-duration "Imilab Timer - On Duration" (G_plug) {channel="miio:basic:plug:on-duration"}
-Number:Duration off-duration "Imilab Timer - Off Duration" (G_plug) {channel="miio:basic:plug:off-duration"}
+Number:Power electric_power "Current Power Consumption - Electric Power" (G_plug) {channel="miio:basic:plug:electric-power"}
+Number:Duration on_duration "Imilab Timer - On Duration" (G_plug) {channel="miio:basic:plug:on-duration"}
+Number:Duration off_duration "Imilab Timer - Off Duration" (G_plug) {channel="miio:basic:plug:off-duration"}
 Number:Time countdown "Imilab Timer - Countdown" (G_plug) {channel="miio:basic:plug:countdown"}
-Switch task-switch "Imilab Timer - Task Switch" (G_plug) {channel="miio:basic:plug:task-switch"}
-Switch countdown-info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:basic:plug:countdown-info"}
+Switch task_switch "Imilab Timer - Task Switch" (G_plug) {channel="miio:basic:plug:task-switch"}
+Switch countdown_info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:basic:plug:countdown-info"}
 ```
 
 ### CHINGMI Smart Power Strip v1 (qmi.powerstrip.v1) item file lines
