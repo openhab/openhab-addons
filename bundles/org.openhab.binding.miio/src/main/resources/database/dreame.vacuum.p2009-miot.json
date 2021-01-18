@@ -10,7 +10,6 @@
 				"property": "",
 				"friendlyName": "Vacuum Action",
 				"channel": "vacuumaction",
-				"channelType": "dreameControl",
 				"type": "String",
 				"stateDescription": {
 					"readOnly": true,
