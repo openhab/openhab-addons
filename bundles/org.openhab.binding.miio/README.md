@@ -236,6 +236,10 @@ Currently the miio binding supports more than 260 different models.
 | Mi smart Home GatewayHub v2  | miio:basic       | [lumi.gateway.v2](#lumi-gateway-v2) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi mart Home Gateway Hub v3  | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier virtual      | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Pet Water Dispenser | miio:basic       | [mmgg.pet_waterer.s1](#mmgg-pet_waterer-s1) | Yes       | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Pet Water Dispenser | miio:basic       | [mmgg.pet_waterer.s2](#mmgg-pet_waterer-s2) | Yes       | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Pet Water Dispenser | miio:basic       | [mmgg.pet_waterer.s3](#mmgg-pet_waterer-s3) | Yes       | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| XIAOWAN Smart Pet Water Dispenser | miio:basic       | [mmgg.pet_waterer.s4](#mmgg-pet_waterer-s4) | Yes       | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ARIES For Bedroom     | miio:basic       | [huayi.light.ari013](#huayi-light-ari013) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ARIES For Living Room | miio:basic       | [huayi.light.aries](#huayi-light-aries) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Fan Light             | miio:basic       | [huayi.light.fanwy](#huayi-light-fanwy) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -1469,6 +1473,69 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | gatewayVol       | Number  | Gateway Volume                      |            |
 | alarmingVol      | Number  | Alarming Volume                     |            |
 | doorbellPush     | String  | Doorbell Push                       |            |
+
+### Mijia Smart Pet Water Dispenser (<a name="mmgg-pet_waterer-s1">mmgg.pet_waterer.s1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| fault            | Number  | Pet Drinking Fountain - Device Fault | Value mapping ["0"="No faults"] |
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                | Value mapping ["1"="Common","2"="Smart "] |
+| filter-left-time | Number:Time | Filter - Filter Left Time           |            |
+| on1              | Switch  | Indicator Light - Switch            |            |
+| cotton-left-time | Number:Time | Filter Cotton - Cotton Left Time    |            |
+| remain-clean-time | Number:Time | Remain Clean Time - Remain Clean Time |            |
+| no-water-flag    | Switch  | No Water Flag - No Water Flag       |            |
+| resetConsumable  | String  | Consumables Reset                   | Value mapping ["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"] |
+| no-water-time    | Number:Time | No Water Flag - No Water Time       |            |
+
+### Mijia Smart Pet Water Dispenser (<a name="mmgg-pet_waterer-s2">mmgg.pet_waterer.s2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| fault            | Number  | Pet Drinking Fountain - Device Fault | Value mapping ["0"="No faults"] |
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                | Value mapping ["1"="Common","2"="Smart "] |
+| filter-left-time | Number:Time | Filter - Filter Left Time           |            |
+| on1              | Switch  | Indicator Light - Switch            |            |
+| cotton-left-time | Number:Time | Filter Cotton - Cotton Left Time    |            |
+| remain-clean-time | Number:Time | Remain Clean Time - Remain Clean Time |            |
+| no-water-flag    | Switch  | No Water Flag - No Water Flag       |            |
+| resetConsumable  | String  | Consumables Reset                   | Value mapping ["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"] |
+| no-water-time    | Number:Time | No Water Flag - No Water Time       |            |
+| pump-block-flag  | Switch  | No Water Flag - Pump Block Flag     |            |
+
+### Mijia Smart Pet Water Dispenser (<a name="mmgg-pet_waterer-s3">mmgg.pet_waterer.s3</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| fault            | Number  | Pet Drinking Fountain - Device Fault | Value mapping ["0"="No faults"] |
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                | Value mapping ["1"="Common","2"="Smart "] |
+| filter-left-time | Number:Time | Filter - Filter Left Time           |            |
+| on1              | Switch  | Indicator Light - Switch            |            |
+| cotton-left-time | Number:Time | Filter Cotton - Cotton Left Time    |            |
+| remain-clean-time | Number:Time | Remain Clean Time - Remain Clean Time |            |
+| no-water-flag    | Switch  | No Water Flag - No Water Flag       |            |
+| resetConsumable  | String  | Consumables Reset                   | Value mapping ["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"] |
+| no-water-time    | Number:Time | No Water Flag - No Water Time       |            |
+| pump-block-flag  | Switch  | No Water Flag - Pump Block Flag     |            |
+
+### XIAOWAN Smart Pet Water Dispenser (<a name="mmgg-pet_waterer-s4">mmgg.pet_waterer.s4</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| fault            | Number  | Pet Drinking Fountain - Device Fault | Value mapping ["0"="No faults"] |
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                | Value mapping ["1"="Common","2"="Smart "] |
+| filter-left-time | Number:Time | Filter - Filter Left Time           |            |
+| on1              | Switch  | Indicator Light - Switch            |            |
+| cotton-left-time | Number:Time | Filter Cotton - Cotton Left Time    |            |
+| remain-clean-time | Number:Time | Remain Clean Time - Remain Clean Time |            |
+| no-water-flag    | Switch  | No Water Flag - No Water Flag       |            |
+| resetConsumable  | String  | Consumables Reset                   | Value mapping ["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"] |
+| no-water-time    | Number:Time | No Water Flag - No Water Time       |            |
+| pump-block-flag  | Switch  | No Water Flag - Pump Block Flag     |            |
 
 ### HUIZUO ARIES For Bedroom (<a name="huayi-light-ari013">huayi.light.ari013</a>) Channels
 
@@ -5497,6 +5564,81 @@ Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:do
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
+```
+
+### Mijia Smart Pet Water Dispenser (mmgg.pet_waterer.s1) item file lines
+
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
+Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
+Switch on "Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
+Number mode "Mode" (G_pet_waterer) {channel="miio:basic:pet_waterer:mode"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:filter-left-time"}
+Switch on1 "Indicator Light - Switch" (G_pet_waterer) {channel="miio:basic:pet_waterer:on1"}
+Number:Time cotton_left_time "Filter Cotton - Cotton Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:cotton-left-time"}
+Number:Time remain_clean_time "Remain Clean Time - Remain Clean Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:remain-clean-time"}
+Switch no_water_flag "No Water Flag - No Water Flag" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-flag"}
+String resetConsumable "Consumables Reset" (G_pet_waterer) {channel="miio:basic:pet_waterer:resetConsumable"}
+Number:Time no_water_time "No Water Flag - No Water Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-time"}
+```
+
+### Mijia Smart Pet Water Dispenser (mmgg.pet_waterer.s2) item file lines
+
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
+Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
+Switch on "Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
+Number mode "Mode" (G_pet_waterer) {channel="miio:basic:pet_waterer:mode"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:filter-left-time"}
+Switch on1 "Indicator Light - Switch" (G_pet_waterer) {channel="miio:basic:pet_waterer:on1"}
+Number:Time cotton_left_time "Filter Cotton - Cotton Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:cotton-left-time"}
+Number:Time remain_clean_time "Remain Clean Time - Remain Clean Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:remain-clean-time"}
+Switch no_water_flag "No Water Flag - No Water Flag" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-flag"}
+String resetConsumable "Consumables Reset" (G_pet_waterer) {channel="miio:basic:pet_waterer:resetConsumable"}
+Number:Time no_water_time "No Water Flag - No Water Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-time"}
+Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channel="miio:basic:pet_waterer:pump-block-flag"}
+```
+
+### Mijia Smart Pet Water Dispenser (mmgg.pet_waterer.s3) item file lines
+
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
+Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
+Switch on "Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
+Number mode "Mode" (G_pet_waterer) {channel="miio:basic:pet_waterer:mode"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:filter-left-time"}
+Switch on1 "Indicator Light - Switch" (G_pet_waterer) {channel="miio:basic:pet_waterer:on1"}
+Number:Time cotton_left_time "Filter Cotton - Cotton Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:cotton-left-time"}
+Number:Time remain_clean_time "Remain Clean Time - Remain Clean Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:remain-clean-time"}
+Switch no_water_flag "No Water Flag - No Water Flag" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-flag"}
+String resetConsumable "Consumables Reset" (G_pet_waterer) {channel="miio:basic:pet_waterer:resetConsumable"}
+Number:Time no_water_time "No Water Flag - No Water Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-time"}
+Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channel="miio:basic:pet_waterer:pump-block-flag"}
+```
+
+### XIAOWAN Smart Pet Water Dispenser (mmgg.pet_waterer.s4) item file lines
+
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_pet_waterer "XIAOWAN Smart Pet Water Dispenser" <status>
+Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
+Switch on "Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
+Number mode "Mode" (G_pet_waterer) {channel="miio:basic:pet_waterer:mode"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:filter-left-time"}
+Switch on1 "Indicator Light - Switch" (G_pet_waterer) {channel="miio:basic:pet_waterer:on1"}
+Number:Time cotton_left_time "Filter Cotton - Cotton Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:cotton-left-time"}
+Number:Time remain_clean_time "Remain Clean Time - Remain Clean Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:remain-clean-time"}
+Switch no_water_flag "No Water Flag - No Water Flag" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-flag"}
+String resetConsumable "Consumables Reset" (G_pet_waterer) {channel="miio:basic:pet_waterer:resetConsumable"}
+Number:Time no_water_time "No Water Flag - No Water Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-time"}
+Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channel="miio:basic:pet_waterer:pump-block-flag"}
 ```
 
 ### HUIZUO ARIES For Bedroom (huayi.light.ari013) item file lines
