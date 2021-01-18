@@ -61,7 +61,6 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             case "Number":
                 return new DecimalType(value);
             case "Switch":
-                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
             case "system.power":
                 return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
             case "Number:Dimensionless":
@@ -75,6 +74,7 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                     case "chlorInstantSaltLevel":
                         return new QuantityType<>(Integer.parseInt(value), Units.PARTS_PER_MILLION);
                 }
+                return StringType.valueOf(value);
             case "Number:Temperature":
                 Bridge bridge = getBridge();
                 if (bridge != null) {
@@ -85,11 +85,10 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                         } else {
                             return new QuantityType<>(Integer.parseInt(value), SIUnits.CELSIUS);
                         }
-                    } else {
-                        // default to imperial if no bridge
-                        return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
                     }
                 }
+                // default to imperial if no bridge
+                return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
             default:
                 return StringType.valueOf(value);
         }
@@ -105,7 +104,7 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
         } else if (command instanceof QuantityType) {
             return ((QuantityType<?>) command).format("%1.0f");
         } else {
-            return ((StringType) command).toString();
+            return command.toString();
         }
     }
 

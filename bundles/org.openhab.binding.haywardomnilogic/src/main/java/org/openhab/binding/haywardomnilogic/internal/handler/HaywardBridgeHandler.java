@@ -450,11 +450,11 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             }
         } catch (ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to resolve host.  Check Hayward hostname and your internet connection.");
+                    "Unable to resolve host.  Check Hayward hostname and your internet connection. " + e);
             return "";
         } catch (TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection Timeout.  Check Hayward hostname and your internet connection.");
+                    "Connection Timeout.  Check Hayward hostname and your internet connection. " + e);
             return "";
         }
     }

@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
-import org.openhab.binding.haywardomnilogic.internal.HaywardThingProperties;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -40,8 +39,6 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardChlorinatorHandler.class);
     public String chlorTimedPercent = "";
     public String chlorState = "";
-
-    HaywardThingProperties prop = getConfig().as(HaywardThingProperties.class);
 
     public HaywardChlorinatorHandler(Thing thing) {
         super(thing);
@@ -121,14 +118,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
         String chlorTimedPercent = "0";
 
         String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-        if (systemID != null) {
-            prop.systemID = systemID;
-        }
-
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
-        if (poolID != null) {
-            prop.poolID = poolID;
-        }
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -160,8 +150,8 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                             + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
                             + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
                             + bridgehandler.account.mspSystemID + "</Parameter>"
-                            + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
-                            + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + prop.systemID
+                            + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
+                            + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + systemID
                             + "</Parameter>" + "<Parameter name=\"CfgState\" dataType=\"byte\" alias=\"Data1\">"
                             + chlorCfgState + "</Parameter>"
                             + "<Parameter name=\"OpMode\" dataType=\"byte\" alias=\"Data2\">1</Parameter>"

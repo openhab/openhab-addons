@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
-import org.openhab.binding.haywardomnilogic.internal.HaywardThingProperties;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -39,8 +38,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HaywardColorLogicHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardColorLogicHandler.class);
-
-    HaywardThingProperties prop = getConfig().as(HaywardThingProperties.class);
 
     public HaywardColorLogicHandler(Thing thing) {
         super(thing);
@@ -88,14 +85,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
         }
 
         String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-        if (systemID != null) {
-            prop.systemID = systemID;
-        }
-
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
-        if (poolID != null) {
-            prop.poolID = poolID;
-        }
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -116,11 +106,10 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                                     + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
                                     + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
                                     + bridgehandler.account.mspSystemID + "</Parameter>"
-                                    + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
-                                    + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID
-                                    + "</Parameter>" + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString
-                                    + "</Parameter>" + HaywardBindingConstants.COMMAND_SCHEDULE
-                                    + "</Parameters></Request>";
+                                    + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
+                                    + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                    + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
+                                    + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
                             break;
                         case HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW:
                             cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
@@ -128,8 +117,8 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                                     + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
                                     + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
                                     + bridgehandler.account.mspSystemID + "</Parameter>"
-                                    + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
-                                    + "<Parameter name=\"LightID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
+                                    + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
+                                    + "<Parameter name=\"LightID\" dataType=\"int\">" + systemID + "</Parameter>"
                                     + "<Parameter name=\"Show\" dataType=\"int\">" + cmdString + "</Parameter>"
                                     + "<Parameter name=\"Speed\" dataType=\"byte\">4</Parameter>"
                                     + "<Parameter name=\"Brightness\" dataType=\"byte\">4</Parameter>"
