@@ -338,8 +338,8 @@ public class WLedHandler extends BaseThingHandler {
                             sendGetRequest("/win&TT=1000&FX=0&CY=0&HU=" + hue65535 + "&SA=" + saturation255 + "&A="
                                     + masterBrightness255);
                         } else {
-                            sendGetRequest("/win&TT=1000&FX=0&CY=0&HU=" + hue65535 + "&SA=" + saturation255 + "&SB="
-                                    + segmentBrightness255);
+                            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A="
+                                + masterBrightness255);
                         }
                     }
                 } else if (command instanceof PercentType) {
