@@ -212,9 +212,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected Optional<String> lastTripCache = Optional.empty();
     protected Optional<String> allTripsCache = Optional.empty();
     protected Optional<String> chargeProfileCache = Optional.empty();
-    protected Optional<ChargeProfile> chargeProfile = Optional.empty();
-    protected Optional<ChargeProfile> chargeProfileEdit = Optional.empty();
-    protected Optional<String> chargeProfileError = Optional.empty();
     protected Optional<String> rangeMapCache = Optional.empty();
     protected Optional<String> destinationCache = Optional.empty();
     protected Optional<byte[]> imageCache = Optional.empty();
@@ -629,6 +626,11 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateChargeControlVersion(ChargeControlVersion version) {
+        if (ChargeControlVersion.EDIT.equals(version)) {
+            updateState(chargeControl, StringType.valueOf(CHARGE_CONTROL_SEND));
+        } else {
+            updateState(chargeControl, StringType.valueOf(CHARGE_CONTROL_CANCEL));
+        }
         updateState(chargeControlVersion, StringType.valueOf(version.name()));
     }
 

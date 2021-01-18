@@ -18,7 +18,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.charge;
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - contributor
  */
-public class ChargeProfile implements Cloneable {
+public class ChargeProfile {
     public WeeklyPlanner weeklyPlanner;
 
     public static ChargeProfile defaultChargeProfile() {
@@ -32,12 +32,5 @@ public class ChargeProfile implements Cloneable {
         }
         weeklyPlanner.completeWeeklyPlanner();
         return this;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        final ChargeProfile cp = (ChargeProfile) super.clone();
-        cp.weeklyPlanner = (WeeklyPlanner) weeklyPlanner.clone();
-        return cp;
     }
 }

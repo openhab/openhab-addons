@@ -21,7 +21,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - contributor
  */
-public class ChargingWindow implements Cloneable {
+public class ChargingWindow {
     public String startTime;// ":"11:00",
     public String endTime;// ":"17:00"}}
 
@@ -48,10 +48,5 @@ public class ChargingWindow implements Cloneable {
 
     public void setEndHour(int hour) {
         endTime = ChargeProfileUtils.withHour(endTime, hour);
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 }

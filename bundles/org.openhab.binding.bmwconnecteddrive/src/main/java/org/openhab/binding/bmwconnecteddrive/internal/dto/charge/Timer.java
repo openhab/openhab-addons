@@ -27,7 +27,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - contributor
  */
-public class Timer implements Cloneable {
+public class Timer {
     public String departureTime;// ": "05:00",
     public boolean timerEnabled;// ": false,
     public List<String> weekdays;
@@ -91,13 +91,5 @@ public class Timer implements Cloneable {
 
     public void setDepartureHour(int hour) {
         departureTime = ChargeProfileUtils.withHour(departureTime, hour);
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        final Timer t = (Timer) super.clone();
-        t.weekdays = new ArrayList<>();
-        t.weekdays.addAll(weekdays);
-        return (Object) t;
     }
 }
