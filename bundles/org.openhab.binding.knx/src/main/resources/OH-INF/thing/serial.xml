@@ -21,6 +21,15 @@
 				<required>true</required>
 				<default>50</default>
 			</parameter>
+			<parameter name="useCEMI" type="boolean">
+				<label>Use CEMI</label>
+				<description>Set to "true" when having a ft1.2 serial device that uses CEMI (such as the kBerry)</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="deviceType" type="text">
+				<label>Device Type</label>
+				<description>The device type changes the commands send to switch modes on the serial device</description>
+			</parameter>
 			<parameter name="responseTimeout" type="integer">
 				<label>Response Timeout</label>
 				<description>Seconds to wait for a response from the KNX bus</description>

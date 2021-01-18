@@ -41,6 +41,8 @@ import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.datapoint.CommandDP;
 import tuwien.auto.calimero.datapoint.Datapoint;
 import tuwien.auto.calimero.device.ProcessCommunicationResponder;
+import tuwien.auto.calimero.internal.SecureApplicationLayer;
+import tuwien.auto.calimero.internal.Security;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.NetworkLinkListener;
 import tuwien.auto.calimero.mgmt.Destination;
@@ -48,7 +50,7 @@ import tuwien.auto.calimero.mgmt.ManagementClient;
 import tuwien.auto.calimero.mgmt.ManagementClientImpl;
 import tuwien.auto.calimero.mgmt.ManagementProcedures;
 import tuwien.auto.calimero.mgmt.ManagementProceduresImpl;
-import tuwien.auto.calimero.process.ProcessCommunicationBase;
+import tuwien.auto.calimero.process.ProcessCommunication;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 import tuwien.auto.calimero.process.ProcessEvent;
@@ -186,12 +188,13 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
-            ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link);
+            SecureApplicationLayer sal = new SecureApplicationLayer(link, Security.defaultInstallation());
+            ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link, sal);
             processCommunicator.setResponseTimeout(responseTimeout);
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
 
-            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link);
+            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, sal);
             this.responseCommunicator = responseCommunicator;
 
             link.addLinkListener(this);
@@ -439,7 +442,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
-    private void sendToKNX(ProcessCommunicationBase communicator, KNXNetworkLink link, GroupAddress groupAddress,
+    private void sendToKNX(ProcessCommunication communicator, KNXNetworkLink link, GroupAddress groupAddress,
             String dpt, Type type) throws KNXException {
         if (!connectIfNotAutomatic()) {
             return;
