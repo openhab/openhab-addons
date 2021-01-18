@@ -10,10 +10,11 @@
 		<channels>
 			<channel id="key-event" typeId="key-event-channel"/>
 			<channel id="text" typeId="text-channel"/>
-			<channel id="media-volume" typeId="media-volume-channel"/>
-			<channel id="media-control" typeId="media-control-channel"/>
+			<channel id="media-volume" typeId="system.volume"/>
+			<channel id="media-control" typeId="system.media-control"/>
 			<channel id="start-package" typeId="start-package-channel"/>
 			<channel id="stop-package" typeId="stop-package-channel"/>
+			<channel id="stop-current-package" typeId="stop-current-package-channel"/>
 			<channel id="current-package" typeId="current-package-channel"/>
 			<channel id="wake-lock" typeId="wake-lock-channel"/>
 			<channel id="screen-state" typeId="screen-state-channel"/>
@@ -353,20 +354,6 @@
 		<description>Send text to android device</description>
 	</channel-type>
 
-	<channel-type id="media-volume-channel">
-		<item-type>Dimmer</item-type>
-		<label>Media Volume</label>
-		<description>Set or get media volume level on android device</description>
-		<category>SoundVolume</category>
-	</channel-type>
-
-	<channel-type id="media-control-channel">
-		<item-type>Player</item-type>
-		<label>Media Player</label>
-		<description>Control media on android device</description>
-		<category>Player</category>
-	</channel-type>
-
 	<channel-type id="start-package-channel">
 		<item-type>String</item-type>
 		<label>Start Package</label>
@@ -377,6 +364,12 @@
 		<item-type>String</item-type>
 		<label>Stop Package</label>
 		<description>Stop application by package name</description>
+	</channel-type>
+
+	<channel-type id="stop-current-package-channel">
+		<item-type>Switch</item-type>
+		<label>Stop Current Package</label>
+		<description>Stops the top application in screen when receives an OFF command</description>
 	</channel-type>
 
 	<channel-type id="current-package-channel">

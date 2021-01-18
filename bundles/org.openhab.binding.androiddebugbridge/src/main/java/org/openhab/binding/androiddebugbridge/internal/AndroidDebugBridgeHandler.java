@@ -110,6 +110,10 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                     new StringType(command.toFullString()));
         } else if (STOP_PACKAGE_CHANNEL.equals(channelId)) {
             adbConnection.stopPackage(command.toFullString());
+        } else if (STOP_CURRENT_PACKAGE_CHANNEL.equals(channelId)) {
+            if (OnOffType.from(command.toFullString()).equals(OnOffType.OFF)) {
+                adbConnection.stopPackage(adbConnection.getCurrentPackage());
+            }
         } else if (CURRENT_PACKAGE_CHANNEL.equals(channelId)) {
             if (command instanceof RefreshType) {
                 var packageName = adbConnection.getCurrentPackage();
