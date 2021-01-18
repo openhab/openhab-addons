@@ -63,7 +63,7 @@ class WlanThermoEsp32CommandHandlerTest {
     private Settings settings;
 
     @BeforeEach
-    void setUp() throws UnsupportedEncodingException {
+    void setUp() {
         Gson gson = new Gson();
         ClassLoader classLoader = Objects.requireNonNull(WlanThermoEsp32CommandHandlerTest.class.getClassLoader());
         InputStream dataStream = Objects.requireNonNull(classLoader.getResourceAsStream("esp32/data.json"));
