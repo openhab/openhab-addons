@@ -81,6 +81,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     DestinationsCallback destinationCallback = new DestinationsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
+    private Optional<ChargeProfile> chargeProfileEdit = Optional.empty();
+
     public VehicleHandler(Thing thing, BMWConnectedDriveOptionProvider op, String type, boolean imperial) {
         super(thing, op, type, imperial);
     }
@@ -103,9 +105,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 vehicleStatusCallback.onResponse(vehicleStatusCache);
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
                 if (chargeProfileEdit.isEmpty()) {
-                    if (!chargeProfile.isEmpty()) {
-                        updateChargeProfile(chargeProfile.get());
-                    }
+                    chargeProfileCallback.onResponse(chargeProfileCache);
                     updateChargeControlVersion(ChargeControlVersion.REMOTE);
                 } else {
                     updateChargeProfile(chargeProfileEdit.get());
@@ -207,279 +207,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 }
             }
         } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
-
-            final String id = channelUID.getIdWithoutGroup();
-
-            if (CHARGE_CONTROL_COMMAND.equals(id)
-                    && ChargeControlCommand.CANCEL.name().equals(command.toFullString())) {
-                chargeProfileEdit = Optional.empty();
-                if (chargeProfile.isPresent()) {
-                    updateChargeProfile(chargeProfile.get());
-                    updateChargeControlVersion(ChargeControlVersion.REMOTE);
-                }
-            } else {
-                try {
-                    if (chargeProfileEdit.isEmpty()) {
-                        if (chargeProfile.isPresent()) {
-                            chargeProfileEdit = Optional.of((ChargeProfile) chargeProfile.get().clone());
-                        } else {
-                            chargeProfileEdit = Optional.of(ChargeProfile.defaultChargeProfile());
-                        }
-                        updateChargeControlVersion(ChargeControlVersion.EDIT);
-                    }
-
-                    final WeeklyPlanner wp = chargeProfileEdit.get().weeklyPlanner;
-
-                    if (command instanceof StringType) {
-                        final String serviceCommand = ((StringType) command).toFullString();
-                        switch (id) {
-                            case CHARGE_PROFILE_MODE:
-                                wp.chargingMode = serviceCommand;
-                                break;
-                            case CHARGE_CONTROL_COMMAND:
-                                if (ChargeControlCommand.SEND.name().equals(serviceCommand) && remote.isPresent()) {
-                                    remote.get().execute(RemoteService.CHARGING_CONTROL,
-                                            Converter.getGson().toJson(chargeProfileEdit.get()));
-                                }
-                                break;
-                        }
-                    }
-
-                    if (command instanceof OnOffType) {
-                        switch (id) {
-                            case CHARGE_PROFILE_CLIMATE:
-                                wp.climatizationEnabled = OnOffType.ON.equals(command) ? true : false;
-                                break;
-                            case CHARGE_TIMER1_ENABLED:
-                                wp.timer1.timerEnabled = OnOffType.ON.equals(command) ? true : false;
-                                break;
-                            case CHARGE_TIMER1_DAYS_MON:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer1.dayOn(Day.MONDAY);
-                                } else {
-                                    wp.timer1.dayOff(Day.MONDAY);
-                                }
-                                updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                break;
-                            case CHARGE_TIMER1_DAYS_TUE:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer1.dayOn(Day.TUESDAY);
-                                } else {
-                                    wp.timer1.dayOff(Day.TUESDAY);
-                                }
-                                updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                break;
-                            case CHARGE_TIMER1_DAYS_WED:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer1.dayOn(Day.WEDNESDAY);
-                                } else {
-                                    wp.timer1.dayOff(Day.WEDNESDAY);
-                                }
-                                updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                break;
-                            case CHARGE_TIMER1_DAYS_THU:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer1.dayOn(Day.THURSDAY);
-                                } else {
-                                    wp.timer1.dayOff(Day.THURSDAY);
-                                }
-                                updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                break;
-                            case CHARGE_TIMER1_DAYS_FRI:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer1.dayOn(Day.FRIDAY);
-                                } else {
-                                    wp.timer1.dayOff(Day.FRIDAY);
-                                }
-                                updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                break;
-                            case CHARGE_TIMER1_DAYS_SAT:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer1.dayOn(Day.SATURDAY);
-                                } else {
-                                    wp.timer1.dayOff(Day.SATURDAY);
-                                }
-                                updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                break;
-                            case CHARGE_TIMER1_DAYS_SUN:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer1.dayOn(Day.SUNDAY);
-                                } else {
-                                    wp.timer1.dayOff(Day.SUNDAY);
-                                }
-                                updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                                break;
-                            case CHARGE_TIMER2_ENABLED:
-                                wp.timer2.timerEnabled = OnOffType.ON.equals(command) ? true : false;
-                                break;
-                            case CHARGE_TIMER2_DAYS_MON:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer2.dayOn(Day.MONDAY);
-                                } else {
-                                    wp.timer2.dayOff(Day.MONDAY);
-                                }
-                                updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                break;
-                            case CHARGE_TIMER2_DAYS_TUE:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer2.dayOn(Day.TUESDAY);
-                                } else {
-                                    wp.timer2.dayOff(Day.TUESDAY);
-                                }
-                                updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                break;
-                            case CHARGE_TIMER2_DAYS_WED:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer2.dayOn(Day.WEDNESDAY);
-                                } else {
-                                    wp.timer2.dayOff(Day.WEDNESDAY);
-                                }
-                                updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                break;
-                            case CHARGE_TIMER2_DAYS_THU:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer2.dayOn(Day.THURSDAY);
-                                } else {
-                                    wp.timer2.dayOff(Day.THURSDAY);
-                                }
-                                updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                break;
-                            case CHARGE_TIMER2_DAYS_FRI:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer2.dayOn(Day.FRIDAY);
-                                } else {
-                                    wp.timer2.dayOff(Day.FRIDAY);
-                                }
-                                updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                break;
-                            case CHARGE_TIMER2_DAYS_SAT:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer2.dayOn(Day.SATURDAY);
-                                } else {
-                                    wp.timer2.dayOff(Day.SATURDAY);
-                                }
-                                updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                break;
-                            case CHARGE_TIMER2_DAYS_SUN:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer2.dayOn(Day.SUNDAY);
-                                } else {
-                                    wp.timer2.dayOff(Day.SUNDAY);
-                                }
-                                updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                                break;
-                            case CHARGE_TIMER3_ENABLED:
-                                wp.timer3.timerEnabled = OnOffType.ON.equals(command) ? true : false;
-                                break;
-                            case CHARGE_TIMER3_DAYS_MON:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer3.dayOn(Day.MONDAY);
-                                } else {
-                                    wp.timer3.dayOff(Day.MONDAY);
-                                }
-                                updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                break;
-                            case CHARGE_TIMER3_DAYS_TUE:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer3.dayOn(Day.TUESDAY);
-                                } else {
-                                    wp.timer3.dayOff(Day.TUESDAY);
-                                }
-                                updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                break;
-                            case CHARGE_TIMER3_DAYS_WED:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer3.dayOn(Day.WEDNESDAY);
-                                } else {
-                                    wp.timer3.dayOff(Day.WEDNESDAY);
-                                }
-                                updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                break;
-                            case CHARGE_TIMER3_DAYS_THU:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer3.dayOn(Day.THURSDAY);
-                                } else {
-                                    wp.timer3.dayOff(Day.THURSDAY);
-                                }
-                                updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                break;
-                            case CHARGE_TIMER3_DAYS_FRI:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer3.dayOn(Day.FRIDAY);
-                                } else {
-                                    wp.timer3.dayOff(Day.FRIDAY);
-                                }
-                                updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                break;
-                            case CHARGE_TIMER3_DAYS_SAT:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer3.dayOn(Day.SATURDAY);
-                                } else {
-                                    wp.timer3.dayOff(Day.SATURDAY);
-                                }
-                                updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                break;
-                            case CHARGE_TIMER3_DAYS_SUN:
-                                if (OnOffType.ON.equals(command)) {
-                                    wp.timer3.dayOn(Day.SUNDAY);
-                                } else {
-                                    wp.timer3.dayOff(Day.SUNDAY);
-                                }
-                                updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                                break;
-                        }
-                    }
-                    if (command instanceof DecimalType) {
-                        final int numberCommand = ((DecimalType) command).intValue();
-                        switch (id) {
-                            case CHARGE_WINDOW_START_HOUR:
-                                wp.preferredChargingWindow.setStartHour(numberCommand);
-                                updateState(chargeWindowStart,
-                                        StringType.valueOf(wp.preferredChargingWindow.startTime));
-                                break;
-                            case CHARGE_WINDOW_START_MINUTE:
-                                wp.preferredChargingWindow.setStartMinute(numberCommand);
-                                updateState(chargeWindowStart,
-                                        StringType.valueOf(wp.preferredChargingWindow.startTime));
-                                break;
-                            case CHARGE_WINDOW_END_HOUR:
-                                wp.preferredChargingWindow.setEndHour(numberCommand);
-                                updateState(chargeWindowEnd, StringType.valueOf(wp.preferredChargingWindow.endTime));
-                                break;
-                            case CHARGE_WINDOW_END_MINUTE:
-                                wp.preferredChargingWindow.setEndMinute(numberCommand);
-                                updateState(chargeWindowEnd, StringType.valueOf(wp.preferredChargingWindow.endTime));
-                                break;
-                            case CHARGE_TIMER1_DEPARTURE_HOUR:
-                                wp.timer1.setDepartureHour(numberCommand);
-                                updateState(timer1Departure, StringType.valueOf(wp.timer1.departureTime));
-                                break;
-                            case CHARGE_TIMER1_DEPARTURE_MINUTE:
-                                wp.timer1.setDepartureMinute(numberCommand);
-                                updateState(timer1Departure, StringType.valueOf(wp.timer1.departureTime));
-                                break;
-                            case CHARGE_TIMER2_DEPARTURE_HOUR:
-                                wp.timer2.setDepartureHour(numberCommand);
-                                updateState(timer2Departure, StringType.valueOf(wp.timer2.departureTime));
-                                break;
-                            case CHARGE_TIMER2_DEPARTURE_MINUTE:
-                                wp.timer2.setDepartureMinute(numberCommand);
-                                updateState(timer2Departure, StringType.valueOf(wp.timer2.departureTime));
-                                break;
-                            case CHARGE_TIMER3_DEPARTURE_HOUR:
-                                wp.timer3.setDepartureHour(numberCommand);
-                                updateState(timer3Departure, StringType.valueOf(wp.timer3.departureTime));
-                                break;
-                            case CHARGE_TIMER3_DEPARTURE_MINUTE:
-                                wp.timer3.setDepartureMinute(numberCommand);
-                                updateState(timer3Departure, StringType.valueOf(wp.timer3.departureTime));
-                                break;
-                        }
-                    }
-                } catch (CloneNotSupportedException e) {
-                    logger.error("ChargeProfile is not Cloneable");
-                }
-            }
+            handleChargeProfileCommand(channelUID, command);
         }
     }
 
@@ -695,13 +423,7 @@ public class VehicleHandler extends VehicleChannelHandler {
     public void updateRemoteExecutionStatus(String service, String status) {
         if (service.equals(RemoteService.CHARGING_CONTROL.toString())
                 && status.equals(ExecutionState.EXECUTED.toString())) {
-            if (chargeProfileEdit.isPresent()) {
-                final ChargeProfile cp = chargeProfileEdit.get();
-                chargeProfileCache = Optional.of(Converter.getGson().toJson(cp));
-                chargeProfile = Optional.of(cp);
-                chargeProfileEdit = Optional.empty();
-                updateChargeControlVersion(ChargeControlVersion.REMOTE);
-            }
+            saveChargeProfileEdit();
         }
         updateState(remoteStateChannel, StringType
                 .valueOf(Converter.toTitleCase(new StringBuilder(service).append(" ").append(status).toString())));
@@ -726,18 +448,11 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onResponse(Optional<String> content) {
             chargeProfileCache = content;
-            if (content.isPresent()) {
+            if (content.isPresent() && chargeProfileEdit.isEmpty()) {
                 ChargeProfile cp = Converter.getGson().fromJson(content.get(), ChargeProfile.class);
-                if (cp == null) {
-                    chargeProfile = Optional.empty();
-                } else {
-                    chargeProfile = Optional.of(cp.completeChargeProfile());
-                    if (!chargeProfileEdit.isPresent()) {
-                        updateChargeProfile(cp);
-                    }
+                if (cp != null) {
+                    updateChargeProfile(cp);
                 }
-            } else {
-                chargeProfile = Optional.empty();
             }
             removeCallback(this);
         }
@@ -749,7 +464,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
             chargeProfileCache = Optional.of(Converter.getGson().toJson(error));
-            chargeProfile = Optional.empty();
             removeCallback(this);
         }
     }
@@ -970,5 +684,301 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             vehicleStatusCallback.onError(error);
         }
+    }
+
+    private void handleChargeProfileCommand(ChannelUID channelUID, Command command) {
+
+        final String id = channelUID.getIdWithoutGroup();
+
+        if (CHARGE_CONTROL_COMMAND.equals(id) && command instanceof StringType) {
+            if (chargeProfileEdit.isPresent()) {
+                switch (((StringType) command).toFullString()) {
+                    case CHARGE_CONTROL_CANCEL:
+                        cancelChargeProfileEdit();
+                        break;
+                    case CHARGE_CONTROL_SEND:
+                        if (remote.isPresent()) {
+                            remote.get().execute(RemoteService.CHARGING_CONTROL,
+                                    Converter.getGson().toJson(chargeProfileEdit.get()));
+                        }
+                        break;
+                }
+            }
+        } else {
+            startChargeProfileEdit();
+
+            final WeeklyPlanner wp = chargeProfileEdit.get().weeklyPlanner;
+
+            if (command instanceof StringType) {
+                switch (id) {
+                    case CHARGE_PROFILE_MODE:
+                        wp.chargingMode = ((StringType) command).toFullString();
+                        break;
+                    default:
+                        cancelChargeProfileEdit();
+                        break;
+                }
+            } else if (command instanceof OnOffType) {
+                switch (id) {
+                    case CHARGE_PROFILE_CLIMATE:
+                        wp.climatizationEnabled = OnOffType.ON.equals(command) ? true : false;
+                        break;
+                    case CHARGE_TIMER1_ENABLED:
+                        wp.timer1.timerEnabled = OnOffType.ON.equals(command) ? true : false;
+                        break;
+                    case CHARGE_TIMER1_DAYS_MON:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer1.dayOn(Day.MONDAY);
+                        } else {
+                            wp.timer1.dayOff(Day.MONDAY);
+                        }
+                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
+                        break;
+                    case CHARGE_TIMER1_DAYS_TUE:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer1.dayOn(Day.TUESDAY);
+                        } else {
+                            wp.timer1.dayOff(Day.TUESDAY);
+                        }
+                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
+                        break;
+                    case CHARGE_TIMER1_DAYS_WED:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer1.dayOn(Day.WEDNESDAY);
+                        } else {
+                            wp.timer1.dayOff(Day.WEDNESDAY);
+                        }
+                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
+                        break;
+                    case CHARGE_TIMER1_DAYS_THU:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer1.dayOn(Day.THURSDAY);
+                        } else {
+                            wp.timer1.dayOff(Day.THURSDAY);
+                        }
+                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
+                        break;
+                    case CHARGE_TIMER1_DAYS_FRI:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer1.dayOn(Day.FRIDAY);
+                        } else {
+                            wp.timer1.dayOff(Day.FRIDAY);
+                        }
+                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
+                        break;
+                    case CHARGE_TIMER1_DAYS_SAT:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer1.dayOn(Day.SATURDAY);
+                        } else {
+                            wp.timer1.dayOff(Day.SATURDAY);
+                        }
+                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
+                        break;
+                    case CHARGE_TIMER1_DAYS_SUN:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer1.dayOn(Day.SUNDAY);
+                        } else {
+                            wp.timer1.dayOff(Day.SUNDAY);
+                        }
+                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
+                        break;
+                    case CHARGE_TIMER2_ENABLED:
+                        wp.timer2.timerEnabled = OnOffType.ON.equals(command) ? true : false;
+                        break;
+                    case CHARGE_TIMER2_DAYS_MON:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer2.dayOn(Day.MONDAY);
+                        } else {
+                            wp.timer2.dayOff(Day.MONDAY);
+                        }
+                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
+                        break;
+                    case CHARGE_TIMER2_DAYS_TUE:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer2.dayOn(Day.TUESDAY);
+                        } else {
+                            wp.timer2.dayOff(Day.TUESDAY);
+                        }
+                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
+                        break;
+                    case CHARGE_TIMER2_DAYS_WED:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer2.dayOn(Day.WEDNESDAY);
+                        } else {
+                            wp.timer2.dayOff(Day.WEDNESDAY);
+                        }
+                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
+                        break;
+                    case CHARGE_TIMER2_DAYS_THU:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer2.dayOn(Day.THURSDAY);
+                        } else {
+                            wp.timer2.dayOff(Day.THURSDAY);
+                        }
+                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
+                        break;
+                    case CHARGE_TIMER2_DAYS_FRI:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer2.dayOn(Day.FRIDAY);
+                        } else {
+                            wp.timer2.dayOff(Day.FRIDAY);
+                        }
+                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
+                        break;
+                    case CHARGE_TIMER2_DAYS_SAT:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer2.dayOn(Day.SATURDAY);
+                        } else {
+                            wp.timer2.dayOff(Day.SATURDAY);
+                        }
+                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
+                        break;
+                    case CHARGE_TIMER2_DAYS_SUN:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer2.dayOn(Day.SUNDAY);
+                        } else {
+                            wp.timer2.dayOff(Day.SUNDAY);
+                        }
+                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
+                        break;
+                    case CHARGE_TIMER3_ENABLED:
+                        wp.timer3.timerEnabled = OnOffType.ON.equals(command) ? true : false;
+                        break;
+                    case CHARGE_TIMER3_DAYS_MON:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer3.dayOn(Day.MONDAY);
+                        } else {
+                            wp.timer3.dayOff(Day.MONDAY);
+                        }
+                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
+                        break;
+                    case CHARGE_TIMER3_DAYS_TUE:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer3.dayOn(Day.TUESDAY);
+                        } else {
+                            wp.timer3.dayOff(Day.TUESDAY);
+                        }
+                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
+                        break;
+                    case CHARGE_TIMER3_DAYS_WED:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer3.dayOn(Day.WEDNESDAY);
+                        } else {
+                            wp.timer3.dayOff(Day.WEDNESDAY);
+                        }
+                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
+                        break;
+                    case CHARGE_TIMER3_DAYS_THU:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer3.dayOn(Day.THURSDAY);
+                        } else {
+                            wp.timer3.dayOff(Day.THURSDAY);
+                        }
+                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
+                        break;
+                    case CHARGE_TIMER3_DAYS_FRI:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer3.dayOn(Day.FRIDAY);
+                        } else {
+                            wp.timer3.dayOff(Day.FRIDAY);
+                        }
+                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
+                        break;
+                    case CHARGE_TIMER3_DAYS_SAT:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer3.dayOn(Day.SATURDAY);
+                        } else {
+                            wp.timer3.dayOff(Day.SATURDAY);
+                        }
+                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
+                        break;
+                    case CHARGE_TIMER3_DAYS_SUN:
+                        if (OnOffType.ON.equals(command)) {
+                            wp.timer3.dayOn(Day.SUNDAY);
+                        } else {
+                            wp.timer3.dayOff(Day.SUNDAY);
+                        }
+                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
+                        break;
+                    default:
+                        this.cancelChargeProfileEdit();
+                }
+            } else if (command instanceof DecimalType) {
+                final int numberCommand = ((DecimalType) command).intValue();
+                switch (id) {
+                    case CHARGE_WINDOW_START_HOUR:
+                        wp.preferredChargingWindow.setStartHour(numberCommand);
+                        updateState(chargeWindowStart, StringType.valueOf(wp.preferredChargingWindow.startTime));
+                        break;
+                    case CHARGE_WINDOW_START_MINUTE:
+                        wp.preferredChargingWindow.setStartMinute(numberCommand);
+                        updateState(chargeWindowStart, StringType.valueOf(wp.preferredChargingWindow.startTime));
+                        break;
+                    case CHARGE_WINDOW_END_HOUR:
+                        wp.preferredChargingWindow.setEndHour(numberCommand);
+                        updateState(chargeWindowEnd, StringType.valueOf(wp.preferredChargingWindow.endTime));
+                        break;
+                    case CHARGE_WINDOW_END_MINUTE:
+                        wp.preferredChargingWindow.setEndMinute(numberCommand);
+                        updateState(chargeWindowEnd, StringType.valueOf(wp.preferredChargingWindow.endTime));
+                        break;
+                    case CHARGE_TIMER1_DEPARTURE_HOUR:
+                        wp.timer1.setDepartureHour(numberCommand);
+                        updateState(timer1Departure, StringType.valueOf(wp.timer1.departureTime));
+                        break;
+                    case CHARGE_TIMER1_DEPARTURE_MINUTE:
+                        wp.timer1.setDepartureMinute(numberCommand);
+                        updateState(timer1Departure, StringType.valueOf(wp.timer1.departureTime));
+                        break;
+                    case CHARGE_TIMER2_DEPARTURE_HOUR:
+                        wp.timer2.setDepartureHour(numberCommand);
+                        updateState(timer2Departure, StringType.valueOf(wp.timer2.departureTime));
+                        break;
+                    case CHARGE_TIMER2_DEPARTURE_MINUTE:
+                        wp.timer2.setDepartureMinute(numberCommand);
+                        updateState(timer2Departure, StringType.valueOf(wp.timer2.departureTime));
+                        break;
+                    case CHARGE_TIMER3_DEPARTURE_HOUR:
+                        wp.timer3.setDepartureHour(numberCommand);
+                        updateState(timer3Departure, StringType.valueOf(wp.timer3.departureTime));
+                        break;
+                    case CHARGE_TIMER3_DEPARTURE_MINUTE:
+                        wp.timer3.setDepartureMinute(numberCommand);
+                        updateState(timer3Departure, StringType.valueOf(wp.timer3.departureTime));
+                        break;
+                    default:
+                        this.cancelChargeProfileEdit();
+                }
+            } else {
+                this.cancelChargeProfileEdit();
+            }
+        }
+    }
+
+    private void cancelChargeProfileEdit() {
+        chargeProfileEdit = Optional.empty();
+        final ChargeProfile cp = Converter.getGson().fromJson(chargeProfileCache.get(), ChargeProfile.class);
+        if (cp != null) {
+            updateChargeProfile(cp);
+        }
+        updateChargeControlVersion(ChargeControlVersion.REMOTE);
+    }
+
+    private void startChargeProfileEdit() {
+        if (chargeProfileEdit.isEmpty()) {
+            final ChargeProfile cp = Converter.getGson().fromJson(chargeProfileCache.get(), ChargeProfile.class);
+            if (cp == null) {
+                chargeProfileEdit = Optional.of(ChargeProfile.defaultChargeProfile());
+            } else {
+                chargeProfileEdit = Optional.of(cp.completeChargeProfile());
+            }
+            updateChargeControlVersion(ChargeControlVersion.EDIT);
+        }
+    }
+
+    private void saveChargeProfileEdit() {
+        chargeProfileCache = Optional.of(Converter.getGson().toJson(chargeProfileEdit.get()));
+        chargeProfileEdit = Optional.empty();
+        updateChargeControlVersion(ChargeControlVersion.REMOTE);
     }
 }

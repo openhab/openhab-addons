@@ -82,10 +82,8 @@ public class ConnectedDriveConstants {
         EDIT
     }
 
-    public enum ChargeControlCommand {
-        CANCEL,
-        SEND
-    }
+    public static final String CHARGE_CONTROL_CANCEL = "CANCEL";
+    public static final String CHARGE_CONTROL_SEND = "SEND";
 
     public static final Set<String> FUEL_VEHICLES = Set.of(VehicleType.CONVENTIONAL.toString(),
             VehicleType.PLUGIN_HYBRID.toString(), VehicleType.ELECTRIC_REX.toString());
