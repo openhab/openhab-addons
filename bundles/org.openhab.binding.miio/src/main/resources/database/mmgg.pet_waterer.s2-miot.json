@@ -1,0 +1,260 @@
+{
+	"deviceMapping": {
+		"id": [
+			"mmgg.pet_waterer.s2",
+			"mmgg.pet_waterer.s3",
+			"mmgg.pet_waterer.s4"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Pet Drinking Fountain - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\"]"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Common"
+						},
+						{
+							"value": "2",
+							"label": "Smart "
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"1\"\u003d\"Common\",\"2\"\u003d\"Smart \"]"
+			},
+			{
+				"property": "filter-left-time",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Filter - Filter Left Time",
+				"channel": "filter-left-time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "on1",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Indicator Light - Switch",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "cotton-left-time",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Filter Cotton - Cotton Left Time",
+				"channel": "cotton-left-time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "remain-clean-time",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Remain Clean Time - Remain Clean Time",
+				"channel": "remain-clean-time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 7,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "no-water-flag",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "No Water Flag - No Water Flag",
+				"channel": "no-water-flag",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "",
+				"friendlyName": "Consumables Reset",
+				"channel": "resetConsumable",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "remain-clean-time-reset-clean-time",
+							"label": "Reset Clean Time"
+						},
+						{
+							"value": "filter-cotton-reset-cotton-life",
+							"label": "Reset Cotton Time"
+						},
+						{
+							"value": "filter-reset-filter-life",
+							"label": "Reset Filter Life"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 6,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "remain-clean-time-reset-clean-time"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 5,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "filter-cotton-reset-cotton-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "filter-reset-filter-life"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping [\"remain-clean-time-reset-clean-time\"\u003d\"Reset Clean Time\",\"filter-cotton-reset-cotton-life\"\u003d\"Reset Cotton Time\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\"]"
+			},
+			{
+				"property": "no-water-time",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "No Water Flag - No Water Time",
+				"channel": "no-water-time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10080,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "pump-block-flag",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "No Water Flag - Pump Block Flag",
+				"channel": "pump-block-flag",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"filter-cotton-reset-cotton-life\",\"siid\":5,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remain-clean-time-reset-clean-time\",\"siid\":6,\"aiid\":1,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
+		"experimental": true
+	}
+}
