@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.PatternSyntaxException;
@@ -24,6 +25,7 @@ import java.util.regex.PatternSyntaxException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.speedtest.internal.dto.ResultContainer;
+import org.openhab.binding.speedtest.internal.dto.ResultsContainerServerList;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -50,6 +52,7 @@ public class speedtestHandler extends BaseThingHandler {
     private Gson GSON = new Gson();
     private static Runtime rt = Runtime.getRuntime();
     private long pollingInterval = 1440;
+    private String serverID = "";
 
     private @Nullable ScheduledFuture<?> pollingJob;
     public volatile boolean isRunning = false;
@@ -85,6 +88,7 @@ public class speedtestHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(speedtestConfiguration.class);
         pollingInterval = config.refreshInterval;
+        serverID = config.serverID;
         if (!config.execPath.isEmpty()) {
             speedTestCommand = config.execPath;
         } else {
@@ -112,6 +116,7 @@ public class speedtestHandler extends BaseThingHandler {
         if (!getSpeedTestVersion()) {
             return;
         }
+        getServerList();
         updateStatus(ThingStatus.ONLINE);
         isRunning = true;
         onUpdate(); // Setup the scheduler
@@ -165,7 +170,7 @@ public class speedtestHandler extends BaseThingHandler {
     private boolean getSpeedTestVersion() {
         String stOutput[] = executeCmd(speedTestCommand + " -V").split("\n");
         if (stOutput.length > 0) {
-            if (stOutput[0].indexOf("Speedtest") > -1) {
+            if (stOutput[0].indexOf("Speedtest by Ookla") > -1) {
                 logger.debug("Speedtest Version : {}", stOutput[0]);
                 return true;
             } else {
@@ -178,15 +183,72 @@ public class speedtestHandler extends BaseThingHandler {
         return false;
     }
 
+    private boolean getServerList() {
+        String serverList = executeCmd(speedTestCommand + " -f json -L");
+        String serverListTxt = "";
+        ResultsContainerServerList tmpCont = GSON.fromJson(serverList, ResultsContainerServerList.class);
+        if (tmpCont != null) {
+            int id = 1;
+            Map<String, String> properties = editProperties();
+            for (ResultsContainerServerList.Server server : tmpCont.servers) {
+                serverListTxt = "ID : " + server.id.toString() + " " + server.host + "( " + server.location + " )";
+                switch (id) {
+                    case 1:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST1, serverListTxt);
+                        break;
+                    case 2:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST2, serverListTxt);
+                        break;
+                    case 3:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST3, serverListTxt);
+                        break;
+                    case 4:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST4, serverListTxt);
+                        break;
+                    case 5:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST5, serverListTxt);
+                        break;
+                    case 6:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST6, serverListTxt);
+                        break;
+                    case 7:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST7, serverListTxt);
+                        break;
+                    case 8:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST8, serverListTxt);
+                        break;
+                    case 9:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST9, serverListTxt);
+                        break;
+                    case 10:
+                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST10, serverListTxt);
+                        break;
+                }
+                id++;
+            }
+            updateProperties(properties);
+        }
+        return false;
+    }
+
     /*
      * Get the speedtest data and convert it from JSON and send it to update the channels.
      */
     private void getSpeed() {
         logger.debug("Getting Speed Measurement");
-        String speedOutput = executeCmd(speedTestCommand + " -f json --accept-license");
+        String postCommand = "";
+        if (!serverID.equals("")) {
+            postCommand = " -s " + serverID;
+        }
+        String speedOutput = executeCmd(speedTestCommand + " -f json --accept-license" + postCommand);
         ResultContainer tmpCont = GSON.fromJson(speedOutput, ResultContainer.class);
         if (tmpCont != null) {
-            updateChannels(tmpCont);
+            if (tmpCont.getType().equals("result")) {
+                updateChannels(tmpCont);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Speedtest is not returning valid results. ");
         }
     }
 

@@ -20,5 +20,6 @@ package org.openhab.binding.speedtest.internal;
 public class speedtestConfiguration {
     public int refreshInterval;
     public String execPath = "";
+    public String serverID = "";
     public String speedTestVersion = "";
 }

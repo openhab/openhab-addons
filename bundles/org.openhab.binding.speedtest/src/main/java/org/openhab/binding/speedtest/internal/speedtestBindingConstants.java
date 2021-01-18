@@ -37,6 +37,7 @@ public class speedtestBindingConstants {
     public static final String REFRESH_INTERVAL = "refreshInterval";
     public static final String EXEC_PATH = "execPath";
     public static final String SPEEDTEST_VERSION = "speedTestVersion";
+    public static final String SERVER_ID = "serverID";
 
     // Channels
     public static final String SERVER = "server";
@@ -52,6 +53,17 @@ public class speedtestBindingConstants {
     public static final String INTERFACE_INTERNALIP = "interface_internalIp";
     public static final String INTERFACE_EXTERNALIP = "interface_externalIp";
     public static final String RESULT_URL = "result_url";
+
+    public static final String PROPERTY_SERVER_LIST1 = "Server List 1";
+    public static final String PROPERTY_SERVER_LIST2 = "Server List 2";
+    public static final String PROPERTY_SERVER_LIST3 = "Server List 3";
+    public static final String PROPERTY_SERVER_LIST4 = "Server List 4";
+    public static final String PROPERTY_SERVER_LIST5 = "Server List 5";
+    public static final String PROPERTY_SERVER_LIST6 = "Server List 6";
+    public static final String PROPERTY_SERVER_LIST7 = "Server List 7";
+    public static final String PROPERTY_SERVER_LIST8 = "Server List 8";
+    public static final String PROPERTY_SERVER_LIST9 = "Server List 9";
+    public static final String PROPERTY_SERVER_LIST10 = "Server List 10";
 
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(SERVER, PING_JITTER, PING_LATENCY,
             DOWNLOAD_BANDWIDTH, DOWNLOAD_BYTES, DOWNLOAD_ELAPSED, UPLOAD_BANDWIDTH, UPLOAD_BYTES, UPLOAD_ELAPSED, ISP,
