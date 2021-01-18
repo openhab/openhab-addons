@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.yamahamusiccast.internal.dto;
 
-import org.eclipse.jdt.annotation.*;
-
 import com.google.gson.JsonArray;
 import com.google.gson.annotations.SerializedName;
 

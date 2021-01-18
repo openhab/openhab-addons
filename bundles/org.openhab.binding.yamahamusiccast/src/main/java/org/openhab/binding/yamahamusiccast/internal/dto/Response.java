@@ -15,33 +15,17 @@ package org.openhab.binding.yamahamusiccast.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * This class represents the Features request requested from the Yamaha model/device via the API.
+ * This class represents the response received from the Yamaha model/device via the API.
  *
  * @author Lennert Coopman - Initial contribution
  */
 
-public class Features {
+public class Response {
 
     @SerializedName("response_code")
     private String responseCode;
 
     public String getResponseCode() {
         return responseCode;
-    }
-
-    @SerializedName("system")
-    private System system;
-
-    public System getSystem() {
-        return system;
-    }
-
-    public class System {
-        @SerializedName("zone_num")
-        private int zoneNum;
-
-        public int getZoneNum() {
-            return zoneNum;
-        }
     }
 }

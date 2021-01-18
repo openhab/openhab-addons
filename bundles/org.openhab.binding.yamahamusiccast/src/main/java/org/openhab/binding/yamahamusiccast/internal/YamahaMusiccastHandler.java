@@ -30,6 +30,7 @@ import org.openhab.binding.yamahamusiccast.internal.dto.DeviceInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.DistributionInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.Features;
 import org.openhab.binding.yamahamusiccast.internal.dto.PlayInfo;
+import org.openhab.binding.yamahamusiccast.internal.dto.Response;
 import org.openhab.binding.yamahamusiccast.internal.dto.Status;
 import org.openhab.binding.yamahamusiccast.internal.dto.UdpMessage;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -70,10 +71,11 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(YamahaMusiccastHandler.class);
     private @Nullable ScheduledFuture<?> keepUdpEventsAliveTask;
     private @Nullable ScheduledFuture<?> generalHousekeepingTask;
-    private @NonNullByDefault({}) YamahaMusiccastConfiguration config;
-    private @NonNullByDefault({}) String httpResponse;
+    private @Nullable YamahaMusiccastConfiguration config;
+    private @Nullable String httpResponse;
 
-    private JsonParser parser = new JsonParser();
+    private @Nullable JsonParser parser = new JsonParser();
+    @Nullable
     String tmpString = "";
     int tmpInteger = 0;
     int volumePercent = 0;
@@ -94,43 +96,43 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     @Nullable
     String soundProgramState = "";
     int sleepState = 0;
-    @NonNullByDefault({})
+    @Nullable
     String playbackState = "";
-    @NonNullByDefault({})
+    @Nullable
     String artistState = "";
-    @NonNullByDefault({})
+    @Nullable
     String trackState = "";
-    @NonNullByDefault({})
+    @Nullable
     String albumState = "";
-    @NonNullByDefault({})
+    @Nullable
     String albumArtUrlState = "";
-    @NonNullByDefault({})
+    @Nullable
     String repeatState = "";
-    @NonNullByDefault({})
+    @Nullable
     String shuffleState = "";
-    @NonNullByDefault({})
+    @Nullable
     String topicAVR = "";
-    @NonNullByDefault({})
+    @Nullable
     String zone = "main";
     String channelWithoutGroup = "";
-    @NonNullByDefault({})
+    @Nullable
     String thingLabel = "";
-    @NonNullByDefault({})
+    @Nullable
     String mclinkSetupServer = "";
-    @NonNullByDefault({})
+    @Nullable
     String mclinkSetupZone = "";
     String url = "";
     String json = "";
     String action = "";
 
     int zoneNum = 0;
-    @NonNullByDefault({})
+    @Nullable
     String groupId = "";
-    @NonNullByDefault({})
+    @Nullable
     String role = "";
-    @NonNullByDefault({})
+    @Nullable
     String host;
-    @NonNullByDefault({})
+    @Nullable
     public String deviceId = "";
 
     private YamahaMusiccastStateDescriptionProvider stateDescriptionProvider;
@@ -142,86 +144,79 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!command.equals(RefreshType.REFRESH)) {
+        if (command != RefreshType.REFRESH) {
             logger.debug("Handling command {} for channel {}", command, channelUID);
             channelWithoutGroup = channelUID.getIdWithoutGroup();
             zone = channelUID.getGroupId();
             DistributionInfo distributioninfo = new DistributionInfo();
+            Response response = new Response();
             switch (channelWithoutGroup) {
                 case CHANNEL_POWER:
-                    if (command.equals(OnOffType.ON)) {
+                    if (command == OnOffType.ON) {
                         httpResponse = setPower("on", zone);
-                        tmpString = getResponseCode(httpResponse);
+                        response = new Gson().fromJson(httpResponse, Response.class);
+                        tmpString = response.getResponseCode();
                         if (!tmpString.equals("0")) {
                             updateState(channelUID, OnOffType.OFF);
                         }
-                    } else if (command.equals(OnOffType.OFF)) {
+                    } else if (command == OnOffType.OFF) {
                         httpResponse = setPower("standby", zone);
-                        tmpString = getResponseCode(httpResponse);
+                        response = new Gson().fromJson(httpResponse, Response.class);
+                        tmpString = response.getResponseCode();
                         if (!tmpString.equals("0")) {
                             updateState(channelUID, OnOffType.ON);
                         }
                     }
                     break;
                 case CHANNEL_MUTE:
-                    if (command.equals(OnOffType.ON)) {
+                    if (command == OnOffType.ON) {
                         httpResponse = setMute("true", zone);
-                        tmpString = getResponseCode(httpResponse);
+                        response = new Gson().fromJson(httpResponse, Response.class);
+                        tmpString = response.getResponseCode();
                         if (!tmpString.equals("0")) {
                             updateState(channelUID, OnOffType.OFF);
                         }
-                    } else if (command.equals(OnOffType.OFF)) {
+                    } else if (command == OnOffType.OFF) {
                         httpResponse = setMute("false", zone);
-                        tmpString = getResponseCode(httpResponse);
+                        response = new Gson().fromJson(httpResponse, Response.class);
+                        tmpString = response.getResponseCode();
                         if (!tmpString.equals("0")) {
                             updateState(channelUID, OnOffType.ON);
                         }
                     }
                     break;
                 case CHANNEL_VOLUME:
-                    tmpString = command.toString();
-                    tmpString = tmpString.replace(".0", "");
-                    try {
-                        volumePercent = Integer.parseInt(tmpString);
-                        volumeAbsValue = (maxVolumeState * volumePercent) / 100;
-                        setVolume(volumeAbsValue, zone, this.host);
-                        if (config.syncVolume) {
-                            tmpString = getDistributionInfo(this.host);
-                            distributioninfo = new Gson().fromJson(tmpString, DistributionInfo.class);
-                            role = distributioninfo.getRole();
-                            if (role.equals("server")) {
-                                for (JsonElement ip : distributioninfo.getClientList()) {
-                                    JsonObject clientObject = ip.getAsJsonObject();
-                                    setVolumeLinkedDevice(volumePercent, zone,
-                                            clientObject.get("ip_address").getAsString());
-                                }
-                            }
-                        } // END config.syncVolume
-                    } catch (Exception e) {
-                        // Wait for refresh
-                    }
-                    break;
-                case CHANNEL_VOLUMEABS:
-                    tmpString = command.toString();
-                    tmpString = tmpString.replace(".0", "");
-                    try {
-                        volumeAbsValue = Integer.parseInt(tmpString);
-                        volumePercent = (volumeAbsValue / maxVolumeState) * 100;
-                        setVolume(volumeAbsValue, zone, this.host);
-                        if (config.syncVolume) {
-                            tmpString = getDistributionInfo(this.host);
-                            distributioninfo = new Gson().fromJson(tmpString, DistributionInfo.class);
-                            role = distributioninfo.getRole();
-                            if (role.equals("server")) {
-                                for (JsonElement ip : distributioninfo.getClientList()) {
-                                    JsonObject clientObject = ip.getAsJsonObject();
-                                    setVolumeLinkedDevice(volumePercent, zone,
-                                            clientObject.get("ip_address").getAsString());
-                                }
+                    volumePercent = Integer.parseInt(command.toString().replace(".0", ""));
+                    volumeAbsValue = (maxVolumeState * volumePercent) / 100;
+                    setVolume(volumeAbsValue, zone, this.host);
+                    if (config.syncVolume) {
+                        tmpString = getDistributionInfo(this.host);
+                        distributioninfo = new Gson().fromJson(tmpString, DistributionInfo.class);
+                        role = distributioninfo.getRole();
+                        if (role.equals("server")) {
+                            for (JsonElement ip : distributioninfo.getClientList()) {
+                                JsonObject clientObject = ip.getAsJsonObject();
+                                setVolumeLinkedDevice(volumePercent, zone,
+                                        clientObject.get("ip_address").getAsString());
                             }
                         }
-                    } catch (Exception e) {
-                        // Wait for refresh
+                    } // END config.syncVolume
+                    break;
+                case CHANNEL_VOLUMEABS:
+                    volumeAbsValue = Integer.parseInt(command.toString().replace(".0", ""));
+                    volumePercent = (volumeAbsValue / maxVolumeState) * 100;
+                    setVolume(volumeAbsValue, zone, this.host);
+                    if (config.syncVolume) {
+                        tmpString = getDistributionInfo(this.host);
+                        distributioninfo = new Gson().fromJson(tmpString, DistributionInfo.class);
+                        role = distributioninfo.getRole();
+                        if (role.equals("server")) {
+                            for (JsonElement ip : distributioninfo.getClientList()) {
+                                JsonObject clientObject = ip.getAsJsonObject();
+                                setVolumeLinkedDevice(volumePercent, zone,
+                                        clientObject.get("ip_address").getAsString());
+                            }
+                        }
                     }
                     break;
                 case CHANNEL_INPUT:
@@ -269,19 +264,21 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                     } else {
                         action = "link";
                         String[] parts = command.toString().split("\\*\\*\\*");
-                        mclinkSetupServer = parts[0];
-                        mclinkSetupZone = parts[1];
-                        tmpString = getDistributionInfo(mclinkSetupServer);
-                        distributioninfo = new Gson().fromJson(tmpString, DistributionInfo.class);
-                        responseCode = distributioninfo.getResponseCode();
+                        if (parts.length > 1) {
+                            mclinkSetupServer = parts[0];
+                            mclinkSetupZone = parts[1];
+                            tmpString = getDistributionInfo(mclinkSetupServer);
+                            distributioninfo = new Gson().fromJson(tmpString, DistributionInfo.class);
+                            responseCode = distributioninfo.getResponseCode();
 
-                        role = distributioninfo.getRole();
-                        if (role.equals("server")) {
-                            groupId = distributioninfo.getGroupId();
-                        } else if (role.equals("client")) {
-                            groupId = "";
-                        } else if (role.equals("none")) {
-                            groupId = generateGroupId();
+                            role = distributioninfo.getRole();
+                            if (role.equals("server")) {
+                                groupId = distributioninfo.getGroupId();
+                            } else if (role.equals("client")) {
+                                groupId = "";
+                            } else if (role.equals("none")) {
+                                groupId = generateGroupId();
+                            }
                         }
                     }
 
@@ -340,7 +337,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         thingLabel = thing.getLabel();
-        logger.info("YXC - Start initializing! - {}", thingLabel);
+        logger.debug("YXC - Start initializing! - {}", thingLabel);
         this.config = getConfigAs(YamahaMusiccastConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         if (config.host != null) {
@@ -348,22 +345,19 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         }
         if (!this.host.equals("")) {
             zoneNum = getNumberOfZones(this.host);
-            logger.info("YXC - Zones found: {} - {}", zoneNum, thingLabel);
+            logger.debug("YXC - Zones found: {} - {}", zoneNum, thingLabel);
 
             if (zoneNum > 0) {
                 refreshOnStartup();
                 generalHousekeepingTask = scheduler.scheduleWithFixedDelay(this::generalHousekeeping, 5, 300,
                         TimeUnit.SECONDS);
-                logger.info("YXC - Start Keep Alive UDP events (5 minutes - {}) ", thingLabel);
+                logger.debug("YXC - Start Keep Alive UDP events (5 minutes - {}) ", thingLabel);
 
                 updateStatus(ThingStatus.ONLINE);
-                logger.info("YXC - Finished initializing! - {}", thingLabel);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
-                logger.info("YXC - No host found");
+                logger.debug("YXC - No host found");
             }
-        } else {
-            logger.info("YXC - Not initialized! - {}", thingLabel);
         }
     }
 
@@ -587,7 +581,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 break;
         }
 
-        if (!powerState.equals("")) {
+        if (!powerState.isEmpty()) {
             channel = new ChannelUID(getThing().getUID(), zoneToUpdate, CHANNEL_POWER);
             if (isLinked(channel)) {
                 if (powerState.equals("on")) {
@@ -598,7 +592,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             }
         }
 
-        if (!muteState.equals("")) {
+        if (!muteState.isEmpty()) {
             channel = new ChannelUID(getThing().getUID(), zoneToUpdate, CHANNEL_MUTE);
             if (isLinked(channel)) {
                 if (muteState.equals("true")) {
@@ -609,7 +603,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             }
         }
 
-        if (!inputState.equals("")) {
+        if (!inputState.isEmpty()) {
             channel = new ChannelUID(getThing().getUID(), zoneToUpdate, CHANNEL_INPUT);
             if (isLinked(channel)) {
                 updateState(channel, StringType.valueOf(inputState));
@@ -636,7 +630,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             updateNetUSBPlayer();
         }
 
-        if (!statusUpdated.equals("")) {
+        if (!statusUpdated.isEmpty()) {
             updateStatusZone(zoneToUpdate);
         }
     }
@@ -837,16 +831,17 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         }
     }
 
-    private String getResponseCode(String json) {
+    private @Nullable String getResponseCode(String json) {
         JsonElement jsonTree = parser.parse(json);
         JsonObject jsonObject = jsonTree.getAsJsonObject();
         return jsonObject.get("response_code").getAsString();
     }
 
-    private String getLastInput() {
+    private @Nullable String getLastInput() {
         String text = "";
         tmpString = getRecentInfo();
-        responseCode = getResponseCode(tmpString);
+        Response targetObject = new Gson().fromJson(tmpString, Response.class);
+        responseCode = targetObject.getResponseCode();
         if (responseCode.equals("0")) {
             JsonElement jsonTree = parser.parse(tmpString);
             JsonObject jsonObject = jsonTree.getAsJsonObject();
@@ -929,7 +924,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         return UUID.randomUUID().toString().replace("-", "").substring(0, 32);
     }
 
-    private int getNumberOfZones(String host) {
+    private int getNumberOfZones(@Nullable String host) {
         int numberOfZones = 0;
         try {
             tmpString = getFeatures(host);
@@ -943,20 +938,20 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         }
     }
 
-    public String getDeviceId() {
+    public @Nullable String getDeviceId() {
         try {
             tmpString = getDeviceInfo();
             @Nullable
             DeviceInfo targetObject = new Gson().fromJson(tmpString, DeviceInfo.class);
-            deviceId = targetObject.getDeviceId();
-            return deviceId;
+            // deviceId = targetObject.getDeviceId();
+            return targetObject.getDeviceId();
         } catch (Exception e) {
             logger.warn("Error fetching Device Id");
             return "";
         }
     }
 
-    private void setVolumeLinkedDevice(int value, String zone, String host) {
+    private void setVolumeLinkedDevice(int value, @Nullable String zone, String host) {
         logger.info("setVolumeLinkedDevice: {}", host);
         int zoneNumLinkedDevice = getNumberOfZones(host);
         int maxVolumeLinkedDevice = 0;
@@ -1055,7 +1050,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
 
     // Start Zone Related
 
-    private String getStatus(String host, String zone) {
+    private @Nullable String getStatus(@Nullable String host, String zone) {
         topicAVR = "Status";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1063,12 +1058,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setPower(String value, String zone) {
+    private @Nullable String setPower(String value, @Nullable String zone) {
         topicAVR = "Power";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1077,12 +1072,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setMute(String value, String zone) {
+    private @Nullable String setMute(String value, @Nullable String zone) {
         topicAVR = "Mute";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1091,12 +1086,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setVolume(int value, String zone, String host) {
+    private @Nullable String setVolume(int value, @Nullable String zone, @Nullable String host) {
         topicAVR = "Volume";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1105,12 +1100,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setInput(String value, String zone) {
+    private @Nullable String setInput(String value, @Nullable String zone) {
         topicAVR = "setInput";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1119,12 +1114,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setSoundProgram(String value, String zone) {
+    private @Nullable String setSoundProgram(String value, @Nullable String zone) {
         topicAVR = "setSoundProgram";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1133,12 +1128,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setPreset(String value, String zone) {
+    private @Nullable String setPreset(String value, @Nullable String zone) {
         topicAVR = "setPreset";
         try {
             httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host
@@ -1147,12 +1142,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setSleep(String value, String zone) {
+    private @Nullable String setSleep(String value, @Nullable String zone) {
         topicAVR = "setSleep";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1161,12 +1156,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String recallScene(String value, String zone) {
+    private @Nullable String recallScene(String value, @Nullable String zone) {
         topicAVR = "recallScene";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1175,7 +1170,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
@@ -1183,7 +1178,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
 
     // Start Net Radio/USB Related
 
-    private String getPresetInfo() {
+    private @Nullable String getPresetInfo() {
         topicAVR = "PresetInfo";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1191,12 +1186,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String getRecentInfo() {
+    private @Nullable String getRecentInfo() {
         topicAVR = "RecentInfo";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1204,12 +1199,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String getPlayInfo() {
+    private @Nullable String getPlayInfo() {
         topicAVR = "PlayInfo";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1217,12 +1212,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setPlayback(String value) {
+    private @Nullable String setPlayback(String value) {
         topicAVR = "Playback";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1231,12 +1226,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setRepeat(String value) {
+    private @Nullable String setRepeat(String value) {
         topicAVR = "Repeat";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1245,12 +1240,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setShuffle(String value) {
+    private @Nullable String setShuffle(String value) {
         topicAVR = "Shuffle";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1259,7 +1254,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
@@ -1267,7 +1262,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     // End Net Radio/USB Related
 
     // Start Music Cast API calls
-    private String getDistributionInfo(String host) {
+    private @Nullable String getDistributionInfo(@Nullable String host) {
         topicAVR = "DistributionInfo";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1275,12 +1270,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setServerInfo(String host, String json) {
+    private @Nullable String setServerInfo(@Nullable String host, String json) {
         InputStream is = new ByteArrayInputStream(json.getBytes());
         topicAVR = "SetServerInfo";
         try {
@@ -1289,12 +1284,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("MC Link/Unlink Server {}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String setClientInfo(String host, String json) {
+    private @Nullable String setClientInfo(@Nullable String host, String json) {
         InputStream is = new ByteArrayInputStream(json.getBytes());
         topicAVR = "SetClientInfo";
         try {
@@ -1303,12 +1298,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("MC Link/Unlink Client {}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String startDistribution(String host) {
+    private @Nullable String startDistribution(@Nullable String host) {
         topicAVR = "StartDistribution";
         try {
             url = "http://" + host + "/YamahaExtendedControl/v1/dist/startDistribution?num=1";
@@ -1316,7 +1311,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("MC Start Distribution {}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
@@ -1324,7 +1319,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     // End Music Cast API calls
 
     // Start General/System API calls
-    private String getFeatures(String host) {
+    private @Nullable String getFeatures(@Nullable String host) {
         topicAVR = "Features";
         try {
             httpResponse = HttpUtil.executeUrl("GET", "http://" + host + "/YamahaExtendedControl/v1/system/getFeatures",
@@ -1332,12 +1327,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
 
-    private String getDeviceInfo() {
+    private @Nullable String getDeviceInfo() {
         topicAVR = "DeviceInfo";
         try {
             httpResponse = HttpUtil.executeUrl("GET",
@@ -1345,7 +1340,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.debug("{}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.toString());
+            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
@@ -1356,11 +1351,11 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         appProps.setProperty("X-AppPort", "41100");
         try {
             httpResponse = HttpUtil.executeUrl("GET",
-                    "http://" + this.host + "/YamahaExtendedControl/v1/system/getDeviceInfo", appProps, null, "",
+                    "http://" + this.host + "/YamahaExtendedControl/v1/netusb/getPlayInfo", appProps, null, "",
                     connectionTimeout);
             logger.debug("{}", httpResponse);
         } catch (IOException e) {
-            logger.warn("UDP refresh failed - {}", e.toString());
+            logger.warn("UDP refresh failed - {}", e.getMessage());
         }
     }
 

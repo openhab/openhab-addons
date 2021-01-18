@@ -65,7 +65,7 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startUDPListenerJob() {
-        logger.info("YXC - Bridge Listener to start in 5 seconds");
+        logger.debug("YXC - Bridge Listener to start in 5 seconds");
         listenerJob = udpScheduler.schedule(udpListener, 5, TimeUnit.SECONDS);
     }
 
