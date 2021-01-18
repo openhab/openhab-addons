@@ -57,8 +57,13 @@ public class MiotJsonFileCreator {
         LinkedHashMap<String, String> checksums = new LinkedHashMap<>();
 
         LinkedHashSet<String> models = new LinkedHashSet<>();
-        for (int i = 1; i <= 12; i++) {
-            models.add("chuangmi.plug.212a0" + String.valueOf(i));
+
+        models.add("philips.light.dlight");
+        boolean scan = false;
+        if (scan) {
+            for (int i = 1; i <= 12; i++) {
+                models.add(models.toArray()[0] + String.valueOf(i));
+            }
         }
 
         if (args.length > 0) {
