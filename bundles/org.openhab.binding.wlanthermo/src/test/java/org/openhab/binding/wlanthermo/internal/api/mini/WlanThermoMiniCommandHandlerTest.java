@@ -15,6 +15,10 @@ package org.openhab.binding.wlanthermo.internal.api.mini;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 
 import java.awt.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,136 +52,14 @@ class WlanThermoMiniCommandHandlerTest {
 
     private static final ThingUID THING_UID = new ThingUID("wlanthermo", "mini", "test");
 
-    //@formatter:off
-    private static final String APP_INPUT_JSON = "{\n" +
-            "  \"temp_unit\": \"fahrenheit\",\n" +
-            "  \"pit\": {\n" +
-            "    \"enabled\": true,\n" +
-            "    \"timestamp\": \"2020-05-29T17:00:54-05:00\",\n" +
-            "    \"setpoint\": 110,\n" +
-            "    \"current\": 77.86,\n" +
-            "    \"control_out\": 100,\n" +
-            "    \"ch\": 0,\n" +
-            "    \"type\": \"False\",\n" +
-            "    \"open_lid\": \"False\"\n" +
-            "  },\n" +
-            "  \"pit2\": {\n" +
-            "    \"enabled\": false\n" +
-            "  },\n" +
-            "  \"cpu_load\": 94.267515923567,\n" +
-            "  \"cpu_temp\": 93.56,\n" +
-            "  \"channel\": {\n" +
-            "    \"0\": {\n" +
-            "      \"temp\": 78.28,\n" +
-            "      \"color\": \"green\",\n" +
-            "      \"state\": \"ok\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal0\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"1\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"red\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal1\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"2\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"blue\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal2\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"3\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"olive\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal3\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"4\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"magenta\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal4\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"5\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"yellow\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal5\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"6\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"violet\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal6\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"7\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"purple\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal7\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"8\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"dark-violet\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal8 - Maverick 1\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    },\n" +
-            "    \"9\": {\n" +
-            "      \"temp\": 0,\n" +
-            "      \"color\": \"seagreen\",\n" +
-            "      \"state\": \"er\",\n" +
-            "      \"temp_min\": -20,\n" +
-            "      \"temp_max\": 200,\n" +
-            "      \"name\": \"Kanal9 - Maverick 2\",\n" +
-            "      \"alert\": false,\n" +
-            "      \"show\": true\n" +
-            "    }\n" +
-            "  },\n" +
-            "  \"timestamp\": \"2020-05-29T16:06:00-05:00\"\n" +
-            "}";
-    //@formatter:on
-
     @Nullable
     private App app;
 
     @BeforeEach
     void setUp() {
-        app = new Gson().fromJson(APP_INPUT_JSON, App.class);
+        ClassLoader classLoader = Objects.requireNonNull(WlanThermoMiniCommandHandlerTest.class.getClassLoader());
+        InputStream stream = Objects.requireNonNull(classLoader.getResourceAsStream("mini/app.json"));
+        app = new Gson().fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), App.class);
     }
 
     static Stream<Arguments> getState() {

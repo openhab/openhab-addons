@@ -20,11 +20,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christian Schlipp - Initial contribution
  */
 @NonNullByDefault
-public abstract class WlanThermoException extends Exception {
+public class WlanThermoException extends Exception {
 
     static final long serialVersionUID = 1L;
 
     public WlanThermoException(String reason) {
         super(reason, null);
+    }
+
+    public WlanThermoException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public WlanThermoException(Throwable cause) {
+        super(cause);
+    }
+
+    public WlanThermoException() {
     }
 }

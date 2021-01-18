@@ -28,4 +28,8 @@ public class WlanThermoInputException extends WlanThermoException {
     public WlanThermoInputException() {
         super(INVALID_INPUT_EXCEPTION);
     }
+
+    public WlanThermoInputException(Throwable cause) {
+        super(INVALID_INPUT_EXCEPTION, cause);
+    }
 }

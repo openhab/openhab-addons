@@ -169,6 +169,7 @@ public class WlanThermoNanoV1CommandHandler {
                             channel.setName(command.toFullString());
                             return true;
                         }
+                        return false;
                     case CHANNEL_MIN:
                         if (command instanceof QuantityType) {
                             try {
@@ -178,6 +179,7 @@ public class WlanThermoNanoV1CommandHandler {
                                 return false;
                             }
                         }
+                        return false;
                     case CHANNEL_MAX:
                         if (command instanceof QuantityType) {
                             try {
@@ -187,6 +189,7 @@ public class WlanThermoNanoV1CommandHandler {
                                 return false;
                             }
                         }
+                        return false;
                     case CHANNEL_ALARM_DEVICE:
                         if (command instanceof OnOffType) {
                             BigInteger value;
@@ -198,6 +201,7 @@ public class WlanThermoNanoV1CommandHandler {
                             channel.setAlarm(value.intValue());
                             return true;
                         }
+                        return false;
                     case CHANNEL_ALARM_PUSH:
                         if (command instanceof OnOffType) {
                             BigInteger value;
@@ -209,11 +213,13 @@ public class WlanThermoNanoV1CommandHandler {
                             channel.setAlarm(value.intValue());
                             return true;
                         }
+                        return false;
                     case CHANNEL_COLOR_NAME:
                         if (command instanceof StringType) {
                             channel.setColor(WlanThermoNanoV1Util.toHex(((StringType) command).toString()));
                             return true;
                         }
+                        return false;
                 }
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_1)) {
@@ -241,6 +247,7 @@ public class WlanThermoNanoV1CommandHandler {
                             pm.setTyp(state);
                             return true;
                         }
+                        return false;
                 }
             }
         }

@@ -180,6 +180,7 @@ public class WlanThermoEsp32CommandHandler {
                             channel.setName(command.toFullString());
                             return true;
                         }
+                        return false;
                     case CHANNEL_MIN:
                         if (command instanceof QuantityType) {
                             try {
@@ -189,6 +190,7 @@ public class WlanThermoEsp32CommandHandler {
                                 return false;
                             }
                         }
+                        return false;
                     case CHANNEL_MAX:
                         if (command instanceof QuantityType) {
                             try {
@@ -198,6 +200,7 @@ public class WlanThermoEsp32CommandHandler {
                                 return false;
                             }
                         }
+                        return false;
                     case CHANNEL_ALARM_DEVICE:
                         if (command instanceof OnOffType) {
                             BigInteger value;
@@ -209,6 +212,7 @@ public class WlanThermoEsp32CommandHandler {
                             channel.setAlarm(value.intValue());
                             return true;
                         }
+                        return false;
                     case CHANNEL_ALARM_PUSH:
                         if (command instanceof OnOffType) {
                             BigInteger value;
@@ -220,16 +224,19 @@ public class WlanThermoEsp32CommandHandler {
                             channel.setAlarm(value.intValue());
                             return true;
                         }
+                        return false;
                     case CHANNEL_COLOR_NAME:
                         if (command instanceof StringType) {
                             channel.setColor(WlanThermoEsp32Util.toHex(((StringType) command).toString()));
                             return true;
                         }
+                        return false;
                     case CHANNEL_COLOR:
                         if (command instanceof HSBType) {
                             channel.setColor(WlanThermoUtil.toHex((HSBType) command));
                             return true;
                         }
+                        return false;
                 }
             }
         } else if (channelUID.getId().startsWith(CHANNEL_PITMASTER_PREFIX)) {
@@ -258,6 +265,7 @@ public class WlanThermoEsp32CommandHandler {
                             pm.setTyp(state);
                             return true;
                         }
+                        return false;
                 }
             }
         }

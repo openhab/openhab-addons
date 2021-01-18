@@ -53,8 +53,7 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
     protected final HttpClient httpClient;
     protected final Logger logger = LoggerFactory.getLogger(WlanThermoHandler.class);
     protected final Gson gson = new Gson();
-    @Nullable
-    protected ScheduledFuture<?> pollingScheduler;
+    protected @Nullable ScheduledFuture<?> pollingScheduler;
 
     public WlanThermoHandler(Thing thing, HttpClient httpClient, boolean extendedConfig) {
         super(thing);
@@ -143,7 +142,7 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
         }
     }
 
-    protected <T> T doGet(String endpoint, Class<T> object) throws InterruptedException, WlanThermoInputException {
+    protected <T> T doGet(String endpoint, Class<T> object) throws InterruptedException, WlanThermoException {
         try {
             String json = httpClient.GET(config.getUri(endpoint)).getContentAsString();
             logger.debug("Received at {}: {}", endpoint, json);
@@ -154,7 +153,7 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
             for (Channel channel : thing.getChannels()) {
                 updateState(channel.getUID(), UnDefType.UNDEF);
             }
-            throw new WlanThermoInputException();
+            throw new WlanThermoException(e);
         }
     }
 

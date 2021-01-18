@@ -33,4 +33,8 @@ public class WlanThermoUnknownChannelException extends WlanThermoException {
     public WlanThermoUnknownChannelException(ChannelUID channelUID) {
         super(UNKNOWN_CHANNEL_EXCEPTION + "ChannelUID: " + channelUID.toString());
     }
+
+    public WlanThermoUnknownChannelException(ChannelUID channelUID, Throwable cause) {
+        super(UNKNOWN_CHANNEL_EXCEPTION + "ChannelUID: " + channelUID.toString(), cause);
+    }
 }

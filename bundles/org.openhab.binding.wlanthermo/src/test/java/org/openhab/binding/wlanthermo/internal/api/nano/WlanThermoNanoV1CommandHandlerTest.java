@@ -15,6 +15,10 @@ package org.openhab.binding.wlanthermo.internal.api.nano;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 
 import java.awt.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,236 +53,6 @@ import com.google.gson.Gson;
 class WlanThermoNanoV1CommandHandlerTest {
     private static final ThingUID THING_UID = new ThingUID("wlanthermo", "nano", "test");
 
-    //@formatter:off
-    private static final String DATA_INPUT_JSON = "{\n" +
-            "  \"system\": {\n" +
-            "    \"time\": \"1610899485\",\n" +
-            "    \"unit\": \"C\",\n" +
-            "    \"soc\": 32,\n" +
-            "    \"charge\": false,\n" +
-            "    \"rssi\": -47,\n" +
-            "    \"online\": 0\n" +
-            "  },\n" +
-            "  \"channel\": [\n" +
-            "    {\n" +
-            "      \"number\": 1,\n" +
-            "      \"name\": \"Kanal 1\",\n" +
-            "      \"typ\": 0,\n" +
-            "      \"temp\": 23.7,\n" +
-            "      \"min\": 11,\n" +
-            "      \"max\": 155,\n" +
-            "      \"alarm\": 1,\n" +
-            "      \"color\": \"#EF562D\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"number\": 2,\n" +
-            "      \"name\": \"Kanal 2\",\n" +
-            "      \"typ\": 3,\n" +
-            "      \"temp\": 999,\n" +
-            "      \"min\": 0,\n" +
-            "      \"max\": 48,\n" +
-            "      \"alarm\": 0,\n" +
-            "      \"color\": \"#22B14C\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"number\": 3,\n" +
-            "      \"name\": \"Kanal 3\",\n" +
-            "      \"typ\": 3,\n" +
-            "      \"temp\": 999,\n" +
-            "      \"min\": 10,\n" +
-            "      \"max\": 35,\n" +
-            "      \"alarm\": 0,\n" +
-            "      \"color\": \"#EF562D\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"number\": 4,\n" +
-            "      \"name\": \"Kanal 4\",\n" +
-            "      \"typ\": 3,\n" +
-            "      \"temp\": 999,\n" +
-            "      \"min\": 10,\n" +
-            "      \"max\": 54,\n" +
-            "      \"alarm\": 0,\n" +
-            "      \"color\": \"#FFC100\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"number\": 5,\n" +
-            "      \"name\": \"Kanal 5\",\n" +
-            "      \"typ\": 3,\n" +
-            "      \"temp\": 999,\n" +
-            "      \"min\": 0,\n" +
-            "      \"max\": 69,\n" +
-            "      \"alarm\": 0,\n" +
-            "      \"color\": \"#A349A4\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"number\": 6,\n" +
-            "      \"name\": \"Kanal 6\",\n" +
-            "      \"typ\": 0,\n" +
-            "      \"temp\": 999,\n" +
-            "      \"min\": 150,\n" +
-            "      \"max\": 170,\n" +
-            "      \"alarm\": 0,\n" +
-            "      \"color\": \"#804000\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"number\": 7,\n" +
-            "      \"name\": \"Kanal 7\",\n" +
-            "      \"typ\": 0,\n" +
-            "      \"temp\": 23.6,\n" +
-            "      \"min\": 0,\n" +
-            "      \"max\": 54,\n" +
-            "      \"alarm\": 0,\n" +
-            "      \"color\": \"#5587A2\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"number\": 8,\n" +
-            "      \"name\": \"Kanal 8\",\n" +
-            "      \"typ\": 0,\n" +
-            "      \"temp\": 999,\n" +
-            "      \"min\": 10,\n" +
-            "      \"max\": 35,\n" +
-            "      \"alarm\": 0,\n" +
-            "      \"color\": \"#5C7148\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"pitmaster\": {\n" +
-            "    \"type\": [\n" +
-            "      \"off\"\n" +
-            "    ],\n" +
-            "    \"pm\": [\n" +
-            "      {\n" +
-            "        \"id\": 0,\n" +
-            "        \"channel\": 1,\n" +
-            "        \"pid\": 0,\n" +
-            "        \"value\": 0,\n" +
-            "        \"set\": 50,\n" +
-            "        \"typ\": \"off\",\n" +
-            "        \"set_color\": \"#ff0000\",\n" +
-            "        \"value_color\": \"#000000\"\n" +
-            "      }\n" +
-            "    ]\n" +
-            "  }\n" +
-            "}";
-
-    private static final String SETTINGS_INPUT_JSON = "{\n" +
-            "  \"device\": {\n" +
-            "    \"device\": \"nano\",\n" +
-            "    \"serial\": \"33e8bb\",\n" +
-            "    \"item\": \"n2E04o42000\",\n" +
-            "    \"hw_version\": \"v2\",\n" +
-            "    \"sw_version\": \"v1.0.6\",\n" +
-            "    \"api_version\": \"1\",\n" +
-            "    \"language\": \"de\"\n" +
-            "  },\n" +
-            "  \"system\": {\n" +
-            "    \"time\": \"1610899506\",\n" +
-            "    \"unit\": \"C\",\n" +
-            "    \"ap\": \"NANO-AP\",\n" +
-            "    \"host\": \"NANO-33e8bb\",\n" +
-            "    \"language\": \"de\",\n" +
-            "    \"version\": \"v1.0.6\",\n" +
-            "    \"getupdate\": \"false\",\n" +
-            "    \"autoupd\": true,\n" +
-            "    \"hwversion\": \"V1+\",\n" +
-            "    \"god\": 0\n" +
-            "  },\n" +
-            "  \"hardware\": [\n" +
-            "    \"V1\",\n" +
-            "    \"V1+\"\n" +
-            "  ],\n" +
-            "  \"api\": {\n" +
-            "    \"version\": \"1\"\n" +
-            "  },\n" +
-            "  \"sensors\": [\n" +
-            "    \"1000K/Maverick\",\n" +
-            "    \"Fantast-Neu\",\n" +
-            "    \"Fantast\",\n" +
-            "    \"100K/iGrill2\",\n" +
-            "    \"ET-73\",\n" +
-            "    \"Perfektion\",\n" +
-            "    \"50K\",\n" +
-            "    \"Inkbird\",\n" +
-            "    \"100K6A1B\",\n" +
-            "    \"Weber_6743\",\n" +
-            "    \"Santos\",\n" +
-            "    \"5K3A1B\"\n" +
-            "  ],\n" +
-            "  \"pid\": [\n" +
-            "    {\n" +
-            "      \"name\": \"SSR SousVide\",\n" +
-            "      \"id\": 0,\n" +
-            "      \"aktor\": 0,\n" +
-            "      \"Kp\": 104,\n" +
-            "      \"Ki\": 0.2,\n" +
-            "      \"Kd\": 0,\n" +
-            "      \"DCmmin\": 0,\n" +
-            "      \"DCmmax\": 100,\n" +
-            "      \"opl\": 0,\n" +
-            "      \"tune\": 0,\n" +
-            "      \"jp\": 100\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"name\": \"TITAN 50x50\",\n" +
-            "      \"id\": 1,\n" +
-            "      \"aktor\": 1,\n" +
-            "      \"Kp\": 3.8,\n" +
-            "      \"Ki\": 0.01,\n" +
-            "      \"Kd\": 128,\n" +
-            "      \"DCmmin\": 25,\n" +
-            "      \"DCmmax\": 100,\n" +
-            "      \"opl\": 0,\n" +
-            "      \"tune\": 0,\n" +
-            "      \"jp\": 70\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"name\": \"Kamado 50x50\",\n" +
-            "      \"id\": 2,\n" +
-            "      \"aktor\": 1,\n" +
-            "      \"Kp\": 7,\n" +
-            "      \"Ki\": 0.02,\n" +
-            "      \"Kd\": 630,\n" +
-            "      \"DCmmin\": 25,\n" +
-            "      \"DCmmax\": 100,\n" +
-            "      \"opl\": 0,\n" +
-            "      \"tune\": 0,\n" +
-            "      \"jp\": 70\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"aktor\": [\n" +
-            "    \"SSR\",\n" +
-            "    \"FAN\",\n" +
-            "    \"SERVO\"\n" +
-            "  ],\n" +
-            "  \"iot\": {\n" +
-            "    \"PMQhost\": \"192.168.2.1\",\n" +
-            "    \"PMQport\": 1883,\n" +
-            "    \"PMQuser\": \"\",\n" +
-            "    \"PMQpass\": \"\",\n" +
-            "    \"PMQqos\": 0,\n" +
-            "    \"PMQon\": false,\n" +
-            "    \"PMQint\": 30,\n" +
-            "    \"CLon\": false,\n" +
-            "    \"CLtoken\": \"thisisnotatoken\",\n" +
-            "    \"CLint\": 30,\n" +
-            "    \"CLurl\": \"cloud.wlanthermo.de/index.html\"\n" +
-            "  },\n" +
-            "  \"notes\": {\n" +
-            "    \"fcm\": [],\n" +
-            "    \"ext\": {\n" +
-            "      \"on\": 0,\n" +
-            "      \"token\": \"\",\n" +
-            "      \"id\": \"\",\n" +
-            "      \"repeat\": 1,\n" +
-            "      \"service\": 0,\n" +
-            "      \"services\": [\n" +
-            "        \"telegram\",\n" +
-            "        \"pushover\"\n" +
-            "      ]\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
-    //@formatter:on
-
     @Nullable
     private Data data;
     @Nullable
@@ -287,8 +61,11 @@ class WlanThermoNanoV1CommandHandlerTest {
     @BeforeEach
     void setUp() {
         Gson gson = new Gson();
-        data = gson.fromJson(DATA_INPUT_JSON, Data.class);
-        settings = gson.fromJson(SETTINGS_INPUT_JSON, Settings.class);
+        ClassLoader classLoader = Objects.requireNonNull(WlanThermoNanoV1CommandHandlerTest.class.getClassLoader());
+        InputStream dataStream = Objects.requireNonNull(classLoader.getResourceAsStream("nanov1/data.json"));
+        InputStream settingsStream = Objects.requireNonNull(classLoader.getResourceAsStream("nanov1/settings.json"));
+        data = gson.fromJson(new InputStreamReader(dataStream, StandardCharsets.UTF_8), Data.class);
+        settings = gson.fromJson(new InputStreamReader(settingsStream, StandardCharsets.UTF_8), Settings.class);
     }
 
     static Stream<Arguments> getState() {
