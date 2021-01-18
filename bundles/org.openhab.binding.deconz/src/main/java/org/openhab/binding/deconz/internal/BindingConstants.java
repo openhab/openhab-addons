@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,6 +70,7 @@ public class BindingConstants {
 
     // sensor channel ids
     public static final String CHANNEL_PRESENCE = "presence";
+    public static final String CHANNEL_ENABLED = "enabled";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
     public static final String CHANNEL_LAST_SEEN = "last_seen";
     public static final String CHANNEL_POWER = "power";

@@ -65,6 +65,7 @@
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.boschindego</module>
+    <module>org.openhab.binding.boschshc</module>
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.bticinosmarther</module>
@@ -114,6 +115,7 @@
     <module>org.openhab.binding.gce</module>
     <module>org.openhab.binding.generacmobilelink</module>
     <module>org.openhab.binding.goecharger</module>
+    <module>org.openhab.binding.gpio</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
@@ -286,6 +288,7 @@
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.tibber</module>
+    <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>

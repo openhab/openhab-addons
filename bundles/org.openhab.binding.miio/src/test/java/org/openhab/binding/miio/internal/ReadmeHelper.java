@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.miio.internal;
 
 import java.io.File;
@@ -201,8 +200,8 @@ public class ReadmeHelper {
                     sw.write("Group " + gr + " \"" + device.getDescription() + "\" <status>\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
-                        sw.write(ch.getType() + " " + ch.getChannel() + " \"" + ch.getFriendlyName() + "\" (" + gr
-                                + ") {channel=\"miio:basic:" + id + ":" + ch.getChannel() + "\"}\n");
+                        sw.write(ch.getType() + " " + ch.getChannel().replace("-", "_") + " \"" + ch.getFriendlyName()
+                                + "\" (" + gr + ") {channel=\"miio:basic:" + id + ":" + ch.getChannel() + "\"}\n");
                     }
                     sw.write("```\n\n");
                 }

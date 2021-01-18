@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,6 @@ import org.openhab.automation.pidcontroller.internal.LowpassFilter;
  */
 @NonNullByDefault
 class PIDController {
-    private final double outputLowerLimit;
-    private final double outputUpperLimit;
-
     private double integralResult;
     private double derivativeResult;
     private double previousError;
@@ -38,17 +35,14 @@ class PIDController {
     private double kd;
     private double derivativeTimeConstantSec;
 
-    public PIDController(double outputLowerLimit, double outputUpperLimit, double kpAdjuster, double kiAdjuster,
-            double kdAdjuster, double derivativeTimeConstantSec) {
-        this.outputLowerLimit = outputLowerLimit;
-        this.outputUpperLimit = outputUpperLimit;
+    public PIDController(double kpAdjuster, double kiAdjuster, double kdAdjuster, double derivativeTimeConstantSec) {
         this.kp = kpAdjuster;
         this.ki = kiAdjuster;
         this.kd = kdAdjuster;
         this.derivativeTimeConstantSec = derivativeTimeConstantSec;
     }
 
-    public PIDOutputDTO calculate(double input, double setpoint, long lastInvocationMs) {
+    public PIDOutputDTO calculate(double input, double setpoint, long lastInvocationMs, int loopTimeMs) {
         final double lastInvocationSec = lastInvocationMs / 1000d;
         final double error = setpoint - input;
 
@@ -60,13 +54,7 @@ class PIDController {
         }
 
         // integral calculation
-        integralResult += error * lastInvocationSec;
-        // limit to output limits
-        if (ki != 0) {
-            final double maxIntegral = outputUpperLimit / ki;
-            final double minIntegral = outputLowerLimit / ki;
-            integralResult = Math.min(maxIntegral, Math.max(minIntegral, integralResult));
-        }
+        integralResult += error * lastInvocationMs / loopTimeMs;
 
         // calculate parts
         final double proportionalPart = kp * error;
@@ -74,9 +62,14 @@ class PIDController {
         final double derivativePart = kd * derivativeResult;
         output = proportionalPart + integralPart + derivativePart;
 
-        // limit output value
-        output = Math.min(outputUpperLimit, Math.max(outputLowerLimit, output));
-
         return new PIDOutputDTO(output, proportionalPart, integralPart, derivativePart, error);
+    }
+
+    public void setIntegralResult(double integralResult) {
+        this.integralResult = integralResult;
+    }
+
+    public void setDerivativeResult(double derivativeResult) {
+        this.derivativeResult = derivativeResult;
     }
 }

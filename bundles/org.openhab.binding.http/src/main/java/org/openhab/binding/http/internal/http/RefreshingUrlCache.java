@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public class RefreshingUrlCache {
         this.headers = thingConfig.headers;
         fallbackEncoding = thingConfig.encoding;
 
-        future = executor.scheduleWithFixedDelay(this::refresh, 0, thingConfig.refresh, TimeUnit.SECONDS);
+        future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);
         logger.trace("Started refresh task for URL '{}' with interval {}s", url, thingConfig.refresh);
     }
 
@@ -94,7 +94,7 @@ public class RefreshingUrlCache {
                 response.exceptionally(e -> {
                     if (e instanceof HttpAuthException) {
                         if (isRetry) {
-                            logger.warn("Retry after authentication  failure failed again for '{}', failing here", uri);
+                            logger.warn("Retry after authentication failure failed again for '{}', failing here", uri);
                         } else {
                             AuthenticationStore authStore = httpClient.getAuthenticationStore();
                             Authentication.Result authResult = authStore.findAuthenticationResult(uri);

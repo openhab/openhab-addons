@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -313,7 +313,8 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     @Override
     protected void startBackgroundDiscovery() {
         logger.trace("startBackgroundDiscovery() called.");
-        if (backgroundTask == null || backgroundTask.isCancelled()) {
+        ScheduledFuture<?> task = this.backgroundTask;
+        if (task == null || task.isCancelled()) {
             this.backgroundTask = scheduler.scheduleWithFixedDelay(this::startScan, 10, 600, TimeUnit.SECONDS);
         }
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,11 +24,16 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.dto.BatteryModel;
 import org.openhab.binding.avmfritz.internal.dto.ButtonModel;
 import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
 import org.openhab.binding.avmfritz.internal.dto.HumidityModel;
+import org.openhab.binding.avmfritz.internal.dto.TemperatureModel;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -90,10 +96,43 @@ public class AVMFritzButtonHandler extends DeviceHandler {
     }
 
     @Override
+    protected void updateTemperatureSensor(@Nullable TemperatureModel temperatureModel) {
+        if (temperatureModel != null) {
+            String channelId = (DECT440_THING_TYPE.equals(thing.getThingTypeUID())
+                    ? CHANNEL_GROUP_SENSORS + ChannelUID.CHANNEL_GROUP_SEPARATOR
+                    : "") + CHANNEL_TEMPERATURE;
+            updateThingChannelState(channelId, new QuantityType<>(temperatureModel.getCelsius(), SIUnits.CELSIUS));
+            updateThingChannelConfiguration(channelId, CONFIG_CHANNEL_TEMP_OFFSET, temperatureModel.getOffset());
+        }
+    }
+
+    @Override
     protected void updateHumiditySensor(@Nullable HumidityModel humidityModel) {
         if (humidityModel != null) {
-            updateThingChannelState(CHANNEL_GROUP_SENSORS + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_HUMIDITY,
-                    new QuantityType<>(humidityModel.getRelativeHumidity(), Units.PERCENT));
+            String channelId = (DECT440_THING_TYPE.equals(thing.getThingTypeUID())
+                    ? CHANNEL_GROUP_SENSORS + ChannelUID.CHANNEL_GROUP_SEPARATOR
+                    : "") + CHANNEL_HUMIDITY;
+            updateThingChannelState(channelId, new QuantityType<>(humidityModel.getRelativeHumidity(), Units.PERCENT));
+        }
+    }
+
+    @Override
+    protected void updateBattery(BatteryModel batteryModel) {
+        String batteryLevelChannelId = (DECT440_THING_TYPE.equals(thing.getThingTypeUID())
+                ? CHANNEL_GROUP_DEVICE + ChannelUID.CHANNEL_GROUP_SEPARATOR
+                : "") + CHANNEL_BATTERY;
+        BigDecimal batteryLevel = batteryModel.getBattery();
+        updateThingChannelState(batteryLevelChannelId,
+                batteryLevel == null ? UnDefType.UNDEF : new DecimalType(batteryLevel));
+        String lowBatteryChannelId = (DECT440_THING_TYPE.equals(thing.getThingTypeUID())
+                ? CHANNEL_GROUP_DEVICE + ChannelUID.CHANNEL_GROUP_SEPARATOR
+                : "") + CHANNEL_BATTERY_LOW;
+        BigDecimal lowBattery = batteryModel.getBatterylow();
+        if (lowBattery == null) {
+            updateThingChannelState(lowBatteryChannelId, UnDefType.UNDEF);
+        } else {
+            updateThingChannelState(lowBatteryChannelId,
+                    BatteryModel.BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
         }
     }
 

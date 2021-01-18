@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,6 +100,9 @@ public class VeluxBindingConstants {
             THING_TYPE_VELUX_ACTUATOR, THING_TYPE_VELUX_ROLLERSHUTTER, THING_TYPE_VELUX_WINDOW,
             THING_TYPE_VELUX_VSHUTTER, THING_TYPE_BINDING, THING_TYPE_BRIDGE);
 
+    public static final Set<ThingTypeUID> ACTUATOR_THINGS = Set.of(THING_TYPE_VELUX_ACTUATOR,
+            THING_TYPE_VELUX_ROLLERSHUTTER, THING_TYPE_VELUX_WINDOW);
+
     // *** List of all Channel ids ***
 
     // List of all binding channel ids
@@ -153,6 +156,4 @@ public class VeluxBindingConstants {
 
     public static final String UNKNOWN_THING_TYPE_ID = "FAILED";
     public static final String UNKNOWN_IP_ADDRESS = "xxx.xxx.xxx.xxx";
-
-    public static final String BRIDGE_THING_TYPE_UID = THING_TYPE_BRIDGE.toString();
 }

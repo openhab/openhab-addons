@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.GatewayMgmt;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,6 +128,11 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         }
         updateState(CHANNEL_SHUTTER, UnDefType.UNDEF);
         positionEstimation = POSITION_UNKNOWN;
+    }
+
+    @Override
+    protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
+        return new WhereLightAutom(wStr);
     }
 
     @Override
@@ -280,8 +286,9 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
+        logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         updateAutomationState((Automation) msg);
-        // REMINDER: update state, then update thing status in the super method, to avoid delays
+        // REMINDER: update automation state, and only after update thing status using the super method, to avoid delays
         super.handleMessage(msg);
     }
 

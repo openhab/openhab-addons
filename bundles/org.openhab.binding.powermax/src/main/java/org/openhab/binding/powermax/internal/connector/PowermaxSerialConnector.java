@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,8 +37,8 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
 
     private final String serialPortName;
     private final int baudRate;
+    private final SerialPortManager serialPortManager;
     private SerialPort serialPort;
-    private SerialPortManager serialPortManager;
 
     /**
      * Constructor

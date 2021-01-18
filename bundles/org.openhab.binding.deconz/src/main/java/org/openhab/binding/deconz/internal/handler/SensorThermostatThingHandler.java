@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,11 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.deconz.internal.dto.*;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
+import org.openhab.binding.deconz.internal.dto.SensorConfig;
+import org.openhab.binding.deconz.internal.dto.SensorMessage;
+import org.openhab.binding.deconz.internal.dto.SensorState;
+import org.openhab.binding.deconz.internal.dto.ThermostatUpdateConfig;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -76,12 +80,11 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             sensorState.buttonevent = null;
-            valueUpdated(channelUID.getId(), sensorState, false);
+            valueUpdated(channelUID, sensorState, false);
             return;
         }
-        ThermostatConfig newConfig = new ThermostatConfig();
-        String channelId = channelUID.getId();
-        switch (channelId) {
+        ThermostatUpdateConfig newConfig = new ThermostatUpdateConfig();
+        switch (channelUID.getId()) {
             case CHANNEL_HEATSETPOINT:
                 Integer newHeatsetpoint = getTemperatureFromCommand(command);
                 if (newHeatsetpoint == null) {
@@ -131,13 +134,12 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         super.valueUpdated(channelUID, newConfig);
         ThermostatMode thermostatMode = newConfig.mode;
         String mode = thermostatMode != null ? thermostatMode.name() : ThermostatMode.UNKNOWN.name();
-        String channelID = channelUID.getId();
-        switch (channelID) {
+        switch (channelUID.getId()) {
             case CHANNEL_HEATSETPOINT:
-                updateQuantityTypeChannel(channelID, newConfig.heatsetpoint, CELSIUS, 1.0 / 100);
+                updateQuantityTypeChannel(channelUID, newConfig.heatsetpoint, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_TEMPERATURE_OFFSET:
-                updateQuantityTypeChannel(channelID, newConfig.offset, CELSIUS, 1.0 / 100);
+                updateQuantityTypeChannel(channelUID, newConfig.offset, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_THERMOSTAT_MODE:
                 updateState(channelUID, new StringType(mode));
@@ -146,19 +148,19 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     }
 
     @Override
-    protected void valueUpdated(String channelID, SensorState newState, boolean initializing) {
-        super.valueUpdated(channelID, newState, initializing);
-        switch (channelID) {
+    protected void valueUpdated(ChannelUID channelUID, SensorState newState, boolean initializing) {
+        super.valueUpdated(channelUID, newState, initializing);
+        switch (channelUID.getId()) {
             case CHANNEL_TEMPERATURE:
-                updateQuantityTypeChannel(channelID, newState.temperature, CELSIUS, 1.0 / 100);
+                updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_VALVE_POSITION:
-                updateQuantityTypeChannel(channelID, newState.valve, PERCENT, 100.0 / 255);
+                updateQuantityTypeChannel(channelUID, newState.valve, PERCENT, 100.0 / 255);
                 break;
             case CHANNEL_WINDOWOPEN:
                 String open = newState.windowopen;
                 if (open != null) {
-                    updateState(channelID, "Closed".equals(open) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                    updateState(channelUID, "Closed".equals(open) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                 }
                 break;
         }

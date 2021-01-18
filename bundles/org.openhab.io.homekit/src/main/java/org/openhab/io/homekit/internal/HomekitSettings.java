@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ package org.openhab.io.homekit.internal;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitSettings {
+    public static final String CONFIG_PID = "org.openhab.homekit";
     public static final String MANUFACTURER = "openHAB Community";
     public static final String SERIAL_NUMBER = "none";
     public static final String MODEL = "openHAB";
@@ -26,6 +27,8 @@ public class HomekitSettings {
     public String name = "openHAB";
     public int port = 9123;
     public String pin = "031-45-154";
+    public String setupId;
+    public String qrCode;
     public int startDelay = 30;
     public boolean useFahrenheitTemperature = false;
     public double minimumTemperature = -100;
@@ -56,6 +59,7 @@ public class HomekitSettings {
         temp = Double.doubleToLongBits(minimumTemperature);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((pin == null) ? 0 : pin.hashCode());
+        result = prime * result + ((setupId == null) ? 0 : setupId.hashCode());
         result = prime * result + port;
         result = prime * result + ((thermostatTargetModeAuto == null) ? 0 : thermostatTargetModeAuto.hashCode());
         result = prime * result + ((thermostatTargetModeCool == null) ? 0 : thermostatTargetModeCool.hashCode());
@@ -88,6 +92,8 @@ public class HomekitSettings {
                 return false;
             }
         } else if (!pin.equals(other.pin)) {
+            return false;
+        } else if (!setupId.equals(other.setupId)) {
             return false;
         }
         if (port != other.port) {

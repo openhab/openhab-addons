@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,10 @@ public class SocketChannelSession implements SocketSession {
     private final Logger logger = LoggerFactory.getLogger(SocketChannelSession.class);
 
     /**
+     * The uid of the calling thing
+     */
+    private final String uid;
+    /**
      * The host/ip address to connect to
      */
     private final String host;
@@ -77,10 +81,11 @@ public class SocketChannelSession implements SocketSession {
     /**
      * Creates the socket session from the given host and port
      *
+     * @param uid the thing uid of the calling thing
      * @param host a non-null, non-empty host/ip address
      * @param port the port number between 1 and 65535
      */
-    public SocketChannelSession(String host, int port) {
+    public SocketChannelSession(String uid, String host, int port) {
         if (host == null || host.trim().length() == 0) {
             throw new IllegalArgumentException("Host cannot be null or empty");
         }
@@ -88,6 +93,7 @@ public class SocketChannelSession implements SocketSession {
         if (port < 1 || port > 65535) {
             throw new IllegalArgumentException("Port must be between 1 and 65535");
         }
+        this.uid = uid;
         this.host = host;
         this.port = port;
     }
@@ -129,8 +135,12 @@ public class SocketChannelSession implements SocketSession {
         }
 
         socketChannel.set(channel);
-        new Thread(dispatcher).start();
-        new Thread(responseReader).start();
+        Thread dispatcherThread = new Thread(dispatcher, "OH-binding-" + uid + "-dispatcher");
+        dispatcherThread.setDaemon(true);
+        dispatcherThread.start();
+        Thread responseReaderThread = new Thread(responseReader, "OH-binding-" + uid + "-responseReader");
+        responseReaderThread.setDaemon(true);
+        responseReaderThread.start();
     }
 
     @Override

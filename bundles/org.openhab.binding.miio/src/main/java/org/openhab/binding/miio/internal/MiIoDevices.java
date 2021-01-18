@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -165,6 +165,8 @@ public enum MiIoDevices {
     CHUANGMI_PLUG_HMI205("chuangmi.plug.hmi205", "Mi Smart Plug WiFi", THING_TYPE_BASIC),
     CHUANGMI_PLUG_HMI206("chuangmi.plug.hmi206", "Mi Smart Plug (WiFi)", THING_TYPE_BASIC),
     CHUANGMI_PLUG_HMI208("chuangmi.plug.hmi208", "Mi Smart Wi-Fi Plug (Bluetooth Gateway)", THING_TYPE_BASIC),
+    CHUANGMI_PLUG_212A01("chuangmi.plug.212a01", "Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway)",
+            THING_TYPE_BASIC),
     QMI_POWERSTRIP_V1("qmi.powerstrip.v1", "CHINGMI Smart Power Strip v1", THING_TYPE_BASIC),
     ZIMI_POWERSTRIP_V2("zimi.powerstrip.v2", "Mi Smart Power Strip", THING_TYPE_BASIC),
     SOOCARE_TOOTHBRUSH_X3("soocare.toothbrush.x3", "Soocare Electric Toothbrush", THING_TYPE_UNSUPPORTED),
@@ -195,6 +197,7 @@ public enum MiIoDevices {
     ROCKROBO_VACUUM_S6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_S6("roborock.vacuum.s6", "Roborock S6", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_E2("roborock.vacuum.e2", "Roborock Xiaowa E Series Vacuum v2", THING_TYPE_UNSUPPORTED),
+    VIOMI_WATERHEATER_E1("viomi.waterheater.e1", "VIOMI Internet electric water heater 1A (60L)", THING_TYPE_BASIC),
     VIOMI_VACUUM_V6("viomi.vacuum.v6", "Viomi Cleaning Robot V-RVCLM21B", THING_TYPE_BASIC),
     VIOMI_VACUUM_V7("viomi.vacuum.v7", "Mi Robot Vacuum-Mop P", THING_TYPE_BASIC),
     VIOMI_VACUUM_V8("viomi.vacuum.v8", "Mi Robot Vacuum-Mop P", THING_TYPE_BASIC),

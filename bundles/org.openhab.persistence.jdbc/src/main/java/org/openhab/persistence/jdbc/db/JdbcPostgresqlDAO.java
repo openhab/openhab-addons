@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,18 +13,14 @@
 package org.openhab.persistence.jdbc.db;
 
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
-import org.openhab.core.persistence.HistoricItem;
 import org.openhab.persistence.jdbc.model.ItemVO;
 import org.openhab.persistence.jdbc.model.ItemsVO;
-import org.openhab.persistence.jdbc.model.JdbcHistoricItem;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,26 +141,12 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         Yank.execute(sql, params);
     }
 
-    @Override
-    public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
-            String table, String name, ZoneId timeZone) {
-        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
-        logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
-        List<Object[]> m = Yank.queryObjectArrays(sql, null);
-
-        List<HistoricItem> items = new ArrayList<>();
-        for (int i = 0; i < m.size(); i++) {
-            items.add(new JdbcHistoricItem(item.getName(), getState(item, m.get(i)[1]), objectAsDate(m.get(i)[0])));
-        }
-        return items;
-    }
-
     /****************************
      * SQL generation Providers *
      ****************************/
-    static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
+    @Override
+    protected String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
             String simpleName, ZoneId timeZone) {
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,19 +33,10 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
 import org.openhab.binding.http.internal.config.HttpChannelMode;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
-import org.openhab.binding.http.internal.converter.AbstractTransformingItemConverter;
-import org.openhab.binding.http.internal.converter.ColorItemConverter;
-import org.openhab.binding.http.internal.converter.DimmerItemConverter;
-import org.openhab.binding.http.internal.converter.FixedValueMappingItemConverter;
-import org.openhab.binding.http.internal.converter.GenericItemConverter;
-import org.openhab.binding.http.internal.converter.ImageItemConverter;
-import org.openhab.binding.http.internal.converter.ItemValueConverter;
-import org.openhab.binding.http.internal.converter.PlayerItemConverter;
-import org.openhab.binding.http.internal.converter.RollershutterItemConverter;
+import org.openhab.binding.http.internal.converter.*;
 import org.openhab.binding.http.internal.http.*;
 import org.openhab.binding.http.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -260,8 +251,8 @@ public class HttpThingHandler extends BaseThingHandler {
                 itemValueConverter = createGenericItemConverter(commandUrl, channelUID, channelConfig, PointType::new);
                 break;
             case "Number":
-                itemValueConverter = createGenericItemConverter(commandUrl, channelUID, channelConfig,
-                        DecimalType::new);
+                itemValueConverter = createItemConverter(NumberItemConverter::new, commandUrl, channelUID,
+                        channelConfig);
                 break;
             case "Player":
                 itemValueConverter = createItemConverter(PlayerItemConverter::new, commandUrl, channelUID,

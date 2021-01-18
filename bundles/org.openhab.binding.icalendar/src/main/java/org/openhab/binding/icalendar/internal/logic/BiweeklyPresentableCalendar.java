@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import biweekly.component.VEvent;
 import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.text.ICalReader;
+import biweekly.parameter.Range;
 import biweekly.property.Comment;
 import biweekly.property.Contact;
 import biweekly.property.DateEnd;
@@ -41,10 +42,12 @@ import biweekly.property.DateStart;
 import biweekly.property.Description;
 import biweekly.property.DurationProperty;
 import biweekly.property.Location;
+import biweekly.property.RecurrenceId;
 import biweekly.property.Status;
 import biweekly.property.Summary;
 import biweekly.property.TextProperty;
 import biweekly.property.Uid;
+import biweekly.util.ICalDate;
 import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 
 /**
@@ -55,6 +58,7 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
  * @author Michael Wodniok - Extension for filtered events
+ * @author Michael Wodniok - Added logic for events moved with "RECURRENCE-ID" (issue 9647)
  */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
@@ -252,7 +256,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             int foundInSeries = 0;
             while (positiveBeginDates.hasNext()) {
                 final Instant begInst = positiveBeginDates.next().toInstant();
-                if (begInst.isAfter(frameEnd)) {
+                if (begInst.isAfter(frameEnd) || begInst.equals(frameEnd)) {
                     break;
                 }
                 Duration duration = getEventLength(positiveEvent);
@@ -293,8 +297,15 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         for (final VEvent currentEvent : usedCalendar.getEvents()) {
             final Status eventStatus = currentEvent.getStatus();
             boolean positive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
-            final Collection<VEvent> positiveOrNegativeEvents = (positive ? positiveEvents : negativeEvents);
-            positiveOrNegativeEvents.add(currentEvent);
+            final RecurrenceId eventRecurrenceId = currentEvent.getRecurrenceId();
+            if (positive && eventRecurrenceId != null) {
+                // RecurrenceId moves an event. This blocks other events of series and creates a new single instance
+                positiveEvents.add(currentEvent);
+                negativeEvents.add(currentEvent);
+            } else {
+                final Collection<VEvent> positiveOrNegativeEvents = (positive ? positiveEvents : negativeEvents);
+                positiveOrNegativeEvents.add(currentEvent);
+            }
         }
     }
 
@@ -386,12 +397,32 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         for (final VEvent counterEvent : counterEvents) {
             final Uid counterEventUid = counterEvent.getUid();
             if (counterEventUid != null && eventUid.getValue().contentEquals(counterEventUid.getValue())) {
-                final DateIterator counterStartDates = getRecurredEventDateIterator(counterEvent);
-                counterStartDates.advanceTo(Date.from(startInstant));
-                if (counterStartDates.hasNext()) {
-                    final Instant counterStartInstant = counterStartDates.next().toInstant();
-                    if (counterStartInstant.equals(startInstant)) {
-                        return true;
+                final RecurrenceId counterRecurrenceId = counterEvent.getRecurrenceId();
+                if (counterRecurrenceId != null) {
+                    ICalDate recurrenceDate = counterRecurrenceId.getValue();
+                    if (recurrenceDate != null) {
+                        Instant recurrenceInstant = Instant.ofEpochMilli(recurrenceDate.getTime());
+                        if (recurrenceInstant.equals(startInstant)) {
+                            return true;
+                        }
+                        Range futureOrPast = counterRecurrenceId.getRange();
+                        if (futureOrPast != null && futureOrPast.equals(Range.THIS_AND_FUTURE)
+                                && startInstant.isAfter(recurrenceInstant)) {
+                            return true;
+                        }
+                        if (futureOrPast != null && futureOrPast.equals(Range.THIS_AND_PRIOR)
+                                && startInstant.isBefore(recurrenceInstant)) {
+                            return true;
+                        }
+                    }
+                } else {
+                    final DateIterator counterStartDates = getRecurredEventDateIterator(counterEvent);
+                    counterStartDates.advanceTo(Date.from(startInstant));
+                    if (counterStartDates.hasNext()) {
+                        final Instant counterStartInstant = counterStartDates.next().toInstant();
+                        if (counterStartInstant.equals(startInstant)) {
+                            return true;
+                        }
                     }
                 }
             }

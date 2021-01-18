@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -350,8 +350,8 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
             parameters.add("sort=StartTime");
             parameters.add("direction=desc");
             parameters.add("limit=1");
-            String response = executeGet(
-                    buildUrlWithParameters(String.format("/api/events/index/MonitorId:%s.json", id), parameters));
+            String response = executeGet(buildUrlWithParameters(
+                    String.format("/api/events/index/MonitorId:%s/Name!=:New%%20Event.json", id), parameters));
             EventsDTO events = GSON.fromJson(response, EventsDTO.class);
             if (events != null && events.eventsList != null && events.eventsList.size() == 1) {
                 EventDTO e = events.eventsList.get(0).event;

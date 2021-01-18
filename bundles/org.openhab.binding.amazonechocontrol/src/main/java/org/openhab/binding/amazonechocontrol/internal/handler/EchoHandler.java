@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -122,8 +120,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private @Nullable Integer notificationVolumeLevel;
     private @Nullable Boolean ascendingAlarm;
     private @Nullable JsonPlaylists playLists;
-    private @Nullable JsonNotificationSound @Nullable [] alarmSounds;
-    private @Nullable List<JsonMusicProvider> musicProviders;
+    private List<JsonNotificationSound> alarmSounds = List.of();
+    private List<JsonMusicProvider> musicProviders = List.of();
     private List<ChannelHandler> channelHandlers = new ArrayList<>();
 
     private @Nullable JsonNotificationResponse currentNotification;
@@ -163,10 +161,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             return false;
         }
         this.device = device;
-        String[] capabilities = device.capabilities;
-        if (capabilities != null) {
-            this.capabilities = Stream.of(capabilities).filter(Objects::nonNull).collect(Collectors.toSet());
-        }
+        this.capabilities = device.getCapabilities();
         if (!device.online) {
             updateStatus(ThingStatus.OFFLINE);
             return false;
@@ -204,11 +199,11 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         return this.playLists;
     }
 
-    public @Nullable JsonNotificationSound @Nullable [] findAlarmSounds() {
+    public List<JsonNotificationSound> findAlarmSounds() {
         return this.alarmSounds;
     }
 
-    public @Nullable List<JsonMusicProvider> findMusicProviders() {
+    public List<JsonMusicProvider> findMusicProviders() {
         return this.musicProviders;
     }
 
@@ -444,17 +439,11 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     String bluetoothId = lastKnownBluetoothMAC;
                     BluetoothState state = bluetoothState;
                     if (state != null && (bluetoothId == null || bluetoothId.isEmpty())) {
-                        PairedDevice[] pairedDeviceList = state.pairedDeviceList;
-                        if (pairedDeviceList != null) {
-                            for (PairedDevice paired : pairedDeviceList) {
-                                if (paired == null) {
-                                    continue;
-                                }
-                                String pairedAddress = paired.address;
-                                if (pairedAddress != null && !pairedAddress.isEmpty()) {
-                                    lastKnownBluetoothMAC = pairedAddress;
-                                    break;
-                                }
+                        for (PairedDevice paired : state.getPairedDeviceList()) {
+                            String pairedAddress = paired.address;
+                            if (pairedAddress != null && !pairedAddress.isEmpty()) {
+                                lastKnownBluetoothMAC = pairedAddress;
+                                break;
                             }
                         }
                     }
@@ -806,8 +795,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     public void updateState(AccountHandler accountHandler, @Nullable Device device,
             @Nullable BluetoothState bluetoothState, @Nullable DeviceNotificationState deviceNotificationState,
             @Nullable AscendingAlarmModel ascendingAlarmModel, @Nullable JsonPlaylists playlists,
-            @Nullable JsonNotificationSound @Nullable [] alarmSounds,
-            @Nullable List<JsonMusicProvider> musicProviders) {
+            @Nullable List<JsonNotificationSound> alarmSounds, @Nullable List<JsonMusicProvider> musicProviders) {
         try {
             this.logger.debug("Handle updateState {}", this.getThing().getUID());
 
@@ -974,24 +962,19 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             boolean bluetoothIsConnected = false;
             if (bluetoothState != null) {
                 this.bluetoothState = bluetoothState;
-                PairedDevice[] pairedDeviceList = bluetoothState.pairedDeviceList;
-                if (pairedDeviceList != null) {
-                    for (PairedDevice paired : pairedDeviceList) {
-                        if (paired == null) {
-                            continue;
+                for (PairedDevice paired : bluetoothState.getPairedDeviceList()) {
+                    String pairedAddress = paired.address;
+                    if (paired.connected && pairedAddress != null) {
+                        bluetoothIsConnected = true;
+                        bluetoothMAC = pairedAddress;
+                        bluetoothDeviceName = paired.friendlyName;
+                        if (bluetoothDeviceName == null || bluetoothDeviceName.isEmpty()) {
+                            bluetoothDeviceName = pairedAddress;
                         }
-                        String pairedAddress = paired.address;
-                        if (paired.connected && pairedAddress != null) {
-                            bluetoothIsConnected = true;
-                            bluetoothMAC = pairedAddress;
-                            bluetoothDeviceName = paired.friendlyName;
-                            if (bluetoothDeviceName == null || bluetoothDeviceName.isEmpty()) {
-                                bluetoothDeviceName = pairedAddress;
-                            }
-                            break;
-                        }
+                        break;
                     }
                 }
+
             }
             if (!bluetoothMAC.isEmpty()) {
                 lastKnownBluetoothMAC = bluetoothMAC;
@@ -1036,22 +1019,21 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             }
             if (mediaState != null) {
-                QueueEntry[] queueEntries = mediaState.queue;
-                if (queueEntries != null && queueEntries.length > 0) {
-                    QueueEntry entry = queueEntries[0];
-                    if (entry != null) {
-                        if (isRadio) {
-                            if ((imageUrl == null || imageUrl.isEmpty()) && entry.imageURL != null) {
-                                imageUrl = entry.imageURL;
-                            }
-                            if ((subTitle1 == null || subTitle1.isEmpty()) && entry.radioStationSlogan != null) {
-                                subTitle1 = entry.radioStationSlogan;
-                            }
-                            if ((subTitle2 == null || subTitle2.isEmpty()) && entry.radioStationLocation != null) {
-                                subTitle2 = entry.radioStationLocation;
-                            }
+                List<QueueEntry> queueEntries = Objects.requireNonNullElse(mediaState.queue, List.of());
+                if (!queueEntries.isEmpty()) {
+                    QueueEntry entry = queueEntries.get(0);
+                    if (isRadio) {
+                        if ((imageUrl == null || imageUrl.isEmpty()) && entry.imageURL != null) {
+                            imageUrl = entry.imageURL;
+                        }
+                        if ((subTitle1 == null || subTitle1.isEmpty()) && entry.radioStationSlogan != null) {
+                            subTitle1 = entry.radioStationSlogan;
+                        }
+                        if ((subTitle2 == null || subTitle2.isEmpty()) && entry.radioStationLocation != null) {
+                            subTitle2 = entry.radioStationLocation;
                         }
                     }
+
                 }
             }
 
@@ -1287,7 +1269,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     }
 
     public void updateNotifications(ZonedDateTime currentTime, ZonedDateTime now,
-            @Nullable JsonCommandPayloadPushNotificationChange pushPayload, JsonNotificationResponse[] notifications) {
+            @Nullable JsonCommandPayloadPushNotificationChange pushPayload,
+            List<JsonNotificationResponse> notifications) {
         Device device = this.device;
         if (device == null) {
             return;

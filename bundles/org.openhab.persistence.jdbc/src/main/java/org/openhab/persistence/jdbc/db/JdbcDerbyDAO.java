@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,15 @@
 package org.openhab.persistence.jdbc.db;
 
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.measure.Quantity;
+import javax.measure.Unit;
 
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
@@ -160,23 +163,22 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
             String table, String name, ZoneId timeZone) {
         String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
-
         logger.debug("JDBC::doGetHistItemFilterQuery got Array length={}", m.size());
-
-        List<HistoricItem> items = new ArrayList<>();
-        for (int i = 0; i < m.size(); i++) {
-            logger.debug("JDBC::doGetHistItemFilterQuery 0='{}' 1='{}'", m.get(i)[0], m.get(i)[1]);
-            items.add(new JdbcHistoricItem(item.getName(), getState(item, m.get(i)[1]), objectAsDate(m.get(i)[0])));
-        }
-        return items;
+        // we already retrieve the unit here once as it is a very costly operation
+        String itemName = item.getName();
+        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
+        return m.stream().map(o -> {
+            logger.debug("JDBC::doGetHistItemFilterQuery 0='{}' 1='{}'", o[0], o[1]);
+            return new JdbcHistoricItem(itemName, getState(item, unit, o[1]), objectAsDate(o[0]));
+        }).collect(Collectors.<HistoricItem> toList());
     }
 
     /****************************
      * SQL generation Providers *
      ****************************/
-    static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
+    @Override
+    protected String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
             String simpleName, ZoneId timeZone) {
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",

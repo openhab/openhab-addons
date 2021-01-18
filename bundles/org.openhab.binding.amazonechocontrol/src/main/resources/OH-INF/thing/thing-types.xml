@@ -535,4 +535,110 @@
 		<description>Next timer</description>
 		<state readOnly="true"/>
 	</channel-type>
+	<!-- dynamic smart home device channels -->
+	<!-- Alexa.AcousticEventSensor -->
+	<channel-type id="glassBreakDetectionState">
+		<item-type>Contact</item-type>
+		<label>Glass Break Detection State</label>
+		<description>Glass Break Detection State</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="smokeAlarmDetectionState">
+		<item-type>Contact</item-type>
+		<label>Smoke Alarm Detection State</label>
+		<description>Smoke Alarm Detection State</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<!-- Alexa.BrightnessController -->
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Brightness</description>
+		<state min="0" max="100" step="1"/>
+	</channel-type>
+	<!-- Alexa.ColorController -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color</description>
+	</channel-type>
+	<channel-type id="colorName">
+		<item-type>String</item-type>
+		<label>Color Name</label>
+		<description>Color Name</description>
+	</channel-type>
+	<!-- Alexa.ColorTemperatureController -->
+	<channel-type id="colorTemperatureName">
+		<item-type>String</item-type>
+		<label>Color Temperature Name</label>
+		<description>Color Temperature Name</description>
+	</channel-type>
+	<channel-type id="colorTemperatureInKelvin">
+		<item-type>Number</item-type>
+		<label>Color Temperature In Kelvin</label>
+		<description>Color Temperature In Kelvin</description>
+	</channel-type>
+	<!-- Alexa.PercentageController -->
+	<channel-type id="percentage">
+		<item-type>Dimmer</item-type>
+		<label>Percentage</label>
+		<description>Percentage</description>
+	</channel-type>
+	<!-- Alexa.PowerController -->
+	<channel-type id="powerState">
+		<item-type>Switch</item-type>
+		<label>Power State</label>
+		<description>Power State</description>
+	</channel-type>
+	<!-- Alexa.PowerLevelController -->
+	<channel-type id="powerLevel">
+		<item-type>Dimmer</item-type>
+		<label>Power Level</label>
+		<description>Power Level</description>
+		<state min="0" max="100" step="1"/>
+	</channel-type>
+	<!-- Alexa.SecurityPanelController -->
+	<channel-type id="armState">
+		<item-type>String</item-type>
+		<label>ARM State</label>
+		<description>ARM State</description>
+	</channel-type>
+	<channel-type id="burglaryAlarm">
+		<item-type>Contact</item-type>
+		<label>Burglary Alarm</label>
+		<description>Burglary Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="carbonMonoxideAlarm">
+		<item-type>Contact</item-type>
+		<label>Carbon Monoxide Alarm</label>
+		<description>Carbon Monoxide Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fireAlarm">
+		<item-type>Contact</item-type>
+		<label>Fire Alarm</label>
+		<description>Fire Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="waterAlarm">
+		<item-type>Contact</item-type>
+		<label>Water Alarm</label>
+		<description>Water Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<!-- Alexa.TemperatureSensor -->
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<!-- Alexa.ThermostatController -->
+	<channel-type id="targetSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Setpoint</label>
+		<description>Target Setpoint</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>

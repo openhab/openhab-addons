@@ -193,8 +193,8 @@ Currently the miio binding supports more than 250 different models.
 | Mi Air Purifier 2            | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes       |            |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.ma1](#zhimi-airpurifier-ma1) | Yes       |            |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.ma2](#zhimi-airpurifier-ma2) | Yes       |            |
-| Mi Air Purifier 3            | miio:basic       | [zhimi.airpurifier.ma4](#zhimi-airpurifier-ma4) | Yes       |            |
-| Mi Air Purifier 3/3H         | miio:basic       | [zhimi.airpurifier.mb3](#zhimi-airpurifier-mb3) | Yes       |            |
+| Mi Air Purifier 3            | miio:basic       | [zhimi.airpurifier.ma4](#zhimi-airpurifier-ma4) | Yes       | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":4,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle","siid":8,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle-mode","siid":8,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Air Purifier 3/3H         | miio:basic       | [zhimi.airpurifier.mb3](#zhimi-airpurifier-mb3) | Yes       | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":4,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle","siid":8,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle-mode","siid":8,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier Super        | miio:basic       | [zhimi.airpurifier.sa1](#zhimi-airpurifier-sa1) | Yes       |            |
 | Mi Air Purifier MAX / MAX Pro | miio:basic       | [zhimi.airpurifier.sa2](#zhimi-airpurifier-sa2) | Yes       |            |
 | Mi Fresh Air Ventilator      | miio:basic       | [dmaker.airfresh.t2017](#dmaker-airfresh-t2017) | Yes       |            |
@@ -309,6 +309,7 @@ Currently the miio binding supports more than 250 different models.
 | Mi Smart Plug WiFi           | miio:basic       | [chuangmi.plug.hmi205](#chuangmi-plug-hmi205) | Yes       |            |
 | Mi Smart Plug (WiFi)         | miio:basic       | [chuangmi.plug.hmi206](#chuangmi-plug-hmi206) | Yes       |            |
 | Mi Smart Wi-Fi Plug (Bluetooth Gateway) | miio:basic       | [chuangmi.plug.hmi208](#chuangmi-plug-hmi208) | Yes       |            |
+| Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway) | miio:basic       | [chuangmi.plug.212a01](#chuangmi-plug-212a01) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | CHINGMI Smart Power Strip v1 | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes       |            |
 | Mi Smart Power Strip         | miio:basic       | [zimi.powerstrip.v2](#zimi-powerstrip-v2) | Yes       |            |
 | Soocare Electric Toothbrush  | miio:unsupported | soocare.toothbrush.x3  | No        |            |
@@ -339,6 +340,7 @@ Currently the miio binding supports more than 250 different models.
 | Roborock Vacuum S6           | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes       |            |
 | Roborock S6                  | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No        |            |
+| VIOMI Internet electric water heater 1A (60L) | miio:basic       | [viomi.waterheater.e1](#viomi-waterheater-e1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Viomi Cleaning Robot V-RVCLM21B | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes       |            |
 | Mi Robot Vacuum-Mop P        | miio:basic       | [viomi.vacuum.v7](#viomi-vacuum-v7) | Yes       |            |
 | Mi Robot Vacuum-Mop P        | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes       |            |
@@ -594,7 +596,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -605,9 +607,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
@@ -615,7 +617,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -626,9 +628,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier v3 (<a name="zhimi-airpurifier-v3">zhimi.airpurifier.v3</a>) Channels
@@ -636,7 +638,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -647,9 +649,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier v5 (<a name="zhimi-airpurifier-v5">zhimi.airpurifier.v5</a>) Channels
@@ -657,7 +659,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -668,9 +670,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier Pro v6 (<a name="zhimi-airpurifier-v6">zhimi.airpurifier.v6</a>) Channels
@@ -720,7 +722,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -731,9 +733,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 2 (<a name="zhimi-airpurifier-m2">zhimi.airpurifier.m2</a>) Channels
@@ -741,7 +743,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -752,9 +754,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-ma1">zhimi.airpurifier.ma1</a>) Channels
@@ -762,7 +764,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -773,9 +775,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-ma2">zhimi.airpurifier.ma2</a>) Channels
@@ -803,127 +805,119 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| Fault            | Number  | Air Purifier-Device Fault           |            |
-| On               | Switch  | Air Purifier-Switch Status          |            |
-| FanLevel         | Number  | Air Purifier-Fan Level              |            |
-| Mode             | Number  | Air Purifier-Mode                   |            |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
-| Manufacturer     | String  | Device Information-Device Manufacturer |            |
-| Model            | String  | Device Information-Device Model     |            |
-| SerialNumber     | String  | Device Information-Device Serial Number |            |
-| Pm25Density      | Number  | Environment-PM2.5 Density           |            |
-| RelativeHumidity | Number  | Environment-Relative Humidity       |            |
-| Temperature      | Number  | Environment-Temperature             |            |
-| FilterLifeLevel  | Number  | Filter-Filter Life Level            |            |
-| FilterUsedTime   | String  | Filter-Filter Used Time             |            |
-| Alarm            | Switch  | Alarm-Alarm                         |            |
-| Brightness       | Number  | Indicator Light-Brightness          |            |
-| On1              | Switch  | Indicator Light-Switch Status       |            |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
-| ButtonPressed    | String  | button-button_pressed               |            |
-| FilterMaxTime    | Number  | filter-time-filter-max-time         |            |
-| FilterHourUsedDebug | Number  | filter-time-filter-hour-used-debug  |            |
-| M1Strong         | Number  | motor-speed-m1-strong               |            |
-| M1High           | Number  | motor-speed-m1-high                 |            |
-| M1Med            | Number  | motor-speed-m1-med                  |            |
-| M1MedL           | Number  | motor-speed-m1-med-l                |            |
-| M1Low            | Number  | motor-speed-m1-low                  |            |
-| M1Silent         | Number  | motor-speed-m1-silent               |            |
-| M1Favorite       | Number  | motor-speed-m1-favorite             |            |
-| Motor1Speed      | Number  | motor-speed-motor1-speed            |            |
-| Motor1SetSpeed   | Number  | motor-speed-motor1-set-speed        |            |
-| FavoriteFanLevel | Number  | motor-speed-favorite fan level      |            |
-| UseTime          | Number  | use-time-use-time                   |            |
-| PurifyVolume     | Number  | aqi-purify-volume                   |            |
-| AverageAqi       | Number  | aqi-average-aqi                     |            |
-| AverageAqiCnt    | Number  | aqi-average-aqi-cnt                 |            |
-| AqiZone          | String  | aqi-aqi-zone                        |            |
-| SensorState      | String  | aqi-sensor-state                    |            |
-| AqiGoodh         | Number  | aqi-aqi-goodh                       |            |
-| AqiRunstate      | Number  | aqi-aqi-runstate                    |            |
-| AqiState         | Number  | aqi-aqi-state                       |            |
-| AqiUpdataHeartbeat | Number  | aqi-aqi-updata-heartbeat            |            |
-| RfidTag          | String  | rfid-rfid-tag                       |            |
-| RfidFactoryId    | String  | rfid-rfid-factory-id                |            |
-| RfidProductId    | String  | rfid-rfid-product-id                |            |
-| RfidTime         | String  | rfid-rfid-time                      |            |
-| RfidSerialNum    | String  | rfid-rfid-serial-num                |            |
-| AppExtra         | Number  | others-app-extra                    |            |
-| MainChannel      | Number  | others-main-channel                 |            |
-| SlaveChannel     | Number  | others-slave-channel                |            |
-| Cola             | String  | others-cola                         |            |
-| ButtomDoor       | Switch  | others-buttom-door                  |            |
-| RebootCause      | Number  | others-reboot_cause                 |            |
-| HwVersion        | Number  | others-hw-version                   |            |
-| I2cErrorCount    | Number  | others-i2c-error-count              |            |
-| ManualLevel      | Number  | others-manual-level                 |            |
+| fault            | Number  | Air Purifier - Device Fault         | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp"] |
+| on               | Switch  | Air Purifier - Switch Status        |            |
+| fan-level        | Number  | Air Purifier - Fan Level            | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
+| mode             | Number  | Air Purifier - Mode                 | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite","3"="None"] |
+| pm2.5-density    | Number  | Environment - Pm2 5 Density         |            |
+| relative-humidity | Number:Dimensionless | Environment - Relative Humidity     |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| filter-life-level | Number:Dimensionless | Filter - Filter Life Level          |            |
+| filter-used-time | Number:Time | Filter - Filter Used Time           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| brightness       | Number:Dimensionless | Indicator Light - Brightness        | Value mapping ["0"="brightest","1"="glimmer","2"="led_closed"] |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| physical-controls-locked | Switch  | Physical Control Locked - Physical Control Locked |            |
+| button-pressed   | String  | Button - Button_pressed             |            |
+| filter-max-time  | Number:Time | Filter Time - Filter Max Time       |            |
+| filter-hour-used-debug | Number  | Filter Time - Filter Hour Used Debug |            |
+| m1-strong        | Number  | Motor Speed - M1 Strong             |            |
+| m1-high          | Number  | Motor Speed - M1 High               |            |
+| m1-med           | Number  | Motor Speed - M1 Med                |            |
+| m1-med-l         | Number  | Motor Speed - M1 Med L              |            |
+| m1-low           | Number  | Motor Speed - M1 Low                |            |
+| m1-silent        | Number  | Motor Speed - M1 Silent             |            |
+| m1-favorite      | Number  | Motor Speed - M1 Favorite           |            |
+| motor1-speed     | Number  | Motor Speed - Motor1 Speed          |            |
+| motor1-set-speed | Number  | Motor Speed - Motor1 Set Speed      |            |
+| favorite-fan-level | Number  | Motor Speed - Favorite Fan Level    |            |
+| use-time         | Number:Time | Use Time - Use Time                 |            |
+| purify-volume    | Number:Volume | Aqi - Purify Volume                 |            |
+| average-aqi      | Number  | Aqi - Average Aqi                   |            |
+| average-aqi-cnt  | Number  | Aqi - Average Aqi Cnt               |            |
+| aqi-zone         | String  | Aqi - Aqi Zone                      |            |
+| sensor-state     | String  | Aqi - Sensor State                  |            |
+| aqi-goodh        | Number  | Aqi - Aqi Goodh                     |            |
+| aqi-runstate     | Number  | Aqi - Aqi Runstate                  | Value mapping ["0"="continue","1"="hold","2"="sleep"] |
+| aqi-state        | Number  | Aqi - Aqi State                     | Value mapping ["0"="AQI_GOOD_L","1"="AQI_GOOD_H","2"="AQI_MID_L","3"="AQI_MID_H","4"="AQI_BAD_L","5"="AQI_BAD_H"] |
+| aqi-updata-heartbeat | Number  | Aqi - Aqi Updata Heartbeat          |            |
+| rfid-tag         | String  | Rfid - Rfid Tag                     |            |
+| rfid-factory-id  | String  | Rfid - Rfid Factory Id              |            |
+| rfid-product-id  | String  | Rfid - Rfid Product Id              |            |
+| rfid-time        | String  | Rfid - Rfid Time                    |            |
+| rfid-serial-num  | String  | Rfid - Rfid Serial Num              |            |
+| app-extra        | Number  | Others - App Extra                  |            |
+| main-channel     | Number  | Others - Main Channel               |            |
+| slave-channel    | Number  | Others - Slave Channel              |            |
+| cola             | String  | Others - Cola                       |            |
+| buttom-door      | Switch  | Others - Buttom Door                |            |
+| reboot-cause     | Number  | Others - Reboot_cause               | Value mapping ["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"] |
+| hw-version       | Number  | Others - Hw Version                 |            |
+| i2c-error-count  | Number  | Others - I2c Error Count            |            |
+| manual-level     | Number  | Others - Manual Level               | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
 
 ### Mi Air Purifier 3/3H (<a name="zhimi-airpurifier-mb3">zhimi.airpurifier.mb3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| Fault            | Number  | Air Purifier-fault                  |            |
-| On               | Switch  | Air Purifier-Switch Status          |            |
-| FanLevel         | Number  | Air Purifier-Fan Level              |            |
-| Mode             | Number  | Air Purifier-Mode                   |            |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
-| Manufacturer     | String  | Device Information-Device Manufacturer |            |
-| Model            | String  | Device Information-Device Model     |            |
-| SerialNumber     | String  | Device Information-Device Serial Number |            |
-| Pm25Density      | Number  | Environment-PM2.5                   |            |
-| RelativeHumidity | Number  | Environment-Relative Humidity       |            |
-| Temperature      | Number  | Environment-Temperature             |            |
-| FilterLifeLevel  | Number  | Filter-Filter Life Level            |            |
-| FilterUsedTime   | String  | Filter-Filter Used Time             |            |
-| Alarm            | Switch  | Alarm-Alarm                         |            |
-| Brightness       | Number  | Indicator Light-brightness          |            |
-| On1              | Switch  | Indicator Light-Switch Status       |            |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
-| ButtonPressed    | String  | Button-button-pressed               |            |
-| FilterMaxTime    | Number  | filter-time-filter-max-time         |            |
-| FilterHourDebug  | Number  | filter-time-filter-hour-debug       |            |
-| MotorStrong      | Number  | motor-speed-motor-strong            |            |
-| MotorHigh        | Number  | motor-speed-motor-high              |            |
-| MotorMed         | Number  | motor-speed-motor-med               |            |
-| MotorMedL        | Number  | motor-speed-motor-med-l             |            |
-| MotorLow         | Number  | motor-speed-motor-low               |            |
-| MotorSilent      | Number  | motor-speed-motor-silent            |            |
-| MotorFavorite    | Number  | motor-speed-motor-favorite          |            |
-| MotorSpeed       | Number  | motor-speed-motor-speed             |            |
-| MotorSetSpeed    | Number  | motor-speed-motor-set-speed         |            |
-| FavoriteFanLevel | Number  | motor-speed-favorite-fan-level      |            |
-| UseTime          | Number  | use-time-use-time                   |            |
-| PurifyVolume     | Number  | aqi-purify-volume                   |            |
-| AverageAqi       | Number  | aqi-average-aqi                     |            |
-| AverageAqiCnt    | Number  | aqi-average-aqi-cnt                 |            |
-| AqiZone          | String  | aqi-aqi-zone                        |            |
-| SensorState      | String  | aqi-sensor-state                    |            |
-| AqiGoodh         | Number  | aqi-aqi-goodh                       |            |
-| AqiRunstate      | Number  | aqi-aqi-runstate                    |            |
-| AqiState         | Number  | aqi-aqi-state                       |            |
-| AqiUpdataHeartbeat | Number  | aqi-aqi-updata-heartbeat            |            |
-| RfidTag          | String  | rfid-rfid-tag                       |            |
-| RfidFactoryId    | String  | rfid-rfid-factory-id                |            |
-| RfidProductId    | String  | rfid-rfid-product-id                |            |
-| RfidTime         | String  | rfid-rfid-time                      |            |
-| RfidSerialNum    | String  | rfid-rfid-serial-num                |            |
-| AppExtra         | Number  | others-app-extra                    |            |
-| MainChannel      | Number  | others-main-channel                 |            |
-| SlaveChannel     | Number  | others-slave-channel                |            |
-| Cola             | String  | others-cola                         |            |
-| ButtomDoor       | Switch  | others-buttom-door                  |            |
-| RebootCause      | Number  | others-reboot-cause                 |            |
-| HwVersion        | Number  | others-hw-version                   |            |
-| IicErrorCount    | Number  | others-iic-error-count              |            |
-| ManualLevel      | Number  | others-manual-level                 |            |
-| CountryCode      | Number  | others-National code                |            |
+| fault            | Number  | Air Purifier - Fault                | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp"] |
+| on               | Switch  | Air Purifier - Switch Status        |            |
+| fan-level        | Number  | Air Purifier - Fan Level            | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
+| mode             | Number  | Air Purifier - Mode                 | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite","3"="None"] |
+| pm2.5-density    | Number  | Environment - Pm2 5                 |            |
+| relative-humidity | Number:Dimensionless | Environment - Relative Humidity     |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| filter-life-level | Number:Dimensionless | Filter - Filter Life Level          |            |
+| filter-used-time | Number:Time | Filter - Filter Used Time           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| brightness       | Number:Dimensionless | Indicator Light - Brightness        | Value mapping ["0"="Brightest","1"="Glimmer","2"="Led Closed"] |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| physical-controls-locked | Switch  | Physical Control Locked - Physical Control Locked |            |
+| button-pressed   | String  | Button - Button Pressed             |            |
+| filter-max-time  | Number  | Filter Time - Filter Max Time       |            |
+| filter-hour-debug | Number  | Filter Time - Filter Hour Debug     |            |
+| motor-strong     | Number  | Motor Speed - Motor Strong          |            |
+| motor-high       | Number  | Motor Speed - Motor High            |            |
+| motor-med        | Number  | Motor Speed - Motor Med             |            |
+| motor-med-l      | Number  | Motor Speed - Motor Med L           |            |
+| motor-low        | Number  | Motor Speed - Motor Low             |            |
+| motor-silent     | Number  | Motor Speed - Motor Silent          |            |
+| motor-favorite   | Number  | Motor Speed - Motor Favorite        |            |
+| motor-speed      | Number  | Motor Speed - Motor Speed           |            |
+| motor-set-speed  | Number  | Motor Speed - Motor Set Speed       |            |
+| favorite-fan-level | Number  | Motor Speed - Favorite Fan Level    |            |
+| use-time         | Number:Time | Use Time - Use Time                 |            |
+| purify-volume    | Number:Volume | Aqi - Purify Volume                 |            |
+| average-aqi      | Number  | Aqi - Average Aqi                   |            |
+| average-aqi-cnt  | Number  | Aqi - Average Aqi Cnt               |            |
+| aqi-zone         | String  | Aqi - Aqi Zone                      |            |
+| sensor-state     | String  | Aqi - Sensor State                  |            |
+| aqi-goodh        | Number  | Aqi - Aqi Goodh                     |            |
+| aqi-runstate     | Number  | Aqi - Aqi Runstate                  | Value mapping ["0"="continuous sampling","1"="preparing sampling","2"="stop sampling"] |
+| aqi-state        | Number  | Aqi - Aqi State                     | Value mapping ["0"="best","1"="good","2"="normal","3"="bad","4"="worse","5"="unhealthy"] |
+| aqi-updata-heartbeat | Number  | Aqi - Aqi Updata Heartbeat          |            |
+| rfid-tag         | String  | Rfid - Rfid Tag                     |            |
+| rfid-factory-id  | String  | Rfid - Rfid Factory Id              |            |
+| rfid-product-id  | String  | Rfid - Rfid Product Id              |            |
+| rfid-time        | String  | Rfid - Rfid Time                    |            |
+| rfid-serial-num  | String  | Rfid - Rfid Serial Num              |            |
+| app-extra        | Number  | Others - App Extra                  |            |
+| main-channel     | Number  | Others - Main Channel               |            |
+| slave-channel    | Number  | Others - Slave Channel              |            |
+| cola             | String  | Others - Cola                       |            |
+| buttom-door      | Switch  | Others - Buttom Door                |            |
+| reboot-cause     | Number  | Others - Reboot Cause               | Value mapping ["0"="hardware reboot","1"="software reboot","2"="update reboot","3"="dog reboot"] |
+| hw-version       | Number  | Others - Hw Version                 |            |
+| iic-error-count  | Number  | Others - Iic Error Count            |            |
+| manual-level     | Number  | Others - Manual Level               | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
+| country-code     | Number  | Others - National Code              | Value mapping ["91"="印度","44"="分销英文","852"="中国香港","886"="中国台湾","82"="韩国"] |
 
 ### Mi Air Purifier Super (<a name="zhimi-airpurifier-sa1">zhimi.airpurifier.sa1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -934,9 +928,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier MAX / MAX Pro (<a name="zhimi-airpurifier-sa2">zhimi.airpurifier.sa2</a>) Channels
@@ -944,7 +938,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -955,9 +949,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Fresh Air Ventilator (<a name="dmaker-airfresh-t2017">dmaker.airfresh.t2017</a>) Channels
@@ -1092,7 +1086,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -1103,9 +1097,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mc1">zhimi.airpurifier.mc1</a>) Channels
@@ -1113,7 +1107,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -1124,9 +1118,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 2H (<a name="zhimi-airpurifier-mc2">zhimi.airpurifier.mc2</a>) Channels
@@ -1134,7 +1128,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
+| mode             | String  | Mode                                | Value mapping ["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"] |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
@@ -1145,9 +1139,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | filterlife       | Number  | Filter Life                         |            |
-| favoritelevel    | Number  | Favorite Level                      |            |
+| favoritelevel    | Number  | Favorite Level                      | Value mapping ["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"] |
 | temperature      | Number:Temperature | Temperature                         |            |
-| purifyvolume     | Number  | Purivied Volume                     |            |
+| purifyvolume     | Number:Volume | Purified Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Smart Fan (<a name="zhimi-fan-v1">zhimi.fan.v1</a>) Channels
@@ -2258,6 +2252,24 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
+### Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway) (<a name="chuangmi-plug-212a01">chuangmi.plug.212a01</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| temperature      | Number:Temperature | Temperature                         |            |
+| working-time     | Number:Duration | Working Time                        |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| power-consumption | Number:Energy | Daily Power Consumption             |            |
+| electric-current | Number:Current | Power Consumption - Electric Current |            |
+| voltage          | Number:ElectricPotential | Power Consumption - Voltage         |            |
+| electric-power   | Number:Power | Current Power Consumption - Electric Power |            |
+| on-duration      | Number:Duration | Imilab Timer - On Duration          |            |
+| off-duration     | Number:Duration | Imilab Timer - Off Duration         |            |
+| countdown        | Number:Time | Imilab Timer - Countdown            |            |
+| task-switch      | Switch  | Imilab Timer - Task Switch          |            |
+| countdown-info   | Switch  | Imilab Timer - Countdown Info       |            |
+
 ### CHINGMI Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
@@ -2285,6 +2297,21 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | lp_autooff       | Number  | Low Power Auto Off                  |            |
 | lp_autooff_delay | Number  | Low Power Limit Time                |            |
 | lp_threshold     | Number  | Low Power Threshold                 |            |
+
+### VIOMI Internet electric water heater 1A (60L) (<a name="viomi-waterheater-e1">viomi.waterheater.e1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| washStatus       | Number  | Wash Status                         |            |
+| velocity         | Number  | Velocity                            |            |
+| waterTemp        | Number:Temperature | Water Temperature                   |            |
+| targetTemp       | Number:Temperature | Target Temperature                  |            |
+| errStatus        | Number  | Error Status                        |            |
+| hotWater         | Number  | Hot Water                           |            |
+| needClean        | Switch  | Need Clean                          |            |
+| modeType         | Number  | Mode                                |            |
+| appointStart     | Number  | Appoint Start                       |            |
+| appointEnd       | Number  | Appoint End                         |            |
 
 ### Viomi Cleaning Robot V-RVCLM21B (<a name="viomi-vacuum-v6">viomi.vacuum.v6</a>) Channels
 
@@ -4314,7 +4341,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4338,7 +4365,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4362,7 +4389,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4386,7 +4413,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4458,7 +4485,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4482,7 +4509,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4506,7 +4533,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4540,60 +4567,56 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 
 ```java
 Group G_airpurifier "Mi Air Purifier 3" <status>
-Number Fault "Air Purifier-Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:Fault"}
-Switch On "Air Purifier-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On"}
-Number FanLevel "Air Purifier-Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:FanLevel"}
-Number Mode "Air Purifier-Mode" (G_airpurifier) {channel="miio:basic:airpurifier:Mode"}
-String FirmwareRevision "Device Information-Current Firmware Version" (G_airpurifier) {channel="miio:basic:airpurifier:FirmwareRevision"}
-String Manufacturer "Device Information-Device Manufacturer" (G_airpurifier) {channel="miio:basic:airpurifier:Manufacturer"}
-String Model "Device Information-Device Model" (G_airpurifier) {channel="miio:basic:airpurifier:Model"}
-String SerialNumber "Device Information-Device Serial Number" (G_airpurifier) {channel="miio:basic:airpurifier:SerialNumber"}
-Number Pm25Density "Environment-PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:Pm25Density"}
-Number RelativeHumidity "Environment-Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:RelativeHumidity"}
-Number Temperature "Environment-Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:Temperature"}
-Number FilterLifeLevel "Filter-Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:FilterLifeLevel"}
-String FilterUsedTime "Filter-Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:FilterUsedTime"}
-Switch Alarm "Alarm-Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:Alarm"}
-Number Brightness "Indicator Light-Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:Brightness"}
-Switch On1 "Indicator Light-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On1"}
-Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:PhysicalControlsLocked"}
-String ButtonPressed "button-button_pressed" (G_airpurifier) {channel="miio:basic:airpurifier:ButtonPressed"}
-Number FilterMaxTime "filter-time-filter-max-time" (G_airpurifier) {channel="miio:basic:airpurifier:FilterMaxTime"}
-Number FilterHourUsedDebug "filter-time-filter-hour-used-debug" (G_airpurifier) {channel="miio:basic:airpurifier:FilterHourUsedDebug"}
-Number M1Strong "motor-speed-m1-strong" (G_airpurifier) {channel="miio:basic:airpurifier:M1Strong"}
-Number M1High "motor-speed-m1-high" (G_airpurifier) {channel="miio:basic:airpurifier:M1High"}
-Number M1Med "motor-speed-m1-med" (G_airpurifier) {channel="miio:basic:airpurifier:M1Med"}
-Number M1MedL "motor-speed-m1-med-l" (G_airpurifier) {channel="miio:basic:airpurifier:M1MedL"}
-Number M1Low "motor-speed-m1-low" (G_airpurifier) {channel="miio:basic:airpurifier:M1Low"}
-Number M1Silent "motor-speed-m1-silent" (G_airpurifier) {channel="miio:basic:airpurifier:M1Silent"}
-Number M1Favorite "motor-speed-m1-favorite" (G_airpurifier) {channel="miio:basic:airpurifier:M1Favorite"}
-Number Motor1Speed "motor-speed-motor1-speed" (G_airpurifier) {channel="miio:basic:airpurifier:Motor1Speed"}
-Number Motor1SetSpeed "motor-speed-motor1-set-speed" (G_airpurifier) {channel="miio:basic:airpurifier:Motor1SetSpeed"}
-Number FavoriteFanLevel "motor-speed-favorite fan level" (G_airpurifier) {channel="miio:basic:airpurifier:FavoriteFanLevel"}
-Number UseTime "use-time-use-time" (G_airpurifier) {channel="miio:basic:airpurifier:UseTime"}
-Number PurifyVolume "aqi-purify-volume" (G_airpurifier) {channel="miio:basic:airpurifier:PurifyVolume"}
-Number AverageAqi "aqi-average-aqi" (G_airpurifier) {channel="miio:basic:airpurifier:AverageAqi"}
-Number AverageAqiCnt "aqi-average-aqi-cnt" (G_airpurifier) {channel="miio:basic:airpurifier:AverageAqiCnt"}
-String AqiZone "aqi-aqi-zone" (G_airpurifier) {channel="miio:basic:airpurifier:AqiZone"}
-String SensorState "aqi-sensor-state" (G_airpurifier) {channel="miio:basic:airpurifier:SensorState"}
-Number AqiGoodh "aqi-aqi-goodh" (G_airpurifier) {channel="miio:basic:airpurifier:AqiGoodh"}
-Number AqiRunstate "aqi-aqi-runstate" (G_airpurifier) {channel="miio:basic:airpurifier:AqiRunstate"}
-Number AqiState "aqi-aqi-state" (G_airpurifier) {channel="miio:basic:airpurifier:AqiState"}
-Number AqiUpdataHeartbeat "aqi-aqi-updata-heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:AqiUpdataHeartbeat"}
-String RfidTag "rfid-rfid-tag" (G_airpurifier) {channel="miio:basic:airpurifier:RfidTag"}
-String RfidFactoryId "rfid-rfid-factory-id" (G_airpurifier) {channel="miio:basic:airpurifier:RfidFactoryId"}
-String RfidProductId "rfid-rfid-product-id" (G_airpurifier) {channel="miio:basic:airpurifier:RfidProductId"}
-String RfidTime "rfid-rfid-time" (G_airpurifier) {channel="miio:basic:airpurifier:RfidTime"}
-String RfidSerialNum "rfid-rfid-serial-num" (G_airpurifier) {channel="miio:basic:airpurifier:RfidSerialNum"}
-Number AppExtra "others-app-extra" (G_airpurifier) {channel="miio:basic:airpurifier:AppExtra"}
-Number MainChannel "others-main-channel" (G_airpurifier) {channel="miio:basic:airpurifier:MainChannel"}
-Number SlaveChannel "others-slave-channel" (G_airpurifier) {channel="miio:basic:airpurifier:SlaveChannel"}
-String Cola "others-cola" (G_airpurifier) {channel="miio:basic:airpurifier:Cola"}
-Switch ButtomDoor "others-buttom-door" (G_airpurifier) {channel="miio:basic:airpurifier:ButtomDoor"}
-Number RebootCause "others-reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:RebootCause"}
-Number HwVersion "others-hw-version" (G_airpurifier) {channel="miio:basic:airpurifier:HwVersion"}
-Number I2cErrorCount "others-i2c-error-count" (G_airpurifier) {channel="miio:basic:airpurifier:I2cErrorCount"}
-Number ManualLevel "others-manual-level" (G_airpurifier) {channel="miio:basic:airpurifier:ManualLevel"}
+Number fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fan-level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
+Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number pm2.5-density "Environment - Pm2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2.5-density"}
+Number:Dimensionless relative-humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter-life-level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
+Number:Time filter-used-time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-used-time"}
+Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number:Dimensionless brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch on1 "Indicator Light - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on1"}
+Switch physical-controls-locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical-controls-locked"}
+String button-pressed "Button - Button_pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button-pressed"}
+Number:Time filter-max-time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-max-time"}
+Number filter-hour-used-debug "Filter Time - Filter Hour Used Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter-hour-used-debug"}
+Number m1-strong "Motor Speed - M1 Strong" (G_airpurifier) {channel="miio:basic:airpurifier:m1-strong"}
+Number m1-high "Motor Speed - M1 High" (G_airpurifier) {channel="miio:basic:airpurifier:m1-high"}
+Number m1-med "Motor Speed - M1 Med" (G_airpurifier) {channel="miio:basic:airpurifier:m1-med"}
+Number m1-med-l "Motor Speed - M1 Med L" (G_airpurifier) {channel="miio:basic:airpurifier:m1-med-l"}
+Number m1-low "Motor Speed - M1 Low" (G_airpurifier) {channel="miio:basic:airpurifier:m1-low"}
+Number m1-silent "Motor Speed - M1 Silent" (G_airpurifier) {channel="miio:basic:airpurifier:m1-silent"}
+Number m1-favorite "Motor Speed - M1 Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:m1-favorite"}
+Number motor1-speed "Motor Speed - Motor1 Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1-speed"}
+Number motor1-set-speed "Motor Speed - Motor1 Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1-set-speed"}
+Number favorite-fan-level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite-fan-level"}
+Number:Time use-time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use-time"}
+Number:Volume purify-volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify-volume"}
+Number average-aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi"}
+Number average-aqi-cnt "Aqi - Average Aqi Cnt" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi-cnt"}
+String aqi-zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-zone"}
+String sensor-state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor-state"}
+Number aqi-goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-goodh"}
+Number aqi-runstate "Aqi - Aqi Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-runstate"}
+Number aqi-state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-state"}
+Number aqi-updata-heartbeat "Aqi - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-updata-heartbeat"}
+String rfid-tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-tag"}
+String rfid-factory-id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-factory-id"}
+String rfid-product-id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-product-id"}
+String rfid-time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-time"}
+String rfid-serial-num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-serial-num"}
+Number app-extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app-extra"}
+Number main-channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main-channel"}
+Number slave-channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave-channel"}
+String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:cola"}
+Switch buttom-door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom-door"}
+Number reboot-cause "Others - Reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot-cause"}
+Number hw-version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw-version"}
+Number i2c-error-count "Others - I2c Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:i2c-error-count"}
+Number manual-level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
 ```
 
 ### Mi Air Purifier 3/3H (zhimi.airpurifier.mb3) item file lines
@@ -4602,61 +4625,57 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 
 ```java
 Group G_airpurifier "Mi Air Purifier 3/3H" <status>
-Number Fault "Air Purifier-fault" (G_airpurifier) {channel="miio:basic:airpurifier:Fault"}
-Switch On "Air Purifier-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On"}
-Number FanLevel "Air Purifier-Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:FanLevel"}
-Number Mode "Air Purifier-Mode" (G_airpurifier) {channel="miio:basic:airpurifier:Mode"}
-String FirmwareRevision "Device Information-Current Firmware Version" (G_airpurifier) {channel="miio:basic:airpurifier:FirmwareRevision"}
-String Manufacturer "Device Information-Device Manufacturer" (G_airpurifier) {channel="miio:basic:airpurifier:Manufacturer"}
-String Model "Device Information-Device Model" (G_airpurifier) {channel="miio:basic:airpurifier:Model"}
-String SerialNumber "Device Information-Device Serial Number" (G_airpurifier) {channel="miio:basic:airpurifier:SerialNumber"}
-Number Pm25Density "Environment-PM2.5" (G_airpurifier) {channel="miio:basic:airpurifier:Pm25Density"}
-Number RelativeHumidity "Environment-Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:RelativeHumidity"}
-Number Temperature "Environment-Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:Temperature"}
-Number FilterLifeLevel "Filter-Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:FilterLifeLevel"}
-String FilterUsedTime "Filter-Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:FilterUsedTime"}
-Switch Alarm "Alarm-Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:Alarm"}
-Number Brightness "Indicator Light-brightness" (G_airpurifier) {channel="miio:basic:airpurifier:Brightness"}
-Switch On1 "Indicator Light-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On1"}
-Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:PhysicalControlsLocked"}
-String ButtonPressed "Button-button-pressed" (G_airpurifier) {channel="miio:basic:airpurifier:ButtonPressed"}
-Number FilterMaxTime "filter-time-filter-max-time" (G_airpurifier) {channel="miio:basic:airpurifier:FilterMaxTime"}
-Number FilterHourDebug "filter-time-filter-hour-debug" (G_airpurifier) {channel="miio:basic:airpurifier:FilterHourDebug"}
-Number MotorStrong "motor-speed-motor-strong" (G_airpurifier) {channel="miio:basic:airpurifier:MotorStrong"}
-Number MotorHigh "motor-speed-motor-high" (G_airpurifier) {channel="miio:basic:airpurifier:MotorHigh"}
-Number MotorMed "motor-speed-motor-med" (G_airpurifier) {channel="miio:basic:airpurifier:MotorMed"}
-Number MotorMedL "motor-speed-motor-med-l" (G_airpurifier) {channel="miio:basic:airpurifier:MotorMedL"}
-Number MotorLow "motor-speed-motor-low" (G_airpurifier) {channel="miio:basic:airpurifier:MotorLow"}
-Number MotorSilent "motor-speed-motor-silent" (G_airpurifier) {channel="miio:basic:airpurifier:MotorSilent"}
-Number MotorFavorite "motor-speed-motor-favorite" (G_airpurifier) {channel="miio:basic:airpurifier:MotorFavorite"}
-Number MotorSpeed "motor-speed-motor-speed" (G_airpurifier) {channel="miio:basic:airpurifier:MotorSpeed"}
-Number MotorSetSpeed "motor-speed-motor-set-speed" (G_airpurifier) {channel="miio:basic:airpurifier:MotorSetSpeed"}
-Number FavoriteFanLevel "motor-speed-favorite-fan-level" (G_airpurifier) {channel="miio:basic:airpurifier:FavoriteFanLevel"}
-Number UseTime "use-time-use-time" (G_airpurifier) {channel="miio:basic:airpurifier:UseTime"}
-Number PurifyVolume "aqi-purify-volume" (G_airpurifier) {channel="miio:basic:airpurifier:PurifyVolume"}
-Number AverageAqi "aqi-average-aqi" (G_airpurifier) {channel="miio:basic:airpurifier:AverageAqi"}
-Number AverageAqiCnt "aqi-average-aqi-cnt" (G_airpurifier) {channel="miio:basic:airpurifier:AverageAqiCnt"}
-String AqiZone "aqi-aqi-zone" (G_airpurifier) {channel="miio:basic:airpurifier:AqiZone"}
-String SensorState "aqi-sensor-state" (G_airpurifier) {channel="miio:basic:airpurifier:SensorState"}
-Number AqiGoodh "aqi-aqi-goodh" (G_airpurifier) {channel="miio:basic:airpurifier:AqiGoodh"}
-Number AqiRunstate "aqi-aqi-runstate" (G_airpurifier) {channel="miio:basic:airpurifier:AqiRunstate"}
-Number AqiState "aqi-aqi-state" (G_airpurifier) {channel="miio:basic:airpurifier:AqiState"}
-Number AqiUpdataHeartbeat "aqi-aqi-updata-heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:AqiUpdataHeartbeat"}
-String RfidTag "rfid-rfid-tag" (G_airpurifier) {channel="miio:basic:airpurifier:RfidTag"}
-String RfidFactoryId "rfid-rfid-factory-id" (G_airpurifier) {channel="miio:basic:airpurifier:RfidFactoryId"}
-String RfidProductId "rfid-rfid-product-id" (G_airpurifier) {channel="miio:basic:airpurifier:RfidProductId"}
-String RfidTime "rfid-rfid-time" (G_airpurifier) {channel="miio:basic:airpurifier:RfidTime"}
-String RfidSerialNum "rfid-rfid-serial-num" (G_airpurifier) {channel="miio:basic:airpurifier:RfidSerialNum"}
-Number AppExtra "others-app-extra" (G_airpurifier) {channel="miio:basic:airpurifier:AppExtra"}
-Number MainChannel "others-main-channel" (G_airpurifier) {channel="miio:basic:airpurifier:MainChannel"}
-Number SlaveChannel "others-slave-channel" (G_airpurifier) {channel="miio:basic:airpurifier:SlaveChannel"}
-String Cola "others-cola" (G_airpurifier) {channel="miio:basic:airpurifier:Cola"}
-Switch ButtomDoor "others-buttom-door" (G_airpurifier) {channel="miio:basic:airpurifier:ButtomDoor"}
-Number RebootCause "others-reboot-cause" (G_airpurifier) {channel="miio:basic:airpurifier:RebootCause"}
-Number HwVersion "others-hw-version" (G_airpurifier) {channel="miio:basic:airpurifier:HwVersion"}
-Number IicErrorCount "others-iic-error-count" (G_airpurifier) {channel="miio:basic:airpurifier:IicErrorCount"}
-Number ManualLevel "others-manual-level" (G_airpurifier) {channel="miio:basic:airpurifier:ManualLevel"}
-Number CountryCode "others-National code" (G_airpurifier) {channel="miio:basic:airpurifier:CountryCode"}
+Number fault "Air Purifier - Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fan-level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
+Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number pm2.5-density "Environment - Pm2 5" (G_airpurifier) {channel="miio:basic:airpurifier:pm2.5-density"}
+Number:Dimensionless relative-humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter-life-level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
+Number:Time filter-used-time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-used-time"}
+Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number:Dimensionless brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch on1 "Indicator Light - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on1"}
+Switch physical-controls-locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical-controls-locked"}
+String button-pressed "Button - Button Pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button-pressed"}
+Number filter-max-time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-max-time"}
+Number filter-hour-debug "Filter Time - Filter Hour Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter-hour-debug"}
+Number motor-strong "Motor Speed - Motor Strong" (G_airpurifier) {channel="miio:basic:airpurifier:motor-strong"}
+Number motor-high "Motor Speed - Motor High" (G_airpurifier) {channel="miio:basic:airpurifier:motor-high"}
+Number motor-med "Motor Speed - Motor Med" (G_airpurifier) {channel="miio:basic:airpurifier:motor-med"}
+Number motor-med-l "Motor Speed - Motor Med L" (G_airpurifier) {channel="miio:basic:airpurifier:motor-med-l"}
+Number motor-low "Motor Speed - Motor Low" (G_airpurifier) {channel="miio:basic:airpurifier:motor-low"}
+Number motor-silent "Motor Speed - Motor Silent" (G_airpurifier) {channel="miio:basic:airpurifier:motor-silent"}
+Number motor-favorite "Motor Speed - Motor Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:motor-favorite"}
+Number motor-speed "Motor Speed - Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor-speed"}
+Number motor-set-speed "Motor Speed - Motor Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor-set-speed"}
+Number favorite-fan-level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite-fan-level"}
+Number:Time use-time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use-time"}
+Number:Volume purify-volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify-volume"}
+Number average-aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi"}
+Number average-aqi-cnt "Aqi - Average Aqi Cnt" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi-cnt"}
+String aqi-zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-zone"}
+String sensor-state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor-state"}
+Number aqi-goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-goodh"}
+Number aqi-runstate "Aqi - Aqi Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-runstate"}
+Number aqi-state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-state"}
+Number aqi-updata-heartbeat "Aqi - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-updata-heartbeat"}
+String rfid-tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-tag"}
+String rfid-factory-id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-factory-id"}
+String rfid-product-id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-product-id"}
+String rfid-time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-time"}
+String rfid-serial-num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-serial-num"}
+Number app-extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app-extra"}
+Number main-channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main-channel"}
+Number slave-channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave-channel"}
+String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:cola"}
+Switch buttom-door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom-door"}
+Number reboot-cause "Others - Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot-cause"}
+Number hw-version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw-version"}
+Number iic-error-count "Others - Iic Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:iic-error-count"}
+Number manual-level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
+Number country-code "Others - National Code" (G_airpurifier) {channel="miio:basic:airpurifier:country-code"}
 ```
 
 ### Mi Air Purifier Super (zhimi.airpurifier.sa1) item file lines
@@ -4679,7 +4698,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4703,7 +4722,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4817,36 +4836,36 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 Group G_vacuum "Dreame Robot Vacuum-Mop F9" <status>
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
-Number battery-level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
-Number charging-state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
-Number:Time brush-left-time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
-Number:Dimensionless brush-life-level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
-Number:Time brush-left-time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
-Number:Dimensionless brush-life-level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
-Number:Dimensionless filter-life-level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter-life-level"}
-Number:Time filter-left-time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
-Number work-mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work-mode"}
-Number:Time cleaning-time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning-time"}
-Number:Area cleaning-area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning-area"}
-Number cleaning-mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
-Number mop-mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop-mode"}
-Number waterbox-status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox-status"}
-Number task-status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task-status"}
-Number break-point-restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break-point-restart"}
-Number carpet-press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet-press"}
+Number battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
+Number:Time brush_left_time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
+Number:Dimensionless brush_life_level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
+Number:Time brush_left_time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
+Number:Dimensionless brush_life_level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter-life-level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
+Number work_mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work-mode"}
+Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning-time"}
+Number:Area cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning-area"}
+Number cleaning_mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number mop_mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop-mode"}
+Number waterbox_status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox-status"}
+Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task-status"}
+Number break_point_restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break-point-restart"}
+Number carpet_press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet-press"}
 Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
-String start-time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start-time"}
-String end-time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end-time"}
+String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start-time"}
+String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end-time"}
 Number volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
-String voice-packet-id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice-packet-id"}
-String voice-change-state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice-change-state"}
-String time-zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
-String timer-clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer-clean"}
-Number first-clean-time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first-clean-time"}
-Number:Time total-clean-time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
-Number total-clean-times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total-clean-times"}
-Number total-clean-area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
-Number save-map-status "Vslam Extend - Save Map Status" (G_vacuum) {channel="miio:basic:vacuum:save-map-status"}
+String voice_packet_id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice-packet-id"}
+String voice_change_state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice-change-state"}
+String time_zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String timer_clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer-clean"}
+Number first_clean_time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first-clean-time"}
+Number:Time total_clean_time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
+Number total_clean_times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total-clean-times"}
+Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
+Number save_map_status "Vslam Extend - Save Map Status" (G_vacuum) {channel="miio:basic:vacuum:save-map-status"}
 ```
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.mb1) item file lines
@@ -4869,7 +4888,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4893,7 +4912,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -4917,7 +4936,7 @@ Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier
 Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
@@ -5241,7 +5260,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO ARIES For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO ARIES For Living Room (huayi.light.aries) item file lines
@@ -5252,7 +5271,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO ARIES For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO Fan Light (huayi.light.fanwy) item file lines
@@ -5263,10 +5282,10 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Fan Light" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 Switch on1 "Fan - Power" (G_light) {channel="miio:basic:light:on1"}
-Number:Dimensionless fan-level "Fan - Fan Level" (G_light) {channel="miio:basic:light:fan-level"}
-Switch motor-reverse "Fan - Motor Reverse" (G_light) {channel="miio:basic:light:motor-reverse"}
+Number:Dimensionless fan_level "Fan - Fan Level" (G_light) {channel="miio:basic:light:fan-level"}
+Switch motor_reverse "Fan - Motor Reverse" (G_light) {channel="miio:basic:light:motor-reverse"}
 Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
 ```
 
@@ -5278,16 +5297,16 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Fan Light(2020)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 Switch on1 "Fan - Power" (G_light) {channel="miio:basic:light:on1"}
-Number:Dimensionless fan-level "Fan - Fan Level" (G_light) {channel="miio:basic:light:fan-level"}
+Number:Dimensionless fan_level "Fan - Fan Level" (G_light) {channel="miio:basic:light:fan-level"}
 Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
-Number:Time time-off "Presets - Time Off" (G_light) {channel="miio:basic:light:time-off"}
-Number:Temperature pre-colortemp "Presets - Pre Colortemp" (G_light) {channel="miio:basic:light:pre-colortemp"}
-Dimmer pre-brightness "Presets - Pre Brightness" (G_light) {channel="miio:basic:light:pre-brightness"}
-Number:Dimensionless pre-speed "Presets - Pre Speed" (G_light) {channel="miio:basic:light:pre-speed"}
+Number:Time time_off "Presets - Time Off" (G_light) {channel="miio:basic:light:time-off"}
+Number:Temperature pre_colortemp "Presets - Pre Colortemp" (G_light) {channel="miio:basic:light:pre-colortemp"}
+Dimmer pre_brightness "Presets - Pre Brightness" (G_light) {channel="miio:basic:light:pre-brightness"}
+Number:Dimensionless pre_speed "Presets - Pre Speed" (G_light) {channel="miio:basic:light:pre-speed"}
 Number reversal "Presets - Reversal" (G_light) {channel="miio:basic:light:reversal"}
-Number pre-custom "Presets - Pre Custom" (G_light) {channel="miio:basic:light:pre-custom"}
+Number pre_custom "Presets - Pre Custom" (G_light) {channel="miio:basic:light:pre-custom"}
 Switch flabellum "Presets - Flabellum" (G_light) {channel="miio:basic:light:flabellum"}
 ```
 
@@ -5299,7 +5318,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO PEGASUS For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO PEGASUS For Bedroom (huayi.light.peg093) item file lines
@@ -5310,7 +5329,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO PEGASUS For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO PISCES For Bedroom (huayi.light.pis123) item file lines
@@ -5321,7 +5340,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO PISCES For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO PISCES For Living Room (huayi.light.pisces) item file lines
@@ -5332,7 +5351,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO PISCES For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO TAURUS For Bedroom (huayi.light.tau023) item file lines
@@ -5343,7 +5362,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO TAURUS For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO TAURUS For Living Room (huayi.light.taurus) item file lines
@@ -5354,7 +5373,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO TAURUS For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO VIRGO For Bedroom (huayi.light.vir063) item file lines
@@ -5365,7 +5384,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO VIRGO For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO VIRGO For Living Room (huayi.light.virgo) item file lines
@@ -5376,7 +5395,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO VIRGO For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO Ceiling Light (huayi.light.wy) item file lines
@@ -5387,7 +5406,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Ceiling Light" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO LIANGCHEN(BLE Mesh) (huayi.light.wy200) item file lines
@@ -5398,7 +5417,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO LIANGCHEN(BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO SAG Downlight (BLE Mesh) (huayi.light.wy201) item file lines
@@ -5409,7 +5428,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO SAG Downlight (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO Bulb (BLE Mesh) (huayi.light.wy202) item file lines
@@ -5420,7 +5439,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Bulb (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO YONG Downlight (BLE Mesh) (huayi.light.wy203) item file lines
@@ -5431,7 +5450,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO YONG Downlight (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### huayi.light.wy204 (huayi.light.wy204) item file lines
@@ -5442,7 +5461,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "huayi.light.wy204" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### HUIZUO Heating Lamp (huayi.light.wyheat) item file lines
@@ -5453,10 +5472,10 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Heating Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 Switch on1 "Heater - Power" (G_light) {channel="miio:basic:light:on1"}
 Number fault "Heater - Device Fault" (G_light) {channel="miio:basic:light:fault"}
-Number heat-level "Heater - Heat Level" (G_light) {channel="miio:basic:light:heat-level"}
+Number heat_level "Heater - Heat Level" (G_light) {channel="miio:basic:light:heat-level"}
 Switch screenshow "Other - Screenshow" (G_light) {channel="miio:basic:light:screenshow"}
 ```
 
@@ -5468,7 +5487,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO ZIWEI Ceiling Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### Xiaomiyoupin Curtain Controller (Wi-Fi) (lumi.curtain.hagl05) item file lines
@@ -5478,14 +5497,14 @@ note: Autogenerated example. Replace the id (curtain) in the channel with your o
 ```java
 Group G_curtain "Xiaomiyoupin Curtain Controller (Wi-Fi)" <status>
 Number fault "Curtain - Device Fault" (G_curtain) {channel="miio:basic:curtain:fault"}
-Number current-position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current-position"}
+Number current_position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current-position"}
 Number status "Curtain - Status" (G_curtain) {channel="miio:basic:curtain:status"}
-Number target-position "Curtain - Target Position" (G_curtain) {channel="miio:basic:curtain:target-position"}
-Number manual-enabled "curtain_cfg - Manual Enabled" (G_curtain) {channel="miio:basic:curtain:manual-enabled"}
+Number target_position "Curtain - Target Position" (G_curtain) {channel="miio:basic:curtain:target-position"}
+Number manual_enabled "curtain_cfg - Manual Enabled" (G_curtain) {channel="miio:basic:curtain:manual-enabled"}
 Number polarity "curtain_cfg - Polarity" (G_curtain) {channel="miio:basic:curtain:polarity"}
-Number pos-limit "curtain_cfg - Position Limit" (G_curtain) {channel="miio:basic:curtain:pos-limit"}
-Switch en-night-tip-light "Set Night Tip Light" (G_curtain) {channel="miio:basic:curtain:en-night-tip-light"}
-Number run-time "curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtain:run-time"}
+Number pos_limit "curtain_cfg - Position Limit" (G_curtain) {channel="miio:basic:curtain:pos-limit"}
+Switch en_night_tip_light "Set Night Tip Light" (G_curtain) {channel="miio:basic:curtain:en-night-tip-light"}
+Number run_time "curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtain:run-time"}
 ```
 
 ### MR.BOND (mrbond.airer.m1pro) item file lines
@@ -5543,26 +5562,26 @@ String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuu
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
 Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
-Number target-water-level "Robot Cleaner - Target Water Level" (G_vacuum) {channel="miio:basic:vacuum:target-water-level"}
-Number fan-level "Robot Cleaner - Fan Level" (G_vacuum) {channel="miio:basic:vacuum:fan-level"}
-Number battery-level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
-Number charging-state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
+Number target_water_level "Robot Cleaner - Target Water Level" (G_vacuum) {channel="miio:basic:vacuum:target-water-level"}
+Number fan_level "Robot Cleaner - Fan Level" (G_vacuum) {channel="miio:basic:vacuum:fan-level"}
+Number battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
 Switch alarm "Alarm - Alarm" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
 Number volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
-Number filter-life-level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter-life-level"}
-Number filter-left-time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
-Number brush-life-level "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
-Number brush-left-time "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
-Number brush-life-level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
-Number brush-left-time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
-Number:Area clean-area "Clean Record - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
-Number:Time clean-time "Clean Record - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
-Number total-clean-area "Clean Record - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
-Number total-clean-time "Clean Record - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
-Number total-clean-count "Clean Record - Total Clean Count" (G_vacuum) {channel="miio:basic:vacuum:total-clean-count"}
+Number filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter-life-level"}
+Number filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
+Number brush_life_level "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
+Number brush_left_time "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
+Number brush_life_level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
+Number brush_left_time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
+Number:Area clean_area "Clean Record - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number:Time clean_time "Clean Record - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number total_clean_area "Clean Record - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
+Number total_clean_time "Clean Record - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
+Number total_clean_count "Clean Record - Total Clean Count" (G_vacuum) {channel="miio:basic:vacuum:total-clean-count"}
 Number language "Language - Language" (G_vacuum) {channel="miio:basic:vacuum:language"}
-Switch not-disturb-switch "Language - Not Disturb Switch" (G_vacuum) {channel="miio:basic:vacuum:not-disturb-switch"}
-Number mop-status "Other Status - Mop Status" (G_vacuum) {channel="miio:basic:vacuum:mop-status"}
+Switch not_disturb_switch "Language - Not Disturb Switch" (G_vacuum) {channel="miio:basic:vacuum:not-disturb-switch"}
+Number mop_status "Other Status - Mop Status" (G_vacuum) {channel="miio:basic:vacuum:mop-status"}
 ```
 
 ### SCISHARE Smart Capsule Coffee Machine (scishare.coffee.s1102) item file lines
@@ -6293,6 +6312,27 @@ Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
+### Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway) (chuangmi.plug.212a01) item file lines
+
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_plug "Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway)" <status>
+Switch on "Power" (G_plug) {channel="miio:basic:plug:on"}
+Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Number:Duration working-time "Working Time" (G_plug) {channel="miio:basic:plug:working-time"}
+Switch on1 "Indicator Light - Switch Status" (G_plug) {channel="miio:basic:plug:on1"}
+Number:Energy power-consumption "Daily Power Consumption" (G_plug) {channel="miio:basic:plug:power-consumption"}
+Number:Current electric-current "Power Consumption - Electric Current" (G_plug) {channel="miio:basic:plug:electric-current"}
+Number:ElectricPotential voltage "Power Consumption - Voltage" (G_plug) {channel="miio:basic:plug:voltage"}
+Number:Power electric-power "Current Power Consumption - Electric Power" (G_plug) {channel="miio:basic:plug:electric-power"}
+Number:Duration on-duration "Imilab Timer - On Duration" (G_plug) {channel="miio:basic:plug:on-duration"}
+Number:Duration off-duration "Imilab Timer - Off Duration" (G_plug) {channel="miio:basic:plug:off-duration"}
+Number:Time countdown "Imilab Timer - Countdown" (G_plug) {channel="miio:basic:plug:countdown"}
+Switch task-switch "Imilab Timer - Task Switch" (G_plug) {channel="miio:basic:plug:task-switch"}
+Switch countdown-info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:basic:plug:countdown-info"}
+```
+
 ### CHINGMI Smart Power Strip v1 (qmi.powerstrip.v1) item file lines
 
 note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -6325,6 +6365,24 @@ Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic
 Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
 Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
 Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
+```
+
+### VIOMI Internet electric water heater 1A (60L) (viomi.waterheater.e1) item file lines
+
+note: Autogenerated example. Replace the id (waterheater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterheater "VIOMI Internet electric water heater 1A (60L)" <status>
+Number washStatus "Wash Status" (G_waterheater) {channel="miio:basic:waterheater:washStatus"}
+Number velocity "Velocity" (G_waterheater) {channel="miio:basic:waterheater:velocity"}
+Number:Temperature waterTemp "Water Temperature" (G_waterheater) {channel="miio:basic:waterheater:waterTemp"}
+Number:Temperature targetTemp "Target Temperature" (G_waterheater) {channel="miio:basic:waterheater:targetTemp"}
+Number errStatus "Error Status" (G_waterheater) {channel="miio:basic:waterheater:errStatus"}
+Number hotWater "Hot Water" (G_waterheater) {channel="miio:basic:waterheater:hotWater"}
+Switch needClean "Need Clean" (G_waterheater) {channel="miio:basic:waterheater:needClean"}
+Number modeType "Mode" (G_waterheater) {channel="miio:basic:waterheater:modeType"}
+Number appointStart "Appoint Start" (G_waterheater) {channel="miio:basic:waterheater:appointStart"}
+Number appointEnd "Appoint End" (G_waterheater) {channel="miio:basic:waterheater:appointEnd"}
 ```
 
 ### Viomi Cleaning Robot V-RVCLM21B (viomi.vacuum.v6) item file lines
@@ -6830,13 +6888,13 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Inverter Air Conditioner (1.5HP)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
@@ -6850,13 +6908,13 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
@@ -6870,13 +6928,13 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Vertical Air Conditioner (2HP)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
@@ -6890,13 +6948,13 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Vertical Air Conditioner C1 (2HP / Inverter / China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
@@ -6910,13 +6968,13 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner C1 (1.5HP / Conventional / China Energy Label Level 3)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
@@ -6930,13 +6988,13 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner C1 (1HP / Inverter / China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
@@ -6950,22 +7008,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner (2HP/Inverter/New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -6977,22 +7035,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner (3HP/Inverter/New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7004,22 +7062,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7031,22 +7089,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7058,22 +7116,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level <1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7085,22 +7143,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level <1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7112,22 +7170,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Vertical Air Conditioner A (2HP / Inverter / China Energy Label Level <1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7139,22 +7197,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Vertical Air Conditioner A (3HP / Inverter / China Energy Label Level <1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7166,22 +7224,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner(1.5HP/Inverter/New China Energy Label Level 3)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7193,22 +7251,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner(2HP/Inverter/New China Energy Label Level 3)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7220,22 +7278,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner C (1HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7247,22 +7305,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner C (1.5HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7274,22 +7332,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner(1HP/Inverter/New China Energy Label Level 3)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7301,22 +7359,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner X (1HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7328,22 +7386,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Air Conditioner X (1.5HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7355,22 +7413,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Gentle Breeze Air Conditioner (1HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7382,22 +7440,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Gentle Breeze Air Conditioner (1.5HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7409,22 +7467,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Gentle Breeze Vertical Air Conditioner (3HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7436,22 +7494,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -7463,22 +7521,22 @@ note: Autogenerated example. Replace the id (aircondition) in the channel with y
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
-Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Number:Temperature target_temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
 Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
 Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
 Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
-Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
-Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
-Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Switch sleep_mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan_level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical_swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
 Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
 Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
 Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
 Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
-Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+Number elec_count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
 String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
 String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
-Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
-Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+Number:Duration running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
@@ -8365,7 +8423,7 @@ Number mode2 "Second Switch Default - Mode" (G_switch) {channel="miio:basic:swit
 Number mode3 "Second Switch Service - Delay" (G_switch) {channel="miio:basic:switch:mode3"}
 Switch interlock "Extension - Interlock" (G_switch) {channel="miio:basic:switch:interlock"}
 Number flash "Extension - Flash" (G_switch) {channel="miio:basic:switch:flash"}
-String rc-list "Extension - Rc List" (G_switch) {channel="miio:basic:switch:rc-list"}
+String rc_list "Extension - Rc List" (G_switch) {channel="miio:basic:switch:rc-list"}
 ```
 
 ### Yilai Ceiling Light Aiyue 480 (yilai.light.ceiling1) item file lines
@@ -8441,14 +8499,14 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
 Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
-Number:Temperature target-temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
 Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Time countdown-time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
-Number:Dimensionless relative-humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch physical-controls-locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
-Number:Time use-time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+Switch physical_controls_locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
+Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
 ```
 
 ### Smartmi Smart Convector Heater 1S (zhimi.heater.zb1) item file lines
@@ -8459,15 +8517,15 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
 Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
-Number:Temperature target-temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
+Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
 Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Time countdown-time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
-Number:Dimensionless relative-humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
+Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch physical-controls-locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
-Number:Time use-time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
-Number country-code "Private-Service - Country-Code" (G_heater) {channel="miio:basic:heater:country-code"}
+Switch physical_controls_locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
+Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+Number country_code "Private-Service - Country-Code" (G_heater) {channel="miio:basic:heater:country-code"}
 ```
 
 
