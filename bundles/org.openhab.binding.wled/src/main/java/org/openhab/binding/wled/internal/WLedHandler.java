@@ -339,7 +339,7 @@ public class WLedHandler extends BaseThingHandler {
                                     + masterBrightness255);
                         } else {
                             sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A="
-                                + masterBrightness255);
+                                    + masterBrightness255);
                         }
                     }
                 } else if (command instanceof PercentType) {
