@@ -14,14 +14,12 @@ package org.openhab.binding.teleinfo.internal.handler;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.TeleinfoDiscoveryService;
-import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
+import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -48,7 +46,7 @@ public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandle
         listeners.remove(listener);
     }
 
-    protected void fireOnFrameReceivedEvent(final Map<Label,Object> frame) {
+    protected void fireOnFrameReceivedEvent(final Frame frame) {
         listeners.forEach(l -> l.onFrameReceived(frame));
     }
 

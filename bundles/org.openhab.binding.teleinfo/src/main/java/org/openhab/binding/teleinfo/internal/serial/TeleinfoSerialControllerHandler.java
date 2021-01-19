@@ -15,16 +15,14 @@ package org.openhab.binding.teleinfo.internal.serial;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
-import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
@@ -105,7 +103,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     @Override
-    public void onFrameReceived(Map<Label,Object> frame) {
+    public void onFrameReceived(Frame frame) {
         updateStatus(ThingStatus.ONLINE);
         fireOnFrameReceivedEvent(frame);
     }

@@ -10,16 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.dto.common;
+package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
 /**
- * The {@link FrameBaseOption} interface defines common attributes for Base option.
+ * Defines all the type of values
+ * 
+ * @author Olivier MARCEAU - Initial contribution
  *
- * @author Nicolas SIBERIL - Initial contribution
  */
-public interface FrameBaseOption {
-
-    int getBase();
-
-    void setBase(int base);
+public enum ValueType {
+    INTEGER,
+    STRING
 }

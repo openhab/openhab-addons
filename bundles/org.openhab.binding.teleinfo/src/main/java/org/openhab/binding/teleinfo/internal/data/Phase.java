@@ -10,24 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.dto.common;
+package org.openhab.binding.teleinfo.internal.data;
 
 /**
- * The {@link FrameHcOption} interface defines common attributes for HC option.
+ * Define all the phase values
+ * 
+ * @author Olivier MARCEAU - Initial contribution
  *
- * @author Nicolas SIBERIL - Initial contribution
  */
-public interface FrameHcOption {
-
-    int getHchc();
-
-    void setHchc(int hchc);
-
-    int getHchp();
-
-    void setHchp(int hchp);
-
-    Hhphc getHhphc();
-
-    void setHhphc(Hhphc hhphc);
+public enum Phase {
+    ONE_PHASED,
+    THREE_PHASED
 }
