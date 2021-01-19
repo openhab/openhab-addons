@@ -9,10 +9,10 @@
 		<description>This thing provides the measurement data that is available through the http interface of the P1 Meter.</description>
 
 		<channels>
-			<channel id="total_power_import_t1" typeId="total_power_import_t1"/>
-			<channel id="total_power_import_t2" typeId="total_power_import_t2"/>
-			<channel id="total_power_export_t1" typeId="total_power_export_t1"/>
-			<channel id="total_power_export_t2" typeId="total_power_export_t2"/>
+			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
+			<channel id="total_energy_import_t2" typeId="total_energy_import_t2"/>
+			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
+			<channel id="total_energy_export_t2" typeId="total_energy_export_t2"/>
 			<channel id="active_power" typeId="active_power"/>
 			<channel id="active_power_l1" typeId="active_power_l1"/>
 			<channel id="active_power_l2" typeId="active_power_l2"/>
@@ -40,36 +40,36 @@
 
 	</thing-type>
 
-	<channel-type id="total_power_import_t1">
-		<item-type>Number:Power</item-type>
-		<label>Total Imported Power Counter 1</label>
-		<description>This channel provides the most recently reported total imported power in KWh by counter 1, most commonly
+	<channel-type id="total_energy_import_t1">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy Counter 1</label>
+		<description>This channel provides the most recently reported total imported energy in kWh by counter 1, most commonly
 			used for import during the night or weekend.</description>
 	</channel-type>
 
-	<channel-type id="total_power_import_t2">
-		<item-type>Number:Power</item-type>
-		<label>Total Imported Power Counter 2</label>
+	<channel-type id="total_energy_import_t2">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy Counter 2</label>
 		<description>
-			This channel provides the most recently reported total imported power in KWh by counter 2, most commonly
+			This channel provides the most recently reported total imported energy in kWh by counter 2, most commonly
 			used for import during the day.
 		</description>
 	</channel-type>
 
-	<channel-type id="total_power_export_t1">
-		<item-type>Number:Power</item-type>
-		<label>Total Exported Power Counter 1</label>
+	<channel-type id="total_energy_export_t1">
+		<item-type>Number:Energy</item-type>
+		<label>Total Exported Energy Counter 1</label>
 		<description>
-			This channel provides the most recently reported total exported power in KWh by counter 1, most commonly
+			This channel provides the most recently reported total exported energy in kWh by counter 1, most commonly
 			used for export during the night or weekend.
 		</description>
 	</channel-type>
 
-	<channel-type id="total_power_export_t2">
-		<item-type>Number:Power</item-type>
-		<label>Total Exported Power Counter 2</label>
+	<channel-type id="total_energy_export_t2">
+		<item-type>Number:Energy</item-type>
+		<label>Total Exported Energy Counter 2</label>
 		<description>
-			This channel provides the most recently reported total exported power in KWh by counter 2, most commonly
+			This channel provides the most recently reported total exported energy in kWh by counter 2, most commonly
 			used for export during the day.
 		</description>
 	</channel-type>
@@ -121,8 +121,8 @@
 	</channel-type>
 
 	<channel-type id="gas_timestamp">
-		<item-type>Number</item-type>
-		<label>Gas Update Timestamp</label>
+		<item-type>DateTime</item-type>
+		<label>Gas Update Time Stamp</label>
 		<description>
 			This channel provides the time stamp of the total_gas measurement.
 		</description>

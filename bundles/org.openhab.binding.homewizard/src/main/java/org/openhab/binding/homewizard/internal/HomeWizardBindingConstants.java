@@ -30,10 +30,10 @@ public class HomeWizardBindingConstants {
     public static final ThingTypeUID THING_TYPE_P1_WIFI_METER = new ThingTypeUID(BINDING_ID, "p1_wifi_meter");
 
     // List of all Channel ids
-    public static final String CHANNEL_POWER_IMPORT_T1 = "total_power_import_t1";
-    public static final String CHANNEL_POWER_IMPORT_T2 = "total_power_import_t2";
-    public static final String CHANNEL_POWER_EXPORT_T1 = "total_power_export_t1";
-    public static final String CHANNEL_POWER_EXPORT_T2 = "total_power_export_t2";
+    public static final String CHANNEL_ENERGY_IMPORT_T1 = "total_energy_import_t1";
+    public static final String CHANNEL_ENERGY_IMPORT_T2 = "total_energy_import_t2";
+    public static final String CHANNEL_ENERGY_EXPORT_T1 = "total_energy_export_t1";
+    public static final String CHANNEL_ENERGY_EXPORT_T2 = "total_energy_export_t2";
     public static final String CHANNEL_ACTIVE_POWER = "active_power";
     public static final String CHANNEL_ACTIVE_POWER_L1 = "active_power_l1";
     public static final String CHANNEL_ACTIVE_POWER_L2 = "active_power_l2";

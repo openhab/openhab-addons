@@ -22,18 +22,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class HomeWizardConfiguration {
 
-    public HomeWizardConfiguration() {
-        refreshDelay = 5;
-        ipAddress = "";
-    }
-
     /**
      * IP Address or host for the P1 Meter
      */
-    public String ipAddress;
+    public String ipAddress = "";
 
     /**
      * Refresh delay in seconds
      */
-    public Integer refreshDelay;
+    public Integer refreshDelay = 5;
 }

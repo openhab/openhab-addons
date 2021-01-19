@@ -14,6 +14,8 @@ package org.openhab.binding.homewizard.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Class that provides storage for the json object obtained from the P1 meter API
  *
@@ -22,28 +24,34 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class P1Payload {
-    private int smr_version;
-    private String meter_model = "";
-    private String wifi_ssid = "";
-    private int wifi_strength;
-    private double total_power_import_t1_kwh;
-    private double total_power_import_t2_kwh;
-    private double total_power_export_t1_kwh;
-    private double total_power_export_t2_kwh;
-    private double active_power_w;
-    private double active_power_l1_w;
-    private double active_power_l2_w;
-    private double active_power_l3_w;
-    private double total_gas_m3;
-    private long gas_timestamp;
+    private int smrVersion = 0;
+    private String meterModel = "";
+    private String wifiSsid = "";
+    private int wifiStrength = 0;
+
+    @SerializedName("total_power_import_t1_kwh")
+    private double totalEnergyImportT1Kwh;
+    @SerializedName("total_power_import_t2_kwh")
+    private double totalEnergyImportT2Kwh;
+    @SerializedName("total_power_export_t1_kwh")
+    private double totalEnergyExportT1Kwh;
+    @SerializedName("total_power_export_t2_kwh")
+    private double totalEnergyExportT2Kwh;
+
+    private double activePowerW;
+    private double activePowerL1W;
+    private double activePowerL2W;
+    private double activePowerL3W;
+    private double totalGasM3;
+    private long gasTimestamp;
 
     /**
      * Getter for the smart meter version
      *
      * @return The most recent smart meter version obtained from the API
      */
-    public int getSmr_version() {
-        return smr_version;
+    public int getSmrVersion() {
+        return smrVersion;
     }
 
     /**
@@ -51,8 +59,8 @@ public class P1Payload {
      *
      * @param smrVersion The smart meter version to set
      */
-    public void setSmr_version(int smrVersion) {
-        smr_version = smrVersion;
+    public void setSmrVersion(int smrVersion) {
+        this.smrVersion = smrVersion;
     }
 
     /**
@@ -60,8 +68,8 @@ public class P1Payload {
      *
      * @return meter model
      */
-    public String getMeter_model() {
-        return meter_model;
+    public String getMeterModel() {
+        return meterModel;
     }
 
     /**
@@ -69,8 +77,8 @@ public class P1Payload {
      *
      * @param meterModel meter model
      */
-    public void setMeter_model(String meterModel) {
-        meter_model = meterModel;
+    public void setMeterModel(String meterModel) {
+        this.meterModel = meterModel;
     }
 
     /**
@@ -78,8 +86,8 @@ public class P1Payload {
      *
      * @return the meter's wifi sid
      */
-    public String getWifi_ssid() {
-        return wifi_ssid;
+    public String getWifiSsid() {
+        return wifiSsid;
     }
 
     /**
@@ -87,8 +95,8 @@ public class P1Payload {
      *
      * @param wifiSsid wifi ssid
      */
-    public void setWifi_ssid(String wifiSsid) {
-        wifi_ssid = wifiSsid;
+    public void setWifiSsid(String wifiSsid) {
+        this.wifiSsid = wifiSsid;
     }
 
     /**
@@ -96,8 +104,8 @@ public class P1Payload {
      *
      * @return wifi rssi
      */
-    public int getWifi_strength() {
-        return wifi_strength;
+    public int getWifiStrength() {
+        return wifiStrength;
     }
 
     /**
@@ -105,80 +113,80 @@ public class P1Payload {
      *
      * @param wifiStrength wifi rssi
      */
-    public void setWifi_strength(int wifiStrength) {
-        wifi_strength = wifiStrength;
+    public void setWifiStrength(int wifiStrength) {
+        this.wifiStrength = wifiStrength;
     }
 
     /**
-     * Getter for the total imported power on counter 1
+     * Getter for the total imported energy on counter 1
      *
-     * @return total imported power on counter 1
+     * @return total imported energy on counter 1
      */
-    public double getTotal_power_import_t1_kwh() {
-        return total_power_import_t1_kwh;
+    public double getTotalEnergyImportT1Kwh() {
+        return totalEnergyImportT1Kwh;
     }
 
     /**
-     * Setter for the total imported power on counter 1
+     * Setter for the total imported energy on counter 1
      *
-     * @param totalPowerImportT1Kwh total imported power on counter 1
+     * @param totalEnergyImportT1Kwh total imported energy on counter 1
      */
-    public void setTotal_power_import_t1_kwh(double totalPowerImportT1Kwh) {
-        total_power_import_t1_kwh = totalPowerImportT1Kwh;
+    public void setTotalEnergyImportT1Kwh(double totalEnergyImportT1Kwh) {
+        this.totalEnergyImportT1Kwh = totalEnergyImportT1Kwh;
     }
 
     /**
-     * Getter for the total imported power on counter 2
+     * Getter for the total imported energy on counter 2
      *
-     * @return total imported power on counter 2
+     * @return total imported energy on counter 2
      */
-    public double getTotal_power_import_t2_kwh() {
-        return total_power_import_t2_kwh;
+    public double getTotalEnergyImportT2Kwh() {
+        return totalEnergyImportT2Kwh;
     }
 
     /**
-     * Setter for the total imported power on counter 2
+     * Setter for the total imported energy on counter 2
      *
-     * @param totalPowerImportT2Kwh
+     * @param totalEnergyImportT2Kwh
      */
-    public void setTotal_power_import_t2_kwh(double totalPowerImportT2Kwh) {
-        total_power_import_t2_kwh = totalPowerImportT2Kwh;
+    public void setTotalEnergyImportT2Kwh(double totalEnergyImportT2Kwh) {
+        this.totalEnergyImportT2Kwh = totalEnergyImportT2Kwh;
     }
 
     /**
-     * Getter for the total exported power on counter 1
+     * Getter for the total exported energy on counter 1
      *
-     * @return total exported power on counter 1
+     * @return total exported energy on counter 1
      */
-    public double getTotal_power_export_t1_kwh() {
-        return total_power_export_t1_kwh;
+    public double getTotalEnergyExportT1Kwh() {
+        return totalEnergyExportT1Kwh;
     }
 
     /**
-     * Setter for the total exported power on counter 1
+     * Setter for the total exported energy on counter 1
      *
-     * @param totalPowerExportT1Kwh
+     * @param totalEnergyExportT1Kwh
      */
-    public void setTotal_power_export_t1_kwh(double totalPowerExportT1Kwh) {
-        total_power_export_t1_kwh = totalPowerExportT1Kwh;
+    public void setTotalEnergyExportT1Kwh(double totalEnergyExportT1Kwh) {
+        this.totalEnergyExportT1Kwh = totalEnergyExportT1Kwh;
     }
 
     /**
-     * Getter for the total exported power on counter 2
+     * Getter for the total exported energy on counter 2
      *
-     * @return total exported power on counter 2
+     * @return total exported energy on counter 2
      */
-    public double getTotal_power_export_t2_kwh() {
-        return total_power_export_t2_kwh;
+    public double getTotalEnergyExportT2Kwh() {
+        return totalEnergyExportT2Kwh;
     }
 
     /**
-     * Setter for the total exported power on counter 2
+     * Setter for the total exported energy on counter 2
      *
-     * @param totalPowerExportT2Kwh
+     * @param totalEnergyExportT2Kwh
      */
-    public void setTotal_power_export_t2_kwh(double totalPowerExportT2Kwh) {
-        total_power_export_t2_kwh = totalPowerExportT2Kwh;
+    public void setTotalEnergyExportT2Kwh(double totalEnergyExportT2Kwh) {
+        this.totalEnergyExportT2Kwh = totalEnergyExportT2Kwh;
     }
 
     /**
@@ -186,8 +194,8 @@ public class P1Payload {
      *
      * @return current active total power
      */
-    public double getActive_power_w() {
-        return active_power_w;
+    public double getActivePowerW() {
+        return activePowerW;
     }
 
     /**
@@ -195,8 +203,8 @@ public class P1Payload {
      *
      * @param activePowerW
      */
-    public void setActive_power_w(double activePowerW) {
-        active_power_w = activePowerW;
+    public void setActivePowerW(double activePowerW) {
+        this.activePowerW = activePowerW;
     }
 
     /**
@@ -204,8 +212,8 @@ public class P1Payload {
      *
      * @return current active total power on phase 1
      */
-    public double getActive_power_l1_w() {
-        return active_power_l1_w;
+    public double getActivePowerL1W() {
+        return activePowerL1W;
     }
 
     /**
@@ -213,8 +221,8 @@ public class P1Payload {
      *
      * @param activePowerL1W current active total power on phase 1
      */
-    public void setActive_power_l1_w(double activePowerL1W) {
-        active_power_l1_w = activePowerL1W;
+    public void setActivePowerL1W(double activePowerL1W) {
+        this.activePowerL1W = activePowerL1W;
     }
 
     /**
@@ -222,8 +230,8 @@ public class P1Payload {
      *
      * @return current active total power on phase 2
      */
-    public double getActive_power_l2_w() {
-        return active_power_l2_w;
+    public double getActivePowerL2W() {
+        return activePowerL2W;
     }
 
     /**
@@ -231,8 +239,8 @@ public class P1Payload {
      *
      * @param activePowerL2W current active total power on phase 2
      */
-    public void setActive_power_l2_w(double activePowerL2W) {
-        active_power_l2_w = activePowerL2W;
+    public void setActivePowerL2W(double activePowerL2W) {
+        this.activePowerL2W = activePowerL2W;
     }
 
     /**
@@ -240,8 +248,8 @@ public class P1Payload {
      *
      * @return current active total power on phase 3
      */
-    public double getActive_power_l3_w() {
-        return active_power_l3_w;
+    public double getActivePowerL3W() {
+        return activePowerL3W;
     }
 
     /**
@@ -249,8 +257,8 @@ public class P1Payload {
      *
      * @param activePowerL3W current active total power on phase 3
      */
-    public void setActive_power_l3_w(double activePowerL3W) {
-        active_power_l3_w = activePowerL3W;
+    public void setActivePowerL3W(double activePowerL3W) {
+        this.activePowerL3W = activePowerL3W;
     }
 
     /**
@@ -258,8 +266,8 @@ public class P1Payload {
      *
      * @return total imported gas volume
      */
-    public double getTotal_gas_m3() {
-        return total_gas_m3;
+    public double getTotalGasM3() {
+        return totalGasM3;
     }
 
     /**
@@ -267,8 +275,8 @@ public class P1Payload {
      *
      * @param totalGasM3 total imported gas volume
      */
-    public void setTotal_gas_m3(double totalGasM3) {
-        total_gas_m3 = totalGasM3;
+    public void setTotalGasM3(double totalGasM3) {
+        this.totalGasM3 = totalGasM3;
     }
 
     /**
@@ -276,8 +284,8 @@ public class P1Payload {
      *
      * @return time stamp of the last gas update
      */
-    public long getGas_timestamp() {
-        return gas_timestamp;
+    public long getGasTimestamp() {
+        return gasTimestamp;
     }
 
     /**
@@ -285,16 +293,16 @@ public class P1Payload {
      *
      * @param gasTimestamp time stamp of the last gas update
      */
-    public void setGas_timestamp(long gasTimestamp) {
-        gas_timestamp = gasTimestamp;
+    public void setGasTimestamp(long gasTimestamp) {
+        this.gasTimestamp = gasTimestamp;
     }
 
     @Override
     public String toString() {
         return String.format("P1 [version: %d model: %s ssid: %s signal: %d"
-                + " imp1: %f imp2: %f exp1: %f exp2: %f active: %f active1: %f active2: %f active3: %f gas: %f timestamp: %d]",
-                smr_version, meter_model, wifi_ssid, wifi_strength, total_power_import_t1_kwh,
-                total_power_import_t2_kwh, total_power_export_t1_kwh, total_power_export_t2_kwh, active_power_w,
-                active_power_l1_w, active_power_l2_w, active_power_l3_w, total_gas_m3, gas_timestamp);
+                + " imp1: %f imp2: %f exp1: %f exp2: %f active: %f active1: %f active2: %f active3: %f gas: %f timestamp: %.0f]",
+                smrVersion, meterModel, wifiSsid, wifiStrength, totalEnergyImportT1Kwh, totalEnergyImportT2Kwh,
+                totalEnergyExportT1Kwh, totalEnergyExportT2Kwh, activePowerW, activePowerL1W, activePowerL2W,
+                activePowerL3W, totalGasM3, gasTimestamp);
     }
 }
