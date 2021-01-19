@@ -1265,7 +1265,7 @@ Check thing status for errors in configuration or communication.
 Enable `DEBUG` or `TRACE` (even more verbose) logging for the loggers named:
 
 * `org.openhab.binding.modbus`
-* `org.openhab.io.transport.modbus`
+* `org.openhab.core.io.transport.modbus`
 * `net.wimpi.modbus`
 
 Consult [openHAB logging documentation](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for more information.
