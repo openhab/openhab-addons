@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.haassohnpelletoven.data;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link HaassohnpelletstoveJsonData} is the Java class used to map the JSON
@@ -20,23 +22,26 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Christian Feininger - Initial contribution
  */
+@NonNullByDefault
 public class HaassohnpelletstoveJsonData {
-    metadata meta;
+    metadata meta = new metadata();
     boolean prg;
     boolean wprg;
-    String mode;
-    String sp_temp;
-    String is_temp;
-    String ht_char;
-    wprogram[] weekprogram;
-    err[] error;
+    String mode = "";
+    String sp_temp = "";
+    String is_temp = "";
+    String ht_char = "";
+    @SerializedName("weekprogram")
+    private @NonNullByDefault({}) wprogram[] weekprogram;
+    @SerializedName("error")
+    private @NonNullByDefault({}) err[] error;
     boolean eco_mode;
     boolean pgi;
-    String ignitions;
-    String on_time;
-    String consumption;
-    String maintenance_in;
-    String cleaning_in;
+    String ignitions = "";
+    String on_time = "";
+    String consumption = "";
+    String maintenance_in = "";
+    String cleaning_in = "";
 
     /***
      * Get the nonce
@@ -44,7 +49,7 @@ public class HaassohnpelletstoveJsonData {
      * @return nonce
      */
     public String getNonce() {
-        return this.meta.Getnonce();
+        return this.meta.getNonce();
     }
 
     /**
@@ -66,43 +71,44 @@ public class HaassohnpelletstoveJsonData {
     }
 
     public class metadata {
-        String sw_version;
-        String hw_version;
-        String bootl_version;
-        String wifi_sw_version;
-        String wifi_bootl_version;
-        String sn;
-        String typ;
-        String language;
-        String nonce;
-        String eco_editable;
-        String ts;
-        String ean;
+        String sw_version = "";
+        String hw_version = "";
+        String bootl_version = "";
+        String wifi_sw_version = "";
+        String wifi_bootl_version = "";
+        String sn = "";
+        String typ = "";
+        String language = "";
+        String nonce = "";
+        String eco_editable = "";
+        String ts = "";
+        String ean = "";
         boolean rau;
-        String[] wlan_features;
+        @SerializedName("wlan_features")
+        private @NonNullByDefault({}) String[] wlan_features;
 
-        public String Getnonce() {
+        public String getNonce() {
             return nonce;
         }
     }
 
     public class err {
-        String time;
-        String nr;
+        String time = "";
+        String nr = "";
     }
 
     public class wprogram {
-        String day;
-        String begin;
-        String end;
-        String temp;
+        String day = "";
+        String begin = "";
+        String end = "";
+        String temp = "";
     }
 
-    public @Nullable String getMode() {
+    public String getMode() {
         return mode;
     }
 
-    public @Nullable String getspTemp() {
+    public String getspTemp() {
         return sp_temp;
     }
 

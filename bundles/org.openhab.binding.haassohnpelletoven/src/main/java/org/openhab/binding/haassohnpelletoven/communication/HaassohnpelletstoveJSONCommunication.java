@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.haassohnpelletoven.data.HaassohnpelletstoveJsonData;
 import org.openhab.binding.haassohnpelletoven.encryption.MD5Utils;
@@ -34,18 +35,21 @@ import com.google.gson.Gson;
  * @author Christian Feininger - Initial contribution
  *
  */
+@NonNullByDefault
 public class HaassohnpelletstoveJSONCommunication {
 
     private final Logger logger = LoggerFactory.getLogger(HaassohnpelletstoveJSONCommunication.class);
-    private @Nullable HaassohnpelletstoveConfiguration config;
+    private HaassohnpelletstoveConfiguration config;
 
     private Gson gson;
-    private String x_hs_pin;
-    private HaassohnpelletstoveJsonData ovenData;
+    private @Nullable String xhspin;
+    private @Nullable HaassohnpelletstoveJsonData ovenData;
 
     public HaassohnpelletstoveJSONCommunication() {
         gson = new Gson();
         ovenData = new HaassohnpelletstoveJsonData();
+        xhspin = "";
+        config = new HaassohnpelletstoveConfiguration();
     }
 
     /**
@@ -55,20 +59,16 @@ public class HaassohnpelletstoveJSONCommunication {
      * @param thingUID Thing UID for logging purposes
      * @return true if no error occurred, false otherwise.
      */
-    @SuppressWarnings("null")
     public boolean refreshOvenConnection(Helper message, String thingUID) {
-        if (config == null) {
+        if (config.hostIP == null || config.hostPIN == null) {
             message.setStatusDescription("Error in configuration. Please recreate Thing.");
             return false;
         }
 
+        @Nullable
         HaassohnpelletstoveJsonData result = null;
         boolean resultOk = false;
         String error = "", errorDetail = "", statusDescr = "";
-        if (config == null) {
-            return false;
-        }
-        @SuppressWarnings("null")
         String urlStr = "http://" + config.hostIP + "/status.cgi";
 
         String response = null;
@@ -101,10 +101,10 @@ public class HaassohnpelletstoveJSONCommunication {
         if (resultOk) {
 
             ovenData = result;
-            x_hs_pin = getValidXHSPIN(ovenData);
+            xhspin = getValidXHSPIN(ovenData);
         } else {
             logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, error, errorDetail);
-            ovenData = null;
+            ovenData = new HaassohnpelletstoveJsonData();
         }
         message.setStatusDescription(statusDescr);
         return resultOk;
@@ -115,19 +115,18 @@ public class HaassohnpelletstoveJSONCommunication {
      *
      * @return true if success or false in case of error
      */
-    @SuppressWarnings("null")
     public boolean updateOvenData(@Nullable String postData, Helper helper, String thingUID) {
 
         String statusDescr = "";
         boolean resultOk = false;
         String error = "", errorDetail = "";
-        if (config == null) {
+        if (config.hostIP == null || config.hostPIN == null) {
             return false;
         }
-        @SuppressWarnings("null")
         String urlStr = "http://" + config.hostIP + "/status.cgi";
 
         // Run the HTTP POST request and get the JSON response from Oven
+        @Nullable
         String response = null;
 
         Properties httpHeader = new Properties();
@@ -174,7 +173,7 @@ public class HaassohnpelletstoveJSONCommunication {
 
         } else {
             logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, error, errorDetail);
-            ovenData = null;
+            ovenData = new HaassohnpelletstoveJsonData();
 
         }
         helper.setStatusDescription(statusDescr);
@@ -186,7 +185,6 @@ public class HaassohnpelletstoveJSONCommunication {
      *
      * @return The created Header Properties
      */
-    @SuppressWarnings("null")
     private Properties createHeader(@Nullable String postData) {
         Properties httpHeader = new Properties();
         httpHeader.setProperty("Host", config.hostIP);
@@ -199,11 +197,11 @@ public class HaassohnpelletstoveJSONCommunication {
         httpHeader.setProperty("Content-Type", "application/json");
         if (postData != null) {
             int a = postData.getBytes().length;
-            httpHeader.setProperty(x_hs_pin, Integer.toString(a));
+            httpHeader.setProperty(xhspin, Integer.toString(a));
         }
         httpHeader.setProperty("User-Agent", "ios");
         httpHeader.setProperty("Connection", "keep-alive");
-        httpHeader.setProperty("X-HS-PIN", x_hs_pin);
+        httpHeader.setProperty("X-HS-PIN", xhspin);
         return httpHeader;
     }
 
@@ -213,14 +211,15 @@ public class HaassohnpelletstoveJSONCommunication {
      * @param ovenData
      * @return
      */
-    private @Nullable String getValidXHSPIN(HaassohnpelletstoveJsonData ovenData) {
+    private @Nullable String getValidXHSPIN(@Nullable HaassohnpelletstoveJsonData ovenData) {
 
-        if (ovenData != null) {
+        if (ovenData != null && config.hostPIN != null) {
 
             String nonce = ovenData.getNonce();
 
-            @SuppressWarnings("null")
-            String ePin = MD5Utils.getMD5String(config.hostPIN);
+            @Nullable
+            String hostPIN = config.hostPIN;
+            String ePin = MD5Utils.getMD5String(hostPIN);
             return MD5Utils.getMD5String(nonce + ePin);
         } else {
             return null;
@@ -233,7 +232,9 @@ public class HaassohnpelletstoveJSONCommunication {
      * @param config2
      */
     public void setConfig(@Nullable HaassohnpelletstoveConfiguration config2) {
-        this.config = config2;
+        if (config2 != null) {
+            this.config = config2;
+        }
     }
 
     /**
@@ -241,6 +242,7 @@ public class HaassohnpelletstoveJSONCommunication {
      *
      * @return
      */
+    @Nullable
     public HaassohnpelletstoveJsonData getOvenData() {
         return this.ovenData;
     }

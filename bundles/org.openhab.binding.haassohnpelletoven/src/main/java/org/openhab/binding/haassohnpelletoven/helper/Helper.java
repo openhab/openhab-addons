@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.haassohnpelletoven.helper;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link Helper} is a Helper class to overcome Call by value for a Status Description.
  *
  *
  * @author Christian Feininger - Initial contribution
  */
+@NonNullByDefault
 public class Helper {
 
     private String statusDescription = "";
@@ -36,7 +40,9 @@ public class Helper {
      *
      * @param status
      */
-    public void setStatusDescription(String status) {
-        statusDescription = statusDescription + "\n" + status;
+    public void setStatusDescription(@Nullable String status) {
+        if (status != null) {
+            statusDescription = statusDescription + "\n" + status;
+        }
     }
 }
