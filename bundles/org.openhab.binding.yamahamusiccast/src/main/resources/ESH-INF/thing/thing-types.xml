@@ -116,6 +116,8 @@
 			<channel id="albumArt" typeId="albumArt"/>
 			<channel id="repeat" typeId="repeat"/>
 			<channel id="shuffle" typeId="shuffle"/>
+			<channel id="playTime" typeId="playTime"/>
+			<channel id="totalTime" typeId="totalTime"/>
 		</channels>
 	</channel-group-type>
 
@@ -152,12 +154,12 @@
 	</channel-type>
 	<channel-type id="selectPreset">
 		<item-type>String</item-type>
-		<label>Select Net Radio/USB Preset</label>
+		<label>NetRadio/USB Preset</label>
 		<description>Select Net Radio/USB Preset channel</description>
 	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>
-		<label>Player for Net Radio/USB</label>
+		<label>NetRadio/USB Player</label>
 		<description>Player for Net Radio/USB channel</description>
 	</channel-type>
 	<channel-type id="sleep">
@@ -176,17 +178,17 @@
 	</channel-type>
 	<channel-type id="mcServer">
 		<item-type>String</item-type>
-		<label>Server for MusicCast Link</label>
+		<label>MusicCast Server</label>
 		<description>Select IP of device to be Server for MusicCast Link - v2</description>
 	</channel-type>
 	<channel-type id="unlinkMCServer">
 		<item-type>Switch</item-type>
-		<label>Deactivate MusicCast Link on Server</label>
+		<label>Deactivate MusicCast</label>
 		<description>Deactivate MusicCast Link on Server</description>
 	</channel-type>
 	<channel-type id="recallScene">
 		<item-type>Number</item-type>
-		<label>Scene selection</label>
+		<label>Scene Selection</label>
 		<description>Scene selection (if available)</description>
 	</channel-type>
 	<channel-type id="artist">
@@ -205,7 +207,7 @@
 		<description>Album</description>
 	</channel-type>
 	<channel-type id="albumArt">
-		<item-type>String</item-type>
+		<item-type>Image</item-type>
 		<label>Album Art</label>
 		<description>Album Art</description>
 	</channel-type>
@@ -236,7 +238,17 @@
 	</channel-type>
 	<channel-type id="mclinkStatus">
 		<item-type>String</item-type>
-		<label>Status mclink</label>
-		<description>Musiccast Status</description>
+		<label>Status MusicCast</label>
+		<description>MusicCast Status</description>
+	</channel-type>
+	<channel-type id="playTime">
+		<item-type>Number</item-type>
+		<label>Play Time</label>
+		<description>Play Time</description>
+	</channel-type>
+	<channel-type id="totalTime">
+		<item-type>Number</item-type>
+		<label>Total Time</label>
+		<description>Total Time</description>
 	</channel-type>
 </thing:thing-descriptions>

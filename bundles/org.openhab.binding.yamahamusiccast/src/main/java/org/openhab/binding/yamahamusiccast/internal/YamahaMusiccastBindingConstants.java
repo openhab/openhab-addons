@@ -50,4 +50,6 @@ public class YamahaMusiccastBindingConstants {
     public static final String CHANNEL_REPEAT = "repeat";
     public static final String CHANNEL_SHUFFLE = "shuffle";
     public static final String CHANNEL_MCLINKSTATUS = "mclinkStatus";
+    public static final String CHANNEL_PLAYTIME = "playTime";
+    public static final String CHANNEL_TOTALTIME = "totalTime";
 }

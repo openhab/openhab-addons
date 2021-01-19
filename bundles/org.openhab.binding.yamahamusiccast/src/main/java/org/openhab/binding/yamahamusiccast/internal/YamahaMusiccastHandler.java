@@ -869,22 +869,27 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         for (Thing thing : bridge.getThings()) {
             label = thing.getLabel();
             host = thing.getConfiguration().get("host").toString();
-            logger.debug("YXC - Thing found on Bridge: {} - {}", label, host);
-            zonesPerHost = getNumberOfZones(host);
-            for (int i = 1; i <= zonesPerHost; i++) {
-                switch (i) {
-                    case 1:
-                        options.add(new StateOption(host + "***main", label + " - main (" + host + ")"));
-                        break;
-                    case 2:
-                        options.add(new StateOption(host + "***zone2", label + " - zone2 (" + host + ")"));
-                        break;
-                    case 3:
-                        options.add(new StateOption(host + "***zone3", label + " - zone3 (" + host + ")"));
-                        break;
-                    case 4:
-                        options.add(new StateOption(host + "***zone4", label + " - zone4 (" + host + ")"));
-                        break;
+            if (host == null) {
+                host = "";
+                zonesPerHost = 0;
+            } else {
+                logger.debug("YXC - Thing found on Bridge: {} - {}", label, host);
+                zonesPerHost = getNumberOfZones(host);
+                for (int i = 1; i <= zonesPerHost; i++) {
+                    switch (i) {
+                        case 1:
+                            options.add(new StateOption(host + "***main", label + " - main (" + host + ")"));
+                            break;
+                        case 2:
+                            options.add(new StateOption(host + "***zone2", label + " - zone2 (" + host + ")"));
+                            break;
+                        case 3:
+                            options.add(new StateOption(host + "***zone3", label + " - zone3 (" + host + ")"));
+                            break;
+                        case 4:
+                            options.add(new StateOption(host + "***zone4", label + " - zone4 (" + host + ")"));
+                            break;
+                    }
                 }
             }
         }
