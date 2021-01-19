@@ -95,12 +95,10 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
         if (FIRST_GENERATION_INVERTER.equals(thing.getThingTypeUID())) {
             return new WebscrapeHandler(thing);
         }
-
         // second generation
         if (SECOND_GENERATION_INVERTER.equals(thing.getThingTypeUID())) {
             return new SecondGenerationHandler(thing, httpClient);
         }
-
         // third generation
         ThirdGenerationInverterTypes inverterType = SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS
                 .get(thing.getThingTypeUID());
