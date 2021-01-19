@@ -92,7 +92,7 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
         properties.put("adapterSerial", adapterSerial);
 
         ThingUID uid = new ThingUID(ResolBindingConstants.THING_TYPE_UID_BRIDGE, adapterSerial);
-        thingDiscovered(
-                DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(dsWithInfo.getName()).build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withRepresentationProperty("ipAddress")
+                .withProperties(properties).withLabel(dsWithInfo.getName()).build());
     }
 }

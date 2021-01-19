@@ -15,6 +15,8 @@ package org.openhab.binding.resol.handler;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.internal.ResolBindingConstants;
 import org.openhab.binding.resol.internal.ResolBridgeConfiguration;
 import org.openhab.binding.resol.internal.ResolStateDescriptionOptionProvider;
-import org.openhab.binding.resol.internal.discovery.ResolDiscoveryService;
+import org.openhab.binding.resol.internal.discovery.ResolDeviceDiscoveryService;
 import org.openhab.binding.resol.internal.providers.ResolChannelTypeProvider;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.Bridge;
@@ -40,6 +42,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -92,7 +95,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private Map<Integer, ResolEmuEMThingHandler> emThingHandlerMap = new HashMap<>();
 
     // Managing Thing Discovery Service
-    private @Nullable ResolDiscoveryService discoveryService = null;
+    private @Nullable ResolDeviceDiscoveryService discoveryService = null;
 
     private ResolStateDescriptionOptionProvider stateDescriptionProvider;
 
@@ -120,7 +123,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void registerDiscoveryService(ResolDiscoveryService discoveryService) {
+    public void registerDiscoveryService(ResolDeviceDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
     }
 
@@ -128,8 +131,13 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         discoveryService = null;
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(ResolDeviceDiscoveryService.class);
+    }
+
     private void createThing(String thingType, String thingID, String name) {
-        ResolDiscoveryService service = discoveryService;
+        ResolDeviceDiscoveryService service = discoveryService;
         logger.trace("Create thing Type='{}' id='{}'", thingType, thingID);
 
         if (service != null) {
