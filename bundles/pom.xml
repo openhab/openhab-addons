@@ -122,7 +122,7 @@
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
     <module>org.openhab.binding.groheondus</module>
-	<module>org.openhab.binding.haassohnpelletoven</module>
+    <module>org.openhab.binding.haassohnpelletoven</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.haywardomnilogic</module>
     <module>org.openhab.binding.hdanywhere</module>

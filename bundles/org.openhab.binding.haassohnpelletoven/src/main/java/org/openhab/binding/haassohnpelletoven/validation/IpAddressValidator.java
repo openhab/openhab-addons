@@ -14,11 +14,15 @@ package org.openhab.binding.haassohnpelletoven.validation;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link IpAddressValidator} is responsible for validating a given IP-Address.
  *
  * @author Christian Feininger - Initial contribution
  */
+@NonNullByDefault
 public class IpAddressValidator {
 
     private static final String zeroTo255 = "([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])";
@@ -33,7 +37,7 @@ public class IpAddressValidator {
      * @param address to be verified
      * @return true if valid IP-Address, false otherwise
      */
-    public boolean isValid(String address) {
+    public boolean isValid(@Nullable String address) {
         return IP_PATTERN.matcher(address).matches();
     }
 }

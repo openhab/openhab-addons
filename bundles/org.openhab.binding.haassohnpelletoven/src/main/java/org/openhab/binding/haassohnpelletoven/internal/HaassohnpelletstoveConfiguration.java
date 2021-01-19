@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.haassohnpelletoven.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link HaassohnpelletstoveConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Feininger - Initial contribution
  */
+@NonNullByDefault
 public class HaassohnpelletstoveConfiguration {
 
-    public String hostIP;
-    public String hostPIN;
+    public @Nullable String hostIP = null;
+    public @Nullable String hostPIN = null;
     public int refreshRate = 30;
 }

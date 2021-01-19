@@ -14,11 +14,15 @@ package org.openhab.binding.haassohnpelletoven.validation;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link PinValidator} is responsible for validating a given PIN.
  *
  * @author Christian Feininger - Initial contribution
  */
+@NonNullByDefault
 public class PinValidator {
 
     Pattern pattern = Pattern.compile("(\\d{4})");
@@ -29,7 +33,7 @@ public class PinValidator {
      * @param pin to be verified.
      * @return true if valid, false otherwise.
      */
-    public boolean isValid(String pin) {
+    public boolean isValid(@Nullable String pin) {
         return pattern.matcher(pin).matches();
     }
 }

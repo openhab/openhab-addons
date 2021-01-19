@@ -18,6 +18,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link MD5Utils} is responsible for generating the MD5 hash
@@ -52,11 +53,14 @@ public class MD5Utils {
     /***
      * Returns an encrypted MD5 string
      *
-     * @param input - nonce as input
+     * @param input nonce as input
      * @return Encrypted String
      */
-    public static String getMD5String(String input) {
-        byte[] md5InBytes = MD5Utils.digest(input.getBytes(UTF_8));
-        return bytesToHex(md5InBytes);
+    public static String getMD5String(@Nullable String input) {
+        if (input != null) {
+            byte[] md5InBytes = MD5Utils.digest(input.getBytes(UTF_8));
+            return bytesToHex(md5InBytes);
+        }
+        return "";
     }
 }
