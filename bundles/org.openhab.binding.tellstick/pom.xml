@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>!com.luckycatlabs.*,!com.jcraft.jzlib.*,!org.apache.commons.cli.*,!org.eclipse.swt.*,!javax.activation</bnd.importpackage>
-    <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-handler</dep.noembedding>
+    <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-handler,netty-transport-native-kqueue,netty-handler-proxy,netty-codec-socks</dep.noembedding>
   </properties>
 
   <dependencies>
