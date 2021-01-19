@@ -96,39 +96,50 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         if (!isLinked(channelUID))
             return;
         String channelId = channelUID.getId();
-        if (KEY_EVENT_CHANNEL.equals(channelId)) {
-            adbConnection.sendKeyEvent(command.toFullString());
-        } else if (TEXT_CHANNEL.equals(channelId)) {
-            adbConnection.sendText(command.toFullString());
-        } else if (MEDIA_VOLUME_CHANNEL.equals(channelId)) {
-            handleMediaVolume(channelUID, command);
-        } else if (MEDIA_CONTROL_CHANNEL.equals(channelId)) {
-            handleMediaControlCommand(channelUID, command);
-        } else if (START_PACKAGE_CHANNEL.equals(channelId)) {
-            adbConnection.startPackage(command.toFullString());
-            updateState(new ChannelUID(this.thing.getUID(), CURRENT_PACKAGE_CHANNEL),
-                    new StringType(command.toFullString()));
-        } else if (STOP_PACKAGE_CHANNEL.equals(channelId)) {
-            adbConnection.stopPackage(command.toFullString());
-        } else if (STOP_CURRENT_PACKAGE_CHANNEL.equals(channelId)) {
-            if (OnOffType.from(command.toFullString()).equals(OnOffType.OFF)) {
-                adbConnection.stopPackage(adbConnection.getCurrentPackage());
-            }
-        } else if (CURRENT_PACKAGE_CHANNEL.equals(channelId)) {
-            if (command instanceof RefreshType) {
-                var packageName = adbConnection.getCurrentPackage();
-                updateState(channelUID, new StringType(packageName));
-            }
-        } else if (WAKE_LOCK_CHANNEL.equals(channelId)) {
-            if (command instanceof RefreshType) {
-                int lock = adbConnection.getPowerWakeLock();
-                updateState(channelUID, new DecimalType(lock));
-            }
-        } else if (SCREEN_STATE_CHANNEL.equals(channelId)) {
-            if (command instanceof RefreshType) {
-                boolean screenState = adbConnection.isScreenOn();
-                updateState(channelUID, OnOffType.from(screenState));
-            }
+        switch (channelId) {
+            case KEY_EVENT_CHANNEL:
+                adbConnection.sendKeyEvent(command.toFullString());
+                break;
+            case TEXT_CHANNEL:
+                adbConnection.sendText(command.toFullString());
+                break;
+            case MEDIA_VOLUME_CHANNEL:
+                handleMediaVolume(channelUID, command);
+                break;
+            case MEDIA_CONTROL_CHANNEL:
+                handleMediaControlCommand(channelUID, command);
+                break;
+            case START_PACKAGE_CHANNEL:
+                adbConnection.startPackage(command.toFullString());
+                updateState(new ChannelUID(this.thing.getUID(), CURRENT_PACKAGE_CHANNEL),
+                        new StringType(command.toFullString()));
+                break;
+            case STOP_PACKAGE_CHANNEL:
+                adbConnection.stopPackage(command.toFullString());
+                break;
+            case STOP_CURRENT_PACKAGE_CHANNEL:
+                if (OnOffType.from(command.toFullString()).equals(OnOffType.OFF)) {
+                    adbConnection.stopPackage(adbConnection.getCurrentPackage());
+                }
+                break;
+            case CURRENT_PACKAGE_CHANNEL:
+                if (command instanceof RefreshType) {
+                    var packageName = adbConnection.getCurrentPackage();
+                    updateState(channelUID, new StringType(packageName));
+                }
+                break;
+            case WAKE_LOCK_CHANNEL:
+                if (command instanceof RefreshType) {
+                    int lock = adbConnection.getPowerWakeLock();
+                    updateState(channelUID, new DecimalType(lock));
+                }
+                break;
+            case SCREEN_STATE_CHANNEL:
+                if (command instanceof RefreshType) {
+                    boolean screenState = adbConnection.isScreenOn();
+                    updateState(channelUID, OnOffType.from(screenState));
+                }
+                break;
         }
     }
 
