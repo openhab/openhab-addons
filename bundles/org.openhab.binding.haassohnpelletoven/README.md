@@ -16,7 +16,7 @@ WIFI-Modul. More information about the WIFI-Modul can be found here: https://www
 In general two parameters are required. The IP-Address of the WIFI-Modul of the Stove in the local Network and the Access PIN of the Stove.
 The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN
 
-Thing oven  [ hostIP="192.168.0.23", hostPIN=1234]
+```Thing haassohnpelletoven:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", hostPIN=1234]
 
 
 
