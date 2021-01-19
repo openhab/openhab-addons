@@ -568,10 +568,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         if (where instanceof WhereZigBee) {
             str = ((WhereZigBee) where).valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
-            if (str.indexOf("#4#") == 0) { // no changes needed for local bus: APL#4#bus
-                if (str.indexOf('#') == 0) { // Thermo zone via central unit: #0 or #Z (Z=[1-99]) --> Z
+            if (str.indexOf("#4#") == -1) { // skip APL#4#bus case
+                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z
                     str = str.substring(1);
-                } else if (str.indexOf('#') > 0) { // Thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) --> Z
+                } else if (str.indexOf('#') > 0) { // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z
                     str = str.substring(0, str.indexOf('#'));
                 }
             }
