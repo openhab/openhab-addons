@@ -205,8 +205,8 @@ Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", us
     Thing subdeviceLan LAN "label LAN"   [ uuid="uuid:xxxxxxxx-xxxx-xxxx-yyyy-xxxxxxxxxxxx",
                                                 macOnline="XX:XX:XX:XX:XX:XX",  
                                                           "YY:YY:YY:YY:YY:YY"]  
-    Thing subdeviceLan WAN "label WAN"               [ uuid="uuid:xxxxxxxx-xxxx-xxxx-zzzz-xxxxxxxxxxxx"]
-    Thing subdeviceLan WANCon "label WANConnection"  [ uuid="uuid:xxxxxxxx-xxxx-xxxx-wwww-xxxxxxxxxxxx"]
+    Thing subdevice WAN "label WAN"               [ uuid="uuid:xxxxxxxx-xxxx-xxxx-zzzz-xxxxxxxxxxxx"]
+    Thing subdevice WANCon "label WANConnection"  [ uuid="uuid:xxxxxxxx-xxxx-xxxx-wwww-xxxxxxxxxxxx"]
     }
 ```
 
