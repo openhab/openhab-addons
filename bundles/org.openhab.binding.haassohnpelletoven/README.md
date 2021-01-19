@@ -1,7 +1,7 @@
 # Haas Sohn Pellet Stove Binding
 
 The binding for Haassohnpelletstove communicates with a Haas and Sohn Pelletstove through the optional
-WIFI-Modul. More information about the WIFI-Modul can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion
+WIFI module. More information about the WIFI module can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion
 
 ## Supported Things
 
