@@ -71,8 +71,9 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         var currentConfig = config;
-        if (currentConfig == null)
+        if (currentConfig == null){
             return;
+        }
         try {
             if (!adbConnection.isConnected()) {
                 // try reconnect
@@ -93,8 +94,9 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     private void handleCommandInternal(ChannelUID channelUID, Command command)
             throws InterruptedException, AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException,
             TimeoutException, ExecutionException {
-        if (!isLinked(channelUID))
+        if (!isLinked(channelUID)){
             return;
+        }
         String channelId = channelUID.getId();
         switch (channelId) {
             case KEY_EVENT_CHANNEL:
@@ -151,8 +153,9 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             maxMediaVolume = volumeInfo.max;
             updateState(channelUID, new PercentType((int) Math.round(toPercent(volumeInfo.current, volumeInfo.max))));
         } else {
-            if (maxMediaVolume == 0)
+            if (maxMediaVolume == 0){
                 return; // We can not transform percentage
+            }
             int targetVolume = Integer.parseInt(command.toFullString());
             adbConnection.setMediaVolume((int) Math.round(fromPercent(targetVolume, maxMediaVolume)));
             updateState(channelUID, new PercentType(targetVolume));
