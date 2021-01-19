@@ -205,7 +205,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     @Override
     public void receive(Event event) {
         if (event instanceof ItemStateChangedEvent) {
-            if (event.getTopic().equals(commandTopic.get())) {
+            if (commandTopic.isPresent() && event.getTopic().equals(commandTopic.get())) {
                 ItemStateChangedEvent changedEvent = (ItemStateChangedEvent) event;
                 if ("RESET".equals(changedEvent.getItemState().toString())) {
                     controller.setIntegralResult(0);
