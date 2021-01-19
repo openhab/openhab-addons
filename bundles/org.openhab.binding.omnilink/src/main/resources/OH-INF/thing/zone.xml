@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Zone Thing -->
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Zone</label>
+		<description>A zone configured in the controller.</description>
+		<channels>
+			<channel id="contact" typeId="zone_contact"/>
+			<channel id="current_condition" typeId="zone_current_condition"/>
+			<channel id="latched_alarm_status" typeId="zone_latched_alarm_status"/>
+			<channel id="arming_status" typeId="zone_arming_status"/>
+			<channel id="bypass" typeId="zone_bypass"/>
+			<channel id="restore" typeId="zone_restore"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Zone Number</label>
+				<description>The zone number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Zone Channels -->
+	<channel-type id="zone_contact">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<description>Contact state information of this zone.</description>
+		<category>Contact</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zone_current_condition">
+		<item-type>Number</item-type>
+		<label>Current Condition</label>
+		<description>Current condition of this zone.</description>
+		<category>Contact</category>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">Secure</option>
+				<option value="1">Not Ready</option>
+				<option value="2">Trouble</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zone_latched_alarm_status">
+		<item-type>Number</item-type>
+		<label>Latched Alarm Status</label>
+		<description>Latched alarm status of this zone.</description>
+		<category>Contact</category>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">Secure</option>
+				<option value="1">Tripped</option>
+				<option value="2">Reset, but previously tripped</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zone_arming_status">
+		<item-type>Number</item-type>
+		<label>Arming Status</label>
+		<description>Arming status of this zone.</description>
+		<category>Contact</category>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">Disarmed</option>
+				<option value="1">Armed</option>
+				<option value="2">Bypassed by user</option>
+				<option value="3">Bypassed by system</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zone_bypass">
+		<item-type>String</item-type>
+		<label>Bypass Zone</label>
+		<description>Send a 4 digit user code to bypass this zone.</description>
+		<category>Alarm</category>
+	</channel-type>
+
+	<channel-type id="zone_restore">
+		<item-type>String</item-type>
+		<label>Restore Zone</label>
+		<description>Send a 4 digit user code to restore this zone.</description>
+		<category>Alarm</category>
+	</channel-type>
+
+</thing:thing-descriptions>
