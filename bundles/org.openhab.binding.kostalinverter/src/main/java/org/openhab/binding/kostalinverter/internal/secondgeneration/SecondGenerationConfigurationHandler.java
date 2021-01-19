@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,8 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
-package org.openhab.binding.internal.kostal.inverter.secondgeneration;
+package org.openhab.binding.kostalinverter.internal.secondgeneration;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -97,7 +96,6 @@ public class SecondGenerationConfigurationHandler {
             postJsonDataRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
             postJsonDataRequest.content(new StringContentProvider(postJsonData));
             postJsonDataRequest.send();
-
         } catch (JsonIOException getAuthenticateResponseException) {
             logger.debug("Could not read the response: {}", getAuthenticateResponseException.getMessage());
         }
@@ -131,7 +129,6 @@ public class SecondGenerationConfigurationHandler {
     static String extractSessionId(JsonObject extractJsonObjectSessionId) throws TimeoutException {
 
         Logger sessionIdLogger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
-
         String extractSessionId = "";
         JsonArray extractJsonArraySessionId = extractJsonObjectSessionId.getAsJsonArray("session");
 
@@ -150,7 +147,6 @@ public class SecondGenerationConfigurationHandler {
     static String extractCode(JsonObject extractJsonObjectCode) throws TimeoutException {
 
         Logger codeLogger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
-
         String extractCode = "";
         JsonArray extractJsonArrayCode = extractJsonObjectCode.getAsJsonArray("status");
 

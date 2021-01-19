@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter;
+package org.openhab.binding.kostalinverter.internal;
 
-import static org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationBindingConstants.*;
+import static org.openhab.binding.kostalinverter.internal.thirdgeneration.ThirdGenerationBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,10 +20,10 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.internal.kostal.inverter.firstgeneration.WebscrapeHandler;
-import org.openhab.binding.internal.kostal.inverter.secondgeneration.SecondGenerationHandler;
-import org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationHandler;
-import org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationInverterTypes;
+import org.openhab.binding.kostalinverter.internal.firstgeneration.WebscrapeHandler;
+import org.openhab.binding.kostalinverter.internal.secondgeneration.SecondGenerationHandler;
+import org.openhab.binding.kostalinverter.internal.thirdgeneration.ThirdGenerationHandler;
+import org.openhab.binding.kostalinverter.internal.thirdgeneration.ThirdGenerationInverterTypes;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
