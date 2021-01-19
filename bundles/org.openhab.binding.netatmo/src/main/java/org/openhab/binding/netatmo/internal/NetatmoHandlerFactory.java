@@ -14,43 +14,46 @@ package org.openhab.binding.netatmo.internal;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.servlet.http.HttpServlet;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
-import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
-import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
-import org.openhab.binding.netatmo.internal.presence.NAPresenceCameraHandler;
-import org.openhab.binding.netatmo.internal.station.NAMainHandler;
-import org.openhab.binding.netatmo.internal.station.NAModule1Handler;
-import org.openhab.binding.netatmo.internal.station.NAModule2Handler;
-import org.openhab.binding.netatmo.internal.station.NAModule3Handler;
-import org.openhab.binding.netatmo.internal.station.NAModule4Handler;
-import org.openhab.binding.netatmo.internal.thermostat.NAPlugHandler;
-import org.openhab.binding.netatmo.internal.thermostat.NATherm1Handler;
-import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
-import org.openhab.binding.netatmo.internal.welcome.NAWelcomeCameraHandler;
-import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
-import org.openhab.binding.netatmo.internal.welcome.NAWelcomePersonHandler;
-import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.binding.netatmo.internal.api.ApiBridge;
+import org.openhab.binding.netatmo.internal.api.doc.ModuleType;
+import org.openhab.binding.netatmo.internal.channelhelper.Co2ChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.HumidityChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.NoiseChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.PressureChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.TemperatureChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.NetatmoThingHandlerBuilder;
+import org.openhab.binding.netatmo.internal.handler.aircare.HealthIndexChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.aircare.NAHealthyHomeCoachHandler;
+import org.openhab.binding.netatmo.internal.handler.energy.NAHomeEnergyChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.energy.NAHomeEnergyHandler;
+import org.openhab.binding.netatmo.internal.handler.energy.NAPlanningDescriptionProvider;
+import org.openhab.binding.netatmo.internal.handler.energy.NAPlugChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.energy.NAPlugHandler;
+import org.openhab.binding.netatmo.internal.handler.energy.NATherm1ChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.energy.NATherm1Handler;
+import org.openhab.binding.netatmo.internal.handler.security.NACameraChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.security.NACameraHandler;
+import org.openhab.binding.netatmo.internal.handler.security.NAHomeSecurityChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.security.NAHomeSecurityHandler;
+import org.openhab.binding.netatmo.internal.handler.security.NAPersonChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.security.NAPersonHandler;
+import org.openhab.binding.netatmo.internal.handler.security.NAPresenceHandler;
+import org.openhab.binding.netatmo.internal.handler.weather.NAMainHandler;
+import org.openhab.binding.netatmo.internal.handler.weather.RainChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.weather.WindChannelHelper;
+import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.ComponentContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -65,134 +68,107 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo", property = Constants.SERVICE_PID
+        + "=" + SERVICE_PID)
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private final Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
-    private final HttpService httpService;
-    private final NATherm1StateDescriptionProvider stateDescriptionProvider;
+    private final NAPlanningDescriptionProvider stateDescriptionProvider;
     private final TimeZoneProvider timeZoneProvider;
-    private final LocaleProvider localeProvider;
-    private final TranslationProvider translationProvider;
-    private boolean backgroundDiscovery;
+    private final ApiBridge apiBridge;
+    private final NetatmoServlet webhookServlet;
 
     @Activate
-    public NetatmoHandlerFactory(final @Reference HttpService httpService,
-            final @Reference NATherm1StateDescriptionProvider stateDescriptionProvider,
-            final @Reference TimeZoneProvider timeZoneProvider, final @Reference LocaleProvider localeProvider,
-            final @Reference TranslationProvider translationProvider) {
-        this.httpService = httpService;
+    public NetatmoHandlerFactory(@Reference HttpService httpService,
+            @Reference NAPlanningDescriptionProvider stateDescriptionProvider,
+            @Reference TimeZoneProvider timeZoneProvider, @Reference ApiBridge apiBridge,
+            @Reference NetatmoServlet webhookServlet) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.timeZoneProvider = timeZoneProvider;
-        this.localeProvider = localeProvider;
-        this.translationProvider = translationProvider;
-    }
-
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-        Dictionary<String, Object> properties = componentContext.getProperties();
-        Object property = properties.get("backgroundDiscovery");
-        if (property instanceof Boolean) {
-            backgroundDiscovery = ((Boolean) property).booleanValue();
-        } else {
-            backgroundDiscovery = false;
-        }
-        logger.debug("backgroundDiscovery {}", backgroundDiscovery);
+        this.apiBridge = apiBridge;
+        this.webhookServlet = webhookServlet;
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID));
+        return (thingTypeUID.getBindingId().equals(BINDING_ID));
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(APIBRIDGE_THING_TYPE)) {
-            WelcomeWebHookServlet servlet = registerWebHookServlet(thing.getUID());
-            NetatmoBridgeHandler bridgeHandler = new NetatmoBridgeHandler((Bridge) thing, servlet);
-            registerDeviceDiscoveryService(bridgeHandler);
-            return bridgeHandler;
-        } else if (thingTypeUID.equals(MODULE1_THING_TYPE)) {
-            return new NAModule1Handler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(MODULE2_THING_TYPE)) {
-            return new NAModule2Handler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(MODULE3_THING_TYPE)) {
-            return new NAModule3Handler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(MODULE4_THING_TYPE)) {
-            return new NAModule4Handler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(MAIN_THING_TYPE)) {
-            return new NAMainHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(HOMECOACH_THING_TYPE)) {
-            return new NAHealthyHomeCoachHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {
-            return new NAPlugHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {
-            return new NATherm1Handler(thing, stateDescriptionProvider, timeZoneProvider);
-        } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
-            return new NAWelcomeHomeHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
-            return new NAWelcomeCameraHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
-            return new NAPresenceCameraHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
-            return new NAWelcomePersonHandler(thing, timeZoneProvider);
-        } else {
-            logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
-            return null;
-        }
-    }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof NetatmoBridgeHandler) {
-            ThingUID thingUID = thingHandler.getThing().getUID();
-            unregisterDeviceDiscoveryService(thingUID);
-            unregisterWebHookServlet(thingUID);
-        }
-    }
-
-    private synchronized void registerDeviceDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
-        if (bundleContext != null) {
-            NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler,
-                    localeProvider, translationProvider);
-            Map<String, Object> configProperties = new HashMap<>();
-            configProperties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
-                    Boolean.valueOf(backgroundDiscovery));
-            discoveryService.activate(configProperties);
-            discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext
-                    .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-        }
-    }
-
-    private synchronized void unregisterDeviceDiscoveryService(ThingUID thingUID) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingUID);
-        if (serviceReg != null) {
-            NetatmoModuleDiscoveryService service = (NetatmoModuleDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
-            serviceReg.unregister();
-            if (service != null) {
-                service.deactivate();
+        Bridge bridge = (Bridge) thing;
+        if (ModuleType.NAHomeEnergy.matches(thingTypeUID)) {
+            NAHomeEnergyHandler handler = (NAHomeEnergyHandler) NetatmoThingHandlerBuilder
+                    .create(bridge, timeZoneProvider, ModuleType.NAHomeEnergy).withHandler(NAHomeEnergyHandler.class)
+                    .withChannelHelpers(Set.of(NAHomeEnergyChannelHelper.class)).withApiBridge(apiBridge).build();
+            if (handler != null) {
+                handler.setStateDescriptionProvider(stateDescriptionProvider);
             }
+            return handler;
+        } else if (ModuleType.NAHomeSecurity.matches(thingTypeUID)) {
+            NAHomeSecurityHandler handler = (NAHomeSecurityHandler) NetatmoThingHandlerBuilder
+                    .create(bridge, timeZoneProvider, ModuleType.NAHomeSecurity)
+                    .withHandler(NAHomeSecurityHandler.class)
+                    .withChannelHelpers(Set.of(NAHomeSecurityChannelHelper.class)).withApiBridge(apiBridge).build();
+            if (handler != null) {
+                handler.setWebHookServlet(webhookServlet);
+            }
+            return handler;
+        } else if (ModuleType.NAMain.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NAMain)
+                    .withHandler(NAMainHandler.class)
+                    .withChannelHelpers(Set.of(PressureChannelHelper.class, NoiseChannelHelper.class,
+                            HumidityChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class))
+                    .withApiBridge(apiBridge).build();
+        } else if (ModuleType.NAModule1.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NAModule1)
+                    .withChannelHelpers(Set.of(HumidityChannelHelper.class, TemperatureChannelHelper.class)).build();
+        } else if (ModuleType.NAModule2.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NAModule2)
+                    .withChannelHelper(WindChannelHelper.class).build();
+        } else if (ModuleType.NAModule3.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NAModule3)
+                    .withChannelHelper(RainChannelHelper.class).build();
+        } else if (ModuleType.NAModule4.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NAModule4)
+                    .withChannelHelpers(
+                            Set.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class))
+                    .build();
+        } else if (ModuleType.NATherm1.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NATherm1)
+                    .withHandler(NATherm1Handler.class).withChannelHelper(NATherm1ChannelHelper.class).build();
+        } else if (ModuleType.NAPlug.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NAPlug)
+                    .withHandler(NAPlugHandler.class).withChannelHelper(NAPlugChannelHelper.class)
+                    .withApiBridge(apiBridge).build();
+        } else if (ModuleType.NHC.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NHC)
+                    .withHandler(NAHealthyHomeCoachHandler.class).withApiBridge(apiBridge)
+                    .withChannelHelpers(Set.of(NoiseChannelHelper.class, HumidityChannelHelper.class,
+                            PressureChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class,
+                            HealthIndexChannelHelper.class))
+                    .build();
+        } else if (ModuleType.NACamera.matches(thingTypeUID)) {
+            NACameraHandler handler = (NACameraHandler) NetatmoThingHandlerBuilder
+                    .create(bridge, timeZoneProvider, ModuleType.NACamera).withApiBridge(apiBridge)
+                    .withHandler(NACameraHandler.class).withChannelHelper(NACameraChannelHelper.class).build();
+            if (handler != null) {
+                handler.setStateDescriptionProvider(stateDescriptionProvider);
+            }
+            return handler;
+        } else if (ModuleType.NAPerson.matches(thingTypeUID)) {
+            NAPersonHandler handler = (NAPersonHandler) NetatmoThingHandlerBuilder
+                    .create(bridge, timeZoneProvider, ModuleType.NAPerson).withHandler(NAPersonHandler.class)
+                    .withChannelHelper(NAPersonChannelHelper.class).build();
+            if (handler != null) {
+                handler.setStateDescriptionProvider(stateDescriptionProvider);
+            }
+            return handler;
+        } else if (ModuleType.NOC.matches(thingTypeUID)) {
+            return NetatmoThingHandlerBuilder.create(bridge, timeZoneProvider, ModuleType.NOC).withApiBridge(apiBridge)
+                    .withHandler(NAPresenceHandler.class).withChannelHelper(NACameraChannelHelper.class).build();
         }
-    }
-
-    private synchronized @Nullable WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
-        WelcomeWebHookServlet servlet = null;
-        if (bundleContext != null) {
-            servlet = new WelcomeWebHookServlet(httpService, thingUID.getId());
-            webHookServiceRegs.put(thingUID,
-                    bundleContext.registerService(HttpServlet.class.getName(), servlet, new Hashtable<>()));
-        }
-        return servlet;
-    }
-
-    private synchronized void unregisterWebHookServlet(ThingUID thingUID) {
-        ServiceRegistration<?> serviceReg = webHookServiceRegs.remove(thingUID);
-        if (serviceReg != null) {
-            serviceReg.unregister();
-        }
+        logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
+        return null;
     }
 }

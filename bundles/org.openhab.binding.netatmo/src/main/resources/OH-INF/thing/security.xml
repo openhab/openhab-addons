@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="home-security">
+		<label>Home Security</label>
+		<channels>
+			<channel id="person-count" typeId="person-count"/>
+			<channel id="unknown-count" typeId="person-count">
+				<label>Unknown Persons</label>
+				<description>Count how many Unknown Persons are at home</description>
+			</channel>
+			<channel id="city" typeId="string-ro">
+				<label>City</label>
+				<description>City of the home</description>
+			</channel>
+			<channel id="country" typeId="string-ro">
+				<label>Country</label>
+				<description>Country of the home</description>
+			</channel>
+			<channel id="timezone" typeId="string-ro">
+				<label>Timezone</label>
+				<description>Timezone of the home</description>
+			</channel>
+			<channel id="home-event" typeId="home-event"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="welcome">
+		<label>Welcome Camera</label>
+		<channels>
+			<channel id="is-monitoring" typeId="switch-rw">
+				<label>Monitoring</label>
+				<description>Monitoring state of the camera</description>
+			</channel>
+			<channel id="sd-status" typeId="switch-ro">
+				<label>SD State</label>
+				<description>State of the SD card</description>
+			</channel>
+			<channel id="alim-status" typeId="switch-ro">
+				<label>Alim State</label>
+				<description>State of the power connector</description>
+			</channel>
+			<channel id="live-picture" typeId="snapshot">
+				<label>Live Snapshot</label>
+				<description>Camera Live Snapshot</description>
+			</channel>
+			<channel id="live-picture-url" typeId="string-ro">
+				<label>Live Snapshot URL</label>
+				<description>Url of the live snapshot for this camera (need scope access_camera)</description>
+			</channel>
+			<channel id="live-stream-url" typeId="string-ro">
+				<label>Live Stream URL</label>
+				<description>Url of the live stream for this camera</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="welcome-event">
+		<label>Last Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="person-id" typeId="string-ro">
+				<label>Person ID</label>
+				<description>Id of the person the event is about (if any)</description>
+			</channel>
+			<channel id="video-status" typeId="video-status"/>
+			<channel id="message" typeId="string-ro">
+				<label>Message</label>
+				<description>Last Event message from this person</description>
+			</channel>
+			<channel id="time" typeId="timestamp">
+				<label>Timestamp</label>
+				<description>Last Event message time for this person</description>
+			</channel>
+			<channel id="snapshot" typeId="snapshot">
+				<label>Picture</label>
+				<description>Picture of the last event for this person</description>
+			</channel>
+			<channel id="snapshot-url" typeId="string-ro">
+				<label>Snapshot URL</label>
+				<description>URL for the picture of the last event for this person</description>
+			</channel>
+			<channel id="video-url" typeId="string-ro">
+				<label>Video URL</label>
+				<description>URL for the stream of the last event for this person</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="person-event">
+		<label>Last Event</label>
+		<channels>
+			<channel id="subtype" typeId="event-subtype"/>
+			<channel id="time" typeId="timestamp">
+				<label>Timestamp</label>
+				<description>Last Event message time for this person</description>
+			</channel>
+			<channel id="snapshot" typeId="snapshot">
+				<label>Picture</label>
+				<description>Picture of the last event for this person</description>
+			</channel>
+			<channel id="snapshot-url" typeId="string-ro">
+				<label>Picture URL</label>
+				<description>URL for the picture of the last event for this person</description>
+			</channel>
+			<channel id="camera-id" typeId="string-ro">
+				<label>Camera ID</label>
+				<description>Id of the camera that generates the event</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="person">
+		<label>Person</label>
+		<channels>
+			<channel id="avatar-url" typeId="string-ro">
+				<label>Avatar URL</label>
+				<description>URL for the avatar of this person</description>
+			</channel>
+			<channel id="avatar" typeId="snapshot">
+				<label>Avatar</label>
+				<description>Avatar of this person</description>
+			</channel>
+			<channel id="at-home" typeId="switch-rw">
+				<label>At Home</label>
+				<description>Indicates if this person is known to be at home or not</description>
+			</channel>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Seen</label>
+				<description>Last time this element has been seen</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="presence">
+		<label>Presence Camera</label>
+		<channels>
+			<channel id="auto-mode" typeId="switch-rw">
+				<label>Floodlight Auto-Mode</label>
+				<description>State of the floodlight auto-mode</description>
+			</channel>
+			<channel id="floodlight" typeId="switch-rw">
+				<label>Floodlight</label>
+				<description>State of the floodlight</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

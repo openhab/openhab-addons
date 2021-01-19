@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="temperature">
+		<label>Temperature</label>
+		<channels>
+			<channel id="value" typeId="temperature"/>
+			<channel id="min-today" typeId="temperature">
+				<label>Today min</label>
+				<description>Minimum Temperature on current day</description>
+			</channel>
+			<channel id="max-today" typeId="temperature">
+				<label>Today max</label>
+				<description>Maximum Temperature on current day</description>
+			</channel>
+			<channel id="min-time" typeId="timestamp">
+				<label>Min Temp Moment</label>
+				<description>Moment when minimum temperature was reached on current day</description>
+			</channel>
+			<channel id="max-time" typeId="timestamp">
+				<label>Max Temp Moment</label>
+				<description>Moment when maximum temperature was reached on current day</description>
+			</channel>
+			<channel id="trend" typeId="trend">
+				<label>Temp Trend</label>
+				<description>Temperature Evolution Trend</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="humidity">
+		<label>Humidity</label>
+		<channels>
+			<channel id="value" typeId="humidity"/>
+			<channel id="humidex" typeId="humidex"/>
+			<channel id="humidex-scale" typeId="humidex-scale"/>
+			<channel id="heat-index" typeId="temperature">
+				<label>Heat Index</label>
+				<description>Computed Heat Index</description>
+			</channel>
+			<channel id="dewpoint" typeId="temperature">
+				<label>Dewpoint</label>
+				<description>Computed Dewpoint Temperature</description>
+			</channel>
+			<channel id="dewpoint-depression" typeId="temperature">
+				<label>Dewpoint Depression</label>
+				<description>Computed Dewpoint Depression</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="co2">
+		<label>CO2</label>
+		<channels>
+			<channel id="value" typeId="co2"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="noise">
+		<label>Noise</label>
+		<channels>
+			<channel id="value" typeId="noise"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pressure">
+		<label>Pressure</label>
+		<channels>
+			<channel id="value" typeId="pressure"/>
+			<channel id="absolute" typeId="pressure">
+				<label>Absolute Pressure</label>
+				<description>Absolute pressure at sea level</description>
+			</channel>
+			<channel id="trend" typeId="trend">
+				<label>Pressure Trend</label>
+				<description>Pressure evolution trend for last 12h (up, down, stable)</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rain">
+		<label>Rain gauge</label>
+		<channels>
+			<channel id="value" typeId="rain"/>
+			<channel id="sum-1" typeId="rain">
+				<label>Rain 1h</label>
+				<description>Current hourly total</description>
+			</channel>
+			<channel id="sum-24" typeId="rain">
+				<label>Rain 24h</label>
+				<description>Current daily total</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="wind">
+		<label>Wind</label>
+		<channels>
+			<channel id="angle" typeId="wind-angle"/>
+			<channel id="strength" typeId="wind-strength"/>
+			<channel id="max-strength" typeId="wind-strength">
+				<label>Max Wind Strength</label>
+				<description>Maximum wind strength recorded</description>
+			</channel>
+			<channel id="max-strength-date" typeId="timestamp">
+				<label>Date Max Wind Strength</label>
+				<description>Date maximum wind strength recorded</description>
+			</channel>
+			<channel id="gust-angle" typeId="wind-angle">
+				<label>Gust Angle</label>
+				<description>Direction of the last 5 minutes highest gust wind</description>
+			</channel>
+			<channel id="gust-strength" typeId="wind-speed">
+				<label>Gust Strength</label>
+				<description>Speed of the last 5 minutes highest gust wind</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
