@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -66,16 +65,7 @@ public class Constants {
     public static final int MILES_TO_FEET_FACTOR = 5280;
     public static final String EMPTY_VEHICLES = "{}";
 
-    @SuppressWarnings("serial")
-    public static final Map<String, String> DAYS = new HashMap<String, String>() {
-        {
-            put(Day.MONDAY.name(), "Mon");
-            put(Day.TUESDAY.name(), "Tue");
-            put(Day.WEDNESDAY.name(), "Wed");
-            put(Day.THURSDAY.name(), "Thu");
-            put(Day.FRIDAY.name(), "Fri");
-            put(Day.SATURDAY.name(), "Sat");
-            put(Day.SUNDAY.name(), "Sun");
-        }
-    };
+    public static final Map<String, String> DAYS = Map.of(Day.MONDAY.name(), "Mon", Day.TUESDAY.name(), "Tue",
+            Day.WEDNESDAY.name(), "Wed", Day.THURSDAY.name(), "Thu", Day.FRIDAY.name(), "Fri", Day.SATURDAY.name(),
+            "Sat", Day.SUNDAY.name(), "Sun");
 }
