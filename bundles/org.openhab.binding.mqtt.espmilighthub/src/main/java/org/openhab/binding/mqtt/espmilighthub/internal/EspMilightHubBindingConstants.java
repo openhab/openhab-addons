@@ -13,6 +13,7 @@
 
 package org.openhab.binding.mqtt.espmilighthub.internal;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,7 +30,7 @@ public class EspMilightHubBindingConstants {
     public static final String BINDING_ID = "mqtt";
     public static final String STATES_BASE_TOPIC = "milight/states/";
     public static final String COMMANDS_BASE_TOPIC = "milight/commands/";
-
+    public static final BigDecimal BIG_DECIMAL_100 = new BigDecimal(100);
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RGB_CCT = new ThingTypeUID(BINDING_ID, "rgb_cct");
     public static final ThingTypeUID THING_TYPE_CCT = new ThingTypeUID(BINDING_ID, "cct");

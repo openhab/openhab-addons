@@ -67,7 +67,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
     private String fullStatesTopic = "";
     private BigDecimal maxColourTemp = BigDecimal.ZERO;
     private BigDecimal minColourTemp = BigDecimal.ZERO;
-    private BigDecimal savedLevel = new BigDecimal(100);
+    private BigDecimal savedLevel = BIG_DECIMAL_100;
     private ConfigOptions config = new ConfigOptions();
 
     public EspMilightHubHandler(Thing thing, ThingRegistry thingRegistry) {
@@ -175,7 +175,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
      */
     private int autoColourTemp(int brightness) {
         return minColourTemp.subtract(
-                minColourTemp.subtract(maxColourTemp).divide(new BigDecimal(100)).multiply(new BigDecimal(brightness)))
+                minColourTemp.subtract(maxColourTemp).divide(BIG_DECIMAL_100).multiply(new BigDecimal(brightness)))
                 .intValue();
     }
 
