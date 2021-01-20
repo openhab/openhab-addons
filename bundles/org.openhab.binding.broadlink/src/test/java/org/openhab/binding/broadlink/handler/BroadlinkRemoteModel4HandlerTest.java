@@ -24,7 +24,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
@@ -49,7 +48,6 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
     @BeforeEach
     public void setUp() {
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_RM4, "rm4-test");
-        MockitoAnnotations.initMocks(this);
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
     }
 
