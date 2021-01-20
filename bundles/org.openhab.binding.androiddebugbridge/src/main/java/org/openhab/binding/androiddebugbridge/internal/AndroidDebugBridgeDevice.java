@@ -16,6 +16,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.tananaev.adblib.AdbBase64;
 import com.tananaev.adblib.AdbConnection;
 import com.tananaev.adblib.AdbCrypto;
+import com.tananaev.adblib.AdbStream;
 
 /**
  * The {@link AndroidDebugBridgeConfiguration} class encapsulates adb device connection logic.
@@ -265,17 +267,18 @@ public class AndroidDebugBridgeDevice {
         }
         var commandFuture = scheduler.submit(() -> {
             var byteArrayOutputStream = new ByteArrayOutputStream();
-            var cmd = String.join(" ", args);
+            String cmd = String.join(" ", args);
             logger.debug("{} - shell:{}", ip, cmd);
             try {
-                var stream = adb.open("shell:" + cmd);
+                AdbStream stream = adb.open("shell:" + cmd);
                 do {
                     byteArrayOutputStream.writeBytes(stream.read());
                 } while (!stream.isClosed());
             } catch (IOException e) {
-                var message = e.getMessage();
-                if (message != null && !message.equals("Stream closed"))
+                String message = e.getMessage();
+                if (message != null && !message.equals("Stream closed")) {
                     throw e;
+                }
             }
             return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
         });
@@ -284,7 +287,8 @@ public class AndroidDebugBridgeDevice {
     }
 
     private static AdbBase64 getBase64Impl() {
-        return bytes -> new String(Base64.getEncoder().encode(bytes));
+        Charset asciiCharset = Charset.forName("ASCII");
+        return bytes -> new String(Base64.getEncoder().encode(bytes), asciiCharset);
     }
 
     private static AdbCrypto loadKeyPair(String pubKeyFile, String privKeyFile)

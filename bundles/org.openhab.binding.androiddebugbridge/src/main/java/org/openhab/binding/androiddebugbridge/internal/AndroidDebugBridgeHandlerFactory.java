@@ -23,8 +23,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link AndroidDebugBridgeHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -34,7 +32,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 @Component(configurationPid = BINDING_CONFIGURATION_PID, service = ThingHandlerFactory.class)
 public class AndroidDebugBridgeHandlerFactory extends BaseThingHandlerFactory {
-    Gson gson = new Gson();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,7 +42,7 @@ public class AndroidDebugBridgeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ANDROID_DEVICE.equals(thingTypeUID)) {
-            return new AndroidDebugBridgeHandler(thing, gson);
+            return new AndroidDebugBridgeHandler(thing);
         }
         return null;
     }

@@ -52,26 +52,23 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     public static final String KEY_EVENT_PREVIOUS = "88";
     public static final String KEY_EVENT_MEDIA_REWIND = "89";
     public static final String KEY_EVENT_MEDIA_FAST_FORWARD = "90";
-
+    private static final Gson GSON = new Gson();
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeHandler.class);
     private final AndroidDebugBridgeDevice adbConnection;
     private int maxMediaVolume = 0;
-
-    private @Nullable AndroidDebugBridgeConfiguration config;
+    private AndroidDebugBridgeConfiguration config = new AndroidDebugBridgeConfiguration();
     private @Nullable ScheduledFuture<?> connectionCheckerSchedule;
-    private final Gson gson;
     private AndroidDebugBridgeMediaStatePackageConfig @Nullable [] packageConfigs = null;
 
-    public AndroidDebugBridgeHandler(Thing thing, Gson gson) {
+    public AndroidDebugBridgeHandler(Thing thing) {
         super(thing);
         this.adbConnection = new AndroidDebugBridgeDevice(scheduler);
-        this.gson = gson;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         var currentConfig = config;
-        if (currentConfig == null){
+        if (currentConfig == null) {
             return;
         }
         try {
@@ -82,8 +79,10 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             handleCommandInternal(channelUID, command);
         } catch (InterruptedException ignored) {
         } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            adbConnection.disconnect();
+            if (!(e.getCause() instanceof InterruptedException)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                adbConnection.disconnect();
+            }
         } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("{} - read error: {}", currentConfig.ip, e.getMessage());
         } catch (TimeoutException e) {
@@ -94,7 +93,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     private void handleCommandInternal(ChannelUID channelUID, Command command)
             throws InterruptedException, AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException,
             TimeoutException, ExecutionException {
-        if (!isLinked(channelUID)){
+        if (!isLinked(channelUID)) {
             return;
         }
         String channelId = channelUID.getId();
@@ -153,7 +152,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             maxMediaVolume = volumeInfo.max;
             updateState(channelUID, new PercentType((int) Math.round(toPercent(volumeInfo.current, volumeInfo.max))));
         } else {
-            if (maxMediaVolume == 0){
+            if (maxMediaVolume == 0) {
                 return; // We can not transform percentage
             }
             int targetVolume = Integer.parseInt(command.toFullString());
@@ -244,10 +243,10 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
 
     private void loadMediaStateConfig(String mediaStateJSONConfig) {
         try {
-            this.packageConfigs = gson.fromJson(mediaStateJSONConfig,
+            this.packageConfigs = GSON.fromJson(mediaStateJSONConfig,
                     AndroidDebugBridgeMediaStatePackageConfig[].class);
         } catch (JsonSyntaxException e) {
-            logger.warn("unable to parse media state config");
+            logger.warn("unable to parse media state config: {}", e.getMessage());
         }
     }
 

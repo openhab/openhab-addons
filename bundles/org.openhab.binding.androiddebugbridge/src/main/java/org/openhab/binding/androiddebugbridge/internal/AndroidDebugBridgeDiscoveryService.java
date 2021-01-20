@@ -53,8 +53,8 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     public static final String LOCAL_INTERFACE_IP = "127.0.0.1";
     public static final int MAX_RETRIES = 2;
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDiscoveryService.class);
+    private final ConfigurationAdmin admin;
     private boolean discoveryRunning = false;
-    private ConfigurationAdmin admin;
 
     @Activate
     public AndroidDebugBridgeDiscoveryService(@Reference ConfigurationAdmin admin) {
@@ -79,10 +79,10 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                     if (!discoveryRunning) {
                         break;
                     }
-                    if (!(inetAddress instanceof Inet4Address))
+                    if (!(inetAddress instanceof Inet4Address)
+                            || inetAddress.getHostAddress().equals(LOCAL_INTERFACE_IP)) {
                         continue;
-                    if (inetAddress.getHostAddress().equals(LOCAL_INTERFACE_IP))
-                        continue;
+                    }
                     String[] ipParts = inetAddress.getHostAddress().split("\\.");
                     for (int i = configuration.discoveryIpRangeMin; i <= configuration.discoveryIpRangeMax; i++) {
                         if (!discoveryRunning) {
@@ -112,7 +112,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                             }
                         } catch (IOException | AndroidDebugBridgeDeviceException | AndroidDebugBridgeDeviceReadException
                                 | TimeoutException | ExecutionException e) {
-                            logger.warn("Error connecting to device at {}: {}", currentIp, e.getMessage());
+                            logger.debug("Error connecting to device at {}: {}", currentIp, e.getMessage());
                         }
                     }
                 }
