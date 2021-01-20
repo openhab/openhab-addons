@@ -34,6 +34,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,20 @@ public class speedtestHandler extends BaseThingHandler {
     private String speedTestCommand = "";
     private static OS os = OS.NOT_SET;
 
+    private String ping_jitter = "";
+    private String ping_latency = "";
+    private String download_bandwidth = "";
+    private String download_bytes = "";
+    private String download_elapsed = "";
+    private String upload_bandwidth = "";
+    private String upload_bytes = "";
+    private String upload_elapsed = "";
+    private String isp = "";
+    private String interface_internalIp = "";
+    private String interface_externalIp = "";
+    private String result_url = "";
+    private String server_name = "";
+
     /**
      * Contains information about which operating system openHAB is running on.
      */
@@ -81,7 +96,16 @@ public class speedtestHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Read only
+        logger.debug("handleCommand channel: {} command: {}", channelUID, command);
+        String ch = channelUID.getId();
+        if (command instanceof RefreshType) {
+            updateChannels();
+            return;
+        }
+        if (ch.equals(speedtestBindingConstants.TRIGGER_TEST)) {
+            getSpeed();
+        }
+
     }
 
     @Override
@@ -127,8 +151,10 @@ public class speedtestHandler extends BaseThingHandler {
      */
     private void onUpdate() {
         logger.debug("Polling Interval Set : {} ", pollingInterval);
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, pollingInterval, TimeUnit.MINUTES);
+        if (pollingInterval > 0) {
+            if (pollingJob == null || pollingJob.isCancelled()) {
+                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, pollingInterval, TimeUnit.MINUTES);
+            }
         }
     }
 
@@ -244,7 +270,21 @@ public class speedtestHandler extends BaseThingHandler {
         ResultContainer tmpCont = GSON.fromJson(speedOutput, ResultContainer.class);
         if (tmpCont != null) {
             if (tmpCont.getType().equals("result")) {
-                updateChannels(tmpCont);
+                ping_jitter = tmpCont.getPing().getJitter();
+                ping_latency = tmpCont.getPing().getLatency();
+                download_bandwidth = tmpCont.getDownload().getBandwidth();
+                download_bytes = tmpCont.getDownload().getBytes();
+                download_elapsed = tmpCont.getDownload().getElapsed();
+                upload_bandwidth = tmpCont.getUpload().getBandwidth();
+                upload_bytes = tmpCont.getUpload().getBytes();
+                upload_elapsed = tmpCont.getUpload().getElapsed();
+                isp = tmpCont.getIsp();
+                interface_internalIp = tmpCont.getInterface().getInternalIp();
+                interface_externalIp = tmpCont.getInterface().getExternalIp();
+                result_url = tmpCont.getResult().getUrl();
+                server_name = tmpCont.getServer().getName() + " (" + tmpCont.getServer().getId().toString() + ") "
+                        + tmpCont.getServer().getLocation();
+                updateChannels();
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -255,39 +295,34 @@ public class speedtestHandler extends BaseThingHandler {
     /*
      * Update the channels
      */
-    private void updateChannels(ResultContainer results) {
+    private void updateChannels() {
         logger.debug("Updating channels");
-        String serverTxt = "";
-        serverTxt += results.getServer().getName();
-        serverTxt += " (" + results.getServer().getId().toString() + ") ";
-        serverTxt += results.getServer().getLocation();
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.PING_JITTER),
-                new DecimalType(results.getPing().getJitter().doubleValue()));
+                new DecimalType(ping_jitter));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.PING_LATENCY),
-                new DecimalType(results.getPing().getLatency().doubleValue()));
+                new DecimalType(ping_latency));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.DOWNLOAD_BANDWIDTH),
-                new DecimalType(results.getDownload().getBandwidth().doubleValue() / 125000));
+                new DecimalType(Double.parseDouble(download_bandwidth) / 125000));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.DOWNLOAD_BYTES),
-                new DecimalType(results.getDownload().getBytes().intValue()));
+                new DecimalType(download_bytes));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.DOWNLOAD_ELAPSED),
-                new DecimalType(results.getDownload().getElapsed().doubleValue()));
+                new DecimalType(download_elapsed));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.UPLOAD_BANDWIDTH),
-                new DecimalType(results.getUpload().getBandwidth().doubleValue() / 125000));
+                new DecimalType(Double.parseDouble(upload_bandwidth) / 125000));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.UPLOAD_BYTES),
-                new DecimalType(results.getUpload().getBytes().intValue()));
+                new DecimalType(upload_bytes));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.UPLOAD_ELAPSED),
-                new DecimalType(results.getUpload().getElapsed().intValue()));
+                new DecimalType(upload_elapsed));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.INTERFACE_EXTERNALIP),
-                new StringType(String.valueOf(results.getInterface().getExternalIp())));
+                new StringType(String.valueOf(interface_externalIp)));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.INTERFACE_INTERNALIP),
-                new StringType(String.valueOf(results.getInterface().getInternalIp())));
+                new StringType(String.valueOf(interface_internalIp)));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.ISP),
-                new StringType(String.valueOf(results.getIsp())));
+                new StringType(String.valueOf(isp)));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.RESULT_URL),
-                new StringType(String.valueOf(results.getResult().getUrl())));
+                new StringType(String.valueOf(result_url)));
         updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.SERVER),
-                new StringType(String.valueOf(serverTxt)));
-
+                new StringType(String.valueOf(server_name)));
     }
 
     /*

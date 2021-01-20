@@ -27,6 +27,8 @@
             <channel id="interface_externalIp" typeId="interface_externalIp"/>
             
             <channel id="result_url" typeId="result_url"/>
+            
+            <channel id="trigger_Test" typeId="trigger_Test"/>
         </channels>
         <properties>
             <property name="Server List 1"></property>
@@ -54,6 +56,7 @@
                     <option value="360">Every 6 Hours</option>
                     <option value="720">Every 12 Hours</option>
                     <option value="1440">Once a Day</option>
+                    <option value="0">Don't test automatically</option>
                 </options>
                 <default>60</default>
             </parameter>
@@ -61,7 +64,7 @@
                 <label>Speedtest Path</label>
                 <description>The path of the Ookla Speedtest executable, Linux machines may leave this blank and it defaults to /usr/bin/speedtest</description>
             </parameter>
-            <parameter name="serverID" type="text" required="false" groupName="config-info">
+            <parameter name="serverID" type="integer" required="false" groupName="config-info">
                 <label>Server ID</label>
                 <description>The server id to use when testing, if this is left blank the best option selected by Ookla will be used. </description>
             </parameter>
@@ -144,6 +147,11 @@
         <label>Result URL</label>
         <description></description>
         <state readOnly="true"></state>
-    </channel-type>              
+    </channel-type>       
+    <channel-type id="trigger_Test">
+        <item-type>Switch</item-type>
+        <label>Test Trigger</label>
+        <description>Switch item to test manually</description>
+    </channel-type>       
 
 </thing:thing-descriptions>

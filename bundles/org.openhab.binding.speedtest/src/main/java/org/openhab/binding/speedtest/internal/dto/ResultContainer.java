@@ -120,35 +120,35 @@ public class ResultContainer {
 
         @SerializedName("bandwidth")
         @Expose
-        private Integer bandwidth;
+        private String bandwidth;
         @SerializedName("bytes")
         @Expose
-        private Integer bytes;
+        private String bytes;
         @SerializedName("elapsed")
         @Expose
-        private Integer elapsed;
+        private String elapsed;
 
-        public Integer getBandwidth() {
+        public String getBandwidth() {
             return bandwidth;
         }
 
-        public void setBandwidth(Integer bandwidth) {
+        public void setBandwidth(String bandwidth) {
             this.bandwidth = bandwidth;
         }
 
-        public Integer getBytes() {
+        public String getBytes() {
             return bytes;
         }
 
-        public void setBytes(Integer bytes) {
+        public void setBytes(String bytes) {
             this.bytes = bytes;
         }
 
-        public Integer getElapsed() {
+        public String getElapsed() {
             return elapsed;
         }
 
-        public void setElapsed(Integer elapsed) {
+        public void setElapsed(String elapsed) {
             this.elapsed = elapsed;
         }
 
@@ -218,24 +218,24 @@ public class ResultContainer {
 
         @SerializedName("jitter")
         @Expose
-        private Double jitter;
+        private String jitter;
         @SerializedName("latency")
         @Expose
-        private Double latency;
+        private String latency;
 
-        public Double getJitter() {
+        public String getJitter() {
             return jitter;
         }
 
-        public void setJitter(Double jitter) {
+        public void setJitter(String jitter) {
             this.jitter = jitter;
         }
 
-        public Double getLatency() {
+        public String getLatency() {
             return latency;
         }
 
-        public void setLatency(Double latency) {
+        public void setLatency(String latency) {
             this.latency = latency;
         }
 
@@ -354,35 +354,35 @@ public class ResultContainer {
 
         @SerializedName("bandwidth")
         @Expose
-        private Integer bandwidth;
+        private String bandwidth;
         @SerializedName("bytes")
         @Expose
-        private Integer bytes;
+        private String bytes;
         @SerializedName("elapsed")
         @Expose
-        private Integer elapsed;
+        private String elapsed;
 
-        public Integer getBandwidth() {
+        public String getBandwidth() {
             return bandwidth;
         }
 
-        public void setBandwidth(Integer bandwidth) {
+        public void setBandwidth(String bandwidth) {
             this.bandwidth = bandwidth;
         }
 
-        public Integer getBytes() {
+        public String getBytes() {
             return bytes;
         }
 
-        public void setBytes(Integer bytes) {
+        public void setBytes(String bytes) {
             this.bytes = bytes;
         }
 
-        public Integer getElapsed() {
+        public String getElapsed() {
             return elapsed;
         }
 
-        public void setElapsed(Integer elapsed) {
+        public void setElapsed(String elapsed) {
             this.elapsed = elapsed;
         }
 

@@ -53,6 +53,7 @@ public class speedtestBindingConstants {
     public static final String INTERFACE_INTERNALIP = "interface_internalIp";
     public static final String INTERFACE_EXTERNALIP = "interface_externalIp";
     public static final String RESULT_URL = "result_url";
+    public static final String TRIGGER_TEST = "trigger_Test";
 
     public static final String PROPERTY_SERVER_LIST1 = "Server List 1";
     public static final String PROPERTY_SERVER_LIST2 = "Server List 2";
