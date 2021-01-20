@@ -17,7 +17,8 @@ Two kind of Things are supported:
 ## Discovery
 
 The gateway device needs to be added manually.
-After that, sub-devices are detected automatically.
+After that, sub-devices should be detected automatically.
+Otherwise go to "Things", click "+" to add a new thing, select the TR-064 binding and click the "Scan" button.
 
 ## Thing Configuration
 
