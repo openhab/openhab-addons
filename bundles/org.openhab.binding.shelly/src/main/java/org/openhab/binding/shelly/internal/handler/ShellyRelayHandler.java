@@ -167,7 +167,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             return;
         } else if (command instanceof IncreaseDecreaseType) {
             ShellyShortLightStatus light = api.getLightStatus(index);
-            if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
+            if (command == IncreaseDecreaseType.INCREASE) {
                 value = Math.min(light.brightness + DIM_STEPSIZE, 100);
             } else {
                 value = Math.max(light.brightness - DIM_STEPSIZE, 0);
@@ -226,10 +226,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             ShellyControlRoller rstatus = api.getRollerStatus(index);
 
             if (!getString(rstatus.state).isEmpty() && !getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) {
-                boolean up = command instanceof UpDownType && (UpDownType) command == UpDownType.UP;
-                boolean down = command instanceof UpDownType && (UpDownType) command == UpDownType.DOWN;
-                if ((up && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
-                        || (down && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_CLOSE))) {
+                if ((command == UpDownType.UP && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
+                        || (command == UpDownType.DOWN
+                                && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_CLOSE))) {
                     logger.debug("{}: Roller is already moving ({}), ignore command {}", thingName,
                             getString(rstatus.state), command);
                     requestUpdates(1, false);
@@ -237,8 +236,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             }
 
-            if (((command instanceof UpDownType) && UpDownType.UP.equals(command))
-                    || ((command instanceof OnOffType) && (command == OnOffType.ON))) {
+            if ((command == UpDownType.UP) || (command == OnOffType.ON)) {
                 logger.debug("{}: Open roller", thingName);
                 api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_OPEN);
                 int pos = profile.getRollerFav(config.favoriteUP - 1);
@@ -247,9 +245,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
                             pos);
                 }
-            }
-            if (((command instanceof UpDownType) && UpDownType.DOWN.equals(command))
-                    || ((command instanceof OnOffType) && (command == OnOffType.OFF))) {
+            } else if ((command == UpDownType.DOWN) || (command == OnOffType.OFF)) {
                 logger.debug("{}: Closing roller", thingName);
                 int pos = profile.getRollerFav(config.favoriteDOWN - 1);
                 if (pos > 0) {
@@ -264,7 +260,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
                 position = SHELLY_MAX_ROLLER_POS - pos;
             }
-        } else if ((command instanceof StopMoveType) && StopMoveType.STOP.equals(command)) {
+        } else if (command == StopMoveType.STOP) {
             logger.debug("{}: Stop roller", thingName);
             api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_STOP);
         } else {

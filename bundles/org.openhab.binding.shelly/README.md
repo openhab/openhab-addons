@@ -622,8 +622,9 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 Note: The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
 Therere for the binding offers beside channel `hsb` also the `white` channel.
-Or control each color separately with channels `red`, `blue`, `green` (those are advanced channels).
+You could each color separately with channels `red`, `blue`, `green` (those are advanced channels).
 
+Channels in group `color`or `white` apply depending on the selected mode - they are not active at the same time. 
 
 #### Shelly Duo (thing-type: shellybulbduo)
 
@@ -685,6 +686,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
 `false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
 
+Channels in group `color`or `white` apply depending on the selected mode - they are not active at the same time. 
 
 ## Shelly Duo RGBW Color Bulb (thing-type: shellycolorbulb)
 
