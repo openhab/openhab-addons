@@ -107,11 +107,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                 password = Hash.getMD5Hash(password);
             }
         }
-        jcReply = statusInfo();
         jsReply = http.sendHttpGet(getBaseUrl() + CMD_STATION_INFO, getRequestRequiredOptions());
         if (jsReply.equals("{\"result\":2}")) {
             throw new UnauthorizedApiException("Unauthorized, check your password is correct");
         }
+        jcReply = statusInfo();
     }
 
     @Override

@@ -23,8 +23,10 @@ import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,14 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
 
     @Override
     public void initialize() {
+        OpenSprinklerApi localAPI = getApi();
+        Channel currentDrawChannel = thing.getChannel(SENSOR_CURRENT_DRAW);
+        if (localAPI != null && localAPI.currentDraw() == -1 && currentDrawChannel != null) {
+            logger.debug("No current sensor detected, removing channel.");
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withoutChannel(currentDrawChannel.getUID());
+            updateThing(thingBuilder.build());
+        }
     }
 
     @Override
