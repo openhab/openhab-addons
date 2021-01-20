@@ -202,7 +202,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 }
             } else {
                 if (savedLevel.intValue() >= 10) {
-                    savedLevel = savedLevel.subtract(new BigDecimal(10));
+                    savedLevel = savedLevel.subtract(BigDecimal.TEN);
                 }
             }
             sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel.intValue() + "}");
