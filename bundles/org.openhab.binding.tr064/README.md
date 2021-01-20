@@ -169,7 +169,7 @@ In case the format of the number in the phonebook and the format of the number f
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
 A `matchCount` of `0` is considered as "match everything".
 Matching is done on normalized versions of the numbers that have all characters except digits, '+' and '*' removed.
-There is an optional configuration parameter called `phoneNumberIndex` that should be used when linking to a channel with item type `Call`, which determines which number to be picked, i.e. to or from.
+There is an optional configuration parameter called `phoneNumberIndex` that should be used when linking to a channel with item type `StringListType` (like `Call` in the example below), which determines which number to be picked, i.e. to or from.
 
 ## Rule Action
 
