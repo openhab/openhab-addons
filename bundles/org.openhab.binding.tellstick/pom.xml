@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Tellstick Binding</name>
 
   <properties>
-    <bnd.importpackage>!com.luckycatlabs.*,!com.jcraft.jzlib.*,!org.apache.commons.cli.*,!org.eclipse.swt.*,!javax.activation</bnd.importpackage>
+    <bnd.importpackage>!com.luckycatlabs.*,!com.jcraft.jzlib.*,!org.apache.commons.cli.*,!org.eclipse.swt.*</bnd.importpackage>
     <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-handler,netty-transport-native-kqueue,netty-handler-proxy,netty-codec-socks</dep.noembedding>
   </properties>
 
