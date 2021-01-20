@@ -198,7 +198,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         } else if (command instanceof IncreaseDecreaseType) {
             if (IncreaseDecreaseType.INCREASE.equals(command)) {
                 if (savedLevel.intValue() <= 90) {
-                    savedLevel = savedLevel.add(new BigDecimal(10));
+                    savedLevel = savedLevel.add(BigDecimal.TEN);
                 }
             } else {
                 if (savedLevel.intValue() >= 10) {
