@@ -141,7 +141,7 @@
 				"siid": 3,
 				"piid": 6,
 				"friendlyName": "Environment - Pm2 5",
-				"channel": "pm2.5-density",
+				"channel": "pm2_5-density",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0.0,
