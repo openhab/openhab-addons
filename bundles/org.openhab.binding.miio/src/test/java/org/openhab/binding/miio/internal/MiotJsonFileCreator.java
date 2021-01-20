@@ -58,8 +58,8 @@ public class MiotJsonFileCreator {
 
         LinkedHashSet<String> models = new LinkedHashSet<>();
 
-        models.add("philips.light.dlight");
-        boolean scan = false;
+        models.add("zhimi.airpurifier.mb");
+        boolean scan = true;
         if (scan) {
             for (int i = 1; i <= 12; i++) {
                 models.add(models.toArray()[0] + String.valueOf(i));
