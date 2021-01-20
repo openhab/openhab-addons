@@ -29,6 +29,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -93,6 +94,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         List<String> property2 = new ArrayList<>();
         List<String> property3 = new ArrayList<>();
         List<String> property4 = new ArrayList<>();
+        Map<String, Object> properties = new HashMap<>();
 
         HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
 
@@ -101,7 +103,11 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             names = bridgehandler.evaluateXPath("//Backyard/Name/text()", xmlResponse);
 
             for (int i = 0; i < names.size(); i++) {
-                onBackyardDiscovered(Integer.parseInt(bridgehandler.account.mspSystemID), names.get(i));
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BACKYARD);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, bridgehandler.account.mspSystemID);
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_BACKYARD, names.get(i), properties);
             }
 
             // Find Bodies of Water
@@ -109,7 +115,11 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             names = bridgehandler.evaluateXPath("//Body-of-water/Name/text()", xmlResponse);
 
             for (int i = 0; i < systemIDs.size(); i++) {
-                onBOWDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i));
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BOW);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_BOW, names.get(i), properties);
             }
 
             // Find Chlorinators
@@ -122,7 +132,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()", xmlResponse);
                 bowName = bridgehandler.evaluateXPath(
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()", xmlResponse);
-                onChlorinatorDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i), bowID.get(0), bowName.get(0));
+
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.CHLORINATOR);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(i));
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_CHLORINATOR, names.get(i), properties);
             }
 
             // Find ColorLogic Lights
@@ -135,7 +152,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()", xmlResponse);
                 bowName = bridgehandler.evaluateXPath(
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()", xmlResponse);
-                onColorLogicDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i), bowID.get(0), bowName.get(0));
+
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.COLORLOGIC);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(i));
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_CHLORINATOR, names.get(i), properties);
             }
 
             // Find Filters
@@ -151,8 +175,18 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()", xmlResponse);
                 bowName = bridgehandler.evaluateXPath(
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()", xmlResponse);
-                onFilterDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i), bowID.get(0), bowName.get(0),
-                        property1.get(i), property2.get(i), property3.get(i), property4.get(i));
+
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.FILTER);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPSPEED, property1.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPSPEED, property2.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPRPM, property3.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPRPM, property4.get(i));
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_FILTER, names.get(i), properties);
             }
 
             // Find Heaters
@@ -166,7 +200,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                         xmlResponse);
                 bowName = bridgehandler.evaluateXPath(
                         "//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/Name/text()", xmlResponse);
-                onHeaterDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i), bowID.get(0), bowName.get(0));
+
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.HEATER);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(i));
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_HEATER, names.get(i), properties);
             }
 
             // Find Pumps
@@ -185,8 +226,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                         xmlResponse);
                 bowName = bridgehandler.evaluateXPath(
                         "//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/Name/text()", xmlResponse);
-                onPumpDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i), bowID.get(0), bowName.get(0),
-                        property1.get(i), property2.get(i), property3.get(i), property4.get(i));
+
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.PUMP);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(i));
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_PUMP, names.get(i), properties);
             }
 
             // Find Relays
@@ -199,12 +246,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()", xmlResponse);
                 bowName = bridgehandler.evaluateXPath(
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()", xmlResponse);
-                if (!(bowID.isEmpty())) {
-                    onRelayDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i), bowID.get(0), bowName.get(0));
-                } else {
-                    onRelayDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i), "", "");
-                }
 
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.RELAY);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(0));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(0));
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_RELAY, names.get(i), properties);
             }
 
             // Find Virtual Heaters
@@ -216,8 +265,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()", xmlResponse);
                 bowName = bridgehandler.evaluateXPath(
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()", xmlResponse);
-                onVirtualHeaterDiscovered(Integer.parseInt(systemIDs.get(i)), "Virtual Heater", bowID.get(0),
-                        bowName.get(0));
+
+                properties.clear();
+                properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.VIRTUALHEATER);
+                properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(i));
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(i));
+
+                onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_VIRTUALHEATER, "Heater", properties);
             }
 
             // Find Sensors
@@ -234,206 +289,31 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                         "//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()", xmlResponse);
                 // Do not add backyard sensors that do not exist in the BOW thus bowID is null
                 if (!(bowID.isEmpty())) {
-                    onSensorDiscovered(Integer.parseInt(systemIDs.get(i)), names.get(i), bowID.get(0), bowName.get(0));
+                    properties.clear();
+                    properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.SENSOR);
+                    properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
+                    properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(0));
+                    properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(0));
+
+                    onDeviceDiscovered(HaywardBindingConstants.THING_TYPE_SENSOR, names.get(i), properties);
                 }
             }
         }
         return true;
     }
 
-    public void onBackyardDiscovered(int systemID, String label) {
-        logger.trace("Hayward Backyard {} Discovered: {}", systemID, label);
+    public void onDeviceDiscovered(ThingTypeUID thingType, String label, Map<String, Object> properties) {
         HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
+        String systemID = (String) properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
         if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_BACKYARD,
-                    bridgehandler.getThing().getUID(), Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BACKYARD);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onBOWDiscovered(int systemID, String label) {
-        logger.trace("Hayward BOW {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_BOW, bridgehandler.getThing().getUID(),
-                    Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BOW);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onChlorinatorDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.trace("Hayward Chlorinator {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_CHLORINATOR,
-                    bridgehandler.getThing().getUID(), Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.CHLORINATOR);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onColorLogicDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.trace("Hayward Color Logic Light {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_COLORLOGIC,
-                    bridgehandler.getThing().getUID(), Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.COLORLOGIC);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onFilterDiscovered(int systemID, String label, String bowID, String bowName, String minPumpSpeed,
-            String maxPumpSpeed, String minPumpRpm, String maxPumpRpm) {
-        logger.trace("Hayward Filter {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_FILTER,
-                    bridgehandler.getThing().getUID(), Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.FILTER);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-            properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPSPEED, minPumpSpeed);
-            properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPSPEED, maxPumpSpeed);
-            properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPRPM, minPumpRpm);
-            properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPRPM, maxPumpRpm);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onHeaterDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.trace("Hayward Heater {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_HEATER,
-                    bridgehandler.getThing().getUID(), Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.HEATER);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onPumpDiscovered(int systemID, String label, String bowID, String bowName, String property1,
-            String property2, String property3, String property4) {
-        logger.trace("Hayward Pump {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_PUMP, bridgehandler.getThing().getUID(),
-                    Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.PUMP);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-            properties.put(HaywardBindingConstants.PROPERTY_PUMP_MINPUMPSPEED, property1);
-            properties.put(HaywardBindingConstants.PROPERTY_PUMP_MAXPUMPSPEED, property2);
-            properties.put(HaywardBindingConstants.PROPERTY_PUMP_MINPUMPRPM, property3);
-            properties.put(HaywardBindingConstants.PROPERTY_PUMP_MAXPUMPRPM, property4);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onRelayDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.trace("Hayward Relay {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_RELAY,
-                    bridgehandler.getThing().getUID(), Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.RELAY);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onSensorDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.trace("Hayward Sensor {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_SENSOR,
-                    bridgehandler.getThing().getUID(), Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.SENSOR);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
-        }
-    }
-
-    public void onVirtualHeaterDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.trace("Hayward Virtual Heater {} Discovered: {}", systemID, label);
-        HaywardBridgeHandler bridgehandler = discoveryBridgehandler;
-        if (bridgehandler != null) {
-            ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_VIRTUALHEATER,
-                    bridgehandler.getThing().getUID(), Integer.toString(systemID));
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
-            properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.VIRTUALHEATER.toString());
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgehandler.getThing().getUID())
-                    .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
-                    .withLabel("Hayward " + label).withProperties(properties).build();
-            thingDiscovered(result);
+            if (systemID != null) {
+                ThingUID thingUID = new ThingUID(thingType, bridgehandler.getThing().getUID(), systemID);
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                        .withBridge(bridgehandler.getThing().getUID())
+                        .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID)
+                        .withLabel("Hayward " + label).withProperties(properties).build();
+                thingDiscovered(result);
+            }
         }
     }
 
