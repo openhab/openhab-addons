@@ -95,7 +95,7 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
             }
             thingTypeBuilder.withConfigDescriptionURI(configURI);
         } catch (URISyntaxException e) {
-            logger.warn("Unable to build configuration description URI : {}", e);
+            logger.warn("Unable to build configuration description URI : {}", e.getMessage());
         }
 
         List<String> extensions = supportedThingType.extensions;
