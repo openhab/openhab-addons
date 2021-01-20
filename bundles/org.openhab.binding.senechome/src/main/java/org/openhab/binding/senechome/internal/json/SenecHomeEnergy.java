@@ -30,13 +30,13 @@ public class SenecHomeEnergy implements Serializable {
     public @SerializedName("GUI_INVERTER_POWER") String inverterPowerGeneration;
     public @SerializedName("GUI_BAT_DATA_POWER") String batteryPower;
     public @SerializedName("GUI_BAT_DATA_FUEL_CHARGE") String batteryFuelCharge;
-    public @SerializedName("STAT_STATE") String batteryState;
+    public @SerializedName("STAT_STATE") String systemState;
     public @SerializedName("GUI_BAT_DATA_VOLTAGE") String batteryVoltage;
 
     @Override
     public String toString() {
         return "SenecHomeEnergy [homePowerConsumption=" + homePowerConsumption + ", inverterPowerGeneration="
                 + inverterPowerGeneration + ", batteryPower=" + batteryPower + ", batteryFuelCharge="
-                + batteryFuelCharge + ", batteryState=" + batteryState + ", batteryVoltage" + batteryVoltage + "]";
+                + batteryFuelCharge + ", systemState=" + systemState + ", batteryVoltage" + batteryVoltage + "]";
     }
 }
