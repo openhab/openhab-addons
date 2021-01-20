@@ -230,15 +230,16 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             savedLevel = hsb.getBrightness().toBigDecimal();
             return;
         } else if (command instanceof PercentType) {
-            if (((PercentType) command).intValue() == 0) {
+            PercentType percentType = (PercentType) command;
+            if (percentType.intValue() == 0) {
                 turnOff();
                 return;
-            } else if (((PercentType) command).intValue() == 1 && config.oneTriggersNightMode) {
+            } else if (percentType.intValue() == 1 && config.oneTriggersNightMode) {
                 sendMQTT("{\"command\":\"night_mode\"}");
                 return;
             }
             sendMQTT("{\"state\":\"ON\",\"level\":" + command + "}");
-            savedLevel = ((PercentType) command).toBigDecimal();
+            savedLevel = percentType.toBigDecimal();
             if (globeType.equals("rgb_cct") || globeType.equals("fut089")) {
                 if (config.dimmedCT > 0 && bulbMode.equals("white")) {
                     sendMQTT("{\"state\":\"ON\",\"color_temp\":" + autoColourTemp(savedLevel.intValue()) + "}");
