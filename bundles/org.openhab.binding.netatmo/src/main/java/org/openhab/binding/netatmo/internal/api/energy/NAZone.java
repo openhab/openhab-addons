@@ -33,6 +33,7 @@ public class NAZone extends NAObject {
     }
 
     public ThermostatZoneType getType() {
-        return type != null ? type : ThermostatZoneType.UNKNOWN;
+        ThermostatZoneType localType = type;
+        return localType != null ? localType : ThermostatZoneType.UNKNOWN;
     }
 }

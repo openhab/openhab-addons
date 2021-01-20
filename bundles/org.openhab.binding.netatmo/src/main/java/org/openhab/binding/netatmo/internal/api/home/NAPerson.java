@@ -47,8 +47,10 @@ public class NAPerson extends NAModule {
     }
 
     public @Nullable NASnapshot getFace() {
-        if (face == null && faceId != null && faceKey != null) {
-            face = new NASnapshot(faceId, faceKey);
+        String fId = faceId;
+        String key = faceKey;
+        if (face == null && fId != null && key != null) {
+            face = new NASnapshot(fId, key);
         }
         return face;
     }

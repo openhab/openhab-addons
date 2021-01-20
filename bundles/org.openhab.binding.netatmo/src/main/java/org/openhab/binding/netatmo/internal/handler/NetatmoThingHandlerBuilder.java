@@ -94,7 +94,9 @@ public class NetatmoThingHandlerBuilder {
             Constructor<?> constructor = channelHelpClass.getConstructor(Thing.class, TimeZoneProvider.class);
             AbstractChannelHelper helper = (AbstractChannelHelper) constructor
                     .newInstance(new Object[] { bridge, timeZoneProvider });
-            channelHelpers.add(helper);
+            if (helper != null) {
+                channelHelpers.add(helper);
+            }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             logger.warn("Error creating ChannelHelper instance : {}", e.getMessage());

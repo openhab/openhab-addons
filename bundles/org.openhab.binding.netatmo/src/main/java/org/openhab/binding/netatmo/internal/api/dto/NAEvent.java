@@ -35,7 +35,8 @@ public abstract class NAEvent extends NAObject {
     protected int subType = -1;
 
     public EventType getEventType() {
-        return type != null ? type : EventType.UNKNOWN;
+        EventType localType = type;
+        return localType != null ? localType : EventType.UNKNOWN;
     }
 
     public String getCameraId() {

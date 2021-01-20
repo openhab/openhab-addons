@@ -28,6 +28,8 @@ import org.openhab.binding.netatmo.internal.api.dto.NADevice;
 
 @NonNullByDefault
 public class NAPlug extends NADevice<NAThermostat> {
+    // TODO : Apparently this has become a boolean in FW >= 222 :
+    // https://community.openhab.org/t/netatmo-thermostat/114729
     private int plugConnectedBoiler;
     private Map<String, @Nullable Integer> lastBilan = Map.of();
 

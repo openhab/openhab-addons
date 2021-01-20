@@ -41,7 +41,8 @@ public class NAWelcome extends NAModule {
      * @return status
      **/
     public State getStatus() {
-        return status != null ? status : UnDefType.NULL;
+        OnOffType localStatus = status;
+        return localStatus != null ? localStatus : UnDefType.NULL;
     }
 
     /**
@@ -69,7 +70,8 @@ public class NAWelcome extends NAModule {
      * @return sdStatus
      **/
     public State getSdStatus() {
-        return sdStatus != null ? sdStatus : UnDefType.NULL;
+        OnOffType sd = sdStatus;
+        return sd != null ? sd : UnDefType.NULL;
     }
 
     /**
@@ -78,7 +80,8 @@ public class NAWelcome extends NAModule {
      * @return alimStatus
      **/
     public State getAlimStatus() {
-        return alimStatus != null ? alimStatus : UnDefType.NULL;
+        OnOffType alim = alimStatus;
+        return alim != null ? alim : UnDefType.NULL;
     }
 
     /**
@@ -87,6 +90,7 @@ public class NAWelcome extends NAModule {
      * @return lightModeStatus
      **/
     public PresenceLightMode getLightModeStatus() {
-        return lightModeStatus != null ? lightModeStatus : PresenceLightMode.UNKNOWN;
+        PresenceLightMode mode = lightModeStatus;
+        return mode != null ? mode : PresenceLightMode.UNKNOWN;
     }
 }

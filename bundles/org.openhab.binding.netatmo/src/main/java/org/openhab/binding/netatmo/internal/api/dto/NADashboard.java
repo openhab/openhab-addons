@@ -98,7 +98,8 @@ public class NADashboard {
     }
 
     public TrendDescription getTempTrend() {
-        return tempTrend != null ? tempTrend : TrendDescription.UNKNOWN;
+        TrendDescription trend = tempTrend;
+        return trend != null ? trend : TrendDescription.UNKNOWN;
     }
 
     public int getDateMaxTemp() {
@@ -138,7 +139,8 @@ public class NADashboard {
     }
 
     public TrendDescription getPressureTrend() {
-        return pressureTrend != null ? pressureTrend : TrendDescription.UNKNOWN;
+        TrendDescription trend = pressureTrend;
+        return trend != null ? trend : TrendDescription.UNKNOWN;
     }
 
     public float getRain() {

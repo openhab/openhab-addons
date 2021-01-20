@@ -37,6 +37,7 @@ public class NASetpoint {
     }
 
     public SetpointMode getMode() {
-        return setpointMode != null ? setpointMode : SetpointMode.UNKNOWN;
+        SetpointMode mode = setpointMode;
+        return mode != null ? mode : SetpointMode.UNKNOWN;
     }
 }

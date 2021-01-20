@@ -67,8 +67,10 @@ public class NAWebhookEvent extends NAEvent {
 
     @Override
     public @Nullable NASnapshot getSnapshot() {
-        if (snapshotId != null && snapshotKey != null) {
-            return new NASnapshot(snapshotId, snapshotKey);
+        String sId = snapshotId;
+        String key = snapshotKey;
+        if (sId != null && key != null) {
+            return new NASnapshot(sId, key);
         }
         return null;
     }

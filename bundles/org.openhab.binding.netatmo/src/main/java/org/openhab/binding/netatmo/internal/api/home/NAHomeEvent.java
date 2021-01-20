@@ -53,7 +53,8 @@ public class NAHomeEvent extends NAEvent {
     }
 
     public VideoStatus getVideoStatus() {
-        return videoStatus != null ? videoStatus : VideoStatus.UNKNOWN;
+        VideoStatus status = videoStatus;
+        return status != null ? status : VideoStatus.UNKNOWN;
     }
 
     @Override
