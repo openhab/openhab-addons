@@ -217,7 +217,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                     sendMQTT("{\"command\":\"set_white\"}");
                 }
                 return;
-            } else if (hsb.getBrightness() == PercentType.ZERO) {
+            } else if (PercentType.ZERO.equals(hsb.getBrightness())) {
                 turnOff();
                 return;
             } else if (config.whiteThreshold != -1 && hsb.getSaturation().intValue() <= config.whiteThreshold
