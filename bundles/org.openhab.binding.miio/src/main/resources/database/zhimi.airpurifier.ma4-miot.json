@@ -140,7 +140,7 @@
 				"property": "pm2.5-density",
 				"siid": 3,
 				"piid": 6,
-				"friendlyName": "Environment - Pm2 5 Density",
+				"friendlyName": "Environment - Pm2.5 Density",
 				"channel": "pm2_5-density",
 				"type": "Number",
 				"stateDescription": {
