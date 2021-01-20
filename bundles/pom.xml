@@ -98,6 +98,7 @@
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
+    <module>org.openhab.binding.enphase</module>
     <module>org.openhab.binding.enturno</module>
     <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.binding.etherrain</module>

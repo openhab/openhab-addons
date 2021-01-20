@@ -323,6 +323,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.enphase</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.enturno</artifactId>
       <version>${project.version}</version>
     </dependency>
