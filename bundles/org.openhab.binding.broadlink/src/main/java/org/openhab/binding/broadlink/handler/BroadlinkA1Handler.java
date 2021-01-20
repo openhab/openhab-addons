@@ -48,11 +48,12 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
             float temperature = (float) ((double) (decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
             thingLogger.logTrace("A1 getStatusFromDevice got temperature " + temperature);
 
-            updateState("temperature", new DecimalType(temperature));
-            updateState("humidity", new DecimalType((double) (decryptResponse[6] * 10 + decryptResponse[7]) / 10D));
-            updateState("light", ModelMapper.getLightValue(decryptResponse[8]));
-            updateState("air", ModelMapper.getAirValue(decryptResponse[10]));
-            updateState("noise", ModelMapper.getNoiseValue(decryptResponse[12]));
+            updateState(BroadlinkBindingConstants.CHANNEL_TEMPERATURE, new DecimalType(temperature));
+            updateState(BroadlinkBindingConstants.CHANNEL_HUMIDITY,
+                    new DecimalType((double) (decryptResponse[6] * 10 + decryptResponse[7]) / 10D));
+            updateState(BroadlinkBindingConstants.CHANNEL_LIGHT_LEVEL, ModelMapper.getLightValue(decryptResponse[8]));
+            updateState(BroadlinkBindingConstants.CHANNEL_AIR_QUALITY, ModelMapper.getAirValue(decryptResponse[10]));
+            updateState(BroadlinkBindingConstants.CHANNEL_NOISE_LEVEL, ModelMapper.getNoiseValue(decryptResponse[12]));
             return true;
         } catch (Exception ex) {
             thingLogger.logError("Failed while getting device status", ex);

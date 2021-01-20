@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
@@ -53,9 +54,9 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
             // Temperature and Humidity response fields are 2 bytes further into the response,
             // mirroring the request
             float temperature = (float) ((double) (decodedPayload[6] * 100 + decodedPayload[7]) / 100D);
-            updateState("temperature", new DecimalType(temperature));
+            updateState(BroadlinkBindingConstants.CHANNEL_TEMPERATURE, new DecimalType(temperature));
             float humidity = (float) ((double) (decodedPayload[8] * 100 + decodedPayload[9]) / 100D);
-            updateState("humidity", new DecimalType(humidity));
+            updateState(BroadlinkBindingConstants.CHANNEL_HUMIDITY, new DecimalType(humidity));
             return true;
         } catch (Exception e) {
             thingLogger.logError("Could not get status: ", e);

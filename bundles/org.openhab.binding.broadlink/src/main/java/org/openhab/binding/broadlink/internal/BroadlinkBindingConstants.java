@@ -64,5 +64,9 @@ public class BroadlinkBindingConstants {
     }
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_LIGHT_LEVEL = "light";
+    public static final String CHANNEL_AIR_QUALITY = "air";
+    public static final String CHANNEL_NOISE_LEVEL = "noise";
 }
