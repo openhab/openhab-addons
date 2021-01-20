@@ -73,7 +73,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         try {
-            IpAddressScan();
+            ipAddressScan();
             discoverySearchPool.shutdown();
         } catch (Exception exp) {
             logger.debug("OpenSprinkler discovery service encountered an error while scanning for devices: {}",
@@ -99,7 +99,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
                 .withRepresentationProperty("hostname").build());
     }
 
-    private void IpAddressScan() {
+    private void ipAddressScan() {
         String ipAddress;
         try {
             for (Enumeration<NetworkInterface> enumNetworks = NetworkInterface.getNetworkInterfaces(); enumNetworks

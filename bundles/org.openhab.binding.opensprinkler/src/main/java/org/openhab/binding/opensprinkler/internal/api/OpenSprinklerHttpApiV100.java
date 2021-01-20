@@ -191,10 +191,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     public int currentDraw() {
         JcResponse localReply = jcReply;
         if (localReply != null) {
-            if (localReply.curr != null) {
-                return localReply.curr;
-            } else {
+            if (localReply.curr == -1) {
                 return -1;// Sensor not supported
+            } else {
+                return localReply.curr;
             }
         }
         return 0;
@@ -273,7 +273,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public @Nullable List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
-        public @Nullable Integer curr;
+        public int curr = -1;
     }
 
     private @Nullable JoResponse getOptions() throws CommunicationApiException {
