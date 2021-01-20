@@ -148,7 +148,7 @@
         <description></description>
         <state readOnly="true"></state>
     </channel-type>       
-    <channel-type id="trigger_Test">
+    <channel-type id="trigger_Test" advanced="true">
         <item-type>Switch</item-type>
         <label>Test Trigger</label>
         <description>Switch item to test manually</description>
