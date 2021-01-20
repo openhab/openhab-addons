@@ -19,22 +19,27 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NADevice;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  *
+ *         DTO for the NAPlug object.
+ *
  */
 
 @NonNullByDefault
 public class NAPlug extends NADevice<NAThermostat> {
-    // TODO : Apparently this has become a boolean in FW >= 222 :
-    // https://community.openhab.org/t/netatmo-thermostat/114729
-    private int plugConnectedBoiler;
+    // Apparently this has become a boolean in FW >= 222 : issue #9875
+    private @Nullable OpenClosedType plugConnectedBoiler;
     private Map<String, @Nullable Integer> lastBilan = Map.of();
 
-    public boolean getPlugConnectedBoiler() {
-        return 1 == plugConnectedBoiler;
+    public State getPlugConnectedBoiler() {
+        OpenClosedType connected = plugConnectedBoiler;
+        return connected != null ? connected : UnDefType.NULL;
     }
 
     public @Nullable ZonedDateTime getLastBilan() {

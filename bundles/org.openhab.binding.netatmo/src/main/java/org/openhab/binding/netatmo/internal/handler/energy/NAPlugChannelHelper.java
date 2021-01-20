@@ -21,7 +21,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.energy.NAPlug;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 
@@ -44,7 +43,7 @@ public class NAPlugChannelHelper extends AbstractChannelHelper {
         if (naThing instanceof NAPlug) {
             NAPlug plug = (NAPlug) naThing;
             if (CHANNEL_CONNECTED_BOILER.equals(channelId)) {
-                return plug.getPlugConnectedBoiler() ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                return plug.getPlugConnectedBoiler();
             } else if (CHANNEL_LAST_BILAN.equals(channelId)) {
                 return toDateTimeType(plug.getLastBilan());
             }

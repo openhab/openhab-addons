@@ -18,6 +18,7 @@ import org.openhab.binding.netatmo.internal.api.NAObjectMapDeserializer;
 import org.openhab.binding.netatmo.internal.webhook.NAPushType;
 import org.openhab.binding.netatmo.internal.webhook.NAPushTypeDeserializer;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -39,8 +40,14 @@ public class NetatmoBindingConstants {
             // .registerTypeAdapter(AccessTokenResponse.class, new NAOAuthDeserializer())
             .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
             .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
-            .registerTypeAdapter(OnOffType.class, (JsonDeserializer<OnOffType>) (json, type,
-                    jsonDeserializationContext) -> OnOffType.from(json.getAsJsonPrimitive().getAsString()))
+            .registerTypeAdapter(OnOffType.class,
+                    (JsonDeserializer<OnOffType>) (json, type, jsonDeserializationContext) -> OnOffType
+                            .from(json.getAsJsonPrimitive().getAsString()))
+            .registerTypeAdapter(OpenClosedType.class,
+                    (JsonDeserializer<OpenClosedType>) (json, type, jsonDeserializationContext) -> {
+                        String value = json.getAsJsonPrimitive().getAsString().toUpperCase();
+                        return "TRUE".equals(value) || "1".equals(value) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                    })
             .create();
 
     public static final String BINDING_ID = "netatmo";
