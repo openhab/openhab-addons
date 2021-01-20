@@ -194,25 +194,29 @@ public class speedtestHandler extends BaseThingHandler {
      * Gets the version information from speedtest, this is really for debug in the event they change things
      */
     private boolean getSpeedTestVersion() {
-        String stOutput[] = executeCmd(speedTestCommand + " -V").split("\n");
-        if (stOutput.length > 0) {
-            if (stOutput[0].indexOf("Speedtest by Ookla") > -1) {
-                logger.debug("Speedtest Version : {}", stOutput[0]);
+        String versionString = doExecuteRequest(" -V", String.class);
+        if (!versionString.isEmpty()) {
+            int newLI = versionString.indexOf("\n");
+            String versionLine = versionString.substring(0, newLI);
+            if (versionString.indexOf("Speedtest by Ookla") > -1) {
+                logger.debug("Speedtest Version : {}", versionLine);
                 return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Speedtest version not recognized, Ookla version REQUIRED.  Please check configuration."
-                                + stOutput[0]);
+                        "Speedtest version not recognized, Ookla version REQUIRED.  Please check configuration.");
                 return false;
             }
         }
         return false;
     }
 
+    /*
+     * Get the server list from the speedtest command. Update the properties of the thing so the user
+     * can see the list of servers closest to them.
+     */
     private boolean getServerList() {
-        String serverList = executeCmd(speedTestCommand + " -f json -L");
         String serverListTxt = "";
-        ResultsContainerServerList tmpCont = GSON.fromJson(serverList, ResultsContainerServerList.class);
+        ResultsContainerServerList tmpCont = doExecuteRequest(" -f json -L", ResultsContainerServerList.class);
         if (tmpCont != null) {
             int id = 1;
             Map<String, String> properties = editProperties();
@@ -260,14 +264,14 @@ public class speedtestHandler extends BaseThingHandler {
     /*
      * Get the speedtest data and convert it from JSON and send it to update the channels.
      */
+    @SuppressWarnings("unused")
     private void getSpeed() {
         logger.debug("Getting Speed Measurement");
         String postCommand = "";
         if (!serverID.equals("")) {
             postCommand = " -s " + serverID;
         }
-        String speedOutput = executeCmd(speedTestCommand + " -f json --accept-license" + postCommand);
-        ResultContainer tmpCont = GSON.fromJson(speedOutput, ResultContainer.class);
+        ResultContainer tmpCont = doExecuteRequest(" -f json --accept-license" + postCommand, ResultContainer.class);
         if (tmpCont != null) {
             if (tmpCont.getType().equals("result")) {
                 ping_jitter = tmpCont.getPing().getJitter();
@@ -290,6 +294,23 @@ public class speedtestHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Speedtest is not returning valid results. ");
         }
+    }
+
+    private <T> T doExecuteRequest(String arguments, Class<T> type) {
+        try {
+            String dataOut = executeCmd(speedTestCommand + arguments);
+            if (type != String.class) {
+                T obj = GSON.fromJson(dataOut, type);
+                return obj;
+            } else {
+                @SuppressWarnings("unchecked")
+                T obj = (T) dataOut;
+                return obj;
+            }
+        } catch (Exception e) {
+            logger.debug(e.getMessage(), e);
+        }
+        return null;
     }
 
     /*
@@ -378,8 +399,6 @@ public class speedtestHandler extends BaseThingHandler {
         }
 
         StringBuilder outputBuilder = new StringBuilder();
-        StringBuilder errorBuilder = new StringBuilder();
-
         try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
                 BufferedReader br = new BufferedReader(isr)) {
             String line;
@@ -389,18 +408,6 @@ public class speedtestHandler extends BaseThingHandler {
             }
         } catch (IOException e) {
             logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'", commandLine,
-                    e.getMessage());
-        }
-
-        try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                BufferedReader br = new BufferedReader(isr)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                // errorBuilder.append(line).append("\n");
-                logger.debug("Exec [{}]: '{}'", "ERROR", line);
-            }
-        } catch (IOException e) {
-            logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", commandLine,
                     e.getMessage());
         }
 
@@ -416,12 +423,7 @@ public class speedtestHandler extends BaseThingHandler {
             logger.debug("Forcibly termininating the process ('{}') after a timeout of {} ms", commandLine, timeOut);
             proc.destroyForcibly();
         }
-
-        outputBuilder.append(errorBuilder.toString());
-
-        outputBuilder.append(errorBuilder.toString());
         return outputBuilder.toString();
-
     }
 
     /**
