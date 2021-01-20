@@ -69,4 +69,6 @@ public class BroadlinkBindingConstants {
     public static final String CHANNEL_LIGHT_LEVEL = "light";
     public static final String CHANNEL_AIR_QUALITY = "air";
     public static final String CHANNEL_NOISE_LEVEL = "noise";
+
+    public static final String CHANNEL_COMMAND = "command";
 }

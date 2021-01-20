@@ -104,9 +104,6 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         payload[0] = 1;
         byte message[] = buildMessage((byte) 0x6a, payload);
         byte response[] = sendAndReceiveDatagram(message, "SP2/3 status byte");
-        if (response == null) {
-            throw new IOException("No response while fetching status byte from SP2/3 device");
-        }
         return decodeDevicePacket(response);
     }
 

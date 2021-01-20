@@ -30,7 +30,6 @@ public class DiscoveryProtocol {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryProtocol.class);
 
-    @NonNullByDefault
     private static class AsyncDiscoveryThread extends Thread {
         private final BroadlinkSocketListener listener;
         private final long timeoutMillis;

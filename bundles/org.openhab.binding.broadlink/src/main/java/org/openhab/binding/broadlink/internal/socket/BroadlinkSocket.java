@@ -65,7 +65,6 @@ public class BroadlinkSocket {
         return sb.toString();
     }
 
-    @NonNullByDefault
     private static class ReceiverThread extends Thread {
 
         public void run() {

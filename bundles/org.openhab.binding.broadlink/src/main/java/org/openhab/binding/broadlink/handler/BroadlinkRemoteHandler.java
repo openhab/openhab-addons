@@ -17,6 +17,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -85,27 +86,19 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             thingLogger.logError("Unexpected null channelTypeUID while handling command " + command.toFullString());
             return;
         }
-        String s;
-        switch ((s = channelTypeUID.getId()).hashCode()) {
-            case 950394699: // FIXME WTF?!?!
-                if (s.equals("command")) {
-                    thingLogger.logDebug(String.format("Handling ir/rf command '%s' on channel %s of thing %s", command,
-                            channelUID.getId(), getThing().getLabel()));
-                    byte code[] = lookupCode(command, channelUID);
-                    if (code != null)
-                        sendCode(code);
-                    break;
-                }
-                // fall through
-
-            default:
-                thingLogger.logDebug(
-                        "Thing " + getThing().getLabel() + " has unknown channel type " + channelTypeUID.getId());
-                break;
+        String s = channelTypeUID.getId();
+        if (BroadlinkBindingConstants.CHANNEL_COMMAND.equals(s)) {
+            thingLogger.logDebug(String.format("Handling ir/rf command '%s' on channel %s of thing %s", command,
+                    channelUID.getId(), getThing().getLabel()));
+            byte code[] = lookupCode(command);
+            if (code != null)
+                sendCode(code);
+        } else {
+            thingLogger.logWarn("Thing " + getThing().getLabel() + " has unknown channel type " + s);
         }
     }
 
-    private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
+    private byte @Nullable [] lookupCode(Command command) {
         if (command.toString() == null) {
             thingLogger.logDebug("Unable to perform transform on null command string");
             return null;
@@ -122,24 +115,22 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                     + "; is bundle installed?");
             return null;
         }
-        byte code[] = null;
-        String value;
+
         try {
-            value = transformService.transform(mapFile, command.toString());
+            String value = transformService.transform(mapFile, command.toString());
             if (value == null || Utils.isEmpty(value)) {
                 thingLogger.logError(String.format("No entry for command '%s' in map file '%s' for thing %s", command,
                         mapFile, getThing().getLabel()));
                 return null;
             }
-            code = HexUtils.hexToBytes(value);
+            byte[] code = HexUtils.hexToBytes(value);
+            thingLogger.logDebug(String.format("Transformed command '%s' for thing %s with map file '%s'", command,
+                    getThing().getLabel(), mapFile));
+            return code;
         } catch (TransformationException e) {
             thingLogger.logError(String.format("Failed to transform command '%s' for thing %s using map file '%s'",
                     command, getThing().getLabel(), mapFile), e);
             return null;
         }
-
-        thingLogger.logDebug(String.format("Transformed command '%s' for thing %s with map file '%s'", command,
-                getThing().getLabel(), mapFile));
-        return code;
     }
 }
