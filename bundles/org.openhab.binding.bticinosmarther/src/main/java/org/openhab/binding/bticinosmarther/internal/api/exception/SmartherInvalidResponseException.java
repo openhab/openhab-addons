@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.bticinosmarther.internal.api.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Signals that an "invalid response" messaging issue with API gateway has occurred.
@@ -30,7 +31,7 @@ public class SmartherInvalidResponseException extends SmartherGatewayException {
      * @param message
      *            the error message returned from the API gateway
      */
-    public SmartherInvalidResponseException(String message) {
+    public SmartherInvalidResponseException(@Nullable String message) {
         super(message);
     }
 }

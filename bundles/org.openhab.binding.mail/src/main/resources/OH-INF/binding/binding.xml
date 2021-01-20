@@ -5,6 +5,5 @@
 
 	<name>Mail Binding</name>
 	<description>This binding is used to access POP3, IMAP and SMTP servers.</description>
-	<author>Jan N. Klug</author>
 
 </binding:binding>

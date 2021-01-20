@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,5 +90,15 @@ public interface BluetoothDiscoveryParticipant {
     public default void publishAdditionalResults(DiscoveryResult result,
             BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
         // do nothing by default
+    }
+
+    /**
+     * Overriding this method allows discovery participants to dictate the order in which they should be evaluated
+     * relative to other discovery participants. Participants with a lower order value are evaluated first.
+     *
+     * @return the order of this participant, default 0
+     */
+    public default int order() {
+        return 0;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 
 /**
  * The REST interface and websocket connection are using the same fields.
@@ -25,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class DeconzBaseMessage {
     // For websocket change events
     public String e = ""; // "changed"
-    public String r = ""; // "sensors"
+    public ResourceType r = ResourceType.UNKNOWN; // "sensors"
     public String t = ""; // "event"
     public String id = ""; // "3"
 

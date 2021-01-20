@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal;
 
+import static org.openhab.binding.deconz.internal.BindingConstants.BRIGHTNESS_FACTOR;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -22,6 +24,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.PercentType;
 
 /**
  * The {@link Util} class defines common utility methods
@@ -30,6 +33,7 @@ import org.openhab.core.library.types.DateTimeType;
  */
 @NonNullByDefault
 public class Util {
+
     public static String buildUrl(String host, int port, String... urlParts) {
         StringBuilder url = new StringBuilder();
         url.append("http://");
@@ -52,6 +56,28 @@ public class Util {
 
     public static int constrainToRange(int intValue, int min, int max) {
         return Math.max(min, Math.min(intValue, max));
+    }
+
+    /**
+     * convert a brightness value from int to PercentType
+     *
+     * @param val the value
+     * @return the corresponding PercentType value
+     */
+    public static PercentType toPercentType(int val) {
+        int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
+        return new PercentType(
+                Util.constrainToRange(scaledValue, PercentType.ZERO.intValue(), PercentType.HUNDRED.intValue()));
+    }
+
+    /**
+     * convert a brightness value from PercentType to int
+     *
+     * @param val the value
+     * @return the corresponding int value
+     */
+    public static int fromPercentType(PercentType val) {
+        return (int) Math.floor(val.doubleValue() * BRIGHTNESS_FACTOR);
     }
 
     /**

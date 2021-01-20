@@ -2,7 +2,7 @@
 
 <img align="right" width="220" src="./logo.png" />
 
-[![Build Status](https://travis-ci.com/openhab/openhab-addons.svg)](https://travis-ci.com/openhab/openhab-addons)
+[![Build Status](https://ci.openhab.org/job/openHAB-Addons/badge/icon)](https://ci.openhab.org/job/openHAB-Addons/)
 [![EPL-2.0](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)
 [![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=2164344)](https://www.bountysource.com/teams/openhab/issues?tracker_ids=2164344)
 
@@ -63,18 +63,32 @@ To build all add-ons from the command-line, type in:
 
 `mvn clean install`
 
-Optionally you can skip tests (`-DskipTests`) or skip some static analysis (`-DskipChecks`).
-This does improve the build time but could hide problems in your code.
-For binding development you want to run that command without skipping checks and tests.
-To check if your code is following the [code style](https://www.openhab.org/docs/developer/guidelines.html#b-code-formatting-rules-style) run `mvn spotless:check`.
-If Maven prints `[INFO] Spotless check skipped` then run `mvn spotless:check -Dspotless.check.skip=false` instead as the check is not mandatory yet.
-To reformat you code run `mvn spotless:apply`.
+To improve build times you can add the following options to the command:
 
-Subsequent calls can include the `-o` for offline as in: `mvn clean install -DskipChecks -o` which will be a bit faster.
+| Option                        | Description                                         |
+| ----------------------------- | --------------------------------------------------- |
+| `-DskipChecks`                | Skip the static analysis (Checkstyle, FindBugs)     |
+| `-DskipTests`                 | Skip the execution of tests                         |
+| `-Dmaven.test.skip=true`      | Skip the compilation and execution of tests         |
+| `-Dfeatures.verify.skip=true` | Skip the Karaf feature verification                 |
+| `-Dspotless.check.skip=true`  | Skip the Spotless code style checks                 |
+| `-o`                          | Work offline so Maven does not download any updates |
+| `-T 1C`                       | Build in parallel, using 1 thread per core          |
 
-For integration tests you might need to run: `mvn clean install -DwithResolver -DskipChecks`
+For example you can skip checks and tests during development with:
 
-You find a generated `.jar` file per bundle in the respective bundle `/target` directory.
+`mvn clean install -DskipChecks -DskipTests`
+
+Adding these options improves the build time but could hide problems in your code.
+Parallel builds are also less easy to debug and the increased load may cause timing sensitive tests to fail.
+
+To check if your code is following the [code style](https://www.openhab.org/docs/developer/guidelines.html#b-code-formatting-rules-style) run: `mvn spotless:check`
+To reformat your code so it conforms to the code style you can run: `mvn spotless:apply`
+
+When your add-on also has an integration test in the `itests` directory, you may need to update the runbundles in the `itest.bndrun` file when the Maven dependencies change.
+Maven can resolve the integration test dependencies automatically by executing: `mvn clean install -DwithResolver -DskipChecks`
+
+The build generates a `.jar` file per bundle in the respective bundle `/target` directory.
 
 ### How to develop via an Integrated Development Environment (IDE)
 

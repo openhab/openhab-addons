@@ -5,6 +5,5 @@
 
 	<name>Minecraft Binding</name>
 	<description>This binding can integrate Minecraft servers.</description>
-	<author>Mattias Markehed</author>
 
 </binding:binding>

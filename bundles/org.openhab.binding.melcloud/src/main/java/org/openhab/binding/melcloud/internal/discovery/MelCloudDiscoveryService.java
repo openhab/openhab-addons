@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    protected void activate(Map<String, @Nullable Object> configProperties) {
+    protected void activate(Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 
@@ -72,7 +72,7 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
 
     @Override
     @Modified
-    protected void modified(Map<String, @Nullable Object> configProperties) {
+    protected void modified(Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 

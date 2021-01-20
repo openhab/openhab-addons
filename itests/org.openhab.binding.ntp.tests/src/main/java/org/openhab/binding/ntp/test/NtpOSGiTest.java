@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,6 +69,7 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
@@ -99,7 +100,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     private static final String TEST_ITEM_NAME = "testItem";
     private static final String TEST_THING_ID = "testThingId";
 
-    // No bundle in ESH is exporting a package from which we can use item types
+    // No bundle is exporting a package from which we can use item types
     // as constants, so we will use String.
     private static final String ACCEPTED_ITEM_TYPE_STRING = "String";
     private static final String ACCEPTED_ITEM_TYPE_DATE_TIME = "DateTime";
@@ -489,7 +490,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         registerService(eventSubscriberMock);
 
         if (updateEventType.equals(UpdateEventType.HANDLE_COMMAND)) {
-            ntpHandler.handleCommand(new ChannelUID("ntp:test:chan:1"), new StringType("test"));
+            ntpHandler.handleCommand(new ChannelUID("ntp:test:chan:1"), RefreshType.REFRESH);
         } else if (updateEventType.equals(UpdateEventType.CHANNEL_LINKED)) {
             ntpHandler.channelLinked(new ChannelUID("ntp:test:chan:1"));
         }

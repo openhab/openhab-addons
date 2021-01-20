@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +46,9 @@ public final class DateUtil {
      *             if the string cannot be parsed to a local date
      */
     public static LocalDate parseDate(@Nullable String str, String pattern) {
+        if (str == null) {
+            throw new DateTimeParseException("date string is null", "<null>", 0);
+        }
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
         return LocalDate.parse(str, dtf);
     }
@@ -63,6 +67,9 @@ public final class DateUtil {
      *             if the string cannot be parsed to a local date and time
      */
     public static LocalDateTime parseLocalTime(@Nullable String str, String pattern) {
+        if (str == null) {
+            throw new DateTimeParseException("time string is null", "<null>", 0);
+        }
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
         return LocalDateTime.parse(str, dtf);
     }
@@ -81,6 +88,9 @@ public final class DateUtil {
      *             if the string cannot be parsed to a date and time with timezone
      */
     public static ZonedDateTime parseZonedTime(@Nullable String str, String pattern) {
+        if (str == null) {
+            throw new DateTimeParseException("zoned string is null", "<null>", 0);
+        }
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
         return ZonedDateTime.parse(str, dtf);
     }

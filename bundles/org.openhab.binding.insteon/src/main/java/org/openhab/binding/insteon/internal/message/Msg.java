@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class Msg {
     private static final Logger logger = LoggerFactory.getLogger(Msg.class);
 
@@ -51,7 +50,7 @@ public class Msg {
         TO_MODEM("TO_MODEM"),
         FROM_MODEM("FROM_MODEM");
 
-        private static HashMap<String, Direction> map = new HashMap<>();
+        private static Map<String, Direction> map = new HashMap<>();
 
         private String directionString;
 
@@ -69,19 +68,24 @@ public class Msg {
         }
 
         public static Direction getDirectionFromString(String dir) {
-            return map.get(dir);
+            Direction direction = map.get(dir);
+            if (direction != null) {
+                return direction;
+            } else {
+                throw new IllegalArgumentException("Unable to find direction for " + dir);
+            }
         }
     }
 
     // has the structure of all known messages
-    private static final Map<String, @Nullable Msg> MSG_MAP = new HashMap<>();
+    private static final Map<String, Msg> MSG_MAP = new HashMap<>();
     // maps between command number and the length of the header
-    private static final Map<Integer, @Nullable Integer> HEADER_MAP = new HashMap<>();
+    private static final Map<Integer, Integer> HEADER_MAP = new HashMap<>();
     // has templates for all message from modem to host
-    private static final Map<Integer, @Nullable Msg> REPLY_MAP = new HashMap<>();
+    private static final Map<Integer, Msg> REPLY_MAP = new HashMap<>();
 
     private int headerLength = -1;
-    private byte @Nullable [] data = null;
+    private byte[] data;
     private MsgDefinition definition = new MsgDefinition();
     private Direction direction = Direction.TO_MODEM;
     private long quietTime = 0;
@@ -97,7 +101,8 @@ public class Msg {
     public Msg(int headerLength, byte[] data, int dataLength, Direction dir) {
         this.headerLength = headerLength;
         this.direction = dir;
-        initialize(data, 0, dataLength);
+        this.data = new byte[dataLength];
+        System.arraycopy(data, 0, this.data, 0, dataLength);
     }
 
     /**
@@ -119,7 +124,7 @@ public class Msg {
         try {
             InputStream stream = FrameworkUtil.getBundle(Msg.class).getResource("/msg_definitions.xml").openStream();
             if (stream != null) {
-                HashMap<String, Msg> msgs = XMLMessageReader.readMessageDefinitions(stream);
+                Map<String, Msg> msgs = XMLMessageReader.readMessageDefinitions(stream);
                 MSG_MAP.putAll(msgs);
             } else {
                 logger.warn("could not get message definition resource!");
@@ -171,15 +176,15 @@ public class Msg {
     }
 
     public byte getCommandNumber() {
-        return ((data == null || data.length < 2) ? -1 : data[1]);
+        return data.length < 2 ? -1 : data[1];
     }
 
     public boolean isPureNack() {
-        return (data.length == 2 && data[1] == 0x15);
+        return data.length == 2 && data[1] == 0x15;
     }
 
     public boolean isExtended() {
-        if (data == null || getLength() < 2) {
+        if (getLength() < 2) {
             return false;
         }
         if (!definition.containsField("messageFlags")) {
@@ -273,22 +278,6 @@ public class Msg {
     }
 
     /**
-     * Will initialize the message with a byte[], an offset, and a length
-     *
-     * @param newData the src byte array
-     * @param offset the offset in the src byte array
-     * @param len the length to copy from the src byte array
-     */
-    private void initialize(byte[] newData, int offset, int len) {
-        data = new byte[len];
-        if (offset >= 0 && offset < newData.length) {
-            System.arraycopy(newData, offset, data, 0, len);
-        } else {
-            logger.warn("intialize(): Offset out of bounds!");
-        }
-    }
-
-    /**
      * Will put a byte at the specified key
      *
      * @param key the string key in the message definition
@@ -344,6 +333,7 @@ public class Msg {
             throw new FieldException("data index out of bounds!");
         }
         byte[] section = new byte[numBytes];
+        byte[] data = this.data;
         System.arraycopy(data, offset, section, 0, numBytes);
         return section;
     }
@@ -373,10 +363,7 @@ public class Msg {
     }
 
     public String toHexString() {
-        if (data != null) {
-            return Utils.getHexString(data);
-        }
-        return super.toString();
+        return Utils.getHexString(data);
     }
 
     /**
@@ -469,19 +456,15 @@ public class Msg {
     @Override
     public String toString() {
         String s = (direction == Direction.TO_MODEM) ? "OUT:" : "IN:";
-        if (data == null) {
-            return toHexString();
-        }
         // need to first sort the fields by offset
-        Comparator<@Nullable Field> cmp = new Comparator<@Nullable Field>() {
+        Comparator<Field> cmp = new Comparator<Field>() {
             @Override
-            public int compare(@Nullable Field f1, @Nullable Field f2) {
+            public int compare(Field f1, Field f2) {
                 return f1.getOffset() - f2.getOffset();
             }
         };
-        TreeSet<@Nullable Field> fields = new TreeSet<>(cmp);
-        for (@Nullable
-        Field f : definition.getFields().values()) {
+        TreeSet<Field> fields = new TreeSet<>(cmp);
+        for (Field f : definition.getFields().values()) {
             fields.add(f);
         }
         for (Field f : fields) {
@@ -513,7 +496,7 @@ public class Msg {
      * @return message, or null if the Msg cannot be created
      */
     public static @Nullable Msg createMessage(byte[] buf, int msgLen, boolean isExtended) {
-        if (buf == null || buf.length < 2) {
+        if (buf.length < 2) {
             return null;
         }
         Msg template = REPLY_MAP.get(cmdToKey(buf[1], isExtended));

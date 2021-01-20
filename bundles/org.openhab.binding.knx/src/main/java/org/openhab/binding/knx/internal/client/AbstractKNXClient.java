@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -213,8 +213,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private void disconnect(@Nullable Exception e) {
         releaseConnection();
         if (e != null) {
+            String message = e.getLocalizedMessage();
             statusUpdateCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getLocalizedMessage());
+                    message != null ? message : "");
         } else {
             statusUpdateCallback.updateStatus(ThingStatus.OFFLINE);
         }

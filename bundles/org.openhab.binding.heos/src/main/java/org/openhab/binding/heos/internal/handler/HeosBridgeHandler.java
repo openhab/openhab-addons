@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -196,7 +196,9 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             @Nullable
             Group[] onlineGroups = getApiConnection().getGroups().payload;
 
-            updatePlayerStatus(onlinePlayers, onlineGroups);
+            if (onlinePlayers != null && onlineGroups != null) {
+                updatePlayerStatus(onlinePlayers, onlineGroups);
+            }
         } catch (ReadException | IOException e) {
             logger.debug("Failed updating online state of groups/players", e);
         }

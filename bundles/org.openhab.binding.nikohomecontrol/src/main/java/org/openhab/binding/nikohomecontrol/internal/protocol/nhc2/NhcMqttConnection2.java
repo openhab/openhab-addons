@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -229,7 +229,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
         if (isConnected()) {
             logger.debug("Niko Home Control: publish {}, {}", topic, payload);
-            connection.publish(topic, payload.getBytes());
+            connection.publish(topic, payload.getBytes(), connection.getQos(), false);
         } else {
             logger.debug("Niko Home Control: cannot publish, not subscribed to connection messages");
         }

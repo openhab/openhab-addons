@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,9 +47,6 @@ public class AuthenticationMessage {
     }
 
     public String getAuthenticationMessageString() {
-        JsonObject authenticationMessage = new JsonObject();
-        authenticationMessage.addProperty("type", type);
-        authenticationMessage.addProperty("token", token);
-        return authenticationMessage.toString();
+        return getAuthenticationMessageJsonObject().toString();
     }
 }

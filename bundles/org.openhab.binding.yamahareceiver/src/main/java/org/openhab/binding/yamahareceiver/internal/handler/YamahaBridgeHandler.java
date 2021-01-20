@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -264,7 +264,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
             onConnectivityError(e);
             return;
         } catch (ReceivedMessageParseException e) {
-            updateProperty(PROPERTY_MENU_ERROR, e.getMessage());
+            String message = e.getMessage();
+            updateProperty(PROPERTY_MENU_ERROR, message != null ? message : "");
             // Some AVRs send unexpected responses. We log parser exceptions therefore.
             logger.debug("Parse error!", e);
         } finally {

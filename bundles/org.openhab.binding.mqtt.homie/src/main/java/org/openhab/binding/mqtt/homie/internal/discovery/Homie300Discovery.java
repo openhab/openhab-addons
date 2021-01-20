@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.mqtthomie")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.mqtthomie")
 @NonNullByDefault
 public class Homie300Discovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(Homie300Discovery.class);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.dwdunwetter.internal.data;
 
 import java.util.Arrays;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Severity enum to make the severity comparable
@@ -46,7 +44,7 @@ public enum Severity {
     }
 
     public static Severity getSeverity(String input) {
-        return Arrays.asList(Severity.values()).stream()
-                .filter(sev -> StringUtils.equalsIgnoreCase(input, sev.getText())).findAny().orElse(UNKNOWN);
+        return Arrays.asList(Severity.values()).stream().filter(sev -> input.equalsIgnoreCase(sev.getText())).findAny()
+                .orElse(UNKNOWN);
     }
 }

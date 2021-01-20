@@ -5,6 +5,5 @@
 
 	<name>D-Link Smart Home Binding</name>
 	<description>This is the binding for D-Link Smart Home devices</description>
-	<author>Mike Major</author>
 
 </binding:binding>

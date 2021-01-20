@@ -17,6 +17,7 @@
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoHub</property>
 		</properties>
+		<representation-property>hostName</representation-property>
 
 		<config-description>
 			<parameter name="hostName" type="text" required="true">

@@ -1,6 +1,8 @@
 # AVM FRITZ! Binding
 
-The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ( [AVM Home Automation](https://avm.de/ratgeber/smart-home/) ) features.  
+The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ([AVM Home Automation](https://avm.de/ratgeber/filter/smart-home/)) features.
+
+![FRITZ!DECT 200 301 500](doc/AVM_FRITZDECT_200_301_500_freigestellt.png)
 
 ## Supported Things
 
@@ -8,7 +10,25 @@ The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ( [AVM Ho
 
 FRITZ!Boxes (thing type `fritzbox`) are supported as bridges and they offer channels for call monitoring.
 To activate the call monitor interface on a FRITZ!Box, you need to dial once `#96*5*` on a connected telephone.
+You should hear a short audio signal as confirmation.
+This procedure opens TCP/IP port 1012 on your FRITZ!Box.
 (It can be deactivated again by dialing `#96*4*`.)
+You can test if everything is working with the Telnet program from your openHAB server:
+
+```
+telnet fritz.box 1012
+```
+
+If you see an output like this:
+
+```
+Trying 192.168.178.1...
+Connected to fritz.box.
+Escape character is '^]'.
+```
+
+then it successfully connected to the call monitor.
+If not, please make sure that the target openHAB system does not block the port on its firewall.
 
 Additionally, they serve as a bridge for accessing other AHA devices.
 For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 and it has to support the "Smart Home" service.
@@ -26,33 +46,44 @@ It only supports temperature readings.
 
 ### FRITZ!Powerline 546E
 
-This [powerline adapter](https://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in stand-alone mode.
+This [powerline adapter](https://avm.de/produkte/fritzpowerline/) can be used via the bridge or in stand-alone mode.
 It supports switching the outlet and reading the current power, current voltage and accumulated energy consumption.
 This device does not contain a temperature sensor.
 **NOTE:** The `voltage` channel will be added to the thing during runtime - if the interface supports it (FRITZ!OS 7 or higher).
 
 ### FRITZ!DECT 301 / FRITZ!DECT 300 / Comet DECT
 
-These devices [FRITZ!DECT 301](https://avm.de/produkte/fritzdect/fritzdect-301/), FRITZ!DECT 300 and [Comet DECT](https://www.eurotronic.org/produkte/comet-dect.html) ( [EUROtronic Technology GmbH](https://www.eurotronic.org) ) are used to regulate radiators via DECT protocol.
+These devices [FRITZ!DECT 301](https://avm.de/produkte/fritzdect/fritzdect-301/), FRITZ!DECT 300 and [Comet DECT](https://eurotronic.org/produkte/dect-ule-heizkoerperthermostat/comet-dect/) ([EUROtronic Technology GmbH](https://eurotronic.org/)) are used to regulate radiators via DECT-ULE protocol.
 The FRITZ!Box can handle up to twelve heating thermostats.
 The binding provides channels for reading and setting the temperature.
 Additionally you can check the eco temperature, the comfort temperature and the battery level of the device.
 The FRITZ!Box has to run at least on firmware FRITZ!OS 6.35.
 **NOTE:** The `battery_level` channel will be added to the thing during runtime - if the interface supports it (FRITZ!OS 7 or higher).
 
-### FRITZ!DECT 400
+### FRITZ!DECT 400 / FRITZ!DECT 440
 
-The [FRITZ!DECT 400](https://avm.de/produkte/fritzdect/fritzdect-400/) is a button for convenient operation of FRITZ! Smart Home devices (FRITZ!OS 7.08 or higher).
+The [FRITZ!DECT 400](https://avm.de/produkte/fritzdect/fritzdect-400/) and [FRITZ!DECT 440](https://avm.de/produkte/fritzdect/fritzdect-440/) are buttons for convenient operation of FRITZ! Smart Home devices (FRITZ!OS 7.08  or higher for FRITZ!DECT 400, 7.20  or higher for FRITZ!DECT 440).
+The FRITZ!DECT 400 supports a configurable button to trigger short or long press events.
+Beside four customizable buttons the FRITZ!DECT 440 supports temperature readings.
+** NOTE: ** FRITZ!DECT 440 now uses Channel Groups to group its Channels like `device#battery_level`, `device#battery_low` for device information, `sensors#temperature` for sensor data and `top-left`, `bottom-left`, `top-right` and `bottom-right` combined with `press` and `last_change` (see [Full Example](#full-example))
+
+#### Supported Channel Groups
+
+| Channel Group ID                                       | Description         | Available on thing |
+|--------------------------------------------------------|---------------------|--------------------|
+| `device`                                               | Device information. | FRITZ!DECT 440     |
+| `sensors`                                              | Sensor data.        | FRITZ!DECT 440     |
+| `top-left`, `bottom-left`, `top-right`, `bottom-right` | Button and trigger. | FRITZ!DECT 440     |
 
 ### DECT-ULE / HAN-FUN Devices
 
 The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!Box 7490 / 7590:
 
-- [SmartHome Tür-/Fensterkontakt (optisch)](https://www.smarthome.de/geraete/eurotronic-smarthome-tuer-fensterkontakt-optisch) - an optical door/window contact
-- [SmartHome Tür-/Fensterkontakt (magnetisch)](https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-magnetisch-weiss) - a magnetic door/window contact
-- [SmartHome Bewegungsmelder](https://www.smarthome.de/geraete/telekom-smarthome-bewegungsmelder-innen) - a motion sensor
-- [SmartHome Rauchmelder](https://www.smarthome.de/geraete/smarthome-rauchmelder-weiss) - a smoke detector
-- [SmartHome Wandtaster](https://www.smarthome.de/geraete/telekom-smarthome-wandtaster) - a switch with two buttons
+- [SmartHome Tür-/Fensterkontakt (optisch)](https://www.smarthome.de/geraete/eurotronic-smarthome-tuer-fensterkontakt-optisch) - an optical door/window contact (thing type `HAN_FUN_CONTACT`)
+- [SmartHome Tür-/Fensterkontakt (magnetisch)](https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-magnetisch-weiss) - a magnetic door/window contact (thing type `HAN_FUN_CONTACT`)
+- [SmartHome Bewegungsmelder](https://www.smarthome.de/geraete/telekom-smarthome-bewegungsmelder-innen) - a motion sensor (thing type `HAN_FUN_CONTACT`)
+- [SmartHome Rauchmelder](https://www.smarthome.de/geraete/smarthome-rauchmelder-weiss) - a smoke detector (thing type `HAN_FUN_CONTACT`)
+- [SmartHome Wandtaster](https://www.smarthome.de/geraete/telekom-smarthome-wandtaster) - a switch with two buttons (thing type `HAN_FUN_SWITCH`)
 
 The use of other Sensors should be possible, if these are compatible with DECT-ULE / HAN-FUN standards.
 
@@ -80,7 +111,7 @@ To do so
 - Enable the option "Login with FRITZ!Box user name and password".
 - Click "Apply" to save the settings.
 
-Note: Now you can only log in to the FRITZ!Box with a user account, i.e. after entering a user name and password.
+**NOTE:** Now you can only log in to the FRITZ!Box with a user account, i.e. after entering a user name and password.
 
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
@@ -121,47 +152,49 @@ If the FRITZ!Powerline 546E is added via auto-discovery it determines its own `a
 
 - `ain` (mandatory), no default (AIN number of the device)
 
-### Finding The AIN ###
+### Finding The AIN
 
 The AIN (actor identification number) can be found in the FRITZ!Box interface -> Home Network -> SmartHome. When opening the details view for a device with the edit button, the AIN is shown. Use the AIN without the blank.
 
 ## Supported Channels
 
-| Channel Type ID | Item Type                | Description                                                                                                                                        | Available on thing                                                                                  |
-|-----------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| incoming_call   | Call                     | Details about incoming call.                                                                                                                       | FRITZ!Box                                                                                           |
-| outgoing_call   | Call                     | Details about outgoing call.                                                                                                                       | FRITZ!Box                                                                                           |
-| active_call     | Call                     | Details about active call.                                                                                                                         | FRITZ!Box                                                                                           |
-| call_state      | String                   | Details about current call state, either IDLE, RINGING, DIALING or ACTIVE.                                                                         | FRITZ!Box                                                                                           |
-| apply_template  | String                   | Apply template for device(s) (channel's state options contains available templates, for an alternative way see the description below) - FRITZ!OS 7 | FRITZ!Box, FRITZ!Powerline 546E                                                                     |
-| mode            | String                   | States the mode of the device (MANUAL/AUTOMATIC/VACATION)                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
-| locked          | Contact                  | Device is locked for switching over external sources (OPEN/CLOSE)                                                                                  | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
-| device_locked   | Contact                  | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                                                               | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
-| temperature     | Number:Temperature       | Current measured temperature                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT |
-| energy          | Number:Energy            | Accumulated energy consumption                                                                                                                     | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| power           | Number:Power             | Current power consumption                                                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| voltage         | Number:ElectricPotential | Current voltage - FRITZ!OS 7                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| outlet          | Switch                   | Switchable outlet (ON/OFF)                                                                                                                         | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
-| actual_temp     | Number:Temperature       | Current temperature of heating thermostat                                                                                                          | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| set_temp        | Number:Temperature       | Set Temperature of heating thermostat                                                                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| eco_temp        | Number:Temperature       | Eco Temperature of heating thermostat                                                                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| comfort_temp    | Number:Temperature       | Comfort Temperature of heating thermostat                                                                                                          | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| radiator_mode   | String                   | Mode of heating thermostat (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN)                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| next_change     | DateTime                 | Next change of the Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                             | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| next_temp       | Number:Temperature       | Next Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                                           | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| battery_level   | Number                   | Battery level (in %) - FRITZ!OS 7                                                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400                                          |
-| battery_low     | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400                                          |
-| contact_state   | Contact                  | Contact state information (OPEN/CLOSED).                                                                                                           | HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder)- FRITZ!OS 7       |
-| last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | FRITZ!DECT 400, HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7                             |
+| Channel Type ID | Item Type                | Description                                                                                                                                        | Available on thing                                                                                                  |
+|-----------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| incoming_call   | Call                     | Details about incoming call. %2$s contains the external, calling number, %1$s is the internal, receiving number.                                   | FRITZ!Box                                                                                                           |
+| outgoing_call   | Call                     | Details about outgoing call. %1$s contains the external, called number, %2$s is the internal, calling number.                                      | FRITZ!Box                                                                                                           |
+| active_call     | Call                     | Details about active call. %1$s contains the external, calling number, %2$s is empty.                                                              | FRITZ!Box                                                                                                           |
+| call_state      | String                   | Details about current call state, either IDLE, RINGING, DIALING or ACTIVE.                                                                         | FRITZ!Box                                                                                                           |
+| apply_template  | String                   | Apply template for device(s) (channel's state options contains available templates, for an alternative way see the description below) - FRITZ!OS 7 | FRITZ!Box, FRITZ!Powerline 546E                                                                                     |
+| mode            | String                   | States the mode of the device (MANUAL/AUTOMATIC/VACATION)                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                    |
+| locked          | Contact                  | Device is locked for switching over external sources (OPEN/CLOSE)                                                                                  | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                    |
+| device_locked   | Contact                  | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                                                               | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                    |
+| temperature     | Number:Temperature       | Current measured temperature                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 440 |
+| humidity        | Number:Dimensionless     | Current measured humidity - FRITZ!OS 7.24                                                                                                          | FRITZ!DECT 440                                                                                           |
+| energy          | Number:Energy            | Accumulated energy consumption                                                                                                                     | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
+| power           | Number:Power             | Current power consumption                                                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
+| voltage         | Number:ElectricPotential | Current voltage - FRITZ!OS 7                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
+| outlet          | Switch                   | Switchable outlet (ON/OFF)                                                                                                                         | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
+| actual_temp     | Number:Temperature       | Current temperature of heating thermostat                                                                                                          | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
+| set_temp        | Number:Temperature       | Set Temperature of heating thermostat                                                                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
+| eco_temp        | Number:Temperature       | Eco Temperature of heating thermostat                                                                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
+| comfort_temp    | Number:Temperature       | Comfort Temperature of heating thermostat                                                                                                          | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
+| radiator_mode   | String                   | Mode of heating thermostat (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN)                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
+| next_change     | DateTime                 | Next change of the Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                             | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
+| next_temp       | Number:Temperature       | Next Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                                           | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
+| battery_level   | Number                   | Battery level (in %) - FRITZ!OS 7                                                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400, FRITZ!DECT 440                                          |
+| battery_low     | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400, FRITZ!DECT 440                                          |
+| contact_state   | Contact                  | Contact state information (OPEN/CLOSED).                                                                                                           | HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder)- FRITZ!OS 7                       |
+| last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | FRITZ!DECT 400, FRITZ!DECT 440, HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7                             |
 
 ### Triggers
 
-| Channel Type ID | Item Type | Description                                                                    | Available on thing                                      |
-|-----------------|-----------|--------------------------------------------------------------------------------|---------------------------------------------------------|
-| press           | Trigger   | Dispatches a `PRESSED` event when a button is pressed.                         | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7 |
-| press           | Trigger   | Dispatches a `SHORT_PRESSED` or `LONG_PRESSED` event when a button is pressed. | FRITZ!DECT 400 - FRITZ!OS 7.08                          |
+| Channel Type ID | Item Type | Description                                                                    | Available on thing                                        |
+|-----------------|-----------|--------------------------------------------------------------------------------|-----------------------------------------------------------|
+| press           | Trigger   | Dispatches a `PRESSED` event when a button is pressed.                         | FRITZ!DECT440, HAN-FUN switch (e.g. SmartHome Wandtaster) |
+| press           | Trigger   | Dispatches a `SHORT_PRESSED` or `LONG_PRESSED` event when a button is pressed. | FRITZ!DECT 400                                            |
 
-The trigger channel `press` is of type `system.rawbutton` to allow the usage of the `rawbutton-toggle-switch` profile.
+The trigger channel `press` for a FRITZ!DECT 440 device or HAN-FUN switch is of type `system.rawbutton` to allow the usage of the `rawbutton-toggle-switch` profile.
+The trigger channel `press` for a FRITZ!DECT 400 device is of type `system.button`.
 
 ### FRITZ! Smart Home Templates
 
@@ -210,6 +243,7 @@ demo.things:
 
 ```java
 Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx", user="xxx" ] {
+    Thing FRITZ_DECT_440 vvvvvvvvvvvv "FRITZ!DECT 440 #15" [ ain="vvvvvvvvvvvv" ]
     Thing FRITZ_DECT_200 xxxxxxxxxxxx "FRITZ!DECT 200 #1" [ ain="xxxxxxxxxxxx" ]
     Thing FRITZ_Powerline_546E yy_yy_yy_yy_yy_yy "FRITZ!Powerline 546E #2" [ ain="yy:yy:yy:yy:yy:yy" ]
     Thing Comet_DECT aaaaaabbbbbb "Comet DECT #3" [ ain="aaaaaabbbbbb" ]
@@ -229,6 +263,14 @@ Call   IncomingCall  "Incoming call: [%1$s to %2$s]" { channel="avmfritz:fritzbo
 Call   OutgoingCall  "Outgoing call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:outgoing_call" }
 Call   ActiveCall    "Call established [%1$s]"       { channel="avmfritz:fritzbox:1:active_call" }
 String ApplyTemplate "Apply template"                { channel="avmfritz:fritzbox:1:apply_template" }
+
+Number:Temperature SwitchTemperature "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_440:1:vvvvvvvvvvvv:sensors#temperature" }
+Number SwitchBatteryLevel "Battery level" { channel="avmfritz:FRITZ_DECT_440:1:vvvvvvvvvvvv:device#battery_level" }
+Switch SwitchBatteryLow "Battery low" { channel="avmfritz:FRITZ_DECT_440:1:vvvvvvvvvvvv:device#battery_low" }
+DateTime TopLeftSwitchLastChanged "Last change" { channel="avmfritz:FRITZ_DECT_440:1:vvvvvvvvvvvv:top-left#last_change" }
+DateTime BottomLeftSwitchLastChanged "Last change" { channel="avmfritz:FRITZ_DECT_440:1:vvvvvvvvvvvv:bottom-left#last_change" }
+DateTime TopRightSwitchLastChanged "Last change" { channel="avmfritz:FRITZ_DECT_440:1:vvvvvvvvvvvv:top-right#last_change" }
+DateTime BottomRightSwitchLastChanged "Last change" { channel="avmfritz:FRITZ_DECT_440:1:vvvvvvvvvvvv:bottom-right#last_change" }
 
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
 Number:Temperature Temperature1 "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
@@ -299,6 +341,15 @@ sitemap demo label="Main Menu" {
 ```
 
 demo.rules:
+
+```java
+rule "FRITZ!DECT 440 Top Left Button pressed"
+when
+    Channel "avmfritz:FRITZ_DECT_440:1:vvvvvvvvvvvv:top-left#press" triggered PRESSED
+then
+    logInfo("demo", "Top Left Button pressed")
+end
+```
 
 ```java
 rule "HAN-FUN Button pressed"

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.slf4j.Logger;
@@ -65,18 +63,15 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
         if (updateIntervalInSeconds != null) {
             return updateIntervalInSeconds;
         }
-        SmartHomeCapability[] capabilities = shd.capabilities;
-        if (capabilities != null) {
-            for (SmartHomeCapability capability : capabilities) {
-                if (capability != null && HandlerAcousticEventSensor.INTERFACE.equals(capability.interfaceName)) {
-                    updateIntervalInSeconds = UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS;
-                    break;
-                }
-            }
+        if (shd.getCapabilities().stream()
+                .anyMatch(capability -> HandlerAcousticEventSensor.INTERFACE.equals(capability.interfaceName))) {
+            updateIntervalInSeconds = UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS;
         }
+
         if (updateIntervalInSeconds == null) {
-            if ("openHAB".equalsIgnoreCase(shd.manufacturerName)
-                    || StringUtils.startsWithIgnoreCase(shd.manufacturerName, "ioBroker")) {
+            String manufacturerName = shd.manufacturerName;
+            if (manufacturerName != null && ("openHAB".equalsIgnoreCase(manufacturerName)
+                    || manufacturerName.toLowerCase().startsWith("iobroker"))) {
                 // OpenHAB or ioBroker skill
                 if (logger.isTraceEnabled()) {
                     updateIntervalInSeconds = UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS_TRACE;

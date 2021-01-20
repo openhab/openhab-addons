@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.binding.nest.internal.data.Thermostat.Mode;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -70,7 +70,7 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             case CHANNEL_FAN_TIMER_ACTIVE:
                 return getAsOnOffTypeOrNull(thermostat.isFanTimerActive());
             case CHANNEL_FAN_TIMER_DURATION:
-                return getAsQuantityTypeOrNull(thermostat.getFanTimerDuration(), SmartHomeUnits.MINUTE);
+                return getAsQuantityTypeOrNull(thermostat.getFanTimerDuration(), Units.MINUTE);
             case CHANNEL_FAN_TIMER_TIMEOUT:
                 return getAsDateTimeTypeOrNull(thermostat.getFanTimerTimeout());
             case CHANNEL_HAS_FAN:
@@ -78,7 +78,7 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             case CHANNEL_HAS_LEAF:
                 return getAsOnOffTypeOrNull(thermostat.isHasLeaf());
             case CHANNEL_HUMIDITY:
-                return getAsQuantityTypeOrNull(thermostat.getHumidity(), SmartHomeUnits.PERCENT);
+                return getAsQuantityTypeOrNull(thermostat.getHumidity(), Units.PERCENT);
             case CHANNEL_LAST_CONNECTION:
                 return getAsDateTimeTypeOrNull(thermostat.getLastConnection());
             case CHANNEL_LOCKED:
@@ -108,7 +108,7 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
             case CHANNEL_TEMPERATURE:
                 return getAsQuantityTypeOrNull(thermostat.getAmbientTemperature(), thermostat.getTemperatureUnit());
             case CHANNEL_TIME_TO_TARGET:
-                return getAsQuantityTypeOrNull(thermostat.getTimeToTarget(), SmartHomeUnits.MINUTE);
+                return getAsQuantityTypeOrNull(thermostat.getTimeToTarget(), Units.MINUTE);
             case CHANNEL_USING_EMERGENCY_HEAT:
                 return getAsOnOffTypeOrNull(thermostat.isUsingEmergencyHeat());
             default:
@@ -137,7 +137,7 @@ public class NestThermostatHandler extends NestBaseHandler<Thermostat> {
         } else if (CHANNEL_FAN_TIMER_DURATION.equals(channelUID.getId())) {
             if (command instanceof QuantityType) {
                 // Update fan timer duration to the command value
-                QuantityType<Time> minuteQuantity = ((QuantityType<Time>) command).toUnit(SmartHomeUnits.MINUTE);
+                QuantityType<Time> minuteQuantity = ((QuantityType<Time>) command).toUnit(Units.MINUTE);
                 if (minuteQuantity != null) {
                     addUpdateRequest("fan_timer_duration", minuteQuantity.intValue());
                 }

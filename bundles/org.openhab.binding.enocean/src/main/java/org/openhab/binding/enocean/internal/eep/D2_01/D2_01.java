@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -159,7 +159,7 @@ public abstract class D2_01 extends _VLDMessage {
 
             float energy = Long.parseLong(HexUtils.bytesToHex(new byte[] { bytes[2], bytes[3], bytes[4], bytes[5] }),
                     16) * factor;
-            return new QuantityType<>(energy, SmartHomeUnits.KILOWATT_HOUR);
+            return new QuantityType<>(energy, Units.KILOWATT_HOUR);
         }
 
         return UnDefType.UNDEF;
@@ -183,7 +183,7 @@ public abstract class D2_01 extends _VLDMessage {
             float power = Long.parseLong(HexUtils.bytesToHex(new byte[] { bytes[2], bytes[3], bytes[4], bytes[5] }), 16)
                     * factor;
 
-            return new QuantityType<>(power, SmartHomeUnits.WATT);
+            return new QuantityType<>(power, Units.WATT);
         }
 
         return UnDefType.UNDEF;

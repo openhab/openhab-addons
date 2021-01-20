@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,14 +24,13 @@ import org.openhab.binding.insteon.internal.message.DataType;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class Utils {
     public static String getHexString(int b) {
         String result = String.format("%02X", b & 0xFF);
         return result;
     }
 
-    public static String getHexString(byte @Nullable [] b) {
+    public static String getHexString(byte[] b) {
         return getHexString(b, b.length);
     }
 
@@ -70,9 +69,8 @@ public class Utils {
         return String.format("0x%02X", b);
     }
 
-    @NonNullByDefault
     public static class DataTypeParser {
-        public static Object parseDataType(@Nullable DataType type, String val) {
+        public static Object parseDataType(DataType type, String val) {
             switch (type) {
                 case BYTE:
                     return parseByte(val);
@@ -123,7 +121,6 @@ public class Utils {
     /**
      * Exception to indicate various xml parsing errors.
      */
-    @NonNullByDefault
     public static class ParsingException extends Exception {
         private static final long serialVersionUID = 3997461423241843949L;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.volvooncall.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link TyrePressure} is responsible for storing
  * Tyre Pressure informations returned by vehicule status rest answer
@@ -22,10 +24,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TyrePressure {
-    public @NonNullByDefault({}) String frontLeftTyrePressure;
-    public @NonNullByDefault({}) String frontRightTyrePressure;
-    public @NonNullByDefault({}) String rearLeftTyrePressure;
-    public @NonNullByDefault({}) String rearRightTyrePressure;
+
+    public enum PressureLevel {
+        @SerializedName("Normal")
+        NORMAL,
+        @SerializedName("LowSoft")
+        LOW_SOFT,
+        UNKNOWN;
+    }
+
+    public PressureLevel frontLeftTyrePressure = PressureLevel.UNKNOWN;
+    public PressureLevel frontRightTyrePressure = PressureLevel.UNKNOWN;
+    public PressureLevel rearLeftTyrePressure = PressureLevel.UNKNOWN;
+    public PressureLevel rearRightTyrePressure = PressureLevel.UNKNOWN;
+
     /*
      * Currently unused in the binding, maybe interesting in the future
      * private ZonedDateTime timestamp;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,14 +71,14 @@ public class DSCAlarmDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Method to add a Thing to the Smarthome Inbox.
+     * Method to add a Thing to the Inbox.
      *
      * @param bridge
      * @param dscAlarmThingType
      * @param event
      */
     public void addThing(Bridge bridge, DSCAlarmThingType dscAlarmThingType, DSCAlarmEvent event) {
-        logger.trace("addThing(): Adding new DSC Alarm {} to the smarthome inbox", dscAlarmThingType.getLabel());
+        logger.trace("addThing(): Adding new DSC Alarm {} to the inbox", dscAlarmThingType.getLabel());
 
         ThingUID thingUID = null;
         String thingID = "";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,11 +44,6 @@ import org.pcap4j.core.PcapAddress;
 @Component(service = ConfigOptionProvider.class)
 @NonNullByDefault
 public class AmazonDashButtonConfigOptionProvider implements ConfigOptionProvider {
-
-    @Override
-    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
-        return getParameterOptions(uri, param, null, locale);
-    }
 
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import jd2xx.JD2XX;
  * @author Pauli Anttila - Initial contribution
  *
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.rfxcom")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.rfxcom")
 public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
     private static final long REFRESH_INTERVAL_IN_SECONDS = 600;
 

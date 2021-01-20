@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.common.Login;
 import org.openhab.binding.velux.internal.bridge.common.Logout;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +74,7 @@ public abstract class VeluxBridge {
      * Handler to access global bridge instance methods
      *
      */
-    protected VeluxBridgeInstance bridgeInstance;
+    protected VeluxBridgeHandler bridgeInstance;
 
     /*
      * ************************
@@ -90,7 +91,7 @@ public abstract class VeluxBridge {
      * @param bridgeInstance refers to the binding-wide instance for dealing for common informations
      *            like existing actuators and predefined scenes.
      */
-    public VeluxBridge(VeluxBridgeInstance bridgeInstance) {
+    public VeluxBridge(VeluxBridgeHandler bridgeInstance) {
         logger.trace("VeluxBridge(constructor,bridgeInstance={}) called.", bridgeInstance);
         this.bridgeInstance = bridgeInstance;
         logger.trace("VeluxBridge(constructor) done.");

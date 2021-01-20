@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,19 +19,18 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.io.net.http.HttpUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,10 +52,11 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
 
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
 
-    private @Nullable CameraAddress cameraAddress;
+    private Optional<CameraAddress> cameraAddress;
 
     protected CameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
+        cameraAddress = Optional.empty();
     }
 
     @Override
@@ -114,7 +114,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     protected State getIsLocalState() {
-        return getModule().map(m -> toOnOffType(m.getIsLocal())).orElse(UnDefType.UNDEF);
+        return getModule().map(m -> toOnOffType(m.isIsLocal())).orElse(UnDefType.UNDEF);
     }
 
     protected State getLivePictureURLState() {
@@ -181,7 +181,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     private boolean isLocal() {
-        return getModule().map(NAWelcomeCamera::getIsLocal).orElse(false);
+        return getModule().map(NAWelcomeCamera::isIsLocal).orElse(false);
     }
 
     private void switchVideoSurveillance(boolean isOn) {
@@ -201,20 +201,20 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
 
     protected Optional<String> getLocalCameraURL() {
         Optional<String> vpnURLOptional = getVpnUrl();
-        CameraAddress address = cameraAddress;
+        Optional<CameraAddress> address = cameraAddress;
         if (vpnURLOptional.isPresent()) {
             final String vpnURL = vpnURLOptional.get();
 
             // The local address is (re-)requested when it wasn't already determined or when the vpn address was
             // changed.
-            if (address == null || address.isVpnURLChanged(vpnURL)) {
+            if (!address.isPresent() || address.get().isVpnURLChanged(vpnURL)) {
                 Optional<JSONObject> json = executeGETRequestJSON(vpnURL + PING_URL_PATH);
                 address = json.map(j -> j.optString("local_url", null))
-                        .map(localURL -> new CameraAddress(vpnURL, localURL)).orElse(null);
+                        .map(localURL -> new CameraAddress(vpnURL, localURL));
                 cameraAddress = address;
             }
         }
-        return Optional.ofNullable(address).map(CameraAddress::getLocalURL);
+        return address.map(CameraAddress::getLocalURL);
     }
 
     private Optional<JSONObject> executeGETRequestJSON(String url) {

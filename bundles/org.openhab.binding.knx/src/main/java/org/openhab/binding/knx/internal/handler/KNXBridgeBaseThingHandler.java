@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 
 import tuwien.auto.calimero.IndividualAddress;
 import tuwien.auto.calimero.mgmt.Destination;
@@ -50,11 +49,6 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     }
 
     protected abstract KNXClient getClient();
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        // Nothing to do here
-    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

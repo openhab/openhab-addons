@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANN
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_SWITCH;
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_TEMPERATURE;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.SmartHomeUnits.WATT;
+import static org.openhab.core.library.unit.Units.WATT;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;

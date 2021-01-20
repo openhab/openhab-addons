@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.insteon.internal.driver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Random;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class Port {
     private final Logger logger = LoggerFactory.getLogger(Port.class);
 
@@ -152,10 +151,10 @@ public class Port {
      */
     public void clearModemDB() {
         logger.debug("clearing modem db!");
-        Map<InsteonAddress, @Nullable ModemDBEntry> dbes = getDriver().lockModemDBEntries();
-        for (InsteonAddress addr : dbes.keySet()) {
-            if (!dbes.get(addr).isModem()) {
-                dbes.remove(addr);
+        Map<InsteonAddress, ModemDBEntry> dbes = getDriver().lockModemDBEntries();
+        for (Entry<InsteonAddress, ModemDBEntry> entry : dbes.entrySet()) {
+            if (!entry.getValue().isModem()) {
+                dbes.remove(entry.getKey());
             }
         }
         getDriver().unlockModemDBEntries();
@@ -178,13 +177,9 @@ public class Port {
         }
         ioStream.start();
         readThread = new Thread(reader);
-        readThread.setName("Insteon " + logName + " Reader");
-        readThread.setDaemon(true);
-        readThread.start();
+        setParamsAndStart(readThread, "Reader");
         writeThread = new Thread(writer);
-        writeThread.setName("Insteon " + logName + " Writer");
-        writeThread.setDaemon(true);
-        writeThread.start();
+        setParamsAndStart(writeThread, "Writer");
 
         if (!mdbb.isComplete()) {
             modem.initialize();
@@ -193,6 +188,14 @@ public class Port {
 
         running = true;
         disconnected.set(false);
+    }
+
+    private void setParamsAndStart(@Nullable Thread thread, String type) {
+        if (thread != null) {
+            thread.setName("OH-binding-Insteon " + logName + " " + type);
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
     /**
@@ -208,9 +211,11 @@ public class Port {
         ioStream.stop();
         ioStream.close();
 
+        Thread readThread = this.readThread;
         if (readThread != null) {
             readThread.interrupt();
         }
+        Thread writeThread = this.writeThread;
         if (writeThread != null) {
             writeThread.interrupt();
         }
@@ -230,8 +235,8 @@ public class Port {
         } catch (InterruptedException e) {
             logger.debug("got interrupted waiting for write thread to exit.");
         }
-        readThread = null;
-        writeThread = null;
+        this.readThread = null;
+        this.writeThread = null;
 
         logger.debug("all threads for port {} stopped.", logName);
     }
@@ -286,12 +291,10 @@ public class Port {
      *
      * @author Bernd Pfrommer - Initial contribution
      */
-    @NonNullByDefault
     class IOStreamReader implements Runnable {
 
         private ReplyType reply = ReplyType.GOT_ACK;
         private Object replyLock = new Object();
-        private boolean dropRandomBytes = false; // set to true for fault injection
 
         /**
          * Helper function for implementing synchronization between reader and writer
@@ -306,12 +309,8 @@ public class Port {
         public void run() {
             logger.debug("starting reader...");
             byte[] buffer = new byte[2 * readSize];
-            Random rng = new Random();
             try {
                 for (int len = -1; (len = ioStream.read(buffer, 0, readSize)) > 0;) {
-                    if (dropRandomBytes && rng.nextInt(100) < 20) {
-                        len = dropBytes(buffer, len);
-                    }
                     msgFactory.addData(buffer, len);
                     processMessages();
                 }
@@ -363,29 +362,6 @@ public class Port {
                     }
                 }
             }
-        }
-
-        /**
-         * Drops bytes randomly from buffer to simulate errors seen
-         * from the InsteonHub using the raw interface
-         *
-         * @param buffer byte buffer from which to drop bytes
-         * @param len original number of valid bytes in buffer
-         * @return length of byte buffer after dropping from it
-         */
-        private int dropBytes(byte[] buffer, int len) {
-            final int dropRate = 2; // in percent
-            Random rng = new Random();
-            ArrayList<Byte> l = new ArrayList<>();
-            for (int i = 0; i < len; i++) {
-                if (rng.nextInt(100) >= dropRate) {
-                    l.add(buffer[i]);
-                }
-            }
-            for (int i = 0; i < l.size(); i++) {
-                buffer[i] = l.get(i);
-            }
-            return (l.size());
         }
 
         @SuppressWarnings("unchecked")
@@ -442,7 +418,6 @@ public class Port {
      *
      * @author Bernd Pfrommer - Initial contribution
      */
-    @NonNullByDefault
     class IOStreamWriter implements Runnable {
         private static final int WAIT_TIME = 200; // milliseconds
 
@@ -492,11 +467,11 @@ public class Port {
     /**
      * Class to get info about the modem
      */
-    @NonNullByDefault
     class Modem implements MsgListener {
         private @Nullable InsteonDevice device = null;
 
         InsteonAddress getAddress() {
+            InsteonDevice device = this.device;
             return (device == null) ? new InsteonAddress() : (device.getAddress());
         }
 
@@ -514,24 +489,37 @@ public class Port {
                 if (msg.getByte("Cmd") == 0x60) {
                     // add the modem to the device list
                     InsteonAddress a = new InsteonAddress(msg.getAddress("IMAddress"));
-                    DeviceType dt = DeviceTypeLoader.instance().getDeviceType(InsteonDeviceHandler.PLM_PRODUCT_KEY);
-                    if (dt == null) {
-                        logger.warn("unknown modem product key: {} for modem: {}.",
-                                InsteonDeviceHandler.PLM_PRODUCT_KEY, a);
+                    DeviceTypeLoader instance = DeviceTypeLoader.instance();
+                    if (instance != null) {
+                        DeviceType dt = instance.getDeviceType(InsteonDeviceHandler.PLM_PRODUCT_KEY);
+                        if (dt == null) {
+                            logger.warn("unknown modem product key: {} for modem: {}.",
+                                    InsteonDeviceHandler.PLM_PRODUCT_KEY, a);
+                        } else {
+                            device = InsteonDevice.makeDevice(dt);
+                            initDevice(a, device);
+                            mdbb.updateModemDB(a, Port.this, null, true);
+                        }
                     } else {
-                        device = InsteonDevice.makeDevice(dt);
-                        device.setAddress(a);
-                        device.setProductKey(InsteonDeviceHandler.PLM_PRODUCT_KEY);
-                        device.setDriver(driver);
-                        device.setIsModem(true);
-                        logger.debug("found modem {} in device_types: {}", a, device.toString());
-                        mdbb.updateModemDB(a, Port.this, null, true);
+                        logger.warn("device type loader instance is null");
                     }
                     // can unsubscribe now
                     removeListener(this);
                 }
             } catch (FieldException e) {
                 logger.warn("error parsing im info reply field: ", e);
+            }
+        }
+
+        private void initDevice(InsteonAddress a, @Nullable InsteonDevice device) {
+            if (device != null) {
+                device.setAddress(a);
+                device.setProductKey(InsteonDeviceHandler.PLM_PRODUCT_KEY);
+                device.setDriver(driver);
+                device.setIsModem(true);
+                logger.debug("found modem {} in device_types: {}", a, device.toString());
+            } else {
+                logger.warn("device is null");
             }
         }
 

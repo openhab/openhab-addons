@@ -279,7 +279,7 @@
 			<channel id="weather-id" typeId="weather-id-channel"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="group-forecast-advanced" advanced="true">
+	<channel-group-type id="group-forecast-advanced">
 		<label>Forecast</label>
 		<description>This is hourly weather forecast.</description>
 		<channels>

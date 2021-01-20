@@ -1,184 +1,272 @@
-# Zoneminder Binding
+# ZoneMinder Binding
 
-This binding offers integration to a ZoneMinder Server. It currently only offers to integrate to monitors (eg. cameras in ZoneMinder).
-It also only offers access to a limited set of values, as well as an even more limited option to update values in ZoneMinder.
-It requires at least ZoneMinder 1.29 with API enabled (option 'OPT_USE_API' in ZoneMinder must be enabled).
-The option 'OPT_TRIGGERS' must be anabled to allow openHAB to trip the ForceAlarm in ZoneMinder.
+Supports the ZoneMinder video surveillance system.
 
 ## Supported Things
 
-This binding supports the following thing types
+The following thing types are supported:
 
-<table>
-<tr><td><b>Thing</b></td><td><b>Thing Type</b></td><td><b>Discovery</b></td><td><b>Description</b></td></tr>
-<tr><td>ZoneMinder Server</td><td>Bridge</td><td>Manual</td><td>A ZoneMinder Server. Required version is minimum 1.29</td></tr>
-<tr><td>ZoneMinder Monitor</td><td>Thing</td><td>Automatic</td><td>Monitor as defined in ZoneMinder Server</td></tr>
-</table>
+| Thing    | ID       | Discovery | Description |
+|----------|----------|-----------|-------------|
+| Server   | server   | Manual    | Server bridge manages all communication with ZoneMinder server |
+| Monitor  | monitor  | Automatic | Monitor represents a ZoneMinder camera monitor |
 
-## Getting started /  Discovery
+## Installation
 
-The binding consists of a Bridge (the ZoneMinder Server it self), and a number of Things, which relates to the induvidual monitors in ZoneMinder.
-ZoneMinder things can be configured either through the online configuration utility via discovery, or manually through the 'zoneminder.things' configuration file.
-The Bridge will not be autodiscovered, this behavior is by design.
-That is because the ZoneMinder API can be configured to communicate on custom ports, you can even change the url from the default /zm/ to something userdefined.
-That makes it meaningless to scan for a ZoneMinder Server.
-The Bridge must therefore be added manually, this can be done from Paper UI.
-After adding the Bridge it will go ONLINE, and after a short while and the discovery process for monitors will start.
-When a new monitor is discovered it will appear in the Inbox.
+The binding requires ZoneMinder version 1.34.0 or greater and API version 2.0 or greater.
+It also requires that you enable the **OPT_USE_API** parameter in the ZoneMinder configuration.
 
-### Bridge
+If your ZoneMinder is installed using a non-standard URL path or port number, that must be specified when you add the ZoneMinder server thing.
 
-| Channel    | Type   | Description                                  |
-|------------|--------|----------------------------------------------|
-| online     | Switch | Parameter indicating if the server is online |
-| CPU load   | Text   | Current CPU Load of server                   |
-| Disk Usage | text   | Current Disk Usage on server                 |
+There are two different styles of operation, depending on whether or not you have ZoneMinder configured to use authentication.
 
-### Thing
+### Non-Authenticated
 
-| Channel         | Type   | Description                                                                                |
-|-----------------|--------|--------------------------------------------------------------------------------------------|
-| online          | Switch | Parameter indicating if the monitor is online                                              |
-| enabled         | Switch | Parameter indicating if the monitor is enabled                                             |
-| force-alarm     | Switch | Parameter indicating if Force Alarm for the the monitor is active                          |
-| alarm           | Switch | true if monitor has an active alarm                                                        |
-| recording       | Text   | true if monitor is recording                                                               |
-| detailed-status | Text   | Detailed status of monitor (Idle, Pre-alarm, Alarm, Alert, Recording)                      |
-| event-cause     | Text   | Empty when there is no active event, else it contains the text with the cause of the event |
-| function        | Text   | Text corresponding the value in ZoneMinder: None, Monitor, Modect, Record, Mocord, Nodect  |
-| capture-daemon  | Switch | Run state of ZMC Daemon                                                                    |
-| analysis-daemon | Switch | Run state of ZMA Daemon                                                                    |
-| frame-daemon    | Switch | Run state of ZMF Daemon                                                                    |
+If ZoneMinder authentication is not used, the User and Password parameters should be empty in the *ZoneMinder Server* thing configuration.
+No other configuration is required.
 
-## Manual configuration
+### Authenticated
 
-### Things configuration
+The binding can access ZoneMinder with or without authentication.
+If ZoneMinder authentication is used, first make sure the ZoneMinder user has the **API Enabled** permission set in the ZoneMinder Users configuration.
+Then, enter the user name and password into the ZoneMinder Server thing configuration.
+
+## Discovery
+
+The server bridge must be added manually.
+Once the server bridge is configured with a valid ZoneMinder host name or IP address, 
+all monitors associated with the ZoneMinder server will be discovered.
+
+## Thing Configuration
+
+### Server Thing
+
+The following configuration parameters are available on the Server thing:
+
+| Parameter | Parameter ID | Required/Optional | Description |
+|-----------|--------------|-------------------|-------------|
+| Host                           | host                        | Required  | Host name or IP address of the ZoneMinder server. |
+| Use secure connection          | useSSL                      | Required  | Use http or https for connection to ZoneMinder. Default is http. |
+| Port Number                    | portNumber                  | Optional  | Port number if not on ZoneMinder default port 80. |
+| Url Path                       | urlPath                     | Required  | Path where Zoneminder is installed. Default is /zm. |
+| Refresh Interval               | refreshInterval             | Required  | Frequency in seconds at which monitor status will be updated. |
+| Default Alarm Duration         | defaultAlarmDuration        | Required  | Can be used to set the default alarm duration on discovered monitors. |
+| Default Image Refresh Interval | defaultImageRefreshInterval | Optional  | Can be used to set the image refresh interval in seconds on discovered monitors. Leave empty to not set an image refresh interval. |
+| Monitor Discovery Enabled      | discoveryEnabled            | Required  | Enable/disable the automatic discovery of monitors. Default is enabled. |
+| Monitor Discovery Interval     | discoveryInterval           | Required  | Frequency in seconds at which the binding will try to discover monitors. Default is 300 seconds. |
+| User ID                        | user                        | Optional  | User ID of ZoneMinder user when using authentication. |
+| Password                       | pass                        | Optional  | Password of ZoneMinder user when using authentication. |
+
+### Monitor Thing
+
+The following configuration parameters are available on the Monitor thing:
+
+| Parameter | Parameter ID | Required/Optional | Description |
+|-----------|--------------|-------------------|-------------|
+| Monitor ID             | monitorId            | Required          | Id of monitor defined in ZoneMinder. |
+| Image Refresh Interval | imageRefreshInterval | Optional          | Interval in seconds in which snapshot image channel will be updated. |
+| Alarm Duration         | alarmDuration        | Required          | How long the alarm will run once triggered by the triggerAlarm channel. |
+
+## Channels
+
+### Server Thing
+
+| Channel  | Type   | Description  |
+|----------|--------|--------------|
+| imageMonitorId | String      | Monitor ID to use for selecting an image URL. Also, sending an OFF command to this channel will reset the monitor id and url to UNDEF.  |
+| imageUrl       | String      | Image URL for monitor id specified by imageMonitorId. Channel is UNDEF if the monitor id is not set, or if an OFF command is sent to the imageMonitorId channel. |
+| videoMonitorId | String      | Monitor ID to use for selecting a video URL. Also, sending an OFF command to this channel will reset the monitor id and url to UNDEF.  |
+| videoUrl       | String      | Video URL for monitor id specified by videoMonitorId. Channel is UNDEF if the monitor id is not set, or if an OFF command is sent to the videoMonitorId channel. |
+
+### Monitor Thing
+
+| Channel  | Type   | Description  |
+|----------|--------|--------------|
+| id                | String      | Monitor ID  |
+| name              | String      | Monitor name  |
+| image             | Image       | Snapshot image  |
+| enable            | Switch      | Enable/disable monitor  |
+| function          | String      | Monitor function (e.g. Nodect, Mocord)  |
+| alarm             | Switch      | Monitor is alarming  |
+| state             | String      | Monitor state (e.g. IDLE, ALARM, TAPE)  |
+| triggerAlarm      | Switch      | Turn alarm on/off  |
+| hourEvents        | Number      | Number of events in last hour |
+| dayEvents         | Number      | Number of events in last day  |
+| weekEvents        | Number      | Number of events in last week  |
+| monthEvents       | Number      | Number of events in last month  |
+| yearEvents        | Number      | Number of events in last year  |
+| totalEvents       | Number      | Total number of events  |
+| imageUrl          | String      | URL for image snapshot  |
+| videoUrl          | String      | URL for JPEG video stream  |
+| eventId           | String      | ID of most recently completed event  |
+| eventName         | String      | Name of most recently completed event |
+| eventCause        | String      | Cause of most recently completed event |
+| eventNotes        | String      | Notes of most recently completed event |
+| eventStart        | DateTime    | Start date/time of most recently completed event |
+| eventEnd          | DateTime    | End date/time of most recently completed event |
+| eventFrames       | Number      | Number of frames of most recently completed event |
+| eventAlarmFrames  | Number      | Number of alarm frames of most recently completed event |
+| eventLength       | Number:Time | Length in seconds of most recently completed event |
+
+## Thing Actions
+
+### triggerAlarm
+
+The `triggerAlarm` action triggers an alarm that runs for the number of seconds specified by the parameter `duration`.
+
+##### triggerAlarm - trigger an alarm
+
+```java
+void triggerAlarm(Number duration)
+```
 
 ```
-Bridge zoneminder:server:ZoneMinderSample [ hostname="192.168.1.55", user="<USERNAME>", password="<PASSWORD>", telnet_port=6802, refresh_interval_disk_usage=1 ]
-{
-	Thing monitor monitor_1 [ monitorId=1, monitorTriggerTimeout=120, monitorEventText="Trigger activated from openHAB" ]
-}
-
+Parameters:
+duration - The number of seconds for which the alarm should run.
 ```
 
-### Items configuration
+### triggerAlarm
 
-```
-/* *****************************************
- * SERVER
- * *****************************************/
-Switch zmServer_Online 			"Zoneminder Online [%s]"			<switch>	{channel="zoneminder:server:ZoneMinderSample:online"}
-Number zmServer_CpuLoad 			"ZoneMinder Server Load [%s]"				{channel="zoneminder:server:ZoneMinderSample:cpu-load"}
+The `triggerAlarm` action triggers an alarm that runs for the number of seconds specified
+in the Monitor thing configuration.
 
-Number zmServer_DiskUsage			"ZoneMinder Disk Usage [%s]"				{channel="zoneminder:server:ZoneMinderSample:disk-usage"}
+##### triggerAlarm - trigger an alarm
 
-/* *****************************************
- * MONITOR 1
- * *****************************************/
-Switch zmMonitor1_Online 		"Online [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:online"}
-Switch zmMonitor1_Enabled 		"Enabled [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:enabled"}
-Switch zmMonitor1_ForceAlarm 		"Force Alarm [%s]"	 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:force-alarm"}
-Switch zmMonitor1_EventState 		"Alarm [%s]"	 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:alarm"}
-Switch zmMonitor1_Recording 		"Recording [%s]"	 		<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:recording"}
-String zmMonitor1_DetailedStatus	"Detailed Status [%s]"	 				{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:detailed-status"}
-String zmMonitor1_EventCause 		"Event Cause [%s]"	 		<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:event-cause"}
-String zmMonitor1_Function 		"Function [%s]" 					{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:function"}
-Switch zmMonitor1_CaptureState	 	"Capture Daemon [%s]" 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:capture-daemon"}
-Switch zmMonitor1_AnalysisState 	"Analysis Daemon [%s]" 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:analysis-daemon"}
-Switch zmMonitor1_FrameState		"Frame Daemon [%s]"			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:frame-daemon"}
-
-
-// Helpers
-Switch zmMonitor1_Mode			"Monitor active [%s]"
+```java
+void triggerAlarm()
 ```
 
-### Sample Rule
+### triggerAlarmOff
+
+The `triggerAlarmOff` action cancels a running alarm.
+
+##### triggerAlarmOff - cancel an alarm
+
+```java
+void triggerAlarmOff()
+```
+
+### Requirements
+
+The binding requires ZoneMinder version 1.34.0 or greater, and API version 2.0 or greater.
+The API must be enabled in the ZoneMinder configuration using the **OPT_USE_API** parameter.
+
+## Full Example
+
+### Things
 
 ```
-rule "Monitor1 Alarm State"
+Bridge zoneminder:server:server [ host="192.168.1.100", refreshInterval=5, defaultAlarmDuration=120, discoveryEnabled=true, useDefaultUrlPath=true ]
+
+Thing zoneminder:monitor:1 "Monitor 1" (zoneminder:server:server) [ monitorId="1", imageRefreshInterval=10, alarmDuration=180 ]
+
+Thing zoneminder:monitor:2 "Monitor 2" (zoneminder:server:server) [ monitorId="2", imageRefreshInterval=10, alarmDuration=180 ]
+```
+
+### Items
+
+```
+// Server
+String ZmServer_ImageMonitorId "Image Monitor Id [%s]" { channel="zoneminder:server:server:imageMonitorId" }
+String ZmServer_ImageUrl "Image Url [%s]" { channel="zoneminder:server:server:imageUrl" }
+String ZmServer_VideoMonitorId "Video Monitor Id [%s]" { channel="zm:server:server:videoMonitorId" }
+String ZmServer_VideoUrl "Video Url [%s]" { channel="zoneminder:server:server:videoUrl" }
+
+// Monitor
+String      ZM_Monitor1_Id           "Monitor Id [%s]"              { channel="zoneminder:monitor:1:id" }
+String      ZM_Monitor1_Name         "Monitor Name [%s]"            { channel="zoneminder:monitor:1:name" }
+Image       ZM_Monitor1_Image        "Image [%s]"                   { channel="zoneminder:monitor:1:image" }
+Switch      ZM_Monitor1_Enable       "Enable [%s]"                  { channel="zoneminder:monitor:1:enable" }
+String      ZM_Monitor1_Function     "Function [%s]"                { channel="zoneminder:monitor:1:function" }
+Switch      ZM_Monitor1_Alarm        "Alarm Status [%s]"            { channel="zoneminder:monitor:1:alarm" }
+String      ZM_Monitor1_State        "Alarm State [%s]"             { channel="zoneminder:monitor:1:state" }
+Switch      ZM_Monitor1_TriggerAlarm "Trigger Alarm [%s]"           { channel="zoneminder:monitor:1:triggerAlarm" }
+Number      ZM_Monitor1_HourEvents   "Hour Events [%.0f]"           { channel="zoneminder:monitor:1:hourEvents" }
+Number      ZM_Monitor1_DayEvents    "Day Events [%.0f]"            { channel="zoneminder:monitor:1:dayEvents" }
+Number      ZM_Monitor1_WeekEvents   "Week Events [%.0f]"           { channel="zoneminder:monitor:1:weekEvents" }
+Number      ZM_Monitor1_MonthEvents  "Month Events [%.0f]"          { channel="zoneminder:monitor:1:monthEvents" }
+Number      ZM_Monitor1_TotalEvents  "Total Events [%.0f]"          { channel="zoneminder:monitor:1:totalEvents" }
+String      ZM_Monitor1_ImageUrl     "Image URL [%s]"               { channel="zoneminder:monitor:1:imageUrl" }
+String      ZM_Monitor1_VideoUrl     "Video URL [%s]"               { channel="zoneminder:monitor:1:videoUrl" }
+String      ZM_Monitor1_EventId      "Event Id [%s]"                { channel="zoneminder:monitor:1:eventId" }
+String      ZM_Monitor1_Event_Name   "Event Name [%s]"              { channel="zoneminder:monitor:1:eventName" }
+String      ZM_Monitor1_EventCause   "Event Cause [%s]"             { channel="zoneminder:monitor:1:eventCause" }
+DateTime    ZM_Monitor1_EventStart   "Event Start [%s]"             { channel="zoneminder:monitor:1:eventStart" }
+DateTime    ZM_Monitor1_EventEnd     "Event End [%s]"               { channel="zoneminder:monitor:1:eventEnd" }
+Number      ZM_Monitor1_Frames       "Event Frames [%.0f]"          { channel="zoneminder:monitor:1:eventFrames" }
+Number      ZM_Monitor1_AlarmFrames  "Event Alarm Frames [%.0f]"    { channel="zoneminder:monitor:1:eventAlarmFrames" }
+Number:Time ZM_Monitor1_Length       "Event Length [%.2f]"          { channel="zoneminder:monitor:1:eventLength" }
+```
+
+### Sitemap
+
+
+```
+Selection item=ZmServer_ImageMonitorId
+Image item=ZmServer_ImageUrl
+Selection item=ZmServer_VideoMonitorId
+Video item=ZmServer_VideoUrl url="" encoding="mjpeg"
+                
+Selection item=ZM_Monitor1_Function
+Selection item=ZM_Monitor1_Enable
+Image item=ZM_Monitor1_Image
+```
+
+### Rules
+
+The following examples assume you have a motion sensor that is linked to an item called *MotionSensorAlarm*.
+
+```
+rule "Record When Motion Detected Using Channel"
 when
-    Item zmMonitor1_EventState changed
+    Item MotionSensorAlarm changed to ON
 then
-	if (zmMonitor1_EventState.state == ON) {
-		logInfo("zoneminder.rules", "ZoneMinder Alarm started")
-	}
-	else if (zmMonitor1_EventState.state == OFF) {
-		logInfo("zoneminder.rules", "ZoneMinder Alarm stopped")
-	}
+    ZM_TriggerAlarm.sendComand(ON)
 end
+```
 
-rule "Monitor1 Recording State"
+```
+rule "Record for 120 Seconds When Motion Detected"
 when
-    Item zmMonitor1_Recording changed
+    Item MotionSensorAlarm changed to ON
 then
-	if (zmMonitor1_Recording.state == ON) {
-		logInfo("zoneminder.rules", "ZoneMinder recording started")
-	}
-	else if (zmMonitor1_Recording.state == OFF) {
-		logInfo("zoneminder.rules", "ZoneMinder recording stopped")
-	}
+    val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
+    zmActions.triggerAlarmOn(120)
 end
+```
 
-
-rule "Change Monitor1 Mode"
+```
+rule "Record When Motion Detected"
 when
-    Item zmMonitor1_Mode changed
+    Item MotionSensorAlarm changed to ON
 then
-	if (zmMonitor1_Mode.state==ON) {
-		zmMonitor1_Function.sendCommand("Modect")
-		zmMonitor1_Enabled.sendCommand(ON)
-	}
-	else {
-		zmMonitor1_Function.sendCommand("Monitor")
-		zmMonitor1_Enabled.sendCommand(OFF)
-	}
+    val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
+    zmActions.triggerAlarmOn()
 end
 ```
 
-### Sitemap configuration
-
 ```
-sitemap zoneminder label="Zoneminder"
-{
-	Frame {
-		Text item=zmServer_Online label="ZoneMinder Server [%s]" {
-			Frame {
-				Text item=zmServer_Online
-				Text  item=zmServer_CpuLoad
-				Text  item=zmServer_DiskUsage
-			}
-		}
-
-		Text item=zmMonitor1_Function label="(Monitor-1) [%s]" {
-			Frame {
-				Switch 		item=zmMonitor1_Enabled
-				Switch 		item=zmMonitor1_ForceAlarm
-				Text		item=zmMonitor1_Online
-				Selection	item=zmMonitor1_Function 	mappings=["None"=None, "Modect"=Modect, "Monitor"=Monitor, "Record"=Record, "Mocord"=Mocord, "Nodect"=Nodect]
-				Text  		item=zmMonitor1_EventState 	
-				Text 		item=zmMonitor1_Recording 	
-				Text		item=zmMonitor1_DetailedStatus
-				Text 		item=zmMonitor1_EventCause
-				Text 		item=zmMonitor1_CaptureState
-				Text 		item=zmMonitor1_AnalysisState
-				Text 		item=zmMonitor1_FrameState
-			}
-		}
-		Frame label="Monitor Helpers" {
-			Switch item=zmMonitor1_Mode
-		}
-	}
-}
+rule "Record When Motion Detection Cleared"
+when
+    Item MotionSensorAlarm changed to OFF
+then
+    val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
+    zmActions.triggerAlarmOff()
+end
 ```
 
-## Troubleshooting
+```
+val monitors = newArrayList("1", "3", "4", "6")
+var int index = 0
 
-<table>
-<tr><td><b>Problem</b></td><td><b>Solution</b></td></tr>
-<tr><td>Cannot connect to ZoneMinder Bridge</td><td>Check if you can logon to ZoneMinder from your openHAB server (with http).</td></tr>
-<tr><td></td><td>Check that it is possible to establish a Telnet connection from openHAB server to Zoneminder Server</td></tr>
-<tr><td>ZoneMinder Bridge is not comming ONLINE. It says: 'OFFLINE - COMMUNICATION_ERROR Cannot access ZoneMinder Server. Check provided usercredentials'</td><td>Check that the hostname is valid, if using a DNS name, make sure name is correct resolved. Also check that the given host can be accessed from a browser. Finally make sure to change the additional path from '/zm', if not using standard setup.</td></tr>
-<tr><td>Cannot connect to ZoneMinder Bridge via HTTPS, using Letsencrypt certificate</td><td>Verify your Java version, if Java is below build 101, letsencrypt certificate isn't known by Java. Either use HTTP or upgrade Java to newest build. Please be aware that https support is provided as an experimental feature.</td></tr>
-<tr><td>I have tried all of the above, it still doesn't work</td><td>Try to execute this from a commandline (on your openHAB server): curl -d "<username>=XXXX&<password>=YYYY&action=login&view=console" -c cookies.txt  http://<yourzmip>/zm/index.php. Change <yourzmip>, <username> and <password> to the actual values. This will check if your server is accessible from the openHAB server.</td></tr>
-</table>
+rule "Rotate Through a List of Monitor Images Every 10 Seconds"
+when
+    Time cron "0/10 * * ? * * *"
+then
+    ZmServer_ImageMonitorId.sendCommand(monitors.get(index))
+    index = index + 1
+    if (index >= monitors.size) {
+        index = 0
+    }
+end
+```

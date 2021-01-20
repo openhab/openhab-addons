@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.darksky.internal.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link DarkSkyCommunicationException} is a communication exception for the connections to Dark Sky API.
@@ -36,7 +37,7 @@ public class DarkSkyCommunicationException extends RuntimeException {
      *
      * @param message Detail message
      */
-    public DarkSkyCommunicationException(String message) {
+    public DarkSkyCommunicationException(@Nullable String message) {
         super(message);
     }
 
@@ -45,7 +46,7 @@ public class DarkSkyCommunicationException extends RuntimeException {
      *
      * @param cause The cause
      */
-    public DarkSkyCommunicationException(Throwable cause) {
+    public DarkSkyCommunicationException(@Nullable Throwable cause) {
         super(cause);
     }
 
@@ -55,7 +56,7 @@ public class DarkSkyCommunicationException extends RuntimeException {
      * @param message Detail message
      * @param cause The cause
      */
-    public DarkSkyCommunicationException(String message, Throwable cause) {
+    public DarkSkyCommunicationException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 }

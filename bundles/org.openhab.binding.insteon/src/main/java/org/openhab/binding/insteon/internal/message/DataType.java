@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.insteon.internal.message;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Defines the data types that can be used in the fields of a message.
@@ -31,10 +31,10 @@ public enum DataType {
     ADDRESS("address", 3),
     INVALID("INVALID", -1);
 
-    private static HashMap<String, DataType> typeMap = new HashMap<>();
+    private static Map<String, DataType> typeMap = new HashMap<>();
 
-    private int size = -1; // number of bytes consumed
-    private String name = "";
+    private int size;
+    private String name;
 
     static {
         typeMap.put(BYTE.getName(), BYTE);
@@ -74,7 +74,12 @@ public enum DataType {
      * @param name the string to translate to a type
      * @return the data type corresponding to the name string, or null if not found
      */
-    public static @Nullable DataType getDataType(String name) {
-        return typeMap.get(name);
+    public static DataType getDataType(String name) {
+        DataType dataType = typeMap.get(name);
+        if (dataType != null) {
+            return dataType;
+        } else {
+            throw new IllegalArgumentException("Unable to find data type for " + name);
+        }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.insteon.internal.driver;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -30,7 +32,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class TcpIOStream extends IOStream {
     private final Logger logger = LoggerFactory.getLogger(TcpIOStream.class);
 
@@ -57,8 +58,7 @@ public class TcpIOStream extends IOStream {
         }
         try {
             socket = new Socket(host, port);
-            in = socket.getInputStream();
-            out = socket.getOutputStream();
+            open(socket);
         } catch (UnknownHostException e) {
             logger.warn("unknown host name: {}", host);
             return (false);
@@ -69,33 +69,43 @@ public class TcpIOStream extends IOStream {
         return true;
     }
 
+    private void open(@Nullable Socket socket) throws IOException {
+        if (socket != null) {
+            in = socket.getInputStream();
+            out = socket.getOutputStream();
+        }
+    }
+
     @Override
     public void close() {
+        InputStream in = this.in;
         if (in != null) {
             try {
                 in.close();
             } catch (IOException e) {
                 logger.warn("failed to close input stream", e);
             }
-            in = null;
+            this.in = null;
         }
 
+        OutputStream out = this.out;
         if (out != null) {
             try {
                 out.close();
             } catch (IOException e) {
                 logger.warn("failed to close output stream", e);
             }
-            out = null;
+            this.out = null;
         }
 
+        Socket socket = this.socket;
         if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
                 logger.warn("failed to close the socket", e);
             }
-            socket = null;
+            this.socket = null;
         }
     }
 }

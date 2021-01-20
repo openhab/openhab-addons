@@ -85,6 +85,8 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    @Override
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return thingTypeUID.equals(FIRST_GENERATION_INVERTER) || thingTypeUID.equals(SECOND_GENERATION_INVERTER)
                 || SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS.keySet().contains(thingTypeUID);
     }

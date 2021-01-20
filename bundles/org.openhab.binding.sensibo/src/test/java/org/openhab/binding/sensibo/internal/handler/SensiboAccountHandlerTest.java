@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,12 +87,14 @@ public class SensiboAccountHandlerTest {
         when(configuration.as(eq(SensiboAccountConfiguration.class))).thenReturn(accountConfig);
 
         // Setup initial response
-        final String getPodsResponse = IOUtils.toString(getClass().getResourceAsStream(podsResponse));
+        final String getPodsResponse = new String(getClass().getResourceAsStream(podsResponse).readAllBytes(),
+                StandardCharsets.UTF_8);
         stubFor(get(urlEqualTo("/api/v2/users/me/pods?apiKey=APIKEY"))
                 .willReturn(aResponse().withStatus(200).withBody(getPodsResponse)));
 
         // Setup 2nd response with details
-        final String getPodDetailsResponse = IOUtils.toString(getClass().getResourceAsStream(podDetailsResponse));
+        final String getPodDetailsResponse = new String(
+                getClass().getResourceAsStream(podDetailsResponse).readAllBytes(), StandardCharsets.UTF_8);
         stubFor(get(urlEqualTo("/api/v2/pods/PODID?apiKey=APIKEY&fields=*"))
                 .willReturn(aResponse().withStatus(200).withBody(getPodDetailsResponse)));
 

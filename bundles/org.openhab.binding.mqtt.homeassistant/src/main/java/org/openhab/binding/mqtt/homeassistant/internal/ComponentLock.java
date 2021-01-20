@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,9 +52,8 @@ public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfig
 
         buildChannel(switchChannelID,
                 new OnOffValue(channelConfiguration.payload_lock, channelConfiguration.payload_unlock),
-                channelConfiguration.name, componentConfiguration.getUpdateListener())//
-                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                        .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
-                        .build();
+                channelConfiguration.name, componentConfiguration.getUpdateListener())
+                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)
+                        .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain).build();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,7 +69,6 @@ public class SystemBrokerHandler extends AbstractBrokerHandler implements MqttSe
             properties.put(PROPERTY_PASSWORD, password);
         }
         properties.put(PROPERTY_QOS, String.valueOf(connection.getQos()));
-        properties.put(PROPERTY_RETAIN, String.valueOf(connection.isRetain()));
         final MqttWillAndTestament lastWill = connection.getLastWill();
         if (lastWill != null) {
             properties.put(PROPERTY_LAST_WILL, lastWill.toString());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -252,10 +252,12 @@ public class SmartMeterHandler extends BaseThingHandler {
             Channel channel = this.thing.getChannel(channelId.getId());
             if (channel != null) {
                 String obis = channel.getProperties().get(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS);
-                MeterValue<?> value = this.smlDevice.getMeterValue(obis);
-                if (value != null) {
-                    State state = getStateForObisValue(value, channel);
-                    updateState(channel.getUID(), state);
+                if (obis != null) {
+                    MeterValue<?> value = this.smlDevice.getMeterValue(obis);
+                    if (value != null) {
+                        State state = getStateForObisValue(value, channel);
+                        updateState(channel.getUID(), state);
+                    }
                 }
             }
         }

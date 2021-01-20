@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.config.VeluxThingConfiguration;
+import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
+import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -25,9 +28,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.binding.velux.internal.config.VeluxThingConfiguration;
-import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
-import org.openhab.binding.velux.internal.utils.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,6 +115,7 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
             for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
                 logger.trace("handleConfigurationUpdate(): found modified config entry {}.",
                         configurationParameter.getKey());
+                configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
             }
             // persist new configuration and reinitialize handler
             dispose();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.astro.internal.model;
 import javax.measure.quantity.Angle;
 
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Holds the calculated azimuth and elevation.
@@ -43,7 +43,7 @@ public class Position {
      * Returns the azimuth.
      */
     public QuantityType<Angle> getAzimuth() {
-        return new QuantityType<>(azimuth, SmartHomeUnits.DEGREE_ANGLE);
+        return new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
     }
 
     /**
@@ -57,7 +57,7 @@ public class Position {
      * Returns the elevation.
      */
     public QuantityType<Angle> getElevation() {
-        return new QuantityType<>(elevation, SmartHomeUnits.DEGREE_ANGLE);
+        return new QuantityType<>(elevation, Units.DEGREE_ANGLE);
     }
 
     public double getElevationAsDouble() {

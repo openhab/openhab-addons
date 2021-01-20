@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tr064"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="generic">
+		<label>Generic CPE</label>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>Host name or IP address.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="user" type="text">
+				<label>Username</label>
+				<default>dslf-config</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s">
+				<label>Refresh Interval</label>
+				<default>60</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="fritzbox">
+		<label>FritzBox</label>
+		<description>A physical FritzBox Device.</description>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>Host name or IP address.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="user" type="text">
+				<label>Username</label>
+				<default>dslf-config</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s">
+				<label>Refresh Interval</label>
+				<default>60</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="tamIndices" type="text" multiple="true">
+				<label>TAM</label>
+				<description>List of answering machines (starting with 0).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="callDeflectionIndices" type="text" multiple="true">
+				<label>Call Deflection</label>
+				<description>List of call deflection IDs (starting with 0).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="missedCallDays" type="text" multiple="true">
+				<label>Missed Call Days</label>
+				<description>List of days for which missed calls should be calculated.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="rejectedCallDays" type="text" multiple="true">
+				<label>Rejected Call Days</label>
+				<description>List of days for which rejected calls should be calculated.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="inboundCallDays" type="text" multiple="true">
+				<label>Inbound Call Days</label>
+				<description>List of days for which inbound calls should be calculated.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="outboundCallDays" type="text" multiple="true">
+				<label>Outbound Call Days</label>
+				<description>List of days for which outbound calls should be calculated.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="callListDays" type="text" multiple="true">
+				<label>Call List Days</label>
+				<description>List of days for which JSON call list should be generated.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="wanBlockIPs" type="text" multiple="true">
+				<label>WAN Block IPs</label>
+				<description>List of IPs that can be blocked for WAN access.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="phonebookInterval" type="integer" min="0" unit="s">
+				<label>Phonebook Interval</label>
+				<description>The interval for refreshing the phonebook (disabled = 0)</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="subdevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="generic"/>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+		<label>Sub-Device</label>
+		<description>A virtual sub-device.</description>
+
+		<config-description>
+			<parameter name="uuid" type="text" required="true">
+				<label>UUID</label>
+				<description>UUID of the sub-device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s">
+				<label>Refresh Interval</label>
+				<default>60</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="subdeviceLan" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="generic"/>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+		<label>Sub-Device (LAN)</label>
+		<description>A virtual Sub-Device (LAN).</description>
+
+		<config-description>
+			<parameter name="uuid" type="text" required="true">
+				<label>UUID</label>
+				<description>UUID of the sub-device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s">
+				<label>Refresh Interval</label>
+				<default>60</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="macOnline" type="text" multiple="true">
+				<label>MAC Online</label>
+				<description>List of MACs for "online" status detection (format: 11:11:11:11:11:11).</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

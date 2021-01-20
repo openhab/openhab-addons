@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.milight")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.milight")
 public class MilightBridgeDiscovery extends AbstractDiscoveryService implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(MilightBridgeDiscovery.class);
 

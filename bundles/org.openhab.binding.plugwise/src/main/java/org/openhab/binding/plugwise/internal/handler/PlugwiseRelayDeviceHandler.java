@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.plugwise.internal.handler;
 
-import static java.util.stream.Collectors.*;
 import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,7 +53,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -222,10 +219,8 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
         }
     };
 
-    private final List<PlugwiseDeviceTask> recurringTasks = Stream
-            .of(clockUpdateTask, currentPowerUpdateTask, energyUpdateTask, informationUpdateTask,
-                    realTimeClockUpdateTask, setClockTask)
-            .collect(collectingAndThen(toList(), Collections::unmodifiableList));
+    private final List<PlugwiseDeviceTask> recurringTasks = List.of(clockUpdateTask, currentPowerUpdateTask,
+            energyUpdateTask, informationUpdateTask, realTimeClockUpdateTask, setClockTask);
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseRelayDeviceHandler.class);
     private final DeviceType deviceType;
@@ -436,8 +431,8 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
                 mostRecentEnergy.setInterval(configuration.getMeasurementInterval());
                 energy = mostRecentEnergy;
                 logger.trace("Updating {} ({}) energy with: {}", deviceType, macAddress, mostRecentEnergy);
-                updateState(CHANNEL_ENERGY, new QuantityType<>(correctSign(mostRecentEnergy.tokWh(localCalibration)),
-                        SmartHomeUnits.KILOWATT_HOUR));
+                updateState(CHANNEL_ENERGY,
+                        new QuantityType<>(correctSign(mostRecentEnergy.tokWh(localCalibration)), Units.KILOWATT_HOUR));
                 LocalDateTime start = mostRecentEnergy.getStart();
                 updateState(CHANNEL_ENERGY_STAMP,
                         start != null ? PlugwiseUtils.newDateTimeType(start) : UnDefType.NULL);
@@ -465,7 +460,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
             return;
         }
 
-        updateState(CHANNEL_POWER, new QuantityType<>(correctSign(watt), SmartHomeUnits.WATT));
+        updateState(CHANNEL_POWER, new QuantityType<>(correctSign(watt), Units.WATT));
     }
 
     private void handleRealTimeClockGetResponse(RealTimeClockGetResponseMessage message) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.openhab.binding.enocean.internal.eep.Base._SIGMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -42,7 +42,7 @@ public class D0_06 extends _SIGMessage {
     public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
         if (CHANNEL_BATTERY_LEVEL.equals(channelId)) {
-            return new QuantityType<>(bytes[1] & 0xFF, SmartHomeUnits.PERCENT);
+            return new QuantityType<>(bytes[1] & 0xFF, Units.PERCENT);
         }
 
         return UnDefType.UNDEF;

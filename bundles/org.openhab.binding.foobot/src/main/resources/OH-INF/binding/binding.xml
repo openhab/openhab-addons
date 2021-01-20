@@ -6,5 +6,4 @@
 	<name>Foobot</name>
 	<description>Foobot binding allow users to connect to their foobots in home or office and get real-time updates on the
 		Air Quality.</description>
-	<author>Divya Chauhan and George Katsis</author>
 </binding:binding>

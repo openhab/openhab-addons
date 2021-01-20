@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.volvooncall.internal.dto;
+
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -48,7 +50,7 @@ public class PostResponse extends VocAnswer {
     @SerializedName("service")
     public @NonNullByDefault({}) String serviceURL;
     public @NonNullByDefault({}) ServiceType serviceType;
-
+    public @NonNullByDefault({}) ZonedDateTime startTime;
     /*
      * Currently unused in the binding, maybe interesting in the future
      *
@@ -59,7 +61,7 @@ public class PostResponse extends VocAnswer {
      * }
      *
      * private ZonedDateTime statusTimestamp;
-     * private ZonedDateTime startTime;
+     * 
      * private FailureReason failureReason;
      *
      * private Integer customerServiceId;

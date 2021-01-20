@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -163,7 +163,9 @@ public class DigiplexAreaHandler extends BaseThingHandler {
         bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();
 
         String areaParm = getThing().getProperties().get(DigiplexBindingConstants.PROPERTY_AREA_NO);
-        areaNo = Integer.parseInt(areaParm);
+        if (areaParm != null) {
+            areaNo = Integer.parseInt(areaParm);
+        }
         bridgeHandler.registerMessageHandler(visitor);
 
         updateStatus(ThingStatus.ONLINE);

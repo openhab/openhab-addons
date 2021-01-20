@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.openweathermap.internal.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link OpenWeatherMapConfigurationException} is a configuration exception for the connections to OpenWeatherMap
@@ -37,7 +38,7 @@ public class OpenWeatherMapConfigurationException extends IllegalArgumentExcepti
      *
      * @param message Detail message
      */
-    public OpenWeatherMapConfigurationException(String message) {
+    public OpenWeatherMapConfigurationException(@Nullable String message) {
         super(message);
     }
 
@@ -46,7 +47,7 @@ public class OpenWeatherMapConfigurationException extends IllegalArgumentExcepti
      *
      * @param cause The cause
      */
-    public OpenWeatherMapConfigurationException(Throwable cause) {
+    public OpenWeatherMapConfigurationException(@Nullable Throwable cause) {
         super(cause);
     }
 
@@ -56,7 +57,7 @@ public class OpenWeatherMapConfigurationException extends IllegalArgumentExcepti
      * @param message Detail message
      * @param cause The cause
      */
-    public OpenWeatherMapConfigurationException(String message, Throwable cause) {
+    public OpenWeatherMapConfigurationException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 }

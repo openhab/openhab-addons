@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public abstract class IOStream {
     private static final Logger logger = LoggerFactory.getLogger(IOStream.class);
     protected @Nullable InputStream in = null;
@@ -59,7 +58,12 @@ public abstract class IOStream {
     public int read(byte[] b, int offset, int readSize) throws InterruptedException, IOException {
         int len = 0;
         while (!stopped && len < 1) {
-            len = in.read(b, offset, readSize);
+            InputStream in = this.in;
+            if (in != null) {
+                len = in.read(b, offset, readSize);
+            } else {
+                throw new IOException("in is null");
+            }
             if (len == -1) {
                 throw new EOFException();
             }
@@ -77,7 +81,12 @@ public abstract class IOStream {
      * @param b byte array to write
      */
     public void write(byte @Nullable [] b) throws IOException {
-        out.write(b);
+        OutputStream out = this.out;
+        if (out != null) {
+            out.write(b);
+        } else {
+            throw new IOException("out is null");
+        }
     }
 
     /**
@@ -156,7 +165,6 @@ public abstract class IOStream {
         return new TcpIOStream(hp.host, hp.port);
     }
 
-    @NonNullByDefault
     private static class HostPort {
         public String host = "localhost";
         public int port = -1;

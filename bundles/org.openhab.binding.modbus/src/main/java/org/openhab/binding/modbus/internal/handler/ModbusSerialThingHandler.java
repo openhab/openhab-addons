@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,12 +21,12 @@ import org.openhab.binding.modbus.discovery.internal.ModbusEndpointDiscoveryServ
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.config.ModbusSerialConfiguration;
+import org.openhab.core.io.transport.modbus.ModbusManager;
+import org.openhab.core.io.transport.modbus.endpoint.EndpointPoolConfiguration;
+import org.openhab.core.io.transport.modbus.endpoint.ModbusSerialSlaveEndpoint;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
-import org.openhab.io.transport.modbus.endpoint.ModbusSerialSlaveEndpoint;
 
 /**
  * Endpoint thing handler for serial slaves

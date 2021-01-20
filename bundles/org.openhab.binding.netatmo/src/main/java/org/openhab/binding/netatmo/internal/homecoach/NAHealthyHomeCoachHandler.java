@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.homecoach;
 
+import static org.openhab.binding.netatmo.internal.APIUtils.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
@@ -19,10 +20,10 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
-import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NADashboardData;
 import io.swagger.client.model.NAHealthyHomeCoach;
@@ -43,7 +44,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     @Override
     protected Optional<NAHealthyHomeCoach> updateReadings() {
         return getBridgeHandler().flatMap(handler -> handler.getHomecoachDataBody(getId()))
-                .map(dataBody -> dataBody.getDevices().stream()
+                .map(dataBody -> nonNullStream(dataBody.getDevices())
                         .filter(device -> device.getId().equalsIgnoreCase(getId())).findFirst().orElse(null));
     }
 
@@ -58,7 +59,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
         if (dashboardData != null) {
             switch (channelId) {
                 case CHANNEL_CO2:
-                    return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
+                    return toQuantityType(dashboardData.getCo2(), API_CO2_UNIT);
                 case CHANNEL_TEMPERATURE:
                     return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
                 case CHANNEL_HEALTH_INDEX:

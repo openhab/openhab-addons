@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,22 +29,9 @@ public class ComfoAirBindingConstants {
     public static final ThingTypeUID THING_TYPE_COMFOAIR_GENERIC = new ThingTypeUID(BINDING_ID, "comfoair");
 
     // Thing properties
-    // General properties
     public static final String PROPERTY_SOFTWARE_MAIN_VERSION = "SOFTWARE_VERSION_MAIN";
     public static final String PROPERTY_SOFTWARE_MINOR_VERSION = "SOFTWARE_VERSION_MINOR";
     public static final String PROPERTY_DEVICE_NAME = "DEVICE_NAME";
-    // Installed options
-    public static final String PROPERTY_OPTION_PREHEATER = "OPTION_PREHEATER";
-    public static final String PROPERTY_OPTION_BYPASS = "OPTION_BYPASS";
-    public static final String PROPERTY_OPTION_RECU_TYPE = "DEVICE_TYPE";
-    public static final String PROPERTY_OPTION_RECU_SIZE = "DEVICE_SIZE";
-    public static final String PROPERTY_OPTION_CHIMNEY = "OPTION_CHIMNEY";
-    public static final String PROPERTY_OPTION_COOKERHOOD = "OPTION_COOKERHOOD";
-    public static final String PROPERTY_OPTION_HEATER = "OPTION_HEATER";
-    public static final String PROPERTY_OPTION_ENTHALPY = "OPTION_ENTHALPY";
-    public static final String PROPERTY_OPTION_EWT = "OPTION_EWT";
-    // Common option states
-    public static final String[] COMMON_OPTION_STATES = { "Not installed", "Installed" };
 
     // Channel groups
     public static final String CG_CONTROL_PREFIX = "bindingControl#";
@@ -53,7 +40,7 @@ public class ComfoAirBindingConstants {
     public static final String CG_TIMES_PREFIX = "times#";
     public static final String CG_BYPASS_PREFIX = "bypass#";
     public static final String CG_PREHEATER_PREFIX = "preheater#";
-    public static final String CG_EWT_PREFIX = "ewt#";
+    public static final String CG_GHX_PREFIX = "ewt#";
     public static final String CG_HEATER_PREFIX = "heater#";
     public static final String CG_COOKERHOOD_PREFIX = "cookerhood#";
     public static final String CG_ENTHALPY_PREFIX = "enthalpy#";
@@ -97,10 +84,10 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_IS_SENSOR_T2 = "isT2Sensor";
     public static final String CHANNEL_IS_SENSOR_T3 = "isT3Sensor";
     public static final String CHANNEL_IS_SENSOR_T4 = "isT4Sensor";
-    public static final String CHANNEL_IS_SENSOR_EWT = "isEWTSensor";
+    public static final String CHANNEL_IS_SENSOR_GHX = "isEWTSensor";
     public static final String CHANNEL_IS_SENSOR_HEATER = "isHeaterSensor";
     public static final String CHANNEL_IS_SENSOR_COOKERHOOD = "isCookerhoodSensor";
-    public static final String CHANNEL_TEMP_EWT = "ewtTemperature";
+    public static final String CHANNEL_TEMP_GHX = "ewtTemperature";
     public static final String CHANNEL_TEMP_HEATER = "heaterTemperature";
     public static final String CHANNEL_TEMP_COOKERHOOD = "cookerhoodTemperature";
     // Time channels
@@ -123,10 +110,10 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_PREHEATER_HEATING = "preheaterHeating";
     public static final String CHANNEL_PREHEATER_FROST_TIME = "preheaterFrostTime";
     public static final String CHANNEL_PREHEATER_SAFETY = "preheaterSafety";
-    // EWT channels
-    public static final String CHANNEL_EWT_TEMP_LOW = "ewtTemperatureLow";
-    public static final String CHANNEL_EWT_TEMP_HIGH = "ewtTemperatureHigh";
-    public static final String CHANNEL_EWT_SPEED = "ewtSpeed";
+    // GHX channels
+    public static final String CHANNEL_GHX_TEMP_LOW = "ewtTemperatureLow";
+    public static final String CHANNEL_GHX_TEMP_HIGH = "ewtTemperatureHigh";
+    public static final String CHANNEL_GHX_SPEED = "ewtSpeed";
     // Heater channels
     public static final String CHANNEL_HEATER_POWER = "heaterPower";
     public static final String CHANNEL_HEATER_POWER_I = "heaterPowerI";
@@ -138,6 +125,17 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_ENTHALPY_HUMIDITY = "enthalpyHumidity";
     public static final String CHANNEL_ENTHALPY_LEVEL = "enthalpyLevel";
     public static final String CHANNEL_ENTHALPY_TIME = "enthalpyTime";
+    // Options channels
+    public static final String CHANNEL_OPTION_PREHEATER = "isPreheater";
+    public static final String CHANNEL_OPTION_BYPASS = "isBypass";
+    public static final String CHANNEL_OPTION_RECU_TYPE = "recuType";
+    public static final String CHANNEL_OPTION_RECU_SIZE = "recuSize";
+    public static final String CHANNEL_OPTION_CHIMNEY = "isChimney";
+    public static final String CHANNEL_OPTION_COOKERHOOD = "isCookerhood";
+    public static final String CHANNEL_OPTION_HEATER = "isHeater";
+    public static final String CHANNEL_OPTION_ENTHALPY = "isEnthalpy";
+    public static final String CHANNEL_OPTION_GHX = "isEWT";
+    public static final String CHANNEL_OPTION_PRIORITY = "analogPriority";
     // Menu P1 channels
     public static final String CHANNEL_MENU20_MODE = "menu20Mode";
     public static final String CHANNEL_MENU21_MODE = "menu21Mode";
@@ -161,7 +159,7 @@ public class ComfoAirBindingConstants {
     // Menu P9 channels
     public static final String CHANNEL_CHIMNEY_STATE = "chimneyState";
     public static final String CHANNEL_BYPASS_STATE = "bypassState";
-    public static final String CHANNEL_EWT_STATE = "ewtState";
+    public static final String CHANNEL_GHX_STATE = "ewtState";
     public static final String CHANNEL_HEATER_STATE = "heaterState";
     public static final String CHANNEL_VCONTROL_STATE = "vControlState";
     public static final String CHANNEL_FROST_STATE = "frostState";
@@ -189,7 +187,6 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_RF_MIN = "RFMin";
     public static final String CHANNEL_RF_MAX = "RFMax";
     public static final String CHANNEL_RF_VALUE = "RFValue";
-    public static final String CHANNEL_ANALOG_PRIORITY = "analogPriority";
     // Error channels
     public static final String CHANNEL_FILTER_ERROR = "filterError";
     public static final String CHANNEL_ERRORS_CURRENT = "errorsCurrent";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class)
 public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(ShellyDiscoveryParticipant.class);
     private final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
@@ -186,7 +186,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 String thingLabel = deviceName.isEmpty() ? name + " - " + address
                         : deviceName + " (" + name + "@" + address + ")";
                 return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
-                        .withRepresentationProperty(name).build();
+                        .withRepresentationProperty(PROPERTY_DEV_NAME).build();
             }
         } catch (IOException | NullPointerException e) {
             // maybe some format description was buggy

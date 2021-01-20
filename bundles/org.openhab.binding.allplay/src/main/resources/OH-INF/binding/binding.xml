@@ -5,7 +5,6 @@
 
 	<name>AllPlay Binding</name>
 	<description>The AllPlay binding integrates devices compatible with Qualcomm AllPlay.</description>
-	<author>Dominic Lerbs</author>
 
 	<config-description>
 		<parameter name="rewindSkipTimeInSec" type="integer" unit="s">

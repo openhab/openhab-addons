@@ -14,12 +14,7 @@ https://github.com/openhab/openhab-addons
 
 == Third-party Content
 
-okhttp
-* License: Apache License 2.0
-* Project: https://square.github.io/okhttp/
-* Source:  https://github.com/square/okhttp
-
-okio
-* License: Apache 2.0 License
-* Project: https://square.github.io/okio/2.x/okio/jvm/okio
-* Source:  https://github.com/square/okio
+jsoup
+* License: MIT License
+* Project: https://jsoup.org/
+* Source:  https://github.com/jhy/jsoup

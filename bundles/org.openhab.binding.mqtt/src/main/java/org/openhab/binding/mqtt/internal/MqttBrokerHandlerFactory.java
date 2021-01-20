@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.mqtt.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -127,10 +133,10 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     }
 
     @Override
-    public void publish(String topic, byte[] payload) {
+    public void publish(String topic, byte[] payload, int qos, boolean retain) {
         handlers.forEach(handler -> {
             handler.getConnectionAsync().thenAccept(connection -> {
-                connection.publish(topic, payload);
+                connection.publish(topic, payload, qos, retain);
             });
         });
     }

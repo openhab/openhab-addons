@@ -5,6 +5,5 @@
 
 	<name>LuftdatenInfo Binding</name>
 	<description>Binding to integrate DIY Sensors from luftdaten.info Sensor Community</description>
-	<author>Bernd Weymann</author>
 
 </binding:binding>

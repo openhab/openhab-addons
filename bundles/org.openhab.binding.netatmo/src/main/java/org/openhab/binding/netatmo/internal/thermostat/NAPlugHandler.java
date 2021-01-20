@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.thermostat;
 
+import static org.openhab.binding.netatmo.internal.APIUtils.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
@@ -21,11 +22,11 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NAPlug;
 import io.swagger.client.model.NAYearMonth;
@@ -47,10 +48,10 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     @Override
     protected Optional<NAPlug> updateReadings() {
         Optional<NAPlug> result = getBridgeHandler().flatMap(handler -> handler.getThermostatsDataBody(getId()))
-                .map(dataBody -> dataBody.getDevices().stream()
+                .map(dataBody -> nonNullStream(dataBody.getDevices())
                         .filter(device -> device.getId().equalsIgnoreCase(getId())).findFirst().orElse(null));
         result.ifPresent(device -> {
-            device.getModules().forEach(child -> childs.put(child.getId(), child));
+            nonNullList(device.getModules()).forEach(child -> childs.put(child.getId(), child));
         });
         return result;
     }

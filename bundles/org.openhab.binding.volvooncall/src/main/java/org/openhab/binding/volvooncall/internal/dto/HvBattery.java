@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.volvooncall.internal.dto;
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.StringType;
 
 /**
  * The {@link HvBattery} is responsible for storing
@@ -26,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class HvBattery {
     public int hvBatteryLevel = UNDEFINED;
     public int distanceToHVBatteryEmpty = UNDEFINED;
-    public @NonNullByDefault({}) String hvBatteryChargeStatusDerived;
+    public @NonNullByDefault({}) StringType hvBatteryChargeStatusDerived;
     public int timeToHVBatteryFullyCharged = UNDEFINED;
     /*
      * Currently unused in the binding, maybe interesting in the future

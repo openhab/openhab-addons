@@ -8,6 +8,7 @@
 				"property": "on",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -15,12 +16,17 @@
 						"command": "set_*",
 						"parameterType": "ONOFFPARA"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "usb_on",
 				"friendlyName": "USB",
 				"channel": "usb",
+				"channelType": "usb",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -29,6 +35,20 @@
 						"command": "set_usb_*",
 						"parameterType": "ONOFFPARA"
 					}
+				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
 				]
 			}
 		]

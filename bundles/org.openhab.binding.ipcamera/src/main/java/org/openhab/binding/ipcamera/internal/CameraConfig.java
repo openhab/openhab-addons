@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,7 @@ public class CameraConfig {
     private String gifOutOptions = "";
     private String mp4OutOptions = "";
     private String mjpegOptions = "";
+    private String snapshotOptions = "";
     private String motionOptions = "";
     private boolean ptzContinuous;
     private int gifPreroll;
@@ -59,6 +60,10 @@ public class CameraConfig {
 
     public String getMjpegOptions() {
         return mjpegOptions;
+    }
+
+    public String getSnapshotOptions() {
+        return snapshotOptions;
     }
 
     public String getMotionOptions() {

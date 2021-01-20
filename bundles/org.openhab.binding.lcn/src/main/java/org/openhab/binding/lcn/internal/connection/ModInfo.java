@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,7 +82,7 @@ public class ModInfo {
      * Variables request status.
      * Lazy initialization: Will be filled once the firmware version is known.
      */
-    private final Map<Variable, @Nullable RequestStatus> requestStatusVars = new HashMap<>();
+    private final Map<Variable, RequestStatus> requestStatusVars = new HashMap<>();
 
     /**
      * Caches the values of the variables, needed for changing the values.
@@ -291,9 +291,9 @@ public class ModInfo {
                     }
                 }
                 // Variables
-                for (Map.Entry<Variable, @Nullable RequestStatus> kv : this.requestStatusVars.entrySet()) {
+                for (Map.Entry<Variable, RequestStatus> kv : this.requestStatusVars.entrySet()) {
                     RequestStatus requestStatus = kv.getValue();
-                    if (requestStatus != null && requestStatus.shouldSendNextRequest(timeoutMSec, currTime)) {
+                    if (requestStatus.shouldSendNextRequest(timeoutMSec, currTime)) {
                         // Detect if we can send immediately or if we have to wait for a "typeless" request first
                         boolean hasTypeInResponse = kv.getKey().hasTypeInResponse(this.firmwareVersion);
                         if (hasTypeInResponse || this.lastRequestedVarWithoutTypeInResponse == Variable.UNKNOWN) {
@@ -351,9 +351,7 @@ public class ModInfo {
         // increase poll interval, if the LCN module sends status updates of a variable event-based
         requestStatusVars.entrySet().stream().filter(e -> e.getKey().isEventBased(firmwareVersion)).forEach(e -> {
             RequestStatus value = e.getValue();
-            if (value != null) {
-                value.setMaxAgeMSec(MAX_STATUS_EVENTBASED_VALUEAGE_MSEC);
-            }
+            value.setMaxAgeMSec(MAX_STATUS_EVENTBASED_VALUEAGE_MSEC);
         });
     }
 

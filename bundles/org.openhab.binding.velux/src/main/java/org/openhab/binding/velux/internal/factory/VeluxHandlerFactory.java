@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,30 +12,27 @@
  */
 package org.openhab.binding.velux.internal.factory;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.BaseThingHandlerFactory;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.discovery.VeluxDiscoveryService;
 import org.openhab.binding.velux.internal.handler.VeluxBindingHandler;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.handler.VeluxHandler;
 import org.openhab.binding.velux.internal.utils.Localization;
+import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -56,7 +53,8 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
 
     // Class internal
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
+    private @Nullable ServiceRegistration<?> discoveryServiceRegistration = null;
+    private @Nullable VeluxDiscoveryService discoveryService = null;
 
     private Set<VeluxBindingHandler> veluxBindingHandlers = new HashSet<>();
     private Set<VeluxBridgeHandler> veluxBridgeHandlers = new HashSet<>();
@@ -69,20 +67,30 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
     // Private
 
     private void registerDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
-        VeluxDiscoveryService discoveryService = new VeluxDiscoveryService(bridgeHandler, localization);
-        ServiceRegistration<?> discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<>());
-        discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceReg);
+        logger.trace("registerDeviceDiscoveryService({}) called.", bridgeHandler);
+        VeluxDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService == null) {
+            discoveryService = this.discoveryService = new VeluxDiscoveryService(localization);
+        }
+        discoveryService.addBridge(bridgeHandler);
+        if (discoveryServiceRegistration == null) {
+            discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
+                    discoveryService, new Hashtable<>());
+        }
     }
 
-    // Even if the compiler tells, that the value of <remove> cannot be null, it is possible!
-    // Therefore a @SuppressWarnings("null") is needed to suppress the warning
-    @SuppressWarnings("null")
-    private synchronized void unregisterDeviceDiscoveryService(ThingUID thingUID) {
-        logger.trace("unregisterDeviceDiscoveryService({}) called.", thingUID);
-        ServiceRegistration<?> remove = discoveryServiceRegistrations.remove(thingUID);
-        if (remove != null) {
-            remove.unregister();
+    private synchronized void unregisterDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
+        logger.trace("unregisterDeviceDiscoveryService({}) called.", bridgeHandler);
+        VeluxDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.removeBridge(bridgeHandler);
+            if (discoveryService.isEmpty()) {
+                ServiceRegistration<?> discoveryServiceRegistration = this.discoveryServiceRegistration;
+                if (discoveryServiceRegistration != null) {
+                    discoveryServiceRegistration.unregister();
+                    this.discoveryServiceRegistration = null;
+                }
+            }
         }
     }
 
@@ -191,7 +199,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof VeluxBridgeHandler) {
             logger.trace("removeHandler() removing bridge '{}'.", thingHandler.toString());
             veluxBridgeHandlers.remove(thingHandler);
-            unregisterDeviceDiscoveryService(thingHandler.getThing().getUID());
+            unregisterDeviceDiscoveryService((VeluxBridgeHandler) thingHandler);
         } else
         // Handle removal of Things behind the Bridge
         if (thingHandler instanceof VeluxHandler) {

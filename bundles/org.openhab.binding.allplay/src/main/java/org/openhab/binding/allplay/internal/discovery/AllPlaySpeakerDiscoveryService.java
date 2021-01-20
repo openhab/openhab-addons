@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import de.kaizencode.tchaikovsky.speaker.Speaker;
  *
  * @author Dominic Lerbs - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.allplay")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.allplay")
 public class AllPlaySpeakerDiscoveryService extends AbstractDiscoveryService implements SpeakerAnnouncedListener {
 
     private final Logger logger = LoggerFactory.getLogger(AllPlaySpeakerDiscoveryService.class);

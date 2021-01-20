@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,7 +24,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.utils.Pair;
 import org.openhab.binding.insteon.internal.utils.Utils.DataTypeParser;
 import org.openhab.binding.insteon.internal.utils.Utils.ParsingException;
@@ -40,7 +40,6 @@ import org.xml.sax.SAXException;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class XMLMessageReader {
     /**
      * Reads the message definitions from an xml file
@@ -51,9 +50,9 @@ public class XMLMessageReader {
      * @throws ParsingException something wrong with the file format
      * @throws FieldException something wrong with the field definition
      */
-    public static HashMap<String, Msg> readMessageDefinitions(InputStream input)
+    public static Map<String, Msg> readMessageDefinitions(InputStream input)
             throws IOException, ParsingException, FieldException {
-        HashMap<String, Msg> messageMap = new HashMap<>();
+        Map<String, Msg> messageMap = new HashMap<>();
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -133,12 +132,9 @@ public class XMLMessageReader {
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                @Nullable
                 Pair<Field, Object> definition = readField((Element) node, offset);
-                if (definition != null) {
-                    offset += definition.getKey().getType().getSize();
-                    fields.put(definition.getKey(), definition.getValue());
-                }
+                offset += definition.getKey().getType().getSize();
+                fields.put(definition.getKey(), definition.getValue());
             }
         }
         if (headerLen != offset) {
@@ -165,8 +161,13 @@ public class XMLMessageReader {
         Msg msg = new Msg(headerLength, new byte[length], length, dir);
         for (Entry<Field, Object> e : values.entrySet()) {
             Field f = e.getKey();
-            f.set(msg.getData(), e.getValue());
-            if (f.getName() != null && !f.getName().equals("")) {
+            byte[] data = msg.getData();
+            if (data != null) {
+                f.set(data, e.getValue());
+            } else {
+                throw new FieldException("data is null");
+            }
+            if (!f.getName().equals("")) {
                 msg.addField(f);
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,7 +60,7 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
 
     @Override
     public MockBluetoothDevice getDevice(BluetoothAddress address) {
-        return devices.computeIfAbsent(address, addr -> new MockBluetoothDevice(this, addr));
+        return Objects.requireNonNull(devices.computeIfAbsent(address, addr -> new MockBluetoothDevice(this, addr)));
     }
 
     @Override

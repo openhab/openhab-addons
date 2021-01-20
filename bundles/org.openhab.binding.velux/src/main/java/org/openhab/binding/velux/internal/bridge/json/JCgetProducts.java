@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,6 @@ class JCgetProducts extends GetProducts implements JsonBridgeCommunicationProtoc
      * ]
      * </PRE>
      */
-    @NonNullByDefault
     private class BCproduct {
         private String name = VeluxBindingConstants.UNKNOWN;
         @SuppressWarnings("unused")
@@ -84,7 +83,6 @@ class JCgetProducts extends GetProducts implements JsonBridgeCommunicationProtoc
      * {"action":"get","params":{}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -126,7 +124,6 @@ class JCgetProducts extends GetProducts implements JsonBridgeCommunicationProtoc
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent.EventTypeEnum;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link NetatmoBinding} class defines common constants, which are used
@@ -286,8 +286,6 @@ public class NetatmoBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), Stream.of(APIBRIDGE_THING_TYPE))
             .collect(Collectors.toSet());
-
-    public static final Set<String> MEASURABLE_CHANNELS = Stream.of(new String[] {}).collect(Collectors.toSet());
 
     public static final Set<EventTypeEnum> HOME_EVENTS = Stream.of(EventTypeEnum.PERSON_AWAY)
             .collect(Collectors.toSet());

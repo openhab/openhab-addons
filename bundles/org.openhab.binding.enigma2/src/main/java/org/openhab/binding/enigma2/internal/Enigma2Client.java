@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
 
 /**
  * The {@link Enigma2Client} class is responsible for communicating with the Enigma2 device.
- * 
+ *
  * @see <a href=
  *      "https://github.com/E2OpenPlugins/e2openplugin-OpenWebif/wiki/OpenWebif-API-documentation">OpenWebif-API-documentation</a>
  *
@@ -65,7 +65,7 @@ public class Enigma2Client {
     static final int TYPE_INFO = 1;
     static final int TYPE_WARNING = 2;
     static final int TYPE_ERROR = 3;
-    private final Map<String, @Nullable String> channels = new ConcurrentHashMap<>();
+    private final Map<String, String> channels = new ConcurrentHashMap<>();
     private final String host;
     private boolean power;
     private String channel = "";
@@ -342,7 +342,7 @@ public class Enigma2Client {
 
     /**
      * Getter for Test-Injection
-     * 
+     *
      * @return HttpGet.
      */
     Enigma2HttpClient getEnigma2HttpClient() {

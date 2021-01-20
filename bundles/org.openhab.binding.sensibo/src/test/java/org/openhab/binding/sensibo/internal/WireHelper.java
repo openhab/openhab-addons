@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
 
 import com.google.gson.Gson;
@@ -51,7 +51,8 @@ public class WireHelper {
     }
 
     public <T> T deSerializeResponse(final String jsonClasspathName, final Type type) throws IOException {
-        final String json = IOUtils.toString(WireHelper.class.getResourceAsStream(jsonClasspathName));
+        final String json = new String(WireHelper.class.getResourceAsStream(jsonClasspathName).readAllBytes(),
+                StandardCharsets.UTF_8);
 
         final JsonParser parser = new JsonParser();
         final JsonObject o = parser.parse(json).getAsJsonObject();
@@ -61,7 +62,8 @@ public class WireHelper {
     }
 
     public <T> T deSerializeFromClasspathResource(final String jsonClasspathName, final Type type) throws IOException {
-        final String json = IOUtils.toString(WireHelper.class.getResourceAsStream(jsonClasspathName));
+        final String json = new String(WireHelper.class.getResourceAsStream(jsonClasspathName).readAllBytes(),
+                StandardCharsets.UTF_8);
         return deSerializeFromString(json, type);
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,12 +28,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class OpenUVBindingConstants {
-    public static final String BASE_URL = "https://api.openuv.io/api/v1/uv";
     public static final String BINDING_ID = "openuv";
     public static final String LOCAL = "local";
-
-    public static final String LOCATION = "location";
-    public static final String APIKEY = "apikey";
 
     // List of Bridge Type UIDs
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "openuvapi");
@@ -43,6 +39,7 @@ public class OpenUVBindingConstants {
 
     // List of all Channel id's
     public static final String UV_INDEX = "UVIndex";
+    public static final String ALERT_LEVEL = "Alert";
     public static final String UV_COLOR = "UVColor";
     public static final String UV_MAX = "UVMax";
     public static final String UV_MAX_TIME = "UVMaxTime";

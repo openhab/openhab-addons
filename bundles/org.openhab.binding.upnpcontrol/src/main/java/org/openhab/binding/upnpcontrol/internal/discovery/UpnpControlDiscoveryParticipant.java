@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.upnpcontrol.internal.discovery;
 
 import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +22,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.meta.RemoteService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -53,8 +55,17 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
             String label = device.getDetails().getFriendlyName().isEmpty() ? device.getDisplayString()
                     : device.getDetails().getFriendlyName();
             Map<String, Object> properties = new HashMap<>();
-            properties.put("ipAddress", device.getIdentity().getDescriptorURL().getHost());
+            URL descriptorURL = device.getIdentity().getDescriptorURL();
+            properties.put("ipAddress", descriptorURL.getHost());
             properties.put("udn", device.getIdentity().getUdn().getIdentifierString());
+            properties.put("deviceDescrURL", descriptorURL.toString());
+            URL baseURL = device.getDetails().getBaseURL();
+            if (baseURL != null) {
+                properties.put("baseURL", device.getDetails().getBaseURL().toString());
+            }
+            for (RemoteService service : device.getServices()) {
+                properties.put(service.getServiceType().getType() + "DescrURI", service.getDescriptorURI().toString());
+            }
             result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties)
                     .withRepresentationProperty("udn").build();
         }
@@ -68,9 +79,10 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
         String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
         String model = device.getDetails().getModelDetails().getModelName();
         String serialNumber = device.getDetails().getSerialNumber();
+        String udn = device.getIdentity().getUdn().getIdentifierString();
 
-        logger.debug("Device type {}, manufacturer {}, model {}, SN# {}", deviceType, manufacturer, model,
-                serialNumber);
+        logger.debug("Device type {}, manufacturer {}, model {}, SN# {}, UDN {}", deviceType, manufacturer, model,
+                serialNumber, udn);
 
         if (deviceType.equalsIgnoreCase("MediaRenderer")) {
             this.logger.debug("Media renderer found: {}, {}", manufacturer, model);

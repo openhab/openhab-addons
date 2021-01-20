@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -202,35 +202,25 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
         // Perform appropriate update based on X10Command received
         // Handle ON/OFF commands
         if (cmd == X10ReceivedData.X10COMMAND.ON) {
-            handleUpdate(channelUid, OnOffType.ON);
+            updateState(channelUid, OnOffType.ON);
             handler.setCurrentState(OnOffType.ON);
         } else if (cmd == X10ReceivedData.X10COMMAND.OFF) {
-            handleUpdate(channelUid, OnOffType.OFF);
+            updateState(channelUid, OnOffType.OFF);
             handler.setCurrentState(OnOffType.OFF);
             // Handle DIM/Bright commands
         } else if (cmd == X10ReceivedData.X10COMMAND.DIM) {
             State newState = handler.addDimsToCurrentState(dims);
-            handleUpdate(channelUid, newState);
+            updateState(channelUid, newState);
             handler.setCurrentState(newState);
             logger.debug("Current state set to: {}", handler.getCurrentState().toFullString());
         } else if (cmd == X10ReceivedData.X10COMMAND.BRIGHT) {
             State newState = handler.addBrightsToCurrentState(dims);
-            handleUpdate(channelUid, newState);
+            updateState(channelUid, newState);
             handler.setCurrentState(newState);
             logger.debug("Current state set to: {}", handler.getCurrentState().toFullString());
         } else {
             logger.warn("Received unknown command from cm11a: {}", cmd);
         }
-    }
-
-    /**
-     * The default implementation of this method doesn't do anything. We need it to update the ui as done by the
-     * updateState function.
-     * And, update state can not be called directly because it is protected
-     */
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        updateState(channelUID, newState);
     }
 
     /**

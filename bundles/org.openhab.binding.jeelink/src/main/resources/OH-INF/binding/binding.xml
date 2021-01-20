@@ -5,6 +5,5 @@
 
 	<name>@text/binding.jeelink.name</name>
 	<description>@text/binding.jeelink.description</description>
-	<author>Volker Bier</author>
 
 </binding:binding>

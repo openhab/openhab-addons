@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonPlaylists {
 
-    public @Nullable Map<String, @Nullable PlayList @Nullable []> playlists;
+    public @Nullable Map<String, PlayList @Nullable []> playlists;
 
     public static class PlayList {
         public @Nullable String playlistId;

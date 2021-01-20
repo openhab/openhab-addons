@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,16 +30,6 @@ public class VolvoOnCallBindingConstants {
 
     public static final String BINDING_ID = "volvooncall";
 
-    // Vehicle properties
-    public static final String VIN = "vin";
-
-    // The URL to use to connect to VocAPI with.
-    // TODO : for North America and China syntax changes to vocapi-cn.xxx
-    public static final String SERVICE_URL = "https://vocapi.wirelesscar.net/customerapi/rest/v3.0/";
-
-    // The JSON content type used when talking to VocAPI.
-    public static final String JSON_CONTENT_TYPE = "application/json";
-
     // List of Thing Type UIDs
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "vocapi");
     public static final ThingTypeUID VEHICLE_THING_TYPE = new ThingTypeUID(BINDING_ID, "vehicle");
@@ -49,6 +39,10 @@ public class VolvoOnCallBindingConstants {
     public static final String GROUP_WINDOWS = "windows";
     public static final String GROUP_TYRES = "tyrePressure";
     public static final String GROUP_BATTERY = "battery";
+    public static final String GROUP_OTHER = "other";
+    public static final String GROUP_POSITION = "position";
+    public static final String GROUP_ODOMETER = "odometer";
+    public static final String GROUP_TANK = "tank";
 
     // List of Channel id's
     public static final String TAILGATE = "tailgate";
@@ -90,6 +84,11 @@ public class VolvoOnCallBindingConstants {
     public static final String CHARGING_END = "chargingEnd";
     public static final String BULB_FAILURE = "bulbFailure";
 
+    // Car Events
+    public static final String CAR_EVENT = "carEvent";
+    public static final String EVENT_CAR_STOPPED = "CAR_STOPPED";
+    public static final String EVENT_CAR_MOVED = "CAR_MOVED";
+    public static final String EVENT_CAR_STARTED = "CAR_STARTED";
     // Last Trip Channel Id's
     public static final String LAST_TRIP_GROUP = "lasttrip";
     public static final String TRIP_CONSUMPTION = "tripConsumption";

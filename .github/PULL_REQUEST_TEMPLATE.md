@@ -36,11 +36,11 @@ Please keep the following in mind:
 - Did you describe any noteworthy changes in usage for the end user?
 - Was the documentation updated accordingly, e.g. the add-on README?
 - Does your contribution follow the coding guidelines:
-  https://www.openhab.org/docs/developer/development/guidelines.html
+  https://www.openhab.org/docs/developer/guidelines.html
 - Did you check for any (relevant) issues from the static code analysis:
-  https://www.openhab.org/docs/developer/development/bindings.html#static-code-analysis
+  https://www.openhab.org/docs/developer/bindings/#include-the-binding-in-the-build
 - Did you sign-off your work:
-  https://www.openhab.org/docs/developer/contributing/contributing.html#sign-your-work
+  https://www.openhab.org/docs/developer/contributing.html#sign-your-work
 -->
 
 <!-- TESTING -->

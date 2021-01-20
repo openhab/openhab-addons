@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,44 +106,49 @@ public class CosemObjectFactory {
 
         logger.trace("Received obisIdString {}, obisId: {}, values: {}", obisIdString, obisId, cosemStringValues);
 
-        CosemObject cosemObject = null;
-
-        if (obisLookupTableFixed.containsKey(reducedObisId)) {
-            cosemObject = getCosemObjectInternal(obisLookupTableFixed.get(reducedObisId), obisId, cosemStringValues);
+        CosemObjectType objectType = obisLookupTableFixed.get(reducedObisId);
+        if (objectType != null) {
             logger.trace("Found obisId {} in the fixed lookup table", reducedObisId);
-        } else if (obisLookupTableMultipleFixed.containsKey(reducedObisId)) {
-            for (CosemObjectType cosemObjectType : obisLookupTableMultipleFixed.get(reducedObisId)) {
-                cosemObject = getCosemObjectInternal(cosemObjectType, obisId, cosemStringValues);
+            return getCosemObjectInternal(objectType, obisId, cosemStringValues);
+        }
+
+        List<CosemObjectType> objectTypeList = obisLookupTableMultipleFixed.get(reducedObisId);
+        if (objectTypeList != null) {
+            for (CosemObjectType cosemObjectType : objectTypeList) {
+                CosemObject cosemObject = getCosemObjectInternal(cosemObjectType, obisId, cosemStringValues);
                 if (cosemObject != null) {
                     logger.trace("Found obisId {} in the fixed lookup table", reducedObisId);
-                    break;
+                    return cosemObject;
                 }
             }
-        } else if (obisLookupTableDynamic.containsKey(reducedObisId)) {
+        }
+
+        objectType = obisLookupTableDynamic.get(reducedObisId);
+        if (objectType != null) {
             logger.trace("Found obisId {} in the dynamic lookup table", reducedObisId);
-            cosemObject = getCosemObjectInternal(obisLookupTableDynamic.get(reducedObisId), obisId, cosemStringValues);
-        } else if (obisLookupTableFixed.containsKey(reducedObisIdGroupE)) {
-            cosemObject = getCosemObjectInternal(obisLookupTableFixed.get(reducedObisIdGroupE), obisId,
-                    cosemStringValues);
-        } else {
-            for (CosemObjectType obisMsgType : obisWildcardCosemTypeList) {
-                if (obisMsgType.obisId.equalsWildCard(reducedObisId)) {
-                    cosemObject = getCosemObjectInternal(obisMsgType, obisId, cosemStringValues);
-                    if (cosemObject != null) {
-                        logger.trace("Searched reducedObisId {} in the wild card type list, result: {}", reducedObisId,
-                                cosemObject);
-                        obisLookupTableDynamic.put(reducedObisId, obisMsgType);
-                        break;
-                    }
+            return getCosemObjectInternal(objectType, obisId, cosemStringValues);
+        }
+
+        objectType = obisLookupTableFixed.get(reducedObisIdGroupE);
+        if (objectType != null) {
+            return getCosemObjectInternal(objectType, obisId, cosemStringValues);
+        }
+
+        for (CosemObjectType obisMsgType : obisWildcardCosemTypeList) {
+            if (obisMsgType.obisId.equalsWildCard(reducedObisId)) {
+                CosemObject cosemObject = getCosemObjectInternal(obisMsgType, obisId, cosemStringValues);
+                if (cosemObject != null) {
+                    logger.trace("Searched reducedObisId {} in the wild card type list, result: {}", reducedObisId,
+                            cosemObject);
+                    obisLookupTableDynamic.put(reducedObisId, obisMsgType);
+                    return cosemObject;
                 }
             }
         }
 
-        if (cosemObject == null) {
-            logger.debug("Received unknown Cosem Object(OBIS id: {})", obisId);
-        }
+        logger.debug("Received unknown Cosem Object(OBIS id: {})", obisId);
 
-        return cosemObject;
+        return null;
     }
 
     /**

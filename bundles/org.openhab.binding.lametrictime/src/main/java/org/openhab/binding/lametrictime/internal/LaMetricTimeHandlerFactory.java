@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,16 +14,16 @@ package org.openhab.binding.lametrictime.internal;
 
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.discovery.LaMetricTimeAppDiscoveryService;
 import org.openhab.binding.lametrictime.internal.handler.ClockAppHandler;
 import org.openhab.binding.lametrictime.internal.handler.CountdownAppHandler;
@@ -40,9 +40,9 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,33 +53,31 @@ import org.slf4j.LoggerFactory;
  * @author Gregory Moyer - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.lametrictime")
+@NonNullByDefault
 public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_DEVICE, THING_TYPE_CLOCK_APP, THING_TYPE_COUNTDOWN_APP, THING_TYPE_RADIO_APP,
-                    THING_TYPE_STOPWATCH_APP, THING_TYPE_WEATHER_APP).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_DEVICE, THING_TYPE_CLOCK_APP,
+            THING_TYPE_COUNTDOWN_APP, THING_TYPE_RADIO_APP, THING_TYPE_STOPWATCH_APP, THING_TYPE_WEATHER_APP);
 
-    // TODO: Those constants are Jersey specific - once we move away from Jersey,
-    // this can be removed and the client builder creation simplified.
-    public static final String READ_TIMEOUT_JERSEY = "jersey.config.client.readTimeout";
-    public static final String CONNECT_TIMEOUT_JERSEY = "jersey.config.client.connectTimeout";
-
-    public static final String READ_TIMEOUT = "http.receive.timeout";
-    public static final String CONNECT_TIMEOUT = "http.connection.timeout";
-
-    private static final int EVENT_STREAM_CONNECT_TIMEOUT = 10000;
-    private static final int EVENT_STREAM_READ_TIMEOUT = 10000;
+    private static final int EVENT_STREAM_CONNECT_TIMEOUT = 10;
+    private static final int EVENT_STREAM_READ_TIMEOUT = 10;
 
     private final Logger logger = LoggerFactory.getLogger(LaMetricTimeHandlerFactory.class);
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    private ClientBuilder injectedClientBuilder;
+    private final ClientBuilder clientBuilder;
 
-    private ClientBuilder clientBuilder;
+    private final StateDescriptionOptionsProvider stateDescriptionProvider;
 
-    private StateDescriptionOptionsProvider stateDescriptionProvider;
+    @Activate
+    public LaMetricTimeHandlerFactory(@Reference ClientBuilder clientBuilder,
+            @Reference StateDescriptionOptionsProvider stateDescriptionProvider) {
+        this.clientBuilder = clientBuilder //
+                .connectTimeout(EVENT_STREAM_CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(EVENT_STREAM_READ_TIMEOUT, TimeUnit.SECONDS);
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -87,14 +85,14 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             logger.debug("Creating handler for LaMetric Time device {}", thing);
 
             LaMetricTimeHandler deviceHandler = new LaMetricTimeHandler((Bridge) thing, stateDescriptionProvider,
-                    getClientBuilder());
+                    clientBuilder);
             registerAppDiscoveryService(deviceHandler);
 
             return deviceHandler;
@@ -151,34 +149,5 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Unregistering app discovery service");
             serviceReg.unregister();
         }
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(StateDescriptionOptionsProvider provider) {
-        this.stateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(StateDescriptionOptionsProvider provider) {
-        this.stateDescriptionProvider = null;
-    }
-
-    private synchronized ClientBuilder getClientBuilder() {
-        if (clientBuilder == null) {
-            try {
-                clientBuilder = ClientBuilder.newBuilder();
-                clientBuilder.property(CONNECT_TIMEOUT_JERSEY, EVENT_STREAM_CONNECT_TIMEOUT);
-                clientBuilder.property(READ_TIMEOUT_JERSEY, EVENT_STREAM_READ_TIMEOUT);
-            } catch (Exception e) {
-                // we seem to have no Jersey, so let's hope for an injected builder by CXF
-                if (this.injectedClientBuilder != null) {
-                    clientBuilder = injectedClientBuilder;
-                    clientBuilder.property(CONNECT_TIMEOUT, EVENT_STREAM_CONNECT_TIMEOUT);
-                    clientBuilder.property(READ_TIMEOUT, EVENT_STREAM_READ_TIMEOUT);
-                } else {
-                    throw new IllegalStateException("No JAX RS Client Builder available.");
-                }
-            }
-        }
-        return clientBuilder;
     }
 }

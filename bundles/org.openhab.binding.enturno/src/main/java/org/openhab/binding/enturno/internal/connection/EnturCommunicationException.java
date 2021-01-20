@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.enturno.internal.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link EnturCommunicationException} is a communication exception for the connections to Entur API.
@@ -24,11 +25,11 @@ public class EnturCommunicationException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public EnturCommunicationException(String message) {
+    public EnturCommunicationException(@Nullable String message) {
         super(message);
     }
 
-    public EnturCommunicationException(String message, Throwable cause) {
+    public EnturCommunicationException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 }

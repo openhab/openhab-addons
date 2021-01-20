@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
@@ -122,14 +121,6 @@ public class PHCHandler extends BaseThingHandler {
             logger.debug("send command: {}, {}", channelUID, command);
         } else {
             logger.info("The Thing {} is offline.", getThing().getUID());
-        }
-    }
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        if (CHANNELS_JRM_TIME.equals(channelUID.getGroupId())) {
-            times[Integer
-                    .parseInt(channelUID.getIdWithoutGroup())] = (short) (((DecimalType) newState).floatValue() * 10);
         }
     }
 

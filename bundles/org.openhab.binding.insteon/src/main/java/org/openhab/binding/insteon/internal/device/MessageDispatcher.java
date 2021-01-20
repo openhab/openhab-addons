@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,13 +31,12 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public abstract class MessageDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(MessageDispatcher.class);
 
     DeviceFeature feature;
     @Nullable
-    Map<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -48,7 +47,7 @@ public abstract class MessageDispatcher {
         feature = f;
     }
 
-    public void setParameters(@Nullable Map<String, @Nullable String> map) {
+    public void setParameters(@Nullable Map<String, String> map) {
         parameters = map;
     }
 
@@ -128,7 +127,6 @@ public abstract class MessageDispatcher {
     //
     //
 
-    @NonNullByDefault
     public static class DefaultDispatcher extends MessageDispatcher {
         DefaultDispatcher(DeviceFeature f) {
             super(f);
@@ -194,7 +192,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class DefaultGroupDispatcher extends MessageDispatcher {
         DefaultGroupDispatcher(DeviceFeature f) {
             super(f);
@@ -263,7 +260,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class PollGroupDispatcher extends MessageDispatcher {
         PollGroupDispatcher(DeviceFeature f) {
             super(f);
@@ -290,7 +286,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class SimpleDispatcher extends MessageDispatcher {
         SimpleDispatcher(DeviceFeature f) {
             super(f);
@@ -328,7 +323,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class X10Dispatcher extends MessageDispatcher {
         X10Dispatcher(DeviceFeature f) {
             super(f);
@@ -355,7 +349,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class PassThroughDispatcher extends MessageDispatcher {
         PassThroughDispatcher(DeviceFeature f) {
             super(f);
@@ -376,7 +369,6 @@ public abstract class MessageDispatcher {
     /**
      * Drop all incoming messages silently
      */
-    @NonNullByDefault
     public static class NoOpDispatcher extends MessageDispatcher {
         NoOpDispatcher(DeviceFeature f) {
             super(f);
@@ -397,13 +389,14 @@ public abstract class MessageDispatcher {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends MessageDispatcher> T makeHandler(String name,
-            @Nullable Map<String, @Nullable String> params, DeviceFeature f) {
+    public static <T extends MessageDispatcher> T makeHandler(String name, @Nullable Map<String, String> params,
+            DeviceFeature f) {
         String cname = MessageDispatcher.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
+            @Nullable
             T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
             ch.setParameters(params);
             return ch;

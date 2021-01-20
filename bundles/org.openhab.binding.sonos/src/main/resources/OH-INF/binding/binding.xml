@@ -5,7 +5,6 @@
 
 	<name>Sonos Binding</name>
 	<description>This is the binding for the Sonos multi-room audio system.</description>
-	<author>Karel Goderis</author>
 
 	<config-description>
 		<parameter name="opmlUrl" type="text">

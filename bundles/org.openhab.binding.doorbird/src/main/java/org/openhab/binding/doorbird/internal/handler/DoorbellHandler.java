@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import javax.imageio.ImageIO;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.doorbird.action.DoorbirdActions;
+import org.openhab.binding.doorbird.internal.action.DoorbirdActions;
 import org.openhab.binding.doorbird.internal.api.DoorbirdAPI;
 import org.openhab.binding.doorbird.internal.api.DoorbirdImage;
 import org.openhab.binding.doorbird.internal.api.SipStatus;

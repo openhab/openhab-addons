@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,19 +12,19 @@
  */
 package org.openhab.binding.velux.internal.bridge.json;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.binding.velux.internal.bridge.VeluxBridge;
-import org.openhab.binding.velux.internal.bridge.VeluxBridgeInstance;
 import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +84,7 @@ public class JsonVeluxBridge extends VeluxBridge {
      *
      * @param bridgeInstance refers to the binding-wide instance for dealing for common informations.
      */
-    public JsonVeluxBridge(VeluxBridgeInstance bridgeInstance) {
+    public JsonVeluxBridge(VeluxBridgeHandler bridgeInstance) {
         super(bridgeInstance);
         logger.trace("JsonVeluxBridge(constructor) called.");
         bridgeAPI = new JsonBridgeAPI(bridgeInstance);
@@ -185,6 +185,9 @@ public class JsonVeluxBridge extends VeluxBridge {
             } else {
                 response = ioUnauthenticated(sapURL, getRequest, classOfResponse);
             }
+            if (response == null) {
+                throw new IOException("Failed to create 'response' object");
+            }
             communication.setResponse(response);
             logger.trace("bridgeCommunicate(): communication result is {}, returning details.",
                     communication.isCommunicationSuccessful());
@@ -233,7 +236,7 @@ public class JsonVeluxBridge extends VeluxBridge {
                 if (authentication.length() > 0) {
                     headerItems.setProperty("Authorization", String.format("Bearer %s", authentication));
                 }
-                InputStream content = IOUtils.toInputStream(jsonRequest, StandardCharsets.UTF_8.name());
+                InputStream content = new ByteArrayInputStream(jsonRequest.getBytes(StandardCharsets.UTF_8));
 
                 String jsonResponse = HttpUtil.executeUrl("PUT", url, headerItems, content, "application/json",
                         this.bridgeInstance.veluxBridgeConfiguration().timeoutMsecs);
@@ -253,7 +256,6 @@ public class JsonVeluxBridge extends VeluxBridge {
                 T response = gson.fromJson(jsonResponse, classOfResponse);
                 lastCommunicationInMSecs = lastSuccessfulCommunicationInMSecs = System.currentTimeMillis();
                 return response;
-
             } catch (IOException ioe) {
                 logger.trace("io(): Exception occurred during I/O: {}.", ioe.getMessage());
                 // Error Retries with Exponential Backoff
@@ -269,7 +271,6 @@ public class JsonVeluxBridge extends VeluxBridge {
                 logger.info("io(): Exception occurred on deserialization: {}, aborting.", jse.getMessage());
                 throw jse;
             }
-
         } while (retryCount++ < this.bridgeInstance.veluxBridgeConfiguration().retries);
         throw new IOException(String.format("io(): socket I/O failed (%d times).",
                 this.bridgeInstance.veluxBridgeConfiguration().retries));

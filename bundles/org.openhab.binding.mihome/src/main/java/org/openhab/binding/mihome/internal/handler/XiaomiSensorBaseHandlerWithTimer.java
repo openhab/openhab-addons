@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,16 +83,6 @@ public abstract class XiaomiSensorBaseHandlerWithTimer extends XiaomiSensorBaseH
         } catch (NumberFormatException e) {
             logger.debug("Cannot parse the value {} to an Integer", value);
             timerSetpoint = defaultTimer;
-        }
-    }
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        if (setpointChannel.equals(channelUID.getId())) {
-            if (newState instanceof DecimalType) {
-                logger.debug("Received update for timer setpoint channel: {}", newState);
-                timerSetpoint = ((DecimalType) newState).intValue();
-            }
         }
     }
 }

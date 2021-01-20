@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -36,20 +39,23 @@ import org.openhab.core.types.Command;
  * Tests for presentable calendar.
  *
  * @author Michael Wodniok - Initial contribution.
- *
  * @author Andrew Fiddian-Green - Tests for Command Tag code
+ * @author Michael Wodniok - Extended Tests for filtered Events
  *
  */
 public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar;
     private AbstractPresentableCalendar calendar2;
     private AbstractPresentableCalendar calendar3;
+    private AbstractPresentableCalendar calendar_issue9647;
 
     @BeforeEach
     public void setUp() throws IOException, CalendarException {
         calendar = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test.ics"));
         calendar2 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test2.ics"));
         calendar3 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test3.ics"));
+        calendar_issue9647 = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issue9647.ics"));
     }
 
     /**
@@ -151,6 +157,7 @@ public class BiweeklyPresentableCalendarTest {
      * This test checks for Events that have just begun or ended, and if so it checks for Command Tags
      * and checks if these tags are valid
      */
+    @SuppressWarnings("null")
     @Test
     public void testCommandTagCode() {
         List<Event> events = null;
@@ -284,7 +291,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:12.3:abc
         Command cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:12.3°C:abc
         Command cmd4 = cmdTags.get(4).getCommand();
@@ -347,7 +354,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:-12.3:abc
         cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:-12.3°C:abc
         cmd4 = cmdTags.get(4).getCommand();
@@ -410,7 +417,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Number:-0:abc
         cmd3 = cmdTags.get(3).getCommand();
         assertNotNull(cmd3);
-        assertEquals(QuantityType.class, cmd3.getClass());
+        assertEquals(DecimalType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:0K:abc
         cmd4 = cmdTags.get(4).getCommand();
@@ -535,11 +542,69 @@ public class BiweeklyPresentableCalendarTest {
         // </p><p>BEGIN:Calendar_Test_Number:12.3:abc</p>
         cmd6 = cmdTags.get(6).getCommand();
         assertNotNull(cmd6);
-        assertEquals(QuantityType.class, cmd6.getClass());
+        assertEquals(DecimalType.class, cmd6.getClass());
 
         // <p>END:Calendar_Test_Number:23.4:abc</p>
         cmd7 = cmdTags.get(7).getCommand();
         assertNotNull(cmd7);
-        assertEquals(QuantityType.class, cmd7.getClass());
+        assertEquals(DecimalType.class, cmd7.getClass());
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testGetFilteredEventsBetween() {
+        Event[] expectedFilteredEvents1 = new Event[] {
+                new Event("Test Series in UTC", Instant.parse("2019-09-12T09:05:00Z"),
+                        Instant.parse("2019-09-12T09:10:00Z"), ""),
+                new Event("Test Event in UTC+2", Instant.parse("2019-09-14T08:00:00Z"),
+                        Instant.parse("2019-09-14T09:00:00Z"), "") };
+        List<Event> realFilteredEvents1 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
+                Instant.parse("2019-09-15T06:00:00Z"), null, 3);
+        assertArrayEquals(expectedFilteredEvents1, realFilteredEvents1.toArray(new Event[0]));
+
+        Event[] expectedFilteredEvents2 = new Event[] {
+                new Event("Evt", Instant.parse("2019-11-10T10:00:00Z"), Instant.parse("2019-11-10T11:45:00Z"), ""),
+                new Event("Evt", Instant.parse("2019-11-17T10:00:00Z"), Instant.parse("2019-11-17T11:45:00Z"), ""),
+                new Event("Evt", Instant.parse("2019-12-01T10:00:00Z"), Instant.parse("2019-12-01T11:45:00Z"), "") };
+        List<Event> realFilteredEvents2 = calendar2.getFilteredEventsBetween(Instant.parse("2019-11-08T06:00:00Z"),
+                Instant.parse("2019-12-31T06:00:00Z"), null, 3);
+        assertArrayEquals(expectedFilteredEvents2, realFilteredEvents2.toArray(new Event[] {}));
+
+        Event[] expectedFilteredEvents3 = new Event[] { new Event("Test Event in UTC+2",
+                Instant.parse("2019-09-14T08:00:00Z"), Instant.parse("2019-09-14T09:00:00Z"), "") };
+        List<Event> realFilteredEvents3 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
+                Instant.parse("2019-09-15T06:00:00Z"),
+                new EventTextFilter(EventTextFilter.Field.SUMMARY, "utc+2", EventTextFilter.Type.TEXT), 3);
+        assertArrayEquals(expectedFilteredEvents3, realFilteredEvents3.toArray(new Event[] {}));
+
+        Event[] expectedFilteredEvents4 = new Event[] { new Event("Test Series in UTC",
+                Instant.parse("2019-09-12T09:05:00Z"), Instant.parse("2019-09-12T09:10:00Z"), "") };
+        List<Event> realFilteredEvents4 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
+                Instant.parse("2019-09-15T06:00:00Z"),
+                new EventTextFilter(EventTextFilter.Field.SUMMARY, ".*UTC$", EventTextFilter.Type.REGEX), 3);
+        assertArrayEquals(expectedFilteredEvents4, realFilteredEvents4.toArray(new Event[] {}));
+
+        List<Event> realFilteredEvents5 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-15T06:00:00Z"),
+                Instant.parse("2019-09-12T06:00:00Z"), null, 3);
+        assertEquals(0, realFilteredEvents5.size());
+
+        List<Event> realFilteredEvents6 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-15T06:00:00Z"),
+                Instant.parse("2019-12-31T00:00:00Z"), null, 3);
+        assertEquals(0, realFilteredEvents6.size());
+
+        List<Event> realFilteredEvents7 = calendar_issue9647.getFilteredEventsBetween(
+                LocalDate.parse("2021-01-01").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.parse("2021-01-02").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
+        assertEquals(0, realFilteredEvents7.size());
+
+        Event[] expectedFilteredEvents8 = new Event[] {
+                new Event("Restabfall", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), ""),
+                new Event("Gelbe Tonne", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "") };
+        List<Event> realFilteredEvents8 = calendar_issue9647.getFilteredEventsBetween(
+                LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
+        assertArrayEquals(expectedFilteredEvents8, realFilteredEvents8.toArray(new Event[] {}));
     }
 }

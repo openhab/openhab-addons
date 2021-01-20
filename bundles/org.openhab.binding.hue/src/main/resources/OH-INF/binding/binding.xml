@@ -6,6 +6,5 @@
 	<name>hue Binding</name>
 	<description>The hue Binding integrates the Philips hue system. It
 		allows to control hue bulbs.</description>
-	<author>Deutsche Telekom AG</author>
 
 </binding:binding>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,16 +38,16 @@ import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
 
 /**
  * An {@link AbstractComponent}s derived class consists of one or multiple channels.
- * Each component channel consists of the determined ESH channel type, channel type UID and the
- * ESH channel description itself as well as the the channels state.
+ * Each component channel consists of the determined channel type, channel type UID and the
+ * channel description itself as well as the the channels state.
  *
  * After the discovery process has completed and the tree of components and component channels
  * have been built up, the channel types are registered to a custom channel type provider
- * before adding the channel descriptions to the ESH Thing themselves.
+ * before adding the channel descriptions to the Thing themselves.
  * <br>
  * <br>
  * An object of this class creates the required {@link ChannelType} and {@link ChannelTypeUID} as well
@@ -60,8 +60,8 @@ public class CChannel {
     private static final String JINJA = "JINJA";
 
     private final ChannelUID channelUID;
-    private final ChannelState channelState; // Channel state (value)
-    private final Channel channel; // ESH Channel
+    private final ChannelState channelState;
+    private final Channel channel;
     private final ChannelType type;
     private final ChannelTypeUID channelTypeUID;
     private final ChannelStateUpdateListener channelStateUpdateListener;
@@ -191,8 +191,8 @@ public class CChannel {
 
         public CChannel build(boolean addToComponent) {
             ChannelUID channelUID;
-            ChannelState channelState; // Channel state (value)
-            Channel channel; // ESH Channel
+            ChannelState channelState;
+            Channel channel;
             ChannelType type;
             ChannelTypeUID channelTypeUID;
 
@@ -208,11 +208,10 @@ public class CChannel {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();
             } else {
-                StateDescription description = valueState.createStateDescription(command_topic == null).build()
-                        .toStateDescription();
+                StateDescriptionFragment description = valueState.createStateDescription(command_topic == null).build();
                 type = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .withStateDescription(description).build();
+                        .withStateDescriptionFragment(description).build();
             }
 
             Configuration configuration = new Configuration();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,8 +27,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 
 /**
- * The {@link LightStateConverter} is responsible for mapping Eclipse SmartHome
- * types to jue types and vice versa.
+ * The {@link LightStateConverter} is responsible for mapping to/from jue types.
  *
  * @author Dennis Nobel - Initial contribution
  * @author Oliver Libutzki - Adjustments

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,10 +27,10 @@ public class HPServerResult<result> {
     private final @Nullable result data;
     private final String errorMessage;
 
-    public HPServerResult(RequestStatus status, String errorMessage) {
+    public HPServerResult(RequestStatus status, @Nullable String errorMessage) {
         this.status = status;
         this.data = null;
-        this.errorMessage = errorMessage;
+        this.errorMessage = errorMessage != null ? errorMessage : "";
     }
 
     public HPServerResult(result data) {

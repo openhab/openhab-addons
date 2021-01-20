@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,15 @@
 package org.openhab.binding.velux.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.VeluxBindingProperties;
+import org.openhab.binding.velux.internal.VeluxItemType;
+import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
+import org.openhab.binding.velux.internal.handler.utils.StateUtils;
+import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
+import org.openhab.binding.velux.internal.utils.Localization;
+import org.openhab.binding.velux.internal.utils.ManifestInformation;
+import org.openhab.core.common.AbstractUID;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -22,13 +31,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.binding.velux.internal.VeluxBindingProperties;
-import org.openhab.binding.velux.internal.VeluxItemType;
-import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
-import org.openhab.binding.velux.internal.handler.utils.StateUtils;
-import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
-import org.openhab.binding.velux.internal.utils.Localization;
-import org.openhab.binding.velux.internal.utils.ManifestInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,9 +84,13 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
      * @param channelUID for type {@link ChannelUID}.
      * @return thingTypeUID of type {@link ThingTypeUID}.
      */
-    @SuppressWarnings("deprecation")
     private ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
-        return channelUID.getThingUID().getThingTypeUID();
+        String[] segments = channelUID.getAsString().split(AbstractUID.SEPARATOR);
+        if (segments.length > 1) {
+            return new ThingTypeUID(segments[0], segments[1]);
+        }
+        logger.warn("thingTypeUIDOf({}) failed.", channelUID);
+        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, VeluxBindingConstants.UNKNOWN_THING_TYPE_ID);
     }
 
     /**

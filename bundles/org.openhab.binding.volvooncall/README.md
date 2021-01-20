@@ -20,10 +20,10 @@ The binding has no configuration options itself, all configuration is done at 'T
 The 'VolvoOnCall API' bridge uses the owner's email address and password in order to access the VOC Remote API.
 This is the same email address and password as used in the VolvoOnCall smartphone app, that allows to remotely control your car(s).
 
-| Parameter | Description                                                              | Required |
-|-----------|------------------------------------------------------------------------- |--------- |
-| username  | Username from the VolvoOnCall app (email address)                        | yes      |
-| password  | Password from the VolvoOnCall app                                        | yes      |
+| Parameter       | Description                                          | Required |
+|-----------------|------------------------------------------------------|--------- |
+| username        | Username from the VolvoOnCall app (email address)    | yes      |
+| password        | Password from the VolvoOnCall app                    | yes      |
 
 Once the bridge created, you will be able to launch discovery of the vehicles attached to it.
 
@@ -31,13 +31,10 @@ Once the bridge created, you will be able to launch discovery of the vehicles at
 
 The 'VolvoOnCall API' bridge uses the owner's email address and password in order to access the VOC Remote API.
 
-
 | Parameter       | Name             | Description                                             | Required |
 |-----------------|------------------|---------------------------------------------------------|----------|
 | vin             | Vin              | Vehicle Identification Number of the car                | yes      |
-| refreshinterval | Refresh interval | Interval in minutes to refresh the data (default=10)    | no       |
-
-
+| refreshinterval | Refresj Interval | Interval in minutes to refresh the data (default=10)    | yes      |
 
 ## Channels
 
@@ -46,7 +43,6 @@ This means you can easily change the desired unit e.g. miles/h instead of km/h j
 
 #####Thing properties
 Some of the channels are only available for specific cars and models.
-Availability of specific action can be found in PaperUI -> Configuration -> Things -> <your car thing> -> SHOW PROPERTIES
 
 Following channels are currently available:
 
@@ -72,16 +68,16 @@ Following channels are currently available:
 | tank#distanceToEmpty                          | Number:Length        | Distance till tank is empty                      |                                                  |
 | position#location                             | Location             | Location of the car                              |                                                  |
 | position#locationTimestamp                    | DateTime             | Timestamp of the latest confirmed location       |                                                  |
-| tyrePressure#frontLeftTyre                    | String               | Tyrepressure front left tyre                     | Normal / LowSoft                                 |
-| tyrePressure#frontRightTyr                    | String               | Tyrepressure front right tyre                    | Normal / LowSoft                                 |
-| tyrePressure#rearLeftTyre                     | String               | Tyrepressure rear left tyre                      | Normal / LowSoft                                 |
-| tyrePressure#rearRightTyre                    | String               | Tyrepressure rear right tyre                     | Normal / LowSoft                                 |
+| tyrePressure#frontLeftTyre                    | Number               | Tyrepressure front left tyre                     | Normal / LowSoft                                 |
+| tyrePressure#frontRightTyre                   | Number               | Tyrepressure front right tyre                    | Normal / LowSoft                                 |
+| tyrePressure#rearLeftTyre                     | Number               | Tyrepressure rear left tyre                      | Normal / LowSoft                                 |
+| tyrePressure#rearRightTyre                    | Number               | Tyrepressure rear right tyre                     | Normal / LowSoft                                 |
 | other#averageSpeed                            | Number:Speed         | Average speed                                    |                                                  |
 | other#engineRunning                           | Switch               | Is the car engine running                        |                                                  |
 | other#remoteHeater                            | Switch               | Start the car remote heater                      | Only if property 'remoteHeater' is true (see thing properties above)                                                 |
 | other#preclimatization                        | Switch               | Start the car preclimatization                   | Only if property 'preclimatization' is true (see thing properties above)                                                 |
-| other#brakeFluidLevel                         | String               | Brake fluid level                                | Normal / Low / VeryLow                                                 |
-| other#washerFluidLevel                        | String               | Washer fluid level                               | Normal / Low / VeryLow                                                 |
+| other#brakeFluidLevel                         | Number               | Brake fluid level                                | Normal / Low / VeryLow                                                 |
+| other#washerFluidLevel                        | Number               | Washer fluid level                               | Normal / Low / VeryLow                                                 |
 | other#serviceWarning                          | String               | Warning if service is needed                     |                                                 |
 | other#bulbFailure                             | Switch               | ON if at least one bulb is reported as failed    |                                                 |
 | battery#batteryLevel                          | Number:Dimensionless | Battery level                                    | Only for Plugin hybrid / Twin Engine models     |
@@ -99,6 +95,14 @@ Following channels are currently available:
 | lasttrip#startPosition                        | Location             | Last trip start location                         |                                                 |
 | lasttrip#endPosition                          | Location             | Last trip end location                           |                                                 |
 
+## Events
+
+| Channel Type ID    | Options     | Description                                                    |
+|--------------------|-------------|----------------------------------------------------------------|
+| other#carEvent     |             |                                                                |
+|                    | CAR_STOPPED | Triggered when the car has finished a trip                     |
+|                    | CAR_MOVED   | Triggered if the car mileage has changed between two polls     |
+|                    | CAR_STARTED | Triggered when the engine of the car went on between two polls |
 
 ## Full Example
 
@@ -134,7 +138,7 @@ Switch Voc_DoorsCarLocked           "Verouillée"                            (gV
 Number:Length Voc_Odometer          "Kilométrage [%d %unit%]"               (gVoc)     {channel="volvooncall:vehicle:glh:XC60:odometer#odometer"}
 Number:Dimensionless Voc_FuelLevel  "Fuel Level"                <sewerage>  (gVoc)     {channel="volvooncall:vehicle:glh:XC60:tank#fuelLevel"}
 Switch Voc_Fuel_Alert               "Niveau Carburant"          <siren>     (gVoc)   {channel="volvooncall:vehicle:glh:XC60:tank#fuelAlert"}
-String Voc_Fluid_Message            "Lave Glace"                    (gVoc)                  {channel="volvooncall:vehicle:glh:XC60:other#washerFluidLevel"}
+Number Voc_Fluid_Message            "Lave Glace"                    (gVoc)                  {channel="volvooncall:vehicle:glh:XC60:other#washerFluidLevel"}
 Location Voc_Location               "Location"                      (gVoc)                  {channel="volvooncall:vehicle:glh:XC60:position#location"}
 DateTime Voc_Location_LUD           "Timestamp [%1$tH:%1$tM]"   <time>      (gVoc)                  {channel="volvooncall:vehicle:glh:XC60:position#locationTimestamp"}
 Switch Voc_Fluid_Alert              "Alerte Lave Glace"         <siren>     (gVoc)

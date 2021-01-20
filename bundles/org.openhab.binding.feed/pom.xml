@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.feed</artifactId>
@@ -16,13 +16,15 @@
 
   <properties>
     <bnd.importpackage>org.jaxen.*;resolution:=optional</bnd.importpackage>
+
+    <rome.version>1.15.0</rome.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
-      <version>1.12.0</version>
+      <version>${rome.version}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -34,7 +36,7 @@
     <dependency>
       <groupId>com.rometools</groupId>
       <artifactId>rome-utils</artifactId>
-      <version>1.12.0</version>
+      <version>${rome.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

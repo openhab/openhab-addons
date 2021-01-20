@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI;
@@ -44,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.digitalstrom")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.digitalstrom")
 public class BridgeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeDiscoveryService.class);
@@ -81,7 +80,7 @@ public class BridgeDiscoveryService extends AbstractDiscoveryService {
                     if (dsidMap != null) {
                         dSID = dsidMap.get(JSONApiResponseKeysEnum.DSID.getKey());
                     }
-                    if (StringUtils.isNotBlank(dSID)) {
+                    if (dSID != null && !dSID.isBlank()) {
                         return new ThingUID(DigitalSTROMBindingConstants.THING_TYPE_DSS_BRIDGE, dSID);
                     } else {
                         logger.error("Can't get server dSID to generate ThingUID. Please add the server manually.");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.common.registry.DefaultAbstractManagedProvider;
 import org.openhab.core.storage.StorageService;
 import org.openhab.io.hueemulation.internal.ConfigStore;
+import org.openhab.io.hueemulation.internal.HueEmulationService;
 import org.openhab.io.hueemulation.internal.NetworkUtils;
 import org.openhab.io.hueemulation.internal.dto.HueUserAuth;
 import org.openhab.io.hueemulation.internal.dto.HueUserAuthWithSecrets;
@@ -42,15 +43,17 @@ import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseCreat
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.reflect.TypeToken;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Manages users of this emulated HUE bridge. Stores users in the frameworks storage backend.
@@ -64,7 +67,9 @@ import io.swagger.annotations.ApiResponses;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = false, service = { UserManagement.class }, property = "com.eclipsesource.jaxrs.publish=false")
+@Component(immediate = false, service = UserManagement.class)
+@JaxrsResource
+@JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + HueEmulationService.REST_APP_NAME + ")")
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
@@ -147,9 +152,9 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
     }
 
     @POST
-    @ApiOperation(value = "Create an API Key")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "API Key created"),
-            @ApiResponse(code = 403, message = "Link button not pressed") })
+    @Operation(summary = "Create an API Key", responses = {
+            @ApiResponse(responseCode = "200", description = "API Key created"),
+            @ApiResponse(responseCode = "403", description = "Link button not pressed") })
     public Response createNewUser(@Context UriInfo uri, String body) {
         if (!cs.ds.config.linkbutton) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.LINK_BUTTON_NOT_PRESSED,
@@ -175,11 +180,10 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
 
     @GET
     @Path("{username}/config/whitelist/{userid}")
-    @ApiOperation(value = "Return a user")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return a user", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response getUserApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("userid") @ApiParam(value = "User ID") String userid) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("userid") @Parameter(description = "User ID") String userid) {
         if (!authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -188,10 +192,9 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
 
     @GET
     @Path("{username}/config/whitelist")
-    @ApiOperation(value = "Return all users")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return all users", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response getAllUsersApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+            @PathParam("username") @Parameter(description = "username") String username) {
         if (!authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -200,12 +203,12 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
 
     @DELETE
     @Path("{username}/config/whitelist/{id}")
-    @ApiOperation(value = "Deletes a user")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "The user got removed"),
-            @ApiResponse(code = 403, message = "Access denied") })
+    @Operation(summary = "Deletes a user", responses = {
+            @ApiResponse(responseCode = "200", description = "The user got removed"),
+            @ApiResponse(responseCode = "403", description = "Access denied") })
     public Response removeUserApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "User to remove") String id) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "User to remove") String id) {
         if (!authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }

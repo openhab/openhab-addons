@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ public class AVMFritzBindingConstants {
 
     // List of main device types
     public static final String DEVICE_DECT400 = "FRITZ_DECT_400";
+    public static final String DEVICE_DECT440 = "FRITZ_DECT_440";
     public static final String DEVICE_DECT301 = "FRITZ_DECT_301";
     public static final String DEVICE_DECT300 = "FRITZ_DECT_300";
     public static final String DEVICE_DECT210 = "FRITZ_DECT_210";
@@ -59,6 +60,7 @@ public class AVMFritzBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_FRITZBOX);
     public static final ThingTypeUID DECT400_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT400);
+    public static final ThingTypeUID DECT440_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT440);
     public static final ThingTypeUID DECT301_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT301);
     public static final ThingTypeUID DECT300_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT300);
     public static final ThingTypeUID DECT210_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT210);
@@ -85,6 +87,15 @@ public class AVMFritzBindingConstants {
     // List of all Properties
     public static final String PROPERTY_MASTER = "master";
     public static final String PROPERTY_MEMBERS = "members";
+    public static final String PRODUCT_NAME = "productName";
+
+    // List of all channel groups
+    public static final String CHANNEL_GROUP_DEVICE = "device";
+    public static final String CHANNEL_GROUP_SENSORS = "sensors";
+    public static final String CHANNEL_GROUP_TOP_LEFT = "top-left";
+    public static final String CHANNEL_GROUP_BOTTOM_LEFT = "bottom-left";
+    public static final String CHANNEL_GROUP_TOP_RIGHT = "top-right";
+    public static final String CHANNEL_GROUP_BOTTOM_RIGHT = "bottom-right";
 
     // List of all Channel ids
     public static final String CHANNEL_CALL_INCOMING = "incoming_call";
@@ -97,6 +108,7 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_DEVICE_LOCKED = "device_locked";
     public static final String CHANNEL_APPLY_TEMPLATE = "apply_template";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_VOLTAGE = "voltage";
@@ -145,21 +157,20 @@ public class AVMFritzBindingConstants {
     public static final String MODE_WINDOW_OPEN = "WINDOW_OPEN";
     public static final String MODE_UNKNOWN = "UNKNOWN";
 
-    public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(DECT400_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Set.of(DECT400_THING_TYPE,
+            DECT440_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Collections.unmodifiableSet(
-            Stream.of(DECT300_THING_TYPE, DECT301_THING_TYPE, COMETDECT_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Set.of(DECT300_THING_TYPE, DECT301_THING_TYPE,
+            COMETDECT_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE,
-                    HAN_FUN_CONTACT_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
+            DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(GROUP_HEATING_THING_TYPE, GROUP_SWITCH_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
+            GROUP_SWITCH_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(BRIDGE_THING_TYPE, PL546E_STANDALONE_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE,
+            PL546E_STANDALONE_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,

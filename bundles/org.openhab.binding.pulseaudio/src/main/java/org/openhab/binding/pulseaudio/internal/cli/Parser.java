@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -265,10 +265,11 @@ public class Parser {
                     source.setMuted(properties.get("muted").equalsIgnoreCase("yes"));
                 }
                 if (properties.containsKey("volume")) {
-                    source.setVolume(Integer.valueOf(parseVolume(properties.get("volume"))));
+                    source.setVolume(parseVolume(properties.get("volume")));
                 }
-                if (properties.containsKey("monitor_of")) {
-                    source.setMonitorOf(client.getSink(Integer.valueOf(properties.get("monitor_of"))));
+                String monitorOf = properties.get("monitor_of");
+                if (monitorOf != null) {
+                    source.setMonitorOf(client.getSink(Integer.valueOf(monitorOf)));
                 }
                 sources.add(source);
             }

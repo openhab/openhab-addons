@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -257,9 +258,9 @@ public class HttpTransportImpl implements HttpTransport {
                 final int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_FORBIDDEN) {
                     if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                        response = IOUtils.toString(connection.getErrorStream());
+                        response = new String(connection.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
                     } else {
-                        response = IOUtils.toString(connection.getInputStream());
+                        response = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
                     }
                     if (response != null) {
                         if (!response.contains("Authentication failed")) {
@@ -380,7 +381,8 @@ public class HttpTransportImpl implements HttpTransport {
             if (connection != null) {
                 connection.connect();
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    if (IOUtils.toString(connection.getInputStream()).contains("Authentication failed")) {
+                    if (new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8)
+                            .contains("Authentication failed")) {
                         return ConnectionManager.AUTHENTIFICATION_PROBLEM;
                     }
                 }
@@ -419,13 +421,12 @@ public class HttpTransportImpl implements HttpTransport {
             File dssCert = new File(path);
             if (dssCert.exists()) {
                 if (path.endsWith(".crt")) {
-                    try {
-                        InputStream certInputStream = new FileInputStream(dssCert);
-                        String cert = IOUtils.toString(certInputStream);
+                    try (InputStream certInputStream = new FileInputStream(dssCert)) {
+                        String cert = new String(certInputStream.readAllBytes(), StandardCharsets.UTF_8);
                         if (cert.startsWith(BEGIN_CERT)) {
                             return cert;
                         } else {
-                            logger.error("File is not a PEM certificate file. PEM-Certificats starts with: {}",
+                            logger.error("File is not a PEM certificate file. PEM-Certificates starts with: {}",
                                     BEGIN_CERT);
                         }
                     } catch (FileNotFoundException e) {

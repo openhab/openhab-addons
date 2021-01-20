@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,6 @@ public class VeluxKLFAPI {
      * <LI>Method {@link toString} to return a String.</LI>
      * </UL>
      */
-    @NonNullByDefault
     public static class CommandName {
         private String name;
 
@@ -90,7 +89,6 @@ public class VeluxKLFAPI {
      * <LI>Method {@link toString} to return a well-formatted String.</LI>
      * </UL>
      */
-    @NonNullByDefault
     public static class CommandNumber {
         private short commandNumber;
 
@@ -104,7 +102,7 @@ public class VeluxKLFAPI {
 
         @Override
         public String toString() {
-            return "0x" + Integer.toHexString(new Short(commandNumber).intValue());
+            return "0x" + Integer.toHexString(Short.valueOf(commandNumber).intValue());
         }
     }
 
@@ -129,7 +127,7 @@ public class VeluxKLFAPI {
         UNDEFTYPE((short) -1, "Unknown command."),
         // Special item: Shutdown of the connection
         GW_OPENHAB_CLOSE((short) -2, "openHAB connection shutdown command."),
-        // Special item: Shutdown of the connection
+        // Special item: Empty Command (used to send nothing and process an incoming message only)
         GW_OPENHAB_RECEIVEONLY((short) -3, "openHAB receive command."),
         // Velux specific commands
         GW_ERROR_NTF((short) 0x0000, "Provides information on what triggered the error."),
@@ -345,11 +343,7 @@ public class VeluxKLFAPI {
         }
 
         public static Command get(short thisTypeId) {
-            if (LOOKUPTYPEID2ENUM.containsKey(thisTypeId)) {
-                return LOOKUPTYPEID2ENUM.get(thisTypeId);
-            } else {
-                return Command.UNDEFTYPE;
-            }
+            return LOOKUPTYPEID2ENUM.getOrDefault(thisTypeId, Command.UNDEFTYPE);
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
@@ -103,7 +104,7 @@ public class ShellyDeviceProfile {
         try {
             initFromThingType(thingType);
             settingsJson = json;
-            settings = gson.fromJson(json, ShellySettingsGlobal.class);
+            settings = Objects.requireNonNull(gson.fromJson(json, ShellySettingsGlobal.class));
         } catch (IllegalArgumentException | JsonSyntaxException e) {
             throw new ShellyApiException(
                     thingName + ": Unable to transform settings JSON " + e.toString() + ", json='" + json + "'", e);

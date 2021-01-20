@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.buienradar.internal.buienradarapi;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * An exception thrown when a result from Buienradar could not be correctly parsed.
@@ -28,19 +29,19 @@ public class BuienradarParseException extends Exception {
         super();
     }
 
-    public BuienradarParseException(String message) {
+    public BuienradarParseException(@Nullable String message) {
         super(message);
     }
 
-    public BuienradarParseException(Throwable cause) {
+    public BuienradarParseException(@Nullable Throwable cause) {
         super(cause);
     }
 
-    public BuienradarParseException(String message, Throwable cause) {
+    public BuienradarParseException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
-    public BuienradarParseException(String message, Throwable cause, boolean enableSuppression,
+    public BuienradarParseException(@Nullable String message, @Nullable Throwable cause, boolean enableSuppression,
             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }

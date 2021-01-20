@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.insteon.internal.driver;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class SerialIOStream extends IOStream {
     private final Logger logger = LoggerFactory.getLogger(SerialIOStream.class);
     private @Nullable SerialPort port = null;
@@ -82,6 +83,11 @@ public class SerialIOStream extends IOStream {
         }
 
         try {
+            SerialPortManager serialPortManager = this.serialPortManager;
+            if (serialPortManager == null) {
+                logger.warn("serial port manager is null.");
+                return false;
+            }
             SerialPortIdentifier spi = serialPortManager.getIdentifier(devName);
             if (spi == null) {
                 logger.warn("{} is not a valid serial port.", devName);
@@ -89,13 +95,7 @@ public class SerialIOStream extends IOStream {
             }
 
             port = spi.open(appName, 1000);
-            port.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-            port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-            logger.debug("setting {} baud rate to {}", devName, baudRate);
-            port.enableReceiveThreshold(1);
-            port.enableReceiveTimeout(1000);
-            in = port.getInputStream();
-            out = port.getOutputStream();
+            open(port);
             logger.debug("successfully opened port {}", devName);
             return true;
         } catch (IOException e) {
@@ -109,29 +109,46 @@ public class SerialIOStream extends IOStream {
         return false;
     }
 
+    private void open(@Nullable SerialPort port) throws UnsupportedCommOperationException, IOException {
+        if (port != null) {
+            port.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+            logger.debug("setting {} baud rate to {}", devName, baudRate);
+            port.enableReceiveThreshold(1);
+            port.enableReceiveTimeout(1000);
+            in = port.getInputStream();
+            out = port.getOutputStream();
+        } else {
+            logger.warn("port is null");
+        }
+    }
+
     @Override
     public void close() {
+        InputStream in = this.in;
         if (in != null) {
             try {
                 in.close();
             } catch (IOException e) {
                 logger.warn("failed to close input stream", e);
             }
-            in = null;
+            this.in = null;
         }
 
+        OutputStream out = this.out;
         if (out != null) {
             try {
                 out.close();
             } catch (IOException e) {
                 logger.warn("failed to close output stream", e);
             }
-            out = null;
+            this.out = null;
         }
 
+        SerialPort port = this.port;
         if (port != null) {
             port.close();
-            port = null;
+            this.port = null;
         }
     }
 }

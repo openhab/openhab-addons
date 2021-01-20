@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,11 +36,12 @@ import org.openhab.binding.teleinfo.util.TestUtils;
  */
 @NonNullByDefault
 public class TeleinfoInputStreamTest {
+    private static final int TIMEOUT_US = 5000000;
 
     @Test
     public void testReadNextFrameCbetmBase1() throws Exception {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
-                new FileInputStream(TestUtils.getTestFile("cbetm-base-option-1.raw")))) {
+                new FileInputStream(TestUtils.getTestFile("cbetm-base-option-1.raw")), TIMEOUT_US, TIMEOUT_US, false)) {
             Frame frame = in.readNextFrame();
 
             assertNotNull(frame);
@@ -65,7 +66,8 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testReadNextFrameCbemmEvoIccHc1() throws Exception {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
-                new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-hc-option-1.raw")))) {
+                new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-hc-option-1.raw")), TIMEOUT_US, TIMEOUT_US,
+                false)) {
             Frame frame = in.readNextFrame();
 
             assertNotNull(frame);
@@ -87,7 +89,7 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testReadNextFrameCbetmEjp1() throws Exception {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
-                new FileInputStream(TestUtils.getTestFile("cbetm-ejp-option-1.raw")))) {
+                new FileInputStream(TestUtils.getTestFile("cbetm-ejp-option-1.raw")), TIMEOUT_US, TIMEOUT_US, false)) {
             Frame frame = in.readNextFrame();
 
             assertNotNull(frame);
@@ -114,7 +116,8 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testReadNextFrameCbemmEvoIccTempo1() throws Exception {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
-                new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-tempo-option-1.raw")))) {
+                new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-tempo-option-1.raw")), TIMEOUT_US, TIMEOUT_US,
+                false)) {
             Frame frame = in.readNextFrame();
 
             assertNotNull(frame);
@@ -143,7 +146,8 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testReadNextFrameCbemmEvoIccBase1() throws Exception {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
-                new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-base-option-1.raw")))) {
+                new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-base-option-1.raw")), TIMEOUT_US, TIMEOUT_US,
+                false)) {
             Frame frame = in.readNextFrame();
             assertNotNull(frame);
             assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
@@ -162,7 +166,8 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testInvalidADPSgrouplineWithAutoRepairActivated() throws Exception {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
-                new FileInputStream(TestUtils.getTestFile("invalid-adps-groupline.raw")), true)) {
+                new FileInputStream(TestUtils.getTestFile("invalid-adps-groupline.raw")), TIMEOUT_US, TIMEOUT_US,
+                true)) {
             Frame frame = in.readNextFrame();
 
             assertNotNull(frame);

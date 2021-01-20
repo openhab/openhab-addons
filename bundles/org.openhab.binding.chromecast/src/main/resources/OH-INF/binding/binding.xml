@@ -5,7 +5,6 @@
 
 	<name>Chromecast Binding</name>
 	<description>This is the binding for Google Chromecast devices.</description>
-	<author>Kai Kreuzer</author>
 
 	<config-description>
 		<parameter name="callbackUrl" type="text">

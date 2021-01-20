@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -46,15 +46,15 @@ public class TellstickBindingConstants {
 
     public static final String BINDING_ID = "tellstick";
 
-    public static final Unit<Dimensionless> HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
+    public static final Unit<Dimensionless> HUMIDITY_UNIT = Units.PERCENT;
     public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
-    public static final Unit<Speed> WIND_SPEED_UNIT_MS = SmartHomeUnits.METRE_PER_SECOND;
-    public static final Unit<Angle> WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
+    public static final Unit<Speed> WIND_SPEED_UNIT_MS = Units.METRE_PER_SECOND;
+    public static final Unit<Angle> WIND_DIRECTION_UNIT = Units.DEGREE_ANGLE;
     public static final Unit<Length> RAIN_UNIT = MILLI(SIUnits.METRE);
-    public static final Unit<Illuminance> LUX_UNIT = SmartHomeUnits.LUX;
-    public static final Unit<ElectricCurrent> ELECTRIC_UNIT = SmartHomeUnits.AMPERE;
-    public static final Unit<Power> POWER_UNIT = KILO(SmartHomeUnits.WATT);
+    public static final Unit<Illuminance> LUX_UNIT = Units.LUX;
+    public static final Unit<ElectricCurrent> ELECTRIC_UNIT = Units.AMPERE;
+    public static final Unit<Power> POWER_UNIT = KILO(Units.WATT);
 
     public static final String CONFIGPATH_ID = "location";
     public static final String DEVICE_ID = "deviceId";

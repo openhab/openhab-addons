@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Pepijn de Geus - Initial contribution
  */
-@Component(immediate = true, service = HttpServlet.class, configurationPid = "org.openhab.imperihome", //
+@Component(service = HttpServlet.class, configurationPid = "org.openhab.imperihome", //
         property = Constants.SERVICE_PID + "=org.openhab.imperihome")
 @ConfigurableService(category = "io", label = "ImperiHome Integration", description_uri = "io:imperihome")
 public class ImperiHomeApiServlet extends HttpServlet {

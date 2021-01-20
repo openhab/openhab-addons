@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +28,12 @@ import org.eclipse.jdt.annotation.Nullable;
 public class JsonAnnouncementTarget {
 
     public @Nullable String customerId;
-    public @Nullable TargetDevice @Nullable [] devices;
+    public List<TargetDevice> devices;
+
+    public JsonAnnouncementTarget(List<JsonDevices.Device> deviceList) {
+        customerId = deviceList.get(0).deviceOwnerCustomerId;
+        devices = deviceList.stream().map(TargetDevice::new).collect(Collectors.toList());
+    }
 
     public static class TargetDevice {
         public @Nullable String deviceSerialNumber;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse.HueErrorMessage;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponseSuccessSimple;
@@ -91,8 +92,9 @@ public class NetworkUtils {
      * @param message A message
      * @return
      */
-    public static Response singleError(Gson gson, UriInfo uri, int type, String message) {
-        HueResponse e = new HueResponse(new HueErrorMessage(type, uri.getPath().replace("/api", ""), message));
+    public static Response singleError(Gson gson, UriInfo uri, int type, @Nullable String message) {
+        HueResponse e = new HueResponse(
+                new HueErrorMessage(type, uri.getPath().replace("/api", ""), message != null ? message : ""));
         String str = gson.toJson(Collections.singleton(e), new TypeToken<List<?>>() {
         }.getType());
         int httpCode = 500;

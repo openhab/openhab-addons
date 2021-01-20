@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Rewrite for Firmware V2, and remove dependency on external libraries
  * @author Wouter Born - Discover light labels, improve locking, optimize packet handling
  */
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.lifx")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.lifx")
 @NonNullByDefault
 public class LifxLightDiscovery extends AbstractDiscoveryService {
 
@@ -69,7 +69,7 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(LifxLightDiscovery.class);
 
-    private final Map<MACAddress, @Nullable DiscoveredLight> discoveredLights = new HashMap<>();
+    private final Map<MACAddress, DiscoveredLight> discoveredLights = new HashMap<>();
     private final long sourceId = randomSourceId();
     private final Supplier<Integer> sequenceNumberSupplier = new LifxSequenceNumberSupplier();
 
@@ -121,13 +121,13 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
 
     @Activate
     @Override
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 
     @Modified
     @Override
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void modified(@Nullable Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -248,9 +248,6 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
         // Iterate through the discovered lights that have to be set up, and the packets that have to be sent
         // Workaround to avoid a ConcurrentModifictionException on the selector.SelectedKeys() Set
         for (DiscoveredLight light : discoveredLights.values()) {
-            if (light == null) {
-                continue;
-            }
             boolean waitingForLightResponse = System.currentTimeMillis() - light.lastRequestTimeMillis < 200;
 
             if (light.supportedProduct && !light.isDataComplete() && !waitingForLightResponse) {

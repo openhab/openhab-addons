@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Introduced config object, migrated to newer UPnP api
  */
-@Component(immediate = true)
+@Component
 @NonNullByDefault
 public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 

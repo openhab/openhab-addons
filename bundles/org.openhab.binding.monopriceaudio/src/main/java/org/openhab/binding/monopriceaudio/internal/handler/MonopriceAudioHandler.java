@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -255,7 +255,12 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             }
 
             if (command instanceof RefreshType) {
-                updateChannelState(zone, channelType, zoneDataMap.get(zone.getZoneId()));
+                MonopriceAudioZoneDTO zoneDTO = zoneDataMap.get(zone.getZoneId());
+                if (zoneDTO != null) {
+                    updateChannelState(zone, channelType, zoneDTO);
+                } else {
+                    logger.info("Could not execute REFRESH command for zone {}: null", zone.getZoneId());
+                }
                 return;
             }
 
@@ -462,12 +467,12 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
                 case MonopriceAudioConnector.KEY_ZONE_UPDATE:
                     String zoneId = updateData.substring(0, 2);
-
-                    if (MonopriceAudioZone.VALID_ZONE_IDS.contains(zoneId)) {
+                    MonopriceAudioZoneDTO zoneDTO = zoneDataMap.get(zoneId);
+                    if (MonopriceAudioZone.VALID_ZONE_IDS.contains(zoneId) && zoneDTO != null) {
                         MonopriceAudioZone targetZone = MonopriceAudioZone.fromZoneId(zoneId);
-                        processZoneUpdate(targetZone, zoneDataMap.get(zoneId), updateData);
+                        processZoneUpdate(targetZone, zoneDTO, updateData);
                     } else {
-                        logger.warn("invalid event: {} for key: {}", evt.getValue(), key);
+                        logger.warn("invalid event: {} for key: {} or zone data null", evt.getValue(), key);
                     }
                     break;
                 default:

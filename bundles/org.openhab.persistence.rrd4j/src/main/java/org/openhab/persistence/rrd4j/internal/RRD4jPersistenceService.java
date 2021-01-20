@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,13 +31,20 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.ItemUtil;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
@@ -48,6 +54,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
@@ -59,6 +66,8 @@ import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.DsType;
@@ -81,17 +90,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j")
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private static final String DEFAULT_OTHER = "default_other";
     private static final String DEFAULT_NUMERIC = "default_numeric";
     private static final String DEFAULT_QUANTIFIABLE = "default_quantifiable";
 
+    private static final Set<String> SUPPORTED_TYPES = Set.of(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT,
+            CoreItemFactory.DIMMER, CoreItemFactory.NUMBER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.COLOR);
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3,
             new NamedThreadFactory("RRD4j"));
 
-    private final Map<String, @Nullable RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
+    private final Map<String, RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
 
     private static final String DATASOURCE_STATE = "state";
 
@@ -99,7 +111,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceService.class);
 
-    private final Map<String, @Nullable ScheduledFuture<?>> scheduledJobs = new HashMap<>();
+    private final Map<String, ScheduledFuture<?>> scheduledJobs = new HashMap<>();
 
     protected final ItemRegistry itemRegistry;
 
@@ -120,6 +132,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public synchronized void store(final Item item, @Nullable final String alias) {
+        if (!isSupportedItemType(item)) {
+            logger.trace("Ignoring item '{}' since its type {} is not supported", item.getName(), item.getType());
+            return;
+        }
         final String name = alias == null ? item.getName() : alias;
         RrdDb db = getDB(name);
         if (db != null) {
@@ -138,8 +154,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                             sample.setTime(now - 1);
                             sample.setValue(DATASOURCE_STATE, lastValue);
                             sample.update();
-                            logger.debug("Stored '{}' with state '{}' in rrd4j database (again)", name,
-                                    mapToState(lastValue, item.getName()));
+                            logger.debug("Stored '{}' as value '{}' in rrd4j database (again)", name, lastValue);
                         }
                     }
                 } catch (IOException e) {
@@ -150,19 +165,42 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 Sample sample = db.createSample();
                 sample.setTime(now);
 
-                DecimalType state = item.getStateAs(DecimalType.class);
-                if (state != null) {
-                    double value = state.toBigDecimal().doubleValue();
+                Double value = null;
+
+                if (item instanceof NumberItem && item.getState() instanceof QuantityType) {
+                    NumberItem nItem = (NumberItem) item;
+                    QuantityType<?> qState = (QuantityType<?>) item.getState();
+                    Unit<? extends Quantity<?>> unit = nItem.getUnit();
+                    if (unit != null) {
+                        QuantityType<?> convertedState = qState.toUnit(unit);
+                        if (convertedState != null) {
+                            value = convertedState.doubleValue();
+                        } else {
+                            logger.warn(
+                                    "Failed to convert state '{}' to unit '{}'. Please check your item definition for correctness.",
+                                    qState, unit);
+                        }
+                    } else {
+                        value = qState.doubleValue();
+                    }
+                } else {
+                    DecimalType state = item.getStateAs(DecimalType.class);
+                    if (state != null) {
+                        value = state.toBigDecimal().doubleValue();
+                    }
+                }
+                if (value != null) {
                     if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) { // counter values must be
                                                                                           // adjusted by stepsize
                         value = value * db.getRrdDef().getStep();
                     }
                     sample.setValue(DATASOURCE_STATE, value);
                     sample.update();
-                    logger.debug("Stored '{}' with state '{}' in rrd4j database", name, state);
+                    logger.debug("Stored '{}' as value '{}' in rrd4j database", name, value);
                 }
             } catch (IllegalArgumentException e) {
-                if (e.getMessage().contains("at least one second step is required")) {
+                String message = e.getMessage();
+                if (message != null && message.contains("at least one second step is required")) {
                     // we try to store the value one second later
                     ScheduledFuture<?> job = scheduledJobs.get(name);
                     if (job != null) {
@@ -193,73 +231,89 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         String itemName = filter.getItemName();
-        RrdDb db = getDB(itemName);
-        if (db != null) {
-            ConsolFun consolidationFunction = getConsolidationFunction(db);
-            long start = 0L;
-            long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
-                    : filter.getEndDate().toInstant().getEpochSecond();
 
-            try {
-                if (filter.getBeginDate() == null) {
-                    // as rrd goes back for years and gets more and more
-                    // inaccurate, we only support descending order
-                    // and a single return value
-                    // if there is no begin date is given - this case is
-                    // required specifically for the historicState()
-                    // query, which we want to support
-                    if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
-                            && filter.getPageNumber() == 0) {
-                        if (filter.getEndDate() == null) {
-                            // we are asked only for the most recent value!
-                            double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
-                            if (!Double.isNaN(lastValue)) {
-                                HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, itemName),
-                                        ZonedDateTime.ofInstant(
-                                                Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
-                                                ZoneId.systemDefault()));
-                                return Collections.singletonList(rrd4jItem);
-                            } else {
-                                return Collections.emptyList();
-                            }
+        RrdDb db = getDB(itemName);
+        if (db == null) {
+            logger.debug("Could not find item '{}' in rrd4j database", itemName);
+            return List.of();
+        }
+
+        Item item = null;
+        Unit<?> unit = null;
+        try {
+            item = itemRegistry.getItem(itemName);
+            if (item instanceof NumberItem) {
+                // we already retrieve the unit here once as it is a very costly operation,
+                // see https://github.com/openhab/openhab-addons/issues/8928
+                unit = ((NumberItem) item).getUnit();
+            }
+        } catch (ItemNotFoundException e) {
+            logger.debug("Could not find item '{}' in registry", itemName);
+        }
+
+        long start = 0L;
+        long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
+                : filter.getEndDate().toInstant().getEpochSecond();
+
+        try {
+            if (filter.getBeginDate() == null) {
+                // as rrd goes back for years and gets more and more
+                // inaccurate, we only support descending order
+                // and a single return value
+                // if there is no begin date is given - this case is
+                // required specifically for the historicState()
+                // query, which we want to support
+                if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
+                        && filter.getPageNumber() == 0) {
+                    if (filter.getEndDate() == null) {
+                        // we are asked only for the most recent value!
+                        double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
+                        if (!Double.isNaN(lastValue)) {
+                            HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, item, unit),
+                                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
+                                            ZoneId.systemDefault()));
+                            return List.of(rrd4jItem);
                         } else {
-                            start = end;
+                            return List.of();
                         }
                     } else {
-                        throw new UnsupportedOperationException("rrd4j does not allow querys without a begin date, "
-                                + "unless order is descending and a single value is requested");
+                        start = end;
                     }
                 } else {
-                    start = filter.getBeginDate().toInstant().getEpochSecond();
+                    throw new UnsupportedOperationException("rrd4j does not allow querys without a begin date, "
+                            + "unless order is descending and a single value is requested");
                 }
-                FetchRequest request = db.createFetchRequest(consolidationFunction, start, end, 1);
-
-                List<HistoricItem> items = new ArrayList<>();
-                FetchData result = request.fetchData();
-                long ts = result.getFirstTimestamp();
-                long step = result.getRowCount() > 1 ? result.getStep() : 0;
-                for (double value : result.getValues(DATASOURCE_STATE)) {
-                    if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
-                        RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, itemName),
-                                ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts * 1000), ZoneId.systemDefault()));
-                        items.add(rrd4jItem);
-                    }
-                    ts += step;
-                }
-                return items;
-            } catch (IOException e) {
-                logger.warn("Could not query rrd4j database for item '{}': {}", itemName, e.getMessage());
+            } else {
+                start = filter.getBeginDate().toInstant().getEpochSecond();
             }
+
+            FetchRequest request = db.createFetchRequest(getConsolidationFunction(db), start, end, 1);
+            FetchData result = request.fetchData();
+
+            List<HistoricItem> items = new ArrayList<>();
+            long ts = result.getFirstTimestamp();
+            long step = result.getRowCount() > 1 ? result.getStep() : 0;
+            for (double value : result.getValues(DATASOURCE_STATE)) {
+                if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
+                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, item, unit),
+                            ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts * 1000), ZoneId.systemDefault()));
+                    items.add(rrd4jItem);
+                }
+                ts += step;
+            }
+            return items;
+        } catch (IOException e) {
+            logger.warn("Could not query rrd4j database for item '{}': {}", itemName, e.getMessage());
+            return List.of();
         }
-        return Collections.emptyList();
     }
 
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
-        return Collections.emptySet();
+        return Set.of();
     }
 
-    protected @Nullable synchronized RrdDb getDB(String alias) {
+    protected synchronized @Nullable RrdDb getDB(String alias) {
         RrdDb db = null;
         File file = new File(DB_FOLDER + File.separator + alias + ".rrd");
         try {
@@ -271,8 +325,15 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (!folder.exists()) {
                     folder.mkdirs();
                 }
-                // create a new database file
-                db = new RrdDb(getRrdDef(alias, file));
+                RrdDef rrdDef = getRrdDef(alias, file);
+                if (rrdDef != null) {
+                    // create a new database file
+                    db = new RrdDb(rrdDef);
+                } else {
+                    logger.debug(
+                            "Did not create rrd4j database for item '{}' since no rrd definition could be determined. This is likely due to an unsupported item type.",
+                            alias);
+                }
             }
         } catch (IOException e) {
             logger.error("Could not create rrd4j database file '{}': {}", file.getAbsolutePath(), e.getMessage());
@@ -285,7 +346,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private @Nullable RrdDefConfig getRrdDefConfig(String itemName) {
         RrdDefConfig useRdc = null;
-        for (Map.Entry<String, @Nullable RrdDefConfig> e : rrdDefs.entrySet()) {
+        for (Map.Entry<String, RrdDefConfig> e : rrdDefs.entrySet()) {
             // try to find special config
             RrdDefConfig rdc = e.getValue();
             if (rdc != null && rdc.appliesTo(itemName)) {
@@ -296,19 +357,26 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         if (useRdc == null) { // not defined, use defaults
             try {
                 Item item = itemRegistry.getItem(itemName);
+                if (!isSupportedItemType(item)) {
+                    return null;
+                }
                 if (item instanceof NumberItem) {
                     NumberItem numberItem = (NumberItem) item;
-                    return numberItem.getDimension() != null ? rrdDefs.get(DEFAULT_QUANTIFIABLE)
+                    useRdc = numberItem.getDimension() != null ? rrdDefs.get(DEFAULT_QUANTIFIABLE)
                             : rrdDefs.get(DEFAULT_NUMERIC);
+                } else {
+                    useRdc = rrdDefs.get(DEFAULT_OTHER);
                 }
             } catch (ItemNotFoundException e) {
                 logger.debug("Could not find item '{}' in registry", itemName);
+                return null;
             }
         }
-        return rrdDefs.get(DEFAULT_OTHER);
+        logger.trace("Using rrd definition '{}' for item '{}'.", useRdc, itemName);
+        return useRdc;
     }
 
-    private RrdDef getRrdDef(String itemName, File file) {
+    private @Nullable RrdDef getRrdDef(String itemName, File file) {
         RrdDef rrdDef = new RrdDef(file.getAbsolutePath());
         RrdDefConfig useRdc = getRrdDefConfig(itemName);
         if (useRdc != null) {
@@ -318,8 +386,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             for (RrdArchiveDef rad : useRdc.archives) {
                 rrdDef.addArchive(rad.fcn, rad.xff, rad.steps, rad.rows);
             }
+            return rrdDef;
+        } else {
+            return null;
         }
-        return rrdDef;
     }
 
     public ConsolFun getConsolidationFunction(RrdDb db) {
@@ -330,32 +400,54 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    private State mapToState(double value, String itemName) {
-        try {
-            Item item = itemRegistry.getItem(itemName);
-            if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-                return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
-            } else if (item instanceof ContactItem) {
-                return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-            } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
-                // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
-                return new PercentType((int) Math.round(value * 100));
-            }
-        } catch (ItemNotFoundException e) {
-            logger.debug("Could not find item '{}' in registry", itemName);
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private State mapToState(double value, @Nullable Item item, @Nullable Unit unit) {
+        if (item instanceof GroupItem) {
+            item = ((GroupItem) item).getBaseItem();
         }
-        // just return a DecimalType as a fallback
+
+        if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
+            return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
+        } else if (item instanceof ContactItem) {
+            return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        } else if (item instanceof DimmerItem || item instanceof RollershutterItem || item instanceof ColorItem) {
+            // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
+            return new PercentType((int) Math.round(value * 100));
+        } else if (item instanceof NumberItem) {
+            if (unit != null) {
+                return new QuantityType(value, unit);
+            } else {
+                return new DecimalType(value);
+            }
+        }
         return new DecimalType(value);
+    }
+
+    private boolean isSupportedItemType(Item item) {
+        if (item instanceof GroupItem) {
+            final Item baseItem = ((GroupItem) item).getBaseItem();
+            if (baseItem != null) {
+                item = baseItem;
+            }
+        }
+
+        return SUPPORTED_TYPES.contains(ItemUtil.getMainItemType(item.getType()));
     }
 
     private static String getUserPersistenceDataFolder() {
         return OpenHAB.getUserDataFolder() + File.separator + "persistence";
     }
 
-    /**
-     * @{inheritDoc
-     */
-    public void activate(final Map<String, Object> config) {
+    @Activate
+    protected void activate(final Map<String, Object> config) {
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(final Map<String, Object> config) {
+        // clean existing definitions
+        rrdDefs.clear();
+
         // add default configurations
 
         RrdDefConfig defaultNumeric = new RrdDefConfig(DEFAULT_NUMERIC);
@@ -367,7 +459,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         // 3. granularity of 15m for the last year
         // 4. granularity of 1h for the last 5 years
         // 5. granularity of 1d for the last 10 years
-        defaultNumeric.addArchives("LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,8640,3650");
+        defaultNumeric
+                .addArchives("LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,360,43800:LAST,0.5,8640,3650");
         rrdDefs.put(DEFAULT_NUMERIC, defaultNumeric);
 
         RrdDefConfig defaultQuantifiable = new RrdDefConfig(DEFAULT_QUANTIFIABLE);
@@ -379,8 +472,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         // 3. granularity of 15m for the last year
         // 4. granularity of 1h for the last 5 years
         // 5. granularity of 1d for the last 10 years
-        defaultQuantifiable
-                .addArchives("AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:LAST,0.5,90,36500:AVERAGE,0.5,8640,3650");
+        defaultQuantifiable.addArchives(
+                "AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:AVERAGE,0.5,90,36500:AVERAGE,0.5,360,43800:AVERAGE,0.5,8640,3650");
         rrdDefs.put(DEFAULT_QUANTIFIABLE, defaultQuantifiable);
 
         RrdDefConfig defaultOther = new RrdDefConfig(DEFAULT_OTHER);
@@ -391,7 +484,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         // 2. granularity of 1m for the last week
         // 3. granularity of 15m for the last year
         // 4. granularity of 4h for the last 10 years
-        defaultOther.addArchives("LAST,0.5,1,1440:LAST,0.5,12,10080:LAST,0.5,180,35040:LAST,0.5,240,21900");
+        defaultOther.addArchives("LAST,0.5,1,720:LAST,0.5,12,10080:LAST,0.5,180,35040:LAST,0.5,2880,21900");
         rrdDefs.put(DEFAULT_OTHER, defaultOther);
 
         if (config.isEmpty()) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
+import static org.openhab.binding.netatmo.internal.APIUtils.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
@@ -24,17 +25,17 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+import org.openhab.binding.netatmo.internal.camera.CameraHandler;
+import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-import org.openhab.binding.netatmo.internal.camera.CameraHandler;
-import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
-import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
-import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,29 +69,30 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     @Override
     protected Optional<NAWelcomeHome> updateReadings() {
         Optional<NAWelcomeHome> result = getBridgeHandler().flatMap(handler -> handler.getWelcomeDataBody(getId()))
-                .map(dataBody -> dataBody.getHomes().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
-                        .findFirst().orElse(null));
+                .map(dataBody -> nonNullStream(dataBody.getHomes())
+                        .filter(device -> device.getId().equalsIgnoreCase(getId())).findFirst().orElse(null));
         // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this need
         dataTimeStamp = (int) (Calendar.getInstance().getTimeInMillis() / 1000);
         result.ifPresent(home -> {
-            home.getCameras().forEach(camera -> childs.put(camera.getId(), camera));
+            nonNullList(home.getCameras()).forEach(camera -> childs.put(camera.getId(), camera));
 
             // Check how many persons are at home
             iPersons = 0;
             iUnknowns = 0;
 
             logger.debug("welcome home '{}' calculate Persons at home count", getId());
-            home.getPersons().forEach(person -> {
-                iPersons += person.getOutOfSight() ? 0 : 1;
+            nonNullList(home.getPersons()).forEach(person -> {
+                iPersons += person.isOutOfSight() ? 0 : 1;
                 if (person.getPseudo() != null) {
                     childs.put(person.getId(), person);
                 } else {
-                    iUnknowns += person.getOutOfSight() ? 0 : 1;
+                    iUnknowns += person.isOutOfSight() ? 0 : 1;
                 }
             });
 
             NAWelcomeEvent previousLastEvent = lastEvent;
-            lastEvent = home.getEvents().stream().max(Comparator.comparingInt(NAWelcomeEvent::getTime)).orElse(null);
+            lastEvent = nonNullStream(home.getEvents()).max(Comparator.comparingInt(NAWelcomeEvent::getTime))
+                    .orElse(null);
             isNewLastEvent = previousLastEvent != null && !previousLastEvent.equals(lastEvent);
         });
         return result;
@@ -150,7 +152,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 return lastEvt.map(e -> e.getVideoId() != null ? toStringType(e.getVideoStatus()) : UnDefType.UNDEF)
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_ISARRIVAL:
-                return lastEvt.map(e -> toOnOffType(e.getIsArrival())).orElse(UnDefType.UNDEF);
+                return lastEvt.map(e -> toOnOffType(e.isIsArrival())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_MESSAGE:
                 return findEventMessage().map(m -> (State) new StringType(m.replace("<b>", "").replace("</b>", "")))
                         .orElse(UnDefType.UNDEF);
@@ -192,7 +194,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             }
         }
 
-        event.getEventList().forEach(subEvent -> {
+        nonNullList(event.getEventList()).forEach(subEvent -> {
             String detectedObjectType = subEvent.getType().name();
             detectedObjectTypes.add(detectedObjectType);
         });
@@ -258,7 +260,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
     private Optional<NAWelcomeSubEvent> findFirstSubEvent(NAWelcomeEvent event) {
         return Optional.ofNullable(event).map(NAWelcomeEvent::getEventList)
-                .flatMap(subEvents -> subEvents.stream().findFirst());
+                .flatMap(subEvents -> nonNullStream(subEvents).findFirst());
     }
 
     private Optional<NAWelcomeEvent> getLastEvent() {

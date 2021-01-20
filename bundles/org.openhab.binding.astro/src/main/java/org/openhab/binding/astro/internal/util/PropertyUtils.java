@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -91,6 +92,7 @@ public class PropertyUtils {
         Method m = instance.getClass().getMethod(toGetterString(propertyName), null);
         Object result = m.invoke(instance, (Object[]) null);
         if (nestedIndex + 1 < properties.length) {
+            Objects.requireNonNull(result);
             return getPropertyValue(result, properties, nestedIndex + 1);
         }
         return result;

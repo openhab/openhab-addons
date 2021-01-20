@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,13 +80,15 @@ public class MillHeatAccountHandlerTest {
 
     @Test
     public void testUpdateModel() throws InterruptedException, IOException, MillheatCommunicationException {
-        final String getHomesResponse = IOUtils.toString(getClass().getResourceAsStream("/select_home_list_ok.json"));
-        final String getRoomsByHomeResponse = IOUtils
-                .toString(getClass().getResourceAsStream("/get_rooms_by_home_ok.json"));
-        final String getDeviceByRoomResponse = IOUtils
-                .toString(getClass().getResourceAsStream("/get_device_by_room_ok.json"));
-        final String getIndependentDevicesResponse = IOUtils
-                .toString(getClass().getResourceAsStream("/get_independent_devices_ok.json"));
+        final String getHomesResponse = new String(
+                getClass().getResourceAsStream("/select_home_list_ok.json").readAllBytes(), StandardCharsets.UTF_8);
+        final String getRoomsByHomeResponse = new String(
+                getClass().getResourceAsStream("/get_rooms_by_home_ok.json").readAllBytes(), StandardCharsets.UTF_8);
+        final String getDeviceByRoomResponse = new String(
+                getClass().getResourceAsStream("/get_device_by_room_ok.json").readAllBytes(), StandardCharsets.UTF_8);
+        final String getIndependentDevicesResponse = new String(
+                getClass().getResourceAsStream("/get_independent_devices_ok.json").readAllBytes(),
+                StandardCharsets.UTF_8);
 
         stubFor(post(urlEqualTo("/millService/v1/selectHomeList"))
                 .willReturn(aResponse().withStatus(200).withBody(getHomesResponse)));

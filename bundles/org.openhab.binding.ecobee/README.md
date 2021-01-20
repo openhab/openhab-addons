@@ -57,20 +57,42 @@ After you have installed the binding, you can create the Account thing using the
 Once the Account thing is created, the binding will try to get information about your thermostats from the Ecobee web service.
 When this happens, the binding will determine that it has not yet been authorized by the Ecobee web service.
 
-At this point the binding will retrieve a four-character PIN code from the Ecobee web service.
+At this point the binding will retrieve a multi-character PIN code from the Ecobee web service.
 The binding will mark the Account thing OFFLINE with a detailed status message that contains the
 PIN code needed to complete the authorization.
-The PIN code will be valid for 9 minutes.
+The PIN code will be valid for several minutes.
 The status message will look something like this.
 
 ```
-Enter PIN 'RVLA' in MyApps. PIN expires in 9 minutes.
+Enter PIN 'JULO-RVLA' in MyApps. PIN expires in 257 minutes.
 ```
 
 To complete the authorization, the PIN code must be entered into the Ecobee **My Apps** settings in your account at ecobee.com.
 This will authorize the binding to work with the thermostats associated with your Ecobee account.
 Once authorization is complete, the binding will retrieve information about the available thermostats, 
 and add those thermostats to the inbox.
+
+## Ecobee Authorization Changes Effective 1 December 2020
+
+Effective 1 Dec 2020, Ecobee implemented changes to their authorization process.
+Ecobee recommends that users who authorized with Ecobee prior to 1 Dec 2020 should reauthorize their application as the new process affords greater security.
+While the binding will continue to work using the old authorization method, it's recommended that you reauthorize the binding using the following process.
+
+- You may need to update openHAB to get the latest version of the binding
+
+- In the MyApps section of your Ecobee Portal, remove the application using the **Remove App** function.
+
+- Wait up to one hour for the binding to do a token refresh with the Ecobee servers.
+
+- At this point the Ecobee Account thing should be OFFLINE with a CONFIGURATION_PENDING status.
+
+- In the MyApps section of your Ecobee Portal, re-add the binding using the **Add Application** function.
+Use the PIN code that is displayed in the Ecobee Account thing status, or in the log file.
+
+- Confirm that the binding is again communicating with the Ecobee servers.
+You can do this by verifying that your items are updating, or by putting the binding in DEBUG mode and monitoring the log file.
+
+- Post any issues on the forum.
 
 ## Thing Configuration
 
@@ -85,7 +107,6 @@ The following configuration parameters are available on the Ecobee Account:
 | refreshIntervalQuick    | Integer    | Required         | Specifies the interval in seconds with which the Ecobee data will be updated after sending an update or executing a function. |
 | apiTimeout              | Integer    | Required         | Time in seconds to allow an API request against the Ecobee servers to complete. |
 | discoveryEnabled        | Switch     | Required         | Specifies whether the binding should auto-discover thermostats and remote sensors. |
-| discoveryInterval       | Integer    | Optional         | Specifies time interval in seconds in which the binding will attempt to discover thermostats. |
 
 ### Ecobee Thermostat
 

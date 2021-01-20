@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,9 @@
 package org.openhab.binding.freebox.internal;
 
 import java.util.List;
-import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
 import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
 import org.openhab.core.thing.ThingUID;
@@ -27,14 +28,8 @@ import org.openhab.core.thing.ThingUID;
  * @author Laurent Garnier - add discovery configuration
  * @author Laurent Garnier - use new internal classes
  */
+@NonNullByDefault
 public interface FreeboxDataListener {
-
-    /**
-     * Update the discovery configuration.
-     *
-     * @param configProperties the configuration
-     */
-    public void applyConfig(Map<String, Object> configProperties);
 
     /**
      * This method is called just after the bridge thing handler fetched new data
@@ -44,6 +39,6 @@ public interface FreeboxDataListener {
      * @param lanHosts the LAN data received from the Freebox server.
      * @param airPlayDevices the list of AirPlay devices received from the Freebox server.
      */
-    public void onDataFetched(ThingUID bridge, List<FreeboxLanHost> lanHosts,
-            List<FreeboxAirMediaReceiver> airPlayDevices);
+    public void onDataFetched(ThingUID bridge, @Nullable List<FreeboxLanHost> lanHosts,
+            @Nullable List<FreeboxAirMediaReceiver> airPlayDevices);
 }

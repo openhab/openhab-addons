@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,6 +73,10 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         OutputStream getOutputStream() throws IOException;
 
         void disconnect();
+
+        default boolean supportsReceiveTimeout() {
+            return false;
+        }
     }
 
     /*
@@ -351,8 +355,8 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     private synchronized void disconnect(@Nullable String reason) {
         // remove all pending commands from the queue
         // notifying about send failure
-        while (!this.sendQueue.isEmpty()) {
-            SatelCommand cmd = this.sendQueue.poll();
+        SatelCommand cmd;
+        while ((cmd = this.sendQueue.poll()) != null) {
             cmd.setState(State.FAILED);
         }
         final CommunicationChannel channel = this.channel;
@@ -503,13 +507,13 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         }
 
         private void startCommunication() {
-            final Thread thread = this.thread;
+            Thread thread = this.thread;
             if (thread != null && thread.isAlive()) {
                 logger.error("Start communication canceled: communication thread is still alive");
                 return;
             }
             // start new thread
-            this.thread = new Thread(new Runnable() {
+            thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     logger.debug("Communication thread started");
@@ -517,7 +521,8 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
                     logger.debug("Communication thread stopped");
                 }
             });
-            this.thread.start();
+            thread.start();
+            this.thread = thread;
             // if module is not initialized yet, send version command
             if (!SatelModule.this.isInitialized()) {
                 SatelModule.this.sendCommand(new IntegraVersionCommand());
@@ -529,9 +534,10 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
             logger.trace("Checking communication thread: {}, {}", thread != null,
                     Boolean.toString(thread != null && thread.isAlive()));
             if (thread != null && thread.isAlive()) {
-                long timePassed = (this.lastActivity == 0) ? 0 : System.currentTimeMillis() - this.lastActivity;
+                final long timePassed = (this.lastActivity == 0) ? 0 : System.currentTimeMillis() - this.lastActivity;
+                final CommunicationChannel channel = SatelModule.this.channel;
 
-                if (timePassed > SatelModule.this.timeout) {
+                if (channel != null && !channel.supportsReceiveTimeout() && timePassed > SatelModule.this.timeout) {
                     logger.error("Send/receive timeout, disconnecting module.");
                     stop();
                     thread.interrupt();

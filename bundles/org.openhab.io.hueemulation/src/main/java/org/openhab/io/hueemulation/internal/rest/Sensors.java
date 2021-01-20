@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.io.hueemulation.internal.ConfigStore;
+import org.openhab.io.hueemulation.internal.HueEmulationService;
 import org.openhab.io.hueemulation.internal.NetworkUtils;
 import org.openhab.io.hueemulation.internal.dto.HueNewLights;
 import org.openhab.io.hueemulation.internal.dto.HueSensorEntry;
@@ -45,13 +46,15 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Listens to the ItemRegistry and add all DecimalType, OnOffType, ContactType, DimmerType items
@@ -59,7 +62,9 @@ import io.swagger.annotations.ApiResponses;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = false, service = { Sensors.class }, property = "com.eclipsesource.jaxrs.publish=false")
+@Component(immediate = false, service = Sensors.class)
+@JaxrsResource
+@JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + HueEmulationService.REST_APP_NAME + ")")
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
@@ -144,10 +149,9 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @GET
     @Path("{username}/sensors")
-    @ApiOperation(value = "Return all sensors")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return all sensors", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response getAllSensorsApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+            @PathParam("username") @Parameter(description = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -156,10 +160,10 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @GET
     @Path("{username}/sensors/new")
-    @ApiOperation(value = "Return new sensors since last scan. Returns an empty list for openHAB as we do not cache that information.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return new sensors since last scan. Returns an empty list for openHAB as we do not cache that information.", responses = {
+            @ApiResponse(responseCode = "200", description = "OK") })
     public Response getNewSensors(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+            @PathParam("username") @Parameter(description = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -168,10 +172,10 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @POST
     @Path("{username}/sensors")
-    @ApiOperation(value = "Starts a new scan for compatible items. This is usually not necessary, because we are observing the item registry.")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Starts a new scan for compatible items. This is usually not necessary, because we are observing the item registry.", responses = {
+            @ApiResponse(responseCode = "200", description = "OK") })
     public Response postNewLights(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+            @PathParam("username") @Parameter(description = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -180,11 +184,10 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @GET
     @Path("{username}/sensors/{id}")
-    @ApiOperation(value = "Return a sensor")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return a sensor", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response getSensorApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "sensor id") String id) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "sensor id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -194,11 +197,11 @@ public class Sensors implements RegistryChangeListener<Item> {
     @SuppressWarnings({ "null", "unused" })
     @GET
     @Path("{username}/sensors/{id}/config")
-    @ApiOperation(value = "Return a sensor config. Always empty")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return a sensor config. Always empty", responses = {
+            @ApiResponse(responseCode = "200", description = "OK") })
     public Response getSensorConfigApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "sensor id") String id) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "sensor id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -214,12 +217,12 @@ public class Sensors implements RegistryChangeListener<Item> {
     @SuppressWarnings({ "null", "unused" })
     @DELETE
     @Path("{username}/sensors/{id}")
-    @ApiOperation(value = "Deletes the sensor that is represented by this id")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "The item got removed"),
-            @ApiResponse(code = 403, message = "Access denied") })
+    @Operation(summary = "Deletes the sensor that is represented by this id", responses = {
+            @ApiResponse(responseCode = "200", description = "The item got removed"),
+            @ApiResponse(responseCode = "403", description = "Access denied") })
     public Response removeSensorAPI(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "id") String id) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -239,11 +242,10 @@ public class Sensors implements RegistryChangeListener<Item> {
     @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/sensors/{id}")
-    @ApiOperation(value = "Rename a sensor")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Rename a sensor", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response renameLightApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "light id") String id, String body) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "light id") String id, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -267,11 +269,10 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @PUT
     @Path("{username}/sensors/{id}/state")
-    @ApiOperation(value = "Set sensor state")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Set sensor state", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response setSensorStateApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "sensor id") String id, String body) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "sensor id") String id, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }

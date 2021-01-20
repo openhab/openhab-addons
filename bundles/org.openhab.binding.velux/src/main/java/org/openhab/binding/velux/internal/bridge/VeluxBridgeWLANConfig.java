@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.velux.internal.bridge;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.StringType;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.common.GetWLANConfig;
+import org.openhab.core.library.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,6 @@ public class VeluxBridgeWLANConfig {
      * <li>wlanPassword.
      * </ul>
      */
-    @NonNullByDefault
     public class Channel {
         public boolean isRetrieved = false;
         public StringType openHABwlanSSID = new StringType(VeluxBindingConstants.UNKNOWN);

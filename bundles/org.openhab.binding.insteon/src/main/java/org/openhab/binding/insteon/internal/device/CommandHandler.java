@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,12 +44,10 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public abstract class CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(CommandHandler.class);
     DeviceFeature feature; // related DeviceFeature
-    @Nullable
-    Map<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -65,7 +63,7 @@ public abstract class CommandHandler {
     /**
      * Implements what to do when an openHAB command is received
      *
-     * @param config the configuration for the item that generated the command
+     * @param conf the configuration for the item that generated the command
      * @param cmd the openhab command issued
      * @param device the Insteon device to which this command applies
      */
@@ -113,30 +111,32 @@ public abstract class CommandHandler {
     }
 
     protected int getMaxLightLevel(InsteonChannelConfiguration conf, int defaultLevel) {
-        Map<String, @Nullable String> params = conf.getParameters();
-        if (conf.getFeature().contains("dimmer") && params.containsKey("dimmermax")) {
-            String item = conf.getChannelName();
+        Map<String, String> params = conf.getParameters();
+        if (conf.getFeature().contains("dimmer")) {
             String dimmerMax = params.get("dimmermax");
-            try {
-                int i = Integer.parseInt(dimmerMax);
-                if (i > 1 && i <= 99) {
-                    int level = (int) Math.ceil((i * 255.0) / 100); // round up
-                    if (level < defaultLevel) {
-                        logger.debug("item {}: using dimmermax value of {}", item, dimmerMax);
-                        return level;
+            if (dimmerMax != null) {
+                String item = conf.getChannelName();
+                try {
+                    int i = Integer.parseInt(dimmerMax);
+                    if (i > 1 && i <= 99) {
+                        int level = (int) Math.ceil((i * 255.0) / 100); // round up
+                        if (level < defaultLevel) {
+                            logger.debug("item {}: using dimmermax value of {}", item, dimmerMax);
+                            return level;
+                        }
+                    } else {
+                        logger.warn("item {}: dimmermax must be between 1-99 inclusive: {}", item, dimmerMax);
                     }
-                } else {
-                    logger.warn("item {}: dimmermax must be between 1-99 inclusive: {}", item, dimmerMax);
+                } catch (NumberFormatException e) {
+                    logger.warn("item {}: invalid int value for dimmermax: {}", item, dimmerMax);
                 }
-            } catch (NumberFormatException e) {
-                logger.warn("item {}: invalid int value for dimmermax: {}", item, dimmerMax);
             }
         }
 
         return defaultLevel;
     }
 
-    void setParameters(Map<String, @Nullable String> map) {
+    void setParameters(Map<String, String> map) {
         parameters = map;
     }
 
@@ -157,7 +157,6 @@ public abstract class CommandHandler {
         return iv;
     }
 
-    @NonNullByDefault
     public static class WarnCommandHandler extends CommandHandler {
         WarnCommandHandler(DeviceFeature f) {
             super(f);
@@ -169,7 +168,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class NoOpCommandHandler extends CommandHandler {
         NoOpCommandHandler(DeviceFeature f) {
             super(f);
@@ -181,7 +179,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class LightOnOffCommandHandler extends CommandHandler {
         LightOnOffCommandHandler(DeviceFeature f) {
             super(f);
@@ -227,7 +224,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class FastOnOffCommandHandler extends CommandHandler {
         FastOnOffCommandHandler(DeviceFeature f) {
             super(f);
@@ -256,7 +252,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class RampOnOffCommandHandler extends RampCommandHandler {
         RampOnOffCommandHandler(DeviceFeature f) {
             super(f);
@@ -291,12 +286,11 @@ public abstract class CommandHandler {
         }
 
         private int getRampLevel(InsteonChannelConfiguration conf, int defaultValue) {
-            Map<String, @Nullable String> params = conf.getParameters();
-            return params.containsKey("ramplevel") ? Integer.parseInt(params.get("ramplevel")) : defaultValue;
+            String str = conf.getParameters().get("ramplevel");
+            return str != null ? Integer.parseInt(str) : defaultValue;
         }
     }
 
-    @NonNullByDefault
     public static class ManualChangeCommandHandler extends CommandHandler {
         ManualChangeCommandHandler(DeviceFeature f) {
             super(f);
@@ -327,7 +321,6 @@ public abstract class CommandHandler {
     /**
      * Sends ALLLink broadcast commands to group
      */
-    @NonNullByDefault
     public static class GroupBroadcastCommandHandler extends CommandHandler {
         GroupBroadcastCommandHandler(DeviceFeature f) {
             super(f);
@@ -358,7 +351,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class LEDOnOffCommandHandler extends CommandHandler {
         LEDOnOffCommandHandler(DeviceFeature f) {
             super(f);
@@ -386,7 +378,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class X10OnOffCommandHandler extends CommandHandler {
         X10OnOffCommandHandler(DeviceFeature f) {
             super(f);
@@ -415,7 +406,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class X10PercentCommandHandler extends CommandHandler {
         X10PercentCommandHandler(DeviceFeature f) {
             super(f);
@@ -454,7 +444,6 @@ public abstract class CommandHandler {
         private final int[] x10CodeForLevel = { 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
     }
 
-    @NonNullByDefault
     public static class X10IncreaseDecreaseCommandHandler extends CommandHandler {
         X10IncreaseDecreaseCommandHandler(DeviceFeature f) {
             super(f);
@@ -484,7 +473,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class IOLincOnOffCommandHandler extends CommandHandler {
         IOLincOnOffCommandHandler(DeviceFeature f) {
             super(f);
@@ -526,7 +514,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class IncreaseDecreaseCommandHandler extends CommandHandler {
         IncreaseDecreaseCommandHandler(DeviceFeature f) {
             super(f);
@@ -552,7 +539,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class PercentHandler extends CommandHandler {
         PercentHandler(DeviceFeature f) {
             super(f);
@@ -582,7 +568,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     private abstract static class RampCommandHandler extends CommandHandler {
         private static double[] halfRateRampTimes = new double[] { 0.1, 0.3, 2, 6.5, 19, 23.5, 28, 32, 38.5, 47, 90,
                 150, 210, 270, 360, 480 };
@@ -597,7 +582,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        void setParameters(Map<String, @Nullable String> params) {
+        void setParameters(Map<String, String> params) {
             super.setParameters(params);
             onCmd = (byte) getIntParameter("on", 0x2E);
             offCmd = (byte) getIntParameter("off", 0x2F);
@@ -642,12 +627,11 @@ public abstract class CommandHandler {
         }
 
         protected double getRampTime(InsteonChannelConfiguration conf, double defaultValue) {
-            Map<String, @Nullable String> params = conf.getParameters();
-            return params.containsKey("ramptime") ? Double.parseDouble(params.get("ramptime")) : defaultValue;
+            String str = conf.getParameters().get("ramptime");
+            return str != null ? Double.parseDouble(str) : defaultValue;
         }
     }
 
-    @NonNullByDefault
     public static class RampPercentHandler extends RampCommandHandler {
 
         RampPercentHandler(DeviceFeature f) {
@@ -681,7 +665,6 @@ public abstract class CommandHandler {
         }
     }
 
-    @NonNullByDefault
     public static class PowerMeterCommandHandler extends CommandHandler {
         PowerMeterCommandHandler(DeviceFeature f) {
             super(f);
@@ -728,7 +711,6 @@ public abstract class CommandHandler {
      * First used for setting thermostat parameters.
      */
 
-    @NonNullByDefault
     public static class NumberCommandHandler extends CommandHandler {
         NumberCommandHandler(DeviceFeature f) {
             super(f);
@@ -792,7 +774,6 @@ public abstract class CommandHandler {
     /**
      * Handler to set the thermostat system mode
      */
-    @NonNullByDefault
     public static class ThermostatSystemModeCommandHandler extends NumberCommandHandler {
         ThermostatSystemModeCommandHandler(DeviceFeature f) {
             super(f);
@@ -821,7 +802,6 @@ public abstract class CommandHandler {
     /**
      * Handler to set the thermostat fan mode
      */
-    @NonNullByDefault
     public static class ThermostatFanModeCommandHandler extends NumberCommandHandler {
         ThermostatFanModeCommandHandler(DeviceFeature f) {
             super(f);
@@ -844,7 +824,6 @@ public abstract class CommandHandler {
     /**
      * Handler to set the fanlinc fan mode
      */
-    @NonNullByDefault
     public static class FanLincFanCommandHandler extends NumberCommandHandler {
         FanLincFanCommandHandler(DeviceFeature f) {
             super(f);
@@ -877,13 +856,13 @@ public abstract class CommandHandler {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends CommandHandler> T makeHandler(String name, Map<String, @Nullable String> params,
-            DeviceFeature f) {
+    public static <T extends CommandHandler> T makeHandler(String name, Map<String, String> params, DeviceFeature f) {
         String cname = CommandHandler.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
+            @Nullable
             T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
             ch.setParameters(params);
             return ch;

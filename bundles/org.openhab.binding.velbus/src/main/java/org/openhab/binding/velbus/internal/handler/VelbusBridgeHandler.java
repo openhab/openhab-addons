@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -253,8 +253,9 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
             int reconnectionInterval = bridgeConfig.reconnectionInterval;
             if (reconnectionInterval > 0) {
                 this.reconnectionHandler = scheduler.scheduleWithFixedDelay(() -> {
-                    if (connect() && reconnectionHandler != null) {
-                        reconnectionHandler.cancel(false);
+                    final ScheduledFuture<?> currentReconnectionHandler = this.reconnectionHandler;
+                    if (connect() && currentReconnectionHandler != null) {
+                        currentReconnectionHandler.cancel(false);
                     }
                 }, reconnectionInterval, reconnectionInterval, TimeUnit.SECONDS);
             }

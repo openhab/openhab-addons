@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,14 +35,26 @@ import org.openhab.core.library.types.OnOffType;
  */
 public class DataBlockTest {
     private Parser mc;
+    private Parser mcNegativePVSupply;
 
     @BeforeEach
     public void setup() {
-        byte[] dataBlock = new byte[] { 0, -14, 0, 0, -2, -47, -1, -1, 2, 47, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 99, 99, 0, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                125, 2, 21, 0, 0, 0, 27, 0, 26, 0, 0, 0, 103, 0, -117, 0, 0 };
-        mc = new Parser(DataType.DATA);
-        mc.setArray(dataBlock);
+        {
+            byte[] dataBlock = new byte[] { 0, -14, 0, 0, -2, -47, -1, -1, 2, 47, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 99, 99, 0, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 1, 125, 2, 21, 0, 0, 0, 27, 0, 26, 0, 0, 0, 103, 0, -117, 0, 0 };
+            mc = new Parser(DataType.DATA);
+            mc.setArray(dataBlock);
+        }
+        {
+            // 65098 bytes [-2, 74]
+            // 65535 bytes [-1, -1]
+            byte[] dataBlock = new byte[] { -2, -74, -1, -1, -2, -47, -1, -1, 2, 47, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 99, 99, 0, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 1, 125, 2, 21, 0, 0, 0, 27, 0, 26, 0, 0, 0, 103, 0, -117, 0, 0 };
+            mcNegativePVSupply = new Parser(DataType.DATA);
+            mcNegativePVSupply.setArray(dataBlock);
+        }
     }
 
     @Test
@@ -51,6 +63,17 @@ public class DataBlockTest {
         assertTrue(dataOpt.isPresent());
         PowerBlock b = (PowerBlock) dataOpt.get();
         assertEquals("242.0 W", b.pvPowerSupply.toString(), "PV Supply");
+        assertEquals("14.0 W", b.gridPowerSupply.toString(), "Grid Supply");
+        assertEquals("0.0 W", b.gridPowerConsumpition.toString(), "Grid Consumption");
+        assertEquals("303.0 W", b.batteryPowerSupply.toString(), "Battery Supply");
+    }
+
+    @Test
+    public void testValidPowerBlockNegativePVSupply() {
+        Optional<Data> dataOpt = mcNegativePVSupply.parse(DataType.POWER);
+        assertTrue(dataOpt.isPresent());
+        PowerBlock b = (PowerBlock) dataOpt.get();
+        assertEquals("-330.0 W", b.pvPowerSupply.toString(), "PV Supply");
         assertEquals("14.0 W", b.gridPowerSupply.toString(), "Grid Supply");
         assertEquals("0.0 W", b.gridPowerConsumpition.toString(), "Grid Consumption");
         assertEquals("303.0 W", b.batteryPowerSupply.toString(), "Battery Supply");

@@ -73,6 +73,62 @@ paths:
         404:
           $ref: "#/responses/NotFound"
 
+  /homes/{home_id}/state:
+    get:
+      operationId: homeState
+      summary: Get state of home
+      tags:
+      - home
+      security:
+      - oauth:
+        - home.details:read
+      description: This will the current presence state of the home (HOME/AWAY).
+      parameters:
+      - $ref: "#/parameters/homeID"
+      responses:
+        200:
+          description: Home State
+          schema:
+            $ref: "#/definitions/HomeState"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+
+  /homes/{home_id}/presenceLock:
+    put:
+      operationId: updatePresenceLock
+      summary: Set a presence lock state, i.e., HOME or AWAY
+      tags:
+        - home
+      security:
+        - oauth:
+            - home.operation:write
+      description: This will set the presence mode of the home
+      parameters:
+        - $ref: "#/parameters/homeID"
+        - name: json
+          in: body
+          description: The new presence settings.
+          required: true
+          schema:
+            $ref: "#/definitions/HomePresence"
+      responses:
+        200:
+          description: Presence mode successfully updated.
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/AccessDenied"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+
   /homes/{home_id}/zones:
     get:
       operationId: listZones
@@ -368,6 +424,37 @@ definitions:
     - temperatureUnit
     - awayRadiusInMeters
 
+  HomeState:
+    type: object
+    properties:
+      presence:
+        description: Presence State.
+        $ref: "#/definitions/PresenceState"
+      name:
+        description: User defined name for the home.
+        type: string
+        readOnly: true
+      presenceLocked:
+        description: Not sure what this does..
+        type: boolean
+        readOnly: true
+      showHomePresenceSwitchButton:
+        description: Not sure what this does..
+        type: boolean
+        readOnly: true
+    required:
+      - presence
+      - presenceLocked
+
+  HomePresence:
+    type: object
+    properties:
+      homePresence:
+        description: Presence State.
+        $ref: "#/definitions/PresenceState"
+    required:
+      - homePresence
+
   TadoSystemType:
     description: The system type of the zone.
     type: string
@@ -425,6 +512,13 @@ definitions:
     enum:
     - 'ON'
     - 'OFF'
+
+  PresenceState:
+    type: string
+    description: Enum to represent presence state.
+    enum:
+    - 'HOME'
+    - 'AWAY'
 
   GenericZoneSetting:
     type: object

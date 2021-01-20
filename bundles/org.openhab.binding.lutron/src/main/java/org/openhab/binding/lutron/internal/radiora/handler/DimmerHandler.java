@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 
 /**
  * Handler for RadioRA dimmers
@@ -73,14 +72,6 @@ public class DimmerHandler extends LutronHandler {
                 updateInternalState(onOffCmd);
 
             }
-        }
-    }
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        if (LutronBindingConstants.CHANNEL_LIGHTLEVEL.equals(channelUID.getId())) {
-            PercentType percent = (PercentType) newState.as(PercentType.class);
-            updateInternalState(percent.intValue());
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,9 @@ public class DigiplexZoneHandler extends BaseThingHandler {
         this.bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();
 
         String nodeParm = getThing().getProperties().get(DigiplexBindingConstants.PROPERTY_ZONE_NO);
-        zoneNo = Integer.parseInt(nodeParm);
+        if (nodeParm != null) {
+            zoneNo = Integer.parseInt(nodeParm);
+        }
         String areaParm = getThing().getProperties().get(DigiplexBindingConstants.PROPERTY_AREA_NO);
         if (areaParm != null) {
             areaNo = Integer.parseInt(areaParm);

@@ -7,16 +7,12 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.io.hueemulation</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: IO :: Hue Emulation Service</name>
-
-  <properties>
-    <bnd.importpackage>org.glassfish.jersey.*;resolution:="optional"</bnd.importpackage>
-  </properties>
 
   <dependencies>
     <!-- https://mvnrepository.com/artifact/org.glassfish.grizzly/grizzly-http-server -->

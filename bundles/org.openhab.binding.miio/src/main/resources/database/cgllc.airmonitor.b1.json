@@ -20,6 +20,7 @@
 				"property": "pm25",
 				"friendlyName": "PM2.5",
 				"channel": "pm25",
+				"channelType": "pm25",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -29,37 +30,57 @@
 				"property": "co2e",
 				"friendlyName": "CO2e",
 				"channel": "co2",
+				"channelType": "co2",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "tvoc",
 				"friendlyName": "tVOC",
 				"channel": "tvoc",
+				"channelType": "tvoc",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			}
 		]
 	}

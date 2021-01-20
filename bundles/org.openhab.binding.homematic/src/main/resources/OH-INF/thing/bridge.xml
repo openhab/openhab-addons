@@ -35,7 +35,7 @@
 			<parameter name="callbackHost" type="text">
 				<context>network-address</context>
 				<label>Callback Network Address</label>
-				<description>Callback network address of the ESH runtime, default is auto-discovery</description>
+				<description>Callback network address of the runtime, default is auto-discovery</description>
 			</parameter>
 			<parameter name="bindAddress" type="text">
 				<context>network-address</context>
@@ -120,7 +120,12 @@
 				<advanced>true</advanced>
 				<default>false</default>
 			</parameter>
-
+			<parameter name="bufferSize" type="integer" min="0">
+				<label>Buffer Size</label>
+				<description>Size of the response buffer retrieved from the gateway (default 2048 kB)</description>
+				<default>2048</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

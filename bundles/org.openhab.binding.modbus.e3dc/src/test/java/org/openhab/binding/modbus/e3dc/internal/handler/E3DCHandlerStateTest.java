@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,16 @@ package org.openhab.binding.modbus.e3dc.internal.handler;
 
 import static org.mockito.Mockito.*;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -28,11 +31,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.io.transport.modbus.AsyncModbusFailure;
-import org.openhab.io.transport.modbus.AsyncModbusReadResult;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegister;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
 
 /**
  * The {@link E3DCHandlerStateTest} Test State handling of Handler if different results occurs
@@ -92,26 +90,16 @@ public class E3DCHandlerStateTest {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 78, 73, 78, 73, 84, 73, 65, 76, 73, 90, 69,
                 68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 83, 49, 48, 95, 50, 48, 50, 48, 95, 48, 52,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        ByteBuffer infoWrap = ByteBuffer.wrap(infoBlockBytes);
-        ModbusRegister[] infoBlock = new ModbusRegister[infoBlockBytes.length / 2];
-        for (int i = 0; i < infoBlock.length; i++) {
-            infoBlock[i] = new ModbusRegister(infoWrap.get(), infoWrap.get());
-        }
         ModbusReadRequestBlueprint readRequest = mock(ModbusReadRequestBlueprint.class);
-        return new AsyncModbusReadResult(readRequest, new ModbusRegisterArray(infoBlock));
+        return new AsyncModbusReadResult(readRequest, new ModbusRegisterArray(infoBlockBytes));
     }
 
     private AsyncModbusReadResult getDataResult() {
         byte[] dataBlockBytes = new byte[] { 0, -14, 0, 0, -2, -47, -1, -1, 2, 47, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 99, 99, 0, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 1, 125, 2, 21, 0, 0, 0, 27, 0, 26, 0, 0, 0, 103, 0, -117, 0, 0 };
-        ByteBuffer dataWrap = ByteBuffer.wrap(dataBlockBytes);
-        ModbusRegister[] dataBlock = new ModbusRegister[dataBlockBytes.length / 2];
-        for (int i = 0; i < dataBlock.length; i++) {
-            dataBlock[i] = new ModbusRegister(dataWrap.get(), dataWrap.get());
-        }
         ModbusReadRequestBlueprint readRequest = mock(ModbusReadRequestBlueprint.class);
-        return new AsyncModbusReadResult(readRequest, new ModbusRegisterArray(dataBlock));
+        return new AsyncModbusReadResult(readRequest, new ModbusRegisterArray(dataBlockBytes));
     }
 
     private AsyncModbusFailure<ModbusReadRequestBlueprint> getFailResult() {

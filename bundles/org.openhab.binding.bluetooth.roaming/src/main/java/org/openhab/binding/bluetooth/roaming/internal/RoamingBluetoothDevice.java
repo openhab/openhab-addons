@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.roaming.internal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -52,11 +53,14 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
     }
 
     public void addBluetoothDevice(BluetoothDevice device) {
-        device.addListener(devices.computeIfAbsent(device, Listener::new));
+        device.addListener(Objects.requireNonNull(devices.computeIfAbsent(device, Listener::new)));
     }
 
     public void removeBluetoothDevice(BluetoothDevice device) {
-        device.removeListener(devices.remove(device));
+        BluetoothDeviceListener listener = devices.remove(device);
+        if (listener != null) {
+            device.removeListener(listener);
+        }
     }
 
     @Override

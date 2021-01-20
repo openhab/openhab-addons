@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * {@link CosemQuantity} represents a value with a unit.
@@ -41,15 +41,15 @@ import org.openhab.core.library.unit.SmartHomeUnits;
 @NonNullByDefault
 class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescriptor<QuantityType<Q>> {
 
-    public static final CosemQuantity<ElectricCurrent> AMPERE = new CosemQuantity<>(SmartHomeUnits.AMPERE);
+    public static final CosemQuantity<ElectricCurrent> AMPERE = new CosemQuantity<>(Units.AMPERE);
     public static final CosemQuantity<Volume> CUBIC_METRE = new CosemQuantity<>(SIUnits.CUBIC_METRE);
-    public static final CosemQuantity<Energy> GIGA_JOULE = new CosemQuantity<>(MetricPrefix.GIGA(SmartHomeUnits.JOULE));
-    public static final CosemQuantity<Power> KILO_WATT = new CosemQuantity<>(MetricPrefix.KILO(SmartHomeUnits.WATT));
-    public static final CosemQuantity<Energy> KILO_WATT_HOUR = new CosemQuantity<>(SmartHomeUnits.KILOWATT_HOUR);
-    public static final CosemQuantity<ElectricPotential> VOLT = new CosemQuantity<>(SmartHomeUnits.VOLT);
-    public static final CosemQuantity<Power> WATT = new CosemQuantity<>(SmartHomeUnits.WATT);
-    public static final CosemQuantity<Power> KILO_VAR = new CosemQuantity<>(SmartHomeUnits.KILOVAR);
-    public static final CosemQuantity<Energy> KILO_VAR_HOUR = new CosemQuantity<>(SmartHomeUnits.KILOVAR_HOUR);
+    public static final CosemQuantity<Energy> GIGA_JOULE = new CosemQuantity<>(MetricPrefix.GIGA(Units.JOULE));
+    public static final CosemQuantity<Power> KILO_WATT = new CosemQuantity<>(MetricPrefix.KILO(Units.WATT));
+    public static final CosemQuantity<Energy> KILO_WATT_HOUR = new CosemQuantity<>(Units.KILOWATT_HOUR);
+    public static final CosemQuantity<ElectricPotential> VOLT = new CosemQuantity<>(Units.VOLT);
+    public static final CosemQuantity<Power> WATT = new CosemQuantity<>(Units.WATT);
+    public static final CosemQuantity<Power> KILO_VAR = new CosemQuantity<>(Units.KILOVAR);
+    public static final CosemQuantity<Energy> KILO_VAR_HOUR = new CosemQuantity<>(Units.KILOVAR_HOUR);
 
     /**
      * Pattern to convert a cosem value to a value that can be parsed by {@link QuantityType}.

@@ -14,6 +14,52 @@
 		</channels>
 	</channel-group-type>
 
+	<!-- Generic channels -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Generic Color Channel</label>
+	</channel-type>
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Generic Contact Channel</label>
+	</channel-type>
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Generic DateTime Channel</label>
+	</channel-type>
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Generic Dimmer Channel</label>
+	</channel-type>
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Generic Image Channel</label>
+	</channel-type>
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Generic Location Channel</label>
+	</channel-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Generic Number Channel</label>
+	</channel-type>
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Generic Player Channel</label>
+	</channel-type>
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Generic Rollershutter Channel</label>
+	</channel-type>
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Generic String Channel</label>
+	</channel-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Generic Switch Channel</label>
+	</channel-type>
+
 	<!-- Network channels -->
 	<channel-type id="ssid" advanced="true">
 		<item-type>String</item-type>
@@ -36,10 +82,26 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- Generic Numeric QtyType channels -->
+	<channel-type id="temperatureRW">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="time">
+		<item-type>Number:Time</item-type>
+		<label>Hours</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
 	<!-- Common Actions channels -->
 	<channel-type id="commands" advanced="true">
 		<item-type>String</item-type>
 		<label>Execute Command</label>
+	</channel-type>
+	<channel-type id="rpc" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute RPC (cloud) Command</label>
 	</channel-type>
 	<channel-type id="power">
 		<item-type>Switch</item-type>
@@ -52,6 +114,10 @@
 	<channel-type id="eyecare">
 		<item-type>Switch</item-type>
 		<label>Eyecare Mode On/Off</label>
+	</channel-type>
+	<channel-type id="clean">
+		<item-type>Switch</item-type>
+		<label>Cleaning On/Off</label>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
@@ -154,10 +220,15 @@
 		<label>Temperature</label>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
+	<channel-type id="temperatureC">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
-		<state pattern="%.1f" readOnly="true"/>
+		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pm25">
 		<item-type>Number</item-type>
@@ -198,19 +269,24 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="filterhours">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Filter Use Time</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f  %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="usedhours">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Run Time</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerhours">
+		<item-type>Number:Time</item-type>
+		<label>Powered On Time</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="motorspeed">
 		<item-type>Number</item-type>
 		<label>Motor Speed</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f rpm" readOnly="true"/>
 	</channel-type>
 	<channel-type id="filterlive">
 		<item-type>Number</item-type>
@@ -240,6 +316,11 @@
 	<channel-type id="translevel">
 		<item-type>Number</item-type>
 		<label>Trans Level</label>
+	</channel-type>
+	<channel-type id="waterlevel">
+		<item-type>Number</item-type>
+		<label>Water Level</label>
+		<state pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="dry">
 		<item-type>Switch</item-type>
@@ -458,6 +539,66 @@
 		<item-type>Switch</item-type>
 		<label>Generic Bool</label>
 	</channel-type>
+	<channel-type id="LumiCurtainHagl05_fault">
+		<item-type>Number</item-type>
+		<label>Curtain - Device Fault</label>
+		<state>
+			<options>
+				<option value="0">No faults</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_status">
+		<item-type>Number</item-type>
+		<label>Curtain - Status</label>
+		<state>
+			<options>
+				<option value="0">Stopped</option>
+				<option value="1">Opening</option>
+				<option value="2">Closing</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_manual-enabled">
+		<item-type>Number</item-type>
+		<label>curtain_cfg - manual_enabled</label>
+		<state>
+			<options>
+				<option value="0">Disable</option>
+				<option value="1">Enable</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_polarity">
+		<item-type>Number</item-type>
+		<label>curtain_cfg - polarity</label>
+		<state>
+			<options>
+				<option value="0">Positive</option>
+				<option value="1">Reverse</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_pos-limit">
+		<item-type>Number</item-type>
+		<label>curtain_cfg - pos_limit</label>
+		<state>
+			<options>
+				<option value="0">Unlimit</option>
+				<option value="1">Limit</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_en-night-tip-light">
+		<item-type>Switch</item-type>
+		<label>curtain_cfg - en_night_tip_light</label>
+		<state>
+			<options>
+				<option value="0">Disable</option>
+				<option value="1">Enable</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="vacuumaction">
 		<item-type>Number</item-type>
 		<label>Vacuum Action</label>
@@ -483,4 +624,199 @@
 			</options>
 		</command>
 	</channel-type>
+	<channel-type id="MijiaVacuumV2_status">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Status</label>
+		<state>
+			<options>
+				<option value="1">Idle</option>
+				<option value="2">Sweeping</option>
+				<option value="3">Paused</option>
+				<option value="4">Error</option>
+				<option value="5">Charging</option>
+				<option value="6">Go Charging</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_fault">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Device Fault</label>
+		<state>
+			<options>
+				<option value="0">No Faults</option>
+				<option value="1">Left-wheel-error</option>
+				<option value="2">Right-wheel-error</option>
+				<option value="3">Cliff-error</option>
+				<option value="4">Low-battery-error</option>
+				<option value="5">Bump-error</option>
+				<option value="6">Main-brush-error</option>
+				<option value="7">Side-brush-error</option>
+				<option value="8">Fan-motor-error</option>
+				<option value="9">Dustbin-error</option>
+				<option value="10">Charging-error</option>
+				<option value="11">No-wate-error</option>
+				<option value="12">Pick-up-error</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_mode">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Mode</label>
+		<state>
+			<options>
+				<option value="1">Auto-clean</option>
+				<option value="2">Spot-clean</option>
+				<option value="3">Wallflow-clean</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_target-water-level">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Target Water Level</label>
+		<state>
+			<options>
+				<option value="1">Level1</option>
+				<option value="2">Level2</option>
+				<option value="3">Level3</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_fan-level">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Fan Level</label>
+		<state>
+			<options>
+				<option value="0">Silence</option>
+				<option value="1">Stanrd</option>
+				<option value="2">Middle</option>
+				<option value="3">Enchance</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_charging-state">
+		<item-type>Number</item-type>
+		<label>Battery - Charging State</label>
+		<state>
+			<options>
+				<option value="0">Not-charging</option>
+				<option value="1">Charging</option>
+				<option value="2">Charging-competely</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_language">
+		<item-type>Number</item-type>
+		<label>Language - Language</label>
+		<state>
+			<options>
+				<option value="0">English</option>
+				<option value="1">简体中文</option>
+				<option value="2">Español</option>
+				<option value="3">Русский</option>
+				<option value="4">Italiano</option>
+				<option value="5">Français</option>
+				<option value="6">Deutsch</option>
+				<option value="7">한국어</option>
+				<option value="8">Polski</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_mop-status">
+		<item-type>Number</item-type>
+		<label>Other Status - Mop Status</label>
+		<state>
+			<options>
+				<option value="0">Mop UnInstall</option>
+				<option value="1">Mop Install</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_action">
+		<item-type>String</item-type>
+		<label>Robot Cleaner - Actions</label>
+		<state>
+			<options>
+				<option value="start">Start Vacuum</option>
+				<option value="stop">Stop Vacuum</option>
+				<option value="dock">Go-To Dock</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ZhimiHeaterZa2_target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Heater - Target Temperature</label>
+		<state min="16" max="28" step="1" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="ZhimiHeaterZb1_country-code">
+		<item-type>Number</item-type>
+		<label>Private-Service - Country-Code</label>
+		<state>
+			<options>
+				<option value="0">Unknown</option>
+				<option value="1">US</option>
+				<option value="7">RU</option>
+				<option value="33">FR</option>
+				<option value="44">EU</option>
+				<option value="81">JP</option>
+				<option value="82">KR</option>
+				<option value="86">CN</option>
+				<option value="852">HK</option>
+				<option value="886">TW</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="humidifierOperationMode">
+		<item-type>Number</item-type>
+		<label>Operation Mode</label>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="humidifierLedBrightness">
+		<item-type>Number</item-type>
+		<label>LED Brightness</label>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Dim</option>
+				<option value="2">Bright</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="humidifierLastPressedButton">
+		<item-type>Number</item-type>
+		<label>Last Pressed Button</label>
+		<state>
+			<options>
+				<option value="0">No</option>
+				<option value="1">LED</option>
+				<option value="2">Power</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="countryCode">
+		<item-type>Number</item-type>
+		<label>Country</label>
+		<state>
+			<options>
+				<option value="0">Unlocked</option>
+				<option value="1">US</option>
+				<option value="82">KR</option>
+				<option value="44">EU</option>
+				<option value="81">JP</option>
+				<option value="7">RU</option>
+				<option value="86">CN</option>
+				<option value="852">HK</option>
+				<option value="886">TW</option>
+				<option value="33">FR</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

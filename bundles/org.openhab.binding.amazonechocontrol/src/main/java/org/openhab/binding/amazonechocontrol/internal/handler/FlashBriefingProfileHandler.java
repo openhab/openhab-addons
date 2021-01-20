@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,10 @@ package org.openhab.binding.amazonechocontrol.internal.handler;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
@@ -104,59 +102,54 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         if (updateStateJob != null) {
             updateStateJob.cancel(false);
         }
-        try {
-            String channelId = channelUID.getId();
-            if (command instanceof RefreshType) {
-                waitForUpdate = 0;
+        String channelId = channelUID.getId();
+        if (command instanceof RefreshType) {
+            waitForUpdate = 0;
+        }
+        if (channelId.equals(CHANNEL_SAVE)) {
+            if (command.equals(OnOffType.ON)) {
+                saveCurrentProfile(accountHandler);
+                waitForUpdate = 500;
             }
-            if (channelId.equals(CHANNEL_SAVE)) {
-                if (command.equals(OnOffType.ON)) {
-                    saveCurrentProfile(accountHandler);
+        }
+        if (channelId.equals(CHANNEL_ACTIVE)) {
+            if (command.equals(OnOffType.ON)) {
+                String currentConfigurationJson = this.currentConfigurationJson;
+                if (!currentConfigurationJson.isEmpty()) {
+                    accountHandler.setEnabledFlashBriefingsJson(currentConfigurationJson);
+                    updateState(CHANNEL_ACTIVE, OnOffType.ON);
                     waitForUpdate = 500;
                 }
             }
-            if (channelId.equals(CHANNEL_ACTIVE)) {
-                if (command.equals(OnOffType.ON)) {
-                    String currentConfigurationJson = this.currentConfigurationJson;
-                    if (!currentConfigurationJson.isEmpty()) {
-                        accountHandler.setEnabledFlashBriefingsJson(currentConfigurationJson);
-                        updateState(CHANNEL_ACTIVE, OnOffType.ON);
-                        waitForUpdate = 500;
-                    }
-                }
-            }
-            if (channelId.equals(CHANNEL_PLAY_ON_DEVICE)) {
-                if (command instanceof StringType) {
-                    String deviceSerialOrName = ((StringType) command).toFullString();
-                    String currentConfigurationJson = this.currentConfigurationJson;
-                    if (!currentConfigurationJson.isEmpty()) {
-                        String old = accountHandler.getEnabledFlashBriefingsJson();
-                        accountHandler.setEnabledFlashBriefingsJson(currentConfigurationJson);
-                        Device device = accountHandler.findDeviceJsonBySerialOrName(deviceSerialOrName);
-                        if (device == null) {
-                            logger.warn("Device '{}' not found", deviceSerialOrName);
+        }
+        if (channelId.equals(CHANNEL_PLAY_ON_DEVICE)) {
+            if (command instanceof StringType) {
+                String deviceSerialOrName = command.toFullString();
+                String currentConfigurationJson = this.currentConfigurationJson;
+                if (!currentConfigurationJson.isEmpty()) {
+                    String old = accountHandler.getEnabledFlashBriefingsJson();
+                    accountHandler.setEnabledFlashBriefingsJson(currentConfigurationJson);
+                    Device device = accountHandler.findDeviceJsonBySerialOrName(deviceSerialOrName);
+                    if (device == null) {
+                        logger.warn("Device '{}' not found", deviceSerialOrName);
+                    } else {
+                        @Nullable
+                        Connection connection = accountHandler.findConnection();
+                        if (connection == null) {
+                            logger.warn("Connection for '{}' not found", accountHandler.getThing().getUID().getId());
                         } else {
-                            @Nullable
-                            Connection connection = accountHandler.findConnection();
-                            if (connection == null) {
-                                logger.warn("Connection for '{}' not found",
-                                        accountHandler.getThing().getUID().getId());
-                            } else {
-                                connection.executeSequenceCommand(device, "Alexa.FlashBriefing.Play", null);
+                            connection.executeSequenceCommand(device, "Alexa.FlashBriefing.Play", Map.of());
 
-                                scheduler.schedule(() -> accountHandler.setEnabledFlashBriefingsJson(old), 1000,
-                                        TimeUnit.MILLISECONDS);
+                            scheduler.schedule(() -> accountHandler.setEnabledFlashBriefingsJson(old), 1000,
+                                    TimeUnit.MILLISECONDS);
 
-                                updateState(CHANNEL_ACTIVE, OnOffType.ON);
-                            }
+                            updateState(CHANNEL_ACTIVE, OnOffType.ON);
                         }
-                        updatePlayOnDevice = true;
-                        waitForUpdate = 1000;
                     }
+                    updatePlayOnDevice = true;
+                    waitForUpdate = 1000;
                 }
             }
-        } catch (IOException | URISyntaxException e) {
-            logger.warn("Handle command failed", e);
         }
         if (waitForUpdate >= 0) {
             this.updateStateJob = scheduler.schedule(() -> accountHandler.updateFlashBriefingHandlers(), waitForUpdate,
@@ -189,7 +182,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_ACTIVE, OnOffType.OFF);
         }
-        return StringUtils.equals(this.currentConfigurationJson, currentConfigurationJson);
+        return this.currentConfigurationJson.equals(currentConfigurationJson);
     }
 
     private String saveCurrentProfile(AccountHandler connection) {

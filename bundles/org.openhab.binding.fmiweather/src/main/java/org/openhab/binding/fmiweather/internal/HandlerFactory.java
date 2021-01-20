@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,6 @@ package org.openhab.binding.fmiweather.internal;
 
 import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,8 +35,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.fmiweather", service = ThingHandlerFactory.class)
 public class HandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_OBSERVATION, THING_TYPE_FORECAST));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OBSERVATION,
+            THING_TYPE_FORECAST);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

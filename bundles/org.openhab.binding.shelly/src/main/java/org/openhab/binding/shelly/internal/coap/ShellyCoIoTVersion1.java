@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,12 +28,10 @@ import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link ShellyCoIoTVersion1} implements the parsing for CoIoT version 1
@@ -84,7 +82,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                     case "temperature": // Sensor Temp
                         if (getString(getProfile().settings.temperatureUnits)
                                 .equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT)) {
-                            value = ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(getDouble(s.value))
+                            value = ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(getDouble(s.value))
                                     .doubleValue();
                         }
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
@@ -120,7 +118,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                 String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER
                         : CHANNEL_GROUP_METER + (profile.isEMeter ? sen.links : rIndex);
                 updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                        toQuantityType(s.value, DIGITS_WATT, Units.WATT));
                 updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
                 break;
             case "s" /* CatchAll */:
@@ -132,7 +130,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                         break;
                     case "energy counter 0 [w-min]":
                         updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN1,
-                                toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                                toQuantityType(s.value, DIGITS_WATT, Units.WATT));
                         break;
                     case "energy counter 1 [w-min]":
                     case "energy counter 2 [w-min]":
@@ -142,15 +140,15 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                     case "energy counter total [w-min]":
                         Double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
                         updateChannel(updates, rGroup, CHANNEL_METER_TOTALKWH,
-                                toQuantityType(total, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                                toQuantityType(total, DIGITS_KWH, Units.KILOWATT_HOUR));
                         break;
                     case "voltage":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_VOLTAGE,
-                                toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                                toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.VOLT));
                         break;
                     case "current":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
-                                toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.AMPERE));
+                                toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.AMPERE));
                         break;
                     case "pf":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));
@@ -159,9 +157,9 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                         // work around: Roller reports 101% instead max 100
                         double pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(s.value, SHELLY_MAX_ROLLER_POS));
                         updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
-                                toQuantityType(SHELLY_MAX_ROLLER_POS - pos, SmartHomeUnits.PERCENT));
+                                toQuantityType(SHELLY_MAX_ROLLER_POS - pos, Units.PERCENT));
                         updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
-                                toQuantityType(pos, SmartHomeUnits.PERCENT));
+                                toQuantityType(pos, Units.PERCENT));
                         break;
                     case "input event": // Shelly Button 1
                         handleInputEvent(sen, getString(s.valueStr), -1, updates);
@@ -175,7 +173,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                         break;
                     case "tilt": // DW with FW1.6.5+ //+
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
-                                toQuantityType(s.value, DIGITS_NONE, SmartHomeUnits.DEGREE_ANGLE));
+                                toQuantityType(s.value, DIGITS_NONE, Units.DEGREE_ANGLE));
                         break;
                     case "vibration": // DW with FW1.6.5+
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,

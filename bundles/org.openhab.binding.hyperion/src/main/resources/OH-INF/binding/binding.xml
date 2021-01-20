@@ -5,6 +5,5 @@
 
 	<name>Hyperion Binding</name>
 	<description>This binding integrates openHAB with the Hyperion ambient lighting software.</description>
-	<author>Daniel Walters</author>
 
 </binding:binding>

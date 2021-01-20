@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,8 +29,10 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
+import org.openhab.binding.neohub.internal.NeoHubBindingConstants.NeoHubReturnResult;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,8 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link NeoHubHandler} is the openHAB Handler for NeoHub devices
@@ -212,7 +212,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     /**
      * sends a JSON request to the NeoHub to read the device data
-     * 
+     *
      * @return a class that contains the full status of all devices
      */
     protected @Nullable NeoHubAbstractDeviceData fromNeoHubGetDeviceData() {
@@ -259,7 +259,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
                 if (deviceData instanceof NeoHubLiveDeviceData) {
                     /*
                      * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
-                     * 
+                     *
                      * new API: discard systemData if its time-stamp is older than the system
                      * time-stamp on the hub
                      */
@@ -269,7 +269,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
                 } else {
                     /*
                      * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
-                     * 
+                     *
                      * legacy API: discard systemData if its time-stamp is older than one hour
                      */
                     if (systemData.timeStamp < Instant.now().minus(1, ChronoUnit.HOURS).getEpochSecond()) {
@@ -288,7 +288,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     /**
      * sends a JSON request to the NeoHub to read the system data
-     * 
+     *
      * @return a class that contains the status of the system
      */
     protected @Nullable NeoHubReadDcbResponse fromNeoHubReadSystemData() {

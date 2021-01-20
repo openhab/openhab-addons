@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,7 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +49,7 @@ import org.openhab.binding.innogysmarthome.internal.discovery.InnogyDeviceDiscov
 import org.openhab.binding.innogysmarthome.internal.listener.DeviceStatusListener;
 import org.openhab.binding.innogysmarthome.internal.listener.EventListener;
 import org.openhab.binding.innogysmarthome.internal.manager.DeviceStructureManager;
+import org.openhab.binding.innogysmarthome.internal.manager.FullDeviceManager;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -170,7 +168,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         if (checkOnAuthCode()) {
             final InnogyClient localClient = createInnogyClient(oAuthService, httpClient);
             client = localClient;
-            deviceStructMan = new DeviceStructureManager(localClient);
+            deviceStructMan = new DeviceStructureManager(createFullDeviceManager(localClient));
             oAuthService.addAccessTokenRefreshListener(this);
             registerDeviceStatusListener(InnogyBridgeHandler.this);
             scheduleRestartClient(false);
@@ -238,6 +236,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         }
 
         Device bridgeDevice = deviceStructMan.getBridgeDevice();
+        if (bridgeDevice == null) {
+            logger.debug("Failed to get bridge device, re-scheduling startClient.");
+            scheduleRestartClient(true);
+            return;
+        }
         setBridgeProperties(bridgeDevice);
         bridgeId = bridgeDevice.getId();
         startWebsocket();
@@ -533,7 +536,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                     case BaseEvent.TYPE_NEW_MESSAGE_RECEIVED:
                     case BaseEvent.TYPE_MESSAGE_CREATED:
                         final MessageEvent messageEvent = gson.fromJson(msg, MessageEvent.class);
-                        handleNewMessageReceivedEvent(messageEvent);
+                        handleNewMessageReceivedEvent(Objects.requireNonNull(messageEvent));
                         break;
 
                     case BaseEvent.TYPE_MESSAGE_DELETED:
@@ -888,6 +891,10 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     ScheduledExecutorService getScheduler() {
         return scheduler;
+    }
+
+    FullDeviceManager createFullDeviceManager(InnogyClient client) {
+        return new FullDeviceManager(client);
     }
 
     InnogyClient createInnogyClient(final OAuthClientService oAuthService, final HttpClient httpClient) {

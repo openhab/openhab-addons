@@ -1,0 +1,82 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.gateway.v1",
+			"lumi.gateway.v2",
+			"lumi.gateway.v3",
+			"lumi.gateway.mgl03"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Enable Telnet",
+				"channel": "telnetEnable",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "enable_telnet_service",
+						"parameterType": "EMPTY"
+					}
+				],
+				"readmeComment": "Access the device with telnet to further unlock developer mode. See forum"
+			},
+			{
+				"property": "doorbell_volume",
+				"friendlyName": "Doorbell Volume",
+				"channel": "doorbellVol",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_doorbell_volume",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "gateway_volume",
+				"friendlyName": "Gateway Volume",
+				"channel": "gatewayVol",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_gateway_volume",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "alarming_volume",
+				"friendlyName": "Alarming Volume",
+				"channel": "alarmingVol",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_alarming_volume",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "doorbell_push",
+				"friendlyName": "Doorbell Push",
+				"channel": "doorbellPush",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_doorbell_push",
+						"parameterType": "STRING"
+					}
+				]
+			}
+		],
+		"readmeComment": "Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.",
+		"experimental": true
+	}
+}

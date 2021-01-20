@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @see <a href="https://openhab.org/documentation/development/bindings/discovery-services.html">MSDN
  *      Discovery</a>
  */
-@Component(immediate = true, configurationPid = "discovery.nanoleaf")
+@Component(configurationPid = "discovery.nanoleaf")
 @NonNullByDefault
 public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
+import static org.openhab.binding.netatmo.internal.APIUtils.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -27,8 +29,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.api.WelcomeApi;
 import io.swagger.client.model.NAWelcomeEvent;
@@ -58,8 +58,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
                 NAWelcomeEventResponse eventResponse = api.getlasteventof(getParentId(), getId(), 10);
 
                 // Search the last event for this person
-                List<NAWelcomeEvent> rawEventList = eventResponse.getBody().getEventsList();
-                rawEventList.forEach(event -> {
+                nonNullList(eventResponse.getBody().getEventsList()).forEach(event -> {
                     if (event.getPersonId() != null && event.getPersonId().equalsIgnoreCase(getId())
                             && (lastEvent == null || lastEvent.getTime() < event.getTime())) {
                         lastEvent = event;
@@ -81,8 +80,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
                 return getModule().map(m -> toDateTimeType(m.getLastSeen(), timeZoneProvider.getTimeZone()))
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_PERSON_ATHOME:
-                return getModule()
-                        .map(m -> m.getOutOfSight() != null ? toOnOffType(!m.getOutOfSight()) : UnDefType.UNDEF)
+                return getModule().map(m -> m.isOutOfSight() != null ? toOnOffType(!m.isOutOfSight()) : UnDefType.UNDEF)
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_PERSON_AVATAR_URL:
                 return toStringType(getAvatarURL());

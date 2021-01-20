@@ -18,11 +18,10 @@
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
-			<parameter name="ipAddress" type="text">
+			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>Network Address</label>
 				<description>Network address of the Hue bridge.</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1" max="65535">
 				<label>Port</label>
@@ -32,12 +31,10 @@
 				<context>password</context>
 				<label>Username</label>
 				<description>Name of a registered Hue bridge user, that allows to access the API.</description>
-				<required>false</required>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="1" step="1" unit="s">
 				<label>Polling Interval</label>
 				<description>Seconds between fetching values from the Hue bridge. Default is 10.</description>
-				<required>true</required>
 				<default>10</default>
 			</parameter>
 			<parameter name="sensorPollingInterval" type="integer" min="0" step="1" unit="ms">
@@ -45,7 +42,6 @@
 				<description>Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for
 					the sensor values, but a too low value can cause congestion on the Hue bridge. Use 0 to disable the polling for
 					sensors. Default is 500.</description>
-				<required>true</required>
 				<default>500</default>
 			</parameter>
 		</config-description>

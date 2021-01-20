@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,9 @@ public class ReadByteBuffer {
         }
 
         int b = Math.min(len, remaining());
-        System.arraycopy(buf, index, bytes, off, b);
+        if (bytes != null) {
+            System.arraycopy(buf, index, bytes, off, b);
+        }
         index += b;
         return b;
     }

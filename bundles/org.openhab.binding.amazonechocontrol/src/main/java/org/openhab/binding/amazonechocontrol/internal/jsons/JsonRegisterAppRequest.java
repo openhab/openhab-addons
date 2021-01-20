@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +27,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class JsonRegisterAppRequest {
 
-    public JsonRegisterAppRequest(String serial, String accessToken, String frc, JsonWebSiteCookie[] webSiteCookies) {
+    public JsonRegisterAppRequest(String serial, @Nullable String accessToken, String frc,
+            List<JsonWebSiteCookie> webSiteCookies) {
         registrationData.deviceSerial = serial;
         authData.accessToken = accessToken;
         userContextMap.frc = frc;
@@ -47,7 +50,7 @@ public class JsonRegisterAppRequest {
 
     public static class Cookies {
         @SerializedName("website_cookies")
-        public @Nullable JsonWebSiteCookie @Nullable [] webSiteCookies;
+        public List<JsonWebSiteCookie> webSiteCookies = List.of();
         public @Nullable String domain = ".amazon.com";
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Pawel Pieczul - Initial contribution
  *
  */
-@Component(immediate = true)
+@Component
 public class LxDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(LxDiscoveryParticipant.class);

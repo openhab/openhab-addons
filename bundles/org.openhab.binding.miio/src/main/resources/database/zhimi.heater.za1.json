@@ -1,0 +1,149 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.heater.za1"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"channelType": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "target_temperature",
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
+				"channelType": "temperatureC",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_target_temperature",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "brightness",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_brightness",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				]
+			},
+			{
+				"property": "buzzer",
+				"friendlyName": "Buzzer Status",
+				"channel": "buzzer",
+				"channelType": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_buzzer",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "relative_humidity",
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "childlock",
+				"channelType": "childlock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "theqmostat",
+				"friendlyName": "HW Switch",
+				"channel": "HWSwitch",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_theqmostat",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"channelType": "temperatureC",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "use_time",
+				"friendlyName": "Run Time",
+				"channel": "usedhours",
+				"channelType": "usedhours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"actions": [],
+				"category": "time"
+			}
+		],
+		"experimental": true
+	}
+}

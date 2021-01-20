@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,20 +35,19 @@ public class GreeException extends Exception {
     private static final long serialVersionUID = -2337258558995287405L;
     private static String EX_NONE = "none";
 
-    public GreeException(Exception exception) {
+    public GreeException(@Nullable Exception exception) {
         super(exception);
     }
 
-    public GreeException(String message) {
+    public GreeException(@Nullable String message) {
         super(message);
     }
 
-    public GreeException(String message, Exception exception) {
+    public GreeException(@Nullable String message, @Nullable Exception exception) {
         super(message, exception);
     }
 
-    @Override
-    public String getMessage() {
+    public String getMessageString() {
         return isEmpty() ? "" : nonNullString(super.getMessage());
     }
 
@@ -69,7 +68,7 @@ public class GreeException extends Exception {
                 message = MessageFormat.format("{0} ({1})", message, cause);
             }
         } else {
-            message = getMessage();
+            message = getMessageString();
         }
         return message;
     }
@@ -82,7 +81,7 @@ public class GreeException extends Exception {
         Class<?> extype = !isEmpty() ? getCauseClass() : null;
         return (extype != null) && ((extype == SocketTimeoutException.class) || (extype == TimeoutException.class)
                 || (extype == ExecutionException.class) || (extype == InterruptedException.class)
-                || getMessage().toLowerCase().contains("timeout"));
+                || getMessageString().toLowerCase().contains("timeout"));
     }
 
     public boolean isUnknownHost() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -35,15 +34,18 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Matthew Skinner - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.ipcamera")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.ipcamera")
 @NonNullByDefault
 public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
     private final @Nullable String openhabIpAddress;
     private final GroupTracker groupTracker = new GroupTracker();
+    private final IpCameraDynamicStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public IpCameraHandlerFactory(final @Reference NetworkAddressService networkAddressService) {
+    public IpCameraHandlerFactory(final @Reference NetworkAddressService networkAddressService,
+            final @Reference IpCameraDynamicStateDescriptionProvider stateDescriptionProvider) {
         openhabIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new IpCameraHandler(thing, openhabIpAddress, groupTracker);
+            return new IpCameraHandler(thing, openhabIpAddress, groupTracker, stateDescriptionProvider);
         } else if (GROUP_SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new IpCameraGroupHandler(thing, openhabIpAddress, groupTracker);
         }

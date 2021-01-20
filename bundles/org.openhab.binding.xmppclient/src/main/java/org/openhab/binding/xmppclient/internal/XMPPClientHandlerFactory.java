@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,7 @@ package org.openhab.binding.xmppclient.internal;
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.xmppclient.XMPPClientBindingConstants;
-import org.openhab.binding.xmppclient.handler.XMPPClientHandler;
+import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;

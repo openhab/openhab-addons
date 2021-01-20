@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt;
 
 import static org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants.HOMIE300_MQTT_THING;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class ThingChannelConstants {
     // Common ThingUID and ChannelUIDs
     public final static ThingUID testHomieThing = new ThingUID(HOMIE300_MQTT_THING, "device123");

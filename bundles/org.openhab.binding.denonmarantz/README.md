@@ -7,7 +7,7 @@ This binding integrates Denon & Marantz AV receivers by using either Telnet or a
 This binding supports Denon and Marantz receivers having a Telnet interface or a web based controller at `http://<AVR IP address>/`.
 The thing type for all of them is `avr`.
 
-Tested models: Marantz SR5008, Denon AVR-X2000 / X3000 / X1200W / X2100W / X2200W / X3100W / X3300W
+Tested models: Marantz SR5008, Denon AVR-X2000 / X3000 / X1200W / X2100W / X2200W / X3100W / X3300W / X4400H
 
 Denon models with HEOS support (`AVR-X..00H`) do not support the HTTP API. They do support Telnet.
 During Discovery this is auto-detected and configured.
@@ -31,8 +31,10 @@ There are more parameters which all have defaults set.
 | zoneCount           | [1, 2, 3 or 4]                            | 2       |
 | telnetEnabled       | true, false                               | false   |
 | telnetPort          | port number, e.g. 23                      | 23      |
-| httpPort            | port number, e.g. 80                      | 80      |
+| httpPort            | port number, e.g. 80                      | 80 (1)  |
 | httpPollingInterval | polling interval in seconds (minimal 5)   | 5       |
+
+(1) Models >= 2016 use port 8080 and have a slightly different API
 
 ## Channels
 

@@ -9,49 +9,49 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-dc-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>DC Power</label>
 		<description>Current DC power of the inverter</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-battery">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Home Consumption Battery</label>
 		<description>Current home consumption obtained from the battery</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-grid">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Home Consumption Grid</label>
 		<description>Current home consumption obtained from the grid</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ownconsumption">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Own Consumption</label>
 		<description>Current own comsumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-pv">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Home Consumption PV</label>
 		<description>Current home consumption obtained from photovoltaic</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-total">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Home Consumption</label>
 		<description>Current total homeconsumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-limit-evu-absolute">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Feed-in Limit</label>
 		<description>Permitted feed-in quantity as absolute value as specified by the energy supplier </description>
 		<category>Energy</category>
@@ -78,7 +78,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>P1 Power</label>
 		<description>Power of phase 1</description>
 		<category>Energy</category>
@@ -99,7 +99,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>P2 Power</label>
 		<description>Power of phase 2</description>
 		<category>Energy</category>
@@ -120,7 +120,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>P3 Power</label>
 		<description>Power of phase 3</description>
 		<category>Energy</category>
@@ -134,7 +134,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-current-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>AC Power</label>
 		<description>Current AC power of the inverter</description>
 		<category>Energy</category>
@@ -161,7 +161,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
 		<description>Current battery charge</description>
 		<category>Energy</category>
@@ -189,7 +189,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>PV Str1 Power</label>
 		<description>Current power of photovoltaic string 1</description>
 		<category>Energy</category>
@@ -210,7 +210,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>PV Str2 Power</label>
 		<description>Current power of photovoltaic string 2</description>
 		<category>Energy</category>
@@ -231,7 +231,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>PV Str3 Power</label>
 		<description>Current power of photovoltaic string 3</description>
 		<category>Energy</category>

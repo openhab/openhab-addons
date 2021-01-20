@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class HueAuthorizedConfig extends HueUnauthorizedConfig {
 
     /**
      * Return a json serializer that behaves like the default one, but updates the UTC and localtime fields
-     * before each serializion.
+     * before each serialization.
      */
     @NonNullByDefault({})
     public static class Serializer implements JsonSerializer<HueAuthorizedConfig> {

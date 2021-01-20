@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,11 @@ package org.openhab.binding.fsinternetradio.test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletException;
@@ -24,7 +26,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadioConstants;
 
@@ -134,7 +135,7 @@ public class RadioServiceDummy extends HttpServlet {
         Collection<String> requestParameterNames = Collections.list(request.getParameterNames());
         if (queryString != null && requestParameterNames.contains(VALUE)) {
             StringBuffer fullUrl = request.getRequestURL().append("?").append(queryString);
-            int value = Integer.parseInt(request.getParameter(VALUE));
+            int value = Integer.parseInt(Objects.requireNonNullElse(request.getParameter(VALUE), ""));
             requestParameters.put(value, fullUrl.toString());
         }
 
@@ -238,11 +239,11 @@ public class RadioServiceDummy extends HttpServlet {
     }
 
     private String makeValidXMLResponse() throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream("/validXml.xml"));
+        return new String(getClass().getResourceAsStream("/validXml.xml").readAllBytes(), StandardCharsets.UTF_8);
     }
 
     private String makeInvalidXMLResponse() throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream("/invalidXml.xml"));
+        return new String(getClass().getResourceAsStream("/invalidXml.xml").readAllBytes(), StandardCharsets.UTF_8);
     }
 
     public void setInvalidResponse(boolean value) {

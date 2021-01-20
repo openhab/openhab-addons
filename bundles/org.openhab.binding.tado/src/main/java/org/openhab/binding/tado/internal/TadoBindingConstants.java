@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,8 @@ public class TadoBindingConstants {
         CELSIUS,
         FAHRENHEIT
     }
+
+    public static final String CHANNEL_HOME_PRESENCE_MODE = "homePresence";
 
     public static final String CHANNEL_ZONE_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String CHANNEL_ZONE_HUMIDITY = "humidity";

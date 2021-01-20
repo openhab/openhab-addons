@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,13 +17,13 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.VeluxItemType;
 import org.openhab.binding.velux.internal.handler.utils.StateUtils;
 import org.openhab.binding.velux.internal.handler.utils.ThingConfiguration;
 import org.openhab.binding.velux.internal.things.VeluxScene;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +81,7 @@ final class ChannelBridgeCheck extends ChannelHandlerTemplate {
                         LOGGER.trace("handleCommand(): ignoring non SCENE_ACTION.");
                         continue;
                     }
-                    if (!ThingConfiguration.exists(thisBridgeHandler, channelUID,
+                    if (!ThingConfiguration.exists(thisBridgeHandler, thisChannelUID,
                             VeluxBindingProperties.PROPERTY_SCENE_NAME)) {
                         LOGGER.trace("handleCommand(): aborting processing as scene name is not set.");
                         break;

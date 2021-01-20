@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -27,7 +28,6 @@ import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Stenlund - Initial contribution
  * @author Hilbrand Bouwkamp - Made this the service class instead of only interface. Added templates
  */
-@Component(service = SpotifyAuthService.class, immediate = true, configurationPid = "binding.spotify.authService")
+@Component(service = SpotifyAuthService.class, configurationPid = "binding.spotify.authService")
 @NonNullByDefault
 public class SpotifyAuthService {
 
@@ -107,7 +107,7 @@ public class SpotifyAuthService {
                     String.format("Cannot find '{}' - failed to initialize Spotify servlet", templateName));
         } else {
             try (InputStream inputStream = index.openStream()) {
-                return IOUtils.toString(inputStream);
+                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
             }
         }
     }

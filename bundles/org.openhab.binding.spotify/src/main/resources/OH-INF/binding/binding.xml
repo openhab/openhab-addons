@@ -5,6 +5,5 @@
 
 	<name>Spotify Binding</name>
 	<description>This is the openHAB binding for Spotify used to manage Connect devices. Using the Spotify WebAPI.</description>
-	<author>Andreas Stenlund, Hilbrand Bouwkamp</author>
 
 </binding:binding>

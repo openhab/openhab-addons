@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,9 @@ package org.openhab.binding.deconz.internal.types;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -24,11 +27,11 @@ import com.google.gson.JsonParseException;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class LightTypeDeserializer implements JsonDeserializer<LightType> {
     @Override
-    public LightType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public @Nullable LightType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        String s = json.getAsString();
-        return s == null ? LightType.UNKNOWN : LightType.fromString(s);
+        return LightType.fromString(json.getAsString());
     }
 }

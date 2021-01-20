@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,7 +129,7 @@ public class GoogleTTSService implements TTSService {
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();
         }
-        logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
+        logger.debug("Using cache folder {}", cacheFolder.getAbsolutePath());
 
         apiImpl = new GoogleCloudAPI(configAdmin, oAuthFactory, cacheFolder);
         updateConfig(config);

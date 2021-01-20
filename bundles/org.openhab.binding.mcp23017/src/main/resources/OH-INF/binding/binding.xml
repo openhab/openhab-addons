@@ -5,6 +5,5 @@
 
 	<name>MCP23017 Binding</name>
 	<description>This is the binding for MCP23017 I/O expansion chips.</description>
-	<author>Anatol Ogorek</author>
 
 </binding:binding>

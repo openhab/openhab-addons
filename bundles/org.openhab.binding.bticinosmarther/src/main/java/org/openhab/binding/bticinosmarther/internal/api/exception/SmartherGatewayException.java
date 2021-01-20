@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.bticinosmarther.internal.api.exception;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Signals that a generic communication issue with API gateway has occurred.
@@ -32,7 +33,7 @@ public class SmartherGatewayException extends IOException {
      * @param message
      *            the error message returned from the API gateway
      */
-    public SmartherGatewayException(String message) {
+    public SmartherGatewayException(@Nullable String message) {
         super(message);
     }
 
@@ -44,7 +45,7 @@ public class SmartherGatewayException extends IOException {
      * @param cause
      *            the cause (a null value is permitted, and indicates that the cause is nonexistent or unknown)
      */
-    public SmartherGatewayException(String message, Throwable cause) {
+    public SmartherGatewayException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -57,7 +58,7 @@ public class SmartherGatewayException extends IOException {
      * @param cause
      *            the cause (a null value is permitted, and indicates that the cause is nonexistent or unknown)
      */
-    public SmartherGatewayException(Throwable cause) {
+    public SmartherGatewayException(@Nullable Throwable cause) {
         super(cause);
     }
 }

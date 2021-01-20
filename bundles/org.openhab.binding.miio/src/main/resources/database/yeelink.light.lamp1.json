@@ -4,9 +4,17 @@
 			"yeelink.light.lamp1",
 			"yeelink.light.lamp2",
 			"yeelink.light.lamp3",
+			"yeelink.light.lamp4",
+			"yeelink.light.lamp5",
+			"yeelink.light.lamp6",
+			"yeelink.light.lamp7",
+			"yeelink.light.lamp8",
+			"yeelink.light.strip4",
 			"yeelink.light.ct2",
 			"yeelink.light.mono1",
 			"yeelink.light.mono2",
+			"yeelink.light.mono5",
+			"yeelink.light.panel1",
 			"yeelink.light.virtual"
 		],
 		"channels": [
@@ -16,12 +24,15 @@
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -30,7 +41,6 @@
 				"channel": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_bright",
@@ -46,15 +56,20 @@
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Light"
 				]
 			},
 			{
 				"property": "delayoff",
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "seconds",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "cron_add",
@@ -64,15 +79,26 @@
 							"$value$"
 						]
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_ct_abx",
@@ -83,6 +109,11 @@
 							500
 						]
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Setpoint",
+					"Temperature"
 				]
 			},
 			{
@@ -90,13 +121,54 @@
 				"friendlyName": "Color Mode",
 				"channel": "colorMode",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 5,
+					"step": 1,
+					"options": [
+						{
+							"value": "0",
+							"label": "Default"
+						},
+						{
+							"value": "1",
+							"label": "CT mode"
+						},
+						{
+							"value": "2",
+							"label": "RGB mode"
+						},
+						{
+							"value": "3",
+							"label": "HSV mode"
+						},
+						{
+							"value": "4",
+							"label": "Color Flow mode"
+						},
+						{
+							"value": "5",
+							"label": "Night Light mode"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_scene",
-						"parameterType": "NUMBER"
+						"command": "set_power",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"on",
+							"smooth",
+							500,
+							"$value$"
+						]
 					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -105,13 +177,13 @@
 				"channel": "name",
 				"type": "String",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_name",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "text"
 			}
 		]
 	}

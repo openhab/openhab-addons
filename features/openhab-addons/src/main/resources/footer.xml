@@ -2,15 +2,18 @@
 	<feature name="openhab-binding-bluetooth" description="Bluetooth Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-serial</feature>
+		<bundle dependency="true">mvn:com.github.hypfvieh/bluez-dbus-osgi/0.1.3</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.airthings/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.am43/${project.version}</bundle>
-		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.blukii/${project.version}</bundle>
-		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.ruuvitag/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluez/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluegiga/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.blukii/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.daikinmadoka/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.enoceanble/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.generic/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.roaming/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.ruuvitag/${project.version}</bundle>
 	</feature>
 	<feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
@@ -24,6 +27,10 @@
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-modbus</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.e3dc/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.helioseasycontrols/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.stiebeleltron/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.studer/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.sunspec/${project.version}</bundle>
 	</feature>
 

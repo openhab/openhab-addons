@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,11 +32,13 @@ import org.openhab.core.thing.ThingUID;
 public class ShellyThingCreator {
     private static final Map<String, String> THING_TYPE_MAPPING = new LinkedHashMap<>();
     static {
-        // mapping by thing type
+        // mapping by device type id
         THING_TYPE_MAPPING.put(SHELLYDT_1PM, THING_TYPE_SHELLY1PM_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_1, THING_TYPE_SHELLY1_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_3EM, THING_TYPE_SHELLY3EM_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_EM, THING_TYPE_SHELLYEM_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_SHPLG_S, THING_TYPE_SHELLYPLUGS_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_SHPLG_U1, THING_TYPE_SHELLYPLUGU1_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_GAS, THING_TYPE_SHELLYGAS_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_DW, THING_TYPE_SHELLYDOORWIN_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_DW2, THING_TYPE_SHELLYDOORWIN2_STR);
@@ -112,6 +114,9 @@ public class ShellyThingCreator {
             if (name.startsWith(THING_TYPE_SHELLYPLUGS_STR) || name.contains("-s")) {
                 return THING_TYPE_SHELLYPLUGS_STR;
             }
+            if (name.startsWith(THING_TYPE_SHELLYPLUGU1_STR)) {
+                return THING_TYPE_SHELLYPLUGU1_STR;
+            }
             return THING_TYPE_SHELLYPLUG_STR;
         }
         if (name.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)) {
@@ -119,12 +124,13 @@ public class ShellyThingCreator {
         }
 
         // Check general mapping
-        if (!deviceType.isEmpty() && THING_TYPE_MAPPING.containsKey(deviceType)) {
-            return THING_TYPE_MAPPING.get(deviceType);
+        if (!deviceType.isEmpty()) {
+            String str = THING_TYPE_MAPPING.get(deviceType);
+            if (str != null) {
+                return str;
+            }
         }
-        if (THING_TYPE_MAPPING.containsKey(type)) {
-            return THING_TYPE_MAPPING.get(type);
-        }
-        return THING_TYPE_SHELLYUNKNOWN_STR;
+
+        return THING_TYPE_MAPPING.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN_STR);
     }
 }

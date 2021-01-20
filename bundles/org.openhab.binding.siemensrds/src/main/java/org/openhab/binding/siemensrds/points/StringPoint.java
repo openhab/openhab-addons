@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,10 +34,14 @@ public class StringPoint extends BasePoint {
     @Override
     public int asInt() {
         try {
-            return Integer.parseInt(value);
-        } catch (Exception e) {
-            return UNDEFINED_VALUE;
+            String value = this.value;
+            if (value != null) {
+                return Integer.parseInt(value);
+            }
+        } catch (NumberFormatException e) {
+            // default value
         }
+        return UNDEFINED_VALUE;
     }
 
     @Override

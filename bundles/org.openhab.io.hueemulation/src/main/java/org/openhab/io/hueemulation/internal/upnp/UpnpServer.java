@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -55,8 +56,6 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -82,8 +81,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(immediate = false, // Don't start the upnp server on its own. Must be pulled in by HueEmulationService.
         configurationPolicy = ConfigurationPolicy.IGNORE, property = {
-                EventConstants.EVENT_TOPIC + "=" + ConfigStore.EVENT_ADDRESS_CHANGED,
-                "com.eclipsesource.jaxrs.publish=false" }, //
+                EventConstants.EVENT_TOPIC + "=" + ConfigStore.EVENT_ADDRESS_CHANGED }, //
         service = { UpnpServer.class, EventHandler.class })
 public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConfigWithRuntime>, EventHandler {
     /**
@@ -120,6 +118,9 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
     protected @NonNullByDefault({}) ConfigStore cs;
     @Reference
     protected @NonNullByDefault({}) HttpService httpService;
+
+    @Reference
+    protected @NonNullByDefault({}) ClientBuilder clientBuilder;
 
     public boolean overwriteReadyToFalse = false;
 
@@ -242,11 +243,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         }
 
         selfTests.clear();
-
-        ClientConfig configuration = new ClientConfig();
-        configuration = configuration.property(ClientProperties.CONNECT_TIMEOUT, 1000);
-        configuration = configuration.property(ClientProperties.READ_TIMEOUT, 1000);
-        Client client = ClientBuilder.newClient(configuration);
+        Client client = clientBuilder.connectTimeout(1, TimeUnit.SECONDS).readTimeout(1, TimeUnit.SECONDS).build();
         Response response;
         String url = "";
         try {
@@ -352,8 +349,9 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         }
         configChangeFuture = root.thenApply(this::createConfiguration)
                 .thenApplyAsync(this::performAddressTest, executor).thenApply(this::applyConfiguration)
-                .thenCompose(config::startNow)
-                .whenComplete((HueEmulationConfigWithRuntime config, @Nullable Throwable e) -> {
+                .thenCompose(c -> {
+                    return c.startNow();
+                }).whenComplete((HueEmulationConfigWithRuntime config, @Nullable Throwable e) -> {
                     if (e != null) {
                         logger.warn("Upnp server: Address test failed", e);
                     }

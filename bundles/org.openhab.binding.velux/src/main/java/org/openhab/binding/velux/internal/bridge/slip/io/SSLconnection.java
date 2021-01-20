@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.velux.internal.bridge.slip.io;
 
+import java.io.Closeable;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -29,6 +31,8 @@ import javax.net.ssl.X509TrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-class SSLconnection {
+class SSLconnection implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(SSLconnection.class);
 
     // Public definition
@@ -62,13 +66,12 @@ class SSLconnection {
      * ***** Private Objects *****
      */
 
-    private static final int CONNECTION_BUFFER_SIZE = 4096;
-
-    private boolean ready = false;
     private @Nullable SSLSocket socket;
     private @Nullable DataOutputStream dOut;
     private @Nullable DataInputStreamWithTimeout dIn;
-    private int ioTimeoutMSecs = 60000;
+
+    private int readTimeoutMSecs = 2000;
+    private int connTimeoutMSecs = 6000;
 
     /**
      * Fake trust manager to suppress any certificate errors,
@@ -102,21 +105,18 @@ class SSLconnection {
      */
     SSLconnection() {
         logger.debug("SSLconnection() called.");
-        ready = false;
-        logger.trace("SSLconnection() finished.");
     }
 
     /**
      * Constructor to setup and establish a connection.
      *
-     * @param host as String describing the Service Access Point location i.e. hostname.
-     * @param port as String describing the Service Access Point location i.e. TCP port.
+     * @param bridgeInstance the actual Bridge Thing instance
      * @throws java.net.ConnectException in case of unrecoverable communication failures.
      * @throws java.io.IOException in case of continuous communication I/O failures.
      * @throws java.net.UnknownHostException in case of continuous communication I/O failures.
      */
-    SSLconnection(String host, int port) throws ConnectException, IOException, UnknownHostException {
-        logger.debug("SSLconnection({},{}) called.", host, port);
+    SSLconnection(VeluxBridgeHandler bridgeInstance) throws ConnectException, IOException, UnknownHostException {
+        logger.debug("SSLconnection() called");
         logger.info("Starting {} bridge connection.", VeluxBindingConstants.BINDING_ID);
         SSLContext ctx = null;
         try {
@@ -126,15 +126,27 @@ class SSLconnection {
             throw new IOException(String.format("create of an empty trust store failed: %s.", e.getMessage()));
         }
         logger.trace("SSLconnection(): creating socket...");
-        // Just for avoidance of Potential null pointer access
-        SSLSocket socketX = (SSLSocket) ctx.getSocketFactory().createSocket(host, port);
-        logger.trace("SSLconnection(): starting SSL handshake...");
-        if (socketX != null) {
-            socketX.startHandshake();
-            dOut = new DataOutputStream(socketX.getOutputStream());
-            dIn = new DataInputStreamWithTimeout(socketX.getInputStream());
-            ready = true;
-            socket = socketX;
+        SSLSocket socket = this.socket = (SSLSocket) ctx.getSocketFactory().createSocket();
+        if (socket != null) {
+            VeluxBridgeConfiguration cfg = bridgeInstance.veluxBridgeConfiguration();
+            readTimeoutMSecs = cfg.timeoutMsecs;
+            connTimeoutMSecs = Math.max(connTimeoutMSecs, readTimeoutMSecs);
+            // use longer timeout when establishing the connection
+            socket.setSoTimeout(connTimeoutMSecs);
+            socket.setKeepAlive(true);
+            socket.connect(new InetSocketAddress(cfg.ipAddress, cfg.tcpPort), connTimeoutMSecs);
+            logger.trace("SSLconnection(): starting SSL handshake...");
+            socket.startHandshake();
+            // use shorter timeout for normal communications
+            socket.setSoTimeout(readTimeoutMSecs);
+            dOut = new DataOutputStream(socket.getOutputStream());
+            dIn = new DataInputStreamWithTimeout(socket.getInputStream(), bridgeInstance);
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "SSLconnection(): connected... (ip={}, port={}, sslTimeout={}, soTimeout={}, soKeepAlive={})",
+                        cfg.ipAddress, cfg.tcpPort, connTimeoutMSecs, socket.getSoTimeout(),
+                        socket.getKeepAlive() ? "true" : "false");
+            }
         }
         logger.trace("SSLconnection() finished.");
     }
@@ -150,46 +162,54 @@ class SSLconnection {
      * @return <b>ready</b> as boolean for an established connection.
      */
     synchronized boolean isReady() {
-        return ready;
+        return socket != null && dIn != null && dOut != null;
     }
 
     /**
-     * Method to pass a message towards the bridge.
+     * Method to pass a message towards the bridge. This method gets called when we are initiating a new SLIP
+     * transaction.
      *
-     * @param packet as Array of bytes to be transmitted towards the bridge via the established connection.
-     * @throws java.io.IOException in case of a communication I/O failure.
+     * @param <b>packet</b> as Array of bytes to be transmitted towards the bridge via the established connection.
+     * @throws java.io.IOException in case of a communication I/O failure
      */
-    @SuppressWarnings("null")
     synchronized void send(byte[] packet) throws IOException {
         logger.trace("send() called, writing {} bytes.", packet.length);
-        if (!ready || (dOut == null)) {
-            throw new IOException();
+        DataOutputStream dOutX = dOut;
+        if (dOutX == null) {
+            throw new IOException("DataOutputStream not initialised");
         }
-        dOut.write(packet, 0, packet.length);
-        if (logger.isTraceEnabled()) {
-            StringBuilder sb = new StringBuilder();
-            for (byte b : packet) {
-                sb.append(String.format("%02X ", b));
+        try {
+            // copy packet data to the write buffer
+            dOutX.write(packet, 0, packet.length);
+            // force the write buffer data to be written to the socket
+            dOutX.flush();
+            if (logger.isTraceEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                for (byte b : packet) {
+                    sb.append(String.format("%02X ", b));
+                }
+                logger.trace("send() finished after having send {} bytes: {}", packet.length, sb.toString());
             }
-            logger.trace("send() finished after having send {} bytes: {}", packet.length, sb.toString());
+        } catch (IOException e) {
+            close();
+            throw e;
         }
     }
 
     /**
      * Method to verify that there is message from the bridge.
      *
-     * @return <b>true</b> if there are any bytes ready to be queried using {@link SSLconnection#receive}.
-     * @throws java.io.IOException in case of a communication I/O failure.
+     * @return <b>true</b> if there are any messages ready to be queried using {@link SSLconnection#receive}.
      */
-    synchronized boolean available() throws IOException {
+    synchronized boolean available() {
         logger.trace("available() called.");
-        if (!ready || (dIn == null)) {
-            throw new IOException();
+        DataInputStreamWithTimeout dInX = dIn;
+        if (dInX != null) {
+            int availableMessages = dInX.available();
+            logger.trace("available(): found {} messages ready to be read (> 0 means true).", availableMessages);
+            return availableMessages > 0;
         }
-        @SuppressWarnings("null")
-        int availableBytes = dIn.available();
-        logger.trace("available(): found {} bytes ready to be read (> 0 means true).", availableBytes);
-        return availableBytes > 0;
+        return false;
     }
 
     /**
@@ -200,58 +220,63 @@ class SSLconnection {
      */
     synchronized byte[] receive() throws IOException {
         logger.trace("receive() called.");
-        if (!ready || (dIn == null)) {
-            throw new IOException();
+        DataInputStreamWithTimeout dInX = dIn;
+        if (dInX == null) {
+            throw new IOException("DataInputStreamWithTimeout not initialised");
         }
-        byte[] message = new byte[CONNECTION_BUFFER_SIZE];
-        @SuppressWarnings("null")
-        int messageLength = dIn.read(message, 0, message.length, ioTimeoutMSecs);
-        byte[] packet = new byte[messageLength];
-        System.arraycopy(message, 0, packet, 0, messageLength);
-        if (logger.isTraceEnabled()) {
-            StringBuilder sb = new StringBuilder();
-            for (byte b : packet) {
-                sb.append(String.format("%02X ", b));
+        try {
+            byte[] packet = dInX.readSlipMessage(readTimeoutMSecs);
+            if (logger.isTraceEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                for (byte b : packet) {
+                    sb.append(String.format("%02X ", b));
+                }
+                logger.trace("receive() finished after having read {} bytes: {}", packet.length, sb.toString());
             }
-            logger.trace("receive() finished after having read {} bytes: {}", messageLength, sb.toString());
+            return packet;
+        } catch (IOException e) {
+            close();
+            throw e;
         }
-        return packet;
     }
 
     /**
      * Destructor to tear down a connection.
      *
      * @throws java.io.IOException in case of a communication I/O failure.
+     *             But actually eats all exceptions to ensure sure that all shutdown code is executed
      */
-    synchronized void close() throws IOException {
+    @Override
+    public synchronized void close() throws IOException {
         logger.debug("close() called.");
-        ready = false;
-        logger.info("Shutting down Velux bridge connection.");
-        // Just for avoidance of Potential null pointer access
         DataInputStreamWithTimeout dInX = dIn;
         if (dInX != null) {
-            dInX.close();
+            try {
+                dInX.close();
+            } catch (IOException e) {
+                // eat the exception so the following will always be executed
+            }
         }
-        // Just for avoidance of Potential null pointer access
         DataOutputStream dOutX = dOut;
         if (dOutX != null) {
-            dOutX.close();
+            try {
+                dOutX.close();
+            } catch (IOException e) {
+                // eat the exception so the following will always be executed
+            }
         }
-        // Just for avoidance of Potential null pointer access
         SSLSocket socketX = socket;
         if (socketX != null) {
-            socketX.close();
+            logger.debug("Shutting down Velux bridge connection.");
+            try {
+                socketX.close();
+            } catch (IOException e) {
+                // eat the exception so the following will always be executed
+            }
         }
+        dIn = null;
+        dOut = null;
+        socket = null;
         logger.trace("close() finished.");
-    }
-
-    /**
-     * Parameter modification.
-     *
-     * @param timeoutMSecs the maximum duration in milliseconds for read operations.
-     */
-    void setTimeout(int timeoutMSecs) {
-        logger.debug("setTimeout() set timeout to {} milliseconds.", timeoutMSecs);
-        ioTimeoutMSecs = timeoutMSecs;
     }
 }

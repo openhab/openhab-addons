@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,9 @@ import org.openhab.core.library.types.PercentType;
  *
  */
 public class HueStateColorBulb extends HueStateBulb {
-    public static int MAX_HUE = 65535; // For extended color light bulbs
+    public static final int MAX_HUE = 65535; // For extended color light bulbs
     public int hue = 0;
-    public static int MAX_SAT = 254;
+    public static final int MAX_SAT = 254;
     public int sat = 0;
 
     // color as array of xy-coordinates

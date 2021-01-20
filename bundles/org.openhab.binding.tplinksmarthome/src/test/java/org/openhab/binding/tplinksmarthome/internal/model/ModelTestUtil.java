@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.tplinksmarthome.internal.model;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.Gson;
@@ -58,8 +57,7 @@ public final class ModelTestUtil {
      * @throws IOException when file could not be read.
      */
     public static String readJson(String filename) throws IOException {
-        return IOUtils
-                .toString(ModelTestUtil.class.getResourceAsStream(filename + ".json"), StandardCharsets.UTF_8.name())
-                .replaceAll("[\n\r\t ]", "");
+        return new String(ModelTestUtil.class.getResourceAsStream(filename + ".json").readAllBytes(),
+                StandardCharsets.UTF_8).replaceAll("[\n\r\t ]", "");
     }
 }

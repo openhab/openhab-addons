@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunProductDiscovery;
 import org.openhab.binding.velux.internal.bridge.common.RunProductIdentification;
 import org.openhab.binding.velux.internal.bridge.common.RunProductSearch;
+import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.common.RunScene;
 import org.openhab.binding.velux.internal.bridge.common.SetHouseStatusMonitor;
 import org.openhab.binding.velux.internal.bridge.common.SetProductLimitation;
@@ -83,25 +84,26 @@ import org.slf4j.LoggerFactory;
 class SlipBridgeAPI implements BridgeAPI {
     private final Logger logger = LoggerFactory.getLogger(SlipBridgeAPI.class);
 
-    private static final GetDeviceStatus GETDEVICESTATUS = new SCgetDeviceStatus();
-    private static final GetFirmware GETFIRMWARE = new SCgetFirmware();
-    private static final GetHouseStatus GETHOUSESTATUS = new SCgetHouseStatus();
-    private static final GetLANConfig GETLANCONFIG = new SCgetLANConfig();
-    private static final GetProduct GETPRODUCT = new SCgetProduct();
-    private static final GetProductLimitation GETPRODUCTLIMITATION = new SCgetLimitation();
-    private static final GetProducts GETPRODUCTS = new SCgetProducts();
-    private static final GetScenes GETSCENES = new SCgetScenes();
-    private static final GetWLANConfig GETWLANCONFIG = new SCgetWLANConfig();
-    private static final Login LOGIN = new SClogin();
-    private static final Logout LOGOUT = new SClogout();
-    private static final RunProductCommand RUNPRODUCTCOMMAND = new SCrunProductCommand();
-    private static final RunProductDiscovery RUNPRODUCTDISCOVERY = new SCrunProductDiscovery();
-    private static final RunProductIdentification RUNPRODUCTIDENTIFICATION = new SCrunProductIdentification();
-    private static final RunProductSearch RUNPRODUCTSEARCH = new SCrunProductSearch();
-    private static final RunScene RUNSCENE = new SCrunScene();
-    private static final SetHouseStatusMonitor SETHOUSESTATUSMONITOR = new SCsetHouseStatusMonitor();
-    private static final SetProductLimitation SETPRODUCTLIMITATION = new SCsetLimitation();
-    private static final SetSceneVelocity SETSCENEVELOCITY = new SCsetSceneVelocity();
+    private final GetDeviceStatus slipGetDeviceStatus = new SCgetDeviceStatus();
+    private final GetFirmware slipGetFirmware = new SCgetFirmware();
+    private final GetHouseStatus slipGetHouseStatus = new SCgetHouseStatus();
+    private final GetLANConfig slipGetLanConfig = new SCgetLANConfig();
+    private final GetProduct slipGetProduct = new SCgetProduct();
+    private final GetProductLimitation slipGetProductLimitation = new SCgetLimitation();
+    private final GetProducts slipGetProducts = new SCgetProducts();
+    private final GetScenes slipGetScenes = new SCgetScenes();
+    private final GetWLANConfig slipGetWLanConfig = new SCgetWLANConfig();
+    private final Login slipLogin = new SClogin();
+    private final Logout slipLogout = new SClogout();
+    private final RunProductCommand slipRunProductCommand = new SCrunProductCommand();
+    private final RunProductDiscovery slipRunProductDiscovery = new SCrunProductDiscovery();
+    private final RunProductIdentification slipRunProductIdentification = new SCrunProductIdentification();
+    private final RunProductSearch slipRunProductSearch = new SCrunProductSearch();
+    private final RunScene slipRunScene = new SCrunScene();
+    private final SetHouseStatusMonitor slipSetHouseMonitor = new SCsetHouseStatusMonitor();
+    private final SetProductLimitation slipSetProductLimitation = new SCsetLimitation();
+    private final SetSceneVelocity slipSetSceneVelocity = new SCsetSceneVelocity();
+    private final RunReboot slipRunReboot = new SCrunReboot();
 
     /**
      * Constructor.
@@ -118,96 +120,101 @@ class SlipBridgeAPI implements BridgeAPI {
 
     @Override
     public GetDeviceStatus getDeviceStatus() {
-        return GETDEVICESTATUS;
+        return slipGetDeviceStatus;
     }
 
     @Override
     public GetFirmware getFirmware() {
-        return GETFIRMWARE;
+        return slipGetFirmware;
     }
 
     @Override
     public @Nullable GetHouseStatus getHouseStatus() {
-        return GETHOUSESTATUS;
+        return slipGetHouseStatus;
     }
 
     @Override
     public GetLANConfig getLANConfig() {
-        return GETLANCONFIG;
+        return slipGetLanConfig;
     }
 
     @Override
     public @Nullable GetProduct getProduct() {
-        return GETPRODUCT;
+        return slipGetProduct;
     }
 
     @Override
     public @Nullable GetProductLimitation getProductLimitation() {
-        return GETPRODUCTLIMITATION;
+        return slipGetProductLimitation;
     }
 
     @Override
     public @Nullable SetProductLimitation setProductLimitation() {
-        return SETPRODUCTLIMITATION;
+        return slipSetProductLimitation;
     }
 
     @Override
     public GetProducts getProducts() {
-        return GETPRODUCTS;
+        return slipGetProducts;
     }
 
     @Override
     public GetScenes getScenes() {
-        return GETSCENES;
+        return slipGetScenes;
     }
 
     @Override
     public GetWLANConfig getWLANConfig() {
-        return GETWLANCONFIG;
+        return slipGetWLanConfig;
     }
 
     @Override
     public Login login() {
-        return LOGIN;
+        return slipLogin;
     }
 
     @Override
     public Logout logout() {
-        return LOGOUT;
+        return slipLogout;
     }
 
     @Override
     public @Nullable RunProductCommand runProductCommand() {
-        return RUNPRODUCTCOMMAND;
+        return slipRunProductCommand;
     }
 
     @Override
     public RunProductDiscovery runProductDiscovery() {
-        return RUNPRODUCTDISCOVERY;
+        return slipRunProductDiscovery;
     }
 
     @Override
     public RunProductIdentification runProductIdentification() {
-        return RUNPRODUCTIDENTIFICATION;
+        return slipRunProductIdentification;
     }
 
     @Override
     public RunProductSearch runProductSearch() {
-        return RUNPRODUCTSEARCH;
+        return slipRunProductSearch;
     }
 
     @Override
     public RunScene runScene() {
-        return RUNSCENE;
+        return slipRunScene;
     }
 
     @Override
     public @Nullable SetHouseStatusMonitor setHouseStatusMonitor() {
-        return SETHOUSESTATUSMONITOR;
+        return slipSetHouseMonitor;
     }
 
     @Override
     public SetSceneVelocity setSceneVelocity() {
-        return SETSCENEVELOCITY;
+        return slipSetSceneVelocity;
+    }
+
+    @Override
+    public @Nullable RunReboot runReboot() {
+        return slipRunReboot;
     }
 }

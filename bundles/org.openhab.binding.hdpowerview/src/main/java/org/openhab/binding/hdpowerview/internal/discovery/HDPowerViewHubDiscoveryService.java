@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import jcifs.netbios.NbtAddress;
  * @author Andy Lintner - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.hdpowerview")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.hdpowerview")
 public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryService.class);

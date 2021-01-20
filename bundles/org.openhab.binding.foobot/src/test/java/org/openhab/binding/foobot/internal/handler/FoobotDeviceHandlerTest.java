@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
@@ -40,7 +41,7 @@ public class FoobotDeviceHandlerTest {
         @Override
         protected String request(String url, String apiKey) throws FoobotApiException {
             try (InputStream stream = getClass().getResourceAsStream("../sensors.json")) {
-                return IOUtils.toString(stream);
+                return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new AssertionError(e.getMessage());
             }
@@ -53,6 +54,7 @@ public class FoobotDeviceHandlerTest {
         final FoobotJsonData sensorData = connector.getSensorData("1234");
 
         assertNotNull(sensorData, "No sensor data read");
+        Objects.requireNonNull(sensorData);
         assertEquals(handler.sensorDataToState("temperature", sensorData), new QuantityType(12.345, SIUnits.CELSIUS));
         assertEquals(handler.sensorDataToState("gpi", sensorData), new DecimalType(5.6789012));
     }

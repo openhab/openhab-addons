@@ -5,6 +5,5 @@
 
 	<name>HP Printer Binding</name>
 	<description>Binding for HP Printers with Embedded Web Servers</description>
-	<author>Stewart Cossey</author>
 
 </binding:binding>

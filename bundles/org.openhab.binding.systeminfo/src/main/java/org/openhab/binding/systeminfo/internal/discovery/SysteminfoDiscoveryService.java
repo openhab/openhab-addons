@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Wouter Born - Add null annotations
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.systeminfo")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.systeminfo")
 public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
     public static final String DEFAULT_THING_ID = "unknown";
     public static final String DEFAULT_THING_LABEL = "Local computer";

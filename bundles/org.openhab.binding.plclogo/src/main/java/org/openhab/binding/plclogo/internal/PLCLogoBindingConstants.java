@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -82,7 +81,7 @@ public class PLCLogoBindingConstants {
     public static final String NI_ANALOG = "NAI"; // Network analog input
     public static final String NQ_ANALOG = "NAQ"; // Network analog output
 
-    private static final Map<Integer, @Nullable String> LOGO_STATES_0BA7;
+    private static final Map<Integer, String> LOGO_STATES_0BA7;
     static {
         Map<Integer, String> buffer = new HashMap<>();
         // buffer.put(???, "Network access error"); // Netzwerkzugriffsfehler
@@ -92,7 +91,7 @@ public class PLCLogoBindingConstants {
         LOGO_STATES_0BA7 = Collections.unmodifiableMap(buffer);
     }
 
-    private static final Map<Integer, @Nullable String> LOGO_STATES_0BA8;
+    private static final Map<Integer, String> LOGO_STATES_0BA8;
     static {
         Map<Integer, String> buffer = new HashMap<>();
         buffer.put(1, "Ethernet link error"); // Netzwerk Verbindungsfehler
@@ -104,9 +103,9 @@ public class PLCLogoBindingConstants {
         LOGO_STATES_0BA8 = Collections.unmodifiableMap(buffer);
     }
 
-    public static final Map<String, @Nullable Map<Integer, @Nullable String>> LOGO_STATES;
+    public static final Map<String, Map<Integer, String>> LOGO_STATES;
     static {
-        Map<String, @Nullable Map<Integer, @Nullable String>> buffer = new HashMap<>();
+        Map<String, Map<Integer, String>> buffer = new HashMap<>();
         buffer.put(LOGO_0BA7, LOGO_STATES_0BA7);
         buffer.put(LOGO_0BA8, LOGO_STATES_0BA8);
         LOGO_STATES = Collections.unmodifiableMap(buffer);
@@ -122,18 +121,18 @@ public class PLCLogoBindingConstants {
         }
     }
 
-    public static final Map<String, @Nullable Layout> LOGO_CHANNELS;
+    public static final Map<String, Layout> LOGO_CHANNELS;
     static {
-        Map<String, @Nullable Layout> buffer = new HashMap<>();
+        Map<String, Layout> buffer = new HashMap<>();
         buffer.put(DAIGNOSTICS_CHANNEL, new Layout(984, 1)); // Diagnostics starts at 984 for 1 byte
         buffer.put(RTC_CHANNEL, new Layout(985, 6)); // RTC starts at 985 for 6 bytes: year month day hour minute second
         buffer.put(DAY_OF_WEEK_CHANNEL, new Layout(998, 1)); // Diagnostics starts at 998 for 1 byte
         LOGO_CHANNELS = Collections.unmodifiableMap(buffer);
     }
 
-    public static final Map<Integer, @Nullable String> DAY_OF_WEEK;
+    public static final Map<Integer, String> DAY_OF_WEEK;
     static {
-        Map<Integer, @Nullable String> buffer = new HashMap<>();
+        Map<Integer, String> buffer = new HashMap<>();
         buffer.put(1, "SUNDAY");
         buffer.put(2, "MONDAY");
         buffer.put(3, "TUEsDAY");
@@ -144,9 +143,9 @@ public class PLCLogoBindingConstants {
         DAY_OF_WEEK = Collections.unmodifiableMap(buffer);
     }
 
-    private static final Map<String, @Nullable Layout> LOGO_MEMORY_0BA7;
+    private static final Map<String, Layout> LOGO_MEMORY_0BA7;
     static {
-        Map<String, @Nullable Layout> buffer = new HashMap<>();
+        Map<String, Layout> buffer = new HashMap<>();
         buffer.put(MEMORY_BYTE, new Layout(0, 850));
         buffer.put(MEMORY_DWORD, new Layout(0, 850));
         buffer.put(MEMORY_WORD, new Layout(0, 850));
@@ -160,9 +159,9 @@ public class PLCLogoBindingConstants {
         LOGO_MEMORY_0BA7 = Collections.unmodifiableMap(buffer);
     }
 
-    private static final Map<String, @Nullable Layout> LOGO_MEMORY_0BA8;
+    private static final Map<String, Layout> LOGO_MEMORY_0BA8;
     static {
-        Map<String, @Nullable Layout> buffer = new HashMap<>();
+        Map<String, Layout> buffer = new HashMap<>();
         buffer.put(MEMORY_BYTE, new Layout(0, 850));
         buffer.put(MEMORY_DWORD, new Layout(0, 850));
         buffer.put(MEMORY_WORD, new Layout(0, 850));
@@ -180,9 +179,9 @@ public class PLCLogoBindingConstants {
         LOGO_MEMORY_0BA8 = Collections.unmodifiableMap(buffer);
     }
 
-    public static final Map<String, @Nullable Map<String, @Nullable Layout>> LOGO_MEMORY_BLOCK;
+    public static final Map<String, Map<String, Layout>> LOGO_MEMORY_BLOCK;
     static {
-        Map<String, @Nullable Map<String, @Nullable Layout>> buffer = new HashMap<>();
+        Map<String, Map<String, Layout>> buffer = new HashMap<>();
         buffer.put(LOGO_0BA7, LOGO_MEMORY_0BA7);
         buffer.put(LOGO_0BA8, LOGO_MEMORY_0BA8);
         LOGO_MEMORY_BLOCK = Collections.unmodifiableMap(buffer);

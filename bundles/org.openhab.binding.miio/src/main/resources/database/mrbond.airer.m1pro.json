@@ -1,0 +1,107 @@
+{
+	"deviceMapping": {
+		"id": [
+			"mrbond.airer.m1s",
+			"mrbond.airer.m1pro",
+			"mrbond.airer.m1super"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "dry",
+				"friendlyName": "Dry",
+				"channel": "dry",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_dry",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "led",
+				"friendlyName": "LED Status",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_lamp",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "motor",
+				"friendlyName": "Motor",
+				"channel": "motor",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_motor",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "drytime",
+				"friendlyName": "Dry Time",
+				"channel": "drytime",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_drytime",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "airer_location",
+				"friendlyName": "Airer Location",
+				"channel": "airer_location",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_airer_location",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "disinfect",
+				"friendlyName": "disinfect",
+				"channel": "disinfect",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_disinfect",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "distime",
+				"friendlyName": "Disinfect Time",
+				"channel": "distime",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_distime",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
+		],
+		"experimental": true
+	}
+}

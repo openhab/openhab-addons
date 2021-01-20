@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,8 +57,8 @@ public class TACmiHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TACmiHandler.class);
 
-    private final Map<@Nullable PodIdentifier, @Nullable PodData> podDatas = new HashMap<>();
-    private final Map<@Nullable ChannelUID, @Nullable TACmiChannelConfiguration> channelConfigByUID = new HashMap<>();
+    private final Map<PodIdentifier, PodData> podDatas = new HashMap<>();
+    private final Map<ChannelUID, TACmiChannelConfiguration> channelConfigByUID = new HashMap<>();
 
     private @Nullable TACmiCoEBridgeHandler bridge;
     private long lastMessageRecvTS; // last received message timestamp
@@ -368,7 +368,7 @@ public class TACmiHandler extends BaseThingHandler {
                     "No update from C.M.I. for 15 min");
         }
         for (final PodData pd : this.podDatas.values()) {
-            if (pd == null || !(pd instanceof PodDataOutgoing)) {
+            if (!(pd instanceof PodDataOutgoing)) {
                 continue;
             }
             PodDataOutgoing podDataOutgoing = (PodDataOutgoing) pd;

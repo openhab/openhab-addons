@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,179 +12,375 @@
  */
 package org.openhab.binding.gardena.internal;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.concurrent.*;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.AbstractTypedContentProvider;
+import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
-import org.openhab.binding.gardena.internal.config.GardenaConfigWrapper;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
-import org.openhab.binding.gardena.internal.exception.GardenaUnauthorizedException;
-import org.openhab.binding.gardena.internal.model.Ability;
-import org.openhab.binding.gardena.internal.model.Device;
-import org.openhab.binding.gardena.internal.model.Devices;
-import org.openhab.binding.gardena.internal.model.Errors;
-import org.openhab.binding.gardena.internal.model.Location;
-import org.openhab.binding.gardena.internal.model.Locations;
-import org.openhab.binding.gardena.internal.model.NoResult;
-import org.openhab.binding.gardena.internal.model.Property;
-import org.openhab.binding.gardena.internal.model.PropertyValue;
-import org.openhab.binding.gardena.internal.model.Session;
-import org.openhab.binding.gardena.internal.model.SessionWrapper;
-import org.openhab.binding.gardena.internal.model.Setting;
-import org.openhab.binding.gardena.internal.model.command.Command;
-import org.openhab.binding.gardena.internal.model.command.MowerParkUntilFurtherNoticeCommand;
-import org.openhab.binding.gardena.internal.model.command.MowerParkUntilNextTimerCommand;
-import org.openhab.binding.gardena.internal.model.command.MowerStartOverrideTimerCommand;
-import org.openhab.binding.gardena.internal.model.command.MowerStartResumeScheduleCommand;
-import org.openhab.binding.gardena.internal.model.command.SensorMeasureAmbientTemperatureCommand;
-import org.openhab.binding.gardena.internal.model.command.SensorMeasureLightCommand;
-import org.openhab.binding.gardena.internal.model.command.SensorMeasureSoilHumidityCommand;
-import org.openhab.binding.gardena.internal.model.command.SensorMeasureSoilTemperatureCommand;
-import org.openhab.binding.gardena.internal.model.command.SettingCommand;
-import org.openhab.binding.gardena.internal.model.command.SettingCommandWrapper;
-import org.openhab.binding.gardena.internal.model.command.WateringCancelOverrideCommand;
-import org.openhab.binding.gardena.internal.model.command.WateringManualOverrideCommand;
-import org.openhab.binding.gardena.internal.model.deser.DateDeserializer;
-import org.openhab.binding.gardena.internal.model.deser.PropertyValueDeserializer;
-import org.openhab.binding.gardena.internal.model.property.BaseProperty;
-import org.openhab.binding.gardena.internal.model.property.IrrigationControlWateringProperty;
-import org.openhab.binding.gardena.internal.model.property.PropertyWrapper;
-import org.openhab.binding.gardena.internal.model.property.StringProperty;
+import org.openhab.binding.gardena.internal.model.DataItemDeserializer;
+import org.openhab.binding.gardena.internal.model.dto.Device;
+import org.openhab.binding.gardena.internal.model.dto.api.*;
+import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
+import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommandRequest;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
- * {@link GardenaSmart} implementation to access Gardena Smart Home.
+ * {@link GardenaSmart} implementation to access Gardena smart system.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GardenaSmartImpl implements GardenaSmart {
+@NonNullByDefault
+public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
 
-    public static final String DEVICE_CATEGORY_PUMP = "electronic_pressure_pump";
-    private static final String ABILITY_MOWER = "mower";
-    private static final String ABILITY_OUTLET = "outlet";
-    private static final String ABILITY_HUMIDITY = "humidity";
-    private static final String ABILITY_LIGHT = "light";
-    private static final String ABILITY_AMBIENT_TEMPERATURE = "ambient_temperature";
-    private static final String ABILITY_SOIL_TEMPERATURE = "soil_temperature";
-    private static final String ABILITY_POWER = "power";
-    private static final String ABILITY_WATERING = "watering";
-    private static final String ABILITY_MANUAL_WATERING = "manual_watering";
+    private Gson gson = new GsonBuilder().registerTypeAdapter(DataItem.class, new DataItemDeserializer()).create();
 
-    private static final String PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME = "button_manual_override_time";
-    private static final String PROPERTY_POWER_TIMER = "power_timer";
-    private static final String PROPERTY_WATERING_TIMER = "watering_timer_";
-    private static final String PROPERTY_MANUAL_WATERING_TIMER = "manual_watering_timer";
+    private static final String URL_API_HUSQUARNA = "https://api.authentication.husqvarnagroup.dev/v1";
+    private static final String URL_API_GARDENA = "https://api.smart.gardena.dev/v1";
+    private static final String URL_API_TOKEN = URL_API_HUSQUARNA + "/oauth2/token";
+    private static final String URL_API_WEBSOCKET = URL_API_GARDENA + "/websocket";
+    private static final String URL_API_LOCATIONS = URL_API_GARDENA + "/locations";
+    private static final String URL_API_COMMAND = URL_API_GARDENA + "/command";
 
-    private static final String DEVICE_CATEGORY_MOWER = "mower";
-    private static final String DEVICE_CATEGORY_GATEWAY = "gateway";
-
-    private static final String DEFAULT_MOWER_DURATION = "180";
-
-    private static final String URL = "https://smart.gardena.com";
-    private static final String URL_LOGIN = URL + "/v1/auth/token";
-    private static final String URL_LOCATIONS = URL + "/v1/locations/?user_id=";
-    private static final String URL_DEVICES = URL + "/v1/devices/?locationId=";
-    private static final String URL_COMMAND = URL + "/v1/devices/%s/abilities/%s/command?locationId=%s";
-    private static final String URL_PROPERTY = URL + "/v1/devices/%s/abilities/%s/properties/%s?locationId=%s";
-    private static final String URL_SETTING = URL + "/v1/devices/%s/settings/%s?locationId=%s";
-
-    private Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer())
-            .registerTypeAdapter(PropertyValue.class, new PropertyValueDeserializer()).create();
-    private HttpClient httpClient;
-
-    private String mowerDuration = DEFAULT_MOWER_DURATION;
-    private Session session;
-    private GardenaConfig config;
     private String id;
-
+    private GardenaConfig config;
     private ScheduledExecutorService scheduler;
-    private ScheduledFuture<?> refreshThreadFuture;
-    private RefreshDevicesThread refreshDevicesThread = new RefreshDevicesThread();
-
-    private GardenaSmartEventListener eventListener;
 
     private Map<String, Device> allDevicesById = new HashMap<>();
-    private Set<Location> allLocations = new HashSet<>();
+    private LocationsResponse locationsResponse;
+    private GardenaSmartEventListener eventListener;
 
-    @Override
-    public void init(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
-            ScheduledExecutorService scheduler) throws GardenaException {
+    private HttpClient httpClient;
+    private List<GardenaSmartWebSocket> webSockets = new ArrayList<>();
+    private @Nullable PostOAuth2Response token;
+    private boolean initialized = false;
+    private WebSocketFactory webSocketFactory;
+
+    private Set<Device> devicesToNotify = ConcurrentHashMap.newKeySet();
+    private @Nullable ScheduledFuture<?> deviceToNotifyFuture;
+    private @Nullable ScheduledFuture<?> newDeviceFuture;
+
+    public GardenaSmartImpl(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
+            ScheduledExecutorService scheduler, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory)
+            throws GardenaException {
         this.id = id;
         this.config = config;
         this.eventListener = eventListener;
         this.scheduler = scheduler;
+        this.webSocketFactory = webSocketFactory;
 
-        if (!config.isValid()) {
-            throw new GardenaException("Invalid config, no email or password specified");
-        }
-
-        httpClient = new HttpClient(new SslContextFactory(true));
-        httpClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
-
+        logger.debug("Starting GardenaSmart");
         try {
+            httpClient = httpClientFactory.createHttpClient(id);
+            httpClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
+            httpClient.setIdleTimeout(httpClient.getConnectTimeout());
             httpClient.start();
+
+            // initially load access token
+            verifyToken();
+            locationsResponse = loadLocations();
+
+            // assemble devices
+            for (LocationDataItem location : locationsResponse.data) {
+                LocationResponse locationResponse = loadLocation(location.id);
+                if (locationResponse.included != null) {
+                    for (DataItem<?> dataItem : locationResponse.included) {
+                        handleDataItem(dataItem);
+                    }
+                }
+            }
+
+            for (Device device : allDevicesById.values()) {
+                device.evaluateDeviceType();
+            }
+
+            startWebsockets();
+            initialized = true;
         } catch (Exception ex) {
             throw new GardenaException(ex.getMessage(), ex);
         }
+    }
 
-        loadAllDevices();
+    /**
+     * Starts the websockets for each location.
+     */
+    private void startWebsockets() throws Exception {
+        for (LocationDataItem location : locationsResponse.data) {
+            WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(location.id);
+            String socketId = id + "-" + location.attributes.name;
+            webSockets.add(new GardenaSmartWebSocket(this, webSocketCreatedResponse, config, scheduler,
+                    webSocketFactory, token, socketId));
+        }
+    }
+
+    /**
+     * Stops all websockets.
+     */
+    private void stopWebsockets() {
+        for (GardenaSmartWebSocket webSocket : webSockets) {
+            webSocket.stop();
+        }
+        webSockets.clear();
+    }
+
+    /**
+     * Communicates with Gardena smart home system and parses the result.
+     */
+    private <T> T executeRequest(HttpMethod method, String url, @Nullable Object content, @Nullable Class<T> result)
+            throws GardenaException {
+        try {
+            AbstractTypedContentProvider contentProvider = null;
+            String contentType = "application/vnd.api+json";
+            if (content != null) {
+                if (content instanceof Fields) {
+                    contentProvider = new FormContentProvider((Fields) content);
+                    contentType = "application/x-www-form-urlencoded";
+                } else {
+                    contentProvider = new StringContentProvider(gson.toJson(content));
+                }
+            }
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(">>> {} {}, data: {}", method, url, content == null ? null : gson.toJson(content));
+            }
+
+            Request request = httpClient.newRequest(url).method(method).header(HttpHeader.CONTENT_TYPE, contentType)
+                    .header(HttpHeader.ACCEPT, "application/vnd.api+json").header(HttpHeader.ACCEPT_ENCODING, "gzip");
+
+            if (!URL_API_TOKEN.equals(url)) {
+                verifyToken();
+                final PostOAuth2Response token = this.token;
+                if (token != null) {
+                    request.header("Authorization", token.tokenType + " " + token.accessToken);
+                    request.header("Authorization-provider", token.provider);
+                }
+                request.header("X-Api-Key", config.getApiKey());
+            }
+
+            request.content(contentProvider);
+            ContentResponse contentResponse = request.send();
+            int status = contentResponse.getStatus();
+            if (logger.isTraceEnabled()) {
+                logger.trace("<<< status:{}, {}", status, contentResponse.getContentAsString());
+            }
+
+            if (status != 200 && status != 204 && status != 201 && status != 202) {
+                throw new GardenaException(String.format("Error %s %s, %s", status, contentResponse.getReason(),
+                        contentResponse.getContentAsString()));
+            }
+
+            if (result == null) {
+                return (T) null;
+            }
+            return (T) gson.fromJson(contentResponse.getContentAsString(), result);
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
+            throw new GardenaException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Creates or refreshes the access token for the Gardena smart system.
+     */
+    private synchronized void verifyToken() throws GardenaException {
+        Fields fields = new Fields();
+        fields.add("client_id", config.getApiKey());
+
+        PostOAuth2Response token = this.token;
+        if (token == null || token.isRefreshTokenExpired()) {
+            // new token
+            logger.debug("Gardena API login using password, reason: {}",
+                    token == null ? "no token available" : "refresh token expired");
+            fields.add("grant_type", "password");
+            fields.add("username", config.getEmail());
+            fields.add("password", config.getPassword());
+            token = executeRequest(HttpMethod.POST, URL_API_TOKEN, fields, PostOAuth2Response.class);
+            token.postProcess();
+            this.token = token;
+        } else if (token.isAccessTokenExpired()) {
+            // refresh token
+            logger.debug("Gardena API login using refreshToken, reason: access token expired");
+            fields.add("grant_type", "refresh_token");
+            fields.add("refresh_token", token.refreshToken);
+            try {
+                PostOAuth2Response tempToken = executeRequest(HttpMethod.POST, URL_API_TOKEN, fields,
+                        PostOAuth2Response.class);
+                token.accessToken = tempToken.accessToken;
+                token.expiresIn = tempToken.expiresIn;
+                token.postProcess();
+                this.token = token;
+            } catch (GardenaException ex) {
+                // refresh token issue
+                this.token = null;
+                verifyToken();
+            }
+        } else {
+            logger.debug("Gardena API token valid");
+        }
+        logger.debug("{}", token.toString());
+    }
+
+    /**
+     * Loads all locations.
+     */
+    private LocationsResponse loadLocations() throws GardenaException {
+        return executeRequest(HttpMethod.GET, URL_API_LOCATIONS, null, LocationsResponse.class);
+    }
+
+    /**
+     * Loads all devices for a given location.
+     */
+    private LocationResponse loadLocation(String locationId) throws GardenaException {
+        return executeRequest(HttpMethod.GET, URL_API_LOCATIONS + "/" + locationId, null, LocationResponse.class);
+    }
+
+    /**
+     * Returns the websocket url for a given location.
+     */
+    private WebSocketCreatedResponse getWebsocketInfo(String locationId) throws GardenaException {
+        return executeRequest(HttpMethod.POST, URL_API_WEBSOCKET, new CreateWebSocketRequest(locationId),
+                WebSocketCreatedResponse.class);
+    }
+
+    /**
+     * Stops the client.
+     */
+    public void dispose() {
+        logger.debug("Disposing GardenaSmart");
+
+        final ScheduledFuture<?> newDeviceFuture = this.newDeviceFuture;
+        if (newDeviceFuture != null) {
+            newDeviceFuture.cancel(true);
+        }
+
+        final ScheduledFuture<?> deviceToNotifyFuture = this.deviceToNotifyFuture;
+        if (deviceToNotifyFuture != null) {
+            deviceToNotifyFuture.cancel(true);
+        }
+        stopWebsockets();
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            // ignore
+        }
+        httpClient.destroy();
+        locationsResponse = new LocationsResponse();
+        allDevicesById.clear();
+        initialized = false;
+    }
+
+    /**
+     * Restarts all websockets.
+     */
+    @Override
+    public synchronized void restartWebsockets() {
+        logger.debug("Restarting GardenaSmart Webservice");
+        stopWebsockets();
+        try {
+            startWebsockets();
+        } catch (Exception ex) {
+            logger.warn("Restarting GardenaSmart Webservice failed: {}, restarting binding", ex.getMessage());
+            eventListener.onError();
+        }
+    }
+
+    /**
+     * Sets the dataItem from the websocket event into the correct device.
+     */
+    private void handleDataItem(final DataItem<?> dataItem) throws GardenaException {
+        final String deviceId = dataItem.getDeviceId();
+        Device device = allDevicesById.get(deviceId);
+        if (device == null && !(dataItem instanceof LocationDataItem)) {
+            device = new Device(deviceId);
+            allDevicesById.put(device.id, device);
+
+            if (initialized) {
+                newDeviceFuture = scheduler.schedule(() -> {
+                    Device newDevice = allDevicesById.get(deviceId);
+                    if (newDevice != null) {
+                        newDevice.evaluateDeviceType();
+                        if (newDevice.deviceType != null) {
+                            eventListener.onNewDevice(newDevice);
+                        }
+                    }
+                }, 3, TimeUnit.SECONDS);
+            }
+        }
+
+        if (device != null) {
+            device.setDataItem(dataItem);
+        }
     }
 
     @Override
-    public void dispose() {
-        stopRefreshThread(true);
-        if (httpClient != null) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                // ignore
+    public void onWebSocketClose() {
+        restartWebsockets();
+    }
+
+    @Override
+    public void onWebSocketError() {
+        eventListener.onError();
+    }
+
+    @Override
+    public void onWebSocketMessage(String msg) {
+        try {
+            DataItem<?> dataItem = gson.fromJson(msg, DataItem.class);
+            if (dataItem != null) {
+                handleDataItem(dataItem);
+                Device device = allDevicesById.get(dataItem.getDeviceId());
+                if (device != null && device.active) {
+                    devicesToNotify.add(device);
+
+                    // delay the deviceUpdated event to filter multiple events for the same device dataItem property
+                    if (deviceToNotifyFuture == null) {
+                        deviceToNotifyFuture = scheduler.schedule(() -> {
+                            deviceToNotifyFuture = null;
+                            Iterator<Device> notifyIterator = devicesToNotify.iterator();
+                            while (notifyIterator.hasNext()) {
+                                eventListener.onDeviceUpdated(notifyIterator.next());
+                                notifyIterator.remove();
+                            }
+                        }, 1, TimeUnit.SECONDS);
+                    }
+                }
             }
-            httpClient.destroy();
+        } catch (GardenaException | JsonSyntaxException ex) {
+            logger.warn("Ignoring message: {}", ex.getMessage());
         }
-        allLocations.clear();
-        allDevicesById.clear();
     }
 
-    /**
-     * Schedules the device refresh thread.
-     */
-    private void startRefreshThread() {
-        refreshThreadFuture = scheduler.scheduleWithFixedDelay(refreshDevicesThread, 6, config.getRefresh(),
-                TimeUnit.SECONDS);
+    @Override
+    public Device getDevice(String deviceId) throws GardenaDeviceNotFoundException {
+        Device device = allDevicesById.get(deviceId);
+        if (device == null) {
+            throw new GardenaDeviceNotFoundException("Device with id " + deviceId + " not found");
+        }
+        return device;
     }
 
-    /**
-     * Stops the device refresh thread.
-     */
-    private void stopRefreshThread(boolean force) {
-        if (refreshThreadFuture != null) {
-            refreshThreadFuture.cancel(force);
-        }
+    @Override
+    public void sendCommand(DataItem<?> dataItem, GardenaCommand gardenaCommand) throws GardenaException {
+        executeRequest(HttpMethod.PUT, URL_API_COMMAND + "/" + dataItem.id, new GardenaCommandRequest(gardenaCommand),
+                null);
     }
 
     @Override
@@ -193,381 +389,7 @@ public class GardenaSmartImpl implements GardenaSmart {
     }
 
     @Override
-    public Set<Location> getLocations() {
-        return allLocations;
-    }
-
-    @Override
-    public Device getDevice(String deviceId) throws GardenaException {
-        Device device = allDevicesById.get(deviceId);
-        if (device == null) {
-            throw new GardenaDeviceNotFoundException(
-                    String.format("Device with id '%s' not found on gateway '%s'", deviceId, id));
-        }
-        return device;
-    }
-
-    @Override
-    public void loadAllDevices() throws GardenaException {
-        stopRefreshThread(false);
-        try {
-            allLocations.clear();
-            allDevicesById.clear();
-
-            verifySession();
-            Locations locations = executeRequest(HttpMethod.GET,
-                    URL_LOCATIONS + session.getSessionAttributes().getUserId(), null, Locations.class);
-
-            for (Location location : locations.getLocations()) {
-                allLocations.add(location);
-                Devices devices = loadDevices(location);
-                for (Device device : devices.getDevices()) {
-                    if (DEVICE_CATEGORY_GATEWAY.equals(device.getCategory())) {
-                        location.getDeviceIds().remove(device.getId());
-                    } else {
-                        allDevicesById.put(device.getId(), device);
-                    }
-                }
-            }
-        } finally {
-            startRefreshThread();
-        }
-    }
-
-    /**
-     * Loads all devices for the location, adds virtual properties for commands.
-     */
-    private Devices loadDevices(Location location) throws GardenaException {
-        Devices devices = executeRequest(HttpMethod.GET, URL_DEVICES + location.getId(), null, Devices.class);
-        for (Device device : devices.getDevices()) {
-            device.setLocation(location);
-            for (Ability ability : device.getAbilities()) {
-                ability.setDevice(device);
-                for (Property property : ability.getProperties()) {
-                    property.setAbility(ability);
-
-                    if (device.getCategory().equals(DEVICE_CATEGORY_PUMP)) {
-                        if (property.getName().equals(PROPERTY_MANUAL_WATERING_TIMER)) {
-                            Integer duration = getIntegerValue(property.getValueAsString());
-                            if (duration == null) {
-                                duration = 0;
-                            }
-                            property.setValue(new PropertyValue(String.valueOf(duration / 60)));
-                        }
-                    }
-                }
-            }
-            for (Setting setting : device.getSettings()) {
-                setting.setDevice(device);
-            }
-
-            if (DEVICE_CATEGORY_MOWER.equals(device.getCategory())) {
-                Ability mower = device.getAbility(ABILITY_MOWER);
-                mower.addProperty(new Property(GardenaSmartCommandName.PARK_UNTIL_NEXT_TIMER, "false"));
-                mower.addProperty(new Property(GardenaSmartCommandName.PARK_UNTIL_FURTHER_NOTICE, "false"));
-                mower.addProperty(new Property(GardenaSmartCommandName.START_RESUME_SCHEDULE, "false"));
-                mower.addProperty(new Property(GardenaSmartCommandName.START_OVERRIDE_TIMER, "false"));
-
-                mower.addProperty(new Property(GardenaSmartCommandName.DURATION_PROPERTY, mowerDuration));
-            }
-        }
-        return devices;
-    }
-
-    @Override
-    public void sendCommand(Device device, GardenaSmartCommandName commandName, Object value) throws GardenaException {
-        Ability ability = null;
-        Command command = null;
-
-        switch (commandName) {
-            case PARK_UNTIL_NEXT_TIMER:
-                ability = device.getAbility(ABILITY_MOWER);
-                command = new MowerParkUntilNextTimerCommand();
-                break;
-            case PARK_UNTIL_FURTHER_NOTICE:
-                ability = device.getAbility(ABILITY_MOWER);
-                command = new MowerParkUntilFurtherNoticeCommand();
-                break;
-            case START_RESUME_SCHEDULE:
-                ability = device.getAbility(ABILITY_MOWER);
-                command = new MowerStartResumeScheduleCommand();
-                break;
-            case START_OVERRIDE_TIMER:
-                ability = device.getAbility(ABILITY_MOWER);
-                command = new MowerStartOverrideTimerCommand(mowerDuration);
-                break;
-            case DURATION_PROPERTY:
-                if (value == null) {
-                    throw new GardenaException("Command '" + commandName + "' requires a value");
-                }
-                mowerDuration = ObjectUtils.toString(value);
-                return;
-            case MEASURE_AMBIENT_TEMPERATURE:
-                ability = device.getAbility(ABILITY_AMBIENT_TEMPERATURE);
-                command = new SensorMeasureAmbientTemperatureCommand();
-                break;
-            case MEASURE_LIGHT:
-                ability = device.getAbility(ABILITY_LIGHT);
-                command = new SensorMeasureLightCommand();
-                break;
-            case MEASURE_SOIL_HUMIDITY:
-                ability = device.getAbility(ABILITY_HUMIDITY);
-                command = new SensorMeasureSoilHumidityCommand();
-                break;
-            case MEASURE_SOIL_TEMPERATURE:
-                ability = device.getAbility(ABILITY_SOIL_TEMPERATURE);
-                command = new SensorMeasureSoilTemperatureCommand();
-                break;
-            case OUTLET_MANUAL_OVERRIDE_TIME:
-                if (value == null) {
-                    throw new GardenaException("Command '" + commandName + "' requires a value");
-                }
-                StringProperty prop = new StringProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME,
-                        ObjectUtils.toString(value));
-
-                executeSetProperty(device, ABILITY_OUTLET, PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME, prop);
-                break;
-            case OUTLET_VALVE:
-                ability = device.getAbility(ABILITY_OUTLET);
-                if (value != null && value == Boolean.TRUE) {
-                    String wateringDuration = device.getAbility(ABILITY_OUTLET)
-                            .getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME).getValueAsString();
-                    command = new WateringManualOverrideCommand(wateringDuration);
-                } else {
-                    command = new WateringCancelOverrideCommand();
-                }
-                break;
-            case POWER_TIMER:
-                if (value == null) {
-                    throw new GardenaException("Command '" + commandName + "' requires a value");
-                }
-                prop = new StringProperty(PROPERTY_POWER_TIMER, ObjectUtils.toString(value));
-                executeSetProperty(device, ABILITY_POWER, PROPERTY_POWER_TIMER, prop);
-                break;
-            case WATERING_TIMER_VALVE_1:
-            case WATERING_TIMER_VALVE_2:
-            case WATERING_TIMER_VALVE_3:
-            case WATERING_TIMER_VALVE_4:
-            case WATERING_TIMER_VALVE_5:
-            case WATERING_TIMER_VALVE_6:
-                if (value == null) {
-                    throw new GardenaException("Command '" + commandName + "' requires a value");
-                } else if (!(value instanceof Integer)) {
-                    throw new GardenaException("Watering duration value '" + value + "' not a number");
-                }
-                int valveId = Integer.parseInt(StringUtils.right(commandName.toString(), 1));
-                String wateringTimerProperty = PROPERTY_WATERING_TIMER + valveId;
-                IrrigationControlWateringProperty irrigationProp = new IrrigationControlWateringProperty(
-                        wateringTimerProperty, (Integer) value, valveId);
-                executeSetProperty(device, ABILITY_WATERING, wateringTimerProperty, irrigationProp);
-                break;
-            case PUMP_MANUAL_WATERING_TIMER:
-                Integer duration = getIntegerValue(value);
-                if (duration == null) {
-                    throw new GardenaException("Command '" + commandName + "' requires a number value");
-                }
-                prop = new StringProperty(PROPERTY_MANUAL_WATERING_TIMER, String.valueOf(duration * 60));
-
-                executeSetProperty(device, ABILITY_MANUAL_WATERING, PROPERTY_MANUAL_WATERING_TIMER, prop);
-                break;
-            default:
-                throw new GardenaException("Unknown command " + commandName);
-        }
-
-        if (command != null) {
-            stopRefreshThread(false);
-            executeRequest(HttpMethod.POST, getCommandUrl(device, ability), command, NoResult.class);
-            startRefreshThread();
-        }
-    }
-
-    private Integer getIntegerValue(Object value) {
-        try {
-            return Integer.valueOf(ObjectUtils.toString(value));
-        } catch (NumberFormatException ex) {
-            return null;
-        }
-    }
-
-    /**
-     * Sends the new property value for the ability.
-     */
-    private void executeSetProperty(Device device, String ability, String property, BaseProperty value)
-            throws GardenaException {
-        String propertyUrl = String.format(URL_PROPERTY, device.getId(), ability, property,
-                device.getLocation().getId());
-        stopRefreshThread(false);
-        executeRequest(HttpMethod.PUT, propertyUrl, new PropertyWrapper(value), NoResult.class);
-        device.getAbility(ability).getProperty(property).setValue(new PropertyValue(value.getValue()));
-        startRefreshThread();
-    }
-
-    @Override
-    public void sendSetting(Setting setting, Object value) throws GardenaException {
-        SettingCommand settingCommand = new SettingCommand(setting.getName());
-        settingCommand.setDeviceId(setting.getDevice().getId());
-        settingCommand.setValue(value);
-
-        stopRefreshThread(false);
-        executeRequest(HttpMethod.PUT, getSettingUrl(setting), new SettingCommandWrapper(settingCommand),
-                NoResult.class);
-        startRefreshThread();
-    }
-
-    /**
-     * Returns the command url.
-     */
-    private String getCommandUrl(Device device, Ability ability) throws GardenaException {
-        return String.format(URL_COMMAND, device.getId(), ability.getName(), device.getLocation().getId());
-    }
-
-    /**
-     * Returns the settings url.
-     */
-    private String getSettingUrl(Setting setting) {
-        Device device = setting.getDevice();
-        return String.format(URL_SETTING, device.getId(), setting.getId(), device.getLocation().getId());
-    }
-
-    /**
-     * Communicates with Gardena Smart Home and parses the result.
-     */
-    private synchronized <T> T executeRequest(HttpMethod method, String url, Object contentObject, Class<T> result)
-            throws GardenaException {
-        try {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{} request:  {}", method, url);
-                if (contentObject != null) {
-                    logger.trace("{} data   :  {}", method, gson.toJson(contentObject));
-                }
-            }
-
-            Request request = httpClient.newRequest(url).method(method)
-                    .timeout(config.getConnectionTimeout(), TimeUnit.SECONDS)
-                    .idleTimeout(config.getConnectionTimeout(), TimeUnit.SECONDS)
-                    .header(HttpHeader.CONTENT_TYPE, "application/json").header(HttpHeader.ACCEPT, "application/json")
-                    .header(HttpHeader.ACCEPT_ENCODING, "gzip");
-
-            if (contentObject != null) {
-                StringContentProvider content = new StringContentProvider(gson.toJson(contentObject));
-                request.content(content);
-            }
-
-            if (!result.equals(SessionWrapper.class)) {
-                verifySession();
-                request.header("authorization", "Bearer " + session.getToken());
-                request.header("authorization-provider", session.getSessionAttributes().getProvider());
-            }
-
-            ContentResponse contentResponse = request.send();
-            int status = contentResponse.getStatus();
-            if (logger.isTraceEnabled()) {
-                logger.trace("Status  : {}", status);
-                logger.trace("Response: {}", contentResponse.getContentAsString());
-            }
-
-            if (status == 500) {
-                throw new GardenaException(
-                        gson.fromJson(contentResponse.getContentAsString(), Errors.class).toString());
-            } else if (status != 200 && status != 204 && status != 201) {
-                throw new GardenaException(String.format("Error %s %s", status, contentResponse.getReason()));
-            }
-
-            if (result == NoResult.class) {
-                return null;
-            }
-
-            return gson.fromJson(contentResponse.getContentAsString(), result);
-        } catch (ExecutionException ex) {
-            Throwable cause = ex.getCause();
-            if (cause instanceof HttpResponseException) {
-                HttpResponseException responseException = (HttpResponseException) ex.getCause();
-                int status = responseException.getResponse().getStatus();
-                if (status == 401) {
-                    throw new GardenaUnauthorizedException(ex.getCause());
-                }
-            }
-            throw new GardenaException(ex.getMessage(), ex);
-        } catch (Exception ex) {
-            throw new GardenaException(ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * Verifies the Gardena Smart Home session and reconnects if necessary.
-     */
-    private void verifySession() throws GardenaException {
-        if (session == null
-                || session.getCreated() + (config.getSessionTimeout() * 60000) <= System.currentTimeMillis()) {
-            logger.trace("(Re)logging in to Gardena Smart Home");
-            session = executeRequest(HttpMethod.POST, URL_LOGIN, new GardenaConfigWrapper(config), SessionWrapper.class)
-                    .getSession();
-        }
-    }
-
-    /**
-     * Thread which refreshes the data from Gardena Smart Home.
-     */
-    private class RefreshDevicesThread implements Runnable {
-        private boolean connectionLost = false;
-
-        @Override
-        public void run() {
-            try {
-                logger.debug("Refreshing gardena device data");
-                final Map<String, Device> newDevicesById = new HashMap<>();
-
-                for (Location location : allLocations) {
-                    Devices devices = loadDevices(location);
-                    for (Device device : devices.getDevices()) {
-                        if (DEVICE_CATEGORY_GATEWAY.equals(device.getCategory())) {
-                            location.getDeviceIds().remove(device.getId());
-                        } else {
-                            newDevicesById.put(device.getId(), device);
-                        }
-                    }
-                }
-
-                if (connectionLost) {
-                    connectionLost = false;
-                    logger.info("Connection resumed to Gardena Smart Home with id '{}'", id);
-                    eventListener.onConnectionResumed();
-                }
-
-                // determine deleted devices
-                Collection<Device> deletedDevices = allDevicesById.values().stream()
-                        .filter(d -> !newDevicesById.values().contains(d)).collect(Collectors.toSet());
-
-                // determine new devices
-                Collection<Device> newDevices = newDevicesById.values().stream()
-                        .filter(d -> !allDevicesById.values().contains(d)).collect(Collectors.toSet());
-
-                // determine updated devices
-                Collection<Device> updatedDevices = allDevicesById.values().stream().distinct()
-                        .filter(newDevicesById.values()::contains).collect(Collectors.toSet());
-
-                allDevicesById = newDevicesById;
-
-                for (Device deletedDevice : deletedDevices) {
-                    eventListener.onDeviceDeleted(deletedDevice);
-                }
-
-                for (Device newDevice : newDevices) {
-                    eventListener.onNewDevice(newDevice);
-                }
-
-                for (Device updatedDevice : updatedDevices) {
-                    eventListener.onDeviceUpdated(updatedDevice);
-                }
-
-            } catch (GardenaException ex) {
-                if (!connectionLost) {
-                    connectionLost = true;
-                    logger.warn("Connection lost to Gardena Smart Home with id '{}'", id);
-                    logger.trace("{}", ex.getMessage(), ex);
-                    eventListener.onConnectionLost();
-                }
-            }
-        }
+    public Collection<Device> getAllDevices() {
+        return allDevicesById.values();
     }
 }

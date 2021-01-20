@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.gree.internal.discovery;
 
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.gree")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.gree")
 public class GreeDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT_SEC = 10;
     private final Logger logger = LoggerFactory.getLogger(GreeDiscoveryService.class);
@@ -58,8 +57,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     @Activate
     public GreeDiscoveryService(@Reference GreeDeviceFinder deviceFinder,
             @Reference NetworkAddressService networkAddressService,
-            @Reference GreeTranslationProvider translationProvider,
-            @Nullable Map<String, @Nullable Object> configProperties) {
+            @Reference GreeTranslationProvider translationProvider, @Nullable Map<String, Object> configProperties) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SEC);
         this.messages = translationProvider;
         this.deviceFinder = deviceFinder;
@@ -70,7 +68,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void modified(@Nullable Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -98,7 +96,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
                 createResult(deviceFinder.getDevices());
             }
         } catch (GreeException e) {
-            logger.info("Discovery: {}", messages.get("discovery.exception", e.getMessage()));
+            logger.info("Discovery: {}", messages.get("discovery.exception", e.getMessageString()));
         } catch (SocketException | RuntimeException e) {
             logger.warn("Discovery: {}", messages.get("discovery.exception", "RuntimeException"), e);
         }

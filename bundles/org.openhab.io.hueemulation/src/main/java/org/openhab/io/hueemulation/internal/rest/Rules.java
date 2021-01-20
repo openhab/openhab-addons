@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,10 +37,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.common.registry.RegistryChangeListener;
-import org.openhab.core.items.Item;
-import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.Condition;
 import org.openhab.core.automation.Rule;
@@ -48,7 +44,12 @@ import org.openhab.core.automation.RuleRegistry;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.util.ModuleBuilder;
 import org.openhab.core.automation.util.RuleBuilder;
+import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemRegistry;
 import org.openhab.io.hueemulation.internal.ConfigStore;
+import org.openhab.io.hueemulation.internal.HueEmulationService;
 import org.openhab.io.hueemulation.internal.NetworkUtils;
 import org.openhab.io.hueemulation.internal.RuleUtils;
 import org.openhab.io.hueemulation.internal.dto.HueRuleEntry;
@@ -59,18 +60,22 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Handles Hue rules via the automation subsystem and the corresponding REST interface
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = false, service = { Rules.class }, property = "com.eclipsesource.jaxrs.publish=false")
+@Component(immediate = false, service = Rules.class)
+@JaxrsResource
+@JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + HueEmulationService.REST_APP_NAME + ")")
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
@@ -234,10 +239,9 @@ public class Rules implements RegistryChangeListener<Rule> {
     @GET
     @Path("{username}/rules")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Return all rules")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return all rules", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response getRulesApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+            @PathParam("username") @Parameter(description = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -246,11 +250,10 @@ public class Rules implements RegistryChangeListener<Rule> {
 
     @GET
     @Path("{username}/rules/{id}")
-    @ApiOperation(value = "Return a rule")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Return a rule", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response getRuleApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "rule id") String id) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "rule id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -259,12 +262,12 @@ public class Rules implements RegistryChangeListener<Rule> {
 
     @DELETE
     @Path("{username}/rules/{id}")
-    @ApiOperation(value = "Deletes a rule")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "The user got removed"),
-            @ApiResponse(code = 403, message = "Access denied") })
+    @Operation(summary = "Deletes a rule", responses = {
+            @ApiResponse(responseCode = "200", description = "The user got removed"),
+            @ApiResponse(responseCode = "403", description = "Access denied") })
     public Response removeRuleApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "Rule to remove") String id) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "Rule to remove") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -279,11 +282,10 @@ public class Rules implements RegistryChangeListener<Rule> {
 
     @PUT
     @Path("{username}/rules/{id}")
-    @ApiOperation(value = "Set rule attributes")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Set rule attributes", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response modifyRuleApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
-            @PathParam("id") @ApiParam(value = "rule id") String id, String body) {
+            @PathParam("username") @Parameter(description = "username") String username,
+            @PathParam("id") @Parameter(description = "rule id") String id, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -334,10 +336,9 @@ public class Rules implements RegistryChangeListener<Rule> {
     @SuppressWarnings({ "null" })
     @POST
     @Path("{username}/rules")
-    @ApiOperation(value = "Create a new rule")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+    @Operation(summary = "Create a new rule", responses = { @ApiResponse(responseCode = "200", description = "OK") })
     public Response postNewRule(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username, String body) {
+            @PathParam("username") @Parameter(description = "username") String username, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }

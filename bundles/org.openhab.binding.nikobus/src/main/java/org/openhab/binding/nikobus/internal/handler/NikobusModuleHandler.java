@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,9 @@ package org.openhab.binding.nikobus.internal.handler;
 
 import static org.openhab.binding.nikobus.internal.NikobusBindingConstants.CHANNEL_OUTPUT_PREFIX;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nikobus.internal.protocol.NikobusCommand;
 import org.openhab.binding.nikobus.internal.protocol.SwitchModuleCommandFactory;
 import org.openhab.binding.nikobus.internal.protocol.SwitchModuleGroup;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -46,10 +45,19 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
     private final EnumSet<SwitchModuleGroup> pendingRefresh = EnumSet.noneOf(SwitchModuleGroup.class);
     private final Logger logger = LoggerFactory.getLogger(NikobusModuleHandler.class);
     private final Map<String, Integer> cachedStates = new HashMap<>();
-    private final List<ChannelUID> linkedChannels = new ArrayList<>();
 
     protected NikobusModuleHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        if (thing.getStatus() != ThingStatus.OFFLINE) {
+            // Fetch all linked channels to get initial values.
+            thing.getChannels().forEach(channel -> refreshChannel(channel.getUID()));
+        }
     }
 
     @Override
@@ -67,6 +75,8 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("handleCommand '{}' for channel '{}'", command, channelUID.getId());
+
         if (command instanceof RefreshType) {
             refreshChannel(channelUID);
         } else {
@@ -85,26 +95,11 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
         updateGroup(SwitchModuleGroup.mapFromChannel(channelUID));
     }
 
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        synchronized (linkedChannels) {
-            linkedChannels.add(channelUID);
-        }
-        super.channelLinked(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        synchronized (linkedChannels) {
-            linkedChannels.remove(channelUID);
-        }
-        super.channelUnlinked(channelUID);
-    }
-
     public void refreshModule() {
         Set<SwitchModuleGroup> groups = new HashSet<>();
-        synchronized (linkedChannels) {
-            for (ChannelUID channelUID : linkedChannels) {
+        for (Channel channel : thing.getChannels()) {
+            ChannelUID channelUID = channel.getUID();
+            if (isLinked(channelUID)) {
                 groups.add(SwitchModuleGroup.mapFromChannel(channelUID));
             }
         }
@@ -181,14 +176,16 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
 
         logger.debug("setting channel '{}' to {}", channelId, value);
 
+        Integer previousValue;
         synchronized (cachedStates) {
-            cachedStates.put(channelId, value);
+            previousValue = cachedStates.put(channelId, value);
         }
 
-        updateState(channelId, stateFromValue(value));
+        if (previousValue == null || previousValue.intValue() != value) {
+            updateState(channelId, stateFromValue(value));
+        }
     }
 
-    @SuppressWarnings({ "unused", "null" })
     private void processWrite(ChannelUID channelUID, Command command) {
         StringBuilder commandPayload = new StringBuilder();
         SwitchModuleGroup group = SwitchModuleGroup.mapFromChannel(channelUID);

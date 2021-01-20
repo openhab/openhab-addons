@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class Driver {
     private Port port;
     private String portName;
     private DriverListener listener;
-    private Map<InsteonAddress, @Nullable ModemDBEntry> modemDBEntries = new HashMap<>();
+    private Map<InsteonAddress, ModemDBEntry> modemDBEntries = new HashMap<>();
     private ReentrantLock modemDBEntriesLock = new ReentrantLock();
 
     public Driver(String portName, DriverListener listener, @Nullable SerialPortManager serialPortManager,
@@ -51,7 +51,7 @@ public class Driver {
         return port.isRunning();
     }
 
-    public Map<InsteonAddress, @Nullable ModemDBEntry> lockModemDBEntries() {
+    public Map<InsteonAddress, ModemDBEntry> lockModemDBEntries() {
         modemDBEntriesLock.lock();
         return modemDBEntries;
     }

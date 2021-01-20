@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -145,7 +145,10 @@ public class OpenAPIUtils {
         }
     }
 
-    public static boolean checkRequiredFirmware(String modelId, String currentFirmwareVersion) {
+    public static boolean checkRequiredFirmware(@Nullable String modelId, @Nullable String currentFirmwareVersion) {
+        if (modelId == null || currentFirmwareVersion == null) {
+            return false;
+        }
         int[] currentVer = getFirmwareVersionNumbers(currentFirmwareVersion);
 
         int[] requiredVer = getFirmwareVersionNumbers(

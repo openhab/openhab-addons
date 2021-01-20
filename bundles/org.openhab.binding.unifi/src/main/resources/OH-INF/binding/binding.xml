@@ -6,6 +6,5 @@
 	<name>UniFi Binding</name>
 	<description>The UniFi binding integrates the UniFi controller from Ubiquiti Networks to facilitate tracking of Wi-Fi
 		clients.</description>
-	<author>Matthew Bowman</author>
 
 </binding:binding>

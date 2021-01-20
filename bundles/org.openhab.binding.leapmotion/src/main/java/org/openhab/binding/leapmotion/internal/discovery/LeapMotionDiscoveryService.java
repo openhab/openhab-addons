@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import com.leapmotion.leap.Listener;
  *
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.leapmotion")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.leapmotion")
 public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
 
     private @NonNullByDefault({}) Controller leapController;
@@ -46,7 +46,7 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         leapController = new Controller();
         listener = new Listener() {
             @Override

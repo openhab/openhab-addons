@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, enabled = false)
+@Component(service = DiscoveryService.class, enabled = false)
 public class TestDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(TestDiscovery.class);
 

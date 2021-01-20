@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.miio.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -28,17 +29,25 @@ public class MiIoSendCommand {
 
     private final int id;
     private final MiIoCommand command;
-    private final String commandString;
+    private final JsonObject commandJson;
     private @Nullable JsonObject response;
+    private String cloudServer = "";
 
     public void setResponse(JsonObject response) {
         this.response = response;
     }
 
-    public MiIoSendCommand(int id, MiIoCommand command, String commandString) {
+    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand) {
         this.id = id;
         this.command = command;
-        this.commandString = commandString;
+        this.commandJson = fullCommand;
+    }
+
+    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand, String cloudServer) {
+        this.id = id;
+        this.command = command;
+        this.commandJson = fullCommand;
+        this.cloudServer = cloudServer;
     }
 
     public int getId() {
@@ -49,8 +58,20 @@ public class MiIoSendCommand {
         return command;
     }
 
+    public JsonObject getCommandJson() {
+        return commandJson;
+    }
+
     public String getCommandString() {
-        return commandString;
+        return commandJson.toString();
+    }
+
+    public String getMethod() {
+        return commandJson.has("method") ? commandJson.get("method").getAsString() : "";
+    }
+
+    public JsonElement getParams() {
+        return commandJson.has("params") ? commandJson.get("params").getAsJsonArray() : new JsonArray();
     }
 
     public JsonObject getResponse() {
@@ -72,5 +93,13 @@ public class MiIoSendCommand {
             return response.get("result");
         }
         return new JsonObject();
+    }
+
+    public String getCloudServer() {
+        return cloudServer;
+    }
+
+    public void setCloudServer(String cloudServer) {
+        this.cloudServer = cloudServer;
     }
 }

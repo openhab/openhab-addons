@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,7 +48,13 @@ public class JsonSmartHomeGroups {
         public @Nullable Boolean isSpace;
         public @Nullable Boolean space;
         public @Nullable SmartHomeGroupIdentifier applianceGroupIdentifier;
+
+        @Override
+        public String toString() {
+            return "SmartHomeGroup{" + "applianceGroupName='" + applianceGroupName + '\'' + ", isSpace=" + isSpace
+                    + ", space=" + space + ", applianceGroupIdentifier=" + applianceGroupIdentifier + '}';
+        }
     }
 
-    public @Nullable SmartHomeGroup @Nullable [] groups;
+    public @Nullable List<SmartHomeGroup> groups;
 }

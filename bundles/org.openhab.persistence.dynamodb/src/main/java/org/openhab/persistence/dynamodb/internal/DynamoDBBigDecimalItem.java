@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 
 /**
  * DynamoDBItem for items that can be serialized as DynamoDB number
@@ -62,6 +63,7 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
 
     @Override
     @DynamoDBRangeKey(attributeName = ATTRIBUTE_NAME_TIMEUTC)
+    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
     public ZonedDateTime getTime() {
         return time;
     }

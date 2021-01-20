@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="deconz"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lightgroup">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Light Group</label>
+		<category>Lightbulb</category>
+		<channels>
+			<channel typeId="all_on" id="all_on"/>
+			<channel typeId="any_on" id="any_on"/>
+			<channel typeId="alert" id="alert"/>
+			<channel typeId="color" id="color"/>
+			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="scene" id="scene"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
+	<channel-type id="alert">
+		<item-type>String</item-type>
+		<label>Alert</label>
+		<category>Alarm</category>
+		<command>
+			<options>
+				<option value="none">No Alarm</option>
+				<option value="select">Blinking (short time)</option>
+				<option value="lselect">Blinking (long time)</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="all_on">
+		<item-type>Switch</item-type>
+		<label>All On</label>
+		<description>"On" if all lights in this group are "On", otherwise "Off".</description>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="any_on">
+		<item-type>Switch</item-type>
+		<label>Any On</label>
+		<description>"On" if any light in this group is "On", otherwise "Off".</description>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<category>Colorpicker</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="ct">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state pattern="%d K" min="15" max="100000" step="100"/>
+	</channel-type>
+
+	<channel-type id="scene">
+		<item-type>String</item-type>
+		<label>Recall Scene</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+
+</thing:thing-descriptions>

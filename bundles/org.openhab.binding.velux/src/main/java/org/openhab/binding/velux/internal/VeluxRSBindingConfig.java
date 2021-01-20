@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -204,6 +204,6 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     public String getSceneName(Integer level) {
         logger.trace("getSceneName({}) called.", level);
         logger.trace("getSceneName() returning {}.", mapDescending.get(level));
-        return mapDescending.get(level);
+        return mapDescending.getOrDefault(level, "null");
     }
 }

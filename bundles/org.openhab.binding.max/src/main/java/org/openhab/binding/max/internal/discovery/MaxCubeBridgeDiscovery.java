@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.max")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.max")
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     private static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
@@ -156,8 +156,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     private void discoveryResultSubmission(String IpAddress, String cubeSerialNumber, String rfAddress) {
         if (cubeSerialNumber != null) {
-            logger.trace("Adding new MAX! Cube Lan Gateway on {} with id '{}' to Smarthome inbox", IpAddress,
-                    cubeSerialNumber);
+            logger.trace("Adding new MAX! Cube Lan Gateway on {} with id '{}' to inbox", IpAddress, cubeSerialNumber);
             Map<String, Object> properties = new HashMap<>(2);
             properties.put(PROPERTY_IP_ADDRESS, IpAddress);
             properties.put(PROPERTY_SERIAL_NUMBER, cubeSerialNumber);

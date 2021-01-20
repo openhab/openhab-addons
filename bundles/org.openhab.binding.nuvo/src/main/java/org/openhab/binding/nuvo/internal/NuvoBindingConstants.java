@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,7 @@ public class NuvoBindingConstants {
     // zone
     public static final String CHANNEL_TYPE_POWER = "power";
     public static final String CHANNEL_TYPE_SOURCE = "source";
+    public static final String CHANNEL_TYPE_FAVORITE = "favorite";
     public static final String CHANNEL_TYPE_VOLUME = "volume";
     public static final String CHANNEL_TYPE_MUTE = "mute";
     public static final String CHANNEL_TYPE_CONTROL = "control";

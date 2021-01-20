@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -135,11 +135,7 @@ public class VeluxGwState {
         }
 
         public static VeluxGatewaySubState get(int stateValue) {
-            if (LOOKUPTYPEID2ENUM.containsKey(stateValue)) {
-                return LOOKUPTYPEID2ENUM.get(stateValue);
-            } else {
-                return VeluxGatewaySubState.UNDEFTYPE;
-            }
+            return LOOKUPTYPEID2ENUM.getOrDefault(stateValue, VeluxGatewaySubState.UNDEFTYPE);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.openhab.core.config.core.validation.ConfigValidationException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -145,8 +145,7 @@ public class KonnectedHandler extends BaseThingHandler {
                     updateState(channelId, onOffType);
                 } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
                     // if the state is of type number then this means it is the humidity channel of the dht22
-                    updateState(channelId,
-                            new QuantityType<>(Double.parseDouble(event.getHumi()), SmartHomeUnits.PERCENT));
+                    updateState(channelId, new QuantityType<>(Double.parseDouble(event.getHumi()), Units.PERCENT));
                 } else if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
                     Configuration configuration = channel.getConfiguration();
                     if (((Boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE))) {

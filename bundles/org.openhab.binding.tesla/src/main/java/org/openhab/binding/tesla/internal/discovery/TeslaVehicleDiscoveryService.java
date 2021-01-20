@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,6 @@ package org.openhab.binding.tesla.internal.discovery;
 
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.TeslaHandlerFactory;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
@@ -69,7 +67,7 @@ public class TeslaVehicleDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+    public void activate(Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 

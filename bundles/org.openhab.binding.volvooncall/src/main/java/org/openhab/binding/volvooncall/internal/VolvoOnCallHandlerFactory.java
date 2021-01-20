@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,30 +14,33 @@ package org.openhab.binding.volvooncall.internal;
 
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.volvooncall.internal.discovery.VolvoOnCallDiscoveryService;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.volvooncall.internal.handler.VehicleHandler;
 import org.openhab.binding.volvooncall.internal.handler.VehicleStateDescriptionProvider;
 import org.openhab.binding.volvooncall.internal.handler.VolvoOnCallBridgeHandler;
-import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 
 /**
  * The {@link VolvoOnCallHandlerFactory} is responsible for creating things and thing
@@ -48,13 +51,31 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.volvooncall", service = ThingHandlerFactory.class)
 public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
+
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final VehicleStateDescriptionProvider stateDescriptionProvider;
+    private final Gson gson;
+    private final HttpClient httpClient;
 
     @Activate
-    public VolvoOnCallHandlerFactory(@Reference VehicleStateDescriptionProvider provider) {
+    public VolvoOnCallHandlerFactory(@Reference VehicleStateDescriptionProvider provider,
+            @Reference HttpClientFactory httpClientFactory) {
         this.stateDescriptionProvider = provider;
+        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID);
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(ZonedDateTime.class,
+                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                                .parse(json.getAsJsonPrimitive().getAsString().replaceAll("\\+0000", "Z")))
+                .registerTypeAdapter(OpenClosedType.class,
+                        (JsonDeserializer<OpenClosedType>) (json, type,
+                                jsonDeserializationContext) -> json.getAsBoolean() ? OpenClosedType.OPEN
+                                        : OpenClosedType.CLOSED)
+                .registerTypeAdapter(OnOffType.class,
+                        (JsonDeserializer<OnOffType>) (json, type,
+                                jsonDeserializationContext) -> json.getAsBoolean() ? OnOffType.ON : OnOffType.OFF)
+                .registerTypeAdapter(StringType.class, (JsonDeserializer<StringType>) (json, type,
+                        jsonDeserializationContext) -> StringType.valueOf(json.getAsString()))
+                .create();
     }
 
     @Override
@@ -66,36 +87,11 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (APIBRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            VolvoOnCallBridgeHandler bridgeHandler = new VolvoOnCallBridgeHandler((Bridge) thing);
-            registerDeviceDiscoveryService(bridgeHandler);
-            return bridgeHandler;
+            return new VolvoOnCallBridgeHandler((Bridge) thing, gson, httpClient);
         } else if (VEHICLE_THING_TYPE.equals(thingTypeUID)) {
             return new VehicleHandler(thing, stateDescriptionProvider);
         }
         logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
         return null;
-    }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof VolvoOnCallBridgeHandler) {
-            ThingUID thingUID = thingHandler.getThing().getUID();
-            unregisterDeviceDiscoveryService(thingUID);
-        }
-        super.removeHandler(thingHandler);
-    }
-
-    private void registerDeviceDiscoveryService(VolvoOnCallBridgeHandler bridgeHandler) {
-        VolvoOnCallDiscoveryService discoveryService = new VolvoOnCallDiscoveryService(bridgeHandler);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    private void unregisterDeviceDiscoveryService(ThingUID thingUID) {
-        if (discoveryServiceRegs.containsKey(thingUID)) {
-            ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingUID);
-            serviceReg.unregister();
-            discoveryServiceRegs.remove(thingUID);
-        }
     }
 }

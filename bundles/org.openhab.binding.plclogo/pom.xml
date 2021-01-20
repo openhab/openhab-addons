@@ -7,11 +7,19 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.plclogo</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: PLCLogo Binding</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.binding.plclogo</groupId>
+      <artifactId>Moka7</artifactId>
+      <version>1.0.2-iopatch</version>
+    </dependency>
+  </dependencies>
 
 </project>

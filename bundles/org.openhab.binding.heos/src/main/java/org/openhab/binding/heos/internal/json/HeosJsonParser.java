@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,7 +58,7 @@ public class HeosJsonParser {
 
     public <T> HeosResponseObject<T> parseResponse(String jsonBody, Class<T> clazz) {
         HeosJsonWrapper wrapper = gson.fromJson(jsonBody, HeosJsonWrapper.class);
-        return postProcess(wrapper, clazz);
+        return postProcess(Objects.requireNonNull(wrapper), clazz);
     }
 
     private <T> HeosResponseObject<T> postProcess(HeosJsonWrapper wrapper, Class<T> clazz) {

@@ -35,11 +35,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.io.mqttembeddedbroker</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.github.j-n-k</groupId>
       <artifactId>moquette-broker</artifactId>
       <version>0.13.0.OH2</version>
@@ -82,7 +77,6 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2-mvstore</artifactId>
       <version>1.4.199</version>
-
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
@@ -100,5 +94,28 @@
       <version>${netty.version}</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>reserve-network-port</id>
+            <goals>
+              <goal>reserve-network-port</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <portNames>
+                <portName>mqttembeddedbroker.port</portName>
+              </portNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

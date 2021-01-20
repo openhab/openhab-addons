@@ -11,11 +11,11 @@
 		</channels>
 		<config-description>
 			<parameter name="apikey" type="text" required="true">
+				<context>password</context>
 				<label>API-Key</label>
 				<description>API-Key. Necessary registration on the Tankerkönig website.</description>
-				<default></default>
 			</parameter>
-			<parameter name="refresh" type="integer" required="true" min="10">
+			<parameter name="refresh" type="integer" min="10" unit="min">
 				<label>Refresh Time</label>
 				<description>Sets the refresh time. Minimum is 10 minutes.</description>
 				<default>60</default>

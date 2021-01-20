@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -66,7 +65,6 @@ import org.slf4j.LoggerFactory;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
-@Disabled("Needs to be updated for OH3")
 public class BluetoothDiscoveryServiceTest {
 
     private static final int TIMEOUT = 2000;
@@ -541,7 +539,8 @@ public class BluetoothDiscoveryServiceTest {
         private ThingTypeUID typeUID;
 
         public MockDiscoveryParticipant() {
-            this.typeUID = new ThingTypeUID("mock", RandomStringUtils.randomAlphabetic(6));
+            this.typeUID = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
+                    RandomStringUtils.randomAlphabetic(6));
         }
 
         @Override
@@ -551,8 +550,9 @@ public class BluetoothDiscoveryServiceTest {
 
         @Override
         public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
+            String repProp = RandomStringUtils.randomAlphabetic(6);
             return DiscoveryResultBuilder.create(getThingUID(device)).withLabel(RandomStringUtils.randomAlphabetic(6))
-                    .withRepresentationProperty(RandomStringUtils.randomAlphabetic(6))
+                    .withProperty(repProp, RandomStringUtils.randomAlphabetic(6)).withRepresentationProperty(repProp)
                     .withBridge(device.getAdapter().getUID()).build();
         }
 

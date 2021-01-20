@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.dwdunwetter.internal.data;
 
 import java.util.Comparator;
-
-import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Comperator to sort a Warning first by Severity, second by the onSet date.
@@ -30,7 +28,14 @@ public class SeverityComparator implements Comparator<DwdWarningData> {
 
         int result = Integer.compare(o1.getSeverity().getOrder(), o2.getSeverity().getOrder());
         if (result == 0) {
-            result = ObjectUtils.compare(o1.getOnset(), o2.getOnset());
+            if (o1.getOnset() == o2.getOnset()) {
+                return 0;
+            } else if (o1.getOnset() == null) {
+                return -1;
+            } else if (o2.getOnset() == null) {
+                return 1;
+            }
+            return o1.getOnset().compareTo(o2.getOnset());
         }
         return result;
     }

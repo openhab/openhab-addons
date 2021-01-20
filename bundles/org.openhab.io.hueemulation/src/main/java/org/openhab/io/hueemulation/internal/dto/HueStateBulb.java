@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,11 +24,11 @@ import org.openhab.core.library.types.PercentType;
 public class HueStateBulb extends HueStatePlug {
     // https://github.com/openhab/openhab-addons/issues/2881
     // Apparently the maximum brightness is 254
-    public static int MAX_BRI = 254;
+    public static final int MAX_BRI = 254;
     public int bri = 0;
 
     /** white color temperature, 154 (cold) - 500 (warm) */
-    public static int MAX_CT = 500;
+    public static final int MAX_CT = 500;
     public int ct = 500;
 
     protected HueStateBulb() {

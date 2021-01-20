@@ -5,6 +5,5 @@
 
 	<name>OpenUV Binding</name>
 	<description>Global Real-Time UV Index Forecast API</description>
-	<author>Gaël L'hopital</author>
 
 </binding:binding>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Bob Adair - Renamed and added bridge properties
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lutron")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.lutron")
 public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private static final int SCAN_INTERVAL_MINUTES = 30;
@@ -171,7 +171,7 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
                     StandardCharsets.US_ASCII);
 
             Matcher matcher = BRIDGE_PROP_PATTERN.matcher(data);
-            Map<String, @Nullable String> bridgeProperties = new HashMap<>();
+            Map<String, String> bridgeProperties = new HashMap<>();
 
             while (matcher.find()) {
                 bridgeProperties.put(matcher.group(1), matcher.group(2));

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nikobus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="push-button" extensible="trigger-filter,trigger-button">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pc-link"/>
+		</supported-bridge-type-refs>
+
+		<label>Push Button</label>
+		<description>A single push button</description>
+
+		<channels>
+			<channel id="button" typeId="button"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The Nikobus address of the push-button.</description>
+			</parameter>
+			<parameter name="impactedModules" type="text">
+				<label>Impacted Modules</label>
+				<description>Comma separated list of impacted modules, i.e. switch-module:s1:1</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="button">
+		<item-type>Switch</item-type>
+		<label>Button Event</label>
+		<description>Fires when the button is pressed</description>
+	</channel-type>
+
+	<channel-type id="trigger-filter">
+		<kind>trigger</kind>
+		<label>Trigger Filter Channel</label>
+		<event/>
+		<config-description-ref uri="push-button:trigger-filter:config"/>
+	</channel-type>
+
+	<channel-type id="trigger-button">
+		<kind>trigger</kind>
+		<label>Trigger Button Channel</label>
+		<event>
+			<options>
+				<option value="SHORT_PRESSED">short pressed</option>
+				<option value="LONG_PRESSED">long pressed</option>
+			</options>
+		</event>
+		<config-description-ref uri="push-button:trigger-button:config"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.openthermgateway;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -46,8 +43,12 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_RETURN_TEMPERATURE = "returntemp";
     public static final String CHANNEL_OUTSIDE_TEMPERATURE = "outsidetemp";
     public static final String CHANNEL_CENTRAL_HEATING_WATER_SETPOINT = "controlsetpoint";
+    public static final String CHANNEL_REQUESTED_CENTRAL_HEATING_WATER_SETPOINT = "controlsetpointrequested";
+    public static final String CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT = "controlsetpointoverride";
     public static final String CHANNEL_CENTRAL_HEATING_WATER_PRESSURE = "waterpressure";
     public static final String CHANNEL_CENTRAL_HEATING_ENABLED = "ch_enable";
+    public static final String CHANNEL_REQUESTED_CENTRAL_HEATING_ENABLED = "ch_enablerequested";
+    public static final String CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED = "ch_enableoverride";
     public static final String CHANNEL_CENTRAL_HEATING_MODE = "ch_mode";
     public static final String CHANNEL_DOMESTIC_HOT_WATER_TEMPERATURE = "dhwtemp";
     public static final String CHANNEL_DOMESTIC_HOT_WATER_ENABLED = "dhw_enable";
@@ -64,15 +65,17 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_AIR_PRESSURE_FAULT = "airpressfault";
     public static final String CHANNEL_WATER_OVER_TEMP = "waterovtemp";
     public static final String CHANNEL_OEM_FAULTCODE = "oemfaultcode";
+    public static final String CHANNEL_DIAGNOSTICS_INDICATION = "diag";
 
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections
-            .unmodifiableSet(Stream.of(CHANNEL_ROOM_TEMPERATURE, CHANNEL_ROOM_SETPOINT, CHANNEL_FLOW_TEMPERATURE,
-                    CHANNEL_RETURN_TEMPERATURE, CHANNEL_OUTSIDE_TEMPERATURE, CHANNEL_CENTRAL_HEATING_WATER_PRESSURE,
-                    CHANNEL_CENTRAL_HEATING_ENABLED, CHANNEL_CENTRAL_HEATING_MODE,
-                    CHANNEL_CENTRAL_HEATING_WATER_SETPOINT, CHANNEL_DOMESTIC_HOT_WATER_TEMPERATURE,
-                    CHANNEL_DOMESTIC_HOT_WATER_ENABLED, CHANNEL_DOMESTIC_HOT_WATER_MODE,
-                    CHANNEL_DOMESTIC_HOT_WATER_SETPOINT, CHANNEL_FLAME, CHANNEL_RELATIVE_MODULATION_LEVEL,
-                    CHANNEL_MAXIMUM_MODULATION_LEVEL, CHANNEL_FAULT, CHANNEL_SERVICEREQUEST, CHANNEL_REMOTE_RESET,
-                    CHANNEL_LOW_WATER_PRESSURE, CHANNEL_GAS_FLAME_FAULT, CHANNEL_AIR_PRESSURE_FAULT,
-                    CHANNEL_WATER_OVER_TEMP, CHANNEL_OEM_FAULTCODE).collect(Collectors.toSet()));
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(CHANNEL_ROOM_TEMPERATURE, CHANNEL_ROOM_SETPOINT,
+            CHANNEL_FLOW_TEMPERATURE, CHANNEL_RETURN_TEMPERATURE, CHANNEL_OUTSIDE_TEMPERATURE,
+            CHANNEL_CENTRAL_HEATING_WATER_PRESSURE, CHANNEL_CENTRAL_HEATING_ENABLED,
+            CHANNEL_REQUESTED_CENTRAL_HEATING_ENABLED, CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
+            CHANNEL_CENTRAL_HEATING_MODE, CHANNEL_CENTRAL_HEATING_WATER_SETPOINT,
+            CHANNEL_REQUESTED_CENTRAL_HEATING_WATER_SETPOINT, CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
+            CHANNEL_DOMESTIC_HOT_WATER_TEMPERATURE, CHANNEL_DOMESTIC_HOT_WATER_ENABLED, CHANNEL_DOMESTIC_HOT_WATER_MODE,
+            CHANNEL_DOMESTIC_HOT_WATER_SETPOINT, CHANNEL_FLAME, CHANNEL_RELATIVE_MODULATION_LEVEL,
+            CHANNEL_MAXIMUM_MODULATION_LEVEL, CHANNEL_FAULT, CHANNEL_SERVICEREQUEST, CHANNEL_REMOTE_RESET,
+            CHANNEL_LOW_WATER_PRESSURE, CHANNEL_GAS_FLAME_FAULT, CHANNEL_AIR_PRESSURE_FAULT, CHANNEL_WATER_OVER_TEMP,
+            CHANNEL_OEM_FAULTCODE, CHANNEL_DIAGNOSTICS_INDICATION);
 }

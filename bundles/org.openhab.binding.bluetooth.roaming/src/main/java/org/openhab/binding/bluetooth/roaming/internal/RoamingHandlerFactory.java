@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.roaming", service = ThingHandlerFactory.class)
 public class RoamingHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> serviceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

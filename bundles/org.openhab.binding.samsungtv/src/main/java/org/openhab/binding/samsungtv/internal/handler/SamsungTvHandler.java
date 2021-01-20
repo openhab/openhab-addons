@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,6 @@ package org.openhab.binding.samsungtv.internal.handler;
 
 import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -26,17 +24,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.Device;
+import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.registry.Registry;
+import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.samsungtv.internal.WakeOnLanUtility;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
 import org.openhab.binding.samsungtv.internal.service.ServiceFactory;
 import org.openhab.binding.samsungtv.internal.service.api.EventListener;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
-import org.openhab.core.config.discovery.DiscoveryListener;
-import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -45,8 +42,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -64,7 +59,7 @@ import org.slf4j.LoggerFactory;
  *         package to power on TV
  */
 @NonNullByDefault
-public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListener, EventListener {
+public class SamsungTvHandler extends BaseThingHandler implements RegistryListener, EventListener {
 
     private static final int WOL_PACKET_RETRY_COUNT = 10;
     private static final int WOL_SERVICE_CHECK_COUNT = 30;
@@ -72,13 +67,12 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     private final Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
     private final UpnpIOService upnpIOService;
-    private final DiscoveryServiceRegistry discoveryServiceRegistry;
     private final UpnpService upnpService;
     private final WebSocketFactory webSocketFactory;
 
     private SamsungTvConfiguration configuration;
 
-    private @Nullable ThingUID upnpThingUID = null;
+    private @Nullable String upnpUDN = null;
 
     /* Samsung TV services */
     private final Set<SamsungTvService> services = new CopyOnWriteArraySet<>();
@@ -91,15 +85,14 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService, DiscoveryServiceRegistry discoveryServiceRegistry,
-            UpnpService upnpService, WebSocketFactory webSocketFactory) {
+    public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            WebSocketFactory webSocketFactory) {
         super(thing);
 
         logger.debug("Create a Samsung TV Handler for thing '{}'", getThing().getUID());
 
         this.upnpIOService = upnpIOService;
         this.upnpService = upnpService;
-        this.discoveryServiceRegistry = discoveryServiceRegistry;
         this.webSocketFactory = webSocketFactory;
         this.configuration = getConfigAs(SamsungTvConfiguration.class);
     }
@@ -155,7 +148,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
         configuration = getConfigAs(SamsungTvConfiguration.class);
 
-        discoveryServiceRegistry.addDiscoveryListener(this);
+        upnpService.getRegistry().addListener(this);
 
         checkAndCreateServices();
 
@@ -175,7 +168,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             pollingJob = null;
         }
 
-        discoveryServiceRegistry.removeDiscoveryListener(this);
+        upnpService.getRegistry().removeListener(this);
         shutdown();
         putOffline();
     }
@@ -330,52 +323,75 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     }
 
     @Override
-    public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-        if (configuration.hostName != null
-                && configuration.hostName.equals(result.getProperties().get(SamsungTvConfiguration.HOST_NAME))) {
-            logger.debug("thingDiscovered: {}, {}", result.getProperties().get(SamsungTvConfiguration.HOST_NAME),
-                    result);
+    public void remoteDeviceAdded(@Nullable Registry registry, @Nullable RemoteDevice device) {
+        if (configuration.hostName != null && device != null && device.getIdentity() != null
+                && device.getIdentity().getDescriptorURL() != null
+                && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())
+                && device.getType() != null) {
+            logger.debug("remoteDeviceAdded: {}, {}", device.getType().getType(),
+                    device.getIdentity().getDescriptorURL());
 
             /* Check if configuration should be updated */
             if (configuration.macAddress == null || configuration.macAddress.trim().isEmpty()) {
                 String macAddress = WakeOnLanUtility.getMACAddress(configuration.hostName);
                 if (macAddress != null) {
                     putConfig(SamsungTvConfiguration.MAC_ADDRESS, macAddress);
-                    logger.debug("thingDiscovered, macAddress: {}", macAddress);
+                    logger.debug("remoteDeviceAdded, macAddress: {}", macAddress);
                 }
             }
             if (SamsungTvConfiguration.PROTOCOL_NONE.equals(configuration.protocol)) {
                 Map<String, Object> properties = RemoteControllerService.discover(configuration.hostName);
                 for (Map.Entry<String, Object> property : properties.entrySet()) {
                     putConfig(property.getKey(), property.getValue());
-                    logger.debug("thingDiscovered, {}: {}", property.getKey(), property.getValue());
+                    logger.debug("remoteDeviceAdded, {}: {}", property.getKey(), property.getValue());
                 }
             }
-
-            /*
-             * SamsungTV discovery services creates thing UID from UPnP UDN.
-             * When thing is generated manually, thing UID may not match UPnP UDN, so store it for later use (e.g.
-             * thingRemoved).
-             */
-            upnpThingUID = result.getThingUID();
-            logger.debug("thingDiscovered, thingUID={}, discoveredUID={}", this.getThing().getUID(), upnpThingUID);
+            upnpUDN = device.getIdentity().getUdn().getIdentifierString().replace("-", "_");
+            logger.debug("remoteDeviceAdded, upnpUDN={}", upnpUDN);
             checkAndCreateServices();
         }
     }
 
     @Override
-    public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-        if (thingUID.equals(upnpThingUID)) {
-            logger.debug("Thing Removed: {}", thingUID);
+    public void remoteDeviceRemoved(@Nullable Registry registry, @Nullable RemoteDevice device) {
+        if (device == null) {
+            return;
+        }
+        String udn = device.getIdentity().getUdn().getIdentifierString().replace("-", "_");
+        if (udn.equals(upnpUDN)) {
+            logger.debug("Device removed: udn={}", upnpUDN);
             shutdown();
             putOffline();
         }
     }
 
     @Override
-    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-        return Collections.emptyList();
+    public void remoteDeviceUpdated(@Nullable Registry registry, @Nullable RemoteDevice device) {
+    }
+
+    @Override
+    public void remoteDeviceDiscoveryStarted(@Nullable Registry registry, @Nullable RemoteDevice device) {
+    }
+
+    @Override
+    public void remoteDeviceDiscoveryFailed(@Nullable Registry registry, @Nullable RemoteDevice device,
+            @Nullable Exception ex) {
+    }
+
+    @Override
+    public void localDeviceAdded(@Nullable Registry registry, @Nullable LocalDevice device) {
+    }
+
+    @Override
+    public void localDeviceRemoved(@Nullable Registry registry, @Nullable LocalDevice device) {
+    }
+
+    @Override
+    public void beforeShutdown(@Nullable Registry registry) {
+    }
+
+    @Override
+    public void afterShutdown() {
     }
 
     /**

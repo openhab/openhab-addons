@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Connor Petty - Introduced connection based discovery and added roaming support
  */
 @NonNullByDefault
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
 public class BluetoothDiscoveryService extends AbstractDiscoveryService implements BluetoothDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryService.class);
@@ -75,14 +75,14 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     @Activate
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         logger.debug("Activating Bluetooth discovery service");
         super.activate(configProperties);
     }
 
     @Override
     @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void modified(@Nullable Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -170,7 +170,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     private class DiscoveryCache {
 
         private final Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
-        private final Map<BluetoothAdapter, @Nullable Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
+        private final Map<BluetoothAdapter, Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
 
         private @Nullable BluetoothDeviceSnapshot latestSnapshot;
 
@@ -267,6 +267,10 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             future = future.thenApply(result -> {
                 publishDiscoveryResult(adapter, result);
                 return result;
+            }).whenComplete((r, t) -> {
+                if (t != null) {
+                    logger.warn("Error occured during discovery of {}", device.getAddress(), t);
+                }
             });
 
             // now save this snapshot for later

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -188,7 +188,7 @@ public class ChannelState implements MqttMessageSubscriber {
             return;
         }
 
-        // Map the string to an ESH command, update the cached value and post the command to the framework
+        // Map the string to a command, update the cached value and post the command to the framework
         try {
             cachedValue.update(command);
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -290,7 +290,7 @@ public class ChannelState implements MqttMessageSubscriber {
             int timeout) {
         synchronized (futureLock) {
             // if the connection is still the same, the subscription is still present, otherwise we need to renew
-            if (hasSubscribed || !future.isDone() && connection.equals(this.connection)) {
+            if ((hasSubscribed || !future.isDone()) && connection.equals(this.connection)) {
                 return future;
             }
             hasSubscribed = false;

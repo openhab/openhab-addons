@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Russell Stephens - Initial Contribution
  *
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.dscalarm")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.dscalarm")
 public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 
@@ -52,12 +52,12 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     };
 
     /**
-     * Method to add an Envisalink Bridge to the Smarthome Inbox.
+     * Method to add an Envisalink Bridge to the Inbox.
      *
      * @param ipAddress
      */
     public void addEnvisalinkBridge(String ipAddress) {
-        logger.trace("addBridge(): Adding new Envisalink Bridge on {} to Smarthome inbox", ipAddress);
+        logger.trace("addBridge(): Adding new Envisalink Bridge on {} to inbox", ipAddress);
 
         String bridgeID = ipAddress.replace('.', '_');
         Map<String, Object> properties = new HashMap<>(0);
@@ -69,7 +69,7 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withLabel("EyezOn Envisalink Bridge - " + ipAddress).build());
 
-            logger.trace("addBridge(): '{}' was added to Smarthome inbox.", thingUID);
+            logger.trace("addBridge(): '{}' was added to inbox.", thingUID);
         } catch (Exception e) {
             logger.error("addBridge(): Error", e);
         }

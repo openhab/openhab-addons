@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,8 +148,8 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
             byte[] subAddresses = new byte[numberOfSubAddresses];
             for (int i = 0; i < numberOfSubAddresses; i++) {
                 String propertyKey = SUB_ADDRESS + (i + 1);
-                if (getThing().getProperties().containsKey(propertyKey)) {
-                    String subAddress = getThing().getProperties().get(propertyKey);
+                String subAddress = getThing().getProperties().get(propertyKey);
+                if (subAddress != null) {
                     subAddresses[i] = hexToByte(subAddress);
                 } else {
                     subAddresses[i] = (byte) 0xFF;

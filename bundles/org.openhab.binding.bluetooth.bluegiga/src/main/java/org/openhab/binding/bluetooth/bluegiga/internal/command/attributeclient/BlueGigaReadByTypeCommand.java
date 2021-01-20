@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,6 +56,13 @@ public class BlueGigaReadByTypeCommand extends BlueGigaDeviceCommand {
      */
     private UUID uuid = new UUID(0, 0);
 
+    private BlueGigaReadByTypeCommand(CommandBuilder builder) {
+        this.connection = builder.connection;
+        this.start = builder.start;
+        this.end = builder.end;
+        this.uuid = builder.uuid;
+    }
+
     /**
      * First attribute handle
      *
@@ -110,5 +117,56 @@ public class BlueGigaReadByTypeCommand extends BlueGigaDeviceCommand {
         builder.append(uuid);
         builder.append(']');
         return builder.toString();
+    }
+
+    public static class CommandBuilder {
+        private int connection;
+        private int start;
+        private int end;
+        private UUID uuid = new UUID(0, 0);
+
+        /**
+         * Set connection handle.
+         *
+         * @param connection the connection to set as {@link int}
+         */
+        public CommandBuilder withConnection(int connection) {
+            this.connection = connection;
+            return this;
+        }
+
+        /**
+         * First requested handle number
+         *
+         * @param start the start to set as {@link int}
+         */
+        public CommandBuilder withStart(int start) {
+            this.start = start;
+            return this;
+        }
+
+        /**
+         * Last requested handle number
+         *
+         * @param end the end to set as {@link int}
+         */
+        public CommandBuilder withEnd(int end) {
+            this.end = end;
+            return this;
+        }
+
+        /**
+         * Attribute type (UUID)
+         *
+         * @param uuid the uuid to set as {@link UUID}
+         */
+        public CommandBuilder withUUID(UUID uuid) {
+            this.uuid = uuid;
+            return this;
+        }
+
+        public BlueGigaReadByTypeCommand build() {
+            return new BlueGigaReadByTypeCommand(this);
+        }
     }
 }

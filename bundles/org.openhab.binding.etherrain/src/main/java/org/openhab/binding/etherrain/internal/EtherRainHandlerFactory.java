@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.etherrain")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.etherrain")
 @NonNullByDefault
 public class EtherRainHandlerFactory extends BaseThingHandlerFactory {
 

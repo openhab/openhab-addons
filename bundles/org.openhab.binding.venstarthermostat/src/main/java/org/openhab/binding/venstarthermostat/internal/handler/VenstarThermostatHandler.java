@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,13 +20,7 @@ import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +55,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -268,7 +262,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         Optional<VenstarSensor> optSensor = sensorData.stream()
                 .filter(sensor -> sensor.getName().equalsIgnoreCase("Thermostat")).findAny();
         if (optSensor.isPresent()) {
-            return new QuantityType<Dimensionless>(optSensor.get().getHum(), SmartHomeUnits.PERCENT);
+            return new QuantityType<Dimensionless>(optSensor.get().getHum(), Units.PERCENT);
         }
 
         return UnDefType.UNDEF;
@@ -341,7 +335,8 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             }
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
-            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = e.getMessage();
+            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }
@@ -364,7 +359,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             if (!isFutureValid(localUpdatesTask)) {
                 return;
             }
-            infoData = gson.fromJson(response, VenstarInfoData.class);
+            infoData = Objects.requireNonNull(gson.fromJson(response, VenstarInfoData.class));
             updateUnits(infoData);
             updateIfChanged(CHANNEL_HEATING_SETPOINT, getHeatingSetpoint());
             updateIfChanged(CHANNEL_COOLING_SETPOINT, getCoolingSetpoint());
@@ -376,7 +371,8 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             goOnline();
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
-            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = e.getMessage();
+            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }

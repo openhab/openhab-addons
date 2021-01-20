@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,9 @@ import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerStationConfig;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -37,8 +37,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * @author Florian Schmidt - Refactoring
@@ -85,13 +83,14 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         updateChannels();
     }
 
+    @SuppressWarnings("null")
     private void handleNextDurationCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof QuantityType<?>)) {
             logger.info("Ignoring implausible non-QuantityType command for NEXT_DURATION");
             return;
         }
         QuantityType<?> quantity = (QuantityType<?>) command;
-        this.nextDurationTime = quantity.toBigDecimal();
+        this.nextDurationTime = quantity.toUnit(Units.SECOND).toBigDecimal();
         updateState(channelUID, quantity);
     }
 
@@ -204,7 +203,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             case NEXT_DURATION:
                 BigDecimal duration = nextDurationValue();
                 if (duration != null) {
-                    updateState(channel, new DecimalType(duration));
+                    updateState(channel, new QuantityType<>(duration, Units.SECOND));
                 }
                 break;
             case STATION_QUEUED:

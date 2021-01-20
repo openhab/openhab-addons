@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+import org.openhab.binding.netatmo.internal.RefreshStrategy;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -34,13 +36,11 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-import org.openhab.binding.netatmo.internal.RefreshStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.swagger.client.ApiException;
 import io.swagger.client.model.NAPlace;
-import retrofit.RetrofitError;
 
 /**
  * {@link NetatmoDeviceHandler} is the handler for a given
@@ -125,7 +125,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     Optional<DEVICE> newDeviceReading = Optional.empty();
                     try {
                         newDeviceReading = updateReadings();
-                    } catch (RetrofitError e) {
+                    } catch (ApiException e) {
                         if (logger.isDebugEnabled()) {
                             // we also attach the stack trace
                             logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);

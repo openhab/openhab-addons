@@ -2,7 +2,7 @@
 <config-description:config-descriptions
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0https://openhab.org/schemas/config-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:miio:config">
 		<parameter name="host" type="text" required="true">
@@ -21,6 +21,16 @@
 		<parameter name="model" type="text" required="false">
 			<label>Device Model String</label>
 			<description>Device model string, used to determine the subtype.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="communication" type="text" required="false">
+			<default>direct</default>
+			<label>Communication Method</label>
+			<description>Determines how the binding communicates with this device</description>
+			<options>
+				<option value="direct">Direct (Default)</option>
+				<option value="cloud">Cloud</option>
+			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="0" max="9999" required="false">
