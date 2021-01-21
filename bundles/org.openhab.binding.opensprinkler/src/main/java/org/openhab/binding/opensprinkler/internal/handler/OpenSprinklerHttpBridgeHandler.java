@@ -100,7 +100,6 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not initialize the connection to the OpenSprinkler.");
-            return;
         }
     }
 

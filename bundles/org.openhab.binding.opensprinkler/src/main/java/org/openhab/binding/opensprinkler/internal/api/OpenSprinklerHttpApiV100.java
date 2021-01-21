@@ -36,7 +36,6 @@ import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiExcept
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
-import org.openhab.binding.opensprinkler.internal.util.Hash;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 
 import com.google.gson.Gson;
@@ -101,12 +100,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public void refresh() throws CommunicationApiException, UnauthorizedApiException {
         joReply = getOptions();
-        if (firmwareVersion == -1) {
-            getFirmwareVersion();
-            if (firmwareVersion >= 213) {
-                password = Hash.getMD5Hash(password);
-            }
-        }
         jsReply = http.sendHttpGet(getBaseUrl() + CMD_STATION_INFO, getRequestRequiredOptions());
         if (jsReply.equals("{\"result\":2}")) {
             throw new UnauthorizedApiException("Unauthorized, check your password is correct");
@@ -219,7 +212,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public int getFirmwareVersion() {
+    public int getFirmwareVersion() throws CommunicationApiException, UnauthorizedApiException {
+        if (joReply == null) {
+            joReply = getOptions();
+        }
         JoResponse localReply = joReply;
         if (localReply != null) {
             if (localReply.fwv > 0) {
@@ -290,7 +286,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     private static class JoResponse {
         public int wl;
-        public int fwv;
+        public int fwv = -1;
     }
 
     /**
