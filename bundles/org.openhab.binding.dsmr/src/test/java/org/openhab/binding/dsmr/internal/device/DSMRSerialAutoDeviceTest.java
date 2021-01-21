@@ -132,9 +132,8 @@ public class DSMRSerialAutoDeviceTest {
         try (InputStream inputStream = new ByteArrayInputStream(new byte[] {})) {
             when(mockSerialPort.getInputStream()).thenReturn(inputStream);
             // Trigger device to go into error stage with port in use.
-            doAnswer(a -> {
-                throw new PortInUseException();
-            }).when(mockIdentifier).open(eq(DSMRBindingConstants.DSMR_PORT_NAME), anyInt());
+            doThrow(new PortInUseException(new Exception())).when(mockIdentifier)
+                    .open(eq(DSMRBindingConstants.DSMR_PORT_NAME), anyInt());
             DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener,
                     new DSMRTelegramListener(), scheduler, 1);
             device.start();
