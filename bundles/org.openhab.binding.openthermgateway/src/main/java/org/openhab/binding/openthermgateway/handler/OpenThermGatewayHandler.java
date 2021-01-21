@@ -151,9 +151,16 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disconnected");
 
         // retry connection if disconnect is not explicitly requested
-        if (conf != null && !explicitDisconnect && conf.connectionRetryInterval > 0) {
+        if (!explicitDisconnect && conf != null && conf.connectionRetryInterval > 0) {
+            logger.debug("Scheduling to reconnect in {} seconds.", conf.connectionRetryInterval);
+
             scheduler.schedule(() -> {
-                if (conn != null && !connecting && !conn.isConnected()) {
+                if (connecting) {
+                    logger.debug("Already connecting...");
+                } else if (conn != null && conn.isConnected()) {
+                    logger.debug("Connector is already connected.");
+                } else {
+                    logger.debug("Trying to reconnect...");
                     connect();
                 }
             }, conf.connectionRetryInterval, TimeUnit.SECONDS);
