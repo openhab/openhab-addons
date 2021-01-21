@@ -6,7 +6,7 @@
 
 	<bridge-type id="telldus-core">
 		<label>Telldus Core Gateway</label>
-		<description>This bridge represents the telldus center on a local computer.</description>
+		<description>This bridge represents the Telldus center on a local computer.</description>
 
 		<config-description>
 			<parameter name="libraryPath" type="text" required="false">
@@ -25,7 +25,7 @@
 	</bridge-type>
 	<bridge-type id="telldus-live">
 		<label>Telldus Live Gateway</label>
-		<description>This bridge represents the telldus live cloud service.</description>
+		<description>This bridge represents the Telldus live cloud service.</description>
 
 		<config-description>
 			<parameter name="privateKey" type="text" required="true">
@@ -51,6 +51,29 @@
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in ms which is used to poll Telldus Live.
+				</description>
+				<default>60000</default>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+	<bridge-type id="telldus-local">
+		<label>Telldus Local API</label>
+		<description>This bridge represents the Telldus local API.</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Local IP Address</label>
+				<description>The local IP address of the Tellstick.</description>
+			</parameter>
+			<parameter name="accessToken" type="text" required="true">
+				<context>credentials</context>
+				<label>Access Token</label>
+				<description>The access token.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in ms which is used to poll Telldus local API.
 				</description>
 				<default>60000</default>
 			</parameter>

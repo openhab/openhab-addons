@@ -23,12 +23,16 @@ import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
 import org.openhab.binding.tellstick.internal.live.xml.DataTypeValue;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensorEvent;
+import org.openhab.binding.tellstick.internal.local.json.LocalDataTypeValue;
+import org.openhab.binding.tellstick.internal.local.json.TellstickLocalSensor;
+import org.openhab.binding.tellstick.internal.local.json.TellstickLocalSensorEvent;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -240,6 +244,10 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             for (DataTypeValue type : ((TellstickNetSensor) dev).getData()) {
                 updateSensorDataState(type);
             }
+        } else if (dev instanceof TellstickLocalSensor) {
+            for (LocalDataTypeValue type : ((TellstickLocalSensor) dev).getData()) {
+                updateSensorDataState(type);
+            }
         }
     }
 
@@ -259,6 +267,9 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                 updateDeviceState(device);
             } else if (event instanceof TellstickNetSensorEvent) {
                 TellstickNetSensorEvent sensorevent = (TellstickNetSensorEvent) event;
+                updateSensorDataState(sensorevent.getDataTypeValue());
+            } else if (event instanceof TellstickLocalSensorEvent) {
+                TellstickLocalSensorEvent sensorevent = (TellstickLocalSensorEvent) event;
                 updateSensorDataState(sensorevent.getDataTypeValue());
             } else if (event instanceof TellstickSensorEvent) {
                 TellstickSensorEvent sensorevent = (TellstickSensorEvent) event;
@@ -331,6 +342,46 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                     updateState(ampereChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), ELECTRIC_UNIT));
                 } else {
                     updateState(wattChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), POWER_UNIT));
+                }
+                break;
+            case LUMINATION:
+                updateState(luxChannel, new QuantityType<>(new DecimalType(dataType.getValue()), LUX_UNIT));
+                break;
+            default:
+        }
+    }
+
+    private void updateSensorDataState(LocalDataTypeValue dataType) {
+        switch (dataType.getName()) {
+            case HUMIDITY:
+                updateState(humidityChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), HUMIDITY_UNIT));
+                break;
+            case TEMPERATURE:
+                updateState(tempChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), SIUnits.CELSIUS));
+                break;
+            case RAINRATE:
+                updateState(rainRateChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), RAIN_UNIT));
+                break;
+            case RAINTOTAL:
+                updateState(raintTotChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), RAIN_UNIT));
+                break;
+            case WINDAVERAGE:
+                updateState(windAverageChannel,
+                        new QuantityType<>(new BigDecimal(dataType.getValue()), WIND_SPEED_UNIT_MS));
+                break;
+            case WINDDIRECTION:
+                updateState(windDirectionChannel,
+                        new QuantityType<>(new BigDecimal(dataType.getValue()), WIND_DIRECTION_UNIT));
+                break;
+            case WINDGUST:
+                updateState(windGuestChannel,
+                        new QuantityType<>(new BigDecimal(dataType.getValue()), WIND_SPEED_UNIT_MS));
+                break;
+            case WATT:
+                if (dataType.getScale() == 5) {
+                    updateState(ampereChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), ELECTRIC_UNIT));
+                } else if (dataType.getScale() == 2) {
+                    updateState(wattChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), Units.WATT));
                 }
                 break;
             case LUMINATION:

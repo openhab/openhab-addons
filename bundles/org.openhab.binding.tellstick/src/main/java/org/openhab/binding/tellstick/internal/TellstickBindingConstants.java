@@ -65,6 +65,7 @@ public class TellstickBindingConstants {
     public static final String DEVICE_ISDIMMER = "dimmer";
     public static final String BRIDGE_TELLDUS_CORE = "telldus-core";
     public static final String BRIDGE_TELLDUS_LIVE = "telldus-live";
+    public static final String BRIDGE_TELLDUS_LOCAL = "telldus-local";
     public static final String DEVICE_SENSOR = "sensor";
     public static final String DEVICE_WINDSENSOR = "windsensor";
     public static final String DEVICE_RAINSENSOR = "rainsensor";
@@ -82,6 +83,7 @@ public class TellstickBindingConstants {
     public static final ThingTypeUID TELLDUSBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_TELLDUS_CORE);
     public static final ThingTypeUID TELLDUSCOREBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_TELLDUS_CORE);
     public static final ThingTypeUID TELLDUSLIVEBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_TELLDUS_LIVE);
+    public static final ThingTypeUID TELLDUSLOCALBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_TELLDUS_LOCAL);
     // List of all Channel ids
     public static final String CHANNEL_DIMMER = "dimmer";
     public static final String CHANNEL_STATE = "state";
@@ -102,8 +104,8 @@ public class TellstickBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(DIMMER_THING_TYPE, SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE,
                     WINDSENSOR_THING_TYPE, POWERSENSOR_THING_TYPE).collect(Collectors.toSet()));
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(DIMMER_THING_TYPE, SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE, WINDSENSOR_THING_TYPE,
-                    POWERSENSOR_THING_TYPE, TELLDUSCOREBRIDGE_THING_TYPE, TELLDUSLIVEBRIDGE_THING_TYPE)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(DIMMER_THING_TYPE, SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE,
+                    WINDSENSOR_THING_TYPE, POWERSENSOR_THING_TYPE, TELLDUSCOREBRIDGE_THING_TYPE,
+                    TELLDUSLIVEBRIDGE_THING_TYPE, TELLDUSLOCALBRIDGE_THING_TYPE).collect(Collectors.toSet()));
 }
