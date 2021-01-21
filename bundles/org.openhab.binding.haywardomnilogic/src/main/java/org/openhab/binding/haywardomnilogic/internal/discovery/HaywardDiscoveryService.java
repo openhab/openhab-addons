@@ -112,11 +112,11 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
 
         // Find Chlorinators
         discoverDevices(bridgehandler, xmlResponse, "Chlorinator", HaywardTypeToRequest.CHLORINATOR,
-                HaywardBindingConstants.THING_TYPE_CHLORINATOR, false, null);
+                HaywardBindingConstants.THING_TYPE_CHLORINATOR, null);
 
         // Find ColorLogic Lights
         discoverDevices(bridgehandler, xmlResponse, "ColorLogic-Light", HaywardTypeToRequest.COLORLOGIC,
-                HaywardBindingConstants.THING_TYPE_COLORLOGIC, false, null);
+                HaywardBindingConstants.THING_TYPE_COLORLOGIC, null);
 
         // Find Filters
         final List<String> filterProperty1 = bridgehandler.evaluateXPath("//Filter/Min-Pump-Speed/text()", xmlResponse);
@@ -125,7 +125,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         final List<String> filterProperty4 = bridgehandler.evaluateXPath("//Filter/Max-Pump-RPM/text()", xmlResponse);
 
         discoverDevices(bridgehandler, xmlResponse, "Filter", HaywardTypeToRequest.FILTER,
-                HaywardBindingConstants.THING_TYPE_FILTER, false, (props, i) -> {
+                HaywardBindingConstants.THING_TYPE_FILTER, (props, i) -> {
                     props.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPSPEED, filterProperty1.get(i));
                     props.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPSPEED, filterProperty2.get(i));
                     props.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPRPM, filterProperty3.get(i));
@@ -134,7 +134,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
 
         // Find Heaters
         discoverDevices(bridgehandler, xmlResponse, "Heater-Equipment", HaywardTypeToRequest.HEATER,
-                HaywardBindingConstants.THING_TYPE_HEATER, false, null);
+                HaywardBindingConstants.THING_TYPE_HEATER, null);
 
         // Find Pumps
         systemIDs = bridgehandler.evaluateXPath("//Pump/System-Id/text()", xmlResponse);
@@ -145,7 +145,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         final List<String> pumpProperty4 = bridgehandler.evaluateXPath("//Pump/Max-Pump-RPM/text()", xmlResponse);
 
         discoverDevices(bridgehandler, xmlResponse, "Pump", HaywardTypeToRequest.PUMP,
-                HaywardBindingConstants.THING_TYPE_FILTER, false, (props, i) -> {
+                HaywardBindingConstants.THING_TYPE_FILTER, (props, i) -> {
                     props.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPSPEED, pumpProperty1.get(i));
                     props.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPSPEED, pumpProperty2.get(i));
                     props.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPRPM, pumpProperty3.get(i));
@@ -154,20 +154,20 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
 
         // Find Relays
         discoverDevices(bridgehandler, xmlResponse, "Relay", HaywardTypeToRequest.RELAY,
-                HaywardBindingConstants.THING_TYPE_RELAY, true, null);
+                HaywardBindingConstants.THING_TYPE_RELAY, null);
 
         // Find Virtual Heaters
         discoverDevices(bridgehandler, xmlResponse, "Heater", HaywardTypeToRequest.VIRTUALHEATER,
-                HaywardBindingConstants.THING_TYPE_VIRTUALHEATER, false, null);
+                HaywardBindingConstants.THING_TYPE_VIRTUALHEATER, null);
 
         // Find Sensors
         discoverDevices(bridgehandler, xmlResponse, "Sensor", HaywardTypeToRequest.SENSOR,
-                HaywardBindingConstants.THING_TYPE_SENSOR, true, null);
+                HaywardBindingConstants.THING_TYPE_SENSOR, null);
         return;
     }
 
     private void discoverDevices(HaywardBridgeHandler bridgehandler, String xmlResponse, String xmlSearchTerm,
-            HaywardTypeToRequest type, ThingTypeUID thingType, boolean useZeroForBowIndex,
+            HaywardTypeToRequest type, ThingTypeUID thingType,
             @Nullable BiConsumer<Map<String, Object>, Integer> additionalPropertyConsumer) {
         List<String> systemIDs = new ArrayList<>();
         List<String> names = new ArrayList<>();
@@ -200,9 +200,8 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             Map<String, Object> properties = new HashMap<>();
             properties.put(HaywardBindingConstants.PROPERTY_TYPE, type);
             properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
-            int bowIndex = useZeroForBowIndex ? 0 : i;
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(bowIndex));
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(bowIndex));
+            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(0));
+            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(0));
             if (additionalPropertyConsumer != null) {
                 additionalPropertyConsumer.accept(properties, i);
             }
