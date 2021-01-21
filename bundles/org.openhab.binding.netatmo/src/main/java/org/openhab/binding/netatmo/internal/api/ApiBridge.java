@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +35,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.netatmo.internal.api.aircare.AircareApi;
@@ -52,7 +52,6 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -74,29 +73,26 @@ import com.google.gson.JsonSyntaxException;
 public class ApiBridge {
     private static final int TIMEOUT_MS = 10000;
 
-    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(SERVICE_PID);
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(SERVICE_PID);
     private final Logger logger = LoggerFactory.getLogger(ApiBridge.class);
-    private static final String AUTH_HEADER = "Authorization";
-    private NetatmoBindingConfiguration configuration = new NetatmoBindingConfiguration();
-
-    private Map<Class<? extends RestManager>, Object> managers = new HashMap<>();
-    private final HttpClient httpClient;
-    private ConnectionStatus connectionStatus = ConnectionStatus.Failed("No connection tried");
-    private List<Scope> grantedScopes = List.of();
-    private final ConnectApi connectApi;
     private final List<ConnectionListener> listeners = new ArrayList<>();
+    private final Map<HttpHeader, String> httpHeaders = new HashMap<>();
 
-    public static final Properties HTTP_HEADERS;
-    static {
-        HTTP_HEADERS = new Properties();
-        HTTP_HEADERS.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-    }
+    private final HttpClient httpClient;
+    private final ConnectApi connectApi;
+
+    private NetatmoBindingConfiguration configuration = new NetatmoBindingConfiguration();
+    private Map<Class<? extends RestManager>, Object> managers = new HashMap<>();
+    private ConnectionStatus connectionStatus = ConnectionStatus.Unknown();
+    private List<Scope> grantedScopes = List.of();
 
     @Activate
     public ApiBridge(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
             ComponentContext componentContext) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpHeaders.put(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
         this.connectApi = new ConnectApi(this, oAuthFactory, configuration);
+
         modified(BindingUtils.ComponentContextToMap(componentContext));
     }
 
@@ -120,12 +116,11 @@ public class ApiBridge {
                     setConnectionStatus(ConnectionStatus.Success());
                     break;
                 case 403: // Forbidden Access maybe too many requests ? Let's wait next cycle
-                    scheduler.schedule(() -> this.testConnection(), configuration.reconnectInterval, TimeUnit.SECONDS);
+                    setConnectionStatus(ConnectionStatus.Failed("Connection failed, retrying"));
+                    scheduler.schedule(() -> testConnection(), configuration.reconnectInterval, TimeUnit.SECONDS);
                     break;
                 default:
-                    setConnectionStatus(ConnectionStatus
-                            .Failed(String.format("Unable to connect Netatmo API : %s", e.getMessage())));
-                    // notifyListeners(false, );
+                    setConnectionStatus(ConnectionStatus.Failed("Unable to connect Netatmo API : %s", e));
             }
         }
     }
@@ -194,32 +189,29 @@ public class ApiBridge {
 
     public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean baseUrl)
             throws NetatmoException {
-        return execute(anUrl, "POST", payload, classOfT, baseUrl);
+        return executeUrl(anUrl, HttpMethod.POST, payload, classOfT, baseUrl);
     }
 
-    public <T> T get(String anUrl, Class<T> classOfT) throws NetatmoException {
-        return execute(anUrl, "GET", null, classOfT, true);
-    }
+    // public <T> T get(String anUrl, Class<T> classOfT) throws NetatmoException {
+    // return executeUrl(anUrl, HttpMethod.GET, null, classOfT, true);
+    // }
 
-    public <T> T execute(String anUrl, String aMethod, @Nullable String aPayload, Class<T> classOfT, boolean baseUrl)
-            throws NetatmoException {
-        return executeUrl(anUrl, aMethod, aPayload, classOfT, baseUrl);
-    }
+    // public <T> T execute(String anUrl, String aMethod, @Nullable String aPayload, Class<T> classOfT, boolean baseUrl)
+    // throws NetatmoException {
+    // return executeUrl(anUrl, aMethod, aPayload, classOfT, baseUrl);
+    // }
 
-    private synchronized <T> T executeUrl(String anUrl, String aMethod, @Nullable String payload, Class<T> classOfT,
+    synchronized <T> T executeUrl(String anUrl, HttpMethod method, @Nullable String payload, Class<T> classOfT,
             boolean baseUrl) throws NetatmoException {
         String url = anUrl.startsWith("http") ? anUrl
                 : (baseUrl ? NetatmoConstants.NETATMO_BASE_URL : NetatmoConstants.NETATMO_APP_URL) + anUrl;
         try {
-            logger.debug("executeUrl  {} {} ", aMethod, url);
+            logger.debug("executeUrl  {} {} ", method.toString(), url);
 
-            final HttpMethod method = HttpUtil.createHttpMethod(aMethod);
             final Request request = httpClient.newRequest(url).method(method).timeout(TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
 
-            for (String httpHeaderKey : HTTP_HEADERS.stringPropertyNames()) {
-                request.header(httpHeaderKey, HTTP_HEADERS.getProperty(httpHeaderKey));
-            }
+            httpHeaders.entrySet().forEach(entry -> request.header(entry.getKey(), entry.getValue()));
 
             if (payload != null && (HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
                 InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
@@ -228,14 +220,14 @@ public class ApiBridge {
                     request.content(inputStreamContentProvider, null);
                 }
                 if (!baseUrl) {
-                    request.getHeaders().remove("Content-Type");
-                    request.header("Content-Type", "application/json;charset=utf-8");
+                    request.getHeaders().remove(HttpHeader.CONTENT_TYPE);
+                    request.header(HttpHeader.CONTENT_TYPE, "application/json;charset=utf-8");
                 }
             }
 
             ContentResponse response = request.send();
-            int statusCode = response.getStatus();
 
+            int statusCode = response.getStatus();
             if (statusCode >= 200 && statusCode < 300) {
                 String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
                 T deserialized = deserialize(classOfT, responseBody);
@@ -269,7 +261,7 @@ public class ApiBridge {
 
     public void onAccessTokenResponse(String accessToken, List<Scope> grantedScopes) {
         this.grantedScopes = grantedScopes;
-        HTTP_HEADERS.setProperty(AUTH_HEADER, "Bearer " + accessToken);
+        httpHeaders.put(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
     }
 
     public void setConnectionListener(ConnectionListener listener) {

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.home.HomeApi;
@@ -42,28 +41,21 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public class NAHomeEnergyHandler extends NetatmoDeviceHandler {
 
-    private @Nullable NAPlanningDescriptionProvider descriptionProvider;
     private int setpointDefaultDuration;
     private final HomeApi api;
 
     public NAHomeEnergyHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider);
+            TimeZoneProvider timeZoneProvider, NADescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
         this.api = apiBridge.getHomeApi();
-    }
-
-    public void setStateDescriptionProvider(NAPlanningDescriptionProvider descriptionProvider) {
-        this.descriptionProvider = descriptionProvider;
     }
 
     @Override
     protected NAHome updateReadings() throws NetatmoException {
         NAHome home = api.getHomeData(config.id);
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), GROUP_HOME_ENERGY, CHANNEL_PLANNING);
-        if (descriptionProvider != null) {
-            descriptionProvider.setStateOptions(channelUID, home.getThermSchedules().stream()
-                    .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
-        }
+        descriptionProvider.setStateOptions(channelUID, home.getThermSchedules().stream()
+                .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
         setpointDefaultDuration = home.getThermSetpointDefaultDuration();
         return home;
     }

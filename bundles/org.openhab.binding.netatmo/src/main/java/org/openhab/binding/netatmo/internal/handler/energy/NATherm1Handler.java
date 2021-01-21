@@ -47,8 +47,8 @@ public class NATherm1Handler extends NetatmoDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(NATherm1Handler.class);
 
     public NATherm1Handler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, @Nullable ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider);
+            TimeZoneProvider timeZoneProvider, NADescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
     }
 
     private @Nullable NAPlugHandler getPlugHandler() {

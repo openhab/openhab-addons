@@ -28,7 +28,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.home.NASnapshot;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
-import org.openhab.binding.netatmo.internal.handler.energy.NAPlanningDescriptionProvider;
+import org.openhab.binding.netatmo.internal.handler.energy.NADescriptionProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -46,11 +46,9 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class NAPersonHandler extends NetatmoDeviceHandler {
 
-    private @Nullable NAPlanningDescriptionProvider descriptionProvider;
-
     public NAPersonHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, @Nullable ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider);
+            TimeZoneProvider timeZoneProvider, NADescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
     }
 
     private @Nullable NAHomeSecurityHandler getHomeHandler() {
@@ -58,15 +56,11 @@ public class NAPersonHandler extends NetatmoDeviceHandler {
         return handler != null ? (NAHomeSecurityHandler) handler : null;
     }
 
-    public void setStateDescriptionProvider(NAPlanningDescriptionProvider descriptionProvider) {
-        this.descriptionProvider = descriptionProvider;
-    }
-
     @Override
     public void setNAThing(NAThing naModule) {
         super.setNAThing(naModule);
         NAHomeSecurityHandler homeHandler = getHomeHandler();
-        if (descriptionProvider != null && homeHandler != null) {
+        if (homeHandler != null) {
             descriptionProvider.setStateOptions(
                     new ChannelUID(getThing().getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID),
                     homeHandler.getCameras().stream().map(p -> new StateOption(p.getId(), p.getName()))

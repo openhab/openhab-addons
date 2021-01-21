@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo;
+package org.openhab.binding.netatmo.internal.api;
 
 import java.lang.reflect.Type;
 

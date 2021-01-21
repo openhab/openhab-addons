@@ -41,8 +41,8 @@ public class NAPlugHandler extends NetatmoDeviceHandler {
     private @Nullable EnergyApi api;
 
     public NAPlugHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider);
+            TimeZoneProvider timeZoneProvider, NADescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
         api = apiBridge.getRestManager(EnergyApi.class);
     }
 

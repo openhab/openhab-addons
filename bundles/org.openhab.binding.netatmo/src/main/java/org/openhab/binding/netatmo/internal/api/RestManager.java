@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.Scope;
 
 /**
@@ -40,11 +41,11 @@ public abstract class RestManager {
     }
 
     public <T> T get(String anUrl, Class<T> classOfT) throws NetatmoException {
-        return apiHandler.execute(SUB_URL + anUrl, "GET", null, classOfT, true);
+        return apiHandler.executeUrl(SUB_URL + anUrl, HttpMethod.GET, null, classOfT, true);
     }
 
     public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean baseUrl)
             throws NetatmoException {
-        return apiHandler.execute(SUB_URL + anUrl, "POST", payload, classOfT, baseUrl);
+        return apiHandler.executeUrl(SUB_URL + anUrl, HttpMethod.POST, payload, classOfT, baseUrl);
     }
 }

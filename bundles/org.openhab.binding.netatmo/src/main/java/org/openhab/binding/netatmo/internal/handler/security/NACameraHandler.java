@@ -30,7 +30,7 @@ import org.openhab.binding.netatmo.internal.api.home.NASnapshot;
 import org.openhab.binding.netatmo.internal.api.security.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
-import org.openhab.binding.netatmo.internal.handler.energy.NAPlanningDescriptionProvider;
+import org.openhab.binding.netatmo.internal.handler.energy.NADescriptionProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -55,16 +55,11 @@ public class NACameraHandler extends NetatmoDeviceHandler {
     private @Nullable String vpnUrl;
     private boolean isLocal;
     private final HomeApi homeApi;
-    private @Nullable NAPlanningDescriptionProvider descriptionProvider;
 
     public NACameraHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider);
+            TimeZoneProvider timeZoneProvider, NADescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
         this.homeApi = apiBridge.getHomeApi();
-    }
-
-    public void setStateDescriptionProvider(NAPlanningDescriptionProvider descriptionProvider) {
-        this.descriptionProvider = descriptionProvider;
     }
 
     private @Nullable NAHomeSecurityHandler getHomeHandler() {
@@ -79,7 +74,7 @@ public class NACameraHandler extends NetatmoDeviceHandler {
         this.vpnUrl = camera.getVpnUrl();
         this.isLocal = camera.isLocal();
         NAHomeSecurityHandler homeHandler = getHomeHandler();
-        if (descriptionProvider != null && homeHandler != null) {
+        if (homeHandler != null) {
             descriptionProvider.setStateOptions(
                     new ChannelUID(getThing().getUID(), GROUP_WELCOME_EVENT, CHANNEL_EVENT_PERSON_ID),
                     homeHandler.getKnownPersons().stream().map(p -> new StateOption(p.getId(), p.getName()))

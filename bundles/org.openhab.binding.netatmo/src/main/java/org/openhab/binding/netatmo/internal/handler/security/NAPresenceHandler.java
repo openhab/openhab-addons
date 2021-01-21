@@ -23,6 +23,7 @@ import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.PresenceLig
 import org.openhab.binding.netatmo.internal.api.home.HomeApi;
 import org.openhab.binding.netatmo.internal.api.security.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.energy.NADescriptionProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -42,8 +43,8 @@ public class NAPresenceHandler extends NACameraHandler {
     private final HomeApi homeApi;
 
     public NAPresenceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider);
+            TimeZoneProvider timeZoneProvider, NADescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
         this.homeApi = apiBridge.getHomeApi();
     }
 

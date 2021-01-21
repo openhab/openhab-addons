@@ -74,40 +74,35 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
 
     @Override
     public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
-        ModuleType supportedThingType = ModuleType.valueOf(thingTypeUID.getId());
+        if (BINDING_ID.equalsIgnoreCase(thingTypeUID.getBindingId())) {
+            try {
+                ModuleType supportedThingType = ModuleType.valueOf(thingTypeUID.getId());
+                String configDescription = BINDING_ID + ":"
+                        + (supportedThingType.getSignalLevels() == NetatmoConstants.NO_RADIO ? "virtual"
+                                : supportedThingType.refreshPeriod == RefreshPolicy.CONFIG ? "configurable" : "device");
 
-        ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder
-                .instance(thingTypeUID, getLabelText(thingTypeUID.getId(), locale))
-                .withDescription(getDescText(thingTypeUID.getId(), locale))
-                .withProperties(getProperties(supportedThingType)).withRepresentationProperty(EQUIPMENT_ID)
-                .withChannelGroupDefinitions(getGroupDefinitions(supportedThingType));
+                ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder
+                        .instance(thingTypeUID, getLabelText(thingTypeUID.getId(), locale))
+                        .withDescription(getDescText(thingTypeUID.getId(), locale))
+                        .withProperties(getProperties(supportedThingType)).withRepresentationProperty(EQUIPMENT_ID)
+                        .withChannelGroupDefinitions(getGroupDefinitions(supportedThingType))
+                        .withConfigDescriptionURI(new URI(configDescription));
 
-        try {
-            URI configURI;
-            if (supportedThingType.getSignalLevels() == NetatmoConstants.NO_RADIO) {
-                configURI = new URI("netatmo:virtual");
-            } else {
-                if (supportedThingType.refreshPeriod == RefreshPolicy.CONFIG) {
-                    configURI = new URI("netatmo:configurable");
-                } else {
-                    configURI = new URI("netatmo:device");
+                List<String> extensions = supportedThingType.extensions;
+                if (extensions != null) {
+                    thingTypeBuilder.withExtensibleChannelTypeIds(extensions);
                 }
+                if (supportedThingType.bridgeThingType != null) {
+                    thingTypeBuilder.withSupportedBridgeTypeUIDs(
+                            Arrays.asList(supportedThingType.bridgeThingType.getAsString()));
+                }
+
+                return thingTypeBuilder.buildBridge();
+            } catch (IllegalArgumentException | URISyntaxException e) {
+                logger.warn("Unable to define ModuleType for thingType {} : {}", thingTypeUID.getId(), e.getMessage());
             }
-            thingTypeBuilder.withConfigDescriptionURI(configURI);
-        } catch (URISyntaxException e) {
-            logger.warn("Unable to build configuration description URI : {}", e.getMessage());
         }
-
-        List<String> extensions = supportedThingType.extensions;
-        if (extensions != null) {
-            thingTypeBuilder.withExtensibleChannelTypeIds(extensions);
-        }
-        if (supportedThingType.bridgeThingType != null) {
-            thingTypeBuilder
-                    .withSupportedBridgeTypeUIDs(Arrays.asList(supportedThingType.bridgeThingType.getAsString()));
-        }
-
-        return thingTypeBuilder.buildBridge();
+        return null;
     }
 
     private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType supportedThingType) {

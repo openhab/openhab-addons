@@ -37,7 +37,6 @@ public class NetatmoBindingConstants {
 
     public static final Gson NETATMO_GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            // .registerTypeAdapter(AccessTokenResponse.class, new NAOAuthDeserializer())
             .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
             .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
             .registerTypeAdapter(OnOffType.class,
@@ -52,7 +51,6 @@ public class NetatmoBindingConstants {
 
     public static final String BINDING_ID = "netatmo";
     public static final String SERVICE_PID = "org.openhab.binding." + BINDING_ID;
-
     public static final String VENDOR = "Netatmo";
 
     // Configuration keys

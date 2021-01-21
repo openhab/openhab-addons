@@ -9,23 +9,10 @@ The Netatmo binding integrates the following Netatmo products:
 
 See http://www.netatmo.com/ for details on their product.
 
-Please note, recent Netatmo thermostats are not supported because they require the Energy API which is not yet implemented in the binding.
-Only older Netatmo thermostats compatible with the Thermostat API are supported.
-For the same reason, Netatmo valves are also not supported.
-
-
 ## Binding Configuration
-
-The binding has the following configuration options:
-
-| Parameter           | Name                 | Description                       |
-|---------------------|----------------------|-----------------------------------|
-| backgroundDiscovery | Background Discovery | If set to true, the device and its associated modules are updated in the discovery inbox at each API call run to refresh device data. Default is false. |
 
 Before setting up your 'Things', you will have to grant openHAB to access Netatmo API.
 Here is the procedure:
-
-### 1. Application Creation
 
 Create an application at https://dev.netatmo.com/dev/createapp
 
@@ -37,27 +24,27 @@ The variables you will need to get to setup the binding are:
 * `<PASSWORD>` The password attached to the above username.
 
 
-### 2. Bridge and Things Configuration
+The binding has the following configuration options:
 
-Once you will get needed informations from the Netatmo API, you will be able to configure bridge and things.
+-   **clientId:** Client ID provided for the application you created on http://dev.netatmo.com/createapp.
+-   **clientSecret:**  Client Secret provided for the application you created.
+-   **username:** Your Netatmo API username (email).
+-   **password:** Your Netatmo API password.
+-   **webHookUrl:** Protocol, public IP and port to access OH2 server from Internet.
+-   **reconnectInterval:** The reconnection interval to Netatmo API (in s).
+-   **backgroundDiscovery:** If set to true, the device and its associated modules are updated in the discovery inbox at each API call run to refresh device data. Default is false.
 
-E.g.
+Create a `<openHAB-conf>/services/netatmo.cfg` file and use the above options like this:
 
 ```
-Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>"] {
-    Thing NAMain    inside  [ id="aa:aa:aa:aa:aa:aa" ]
-    Thing NAModule1 outside  [ id="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
-    Thing NHC       homecoach  [ id="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
-    Thing NAPlug    plugtherm  [ id="bb:bb:bb:bb:bb:bb", [refreshInterval=60000] ]
-    Thing NATherm1  thermostat [ id="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
-    Thing NAWelcomeHome home   [ id="58yyacaaexxxebca99x999x", refreshInterval=600000 ]
-    Thing NACamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
-    Thing NOC presenceOutdoorCamera [ id="dd:dd:dd:dd:dd:dd", parentId="58yyacaaexxxebca99x999x" ]
-    Thing NAWelcomePerson sysadmin [ id="aaaaaaaa-bbbb-cccc-eeee-zzzzzzzzzzzz", parentId="58yyacaaexxxebca99x999x" ]
-    ...
-}
+binding.netatmo:clientId=ezezsdfdssfhdreytr
+binding.netatmo:clientSecret=dshfdkfdfkshdkj
+binding.netatmo:username=mail@mail.com
+binding.netatmo:password=dssdsdsd
 ```
 
+
+### 2. Things Configuration
 
 ### Webhook
 

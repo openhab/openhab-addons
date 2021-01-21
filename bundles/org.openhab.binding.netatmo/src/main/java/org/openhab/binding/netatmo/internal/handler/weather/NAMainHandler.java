@@ -22,6 +22,7 @@ import org.openhab.binding.netatmo.internal.api.weather.NAMain;
 import org.openhab.binding.netatmo.internal.api.weather.WeatherApi;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.energy.NADescriptionProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 
@@ -37,8 +38,8 @@ public class NAMainHandler extends NetatmoDeviceHandler {
     private @Nullable WeatherApi api;
 
     public NAMainHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider);
+            TimeZoneProvider timeZoneProvider, NADescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
         api = apiBridge.getRestManager(WeatherApi.class);
     }
 

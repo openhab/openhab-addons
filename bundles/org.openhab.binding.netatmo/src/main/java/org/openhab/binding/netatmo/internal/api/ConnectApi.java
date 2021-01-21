@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.NAAccessTokenResponse;
 import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.GrantType;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;

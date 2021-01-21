@@ -34,6 +34,7 @@ import org.openhab.binding.netatmo.internal.api.security.NAWelcome;
 import org.openhab.binding.netatmo.internal.api.security.SecurityApi;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.energy.NADescriptionProvider;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookEvent;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -63,8 +64,8 @@ public class NAHomeSecurityHandler extends NetatmoDeviceHandler {
     private List<NAWelcome> cameras = List.of();
 
     public NAHomeSecurityHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
-            TimeZoneProvider timeZoneProvider) {
-        super(bridge, channelHelpers, apiBridge, timeZoneProvider);
+            TimeZoneProvider timeZoneProvider, NADescriptionProvider descriptionProvider) {
+        super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
         this.homeApi = apiBridge.getHomeApi();
         this.api = apiBridge.getRestManager(SecurityApi.class);
         String lastEvent = editProperties().get(PROPERTY_MAX_EVENT_TIME);

@@ -83,13 +83,13 @@ public class HomeApi extends RestManager {
 
     public String ping(String vpnUrl) throws NetatmoException {
         String url = vpnUrl + "/command/ping";
-        NAPing response = apiHandler.get(url, NAPing.class);
+        NAPing response = get(url, NAPing.class);
         return response.getStatus();
     }
 
     public boolean changeStatus(String localCameraURL, boolean isOn) throws NetatmoException {
         String url = localCameraURL + "/command/changestatus?status=" + (isOn ? "on" : "off");
-        ApiOkResponse response = apiHandler.post(url, null, ApiOkResponse.class, false);
+        ApiOkResponse response = post(url, null, ApiOkResponse.class, false);
         if (!response.isSuccess()) {
             throw new NetatmoException(String.format("Unsuccessfull camara status change : %s", response.getStatus()));
         }
@@ -99,7 +99,7 @@ public class HomeApi extends RestManager {
     public boolean changeFloodLightMode(String localCameraURL, PresenceLightMode mode) throws NetatmoException {
         String url = localCameraURL + "/command/floodlight_set_config?config=%7B%22mode%22:%22" + mode.toString()
                 + "%22%7D";
-        ApiOkResponse response = apiHandler.get(url, ApiOkResponse.class);
+        ApiOkResponse response = get(url, ApiOkResponse.class);
         if (!response.isSuccess()) {
             throw new NetatmoException(String.format("Unsuccessfull camara status change : %s", response.getStatus()));
         }

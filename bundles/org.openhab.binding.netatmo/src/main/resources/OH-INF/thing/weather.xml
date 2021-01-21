@@ -100,8 +100,8 @@
 		<label>Wind</label>
 		<channels>
 			<channel id="angle" typeId="wind-angle"/>
-			<channel id="strength" typeId="wind-strength"/>
-			<channel id="max-strength" typeId="wind-strength">
+			<channel id="strength" typeId="wind-speed"/>
+			<channel id="max-strength" typeId="wind-speed">
 				<label>Max Wind Strength</label>
 				<description>Maximum wind strength recorded</description>
 			</channel>

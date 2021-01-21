@@ -39,6 +39,7 @@ import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.MeasuresChannelHelper;
 import org.openhab.binding.netatmo.internal.config.MeasureChannelConfig;
 import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
+import org.openhab.binding.netatmo.internal.handler.energy.NADescriptionProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -77,12 +78,14 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
     private @Nullable RefreshStrategy refreshStrategy;
     protected @Nullable ApiBridge apiBridge;
     protected final ZoneId zoneId;
+    protected final NADescriptionProvider descriptionProvider;
 
     public NetatmoDeviceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers,
-            @Nullable ApiBridge apiBridge, TimeZoneProvider timeZoneProvider) {
+            @Nullable ApiBridge apiBridge, TimeZoneProvider timeZoneProvider,
+            NADescriptionProvider descriptionProvider) {
         super(bridge);
         this.apiBridge = apiBridge;
-
+        this.descriptionProvider = descriptionProvider;
         this.channelHelpers.addAll(channelHelpers);
         for (AbstractChannelHelper helper : this.channelHelpers) {
             if (helper instanceof MeasuresChannelHelper) {

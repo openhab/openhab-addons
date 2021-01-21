@@ -37,6 +37,14 @@ public class ConnectionStatus {
         return new ConnectionStatus(false, message);
     }
 
+    public static ConnectionStatus Failed(String format, Exception e) {
+        return new ConnectionStatus(false, String.format(format, e.getMessage()));
+    }
+
+    public static ConnectionStatus Unknown() {
+        return new ConnectionStatus(false, "No connection tried yet.");
+    }
+
     public boolean isConnected() {
         return isConnected;
     }

@@ -29,6 +29,7 @@ import org.openhab.binding.netatmo.internal.channelhelper.DeviceChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.MeasuresChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.ModuleChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.SignalHelper;
+import org.openhab.binding.netatmo.internal.handler.energy.NADescriptionProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -47,13 +48,16 @@ public class NetatmoThingHandlerBuilder {
     private final Logger logger = LoggerFactory.getLogger(NetatmoThingHandlerBuilder.class);
     private final Bridge bridge;
     private final TimeZoneProvider timeZoneProvider;
+    private final NADescriptionProvider stateDescriptionProvider;
     private final List<AbstractChannelHelper> channelHelpers = new ArrayList<>();
     private Class<?> handlerClass = NetatmoDeviceHandler.class;
     private @Nullable ApiBridge apiBridge;
 
-    private NetatmoThingHandlerBuilder(Bridge bridge, TimeZoneProvider timeZoneProvider, ModuleType moduleType) {
+    private NetatmoThingHandlerBuilder(Bridge bridge, TimeZoneProvider timeZoneProvider, ModuleType moduleType,
+            NADescriptionProvider stateDescriptionProvider) {
         this.bridge = bridge;
         this.timeZoneProvider = timeZoneProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
         if (moduleType.hasBattery()) {
             channelHelpers.add(new BatteryHelper(bridge, timeZoneProvider));
         }
@@ -72,16 +76,16 @@ public class NetatmoThingHandlerBuilder {
     }
 
     public static NetatmoThingHandlerBuilder create(Bridge bridge, TimeZoneProvider timeZoneProvider,
-            ModuleType moduleType) {
-        return new NetatmoThingHandlerBuilder(bridge, timeZoneProvider, moduleType);
+            ModuleType moduleType, NADescriptionProvider stateDescriptionProvider) {
+        return new NetatmoThingHandlerBuilder(bridge, timeZoneProvider, moduleType, stateDescriptionProvider);
     }
 
     public @Nullable BaseThingHandler build() {
         try {
             Constructor<?> constructor = handlerClass.getConstructor(Bridge.class, List.class, ApiBridge.class,
-                    TimeZoneProvider.class);
-            return (BaseThingHandler) constructor
-                    .newInstance(new Object[] { bridge, channelHelpers, apiBridge, timeZoneProvider });
+                    TimeZoneProvider.class, NADescriptionProvider.class);
+            return (BaseThingHandler) constructor.newInstance(
+                    new Object[] { bridge, channelHelpers, apiBridge, timeZoneProvider, stateDescriptionProvider });
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             logger.warn("Error creating handler = {}", e.getMessage());
