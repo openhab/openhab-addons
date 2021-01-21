@@ -68,20 +68,22 @@ public class RetryableSocket {
     }
 
     private boolean sendDatagram(byte message[], String purpose) {
+        DatagramSocket localSocket = socket;
         try {
             thingLogger
                     .logTrace("Sending " + purpose + " to " + thingConfig.getIpAddress() + ":" + thingConfig.getPort());
-            if (socket == null || socket.isClosed()) {
+            if (localSocket == null || localSocket.isClosed()) {
                 thingLogger.logTrace("No existing socket ... creating");
-                socket = new DatagramSocket();
-                socket.setBroadcast(true);
-                socket.setReuseAddress(true);
-                socket.setSoTimeout(5000);
+                localSocket = new DatagramSocket();
+                localSocket.setBroadcast(true);
+                localSocket.setReuseAddress(true);
+                localSocket.setSoTimeout(5000);
+                socket = localSocket;
             }
             InetAddress host = InetAddress.getByName(thingConfig.getIpAddress());
             int port = thingConfig.getPort();
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, new InetSocketAddress(host, port));
-            socket.send(sendPacket);
+            localSocket.send(sendPacket);
             thingLogger.logTrace("Sending " + purpose + " complete");
             return true;
         } catch (IOException e) {
@@ -92,12 +94,13 @@ public class RetryableSocket {
 
     private @Nullable DatagramPacket receiveDatagram(String purpose, DatagramPacket receivePacket) {
         thingLogger.logTrace("Awaiting " + purpose + " response");
+        final DatagramSocket localSocket = socket;
 
         try {
-            if (socket == null) {
+            if (localSocket == null) {
                 thingLogger.logError("receiveDatagram " + purpose + " for socket was unexpectedly null");
             } else {
-                socket.receive(receivePacket);
+                localSocket.receive(receivePacket);
                 thingLogger.logTrace("Received " + purpose + " (" + receivePacket.getLength() + " bytes)");
                 return receivePacket;
             }
@@ -111,8 +114,9 @@ public class RetryableSocket {
     }
 
     public void close() {
-        if (socket != null) {
-            socket.close();
+        final DatagramSocket localSocket = socket;
+        if (localSocket != null) {
+            localSocket.close();
             socket = null;
         }
     }

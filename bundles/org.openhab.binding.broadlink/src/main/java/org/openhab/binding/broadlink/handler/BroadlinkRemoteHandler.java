@@ -99,7 +99,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     private byte @Nullable [] lookupCode(Command command) {
-        if (command.toString() == null) {
+        if (command.toString().isEmpty()) {
             thingLogger.logDebug("Unable to perform transform on null command string");
             return null;
         }

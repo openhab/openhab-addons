@@ -55,7 +55,6 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
                 break;
             default:
                 break;
-
         }
     }
 

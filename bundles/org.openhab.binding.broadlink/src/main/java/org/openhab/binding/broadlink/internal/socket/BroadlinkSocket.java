@@ -72,24 +72,30 @@ public class BroadlinkSocket {
         }
 
         private void receiveData(@Nullable MulticastSocket socket, DatagramPacket dgram) {
+            final MulticastSocket localSocket = socket;
+
             try {
                 while (true) {
-                    socket.receive(dgram);
-                    BroadlinkSocketListener listener;
-                    byte remoteMAC[];
-                    org.openhab.core.thing.ThingTypeUID deviceType;
-                    int model;
-                    for (Iterator<BroadlinkSocketListener> iterator = (new ArrayList<BroadlinkSocketListener>(
-                            BroadlinkSocket.listeners)).iterator(); iterator.hasNext(); listener.onDataReceived(
-                                    dgram.getAddress().getHostAddress(), dgram.getPort(), decodeMAC(remoteMAC),
-                                    deviceType, model)) {
-                        listener = iterator.next();
-                        byte receivedPacket[] = dgram.getData();
-                        remoteMAC = Arrays.copyOfRange(receivedPacket, 58, 64);
-                        model = Byte.toUnsignedInt(receivedPacket[52]) | Byte.toUnsignedInt(receivedPacket[53]) << 8;
-                        deviceType = ModelMapper.getThingType(model);
+                    if (localSocket != null) {
+                        localSocket.receive(dgram);
+                        BroadlinkSocketListener listener;
+                        byte remoteMAC[];
+                        org.openhab.core.thing.ThingTypeUID deviceType;
+                        int model;
+                        for (Iterator<BroadlinkSocketListener> iterator = (new ArrayList<BroadlinkSocketListener>(
+                                BroadlinkSocket.listeners)).iterator(); iterator.hasNext(); listener.onDataReceived(
+                                        dgram.getAddress().getHostAddress(), dgram.getPort(), decodeMAC(remoteMAC),
+                                        deviceType, model)) {
+                            listener = iterator.next();
+                            byte receivedPacket[] = dgram.getData();
+                            remoteMAC = Arrays.copyOfRange(receivedPacket, 58, 64);
+                            model = Byte.toUnsignedInt(receivedPacket[52])
+                                    | Byte.toUnsignedInt(receivedPacket[53]) << 8;
+                            deviceType = ModelMapper.getThingType(model);
+                        }
+                    } else {
+                        LOGGER.error("MulticastSocket is null");
                     }
-
                 }
             } catch (IOException e) {
                 if (!isInterrupted())
@@ -110,32 +116,40 @@ public class BroadlinkSocket {
     }
 
     public static void unregisterListener(BroadlinkSocketListener listener) {
+        final MulticastSocket localSocket = socket;
+
         listeners.remove(listener);
-        if (listeners.isEmpty() && socket != null) {
+        if (listeners.isEmpty() && localSocket != null) {
             closeSocket();
         }
     }
 
     private static void setupSocket() {
         synchronized (BroadlinkSocket.class) {
+            Thread localSocketReceiveThread = socketReceiveThread;
+
             try {
                 socket = new MulticastSocket();
             } catch (IOException e) {
                 LOGGER.error("Setup socket error '{}'.", e.getMessage());
             }
-            socketReceiveThread = new ReceiverThread();
-            socketReceiveThread.start();
+            localSocketReceiveThread = new ReceiverThread();
+            localSocketReceiveThread.start();
+            socketReceiveThread = localSocketReceiveThread;
         }
     }
 
     private static void closeSocket() {
         synchronized (BroadlinkSocket.class) {
-            if (socketReceiveThread != null) {
-                socketReceiveThread.interrupt();
+            final MulticastSocket localSocket = socket;
+            final Thread localSocketReceiveThread = socketReceiveThread;
+
+            if (localSocketReceiveThread != null) {
+                localSocketReceiveThread.interrupt();
             }
-            if (socket != null) {
+            if (localSocket != null) {
                 LOGGER.info("Socket closed");
-                socket.close();
+                localSocket.close();
                 socket = null;
             }
         }
@@ -146,9 +160,15 @@ public class BroadlinkSocket {
     }
 
     public static void sendMessage(byte message[], String host, int port) {
+        final MulticastSocket localSocket = socket;
+
         try {
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName(host), port);
-            socket.send(sendPacket);
+            if (localSocket != null) {
+                localSocket.send(sendPacket);
+            } else {
+                LOGGER.error("MulticastSocket is null");
+            }
         } catch (IOException e) {
             LOGGER.error("IO Error sending message: '{}'", e.getMessage());
         }

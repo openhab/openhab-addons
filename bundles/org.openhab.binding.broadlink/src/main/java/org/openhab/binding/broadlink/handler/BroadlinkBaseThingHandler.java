@@ -114,14 +114,17 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     public void dispose() {
+        final ScheduledFuture<?> localRefreshHandle = refreshHandle;
+        final RetryableSocket localSocket = socket;
+
         thingLogger.logDebug(getThing().getLabel() + " is being disposed");
-        if (refreshHandle != null && !refreshHandle.isDone()) {
+        if (localRefreshHandle != null && !localRefreshHandle.isDone()) {
             thingLogger.logDebug("Cancelling refresh task");
-            boolean cancelled = refreshHandle.cancel(true);
+            boolean cancelled = localRefreshHandle.cancel(true);
             thingLogger.logDebug("Cancellation successful: " + cancelled);
         }
-        if (socket != null) {
-            socket.close();
+        if (localSocket != null) {
+            localSocket.close();
         }
         super.dispose();
     }
@@ -156,7 +159,14 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     protected byte[] sendAndReceiveDatagram(byte message[], String purpose) {
-        return socket.sendAndReceive(message, purpose);
+        final RetryableSocket localSocket = socket;
+
+        if (localSocket != null) {
+            return localSocket.sendAndReceive(message, purpose);
+        } else {
+            thingLogger.logError("RetryableSocket is null");
+            return new byte[0]; // Return empty byte array when socket is null
+        }
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) throws IOException {
@@ -164,11 +174,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     private byte[] buildMessage(byte command, byte payload[], int deviceType) throws IOException {
+        final NetworkTrafficObserver localNetworkTrafficObserver = networkTrafficObserver;
+
         count = count + 1 & 0xffff;
 
-        if (networkTrafficObserver != null) {
-            networkTrafficObserver.onCommandSent(command);
-            networkTrafficObserver.onBytesSent(payload);
+        if (localNetworkTrafficObserver != null) {
+            localNetworkTrafficObserver.onCommandSent(command);
+            localNetworkTrafficObserver.onBytesSent(payload);
         }
 
         return BroadlinkProtocol.buildMessage(command, payload, count, thingConfig.getMAC(), deviceId,
@@ -176,11 +188,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     protected byte[] decodeDevicePacket(byte[] responseBytes) throws IOException {
+        final NetworkTrafficObserver localNetworkTrafficObserver = networkTrafficObserver;
+
         byte[] rxBytes = BroadlinkProtocol.decodePacket(responseBytes, this.deviceKey,
                 BroadlinkBindingConstants.BROADLINK_IV);
 
-        if (networkTrafficObserver != null) {
-            networkTrafficObserver.onBytesReceived(rxBytes);
+        if (localNetworkTrafficObserver != null) {
+            localNetworkTrafficObserver.onBytesReceived(rxBytes);
         }
         return rxBytes;
     }
@@ -278,11 +292,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     private void forceOffline(ThingStatusDetail detail, String reason) {
+        final RetryableSocket localSocket = socket;
+
         thingLogger.logWarn("Online -> Offline due to: " + reason);
         authenticated = false; // This session is dead; we'll need to re-authenticate next time
         updateStatus(ThingStatus.OFFLINE, detail, reason);
-        if (socket != null) {
-            socket.close();
+        if (localSocket != null) {
+            localSocket.close();
         }
     }
 }
