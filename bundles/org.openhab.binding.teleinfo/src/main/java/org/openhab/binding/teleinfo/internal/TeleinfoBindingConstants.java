@@ -24,6 +24,9 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class TeleinfoBindingConstants {
 
+    private TeleinfoBindingConstants() {
+    }
+
     private static final String BINDING_ID = "teleinfo";
 
     // List of all Thing Type UIDs

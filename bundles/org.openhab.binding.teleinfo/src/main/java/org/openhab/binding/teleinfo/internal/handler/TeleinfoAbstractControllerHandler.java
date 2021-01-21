@@ -34,7 +34,7 @@ public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandle
 
     private Set<TeleinfoControllerHandlerListener> listeners = new CopyOnWriteArraySet<>();
 
-    public TeleinfoAbstractControllerHandler(Bridge bridge) {
+    protected TeleinfoAbstractControllerHandler(Bridge bridge) {
         super(bridge);
     }
 
