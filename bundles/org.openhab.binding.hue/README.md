@@ -65,16 +65,9 @@ They are presented by the following ZigBee Device ID and _Thing type_:
 
 The Hue Dimmer Switch has 4 buttons and registers as a Non-Colour Controller switch, while the Hue Tap (also 4 buttons) registers as a Non-Colour Scene Controller in accordance with the ZLL standard.
 
-Also, Hue bridge support CLIP Generic Status Sensor and CLIP Generic Flag Sensor. These sensors save state for rules and calculate what actions to do. CLIP Sensor set or get by JSON through IP.
-
-The type of a specific device can be found in the configuration section for things in the PaperUI.
-It is part of the unique thing id which could look like:
-
-```
-hue:0210:00178810d0dc:1
-```
-
-The thing type is the second string behind the first colon and in this example it is **0210**.
+Also, Hue bridge support CLIP Generic Status Sensor and CLIP Generic Flag Sensor.
+These sensors save state for rules and calculate what actions to do.
+CLIP Sensor set or get by JSON through IP.
 
 Finally, the Hue binding also supports the groups of lights and rooms set up on the Hue bridge.
 
