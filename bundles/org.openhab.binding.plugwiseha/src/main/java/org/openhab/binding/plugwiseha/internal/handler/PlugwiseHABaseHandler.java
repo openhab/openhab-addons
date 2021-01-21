@@ -51,11 +51,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> extends BaseThingHandler {
 
-    // Private Static error messages
-
     protected static final String STATUS_DESCRIPTION_COMMUNICATION_ERROR = "Error communicating with the Plugwise Home Automation controller";
-
-    // private @Nullable C config;
 
     protected final Logger logger = LoggerFactory.getLogger(PlugwiseHABaseHandler.class);
 
@@ -86,8 +82,6 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
         C config = getPlugwiseThingConfig();
 
         if (checkConfig(config)) {
-            // logger.debug("Initializing Plugwise Home Automation thing handler with config = {}", config);
-
             Bridge bridge = getBridge();
             if (bridge == null || bridge.getHandler() == null
                     || !(bridge.getHandler() instanceof PlugwiseHABridgeHandler)) {
@@ -103,7 +97,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
             initialize(config);
         } else {
-            logger.warn("Invalid config for Plugwise Home Automation thing handler with config = {}", config);
+            logger.debug("Invalid config for Plugwise Home Automation thing handler with config = {}", config);
         }
     }
 
@@ -152,13 +146,10 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
     // Private & protected methods
 
     private final @Nullable PlugwiseHAController getController() {
-        Bridge bridge = getBridge();
+        PlugwiseHABridgeHandler bridgeHandler = getPlugwiseHABridge();
 
-        if (bridge != null) {
-            if (bridge.getHandler() instanceof PlugwiseHABridgeHandler) {
-                PlugwiseHABridgeHandler handler = (PlugwiseHABridgeHandler) bridge.getHandler();
-                return handler.getController();
-            }
+        if (bridgeHandler != null) {
+            return bridgeHandler.getController();
         }
 
         return null;

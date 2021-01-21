@@ -76,9 +76,7 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService impleme
     protected void startBackgroundDiscovery() {
         logger.debug("Start Plugwise Home Automation background discovery");
         if (discoveryFuture == null || discoveryFuture.isCancelled()) {
-            discoveryFuture = scheduler.scheduleWithFixedDelay(() -> {
-                startScan();
-            }, 30, REFRESH_SECONDS, TimeUnit.SECONDS);
+            discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH_SECONDS, TimeUnit.SECONDS);
         }
     }
 

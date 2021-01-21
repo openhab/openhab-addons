@@ -15,10 +15,13 @@ package org.openhab.binding.plugwiseha.internal.handler;
 
 import static org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_OFFLINE;
+import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -88,10 +91,17 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                     PlugwiseHAController controller = bridge.getController();
                     if (controller != null) {
                         this.location = getEntity(controller, true);
-
-                        setLocationProperties();
-                        updateStatus(ONLINE);
+                        if (this.location != null) {
+                            setLocationProperties();
+                            updateStatus(ONLINE);
+                        } else {
+                            updateStatus(OFFLINE);
+                        }
+                    } else {
+                        updateStatus(OFFLINE, BRIDGE_UNINITIALIZED);
                     }
+                } else {
+                    updateStatus(OFFLINE, BRIDGE_OFFLINE);
                 }
             } catch (PlugwiseHAException e) {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
@@ -167,9 +177,9 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
 
         switch (channelID) {
             case ZONE_PREHEAT_CHANNEL:
-                Boolean preHeatState = entity.getPreHeatState().orElse(null);
-                if (preHeatState != null) {
-                    state = OnOffType.from(preHeatState);
+                Optional<Boolean> preHeatState = entity.getPreHeatState();
+                if (preHeatState.isPresent()) {
+                    state = OnOffType.from(preHeatState.get());
                 }
                 break;
             case ZONE_PRESETSCENE_CHANNEL:

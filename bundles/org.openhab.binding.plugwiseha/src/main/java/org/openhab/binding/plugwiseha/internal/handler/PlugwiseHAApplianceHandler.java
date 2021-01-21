@@ -16,6 +16,8 @@ package org.openhab.binding.plugwiseha.internal.handler;
 import static org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_OFFLINE;
+import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
@@ -67,7 +69,6 @@ import tec.uom.se.unit.Units;
 @NonNullByDefault
 public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance, PlugwiseHAThingConfig> {
 
-    // private PlugwiseHAThingConfig config = new PlugwiseHAThingConfig();
     private @Nullable Appliance appliance;
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHAApplianceHandler.class);
 
@@ -95,6 +96,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                         "Invalid configuration for Plugwise Home Automation appliance handler.");
                 return;
             }
+
             try {
                 PlugwiseHABridgeHandler bridge = this.getPlugwiseHABridge();
                 if (bridge != null) {
@@ -107,8 +109,14 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                             }
                             setApplianceProperties();
                             updateStatus(ONLINE);
+                        } else {
+                            updateStatus(OFFLINE);
                         }
+                    } else {
+                        updateStatus(OFFLINE, BRIDGE_UNINITIALIZED);
                     }
+                } else {
+                    updateStatus(OFFLINE, BRIDGE_OFFLINE);
                 }
             } catch (PlugwiseHAException e) {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);

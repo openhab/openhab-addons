@@ -81,25 +81,8 @@ public class PlugwiseHAController {
     // Public methods
 
     public void start(Runnable callback) throws PlugwiseHAException {
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.error("Could not start http client", e);
-            throw new PlugwiseHAException("Could not start http client", e);
-        }
-
         refresh();
         callback.run();
-    }
-
-    public void stop() {
-        if (httpClient.isStarted()) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                logger.debug("Could not stop http client.", e);
-            }
-        }
     }
 
     public void refresh() throws PlugwiseHAException {

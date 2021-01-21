@@ -140,7 +140,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         cancelRefreshJob();
         if (this.controller != null) {
-            this.controller.stop();
             this.controller = null;
         }
     }
@@ -194,6 +193,10 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_TIMEOUT);
         } catch (PlugwiseHAException e) {
             logger.debug("Unhandled exception while refreshing the Plugwise Home Automation Controller {} - {}",
+                    getThing().getUID(), e.getMessage());
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
+        } catch (RuntimeException e) {
+            logger.warn("Unhandled RunTimeException while refreshing the Plugwise Home Automation Controller {} - {}",
                     getThing().getUID(), e.getMessage());
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }

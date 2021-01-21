@@ -25,13 +25,14 @@ public class ActuatorFunctionalityThermostat extends ActuatorFunctionality {
     private Double setpoint;
 
     @SuppressWarnings("unused")
-    private Boolean preheating_allowed;
+    @XStreamAlias("preheating_allowed")
+    private Boolean preheatingAllowed;
 
     public ActuatorFunctionalityThermostat(Double temperature) {
         this.setpoint = temperature;
     }
 
-    public ActuatorFunctionalityThermostat(Boolean preheating_allowed) {
-        this.preheating_allowed = preheating_allowed;
+    public ActuatorFunctionalityThermostat(Boolean preheatingAllowed) {
+        this.preheatingAllowed = preheatingAllowed;
     }
 }
