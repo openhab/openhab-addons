@@ -1,31 +1,23 @@
 # OpenSprinkler Binding
 
-This binding allows allows basic control of OpenSprinkler devices.
+This binding allows basic control of OpenSprinkler devices.
 Stations can be controlled (turned on or off) and rain sensor state can be read.
 
 ## Supported Bridges
 
-* (`http`) - The `OpenSprinkler HTTP Bridge` is required to communicate with an OpenSprinkler device through the network and should be added first.
+* `OpenSprinkler HTTP Bridge` (`http`) is required to communicate with an OpenSprinkler device through the network and should be added first.
 
 ## Supported Things
 
-* (`station`) - An `OpenSprinkler Station`  is used to control a single station (zone) of a device, e.g. to turn it on or off
-* (`device`) - An `OpenSprinkler Device`  is for getting device-specific information, e.g. if rain was detected
+* `OpenSprinkler Station` (`station`) is used to control a single station (zone) of a device, e.g. to turn it on or off
+* `OpenSprinkler Device` (`device`) is for getting device-specific information, e.g. if rain was detected
 
 ## Discovery
 
-OpenSprinkler devices can be discovered by sending a request to every IP on your network.
-Discovery due to this method used is very slow at finding devices, and can saturate network bandwidth.
+OpenSprinkler devices can be discovered by the binding sending requests to every IP on your network.
+Due to this method used, it is very slow at finding devices and can saturate network bandwidth.
 
-## Thing Configuration
-
-OpenSprinkler using the HTTP interface
-
-```
-Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, password="opendoor", refresh=60] {
-    Thing station 01 [stationIndex=1]
-}
-```
+## Bridge ('http') Configuration
 
 -   hostname: Hostname or IP address of the OpenSprinkler HTTP API.
 -   port: Port the OpenSprinkler device is listening on. Usually 80.
@@ -36,13 +28,13 @@ Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, password="opendoo
 
 ### Station Thing Configuration
 
-The `station` thing can be used with both bridge and has the following configuration properties:
+The `station` thing must be used with a `http` bridge and has the following configuration properties:
 
 -   stationIndex: The index of the station to communicate with, starting with 0 for the first station
 
 ## Channels
 
-The following channel is supported by the `station` thing.
+The following channels are supported by the `station` thing.
 
 | Channel Type ID    | Item Type   |    | Description                                              |
 |--------------------|-------------|----|----------------------------------------------------------|
@@ -59,7 +51,7 @@ The following channel is supported by the `station` thing.
 
 When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.
 
-The following is supported by the `device` thing, but only when connected using the http interface.
+The following channels are supported by the `device` thing.
 
 | Channel Type ID | Item Type              |    | Description                                                                        |
 |-----------------|------------------------|----|------------------------------------------------------------------------------------|
@@ -69,9 +61,9 @@ The following is supported by the `device` thing, but only when connected using 
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
 |                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
 
-## Example
+## Textual Example
 
-demo.Things:
+demo.things:
 
 ```
 Bridge opensprinkler:http:http [hostname="127.0.0.1", port=81, password="opendoor"] {
