@@ -13,6 +13,7 @@
 
 package org.openhab.binding.plugwiseha.internal.api.model.dto;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -109,7 +110,18 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
     }
 
     public int compareDateWith(Location hasModifiedDate) {
-        return this.getModifiedDate().compareTo(hasModifiedDate.getModifiedDate());
+        if (hasModifiedDate == null) {
+            return -1;
+        }
+        ZonedDateTime compareToDate = this.getModifiedDate();
+        ZonedDateTime localcompareFromDate = hasModifiedDate.getModifiedDate();
+        if (localcompareFromDate == null) {
+            return -1;
+        } else if (compareToDate == null) {
+            return 1;
+        } else {
+            return localcompareFromDate.compareTo(compareToDate);
+        }
     }
 
     public boolean isOlderThan(Location hasModifiedDate) {

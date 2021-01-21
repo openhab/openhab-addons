@@ -13,6 +13,7 @@
 
 package org.openhab.binding.plugwiseha.internal.api.model.dto;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -161,7 +162,18 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
 
     @Override
     public int compareDateWith(Appliance hasModifiedDate) {
-        return this.getModifiedDate().compareTo(hasModifiedDate.getModifiedDate());
+        if (hasModifiedDate == null) {
+            return -1;
+        }
+        ZonedDateTime compareToDate = this.getModifiedDate();
+        ZonedDateTime localcompareFromDate = hasModifiedDate.getModifiedDate();
+        if (localcompareFromDate == null) {
+            return -1;
+        } else if (compareToDate == null) {
+            return 1;
+        } else {
+            return localcompareFromDate.compareTo(compareToDate);
+        }
     }
 
     @Override

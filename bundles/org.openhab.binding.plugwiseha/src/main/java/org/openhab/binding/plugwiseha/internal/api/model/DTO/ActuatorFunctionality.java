@@ -94,7 +94,6 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
             return -1;
         } else if (compareToDate == null) {
             return 1;
-
         } else {
             return localcompareFromDate.compareTo(compareToDate);
         }
