@@ -85,7 +85,19 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
 
     @Override
     public int compareDateWith(ActuatorFunctionality hasUpdatedDate) {
-        return this.getUpdatedDate().compareTo(hasUpdatedDate.getUpdatedDate());
+        if (hasUpdatedDate == null) {
+            return -1;
+        }
+        ZonedDateTime compareToDate = this.getUpdatedDate();
+        ZonedDateTime localcompareFromDate = hasUpdatedDate.getUpdatedDate();
+        if (localcompareFromDate == null) {
+            return -1;
+        } else if (compareToDate == null) {
+            return 1;
+
+        } else {
+            return localcompareFromDate.compareTo(compareToDate);
+        }
     }
 
     @Override
