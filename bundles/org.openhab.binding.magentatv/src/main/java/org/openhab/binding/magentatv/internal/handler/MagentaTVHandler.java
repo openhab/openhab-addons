@@ -185,7 +185,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     /**
-     * This routine is called every time the Thing configuration has been changed (e.g. PaperUI)
+     * This routine is called every time the Thing configuration has been changed.
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {

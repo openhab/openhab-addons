@@ -209,7 +209,7 @@ Bridge homematic:bridge:occu  [ gatewayAddress="..."]
 
 ## Thing Configuration
 
-Things are all discovered automatically, you can handle them in PaperUI.
+Things are all discovered automatically.
 
 If you really like to manually configure a thing:
 
@@ -224,13 +224,6 @@ The first parameter after Thing is the device type, the second the serial number
 If you are using Homegear, you have to add the prefix `HG-` for each type.
 The `HG-` prefix is only needed for Things, not for Items or channel configs.
 This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
-
-```java
-  Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
-```
-
-As additional parameters you can define a name and a location for each thing.
-The `Name` will be used to identify the thing in the Paper UI lists, the `Location` will be used in the Control section of PaperUI to sort the things.
 
 ```java
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"

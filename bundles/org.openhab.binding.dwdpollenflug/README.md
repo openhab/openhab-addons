@@ -26,9 +26,9 @@ This can be used for `region` things you may add manually.
 
 ### Region
 
-| Parameter  | Default | Required | Description                                                                                              |
-| ---------- | :-----: | :------: | -------------------------------------------------------------------------------------------------------- |
-| `regionID` |    -    |   yes    | In PaperUI just select the region you want to display data for. For files-configuration see table below. |
+| Parameter  | Default | Required | Description                                                         |
+| ---------- | :-----: | :------: | ------------------------------------------------------------------- |
+| `regionID` |    -    |   yes    | The id of the region. The available options are in the table below. |
 
 #### Manual region or partregion selection ####
 
