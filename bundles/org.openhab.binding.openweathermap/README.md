@@ -23,9 +23,6 @@ If your system language is supported by the OpenWeatherMap API it will be used a
 The second thing `weather-and-forecast` supports the [current weather](https://openweathermap.org/current), [5 day / 3 hour forecast](https://openweathermap.org/forecast5) and optional [16 day / daily forecast](https://openweathermap.org/forecast16) services for a specific location.
 It requires coordinates of the location of your interest.
 You can add as many `weather-and-forecast` things for different locations to your setup as you like to observe.
-**Attention**: The daily forecast is only available for [paid accounts](https://openweathermap.org/price).
-The binding tries to request daily forecast data from the OpenWeatherMap API.
-If the request fails, all daily forecast channel groups will be removed from the thing and further request will be omitted.
 
 ### Current UV Index And Forecast
 
