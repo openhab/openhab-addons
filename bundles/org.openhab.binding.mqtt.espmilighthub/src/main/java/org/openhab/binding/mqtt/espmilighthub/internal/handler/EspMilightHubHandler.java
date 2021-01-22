@@ -282,8 +282,9 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             maxColourTemp = new BigDecimal(config.favouriteWhite);
             minColourTemp = new BigDecimal(config.dimmedCT);
             if (minColourTemp.intValue() <= maxColourTemp.intValue()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "The dimmedCT config value must be greater than the favouriteWhite value.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "The dimmedCT config value must be greater than the favourite White value.");
+                return;
             }
         }
         Bridge localBridge = getBridge();
