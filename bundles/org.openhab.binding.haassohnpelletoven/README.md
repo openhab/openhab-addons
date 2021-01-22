@@ -22,7 +22,7 @@ The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN
 
 ## Channels
 
-In V0.1 the following channels are yet supported:
+The following channels are yet supported:
 
 | channel  | type               | description                                              |
 |----------|--------------------|----------------------------------------------------------|
@@ -36,13 +36,16 @@ In V0.1 the following channels are yet supported:
 
 demo.items:
 
-```java
+```
 Number:Temperature isTemp { channel="oven:isTemp" }
 Number:Temperature spTemp { channel="oven:spTemp" }
 String mode   { channel="oven:mode" }
 Switch prg    	{ channel="oven:prg" }
 ```
 
-## Any custom content here!
+## Tested Hardware
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+The binding was succesfully tested with the following ovens:
+
+- HSP 7 DIANA
+- HSP6 434.08
