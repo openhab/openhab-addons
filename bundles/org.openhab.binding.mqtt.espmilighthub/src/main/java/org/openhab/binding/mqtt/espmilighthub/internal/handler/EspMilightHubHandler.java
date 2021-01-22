@@ -111,7 +111,6 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         String bulbLevel = Helper.resolveJSON(messageJSON, "\"level\":", 3);
         if (!bulbLevel.isEmpty()) {
             if (bulbLevel.equals("0") || bulbState.equals("OFF")) {
-                changeChannel(CHANNEL_LEVEL, new PercentType(0));
                 changeChannel(CHANNEL_LEVEL, OnOffType.OFF);
                 tempBulbLevel = BigDecimal.ZERO;
             } else {
