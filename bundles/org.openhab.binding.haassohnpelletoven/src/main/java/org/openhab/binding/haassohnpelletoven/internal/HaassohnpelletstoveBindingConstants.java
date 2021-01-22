@@ -32,4 +32,10 @@ public class HaassohnpelletstoveBindingConstants {
     public static final String CHANNEL_mode = "channelMode";
     public static final String CHANNEL_spTemp = "channelSpTemp";
     public static final String CHANNEL_prg = "channelPrg";
+    public static final String CHANNEL_ecoMode = "channelEcoMode";
+    public static final String CHANNEL_ignitions = "channelIgnitions";
+    public static final String CHANNEL_maintenanceIn = "channelMaintenanceIn";
+    public static final String CHANNEL_cleaningIn = "channelCleaningIn";
+    public static final String CHANNEL_consumption = "channelConsumption";
+    public static final String CHANNEL_onTime = "channelOnTime";
 }
