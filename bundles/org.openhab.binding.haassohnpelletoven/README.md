@@ -18,18 +18,16 @@ The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN
 
 ```Thing haassohnpelletoven:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", hostPIN=1234]
 
-
-
 ## Channels
 
 The following channels are yet supported:
 
-| channel  | type               | description                                              |
-|----------|--------------------|----------------------------------------------------------|
-| prg      | Switch 	 	    | Turn the Stove On/Off		                               |
-| isTemp   | Number:Temperature | Receives the actual Temperature of the stove	           |
-| spTemp   | Number:Temperature | Receives and Sets the Target Temperature of the stove	   |
-| mode     | String             | Receives the actual mode the stove is in          	   |
+| channel  		  | type               | description                                              						  |
+|-----------------|--------------------|----------------------------------------------------------------------------------|
+| channelPrg      | Switch 	 	       | Turn the Stove On/Off		                              						  |
+| channelIsTemp   | Number:Temperature | Receives the actual temperature of the stove	          						  |
+| channelSpTemp   | Number:Temperature | Receives and sets the target temperature of the stove	  						  |
+| channelMode     | String             | Receives the actual mode the stove is in like heating, cooling, error, ....	  |
 
 
 ## Full Example
