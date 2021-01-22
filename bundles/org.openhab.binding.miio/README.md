@@ -441,6 +441,7 @@ Currently the miio binding supports more than 260 different models.
 | Mi Air Purifier 3            | miio:basic       | [zhimi.airpurifier.ma4](#zhimi-airpurifier-ma4) | Yes       | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":4,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle","siid":8,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle-mode","siid":8,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |            |
 | Mi Air Purifier 3/3H         | miio:basic       | [zhimi.airpurifier.mb3](#zhimi-airpurifier-mb3) | Yes       | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":4,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle","siid":8,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle-mode","siid":8,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Air Purifier 3C           | miio:basic       | [zhimi.airpurifier.mb4](#zhimi-airpurifier-mb4) | Yes       | Specified action for filter reset <br />`action{"did":"filter-reset-filter-life","siid":4,"aiid":1,"in":[3.0]}`<br />However, this has not been successfully tested yet. |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | Yes       |            |
 | Mi Air Purifier 2H           | miio:basic       | [zhimi.airpurifier.mc2](#zhimi-airpurifier-mc2) | Yes       |            |
 | Mi Air Purifier Super        | miio:basic       | [zhimi.airpurifier.sa1](#zhimi-airpurifier-sa1) | Yes       |            |
@@ -3770,7 +3771,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | on               | Switch  | Air Purifier - Switch Status        |            |
 | fan-level        | Number  | Air Purifier - Fan Level            | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
 | mode             | Number  | Air Purifier - Mode                 | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite","3"="None"] |
-| pm2.5-density    | Number  | Environment - Pm2 5 Density         |            |
+| pm2_5-density    | Number  | Environment - Pm2.5 Density         |            |
 | relative-humidity | Number:Dimensionless | Environment - Relative Humidity     |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | filter-life-level | Number:Dimensionless | Filter - Filter Life Level          |            |
@@ -3846,7 +3847,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | on               | Switch  | Air Purifier - Switch Status        |            |
 | fan-level        | Number  | Air Purifier - Fan Level            | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
 | mode             | Number  | Air Purifier - Mode                 | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite","3"="None"] |
-| pm2.5-density    | Number  | Environment - Pm2 5                 |            |
+| pm2_5-density    | Number  | Environment - Pm2.5 density         |            |
 | relative-humidity | Number:Dimensionless | Environment - Relative Humidity     |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | filter-life-level | Number:Dimensionless | Filter - Filter Life Level          |            |
@@ -3893,6 +3894,24 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | iic-error-count  | Number  | Others - Iic Error Count            |            |
 | manual-level     | Number  | Others - Manual Level               | Value mapping ["1"="Level1","2"="Level2","3"="Level3"] |
 | country-code     | Number  | Others - National Code              | Value mapping ["91"="印度","44"="分销英文","852"="中国香港","886"="中国台湾","82"="韩国"] |
+
+### Mi Air Purifier 3C (<a name="zhimi-airpurifier-mb4">zhimi.airpurifier.mb4</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| fault            | String  | Air Purifier - Device Fault         |            |
+| mode             | Number  | Mode                                | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite"] |
+| pm2_5_density    | Number  | Environment - Pm2 5 Density         |            |
+| filter_life_level | Number:Dimensionless | Filter - Filter Life Level          |            |
+| filter_used_time | Number:Time | Filter - Filter Used Time           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| brightness       | Number  | Screen - Brightness                 |            |
+| physical_controls_locked | Switch  | Physical Control Locked - Physical Control Locked |            |
+| moto_speed_rpm   | Number  | Custom Service - Moto Speed Rpm     |            |
+| miio_lib_version | String  | Custom Service - Miio Lib Version   |            |
+| favorite_speed   | Number  | Custom Service - Favorite Speed     |            |
+| aqi_updata_heartbeat | Number:Time | Custom Service - Aqi Updata Heartbeat |            |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mc1">zhimi.airpurifier.mc1</a>) Channels
 
@@ -8353,7 +8372,7 @@ Number fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:
 Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
 Number fan_level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
 Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number pm2.5_density "Environment - Pm2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2.5-density"}
+Number pm2_5_density "Environment - Pm2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5-density"}
 Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
@@ -8435,7 +8454,7 @@ Number fault "Air Purifier - Fault" (G_airpurifier) {channel="miio:basic:airpuri
 Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
 Number fan_level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
 Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number pm2.5_density "Environment - Pm2 5" (G_airpurifier) {channel="miio:basic:airpurifier:pm2.5-density"}
+Number pm2_5_density "Environment - Pm2.5 density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5-density"}
 Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
@@ -8482,6 +8501,27 @@ Number hw_version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:air
 Number iic_error_count "Others - Iic Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:iic-error-count"}
 Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
 Number country_code "Others - National Code" (G_airpurifier) {channel="miio:basic:airpurifier:country-code"}
+```
+
+### Mi Air Purifier 3C (zhimi.airpurifier.mb4) item file lines
+
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airpurifier "Mi Air Purifier 3C" <status>
+Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+String fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Number mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number pm2_5_density "Environment - Pm2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number brightness "Screen - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number moto_speed_rpm "Custom Service - Moto Speed Rpm" (G_airpurifier) {channel="miio:basic:airpurifier:moto_speed_rpm"}
+String miio_lib_version "Custom Service - Miio Lib Version" (G_airpurifier) {channel="miio:basic:airpurifier:miio_lib_version"}
+Number favorite_speed "Custom Service - Favorite Speed" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_speed"}
+Number:Time aqi_updata_heartbeat "Custom Service - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_updata_heartbeat"}
 ```
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.mc1) item file lines
