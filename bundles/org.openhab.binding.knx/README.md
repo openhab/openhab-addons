@@ -1,7 +1,7 @@
 
 # KNX Binding
 
-The openHAB KNX binding allows to connect to [KNX Home Automation](https://www.knx.org/) installations. 
+The openHAB KNX binding allows to connect to [KNX Home Automation](https://www.knx.org/) installations.
 Switching lights on and off, activating your roller shutters or changing room temperatures are only some examples.
 
 To access your KNX bus you either need a gateway device which is connected to the KNX bus and allows computers to access the bus communication.
@@ -17,7 +17,7 @@ There is an *ip* bridge to connect to KNX IP Gateways, and a *serial* bridge for
 
 ## Binding Configuration
 
-The binding itself does not require any special configuration. 
+The binding itself does not require any special configuration.
 
 ## Bridges
 
@@ -209,11 +209,11 @@ Only add parameters to the Bridge and Thing configuration if you know exactly wh
 knx.things:
 
 ```xtend
-Bridge knx:ip:bridge [ 
+Bridge knx:ip:bridge [
     type="ROUTER",
     autoReconnectPeriod=60 //optional, do not set <30 sec.
 ] {
-    Thing device knx_device "knx_device_name" @ "knx_device_group_in_paperui" [ 
+    Thing device knx_device "knx_device_name" @ "knx_device_group" [
         //readInterval=3600 //optional, only used if reading values are present
     ] {
         //Items configurations
@@ -226,12 +226,12 @@ Bridge knx:ip:bridge [
 knx.things:
 
 ```xtend
-Bridge knx:ip:bridge [ 
+Bridge knx:ip:bridge [
     type="TUNNEL",
     ipAddress="192.168.0.111",
     autoReconnectPeriod=60 //optional, do not set <30 sec.
 ] {
-    Thing device knx_device "knx_device_name" @ "knx_device_group_in_paperui" [ 
+    Thing device knx_device "knx_device_name" @ "knx_device_group" [
         //readInterval=3600 //optional, only used if reading values are present
     ] {
         //Items configurations
@@ -243,14 +243,14 @@ Bridge knx:ip:bridge [
 
 ```xtend
 //TUNNEL
-Bridge knx:ip:bridge [  
-    type="TUNNEL", 
-    ipAddress="192.168.0.10", 
-    portNumber=3671, 
+Bridge knx:ip:bridge [
+    type="TUNNEL",
+    ipAddress="192.168.0.10",
+    portNumber=3671,
     localIp="192.168.0.11",
-    readingPause=50, 
-    responseTimeout=10, 
-    readRetriesLimit=3, 
+    readingPause=50,
+    responseTimeout=10,
+    readRetriesLimit=3,
     autoReconnectPeriod=60,
     localSourceAddr="0.0.0"
 ] {
@@ -271,14 +271,14 @@ Bridge knx:ip:bridge [
 }
 
 //ROUTER
-Bridge knx:ip:bridge [  
-    type="ROUTER", 
-    ipAddress="224.0.23.12", 
-    portNumber=3671, 
+Bridge knx:ip:bridge [
+    type="ROUTER",
+    ipAddress="224.0.23.12",
+    portNumber=3671,
     localIp="192.168.0.11",
-    readingPause=50, 
-    responseTimeout=10, 
-    readRetriesLimit=3, 
+    readingPause=50,
+    responseTimeout=10,
+    readRetriesLimit=3,
     autoReconnectPeriod=60,
     localSourceAddr="0.0.0"
 ] {}
@@ -308,7 +308,7 @@ sitemap knx label="KNX Demo Sitemap" {
     Slider item=demoDimmer
     Text   item=demoString
     Text   item=demoDatetime
-  }                
+  }
 }
 
 ```
@@ -318,11 +318,11 @@ sitemap knx label="KNX Demo Sitemap" {
 control.things:
 
 ```xtend
-Bridge knx:serial:bridge [ 
-    serialPort="/dev/ttyAMA0", 
-    readingPause=50, 
-    responseTimeout=10, 
-    readRetriesLimit=3, 
+Bridge knx:serial:bridge [
+    serialPort="/dev/ttyAMA0",
+    readingPause=50,
+    responseTimeout=10,
+    readRetriesLimit=3,
     autoReconnectPeriod=60
 ] {
     Thing device generic {
@@ -335,9 +335,9 @@ Bridge knx:serial:bridge [
     }
 }
 
-Bridge hue:bridge:bridge "Philips Hue Bridge" [ 
-    ipAddress="...", 
-    userName="..." 
+Bridge hue:bridge:bridge "Philips Hue Bridge" [
+    ipAddress="...",
+    userName="..."
 ] {
     Thing 0210 1 "Color Lamp" [ lightId="1" ]
 }

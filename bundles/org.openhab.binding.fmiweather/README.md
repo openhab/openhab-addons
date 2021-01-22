@@ -28,10 +28,6 @@ The binding automatically discovers weather stations and forecasts for nearby pl
 
 ## Thing Configuration
 
-Typically there is no need to manually configure things unless you prefer to use textual configuration, or if you want to have observation or forecast for a specific location.
-
-In case you are using textual configuration, you need to use quotes around text parameters. In PaperUI this is not necessary.
-
 ### `observation` thing configuration
 
 | Parameter | Type | Required | Description                                                                                                                                                                                                                                                                                                                                                         | Example                              |

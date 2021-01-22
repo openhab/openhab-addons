@@ -114,7 +114,7 @@ To pair an EnOcean device with its openHAB thing representation, you have to dif
 
 ### Sensors
 
-To pair a sensor with its thing, you first have to start the discovery scan for this binding in PaperUI.
+To pair a sensor with its thing, you first have to start the discovery scan for this binding.
 Then press the "teach-in" button of the sensor.
 The sensor sends a teach-in message which contains the information about the EEP and the EnOceanId of the sensor.
 If the EEP is known by this binding the thing representation of the device is created.
@@ -123,7 +123,7 @@ The corresponding channels are created dynamically, too.
 ### Actuators
  
 If the actuator supports UTE teach-in, the corresponding thing can be created and paired automatically.
-First you have to **start the discovery scan for a gateway** in PaperUI.
+First you have to **start the discovery scan for a gateway**.
 Then press the teach-in button of the actuator.
 If the EEP of the actuator is known, the binding sends an UTE teach-in response with a new SenderId and creates a new thing with its channels. 
 
