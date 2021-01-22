@@ -66,7 +66,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
     // Abstract methods
 
-    protected abstract void initialize(C config);
+    protected abstract void initialize(C config, PlugwiseHABridgeHandler bridge);
 
     protected abstract @Nullable E getEntity(PlugwiseHAController controller, Boolean forceRefresh)
             throws PlugwiseHAException;
@@ -93,9 +93,13 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
             if (bridge.getStatus() == OFFLINE) {
                 updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                         "The Plugwise Home Automation bridge is currently offline.");
+                return;
             }
 
-            initialize(config);
+            PlugwiseHABridgeHandler bridgeHandler = (PlugwiseHABridgeHandler) bridge.getHandler();
+            if (bridgeHandler != null) {
+                initialize(config, bridgeHandler);
+            }
         } else {
             logger.debug("Invalid config for Plugwise Home Automation thing handler with config = {}", config);
         }
@@ -145,7 +149,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
     // Private & protected methods
 
-    private final @Nullable PlugwiseHAController getController() {
+    private @Nullable PlugwiseHAController getController() {
         PlugwiseHABridgeHandler bridgeHandler = getPlugwiseHABridge();
 
         if (bridgeHandler != null) {

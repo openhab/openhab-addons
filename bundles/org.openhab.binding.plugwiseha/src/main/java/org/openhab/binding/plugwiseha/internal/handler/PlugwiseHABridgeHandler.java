@@ -96,8 +96,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        // This method is also called whenever config changes
-        cancelRefreshJob();
         this.config = getConfig().as(PlugwiseHABridgeThingConfig.class);
 
         if (this.checkConfig()) {
@@ -108,6 +106,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
                 this.controller.start(() -> {
                     setBridgeProperties();
                     updateStatus(ONLINE);
+                    scheduleRefreshJob();
                 });
             } catch (PlugwiseHAInvalidHostException e) {
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME);
@@ -116,9 +115,13 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             } catch (PlugwiseHACommunicationException e) {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
             } catch (PlugwiseHAException e) {
-                logger.error("Unknown error while configuring the Plugwise Home Automation Controller", e);
+                logger.debug("Unknown error while configuring the Plugwise Home Automation Controller", e);
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, e.getMessage());
+            } catch (RuntimeException e) {
+                logger.debug("Unknown error while configuring the Plugwise Home Automation Controller", e);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
             }
+
         } else {
             logger.warn("Invalid config for the Plugwise Home Automation bridge handler with config = {}", this.config);
         }
@@ -196,7 +199,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
                     getThing().getUID(), e.getMessage());
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
-            logger.warn("Unhandled RunTimeException while refreshing the Plugwise Home Automation Controller {} - {}",
+            logger.debug("Unhandled RunTimeException while refreshing the Plugwise Home Automation Controller {} - {}",
                     getThing().getUID(), e.getMessage());
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }
@@ -238,12 +241,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(status, statusDetail).withDescription(description)
                 .build();
         if (!statusInfo.equals(getThing().getStatusInfo())) {
-            if (status == ONLINE || (status == OFFLINE && statusDetail == COMMUNICATION_ERROR)) {
-                scheduleRefreshJob();
-            } else if (status == OFFLINE && statusDetail == CONFIGURATION_ERROR) {
-                cancelRefreshJob();
-            }
-
             super.updateStatus(status, statusDetail, description);
         }
     }

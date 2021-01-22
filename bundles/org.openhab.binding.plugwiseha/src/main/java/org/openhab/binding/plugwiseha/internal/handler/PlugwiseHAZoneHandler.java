@@ -16,7 +16,6 @@ package org.openhab.binding.plugwiseha.internal.handler;
 import static org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_OFFLINE;
-import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
@@ -76,7 +75,7 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
     // Overrides
 
     @Override
-    protected synchronized void initialize(PlugwiseHAThingConfig config) {
+    protected synchronized void initialize(PlugwiseHAThingConfig config, PlugwiseHABridgeHandler bridgeHandler) {
         if (thing.getStatus() == INITIALIZING) {
             logger.debug("Initializing Plugwise Home Automation zone handler with config = {}", config);
             if (!config.isValid()) {
@@ -86,19 +85,14 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
             }
 
             try {
-                PlugwiseHABridgeHandler bridge = this.getPlugwiseHABridge();
-                if (bridge != null) {
-                    PlugwiseHAController controller = bridge.getController();
-                    if (controller != null) {
-                        this.location = getEntity(controller, true);
-                        if (this.location != null) {
-                            setLocationProperties();
-                            updateStatus(ONLINE);
-                        } else {
-                            updateStatus(OFFLINE);
-                        }
+                PlugwiseHAController controller = bridgeHandler.getController();
+                if (controller != null) {
+                    this.location = getEntity(controller, true);
+                    if (this.location != null) {
+                        setLocationProperties();
+                        updateStatus(ONLINE);
                     } else {
-                        updateStatus(OFFLINE, BRIDGE_UNINITIALIZED);
+                        updateStatus(OFFLINE);
                     }
                 } else {
                     updateStatus(OFFLINE, BRIDGE_OFFLINE);

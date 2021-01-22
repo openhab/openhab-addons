@@ -17,7 +17,6 @@ import static org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants
 import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_OFFLINE;
-import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
@@ -41,11 +40,11 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
@@ -54,8 +53,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link PlugwiseHAApplianceHandler} class is responsible for handling
@@ -88,7 +85,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
     // Overrides
 
     @Override
-    protected synchronized void initialize(PlugwiseHAThingConfig config) {
+    protected synchronized void initialize(PlugwiseHAThingConfig config, PlugwiseHABridgeHandler bridgeHandler) {
         if (thing.getStatus() == INITIALIZING) {
             logger.debug("Initializing Plugwise Home Automation appliance handler with config = {}", config);
             if (!config.isValid()) {
@@ -98,22 +95,17 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             }
 
             try {
-                PlugwiseHABridgeHandler bridge = this.getPlugwiseHABridge();
-                if (bridge != null) {
-                    PlugwiseHAController controller = bridge.getController();
-                    if (controller != null) {
-                        this.appliance = getEntity(controller, true);
-                        if (this.appliance != null) {
-                            if (this.appliance.isBatteryOperated()) {
-                                addBatteryChannels();
-                            }
-                            setApplianceProperties();
-                            updateStatus(ONLINE);
-                        } else {
-                            updateStatus(OFFLINE);
+                PlugwiseHAController controller = bridgeHandler.getController();
+                if (controller != null) {
+                    this.appliance = getEntity(controller, true);
+                    if (this.appliance != null) {
+                        if (this.appliance.isBatteryOperated()) {
+                            addBatteryChannels();
                         }
+                        setApplianceProperties();
+                        updateStatus(ONLINE);
                     } else {
-                        updateStatus(OFFLINE, BRIDGE_UNINITIALIZED);
+                        updateStatus(OFFLINE);
                     }
                 } else {
                     updateStatus(OFFLINE, BRIDGE_OFFLINE);
@@ -124,29 +116,31 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
         }
     }
 
-    @Override
-    public void thingUpdated(Thing thing) {
-        super.thingUpdated(thing);
-
-        if (this.appliance.isBatteryOperated()) {
-            addBatteryChannels();
-        }
-
-        ThingHandler thingHandler = thing.getHandler();
-
-        if (thingHandler != null) {
-            for (Channel channel : thing.getChannels()) {
-                if (this.isLinked(channel.getUID())) {
-                    Appliance appliance = this.appliance;
-                    if (appliance != null) {
-                        this.refreshChannel(appliance, channel.getUID());
-                    }
-                }
-            }
-        }
-
-        setApplianceProperties();
-    }
+    /*
+     * @Override
+     * public void thingUpdated(Thing thing) {
+     * super.thingUpdated(thing);
+     * 
+     * if (this.appliance.isBatteryOperated()) {
+     * addBatteryChannels();
+     * }
+     * 
+     * ThingHandler thingHandler = thing.getHandler();
+     * 
+     * if (thingHandler != null) {
+     * for (Channel channel : thing.getChannels()) {
+     * if (this.isLinked(channel.getUID())) {
+     * Appliance appliance = this.appliance;
+     * if (appliance != null) {
+     * this.refreshChannel(appliance, channel.getUID());
+     * }
+     * }
+     * }
+     * }
+     * 
+     * setApplianceProperties();
+     * }
+     */
 
     @Override
     protected @Nullable Appliance getEntity(PlugwiseHAController controller, Boolean forceRefresh)
@@ -353,7 +347,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
         }
 
-        if (state != UnDefType.NULL && state != UnDefType.UNDEF) {
+        if (state != UnDefType.NULL) {
             updateState(channelID, state);
         }
     }
