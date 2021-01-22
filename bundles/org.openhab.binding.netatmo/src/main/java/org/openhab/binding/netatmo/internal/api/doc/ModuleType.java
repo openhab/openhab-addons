@@ -52,7 +52,8 @@ public enum ModuleType {
     // Energy group
     NAHomeEnergy(List.of(GROUP_HOME_ENERGY), null, RefreshPolicy.CONFIG, null),
     NAPlug(List.of(GROUP_PLUG, GROUP_DEVICE, GROUP_SIGNAL), null, RefreshPolicy.CONFIG, NAHomeEnergy),
-    NATherm1(List.of(GROUP_THERMOSTAT, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY), null, RefreshPolicy.PARENT, NAPlug),
+    NATherm1(List.of(GROUP_TH_PROPERTIES, GROUP_TH_SETPOINT, GROUP_TH_TEMPERATURE, GROUP_MODULE, GROUP_SIGNAL,
+            GROUP_BATTERY), null, RefreshPolicy.PARENT, NAPlug),
 
     // Left for future implementation
     // NACamDoorTag,

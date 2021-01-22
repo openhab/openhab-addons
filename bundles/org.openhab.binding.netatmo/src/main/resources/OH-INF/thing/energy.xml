@@ -12,12 +12,33 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="thermostat">
-		<label>Thermostat Netatmo</label>
+	<channel-group-type id="th-temperature">
+		<label>Temperature</label>
 		<channels>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="setpoint" typeId="setpoint"/>
-			<channel id="setpoint-mode" typeId="th-mode"/>
+			<channel id="value" typeId="temperature"/>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Measurement Time</label>
+				<description>Timestamp when data was measured</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="setpoint">
+		<label>Setpoint</label>
+		<channels>
+			<channel id="value" typeId="setpoint"/>
+			<channel id="mode" typeId="th-mode"/>
+			<channel id="end" typeId="timestamp">
+				<label>Setpoint End</label>
+				<description>Thermostat goes back to schedule after that timestamp.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="th-properties">
+		<label>Thermostat</label>
+		<channels>
+			<!-- channel id="temperature" typeId="temperature"/ -->
 			<channel id="relay-status" typeId="switch-ro">
 				<label>Heating Status</label>
 				<description>Indicates whether the furnace is heating or not</description>
@@ -25,14 +46,6 @@
 			<channel id="orientation" typeId="orientation"/>
 			<channel id="anticipating" typeId="switch-ro">
 				<label>Anticipated heating</label>
-			</channel>
-			<channel id="timestamp" typeId="timestamp">
-				<label>Measurement Time</label>
-				<description>Timestamp when data was measured</description>
-			</channel>
-			<channel id="setpoint-end" typeId="timestamp">
-				<label>Setpoint End</label>
-				<description>Thermostat goes back to schedule after that timestamp.</description>
 			</channel>
 		</channels>
 	</channel-group-type>

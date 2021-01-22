@@ -30,10 +30,16 @@ public abstract class RestManager {
 
     protected final ApiBridge apiHandler;
     private final Set<Scope> requiredScopes;
+    private final String baseUrl;
 
     public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes) {
+        this(apiHandler, requiredScopes, SUB_URL);
+    }
+
+    public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes, String substitudedBaseUrl) {
         this.apiHandler = apiHandler;
         this.requiredScopes = requiredScopes;
+        this.baseUrl = substitudedBaseUrl;
     }
 
     public Set<Scope> getRequiredScopes() {
@@ -41,11 +47,15 @@ public abstract class RestManager {
     }
 
     public <T> T get(String anUrl, Class<T> classOfT) throws NetatmoException {
-        return apiHandler.executeUrl(SUB_URL + anUrl, HttpMethod.GET, null, classOfT, true);
+        return apiHandler.executeUrl(baseUrl + anUrl, HttpMethod.GET, null, classOfT, true);
     }
 
-    public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean baseUrl)
+    public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean defaultApp)
             throws NetatmoException {
-        return apiHandler.executeUrl(SUB_URL + anUrl, HttpMethod.POST, payload, classOfT, baseUrl);
+        return apiHandler.executeUrl(baseUrl + anUrl, HttpMethod.POST, payload, classOfT, defaultApp);
+    }
+
+    public <T> T post(String payload, Class<T> classOfT) throws NetatmoException {
+        return post("", payload, classOfT, true);
     }
 }

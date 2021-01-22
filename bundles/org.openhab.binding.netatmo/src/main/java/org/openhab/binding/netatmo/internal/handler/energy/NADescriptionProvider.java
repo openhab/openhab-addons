@@ -29,8 +29,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class NADescriptionProvider extends BaseDynamicStateDescriptionProvider {
     @Activate
-    public NADescriptionProvider(
-            @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+    public NADescriptionProvider(@Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
     }
 }

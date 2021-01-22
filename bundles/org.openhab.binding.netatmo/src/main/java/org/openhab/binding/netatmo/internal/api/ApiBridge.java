@@ -91,7 +91,7 @@ public class ApiBridge {
             ComponentContext componentContext) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpHeaders.put(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
-        this.connectApi = new ConnectApi(this, oAuthFactory, configuration);
+        this.connectApi = new ConnectApi(this, oAuthFactory, configuration, scheduler);
 
         modified(BindingUtils.ComponentContextToMap(componentContext));
     }
@@ -187,10 +187,10 @@ public class ApiBridge {
         return homeApi;
     }
 
-    public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean baseUrl)
-            throws NetatmoException {
-        return executeUrl(anUrl, HttpMethod.POST, payload, classOfT, baseUrl);
-    }
+    // public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean baseUrl)
+    // throws NetatmoException {
+    // return executeUrl(anUrl, HttpMethod.POST, payload, classOfT, baseUrl);
+    // }
 
     // public <T> T get(String anUrl, Class<T> classOfT) throws NetatmoException {
     // return executeUrl(anUrl, HttpMethod.GET, null, classOfT, true);
@@ -237,7 +237,7 @@ public class ApiBridge {
             switch (statusCode) {
                 case HttpStatus.NOT_FOUND_404:
                     throw new NetatmoException(statusCode, "Target '" + response.getRequest().getURI()
-                            + "' seems to be not available: " + response.getContentAsString());
+                            + "' seems unavailable : " + response.getContentAsString());
                 case HttpStatus.FORBIDDEN_403:
                 case HttpStatus.UNAUTHORIZED_401:
                     throw new NetatmoException(statusCode,

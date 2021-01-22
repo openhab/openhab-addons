@@ -54,37 +54,12 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="sum-rain">
-		<item-type>Number:Length</item-type>
-		<label>Sum Rain</label>
-		<description>Quantity of water over a given period</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-		<config-description-ref uri="netatmo:sum-rain:config"/>
-	</channel-type>
-
 	<channel-type id="rain">
 		<item-type>Number:Length</item-type>
 		<label>Rain</label>
 		<description>Quantity of water</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="measure">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Measure</label>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-		<config-description-ref uri="netatmo:confMeasure:config"/>
-	</channel-type>
-
-	<channel-type id="measure-timestamp">
-		<item-type>DateTime</item-type>
-		<label>Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<category>time</category>
-		<state readOnly="true"/>
-		<config-description-ref uri="netatmo:confMeasureTimestamp:config"/>
 	</channel-type>
 
 	<channel-type id="location">

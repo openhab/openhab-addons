@@ -15,12 +15,16 @@ package org.openhab.binding.netatmo.internal.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.GrantType;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.oauth2client.internal.Keyword;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows access to the AutomowerConnectApi
@@ -29,59 +33,50 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
  */
 @NonNullByDefault
 public class ConnectApi extends RestManager {
-    private static final String TOKEN_URL = "oauth2/token";
+    private static final String OAUTH_BASE = "oauth2/token";
     private static final String GRANT_BASE = "grant_type=%s&client_id=%s&client_secret=%s";
     private static final String TOKEN_REQ = "&username=%s&password=%s&scope=%s";
     private static final String TOKEN_REF = "&refresh_token=%s";
 
+    private final Logger logger = LoggerFactory.getLogger(ConnectApi.class);
     private final NetatmoBindingConfiguration configuration;
+    private final ScheduledExecutorService scheduler;
 
-    // TODO : finalize once #1888 over
-    // private final OAuthClientService authService;
-
-    public ConnectApi(ApiBridge apiClient, OAuthFactory oAuthFactory, NetatmoBindingConfiguration configuration) {
-        super(apiClient, Set.of());
+    public ConnectApi(ApiBridge apiClient, OAuthFactory oAuthFactory, NetatmoBindingConfiguration configuration,
+            ScheduledExecutorService scheduler) {
+        super(apiClient, Set.of(), OAUTH_BASE);
         this.configuration = configuration;
-        // TODO : finalize once #1888 over
-        // this.authService = oAuthFactory.createOAuthClientService(SERVICE_PID, NETATMO_BASE_URL + TOKEN_URL, null,
-        // configuration.clientId != null ? configuration.clientId : "", configuration.clientSecret, scope, false)
-        // .withDeserializer(NAOAuthDeserializer.class);
-        // this.loginManager = new LoginManager(apiClient, configuration);
+        this.scheduler = scheduler;
     }
 
-    public NAAccessTokenResponse authenticate() throws NetatmoException {
-        // TODO : finalize once #1888 over
-        // try {
-        // AccessTokenResponse result = authService.getAccessTokenResponse();
-        // if (result == null) {
-        // result = authService.getAccessTokenByResourceOwnerPasswordCredentials(userName, password, scope);
-        // }
-        // return result;
-        // } catch (OAuthException | IOException | OAuthResponseException e) {
-        // throw new NetatmoException("Unable to authenticate", e);
-        // }
-        // return loginManager.openSession();
-        String req = getBaseRequest(GrantType.PASSWORD);
+    private String getBaseRequest(String grantType) {
+        return String.format(GRANT_BASE, grantType, configuration.clientId, configuration.clientSecret);
+    }
 
+    public void authenticate() throws NetatmoException {
         List<String> scopes = new ArrayList<>();
         NetatmoConstants.ALL_SCOPES.forEach(scope -> scopes.add(scope.name().toLowerCase()));
 
+        String req = getBaseRequest(Keyword.PASSWORD);
         req += String.format(TOKEN_REQ, configuration.username, configuration.password, String.join(" ", scopes));
 
-        NAAccessTokenResponse authorization = apiHandler.post(TOKEN_URL, req, NAAccessTokenResponse.class, true);
-
+        NAAccessTokenResponse authorization = post(req, NAAccessTokenResponse.class);
         apiHandler.onAccessTokenResponse(authorization.getAccessToken(), authorization.getScope());
-        return authorization;
+
+        scheduleTokenRefresh(authorization.getRefreshToken(), 5 /* authorization.getExpiresIn() */);
     }
 
-    private String getBaseRequest(GrantType type) {
-        return String.format(GRANT_BASE, type.name().toLowerCase(), configuration.clientId, configuration.clientSecret);
-    }
-
-    public void refreshToken(String refreshToken) throws NetatmoException {
-        String req = getBaseRequest(GrantType.REFRESH_TOKEN);
-        req += String.format(TOKEN_REF, refreshToken);
-        NAAccessTokenResponse authorization = apiHandler.post(TOKEN_URL, req, NAAccessTokenResponse.class, true);
-        apiHandler.onAccessTokenResponse(authorization.getAccessToken(), authorization.getScope());
+    private void scheduleTokenRefresh(String refreshToken, long delay) {
+        scheduler.schedule(() -> {
+            String req = getBaseRequest(Keyword.REFRESH_TOKEN);
+            req += String.format(TOKEN_REF, refreshToken);
+            try {
+                NAAccessTokenResponse answer = post(req, NAAccessTokenResponse.class);
+                apiHandler.onAccessTokenResponse(answer.getAccessToken(), answer.getScope());
+                scheduleTokenRefresh(answer.getRefreshToken(), answer.getExpiresIn());
+            } catch (NetatmoException e) {
+                logger.warn("Unable to refresh access token : ", e.getMessage());
+            }
+        }, delay, TimeUnit.SECONDS);
     }
 }

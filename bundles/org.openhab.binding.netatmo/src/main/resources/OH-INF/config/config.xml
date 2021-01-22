@@ -5,6 +5,28 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
+	<config-description uri="netatmo:sum-boiler:config">
+		<parameter name="type" type="text">
+			<label>Type</label>
+			<description>Type of Measurement</description>
+			<options>
+				<option value="SUM_BOILER_ON">Sum Boiler On</option>
+				<option value="SUM_BOILER_OFF">Sum Boiler Off</option>
+			</options>
+			<default>SUM_BOILER_ON</default>
+		</parameter>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<description>Observation period</description>
+			<options>
+				<option value="ONE_DAY">This day</option>
+				<option value="ONE_WEEK">This week</option>
+				<option value="ONE_MONTH">This month</option>
+			</options>
+			<default>ONE_DAY</default>
+		</parameter>
+	</config-description>
+
 	<config-description uri="netatmo:sum-rain:config">
 		<parameter name="type" type="text">
 			<label>Type</label>
@@ -22,7 +44,7 @@
 				<option value="ONE_WEEK">This week</option>
 				<option value="ONE_MONTH">This month</option>
 			</options>
-			<default>week</default>
+			<default>ONE_WEEK</default>
 		</parameter>
 	</config-description>
 
@@ -56,7 +78,7 @@
 				<option value="ONE_WEEK">This week</option>
 				<option value="ONE_MONTH">This month</option>
 			</options>
-			<default>week</default>
+			<default>ONE_WEEK</default>
 		</parameter>
 	</config-description>
 
@@ -68,7 +90,7 @@
 				<option value="DATE_MIN">Date Minimum</option>
 				<option value="DATE_MAX">Date Maximum</option>
 			</options>
-			<default>MIN</default>
+			<default>DATE_MIN</default>
 		</parameter>
 		<parameter name="type" type="text">
 			<label>Type</label>
@@ -89,7 +111,7 @@
 				<option value="ONE_WEEK">This week</option>
 				<option value="ONE_MONTH">This month</option>
 			</options>
-			<default>week</default>
+			<default>ONE_WEEK</default>
 		</parameter>
 	</config-description>
 

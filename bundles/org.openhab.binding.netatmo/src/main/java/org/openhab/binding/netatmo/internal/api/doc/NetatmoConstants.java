@@ -157,11 +157,6 @@ public class NetatmoConstants {
             .of(WEATHER_SCOPES, ENERGY_SCOPES, SECURITY_SCOPES, AIR_QUALITY_SCOPES).flatMap(Set::stream)
             .collect(Collectors.toSet());
 
-    public static enum GrantType {
-        PASSWORD,
-        REFRESH_TOKEN;
-    }
-
     // Radio signal quality thresholds
     private static final int[] EMPTY_INT_ARRAY = new int[0];
     public static final int[] WIFI_SIGNAL_LEVELS = new int[] { 86, 71, 56 }; // Resp : bad, average, good

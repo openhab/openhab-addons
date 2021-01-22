@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,22 +41,15 @@ public class MeasuresChannelHelper extends AbstractChannelHelper {
 
     public MeasuresChannelHelper(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
-        // TODO : cette liste n'est initialisée qu'au lancement du module, donc l'adjonction d'un channel ne produit pas
-        // de résultat immédiatement.
-        thing.getChannels().stream().forEach(channel -> {
-            MeasureChannelConfig channelConfig = getChannelConfigIfValid(channel);
-            if (channelConfig != null) {
-                measures.put(channelConfig, Double.NaN);
-            }
-        });
     }
 
     @Override
     protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
-            MeasureChannelConfig channelConfig = getChannelConfigIfValid(channel);
-            if (channelConfig != null) {
+            Optional<MeasureChannelConfig> config = getChannelConfigIfValid2(channel);
+            if (config.isPresent()) {
+                MeasureChannelConfig channelConfig = config.get();
                 Double measure = measures.get(channelConfig);
                 if (channelConfig.limit == MeasureLimit.DATE_MAX || channelConfig.limit == MeasureLimit.DATE_MIN) {
                     return toDateTimeType(measure, zoneId);
@@ -66,12 +60,20 @@ public class MeasuresChannelHelper extends AbstractChannelHelper {
         return null;
     }
 
-    private @Nullable MeasureChannelConfig getChannelConfigIfValid(Channel channel) {
-        MeasureChannelConfig channelConfig = channel.getConfiguration().as(MeasureChannelConfig.class);
-        return channelConfig.period != null && channelConfig.type != null ? channelConfig : null;
+    private Optional<MeasureChannelConfig> getChannelConfigIfValid2(Channel channel) {
+        MeasureChannelConfig config = channel.getConfiguration().as(MeasureChannelConfig.class);
+        return config.period != null && config.type != null ? Optional.of(config) : Optional.empty();
     }
 
     public Map<MeasureChannelConfig, Double> getMeasures() {
         return measures;
+    }
+
+    public void collectMeasuredChannels() {
+        measures.clear();
+        thing.getChannels().stream().map(channel -> getChannelConfigIfValid2(channel)).filter(c -> c.isPresent())
+                .forEach(config -> {
+                    measures.put(config.get(), Double.NaN);
+                });
     }
 }

@@ -33,8 +33,10 @@ import org.openhab.binding.netatmo.internal.handler.energy.NAHomeEnergyChannelHe
 import org.openhab.binding.netatmo.internal.handler.energy.NAHomeEnergyHandler;
 import org.openhab.binding.netatmo.internal.handler.energy.NAPlugChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.energy.NAPlugHandler;
-import org.openhab.binding.netatmo.internal.handler.energy.NATherm1ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.energy.NATherm1Handler;
+import org.openhab.binding.netatmo.internal.handler.energy.NATherm1PropsChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.energy.NATherm1SetpointChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.energy.NATherm1TempChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.security.NACameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.security.NACameraHandler;
 import org.openhab.binding.netatmo.internal.handler.security.NAHomeSecurityChannelHelper;
@@ -141,7 +143,9 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         } else if (ModuleType.NATherm1.matches(thingTypeUID)) {
             return NetatmoThingHandlerBuilder
                     .create(bridge, timeZoneProvider, ModuleType.NATherm1, stateDescriptionProvider)
-                    .withHandler(NATherm1Handler.class).withChannelHelper(NATherm1ChannelHelper.class).build();
+                    .withHandler(NATherm1Handler.class).withChannelHelpers(Set.of(NATherm1PropsChannelHelper.class,
+                            NATherm1SetpointChannelHelper.class, NATherm1TempChannelHelper.class))
+                    .build();
         } else if (ModuleType.NAPlug.matches(thingTypeUID)) {
             return NetatmoThingHandlerBuilder
                     .create(bridge, timeZoneProvider, ModuleType.NAPlug, stateDescriptionProvider)

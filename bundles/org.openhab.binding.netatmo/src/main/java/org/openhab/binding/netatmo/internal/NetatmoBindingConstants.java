@@ -71,7 +71,6 @@ public class NetatmoBindingConstants {
     public static final String GROUP_WIND = "wind";
     public static final String GROUP_HEALTH = "health";
     public static final String GROUP_PLUG = "plug";
-    public static final String GROUP_THERMOSTAT = "thermostat";
     public static final String GROUP_HOME_ENERGY = "energy";
     public static final String GROUP_SIGNAL = "signal";
     public static final String GROUP_BATTERY = "battery";
@@ -81,7 +80,9 @@ public class NetatmoBindingConstants {
     public static final String GROUP_WELCOME_EVENT = "welcome-event";
     public static final String GROUP_PERSON = "person";
     public static final String GROUP_PERSON_EVENT = "person-event";
-
+    public static final String GROUP_TH_PROPERTIES = "th-properties";
+    public static final String GROUP_TH_SETPOINT = "setpoint";
+    public static final String GROUP_TH_TEMPERATURE = "th-temperature";
     // Channel ids
     public static final String CHANNEL_VALUE = "value";
     public static final String CHANNEL_TREND = "trend";
@@ -110,10 +111,8 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_GUST_STRENGTH = "gust-strength";
     public static final String CHANNEL_CONNECTED_BOILER = "connected";
     public static final String CHANNEL_LAST_BILAN = "last-bilan";
-    public static final String CHANNEL_TEMPERATURE = "temperature";
-    public static final String CHANNEL_SETPOINT_MODE = "setpoint-mode";
-    public static final String CHANNEL_SETPOINT_END_TIME = "setpoint-end";
-    public static final String CHANNEL_SETPOINT_TEMP = "setpoint";
+    public static final String CHANNEL_SETPOINT_MODE = "mode";
+    public static final String CHANNEL_SETPOINT_END_TIME = "end";
     public static final String CHANNEL_THERM_RELAY = "relay-status";
     public static final String CHANNEL_THERM_ORIENTATION = "orientation";
     public static final String CHANNEL_THERM_ANTICIPATING = "anticipating";

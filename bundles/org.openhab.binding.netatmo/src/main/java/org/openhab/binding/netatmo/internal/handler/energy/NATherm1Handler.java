@@ -65,6 +65,7 @@ public class NATherm1Handler extends NetatmoDeviceHandler {
             NAPlugHandler handler = getPlugHandler();
             if (currentData != null && handler != null) {
                 String channelName = channelUID.getIdWithoutGroup();
+                String groupName = channelUID.getGroupId();
                 if (channelName.equals(CHANNEL_SETPOINT_MODE)) {
                     SetpointMode targetMode = SetpointMode.valueOf(command.toString());
                     if (targetMode == SetpointMode.MANUAL) {
@@ -73,7 +74,7 @@ public class NATherm1Handler extends NetatmoDeviceHandler {
                     } else {
                         handler.callSetThermMode(config.id, targetMode);
                     }
-                } else if (channelName.equals(CHANNEL_SETPOINT_TEMP)) {
+                } else if (groupName.equals(GROUP_TH_SETPOINT) && channelName.equals(CHANNEL_VALUE)) {
                     QuantityType<?> quantity = commandToQuantity(command, TEMPERATURE_UNIT);
                     if (quantity != null) {
                         handler.callSetThermTemp(config.id, quantity.doubleValue());

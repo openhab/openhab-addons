@@ -107,7 +107,7 @@ public class EnergyApi extends RestManager {
             }
         }
 
-        ApiOkResponse response = apiHandler.post(req, null, ApiOkResponse.class, true);
+        ApiOkResponse response = post(req, null, ApiOkResponse.class, true);
         if (!response.isSuccess()) {
             throw new NetatmoException(String.format("Unsuccessfull setpoint change : %s", response.getStatus()));
         }

@@ -18,6 +18,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -70,15 +71,16 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
     public final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
 
     protected final List<AbstractChannelHelper> channelHelpers = new ArrayList<>();
-    protected @Nullable MeasuresChannelHelper measureChannelHelper;
-
-    protected @Nullable NAThing naThing;
-    protected @NonNullByDefault({}) NetatmoThingConfiguration config;
-    private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable RefreshStrategy refreshStrategy;
-    protected @Nullable ApiBridge apiBridge;
     protected final ZoneId zoneId;
     protected final NADescriptionProvider descriptionProvider;
+    protected final Optional<MeasuresChannelHelper> measureChannelHelper;
+
+    protected @Nullable NAThing naThing;
+    protected @Nullable ApiBridge apiBridge;
+    protected @NonNullByDefault({}) NetatmoThingConfiguration config;
+
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable RefreshStrategy refreshStrategy;
 
     public NetatmoDeviceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers,
             @Nullable ApiBridge apiBridge, TimeZoneProvider timeZoneProvider,
@@ -87,13 +89,10 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
         this.apiBridge = apiBridge;
         this.descriptionProvider = descriptionProvider;
         this.channelHelpers.addAll(channelHelpers);
-        for (AbstractChannelHelper helper : this.channelHelpers) {
-            if (helper instanceof MeasuresChannelHelper) {
-                measureChannelHelper = (MeasuresChannelHelper) helper;
-            }
-        }
-
         this.zoneId = timeZoneProvider.getTimeZone();
+
+        measureChannelHelper = channelHelpers.stream().filter(c -> c instanceof MeasuresChannelHelper).findFirst()
+                .map(MeasuresChannelHelper.class::cast);
     }
 
     @Override
@@ -110,6 +109,8 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
         refreshStrategy = supportedThingType.refreshPeriod == RefreshPolicy.AUTO ? new RefreshStrategy(-1)
                 : supportedThingType.refreshPeriod == RefreshPolicy.CONFIG ? new RefreshStrategy(config.refreshInterval)
                         : null;
+
+        measureChannelHelper.ifPresent(channelHelper -> channelHelper.collectMeasuredChannels());
 
         scheduleRefreshJob();
     }
@@ -206,17 +207,17 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
         this.naThing = naThing;
         channelHelpers.forEach(helper -> helper.setNewData(naThing));
-        MeasuresChannelHelper localMeasureChannelHelper = this.measureChannelHelper;
-        if (localMeasureChannelHelper != null) {
+        measureChannelHelper.ifPresent(channelHelper -> {
+            channelHelper.collectMeasuredChannels();
             if (refreshStrategy == null) {
                 NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
                 if (bridgeHandler != null) {
-                    bridgeHandler.callGetMeasurements(config.id, localMeasureChannelHelper.getMeasures());
+                    bridgeHandler.callGetMeasurements(config.id, channelHelper.getMeasures());
                 }
             } else {
-                callGetMeasurements(null, localMeasureChannelHelper.getMeasures());
+                callGetMeasurements(null, channelHelper.getMeasures());
             }
-        }
+        });
         getThing().getChannels().stream()
                 .filter(channel -> !ChannelKind.TRIGGER.equals(channel.getKind()) && isLinked(channel.getUID()))
                 .map(channel -> channel.getUID()).forEach(channelUID -> {
