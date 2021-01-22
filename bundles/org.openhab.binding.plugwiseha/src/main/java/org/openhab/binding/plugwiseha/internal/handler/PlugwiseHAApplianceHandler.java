@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.plugwiseha.internal.handler;
 
 import static org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants.*;
@@ -34,7 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
-import org.openhab.binding.plugwiseha.internal.api.model.dto.Appliance;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.*;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
