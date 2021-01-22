@@ -198,7 +198,6 @@
 				"friendlyName": "Light Mode",
 				"channel": "lightMode",
 				"type": "Number",
-				"refresh": true,
 				"stateDescription": {
 					"options": [
 						{
@@ -211,6 +210,7 @@
 						}
 					]
 				},
+				"refresh": true,
 				"actions": [
 					{
 						"command": "set_lightMode",
