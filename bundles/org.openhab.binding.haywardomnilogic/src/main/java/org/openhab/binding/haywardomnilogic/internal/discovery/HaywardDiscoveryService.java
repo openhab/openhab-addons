@@ -166,7 +166,6 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     private void discoverDevices(HaywardBridgeHandler bridgehandler, String xmlResponse, String xmlSearchTerm,
             HaywardTypeToRequest type, ThingTypeUID thingType,
             @Nullable BiConsumer<Map<String, Object>, Integer> additionalPropertyConsumer) {
-
         List<String> systemIDs = bridgehandler.evaluateXPath("//" + xmlSearchTerm + "/System-Id/text()", xmlResponse);
         List<String> names;
 
