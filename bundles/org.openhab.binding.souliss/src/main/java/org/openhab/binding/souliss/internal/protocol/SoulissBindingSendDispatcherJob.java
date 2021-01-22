@@ -311,6 +311,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
             gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(_lastByteGatewayIP)
                     .getHandler();
         } catch (Exception ex) {
+            logger.error("exception getting gw handler {}", ex);
         }
 
         Iterator<Thing> thingsIterator;
@@ -392,7 +393,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                 }
 
                 boolean tFlag = (t - t_prec) >= this.gw.sendRefreshInterval;
-                ;
+
                 // se siamo arrivati alla fine della lista e quindi tutti i
                 // pacchetti sono già  stati inviati allora pongo anche il tFlag
                 // a false (come se il timeout non fosse ancora trascorso)
