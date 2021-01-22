@@ -122,6 +122,25 @@ public class LongPolling {
         }
     }
 
+    private void executeResubscribe(BoschHttpClient httpClient) {
+        scheduler.execute(() -> this.resubscribe(httpClient));
+    }
+
+    /**
+     * Create a new subscription for long polling.
+     * 
+     * @param httpClient Http client to send requests to
+     */
+    private void resubscribe(BoschHttpClient httpClient) {
+        try {
+            String subscriptionId = this.subscribe(httpClient);
+            this.executeLongPoll(httpClient, subscriptionId);
+        } catch (LongPollingFailedException e) {
+            this.handleFailure.accept(e);
+            return;
+        }
+    }
+
     private void executeLongPoll(BoschHttpClient httpClient, String subscriptionId) {
         scheduler.execute(() -> this.longPoll(httpClient, subscriptionId));
     }
@@ -166,6 +185,16 @@ public class LongPolling {
         });
     }
 
+    /**
+     * This is the handler for responses of long poll requests.
+     * 
+     * @implNote Please be aware that this function runs inside the HTTP request thread, so be careful with calling
+     *           other functions that might have to run on a main thread
+     * 
+     * @param httpClient HTTP client which received the response
+     * @param subscriptionId Id of subscription the response is for
+     * @param content Content of the response
+     */
     private void onLongPollResponse(BoschHttpClient httpClient, String subscriptionId, String content) {
         // Check if thing is still online
         if (this.aborted) {
@@ -192,12 +221,8 @@ public class LongPolling {
 
                 if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
                     logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
-                    try {
-                        nextSubscriptionId = this.subscribe(httpClient);
-                    } catch (LongPollingFailedException e) {
-                        this.handleFailure.accept(e);
-                        return;
-                    }
+                    this.executeResubscribe(httpClient);
+                    return;
                 }
             }
         }
