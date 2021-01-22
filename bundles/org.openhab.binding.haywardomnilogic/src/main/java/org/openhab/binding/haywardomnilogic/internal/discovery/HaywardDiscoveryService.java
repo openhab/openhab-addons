@@ -137,8 +137,6 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 HaywardBindingConstants.THING_TYPE_HEATER, null);
 
         // Find Pumps
-        systemIDs = bridgehandler.evaluateXPath("//Pump/System-Id/text()", xmlResponse);
-        names = bridgehandler.evaluateXPath("//Pump/Name/text()", xmlResponse);
         final List<String> pumpProperty1 = bridgehandler.evaluateXPath("//Pump/Min-Pump-Speed/text()", xmlResponse);
         final List<String> pumpProperty2 = bridgehandler.evaluateXPath("//Pump/Max-Pump-Speed/text()", xmlResponse);
         final List<String> pumpProperty3 = bridgehandler.evaluateXPath("//Pump/Min-Pump-RPM/text()", xmlResponse);
@@ -163,16 +161,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         // Find Sensors
         discoverDevices(bridgehandler, xmlResponse, "Sensor", HaywardTypeToRequest.SENSOR,
                 HaywardBindingConstants.THING_TYPE_SENSOR, null);
-        return;
     }
 
     private void discoverDevices(HaywardBridgeHandler bridgehandler, String xmlResponse, String xmlSearchTerm,
             HaywardTypeToRequest type, ThingTypeUID thingType,
             @Nullable BiConsumer<Map<String, Object>, Integer> additionalPropertyConsumer) {
-        List<String> systemIDs = new ArrayList<>();
-        List<String> names = new ArrayList<>();
 
-        systemIDs = bridgehandler.evaluateXPath("//" + xmlSearchTerm + "/System-Id/text()", xmlResponse);
+        List<String> systemIDs = bridgehandler.evaluateXPath("//" + xmlSearchTerm + "/System-Id/text()", xmlResponse);
+        List<String> names;
 
         // Set Virtual Heater Name
         if (thingType == HaywardBindingConstants.THING_TYPE_VIRTUALHEATER) {
@@ -183,13 +179,10 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         }
 
         for (int i = 0; i < systemIDs.size(); i++) {
-            List<String> bowName = new ArrayList<>();
-            List<String> bowID = new ArrayList<>();
-
             // get Body of Water for each item
-            bowID = bridgehandler.evaluateXPath(
+            List<String> bowID = bridgehandler.evaluateXPath(
                     "//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/System-Id/text()", xmlResponse);
-            bowName = bridgehandler.evaluateXPath(
+            List<String> bowName = bridgehandler.evaluateXPath(
                     "//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/Name/text()", xmlResponse);
 
             // skip system sensors with no BOW
