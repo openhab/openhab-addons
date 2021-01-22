@@ -6,7 +6,7 @@ You MUST have the Ookla cli application installed on your machine prior to using
 
 ## Supported Things
 
-Single thing, the Speedtest Thing.   
+Speedtest thing.   
 
 ## Binding Configuration
 
@@ -21,6 +21,8 @@ Linux based systems will assume a default install location of /usr/bin/speedtest
 |----------|------------------------------|
 | Refresh Rate  | This will change the refresh rate(or how often) the binding checks the speed  |
 | Speedtest Path  | This is the full URL to the speedtest executable ** |
+
+The refresh rate can also be set to "Do not test automtically" which will never test.   This can be used if you want to use the trigger_test to test via rules, or an item instead.
 
 ** You must also check that you have permission as the user that openhab is running under to access and run this.   
 
@@ -41,7 +43,6 @@ Linux based systems will assume a default install location of /usr/bin/speedtest
 | interface_internalIp  | String | The IP of the internal interface that was used for the test  |
 | interface_externalIp  | String | The IP of the external interface that was used for the test |
 | result_url  | String | The URL of your results of the test on Ookla |
+| trigger_test  | Switch | Allows a manual trigger to test speed now |
 
-## Full Example
 
-Setup intended to be done through the Main UI.   
