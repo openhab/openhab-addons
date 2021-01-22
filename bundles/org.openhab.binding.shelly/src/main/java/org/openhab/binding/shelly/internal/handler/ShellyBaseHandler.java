@@ -176,7 +176,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     /**
-     * This routine is called every time the Thing configuration has been changed (e.g. PaperUI)
+     * This routine is called every time the Thing configuration has been changed.
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
