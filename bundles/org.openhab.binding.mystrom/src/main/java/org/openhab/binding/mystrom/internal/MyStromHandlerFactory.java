@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.mystrom.internal;
 
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.THING_TYPE_BULB;
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.THING_TYPE_PLUG;
 
-import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,14 +36,16 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Paul Frank - Initial contribution
+ * @author Frederic Chastagnol - Add support for myStrom bulb
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.mystrom", service = ThingHandlerFactory.class)
 public class MyStromHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLUG);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_PLUG, THING_TYPE_BULB)
+            .collect(Collectors.toSet());
 
-    private HttpClientFactory httpClientFactory;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public MyStromHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
@@ -59,6 +63,10 @@ public class MyStromHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_PLUG.equals(thingTypeUID)) {
             return new MyStromHandler(thing, httpClientFactory.getCommonHttpClient());
+        }
+
+        if (THING_TYPE_BULB.equals(thingTypeUID)) {
+            return new MyStromBulbHandler(thing, httpClientFactory.getCommonHttpClient());
         }
 
         return null;
