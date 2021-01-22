@@ -287,9 +287,11 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                         "The dimmedCT config value must be greater than the favouriteWhite value.");
             }
         }
-        if (getBridge() == null) {
+        Bridge localBridge = getBridge();
+        if (localBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Globe must have a valid bridge selected before it can come online.");
+            return;
         } else {
             globeType = thing.getThingTypeUID().getId();// eg rgb_cct
             String globeLocation = this.getThing().getUID().getId();// eg 0x014
@@ -304,11 +306,8 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                         "The milight globe {}{} is using lowercase for the remote code when the hub needs UPPERCASE",
                         remotesIDCode, remotesGroupID);
             }
-            Bridge localBridge = getBridge();
-            if (localBridge != null) {
-                channelPrefix = BINDING_ID + ":" + globeType + ":" + localBridge.getUID().getId() + ":" + remotesIDCode
-                        + remotesGroupID + ":";
-            }
+            channelPrefix = BINDING_ID + ":" + globeType + ":" + localBridge.getUID().getId() + ":" + remotesIDCode
+                    + remotesGroupID + ":";
             connectMQTT();
         }
     }
