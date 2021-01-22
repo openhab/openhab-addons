@@ -78,6 +78,7 @@ public class SonosBindingConstants {
     public static final String ALARM = "alarm";
     public static final String ALARMPROPERTIES = "alarmproperties";
     public static final String ALARMRUNNING = "alarmrunning";
+    public static final String BASS = "bass";
     public static final String CLEARQUEUE = "clearqueue";
     public static final String CONTROL = "control";
     public static final String COORDINATOR = "coordinator";
@@ -95,6 +96,7 @@ public class SonosBindingConstants {
     public static final String ANALOGLINEIN = "analoglinein";
     public static final String DIGITALLINEIN = "digitallinein";
     public static final String LOCALCOORDINATOR = "localcoordinator";
+    public static final String LOUDNESS = "loudness";
     public static final String MUTE = "mute";
     public static final String NIGHTMODE = "nightmode";
     public static final String NOTIFICATIONSOUND = "notificationsound";
@@ -120,6 +122,7 @@ public class SonosBindingConstants {
     public static final String STANDALONE = "standalone";
     public static final String STATE = "state";
     public static final String STOP = "stop";
+    public static final String TREBLE = "treble";
     public static final String TUNEINSTATIONID = "tuneinstationid";
     public static final String VOLUME = "volume";
     public static final String ZONEGROUPID = "zonegroupid";

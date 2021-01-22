@@ -111,6 +111,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private static final int TUNEIN_DEFAULT_SERVICE_TYPE = 65031;
 
+    private static final int MIN_BASS = -10;
+    private static final int MAX_BASS = 10;
+    private static final int MIN_TREBLE = -10;
+    private static final int MAX_TREBLE = 10;
+
     private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
 
     private final ThingRegistry localThingRegistry;
@@ -258,6 +263,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     break;
                 case VOLUME:
                     setVolumeForGroup(command);
+                    break;
+                case BASS:
+                    setBass(command);
+                    break;
+                case TREBLE:
+                    setTreble(command);
+                    break;
+                case LOUDNESS:
+                    setLoudness(command);
                     break;
                 case ADD:
                     addMember(command);
@@ -485,6 +499,20 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "MuteMaster":
                     updateChannel(MUTE);
                     break;
+                case "Bass":
+                    updateChannel(BASS);
+                    break;
+                case "Treble":
+                    updateChannel(TREBLE);
+                    break;
+                case "LoudnessMaster":
+                    updateChannel(LOUDNESS);
+                    break;
+                case "OutputFixed":
+                    updateChannel(BASS);
+                    updateChannel(TREBLE);
+                    updateChannel(LOUDNESS);
+                    break;
                 case "NightMode":
                     updateChannel(NIGHTMODE);
                     break;
@@ -692,6 +720,24 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 value = getVolume();
                 if (value != null) {
                     newState = new PercentType(value);
+                }
+                break;
+            case BASS:
+                value = getBass();
+                if (value != null && !isOutputLevelFixed()) {
+                    newState = new DecimalType(value);
+                }
+                break;
+            case TREBLE:
+                value = getTreble();
+                if (value != null && !isOutputLevelFixed()) {
+                    newState = new DecimalType(value);
+                }
+                break;
+            case LOUDNESS:
+                value = getLoudness();
+                if (value != null && !isOutputLevelFixed()) {
+                    newState = isLoudnessEnabled() ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case MUTE:
@@ -1238,6 +1284,26 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return stateMap.get("VolumeMaster");
     }
 
+    public boolean isOutputLevelFixed() {
+        return "1".equals(stateMap.get("OutputFixed"));
+    }
+
+    public @Nullable String getBass() {
+        return stateMap.get("Bass");
+    }
+
+    public @Nullable String getTreble() {
+        return stateMap.get("Treble");
+    }
+
+    public @Nullable String getLoudness() {
+        return stateMap.get("LoudnessMaster");
+    }
+
+    public boolean isLoudnessEnabled() {
+        return "1".equals(getLoudness());
+    }
+
     public @Nullable String getTransportState() {
         return stateMap.get("TransportState");
     }
@@ -1553,8 +1619,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void setVolume(Command command) {
         if (command instanceof OnOffType || command instanceof IncreaseDecreaseType || command instanceof DecimalType
                 || command instanceof PercentType) {
-            Map<String, String> inputs = new HashMap<>();
-
             String newValue = null;
             String currentVolume = getVolume();
             if (command == IncreaseDecreaseType.INCREASE && currentVolume != null) {
@@ -1572,6 +1636,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             } else {
                 return;
             }
+
+            Map<String, String> inputs = new HashMap<>();
+            inputs.put("InstanceID", "0");
             inputs.put("Channel", "Master");
             inputs.put("DesiredVolume", newValue);
 
@@ -1596,6 +1663,79 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 getCoordinatorHandler().setVolume(command);
             } catch (IllegalStateException e) {
                 logger.debug("Cannot set group volume ({})", e.getMessage());
+            }
+        }
+    }
+
+    public void setBass(Command command) {
+        if (!isOutputLevelFixed()) {
+            String newValue = getNewNumericValue(command, getBass(), MIN_BASS, MAX_BASS);
+            if (newValue != null) {
+                Map<String, String> inputs = new HashMap<>();
+                inputs.put("InstanceID", "0");
+                inputs.put("DesiredBass", newValue);
+
+                Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetBass", inputs);
+
+                for (String variable : result.keySet()) {
+                    this.onValueReceived(variable, result.get(variable), "RenderingControl");
+                }
+            }
+        }
+    }
+
+    public void setTreble(Command command) {
+        if (!isOutputLevelFixed()) {
+            String newValue = getNewNumericValue(command, getTreble(), MIN_TREBLE, MAX_TREBLE);
+            if (newValue != null) {
+                Map<String, String> inputs = new HashMap<>();
+                inputs.put("InstanceID", "0");
+                inputs.put("DesiredTreble", newValue);
+
+                Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetTreble", inputs);
+
+                for (String variable : result.keySet()) {
+                    this.onValueReceived(variable, result.get(variable), "RenderingControl");
+                }
+            }
+        }
+    }
+
+    private @Nullable String getNewNumericValue(Command command, @Nullable String currentValue, int minValue,
+            int maxValue) {
+        String newValue = null;
+        if (command instanceof IncreaseDecreaseType || command instanceof DecimalType) {
+            if (command == IncreaseDecreaseType.INCREASE && currentValue != null) {
+                int i = Integer.valueOf(currentValue);
+                newValue = String.valueOf(Math.min(maxValue, i + 1));
+            } else if (command == IncreaseDecreaseType.DECREASE && currentValue != null) {
+                int i = Integer.valueOf(currentValue);
+                newValue = String.valueOf(Math.max(minValue, i - 1));
+            } else if (command instanceof DecimalType) {
+                newValue = String.valueOf(((DecimalType) command).intValue());
+            }
+        }
+        return newValue;
+    }
+
+    public void setLoudness(Command command) {
+        if (!isOutputLevelFixed() && (command instanceof OnOffType || command instanceof OpenClosedType
+                || command instanceof UpDownType)) {
+            Map<String, String> inputs = new HashMap<>();
+            inputs.put("InstanceID", "0");
+            inputs.put("Channel", "Master");
+
+            if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
+                inputs.put("DesiredLoudness", "True");
+            } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)
+                    || command.equals(OpenClosedType.CLOSED)) {
+                inputs.put("DesiredLoudness", "False");
+            }
+
+            Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetLoudness", inputs);
+
+            for (String variable : result.keySet()) {
+                this.onValueReceived(variable, result.get(variable), "RenderingControl");
             }
         }
     }
@@ -2071,6 +2211,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void setMute(Command command) {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
             Map<String, String> inputs = new HashMap<>();
+            inputs.put("InstanceID", "0");
             inputs.put("Channel", "Master");
 
             if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
