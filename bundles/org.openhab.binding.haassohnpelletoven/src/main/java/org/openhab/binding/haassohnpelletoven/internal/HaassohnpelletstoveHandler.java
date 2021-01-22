@@ -14,6 +14,7 @@ package org.openhab.binding.haassohnpelletoven.internal;
 
 import static org.openhab.binding.haassohnpelletoven.internal.HaassohnpelletstoveBindingConstants.*;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -101,6 +102,18 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
             } else {
                 logger.debug("Error. Command is the wrong type: {}", command.toString());
             }
+        } else if (channelUID.getId().equals(CHANNEL_ecoMode)) {
+
+            String postData = null;
+            if (command.equals(OnOffType.ON)) {
+                postData = "{\"eco_mode\":true}";
+            } else if (command.equals(OnOffType.OFF)) {
+                postData = "{\"eco_mode\":false}";
+            }
+            if (postData != null) {
+                logger.debug("Executing {} command", CHANNEL_ecoMode);
+                updateOvenData(postData);
+            }
         }
     }
 
@@ -146,9 +159,7 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
                 errors += " Parameter 'hostIP' must be configured.";
                 statusDescr = "IP Address must be configured!";
                 validConfig = false;
-            }
-
-            if (!new IpAddressValidator().isValid(config.hostIP)) {
+            } else if (!new IpAddressValidator().isValid(config.hostIP)) {
                 errors += " 'hostIP' is no valid IP address.";
                 logger.debug("{} is no valid IP address.", config.hostIP);
                 statusDescr = "No valid IP-Adress configured.";
@@ -159,15 +170,12 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
                 errors += " Parameter 'hostPin' must be configured.";
                 statusDescr = "PIN must be configured!";
                 validConfig = false;
-            }
-
-            if (!new PinValidator().isValid(config.hostPIN)) {
+            } else if (!new PinValidator().isValid(config.hostPIN)) {
                 errors += " 'hostPIN' is no valid PIN. PIN consists of 4-digit numbers.";
                 logger.debug("{} is no valid PIN. PIN consists of 4-digit numbers.", config.hostPIN);
                 statusDescr = "No valid PIN configure. A valid PIN consists of 4-digit numbers.";
                 validConfig = false;
             }
-
             errors = errors.trim();
         }
 
@@ -198,6 +206,12 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
         verifyLinkedChannel(CHANNEL_mode);
         verifyLinkedChannel(CHANNEL_prg);
         verifyLinkedChannel(CHANNEL_spTemp);
+        verifyLinkedChannel(CHANNEL_ecoMode);
+        verifyLinkedChannel(CHANNEL_ignitions);
+        verifyLinkedChannel(CHANNEL_maintenanceIn);
+        verifyLinkedChannel(CHANNEL_cleaningIn);
+        verifyLinkedChannel(CHANNEL_consumption);
+        verifyLinkedChannel(CHANNEL_onTime);
 
         if (!linkedChannels.isEmpty()) {
             logger.debug("Start automatic refreshing");
@@ -221,7 +235,6 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
     @Override
     public void dispose() {
 
-        this.dispose();
         logger.debug("Disposing Haas and Sohn Pellet stove handler.");
         stopScheduler();
     }
@@ -315,11 +328,43 @@ public class HaassohnpelletstoveHandler extends BaseThingHandler {
                         }
                         update(state, channelId);
                         break;
+                    case CHANNEL_ecoMode:
+                        boolean eco = data.getEco_mode();
+                        if (eco) {
+                            state = OnOffType.ON;
+                        } else {
+                            state = OnOffType.OFF;
+                        }
+                        update(state, channelId);
+                        break;
                     case CHANNEL_spTemp:
                         state = new StringType(data.getspTemp());
                         update(state, channelId);
                         break;
-
+                    case CHANNEL_cleaningIn:
+                        String cleaning = data.getCleaning_in();
+                        double time = Double.parseDouble(cleaning);
+                        time = time / 60;
+                        DecimalFormat df = new DecimalFormat("0.00");
+                        state = new StringType(df.format(time));
+                        update(state, channelId);
+                        break;
+                    case CHANNEL_consumption:
+                        state = new StringType(data.getConsumption());
+                        update(state, channelId);
+                        break;
+                    case CHANNEL_ignitions:
+                        state = new StringType(data.getIgnitions());
+                        update(state, channelId);
+                        break;
+                    case CHANNEL_maintenanceIn:
+                        state = new StringType(data.getMaintenance_in());
+                        update(state, channelId);
+                        break;
+                    case CHANNEL_onTime:
+                        state = new StringType(data.getOn_time());
+                        update(state, channelId);
+                        break;
                 }
 
             }

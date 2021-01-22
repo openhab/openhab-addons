@@ -61,6 +61,30 @@ public class HaassohnpelletstoveJsonData {
         return is_temp;
     }
 
+    public boolean getEco_mode() {
+        return eco_mode;
+    }
+
+    public String getIgnitions() {
+        return ignitions;
+    }
+
+    public String getOn_time() {
+        return on_time;
+    }
+
+    public String getConsumption() {
+        return consumption;
+    }
+
+    public String getMaintenance_in() {
+        return maintenance_in;
+    }
+
+    public String getCleaning_in() {
+        return cleaning_in;
+    }
+
     /***
      * JSON response
      *
@@ -115,4 +139,5 @@ public class HaassohnpelletstoveJsonData {
     public boolean getPrg() {
         return prg;
     }
+
 }
