@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="pump" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Pump</label>
+		<description>Pump</description>
+		<channels>
+			<channel id="pumpEnable" typeId="system.power"/>
+			<channel id="pumpSpeed" typeId="pumpSpeed"/>
+		</channels>
+
+		<properties>
+			<property name="Vendor">Hayward</property>
+			<property name="Min Pump Percent"></property>
+			<property name="Max Pump Percent"></property>
+			<property name="Min Pump RPM"></property>
+			<property name="Max Pump RPM"></property>
+		</properties>
+		<representation-property>systemID</representation-property>
+
+	</thing-type>
+
+	<channel-type id="pumpSpeed">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pump Speed in %</label>
+		<description>Pump Speed</description>
+		<state min="0" max="100" step="1.0" pattern="%1f %unit%" readOnly="false"/>
+	</channel-type>
+
+</thing:thing-descriptions>

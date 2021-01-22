@@ -236,6 +236,8 @@
 
     <module>org.openhab.binding.harmonyhub</module>
 
+    <module>org.openhab.binding.haywardomnilogic</module>
+
     <module>org.openhab.binding.hdanywhere</module>
 
     <module>org.openhab.binding.hdpowerview</module>
