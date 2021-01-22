@@ -194,6 +194,8 @@ public class BoschHttpClient extends HttpClient {
      * @return created HTTP request instance
      */
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
+        logger.trace(String.format("Create request for http client %s", this.toString()));
+
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
         if (content != null) {
             String body = GSON.toJson(content);
@@ -220,9 +222,11 @@ public class BoschHttpClient extends HttpClient {
      */
     public <TContent> TContent sendRequest(Request request, Class<TContent> responseContentClass)
             throws InterruptedException, TimeoutException, ExecutionException {
+        logger.trace("Send request: {}", request.toString());
+
         ContentResponse contentResponse = request.send();
 
-        logger.debug("BoschHttpClient: response complete: {} - return code: {}", contentResponse.getContentAsString(),
+        logger.debug("Received response: {} - status: {}", contentResponse.getContentAsString(),
                 contentResponse.getStatus());
 
         try {
