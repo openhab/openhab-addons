@@ -80,7 +80,7 @@
 			<channel id="waterlevel" typeId="waterlevel"></channel>
 			<channel id="currentDraw" typeId="currentDraw"></channel>
 			<channel id="signalStrength" typeId="signalStrength"></channel>
-			<channel id="flowMeterCount" typeId="flowMeterCount"></channel>
+			<channel id="flowSensorCount" typeId="flowSensorCount"></channel>
 		</channels>
 	</thing-type>
 
@@ -99,10 +99,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="flowMeterCount">
+	<channel-type id="flowSensorCount">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Flow Meter Count</label>
-		<description>A count of how many pulses the water flow meter has given.</description>
+		<label>Flow Sensor Count</label>
+		<description>A count of how many pulses the water flow sensor has given.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

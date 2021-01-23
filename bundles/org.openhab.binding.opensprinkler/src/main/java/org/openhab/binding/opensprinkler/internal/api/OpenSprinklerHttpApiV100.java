@@ -190,7 +190,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public int flowMeterCount() {
+    public int flowSensorCount() {
         JcResponse localReply = jcReply;
         if (localReply != null) {
             return localReply.flcrt;

@@ -109,9 +109,9 @@ public interface OpenSprinklerApi {
 
     /**
      *
-     * @return The pulses that the flow meter has given in the last time period, -1 if not supported.
+     * @return The pulses that the flow sensor has given in the last time period, -1 if not supported.
      */
-    public abstract int flowMeterCount();
+    public abstract int flowSensorCount();
 
     /**
      * Returns the water level in %.

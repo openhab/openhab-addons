@@ -62,7 +62,7 @@ Some channels will only show up if the needed sensor is setup correctly and the 
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
 |                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
 | signalStrength  | Number:Dimensionless   | RO | Shows the reported RSSI value in dB to indicate how strong the WiFi Signal is.     |
-| flowMeterCount  | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
+| flowSensorCount  | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
 
 ## Textual Example
 

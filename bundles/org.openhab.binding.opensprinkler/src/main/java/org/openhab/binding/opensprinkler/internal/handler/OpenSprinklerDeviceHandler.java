@@ -68,10 +68,10 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 updateState(channel, new QuantityType<ElectricCurrent>(localAPI.currentDraw(), MILLI(Units.AMPERE)));
                 break;
             case SENSOR_SIGNAL_STRENGTH:
-                updateState(channel, new QuantityType<Dimensionless>(localAPI.flowMeterCount(), Units.DECIBEL));
+                updateState(channel, new QuantityType<Dimensionless>(localAPI.flowSensorCount(), Units.DECIBEL));
                 break;
-            case SENSOR_FLOW_METER_COUNT:
-                updateState(channel, new QuantityType<Dimensionless>(localAPI.flowMeterCount(), Units.ONE));
+            case SENSOR_FLOW_COUNT:
+                updateState(channel, new QuantityType<Dimensionless>(localAPI.flowSensorCount(), Units.ONE));
                 break;
             default:
                 logger.debug("Can not update the unknown channel {}", channel);
@@ -92,8 +92,8 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
             if (localAPI.signalStrength() == 0 && channel != null) {
                 removeChannels.add(channel);
             }
-            channel = thing.getChannel(SENSOR_FLOW_METER_COUNT);
-            if (localAPI.flowMeterCount() == -1 && channel != null) {
+            channel = thing.getChannel(SENSOR_FLOW_COUNT);
+            if (localAPI.flowSensorCount() == -1 && channel != null) {
                 removeChannels.add(channel);
             }
             if (!removeChannels.isEmpty()) {
