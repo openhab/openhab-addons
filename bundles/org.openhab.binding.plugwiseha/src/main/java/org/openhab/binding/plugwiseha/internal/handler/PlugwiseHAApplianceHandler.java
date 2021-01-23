@@ -115,32 +115,6 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
         }
     }
 
-    /*
-     * @Override
-     * public void thingUpdated(Thing thing) {
-     * super.thingUpdated(thing);
-     * 
-     * if (this.appliance.isBatteryOperated()) {
-     * addBatteryChannels();
-     * }
-     * 
-     * ThingHandler thingHandler = thing.getHandler();
-     * 
-     * if (thingHandler != null) {
-     * for (Channel channel : thing.getChannels()) {
-     * if (this.isLinked(channel.getUID())) {
-     * Appliance appliance = this.appliance;
-     * if (appliance != null) {
-     * this.refreshChannel(appliance, channel.getUID());
-     * }
-     * }
-     * }
-     * }
-     * 
-     * setApplianceProperties();
-     * }
-     */
-
     @Override
     protected @Nullable Appliance getEntity(PlugwiseHAController controller, Boolean forceRefresh)
             throws PlugwiseHAException {
