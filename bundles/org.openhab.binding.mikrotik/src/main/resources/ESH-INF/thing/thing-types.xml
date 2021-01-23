@@ -144,9 +144,9 @@
 					will stay offline until client reconnects to specified SSID.
 				</description>
 			</parameter>
-			<parameter name="considerHome" type="integer" required="false">
+			<parameter name="considerContinuous" type="integer" required="false">
 				<label>Consider Home Interval</label>
-				<description>The interval in seconds to consider the client as connected permanently</description>
+				<description>The interval in seconds to treat the client as connected permanently</description>
 				<default>180</default>
 			</parameter>
 		</config-description>
