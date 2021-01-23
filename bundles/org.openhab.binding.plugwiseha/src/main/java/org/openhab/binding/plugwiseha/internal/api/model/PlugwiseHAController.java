@@ -125,7 +125,6 @@ public class PlugwiseHAController {
         Appliances appliances = this.domainObjects.getAppliances();
 
         if (!forceRefresh && appliances != null) {
-            this.logger.debug("Found {} Plugwise Home Automation appliance(s)", appliances.size());
             return appliances;
         } else {
             PlugwiseHAControllerRequest<DomainObjects> request;
@@ -137,6 +136,11 @@ public class PlugwiseHAController {
 
             DomainObjects domainObjects = executeRequest(request);
             this.gatewayUpdateDateTime = ZonedDateTime.parse(request.getServerDateTime(), PlugwiseHAController.FORMAT);
+            int size = 0;
+            if (!(domainObjects == null || domainObjects.getAppliances() == null)) {
+                size = domainObjects.getAppliances().size();
+            }
+            this.logger.debug("Found {} Plugwise Home Automation appliance(s)", size);
 
             return mergeDomainObjects(domainObjects).getAppliances();
         }
@@ -160,7 +164,6 @@ public class PlugwiseHAController {
         Locations locations = this.domainObjects.getLocations();
 
         if (!forceRefresh && locations != null) {
-            this.logger.debug("Found {} Plugwise Home Automation location(s)", locations.size());
             return locations;
         } else {
             PlugwiseHAControllerRequest<DomainObjects> request;
@@ -172,7 +175,11 @@ public class PlugwiseHAController {
 
             DomainObjects domainObjects = executeRequest(request);
             this.gatewayUpdateDateTime = ZonedDateTime.parse(request.getServerDateTime(), PlugwiseHAController.FORMAT);
-
+            int size = 0;
+            if (!(domainObjects == null || domainObjects.getLocations() == null)) {
+                size = domainObjects.getLocations().size();
+            }
+            this.logger.debug("Found {} Plugwise Home Automation location(s)", size);
             return mergeDomainObjects(domainObjects).getLocations();
         }
     }
