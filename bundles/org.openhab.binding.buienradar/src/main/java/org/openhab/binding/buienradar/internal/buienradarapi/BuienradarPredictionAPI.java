@@ -143,7 +143,7 @@ public class BuienradarPredictionAPI implements PredictionAPI {
         try {
             result = HttpUtil.executeUrl("GET", address, TIMEOUT_MS);
         } catch (IOException e) {
-            logger.warn("IO Exception when trying to retrieve Buienradar results", e);
+            logger.debug("IO Exception when trying to retrieve Buienradar results: {}", e.getMessage());
             return Optional.empty();
         }
 

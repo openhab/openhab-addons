@@ -17,7 +17,8 @@ Two kind of Things are supported:
 ## Discovery
 
 The gateway device needs to be added manually.
-After that, sub-devices are detected automatically.
+After that, sub-devices should be detected automatically.
+Otherwise go to "Things", click "+" to add a new thing, select the TR-064 binding and click the "Scan" button.
 
 ## Thing Configuration
 
@@ -169,6 +170,7 @@ In case the format of the number in the phonebook and the format of the number f
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
 A `matchCount` of `0` is considered as "match everything".
 Matching is done on normalized versions of the numbers that have all characters except digits, '+' and '*' removed.
+There is an optional configuration parameter called `phoneNumberIndex` that should be used when linking to a channel with item type `StringListType` (like `Call` in the example below), which determines which number to be picked, i.e. to or from.
 
 ## Rule Action
 
@@ -205,8 +207,8 @@ Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", us
     Thing subdeviceLan LAN "label LAN"   [ uuid="uuid:xxxxxxxx-xxxx-xxxx-yyyy-xxxxxxxxxxxx",
                                                 macOnline="XX:XX:XX:XX:XX:XX",  
                                                           "YY:YY:YY:YY:YY:YY"]  
-    Thing subdeviceLan WAN "label WAN"               [ uuid="uuid:xxxxxxxx-xxxx-xxxx-zzzz-xxxxxxxxxxxx"]
-    Thing subdeviceLan WANCon "label WANConnection"  [ uuid="uuid:xxxxxxxx-xxxx-xxxx-wwww-xxxxxxxxxxxx"]
+    Thing subdevice WAN "label WAN"               [ uuid="uuid:xxxxxxxx-xxxx-xxxx-zzzz-xxxxxxxxxxxx"]
+    Thing subdevice WANCon "label WANConnection"  [ uuid="uuid:xxxxxxxx-xxxx-xxxx-wwww-xxxxxxxxxxxx"]
     }
 ```
 
@@ -216,4 +218,10 @@ The channel are automatically generated and it is simpler to use the Main User I
 Switch PresXX "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_XX_3AXX_3AXX_3AXX_3AXX_3AXX"}
 Switch PresYY "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_YY_3AYY_3AYY_3AYY_3AYY_3AYY"}
 
+```
+
+Example `*.items` file using the `PHONEBOOK` profile for storing the name of a caller in an item. it matches 8 digits from the right of the "from" number (note the escaping of `:` to `_3A`):
+
+```
+Call IncomingCallResolved "Caller name: [%s]" { channel="avmfritz:fritzbox:fritzbox:incoming_call" [profile="transform:PHONEBOOK", phonebook="tr064_3Afritzbox_3AfritzboxTR064", phoneNumberIndex="1", matchCount="8"] }
 ```

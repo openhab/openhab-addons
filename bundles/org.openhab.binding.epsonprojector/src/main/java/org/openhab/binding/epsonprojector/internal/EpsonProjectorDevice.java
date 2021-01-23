@@ -210,6 +210,7 @@ public class EpsonProjectorDevice {
         if (timeoutJob != null) {
             timeoutJob.cancel(true);
             this.timeoutJob = null;
+            ready = true;
         }
     }
 

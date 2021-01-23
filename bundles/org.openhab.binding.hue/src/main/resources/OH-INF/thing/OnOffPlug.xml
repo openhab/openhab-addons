@@ -13,7 +13,7 @@
 		<description>An outlet that could be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="switch"/>
+			<channel id="switch" typeId="system.power"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>

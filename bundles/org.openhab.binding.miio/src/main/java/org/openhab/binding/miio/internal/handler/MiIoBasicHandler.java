@@ -595,6 +595,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 logger.debug("'{}' channel '{}' has unit '{}' with symbol '{}'.", getThing().getUID(),
                         basicChannel.getChannel(), basicChannel.getUnit(), unit);
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), unit));
+                return;
             } else {
                 logger.debug("Unit '{}' used by '{}' channel '{}' is not found.. using default unit.",
                         getThing().getUID(), basicChannel.getUnit(), basicChannel.getChannel());

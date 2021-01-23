@@ -310,7 +310,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         } else if (lightMessage.manufacturername.equals("MLI")) {
             model = EffectLightModel.TINT_MUELLER;
         } else {
-            logger.info("Could not determine effect light type for thing {}, please request adding support on GitHub.",
+            logger.debug(
+                    "Could not determine effect light type for thing {}, if you feel this is wrong request adding support on GitHub.",
                     thing.getUID());
         }
 

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -22,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class JsonWakeWords {
-    public @Nullable WakeWord @Nullable [] wakeWords;
+    public @Nullable List<WakeWord> wakeWords;
 
     public static class WakeWord {
         public @Nullable Boolean active;
