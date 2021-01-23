@@ -332,8 +332,8 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_VALVEPOSITION_CHANNEL:
                 if (entity.getValvePosition().isPresent()) {
-                    state = new QuantityType<Dimensionless>((int) (entity.getValvePosition().get() * 100),
-                            Units.PERCENT);
+                    Double valvePosition = entity.getValvePosition().get() * 100;
+                    state = new QuantityType<Dimensionless>(valvePosition.intValue(), Units.PERCENT);
                 }
                 break;
             case APPLIANCE_WATERPRESSURE_CHANNEL:
