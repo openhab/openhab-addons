@@ -41,8 +41,11 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
     @SuppressWarnings("unchecked")
     public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_NEW = ((StaticTableSchema.Builder<DynamoDBBigDecimalItem>) TABLE_SCHEMA_BUILDER_BASE_NEW
             .get()).newItemSupplier(DynamoDBBigDecimalItem::new)
-                    .addAttribute(NULLABLE_BIGDECIMAL, a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_NUMBER)
-                            .getter(DynamoDBBigDecimalItem::getState).setter(DynamoDBBigDecimalItem::setState))
+                    .addAttribute(NULLABLE_BIGDECIMAL,
+                            a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_NUMBER).getter(DynamoDBBigDecimalItem::getState)
+                                    .setter(DynamoDBBigDecimalItem::setState))
+                    .addAttribute(NULLABLE_LONG, a -> a.name(ATTRIBUTE_NAME_EXPIRY)
+                            .getter(AbstractDynamoDBItem::getExpiryDate).setter(AbstractDynamoDBItem::setExpiry))
                     .build();
 
     /**
@@ -55,11 +58,12 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
     private static final int MAX_DIGITS_SUPPORTED_BY_AMAZON = 38;
 
     public DynamoDBBigDecimalItem() {
-        this("", null, ZonedDateTime.now());
+        this("", null, ZonedDateTime.now(), null);
     }
 
-    public DynamoDBBigDecimalItem(String name, @Nullable BigDecimal state, ZonedDateTime time) {
-        super(name, state, time);
+    public DynamoDBBigDecimalItem(String name, @Nullable BigDecimal state, ZonedDateTime time,
+            @Nullable Integer expireDays) {
+        super(name, state, time, expireDays);
     }
 
     @Override
@@ -84,9 +88,6 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
     }
 
     static BigDecimal loseDigits(BigDecimal number) {
-        if (number == null) {
-            return null;
-        }
         return number.round(new MathContext(MAX_DIGITS_SUPPORTED_BY_AMAZON));
     }
 }

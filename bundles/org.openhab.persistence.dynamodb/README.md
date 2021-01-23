@@ -69,12 +69,14 @@ Only one table will be created for all data. The table will have the following f
 | `t`       | Number | Yes       | Timestamp in milliepoch                       |
 | `s`       | String | Yes       | State of the item, stored as DynamoDB string. |
 | `n`       | Number | Yes       | State of the item, stored as DynamoDB number. |
+| `exp`     | Number | Yes       | Expiry date for item, in epoch seconds        |
 
 Other notes
 
 - `i` and `t` forms the composite primary key (partition key, sort key) for the table
 - Only one of `s` or `n` attributes are specified, not both. Most items are converted to number type for most compact representation.
 - Compared to legacy format, data overhead is minimizing by using short attribute names, number timestamps and having only single table.
+- `exp` attribute is used with DynamoDB Time To Live (TTL) feature to automatically delete old data
 
 #### Legacy schema
 
@@ -123,12 +125,14 @@ aws_secret_access_key=testSecretKey
 
 In addition to the configuration properties above, the following are also available:
 
-| Property                   | Default    | Required | Description                                                                                        |
-| -------------------------- | ---------- | :------: | -------------------------------------------------------------------------------------------------- |
-| readCapacityUnits          | 1          |    No    | read capacity for the created tables                                                               |
-| writeCapacityUnits         | 1          |    No    | write capacity for the created tables                                                              |
+| Property           | Default | Required | Description                                                 |
+| ------------------ | ------- | :------: | ----------------------------------------------------------- |
+| expireDays         | (null)  |    No    | Expire time for data in days (relative to stored timestamp) |
+| readCapacityUnits  | 1       |    No    | read capacity for the created tables                        |
+| writeCapacityUnits | 1       |    No    | write capacity for the created tables                       |
 
 Refer to Amazon documentation on [provisioned throughput](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ProvisionedThroughput.html) for details on read/write capacity.
+DynamoDB Time to Live (TTL) setting is configured using `expireDays`.
 
 All item- and event-related configuration is done in the file `persistence/dynamodb.persist`.
 
@@ -139,6 +143,8 @@ All item- and event-related configuration is done in the file `persistence/dynam
 When the tables are created, the read/write capacity is configured according to configuration.
 However, the service does not modify the capacity of existing tables.
 As a workaround, you can modify the read/write capacity of existing tables using the [Amazon console](https://aws.amazon.com/console/).
+
+Similar caveat applies for DynamoDB Time to Live (TTL) setting `expireDays`.
 
 ## Developer Notes
 

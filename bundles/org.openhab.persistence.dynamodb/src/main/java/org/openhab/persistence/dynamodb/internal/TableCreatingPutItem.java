@@ -68,7 +68,18 @@ class TableCreatingPutItem {
                             .readCapacityUnits(this.service.dbConfig.getReadCapacityUnits())
                             .writeCapacityUnits(this.service.dbConfig.getWriteCapacityUnits()).build())
                     .build()).thenComposeAsync(_void -> waitForTableToBeActive(), this.service.executor)
-                    .thenComposeAsync(_void -> table.putItem(dto), this.service.executor)
+                    .thenComposeAsync(_void -> {
+                        boolean legacy = this.service.tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
+                        if (legacy) {
+                            return CompletableFuture.completedFuture(null);
+                        } else {
+                            // new table schema, we also configure TTL for the table
+                            return this.service.lowLevelClient
+                                    .updateTimeToLive(req -> req.overrideConfiguration(this.service::overrideConfig)
+                                            .tableName(table.tableName()).timeToLiveSpecification(spec -> spec
+                                                    .attributeName(DynamoDBItem.ATTRIBUTE_NAME_EXPIRY).enabled(true)));
+                        }
+                    }, this.service.executor).thenComposeAsync(_void -> table.putItem(dto), this.service.executor)
                     .whenCompleteAsync((result, exception) -> {
                         // PutItem failed even after creating the table. We give up and complete the aggregate
                         // future

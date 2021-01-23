@@ -292,12 +292,10 @@ public class BaseIntegrationTest extends JavaTest {
             if (legacy.booleanValue()) {
                 LOGGER.info("Legacy test");
                 config.put("tablePrefix", tablePrefix == null ? TABLE_PREFIX : tablePrefix);
-
-                // Disable buffering
-                config.put("bufferSize", "0");
             } else {
                 LOGGER.info("Non-legacy test");
                 config.put("table", table == null ? TABLE : table);
+                config.put("expireDays", "1");
             }
         }
 

@@ -49,10 +49,7 @@ public class DynamoDBConfig {
     public static final String DEFAULT_TABLE_NAME = "openhab";
     public static final long DEFAULT_READ_CAPACITY_UNITS = 1;
     public static final long DEFAULT_WRITE_CAPACITY_UNITS = 1;
-    public static final long DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS = 1000;
-    public static final int DEFAULT_BUFFER_SIZE = 1000;
     public static final RetryMode DEFAULT_RETRY_MODE = RetryMode.STANDARD;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBConfig.class);
 
     private long readCapacityUnits;
@@ -63,6 +60,7 @@ public class DynamoDBConfig {
     private ExpectedTableSchema tableRevision;
     private String table;
     private String tablePrefixLegacy;
+    private @Nullable Integer expireDays;
 
     /**
      *
@@ -143,7 +141,6 @@ public class DynamoDBConfig {
             final long readCapacityUnits;
             String readCapacityUnitsParam = (String) config.get("readCapacityUnits");
             if (readCapacityUnitsParam == null || readCapacityUnitsParam.isBlank()) {
-                LOGGER.debug("Read capacity units: {}", DEFAULT_READ_CAPACITY_UNITS);
                 readCapacityUnits = DEFAULT_READ_CAPACITY_UNITS;
             } else {
                 readCapacityUnits = Long.parseLong(readCapacityUnitsParam);
@@ -152,17 +149,28 @@ public class DynamoDBConfig {
             final long writeCapacityUnits;
             String writeCapacityUnitsParam = (String) config.get("writeCapacityUnits");
             if (writeCapacityUnitsParam == null || writeCapacityUnitsParam.isBlank()) {
-                LOGGER.debug("Write capacity units: {}", DEFAULT_WRITE_CAPACITY_UNITS);
                 writeCapacityUnits = DEFAULT_WRITE_CAPACITY_UNITS;
             } else {
                 writeCapacityUnits = Long.parseLong(writeCapacityUnitsParam);
+            }
+
+            final @Nullable Integer expireDays;
+            String expireDaysString = (String) config.get("expireDays");
+            if (expireDaysString == null || expireDaysString.isBlank()) {
+                expireDays = null;
+            } else {
+                expireDays = Integer.parseInt(expireDaysString);
+                if (expireDays <= 0) {
+                    LOGGER.error("expireDays should be positive integer or null");
+                    return null;
+                }
             }
 
             switch (tableRevision) {
                 case NEW:
                     LOGGER.debug("Using new DynamoDB table schema");
                     return DynamoDBConfig.newSchema(region, credentials, AwsRetryPolicy.forRetryMode(retryMode), table,
-                            readCapacityUnits, writeCapacityUnits);
+                            readCapacityUnits, writeCapacityUnits, expireDays);
                 case LEGACY:
                     LOGGER.warn(
                             "Using legacy DynamoDB table schema. It is recommended to transition to new schema by defining 'table' parameter and not configuring 'tablePrefix'");
@@ -172,7 +180,7 @@ public class DynamoDBConfig {
                     LOGGER.debug(
                             "Unclear whether we should use new legacy DynamoDB table schema. It is recommended to explicitly define new 'table' parameter. The correct table schema will be detected at runtime.");
                     return DynamoDBConfig.maybeLegacySchema(region, credentials, AwsRetryPolicy.forRetryMode(retryMode),
-                            table, tablePrefixLegacy, readCapacityUnits, writeCapacityUnits);
+                            table, tablePrefixLegacy, readCapacityUnits, writeCapacityUnits, expireDays);
                 default:
                     throw new IllegalStateException("Unhandled enum. Bug");
             }
@@ -183,26 +191,27 @@ public class DynamoDBConfig {
     }
 
     private static DynamoDBConfig newSchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
-            String table, long readCapacityUnits, long writeCapacityUnits) {
+            String table, long readCapacityUnits, long writeCapacityUnits, @Nullable Integer expireDays) {
         return new DynamoDBConfig(region, credentials, retryPolicy, table, "", ExpectedTableSchema.NEW,
-                readCapacityUnits, writeCapacityUnits);
+                readCapacityUnits, writeCapacityUnits, expireDays);
     }
 
     private static DynamoDBConfig legacySchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
             String tablePrefixLegacy, long readCapacityUnits, long writeCapacityUnits) {
         return new DynamoDBConfig(region, credentials, retryPolicy, "", tablePrefixLegacy, ExpectedTableSchema.LEGACY,
-                readCapacityUnits, writeCapacityUnits);
+                readCapacityUnits, writeCapacityUnits, null);
     }
 
     private static DynamoDBConfig maybeLegacySchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
-            String table, String tablePrefixLegacy, long readCapacityUnits, long writeCapacityUnits) {
+            String table, String tablePrefixLegacy, long readCapacityUnits, long writeCapacityUnits,
+            @Nullable Integer expireDays) {
         return new DynamoDBConfig(region, credentials, retryPolicy, table, tablePrefixLegacy,
-                ExpectedTableSchema.MAYBE_LEGACY, readCapacityUnits, writeCapacityUnits);
+                ExpectedTableSchema.MAYBE_LEGACY, readCapacityUnits, writeCapacityUnits, expireDays);
     }
 
     private DynamoDBConfig(Region region, AwsCredentials credentials, RetryPolicy retryPolicy, String table,
             String tablePrefixLegacy, ExpectedTableSchema tableRevision, long readCapacityUnits,
-            long writeCapacityUnits) {
+            long writeCapacityUnits, @Nullable Integer expireDays) {
         this.region = region;
         this.credentials = credentials;
         this.retryPolicy = retryPolicy;
@@ -211,6 +220,7 @@ public class DynamoDBConfig {
         this.tableRevision = tableRevision;
         this.readCapacityUnits = readCapacityUnits;
         this.writeCapacityUnits = writeCapacityUnits;
+        this.expireDays = expireDays;
     }
 
     public AwsCredentials getCredentials() {
@@ -243,5 +253,9 @@ public class DynamoDBConfig {
 
     public RetryPolicy getRetryPolicy() {
         return retryPolicy;
+    }
+
+    public @Nullable Integer getExpireDays() {
+        return expireDays;
     }
 }

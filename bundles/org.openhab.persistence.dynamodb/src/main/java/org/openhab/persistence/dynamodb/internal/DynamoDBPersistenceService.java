@@ -113,7 +113,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     @NonNullByDefault({})
     DynamoDbAsyncClient lowLevelClient;
     private final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
-    private boolean isProperlyConfigured;
+    boolean isProperlyConfigured;
     @NonNullByDefault({})
     DynamoDBConfig dbConfig;
     @NonNullByDefault({})
@@ -333,17 +333,17 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             Boolean resolved = resolveTableSchema().get();
             if (!resolved) {
                 logger.warn("Table schema not resolved, cannot query data.");
-                return Collections.<HistoricItem>emptyList();
+                return Collections.<HistoricItem> emptyList();
             }
         } catch (InterruptedException e) {
             logger.warn("Table schema resolution interrupted, cannot query data");
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             logger.warn("Table schema resolution errored, cannot query data: {} {}",
                     cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
                     cause == null ? e.getMessage() : cause.getMessage());
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
 
         Instant start = Instant.now();
@@ -352,18 +352,18 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         DynamoDbEnhancedAsyncClient localClient = client;
         if (!isProperlyConfigured) {
             logger.debug("Configuration for dynamodb not yet loaded or broken. Not storing item.");
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
         if (!ensureClient() || localClient == null) {
             logger.warn("DynamoDB not connected. Not storing item.");
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
 
         String itemName = filter.getItemName();
         Item item = getItemFromRegistry(itemName);
         if (item == null) {
             logger.warn("Could not get item {} from registry!", itemName);
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
         boolean legacy = tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
         Class<DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass(), legacy);
@@ -400,7 +400,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             return results;
         } catch (InterruptedException e) {
             logger.warn("Query interrupted. Filter was {}", filterDescription);
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof ResourceNotFoundException) {
@@ -413,7 +413,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                         cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
                         cause == null ? e.getMessage() : cause.getMessage(), filterDescription);
             }
-            return Collections.<HistoricItem>emptyList();
+            return Collections.<HistoricItem> emptyList();
         }
     }
 
@@ -477,14 +477,17 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
             DynamoDbEnhancedAsyncClient localClient = client;
             DynamoDbAsyncClient localLowlevelClient = lowLevelClient;
-            if (localClient == null || localLowlevelClient == null) {
+            DynamoDBConfig localConfig = dbConfig;
+            if (!isProperlyConfigured || localClient == null || localLowlevelClient == null) {
                 return;
             }
+
+            Integer expireDays = localConfig.getExpireDays();
 
             final DynamoDBItem<?> dto;
             switch (tableNameResolver.getTableSchema()) {
                 case NEW:
-                    dto = AbstractDynamoDBItem.fromStateNew(copiedItem, time);
+                    dto = AbstractDynamoDBItem.fromStateNew(copiedItem, time, expireDays);
                     break;
                 case LEGACY:
                     dto = AbstractDynamoDBItem.fromStateLegacy(copiedItem, time);

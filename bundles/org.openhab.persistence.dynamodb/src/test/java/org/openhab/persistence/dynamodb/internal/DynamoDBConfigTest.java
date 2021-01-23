@@ -154,7 +154,7 @@ public class DynamoDBConfigTest {
     @Test
     public void testRegionWithAccessKeysWithLegacyPrefix() throws Exception {
         DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "accessKey", "access1",
-                "secretKey", "secret1", "tablePrefix", "foobie-"));
+                "secretKey", "secret1", "tablePrefix", "foobie-", "expireDays", "105"));
         assertEquals(Region.EU_WEST_1, fromConfig.getRegion());
         assertEquals("access1", fromConfig.getCredentials().accessKeyId());
         assertEquals("secret1", fromConfig.getCredentials().secretAccessKey());
@@ -163,13 +163,14 @@ public class DynamoDBConfigTest {
         assertEquals(1, fromConfig.getWriteCapacityUnits());
         assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
         assertEquals(ExpectedTableSchema.LEGACY, fromConfig.getTableRevision());
+        assertNull(fromConfig.getExpireDays()); // not supported with legacy
     }
 
     @SuppressWarnings("null")
     @Test
     public void testRegionWithAccessKeysWithTable() throws Exception {
-        DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(
-                mapFrom("region", "eu-west-1", "accessKey", "access1", "secretKey", "secret1", "table", "mytable"));
+        DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "accessKey", "access1",
+                "secretKey", "secret1", "table", "mytable", "expireDays", "105"));
         assertEquals(Region.EU_WEST_1, fromConfig.getRegion());
         assertEquals("access1", fromConfig.getCredentials().accessKeyId());
         assertEquals("secret1", fromConfig.getCredentials().secretAccessKey());
@@ -178,28 +179,14 @@ public class DynamoDBConfigTest {
         assertEquals(1, fromConfig.getWriteCapacityUnits());
         assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
         assertEquals(ExpectedTableSchema.NEW, fromConfig.getTableRevision());
+        assertEquals(105, fromConfig.getExpireDays());
     }
 
     @SuppressWarnings("null")
     @Test
-    public void testRegionWithAccessKeysWithPrefixWithCreateTable() throws Exception {
-        DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(
-                mapFrom("region", "eu-west-1", "accessKey", "access1", "secretKey", "secret1", "createTable", "false"));
-        assertEquals(Region.EU_WEST_1, fromConfig.getRegion());
-        assertEquals("access1", fromConfig.getCredentials().accessKeyId());
-        assertEquals("secret1", fromConfig.getCredentials().secretAccessKey());
-        assertEquals("openhab-", fromConfig.getTablePrefixLegacy());
-        assertEquals(1, fromConfig.getReadCapacityUnits());
-        assertEquals(1, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
-        assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testRegionWithAccessKeysWithPrefixWithReadCapacityUnits() throws Exception {
+    public void testRegionWithAccessKeysWithoutPrefixWithReadCapacityUnits() throws Exception {
         DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "accessKey", "access1",
-                "secretKey", "secret1", "readCapacityUnits", "5"));
+                "secretKey", "secret1", "readCapacityUnits", "5", "expireDays", "105"));
         assertEquals(Region.EU_WEST_1, fromConfig.getRegion());
         assertEquals("access1", fromConfig.getCredentials().accessKeyId());
         assertEquals("secret1", fromConfig.getCredentials().secretAccessKey());
@@ -208,11 +195,12 @@ public class DynamoDBConfigTest {
         assertEquals(1, fromConfig.getWriteCapacityUnits());
         assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
+        assertEquals(105, fromConfig.getExpireDays());
     }
 
     @SuppressWarnings("null")
     @Test
-    public void testRegionWithAccessKeysWithPrefixWithWriteCapacityUnits() throws Exception {
+    public void testRegionWithAccessKeysWithoutPrefixWithWriteCapacityUnits() throws Exception {
         DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "accessKey", "access1",
                 "secretKey", "secret1", "writeCapacityUnits", "5"));
         assertEquals(Region.EU_WEST_1, fromConfig.getRegion());
@@ -223,13 +211,14 @@ public class DynamoDBConfigTest {
         assertEquals(5, fromConfig.getWriteCapacityUnits());
         assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
+        assertNull(fromConfig.getExpireDays()); // default is null
     }
 
     @SuppressWarnings("null")
     @Test
-    public void testRegionWithAccessKeysWithPrefixWithReadWriteCapacityUnits() throws Exception {
+    public void testRegionWithAccessKeysWithoutPrefixWithReadWriteCapacityUnits() throws Exception {
         DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "accessKey", "access1",
-                "secretKey", "secret1", "readCapacityUnits", "3", "writeCapacityUnits", "5"));
+                "secretKey", "secret1", "readCapacityUnits", "3", "writeCapacityUnits", "5", "expireDays", "105"));
         assertEquals(Region.EU_WEST_1, fromConfig.getRegion());
         assertEquals("access1", fromConfig.getCredentials().accessKeyId());
         assertEquals("secret1", fromConfig.getCredentials().secretAccessKey());

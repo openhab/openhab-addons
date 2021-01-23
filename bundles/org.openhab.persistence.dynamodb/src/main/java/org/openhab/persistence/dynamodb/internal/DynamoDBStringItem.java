@@ -39,16 +39,19 @@ public class DynamoDBStringItem extends AbstractDynamoDBItem<String> {
     @SuppressWarnings("unchecked")
     public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_NEW = ((StaticTableSchema.Builder<DynamoDBStringItem>) TABLE_SCHEMA_BUILDER_BASE_NEW
             .get()).newItemSupplier(DynamoDBStringItem::new)
-                    .addAttribute(NULLABLE_STRING, a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING)
-                            .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
+                    .addAttribute(NULLABLE_STRING,
+                            a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING)
+                                    .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
+                    .addAttribute(NULLABLE_LONG, a -> a.name(ATTRIBUTE_NAME_EXPIRY)
+                            .getter(AbstractDynamoDBItem::getExpiryDate).setter(AbstractDynamoDBItem::setExpiry))
                     .build();
 
     public DynamoDBStringItem() {
-        this("", null, ZonedDateTime.now());
+        this("", null, ZonedDateTime.now(), null);
     }
 
-    public DynamoDBStringItem(String name, @Nullable String state, ZonedDateTime time) {
-        super(name, state, time);
+    public DynamoDBStringItem(String name, @Nullable String state, ZonedDateTime time, @Nullable Integer expireDays) {
+        super(name, state, time, expireDays);
     }
 
     @Override

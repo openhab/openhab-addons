@@ -55,7 +55,34 @@ public class DynamoDBQueryUtils {
                 .scanIndexForward(filter.getOrdering() == Ordering.ASCENDING);
         addFilterbyItemAndTimeFilter(queryBuilder, expectedTableSchema, filter.getItemName(), filter);
         addStateFilter(queryBuilder, expectedTableSchema, item, dtoClass, filter);
+        addProjection(dtoClass, expectedTableSchema, queryBuilder);
         return queryBuilder.build();
+    }
+
+    /**
+     * Add projection for key parameters only, not expire date
+     */
+    private static void addProjection(Class<DynamoDBItem<?>> dtoClass, ExpectedTableSchema expectedTableSchema,
+            QueryEnhancedRequest.Builder queryBuilder) {
+        boolean legacy = expectedTableSchema == ExpectedTableSchema.LEGACY;
+        if (legacy) {
+            queryBuilder.attributesToProject(DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME_LEGACY,
+                    DynamoDBItem.ATTRIBUTE_NAME_TIMEUTC_LEGACY, DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY);
+        } else {
+            acceptAsEmptyDTO(dtoClass, new DynamoDBItemVisitor() {
+                @Override
+                public void visit(DynamoDBStringItem dynamoStringItem) {
+                    queryBuilder.attributesToProject(DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME,
+                            DynamoDBItem.ATTRIBUTE_NAME_TIMEUTC, DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING);
+                }
+
+                @Override
+                public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
+                    queryBuilder.attributesToProject(DynamoDBItem.ATTRIBUTE_NAME_ITEMNAME,
+                            DynamoDBItem.ATTRIBUTE_NAME_TIMEUTC, DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_NUMBER);
+                }
+            });
+        }
     }
 
     private static void addStateFilter(QueryEnhancedRequest.Builder queryBuilder,
@@ -168,11 +195,11 @@ public class DynamoDBQueryUtils {
     }
 
     private static void acceptAsDTO(Item item, boolean legacy, DynamoDBItemVisitor visitor) {
-        ZonedDateTime dummy = ZonedDateTime.now();
+        ZonedDateTime dummyTimestamp = ZonedDateTime.now();
         if (legacy) {
-            AbstractDynamoDBItem.fromStateLegacy(item, dummy).accept(visitor);
+            AbstractDynamoDBItem.fromStateLegacy(item, dummyTimestamp).accept(visitor);
         } else {
-            AbstractDynamoDBItem.fromStateNew(item, dummy).accept(visitor);
+            AbstractDynamoDBItem.fromStateNew(item, dummyTimestamp, null).accept(visitor);
         }
     }
 

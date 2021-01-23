@@ -13,6 +13,7 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -81,6 +82,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
     public static final ZonedDateTimeStringConverter ZONED_DATE_TIME_CONVERTER_STRING = new ZonedDateTimeStringConverter();
     public static final ZonedDateTimeMilliEpochConverter ZONED_DATE_TIME_CONVERTER_MILLIEPOCH = new ZonedDateTimeMilliEpochConverter();
     public static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT).withZone(UTC);
+    protected static Class<@Nullable Long> NULLABLE_LONG = (Class<@Nullable Long>) Long.class;
 
     public static AttributeConverter<ZonedDateTime> getTimestampConverter(boolean legacy) {
         return legacy ? ZONED_DATE_TIME_CONVERTER_STRING : ZONED_DATE_TIME_CONVERTER_MILLIEPOCH;
@@ -172,7 +174,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
         }
 
         @Override
@@ -211,7 +213,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
         }
 
         @Override
@@ -241,11 +243,18 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
     protected String name;
     protected @Nullable T state;
     protected ZonedDateTime time;
+    private @Nullable Integer expireDays;
+    private @Nullable Long expiry;
 
-    public AbstractDynamoDBItem(String name, @Nullable T state, ZonedDateTime time) {
+    public AbstractDynamoDBItem(String name, @Nullable T state, ZonedDateTime time, @Nullable Integer expireDays) {
         this.name = name;
         this.state = state;
         this.time = time;
+        if (expireDays != null && expireDays <= 0) {
+            throw new IllegalArgumentException();
+        }
+        this.expireDays = expireDays;
+        this.expiry = expireDays == null ? null : time.toInstant().plus(Duration.ofDays(expireDays)).getEpochSecond();
     }
 
     /**
@@ -274,47 +283,48 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         String name = item.getName();
         State state = item.getState();
         if (item instanceof PlayerItem) {
-            return new DynamoDBStringItem(name, state.toFullString(), time);
+            return new DynamoDBStringItem(name, state.toFullString(), time, null);
         } else {
             // Apart from PlayerItem, the values are serialized to dynamodb number/strings in the same way in legacy
             // delegate to fromStateNew
-            return fromStateNew(item, time);
+            return fromStateNew(item, time, null);
         }
     }
 
-    public static DynamoDBItem<?> fromStateNew(Item item, ZonedDateTime time) {
+    public static DynamoDBItem<?> fromStateNew(Item item, ZonedDateTime time, @Nullable Integer expireDays) {
         String name = item.getName();
         State state = item.getState();
         if (item instanceof CallItem) {
-            return new DynamoDBStringItem(name, convert(state, StringListType.class).toFullString(), time);
+            return new DynamoDBStringItem(name, convert(state, StringListType.class).toFullString(), time, expireDays);
         } else if (item instanceof ContactItem) {
-            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time);
+            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time, expireDays);
         } else if (item instanceof DateTimeItem) {
             return new DynamoDBStringItem(name,
-                    ZONED_DATE_TIME_CONVERTER_STRING.toString(((DateTimeType) state).getZonedDateTime()), time);
+                    ZONED_DATE_TIME_CONVERTER_STRING.toString(((DateTimeType) state).getZonedDateTime()), time,
+                    expireDays);
         } else if (item instanceof ImageItem) {
             throw new IllegalArgumentException("Unsupported item " + item.getClass().getSimpleName());
         } else if (item instanceof LocationItem) {
-            return new DynamoDBStringItem(name, state.toFullString(), time);
+            return new DynamoDBStringItem(name, state.toFullString(), time, expireDays);
         } else if (item instanceof NumberItem) {
             // XXX: quantitytype
-            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time);
+            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time, expireDays);
         } else if (item instanceof PlayerItem) {
             if (state instanceof PlayPauseType) {
                 switch ((PlayPauseType) state) {
                     case PLAY:
-                        return new DynamoDBBigDecimalItem(name, PLAY_BIGDECIMAL, time);
+                        return new DynamoDBBigDecimalItem(name, PLAY_BIGDECIMAL, time, expireDays);
                     case PAUSE:
-                        return new DynamoDBBigDecimalItem(name, PAUSE_BIGDECIMAL, time);
+                        return new DynamoDBBigDecimalItem(name, PAUSE_BIGDECIMAL, time, expireDays);
                     default:
                         throw new IllegalArgumentException("Unexpected enum with PlayPauseType: " + state.toString());
                 }
             } else if (state instanceof RewindFastforwardType) {
                 switch ((RewindFastforwardType) state) {
                     case FASTFORWARD:
-                        return new DynamoDBBigDecimalItem(name, FAST_FORWARD_BIGDECIMAL, time);
+                        return new DynamoDBBigDecimalItem(name, FAST_FORWARD_BIGDECIMAL, time, expireDays);
                     case REWIND:
-                        return new DynamoDBBigDecimalItem(name, REWIND_BIGDECIMAL, time);
+                        return new DynamoDBBigDecimalItem(name, REWIND_BIGDECIMAL, time, expireDays);
                     default:
                         throw new IllegalArgumentException(
                                 "Unexpected enum with RewindFastforwardType: " + state.toString());
@@ -325,25 +335,26 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
             }
         } else if (item instanceof RollershutterItem) {
             // Normalize UP/DOWN to %
-            return new DynamoDBBigDecimalItem(name, convert(state, PercentType.class).toBigDecimal(), time);
+            return new DynamoDBBigDecimalItem(name, convert(state, PercentType.class).toBigDecimal(), time, expireDays);
         } else if (item instanceof StringItem) {
             if (state instanceof StringType) {
-                return new DynamoDBStringItem(name, ((StringType) state).toString(), time);
+                return new DynamoDBStringItem(name, ((StringType) state).toString(), time, expireDays);
             } else if (state instanceof DateTimeType) {
                 return new DynamoDBStringItem(name,
-                        ZONED_DATE_TIME_CONVERTER_STRING.toString(((DateTimeType) state).getZonedDateTime()), time);
+                        ZONED_DATE_TIME_CONVERTER_STRING.toString(((DateTimeType) state).getZonedDateTime()), time,
+                        expireDays);
             } else {
                 throw new IllegalStateException(
                         String.format("Unexpected state type %s with StringItem", state.getClass().getSimpleName()));
             }
         } else if (item instanceof ColorItem) { // Note: needs to be before parent class DimmerItem
-            return new DynamoDBStringItem(name, convert(state, HSBType.class).toFullString(), time);
+            return new DynamoDBStringItem(name, convert(state, HSBType.class).toFullString(), time, expireDays);
         } else if (item instanceof DimmerItem) {// Note: needs to be before parent class SwitchItem
             // Normalize ON/OFF to %
-            return new DynamoDBBigDecimalItem(name, convert(state, PercentType.class).toBigDecimal(), time);
+            return new DynamoDBBigDecimalItem(name, convert(state, PercentType.class).toBigDecimal(), time, expireDays);
         } else if (item instanceof SwitchItem) {
             // Normalize ON/OFF to 1/0
-            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time);
+            return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time, expireDays);
         } else {
             throw new IllegalArgumentException("Unsupported item " + item.getClass().getSimpleName());
         }
@@ -491,7 +502,27 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
     }
 
     @Override
+    @Nullable
+    public Long getExpiryDate() {
+        return expiry;
+    }
+
+    @Override
     public void setTime(ZonedDateTime time) {
         this.time = time;
+    }
+
+    @Override
+    public @Nullable Integer getExpireDays() {
+        return expireDays;
+    }
+
+    @Override
+    public void setExpireDays(@Nullable Integer expireDays) {
+        this.expireDays = expireDays;
+    }
+
+    public void setExpiry(@Nullable Long expiry) {
+        this.expiry = expiry;
     }
 }

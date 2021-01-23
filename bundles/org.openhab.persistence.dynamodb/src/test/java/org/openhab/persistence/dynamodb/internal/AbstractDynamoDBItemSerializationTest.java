@@ -75,7 +75,7 @@ public class AbstractDynamoDBItemSerializationTest {
             Object expectedState) throws IOException {
         item.setState(stateOverride);
         DynamoDBItem<?> dbItem = legacy ? AbstractDynamoDBItem.fromStateLegacy(item, date)
-                : AbstractDynamoDBItem.fromStateNew(item, date);
+                : AbstractDynamoDBItem.fromStateNew(item, date, null);
 
         assertEquals("foo", dbItem.getName());
         assertEquals(date, dbItem.getTime());
