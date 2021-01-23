@@ -79,6 +79,8 @@
 			<channel id="rainsensor" typeId="rainsensor"></channel>
 			<channel id="waterlevel" typeId="waterlevel"></channel>
 			<channel id="currentDraw" typeId="currentDraw"></channel>
+			<channel id="signalStrength" typeId="signalStrength"></channel>
+			<channel id="flowMeterCount" typeId="flowMeterCount"></channel>
 		</channels>
 	</thing-type>
 
@@ -90,11 +92,17 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-
 	<channel-type id="waterlevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Water Level</label>
 		<description>The current water level in percent</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="flowMeterCount">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Flow Meter Count</label>
+		<description>A count of how many pulses the water flow meter has given.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -118,6 +126,14 @@
 		<description>Indicates if the station is queued to be turned on. Can be removed from the queue by turning off. ON is
 			read-only.</description>
 		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="signalStrength">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Signal Strength</label>
+		<description>Wi-Fi received signal strength indicator.</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="remainingWaterTime">

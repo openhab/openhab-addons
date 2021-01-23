@@ -16,6 +16,9 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
+import java.util.ArrayList;
+
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCurrent;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,6 +67,12 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
             case SENSOR_CURRENT_DRAW:
                 updateState(channel, new QuantityType<ElectricCurrent>(localAPI.currentDraw(), MILLI(Units.AMPERE)));
                 break;
+            case SENSOR_SIGNAL_STRENGTH:
+                updateState(channel, new QuantityType<Dimensionless>(localAPI.flowMeterCount(), Units.DECIBEL));
+                break;
+            case SENSOR_FLOW_METER_COUNT:
+                updateState(channel, new QuantityType<Dimensionless>(localAPI.flowMeterCount(), Units.ONE));
+                break;
             default:
                 logger.debug("Can not update the unknown channel {}", channel);
         }
@@ -72,12 +81,26 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     @Override
     public void initialize() {
         OpenSprinklerApi localAPI = getApi();
-        Channel currentDrawChannel = thing.getChannel(SENSOR_CURRENT_DRAW);
-        if (localAPI != null && localAPI.currentDraw() == -1 && currentDrawChannel != null) {
-            logger.debug("No current sensor detected, removing channel.");
-            ThingBuilder thingBuilder = editThing();
-            thingBuilder.withoutChannel(currentDrawChannel.getUID());
-            updateThing(thingBuilder.build());
+        if (localAPI != null) {
+            ArrayList<Channel> removeChannels = new ArrayList<>();
+            Channel channel = thing.getChannel(SENSOR_CURRENT_DRAW);
+            if (localAPI.currentDraw() == -1 && channel != null) {
+                logger.debug("No current sensor detected, removing channel.");
+                removeChannels.add(channel);
+            }
+            channel = thing.getChannel(SENSOR_SIGNAL_STRENGTH);
+            if (localAPI.signalStrength() == 0 && channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = thing.getChannel(SENSOR_FLOW_METER_COUNT);
+            if (localAPI.flowMeterCount() == -1 && channel != null) {
+                removeChannels.add(channel);
+            }
+            if (!removeChannels.isEmpty()) {
+                ThingBuilder thingBuilder = editThing();
+                thingBuilder.withoutChannels(removeChannels);
+                updateThing(thingBuilder.build());
+            }
         }
         updateStatus(ThingStatus.ONLINE);
     }

@@ -184,11 +184,25 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     public int currentDraw() {
         JcResponse localReply = jcReply;
         if (localReply != null) {
-            if (localReply.curr == -1) {
-                return -1;// Sensor not supported
-            } else {
-                return localReply.curr;
-            }
+            return localReply.curr;
+        }
+        return 0;
+    }
+
+    @Override
+    public int flowMeterCount() {
+        JcResponse localReply = jcReply;
+        if (localReply != null) {
+            return localReply.flcrt;
+        }
+        return 0;
+    }
+
+    @Override
+    public int signalStrength() {
+        JcResponse localReply = jcReply;
+        if (localReply != null) {
+            return localReply.RSSI;
         }
         return 0;
     }
@@ -269,6 +283,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public @Nullable List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
+        public int RSSI = 0; // json reply uses all uppercase
+        public int flcrt = -1;
         public int curr = -1;
     }
 

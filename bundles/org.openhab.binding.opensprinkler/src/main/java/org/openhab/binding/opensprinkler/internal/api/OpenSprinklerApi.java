@@ -102,6 +102,18 @@ public interface OpenSprinklerApi {
     public abstract int currentDraw();
 
     /**
+     *
+     * @return The Wifi signal strength in -dB or 0 if not supported by firmware
+     */
+    public abstract int signalStrength();
+
+    /**
+     *
+     * @return The pulses that the flow meter has given in the last time period, -1 if not supported.
+     */
+    public abstract int flowMeterCount();
+
+    /**
      * Returns the water level in %.
      *
      * @return waterLevel in %
@@ -125,5 +137,11 @@ public interface OpenSprinklerApi {
      */
     public abstract int getFirmwareVersion() throws CommunicationApiException, UnauthorizedApiException;
 
-    public void refresh() throws CommunicationApiException, UnauthorizedApiException;
+    /**
+     * Sends GET requests and stores the responses for use by the API.
+     *
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
+     */
+    public abstract void refresh() throws CommunicationApiException, UnauthorizedApiException;
 }
