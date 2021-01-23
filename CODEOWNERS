@@ -134,6 +134,7 @@
 /bundles/org.openhab.binding.miele/ @kgoderis
 /bundles/org.openhab.binding.mihome/ @pboos
 /bundles/org.openhab.binding.miio/ @marcelrv
+/bundles/org.openhab.binding.mikrotik/ @duhast
 /bundles/org.openhab.binding.milight/ @davidgraeff
 /bundles/org.openhab.binding.millheat/ @seime
 /bundles/org.openhab.binding.minecraft/ @ibaton
