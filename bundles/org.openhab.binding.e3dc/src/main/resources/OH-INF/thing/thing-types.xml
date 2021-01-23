@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="e3dc">
+		<label>E3DC Binding Thing</label>
+		<description>E3DC Battery</description>
+
+		<channels>
+			<channel id="CurrentPowerPV" typeId="CurrentPowerPV"/>
+            <channel id="CurrentPowerBat" typeId="CurrentPowerBat"/>
+            <channel id="CurrentPowerHome" typeId="CurrentPowerHome"/>
+            <channel id="CurrentPowerGrid" typeId="CurrentPowerGrid"/>
+            <channel id="CurrentPowerAdd" typeId="CurrentPowerAdd"/>
+		</channels>
+
+		<config-description>
+            <parameter name="ip" type="text" required="true">
+                <label>IP Address</label>
+                <context>network-address</context>
+                <description>IP address or host name of E3DC</description>
+            </parameter>
+            <parameter name="port" type="integer" required="false">
+                <label>Port</label>
+                <description>Data of E3DC (default: 5033)</description>
+                <default>5033</default>
+            </parameter>
+            <parameter name="updateinterval" type="integer" required="false">
+                <label>Update Interval</label>
+                <description>Data update interval in seconds (default: 60s)</description>
+                <default>60</default>
+            </parameter>
+            <parameter name="webusername" type="text" required="true">
+                <label>Username Webinterface</label>
+                <description>Username E3DC Webinterface</description>
+            </parameter>
+            <parameter name="webpassword" type="text" required="true">
+                <label>Password Webinterface</label>
+                <description>Password E3DC Webinterface</description>
+            </parameter>
+            <parameter name="rscppassword" type="text" required="true">
+                <label>RSCP Password</label>
+                <description>RSCP AES Password</description>
+            </parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="CurrentPowerPV">
+		<item-type>Number:Power</item-type>
+		<label>Current Power PV</label>
+		<description>Current power from photovoltaics</description>
+        <category>Power</category>
+        <state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+    <channel-type id="CurrentPowerBat">
+        <item-type>Number:Power</item-type>
+        <label>Current Power Battery</label>
+        <description>Current power exchange with battery</description>
+        <category>Power</category>
+        <state pattern="%.2f %unit%" readOnly="true"/>
+    </channel-type>
+    <channel-type id="CurrentPowerHome">
+        <item-type>Number:Power</item-type>
+        <label>Current Power Home</label>
+        <description>Current power consumption</description>
+        <category>Power</category>
+        <state pattern="%.2f %unit%" readOnly="true"/>
+    </channel-type>
+    <channel-type id="CurrentPowerGrid">
+        <item-type>Number:Power</item-type>
+        <label>Current Power Grid</label>
+        <description>Current power exchange with the grid</description>
+        <category>Power</category>
+        <state pattern="%.2f %unit%" readOnly="true"/>
+    </channel-type>
+    <channel-type id="CurrentPowerAdd">
+        <item-type>Number:Power</item-type>
+        <label>Current Power additional connection</label>
+        <description>Current power exchange with an additionally connected external device</description>
+        <category>Power</category>
+        <state pattern="%.2f %unit%" readOnly="true"/>
+    </channel-type>
+
+</thing:thing-descriptions>
