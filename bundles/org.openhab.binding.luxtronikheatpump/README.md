@@ -268,10 +268,55 @@ The following channels are also writable:
 | Einst_Kuhl_Zeit_Aus_akt | Number |   | AT undercut | 
 
 
-## Full Example
+## Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+Below you can find some example textual configuration for a heatpump with some basic functionallity. This can be extended/adjusted according to your needs and depending on the availability of channels (see list above).
 
+_heatpump.things:_
+```
+Thing luxtronikheatpump:heatpump:heatpump "Heatpump" [
+    ipAddress="192.168.178.12",
+    port="8889",
+    refresh="300"
+]
+```
+
+_heatpump.items:_
+```
+Group    gHeatpump   "Heatpump"   <temperature>
+
+Number:Temperature HeatPump_Temp_Outside   "Temperature outside [%.1f °C]"   <temperature> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Temperatur_TA" }
+Number:Temperature HeatPump_Temp_Outside_Avg     "Avg. temperature outside [%.1f °C]"  <temperature> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Mitteltemperatur" }
+
+Number:Time HeatPump_Hours_Heatpump  "Operating hours [%d h]"  <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Zaehler_BetrZeitWP" }
+Number:Time HeatPump_Hours_Heating   "Operating hours heating [%d h]"  <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Zaehler_BetrZeitHz" }
+Number:Time HeatPump_Hours_Warmwater "Operating hours hot water [%d h]" <clock> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Zaehler_BetrZeitBW" }
+
+String HeatPump_State_Ext   "State [%s]"   (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:HauptMenuStatus" }
+
+Number HeatPump_heating_operation_mode   "Heating operation mode [%s]"  (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Ba_Hz_akt" }
+Number HeatPump_heating_temperature   "Heating temperature [%.1f]"  (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Einst_WK_akt" }
+Number HeatPump_warmwater_operation_mode   "Hot water operation mode [%s]"  (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Ba_Bw_akt" }
+Number HeatPump_warmwater_temperature   "Hot water temperature [%.1f]"  (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:Einst_BWS_akt" }
+```
+
+_heatpump.sitemap:_
+```
+sitemap heatpump label="Heatpump" {
+    Frame label="Heatpump" {
+        Text item=HeatPump_State_Ext
+        Text item=HeatPump_Temperature_1
+        Text item=HeatPump_Outside_Avg
+        Text item=HeatPump_Hours_Heatpump
+        Text item=HeatPump_Hours_Heating
+        Text item=HeatPump_Hours_Warmwater
+        Switch item=HeatPump_heating_operation_mode  mappings=[0="Auto", 1="Auxiliary heater", 2="Party", 3="Holiday", 4="Off"]
+        Setpoint item=HeatPump_heating_temperature minValue=-10 maxValue=10 step=0.5
+        Switch item=HeatPump_warmwater_operation_mode  mappings=[0="Auto", 1="Auxiliary heater", 2="Party", 3="Holiday", 4="Off"]
+        Setpoint item=HeatPump_warmwater_temperature minValue=10 maxValue=65 step=1
+    }
+}
+```
 
 ## Development Notes
 
