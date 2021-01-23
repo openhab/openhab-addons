@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * MDNS discovery participant for discovering Envoy gateways.
- * This service also keeps track of any discovered envoys host name to provide this information for existing Envoy
+ * This service also keeps track of any discovered Envoys host name to provide this information for existing Envoy
  * bridges
  * so the bridge cat get the host name/ip address if that is unknown.
  *
@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = { EnvoyHostAddressCache.class, MDNSDiscoveryParticipant.class })
 @NonNullByDefault
 public class EnvoyDiscoveryParticipant implements MDNSDiscoveryParticipant, EnvoyHostAddressCache {
+    private static final String ENVOY_MDNS_ID = "envoy";
+
     private final Logger logger = LoggerFactory.getLogger(EnvoyDiscoveryParticipant.class);
 
     private final Map<String, @Nullable String> lastKnownHostAddresses = new ConcurrentHashMap<>();
@@ -68,7 +70,7 @@ public class EnvoyDiscoveryParticipant implements MDNSDiscoveryParticipant, Envo
 
         logger.debug("id found: {} with type: {}", id, info.getType());
 
-        if (!id.contains("envoy")) {
+        if (!id.contains(ENVOY_MDNS_ID)) {
             return null;
         }
 
@@ -86,7 +88,7 @@ public class EnvoyDiscoveryParticipant implements MDNSDiscoveryParticipant, Envo
         final String serialNumber = info.getPropertyString(DISCOVERY_SERIAL);
 
         if (serialNumber == null) {
-            logger.debug("No serial number found in data for discovered envoy {}: {}", id, info);
+            logger.debug("No serial number found in data for discovered Envoy {}: {}", id, info);
             return null;
         }
         final String version = info.getPropertyString(DISCOVERY_VERSION);
@@ -114,12 +116,12 @@ public class EnvoyDiscoveryParticipant implements MDNSDiscoveryParticipant, Envo
     public @Nullable ThingUID getThingUID(final ServiceInfo info) {
         final String name = info.getName();
 
-        if (!name.contains("envoy")) {
-            logger.trace("Found other type of device that is not recognized as an envoy: {}", name);
+        if (!name.contains(ENVOY_MDNS_ID)) {
+            logger.trace("Found other type of device that is not recognized as an Envoy: {}", name);
             return null;
         }
         if (info.getInet4Addresses().length == 0 || info.getInet4Addresses()[0] == null) {
-            logger.debug("Found and envoy, but no ip address is given: {}", info);
+            logger.debug("Found an Envoy, but no ip address is given: {}", info);
             return null;
         }
         logger.debug("ServiceInfo addr: {}", info.getInet4Addresses()[0]);

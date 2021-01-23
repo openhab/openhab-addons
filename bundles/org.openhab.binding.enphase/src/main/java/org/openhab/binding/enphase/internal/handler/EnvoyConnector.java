@@ -85,7 +85,7 @@ class EnvoyConnector {
             return;
         }
         final String password = configuration.password.isEmpty()
-                ? EnphaseBindingConstants.defaultPassword(configuration.serialnumber)
+                ? EnphaseBindingConstants.defaultPassword(configuration.serialNumber)
                 : configuration.password;
         final String username = configuration.username.isEmpty() ? EnvoyConfiguration.DEFAULT_USERNAME
                 : configuration.username;

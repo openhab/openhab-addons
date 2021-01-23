@@ -25,7 +25,7 @@ public class EnvoyConfiguration {
     public static final String DEFAULT_USERNAME = "envoy";
     private static final int DEFAULT_REFRESH_MINUTES = 5;
 
-    public String serialnumber = "";
+    public String serialNumber = "";
     public String hostname = "";
     public String username = DEFAULT_USERNAME;
     public String password = "";
@@ -33,7 +33,7 @@ public class EnvoyConfiguration {
 
     @Override
     public String toString() {
-        return "EnvoyConfiguration [serialnumber=" + serialnumber + ", hostname=" + hostname + ", username=" + username
+        return "EnvoyConfiguration [serialNumber=" + serialNumber + ", hostname=" + hostname + ", username=" + username
                 + ", password=" + password + ", refresh=" + refresh + "]";
     }
 }

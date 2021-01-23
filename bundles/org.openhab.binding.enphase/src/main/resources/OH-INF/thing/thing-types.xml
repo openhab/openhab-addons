@@ -20,10 +20,10 @@
 			</channel-group>
 		</channel-groups>
 
-		<representation-property>serialnumber</representation-property>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
-			<parameter name="serialnumber" type="text" pattern="[0-9]{12}" required="true">
+			<parameter name="serialNumber" type="text" pattern="[0-9]{12}" required="true">
 				<label>Serial Number</label>
 				<description>The serial number of the Envoy gateway which can be found on the gateway</description>
 			</parameter>
@@ -77,10 +77,10 @@
 			<property name="partNumber"/>
 		</properties>
 
-		<representation-property>serialnumber</representation-property>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
-			<parameter name="serialnumber" type="text" pattern="[0-9]{12}" required="true">
+			<parameter name="serialNumber" type="text" pattern="[0-9]{12}" required="true">
 				<label>Serial Number</label>
 				<description>The serial number of the inverter</description>
 			</parameter>
@@ -117,10 +117,10 @@
 			<property name="partNumber"/>
 		</properties>
 
-		<representation-property>serialnumber</representation-property>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
-			<parameter name="serialnumber" type="text" pattern="[0-9]{12}" required="true">
+			<parameter name="serialNumber" type="text" pattern="[0-9]{12}" required="true">
 				<label>Serial Number</label>
 				<description>The serial number of the inverter</description>
 			</parameter>
@@ -140,26 +140,26 @@
 
 	<channel-type id="watt-hours-today">
 		<item-type>Number:Energy</item-type>
-		<label>Watt Hours Today</label>
-		<description>Watt hours today</description>
+		<label>Produced Today</label>
+		<description>Watt hours produced today</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-seven-days">
 		<item-type>Number:Energy</item-type>
-		<label>Watt Hours 7 Days</label>
-		<description>Watt Hours of the last 7 days</description>
+		<label>Produced 7 Days</label>
+		<description>Watt hours produced the last 7 days</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-lifetime">
 		<item-type>Number:Energy</item-type>
-		<label>Watt Hours Lifetime</label>
-		<description>Watt Hours Lifetime</description>
+		<label>Produced Lifetime</label>
+		<description>Watt hours produced over the lifetime</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watts-now">
 		<item-type>Number:Power</item-type>
-		<label>Watt Now</label>
-		<description>Watt Now</description>
+		<label>Latest Power</label>
+		<description>Latest watts produced</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 

@@ -1,7 +1,7 @@
 # Enphase Binding
 
 This is the binding for the [Enphase](https://enphase.com/) Envoy Solar Panel gateway.
-The binding uses the local api of the Envoy gateway.
+The binding uses the local API of the Envoy gateway.
 Some calls can be made without authentication and some use a user name and password.
 The default user name is `envoy` and the default password is the last 6 numbers of the serial number.
 The Envoy gateway updates the data every 5 minutes.
@@ -17,11 +17,11 @@ The follow things are supported:
 
 Not all Envoy gateways support all channels and things.
 Therefore some data on inverters and the relay may not be available.
-The binding auto detects which data is available and will report this in log on initialization of the gateway bridge.
+The binding auto detects which data is available and will report this in the log on initialization of the gateway bridge.
 
 ## Discovery
 
-The binding can discovery both the Envoy gatewaye's and the micro inverters.
+The binding can discover Envoy gateways, micro inverters and relays.
 
 ## Thing Configuration
 
@@ -29,7 +29,7 @@ The Envoy gateway thing `envoy` has the following configuration options:
 
 | parameter    | required | description                                                                                                 |
 |--------------|----------|-------------------------------------------------------------------------------------------------------------|
-| serialnumber | yes      | The serial number of the Envoy gateway which can be found on the gateway                                    |
+| serialNumber | yes      | The serial number of the Envoy gateway which can be found on the gateway                                    |
 | hostname     | no       | The host name/ip address of the Envoy gateway. Leave empty to auto detect                                   |
 | username     | no       | The user name to the Envoy gateway. Leave empty when using the default user name                            |
 | password     | no       | The password to the Envoy gateway. Leave empty when using the default password                              |
@@ -39,7 +39,7 @@ The micro inverter `inverter` and `relay` things have only 1 parameter:
 
 | parameter    | required | description                       |
 |--------------|----------|-----------------------------------|
-| serialnumber | yes      | The serial number of the inverter |
+| serialNumber | yes      | The serial number of the inverter |
 
 ## Channels
 
@@ -53,7 +53,7 @@ A example of a production channel name is: `production#wattsNow`.
 | wattHoursToday     | Number:Energy | Watt Hours Today       |
 | wattHoursSevenDays | Number:Energy | Watt Hours Last 7 Days |
 | wattHoursLifetime  | Number:Energy | Watt Hours Lifetime    |
-| wattsNow           | Number:Power  | Watt Hours Today       |
+| wattsNow           | Number:Power  | Watts Now              |
 
 The `inverter` thing has the following channels:
 
@@ -88,10 +88,10 @@ The `inverter` and `relay` have the following additional advanced channels:
 Things example:
 
 ```
-Bridge enphase:envoy:789012 "Envoy" [ serialnumber="12345789012" ] {
+Bridge enphase:envoy:789012 "Envoy" [ serialNumber="12345789012" ] {
   Things:
-    inverter 123456 "Enphase Inverter 123456" [ serialnumber="789012123456" ]
-    inverter 223456 "Enphase Inverter 223456" [ serialnumber="789012223456" ]
+    inverter 123456 "Enphase Inverter 123456" [ serialNumber="789012123456" ]
+    inverter 223456 "Enphase Inverter 223456" [ serialNumber="789012223456" ]
 }
 ```
 

@@ -133,7 +133,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(EnvoyConfiguration.class);
-        if (!EnphaseBindingConstants.isValidSerial(configuration.serialnumber)) {
+        if (!EnphaseBindingConstants.isValidSerial(configuration.serialNumber)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial Number is not valid");
         }
         if (configuration.hostname.isEmpty()) {
@@ -365,7 +365,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
      * Handles a host name / ip address update.
      */
     private void updateHostname() {
-        final String lastKnownHostname = envoyHostnameCache.getLastKnownHostAddress(configuration.serialnumber);
+        final String lastKnownHostname = envoyHostnameCache.getLastKnownHostAddress(configuration.serialNumber);
 
         if (lastKnownHostname.isEmpty()) {
             scheduleHostnameUpdate(true);
