@@ -65,13 +65,38 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
     // Abstract methods
 
+    /**
+     * Initializes the Plugwise Entity that this class handles.
+     *
+     * @param config the thing configuration
+     * @param bridge the bridge that this thing is part of
+     */
     protected abstract void initialize(C config, PlugwiseHABridgeHandler bridge);
 
+    /**
+     * Get the Plugwise Entity that this class handles.
+     *
+     * @param controller the controller for this ThingHandler
+     * @param forceRefresh indicated if the entity should be refreshed from the Plugwise API
+     */
     protected abstract @Nullable E getEntity(PlugwiseHAController controller, Boolean forceRefresh)
             throws PlugwiseHAException;
 
+    /**
+     * Handles a {@link RefreshType} command for a given channel.
+     *
+     * @param entity the Plugwise Entity
+     * @param channelUID the channel uid the command is for
+     */
     protected abstract void refreshChannel(E entity, ChannelUID channelUID);
 
+    /**
+     * Handles a command for a given channel.
+     * 
+     * @param entity the Plugwise Entity
+     * @param channelUID the channel uid the command is for
+     * @param command the command
+     */
     protected abstract void handleCommand(E entity, ChannelUID channelUID, Command command) throws PlugwiseHAException;
 
     // Overrides
