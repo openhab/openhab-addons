@@ -80,9 +80,9 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_BRIDGE_TYPES_UIDS.contains(thingTypeUID)) {
-            return new PowermaxBridgeHandler((Bridge) thing, serialPortManager);
+            return new PowermaxBridgeHandler((Bridge) thing, serialPortManager, timeZoneProvider);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new PowermaxThingHandler(thing, timeZoneProvider);
+            return new PowermaxThingHandler(thing);
         }
 
         return null;

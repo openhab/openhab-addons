@@ -60,6 +60,11 @@
 			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 		</channels>
 
+		<properties>
+			<property name="vendor">tado°</property>
+		</properties>
+		<representation-property>id</representation-property>
+
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>Zone Id</label>
@@ -97,6 +102,11 @@
 		<channels>
 			<channel typeId="atHome" id="atHome"></channel>
 		</channels>
+
+		<properties>
+			<property name="vendor">tado°</property>
+		</properties>
+		<representation-property>id</representation-property>
 
 		<config-description>
 			<parameter name="id" type="integer" required="true">

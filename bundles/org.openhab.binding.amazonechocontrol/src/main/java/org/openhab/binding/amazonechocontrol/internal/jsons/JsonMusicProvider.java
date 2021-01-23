@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonMusicProvider {
     public @Nullable String displayName;
-    public @Nullable List<Object> @Nullable [] supportedTriggers;
+    public List<Object> @Nullable [] supportedTriggers;
     public @Nullable String icon;
     public @Nullable List<String> supportedProperties;
     public @Nullable String id;

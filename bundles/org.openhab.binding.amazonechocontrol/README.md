@@ -165,7 +165,7 @@ It will be configured at runtime by using the save channel to store the current 
 | radioStationId        | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a TuneIn radio station by specifying its id or stops playing if an empty string was provided
 | radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openHAB start)
 | amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by its id or stops playing if an empty string was provided
-| amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided. Selection will only work in PaperUI
+| amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided.
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openHAB start)
 | remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the Amazon software)
 | nextReminder          | DateTime    | R           | echo, echoshow, echospot      | Next reminder on the device
@@ -348,7 +348,7 @@ sitemap amazonechocontrol label="Echo Devices"
             // Change the <YOUR_DEVICE_MAC> Place holder with the MAC address shown, if Alexa is connected to the device
             Selection item=Echo_Living_Room_BluetoothMAC mappings=[ ''='Disconnected', '<YOUR_DEVICE_MAC>'='Bluetooth Device 1', '<YOUR_DEVICE_MAC>'='Bluetooth Device 2']
 
-            // These are only view of the possible options. Enable ShowIDsInGUI in the binding configuration and look in drop-down-box of this channel in the Paper UI Control section
+            // These are only view of the possible options.
             Selection item=Echo_Living_Room_PlayAlarmSound mappings=[ ''='None', 'ECHO:system_alerts_soothing_01'='Adrift', 'ECHO:system_alerts_atonal_02'='Clangy']
 
             Switch  item=Echo_Living_Room_Bluetooth
@@ -446,11 +446,11 @@ The polling interval configured in the Account Thing to get the state is specifi
 |--------------------------|---------------------------------------------------------------------------|
 | id                       | The id of the device or device group                                      |
 
-The only possibility to find out the id is by using the discover function in the PaperUI. You can use then the id, if you want define the Thing in a file.
+The only possibility to find out the id is by using the discover function in the UI. You can use then the id, if you want define the Thing in a file.
 
 #### Channels
 
-The channels of the smarthome devices will be generated at runtime. Check in the paperUI thing configurations, which channels are created.
+The channels of the smarthome devices will be generated at runtime. Check in the UI thing configurations, which channels are created.
 
 | Channel Type ID          | Item Type | Access Mode | Thing Type                    | Description                                                                                                                                                                
 |--------------------------|-----------|-------------|-------------------------------|------------------------------------------------------------------------------------------
@@ -505,7 +505,7 @@ Switch Arm_State "State" { channel="amazonechocontrol:smartHomeDevice:account1:s
 Switch Group_State "On/Off" { channel="amazonechocontrol:smartHomeDeviceGroup:account1:smartHomeDeviceGroup1:powerState" }
 ```
 
-The only possibility to find out the id for the smartHomeDevice and smartHomeDeviceGroup Things is by using the discover function in the PaperUI.
+The only possibility to find out the id for the smartHomeDevice and smartHomeDeviceGroup Things is by using the discover function.
 
 #### smarthome.sitemap:
 

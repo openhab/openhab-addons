@@ -133,23 +133,11 @@ Callback network address of the system runtime, default is auto-discovery
 - **bindAddress**
 The address the XML-/BINRPC server binds to, default is value of "callbackHost"
 
-- **callbackPort** (DEPRECATED, use "binCallbackPort" resp. "xmlCallbackPort")
-Callback port of the binding's server, default is 9125 and counts up for each additional bridge
-
 - **xmlCallbackPort**
 Callback port of the binding's XML-RPC server, default is 9125 and counts up for each additional bridge
 
 - **binCallbackPort**
 Callback port of the binding's BIN-RPC server, default is 9126 and counts up for each additional bridge
-
-- **aliveInterval** (DEPRECATED, not necessary anymore)
-The interval in seconds to check if the communication with the Homematic gateway is still alive. If no message receives from the Homematic gateway, the RPC server restarts (default = 300)
-
-- **reconnectInterval** (DEPRECATED, not necessary anymore)
-The interval in seconds to force a reconnect to the Homematic gateway, disables "aliveInterval"! (0 = disabled, default = disabled).
-If you have no sensors which sends messages in regular intervals and/or you have low communication, the "aliveInterval" may restart the connection to the Homematic gateway to often.
-The "reconnectInterval" disables the "aliveInterval" and reconnects after a fixed period of time.
-Think in hours when configuring (one hour = 3600)
 
 - **timeout**
 The timeout in seconds for connections to a Homematic gateway (default = 15)
@@ -182,6 +170,11 @@ If set to true, devices are automatically unpaired from the gateway when their c
 - **factoryResetOnDeletion**
 If set to true, devices are automatically factory reset when their corresponding things are removed.
 Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
+
+- **bufferSize** 
+If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway. 
+In this case, e.g. the discovery fails. 
+With this setting the buffer size can be adjusted. The value is specified in kB.
 
 The syntax for a bridge is:
 
@@ -216,7 +209,7 @@ Bridge homematic:bridge:occu  [ gatewayAddress="..."]
 
 ## Thing Configuration
 
-Things are all discovered automatically, you can handle them in PaperUI.
+Things are all discovered automatically.
 
 If you really like to manually configure a thing:
 
@@ -231,13 +224,6 @@ The first parameter after Thing is the device type, the second the serial number
 If you are using Homegear, you have to add the prefix `HG-` for each type.
 The `HG-` prefix is only needed for Things, not for Items or channel configs.
 This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
-
-```java
-  Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
-```
-
-As additional parameters you can define a name and a location for each thing.
-The `Name` will be used to identify the thing in the Paper UI lists, the `Location` will be used in the Control section of PaperUI to sort the things.
 
 ```java
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
@@ -675,6 +661,11 @@ Var_1.sendCommand(RefreshType.REFRESH)
 
 **Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS thing is currently not supported.
 You have to delete the thing, start a scan and add it again.
+
+**`openhab.log` contains an exception with message: `Buffering capacity 2097152 exceeded` resp. discovery detects no devices**
+
+In case of problems in the discovery or if above mentioned error message appears in `openhab.log`, the size for the transmission buffer for the communication with the gateway is too small.
+The problem can be solved by increasing the `bufferSize` value in the bridge configuration.
 
 ### Debugging and Tracing
 
