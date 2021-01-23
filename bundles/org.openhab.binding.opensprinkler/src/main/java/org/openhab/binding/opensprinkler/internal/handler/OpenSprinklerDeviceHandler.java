@@ -68,7 +68,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 updateState(channel, new QuantityType<ElectricCurrent>(localAPI.currentDraw(), MILLI(Units.AMPERE)));
                 break;
             case SENSOR_SIGNAL_STRENGTH:
-                updateState(channel, new QuantityType<Dimensionless>(localAPI.flowSensorCount(), Units.DECIBEL));
+                updateState(channel, new QuantityType<Dimensionless>(localAPI.signalStrength(), Units.DECIBEL));
                 break;
             case SENSOR_FLOW_COUNT:
                 updateState(channel, new QuantityType<Dimensionless>(localAPI.flowSensorCount(), Units.ONE));
