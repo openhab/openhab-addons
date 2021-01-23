@@ -19,14 +19,11 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.WATT;
 
 import java.time.Duration;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.OnOffType;
@@ -41,14 +38,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyStromHandler} is responsible for handling commands, which are
+ * The {@link MyStromPlugHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Paul Frank - Initial contribution
  * @author Frederic Chastagnol - Extends from new abstract class
  */
 @NonNullByDefault
-public class MyStromHandler extends MyStromAbstractHandler {
+public class MyStromPlugHandler extends AbstractMyStromHandler {
 
     private static class MyStromReport {
 
@@ -57,11 +54,11 @@ public class MyStromHandler extends MyStromAbstractHandler {
         public float temperature;
     }
 
-    private final Logger logger = LoggerFactory.getLogger(MyStromHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MyStromPlugHandler.class);
 
     private final ExpiringCache<MyStromReport> cache = new ExpiringCache<>(Duration.ofSeconds(3), this::getReport);
 
-    public MyStromHandler(Thing thing, HttpClient httpClient) {
+    public MyStromPlugHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
     }
 
@@ -72,7 +69,7 @@ public class MyStromHandler extends MyStromAbstractHandler {
                 pollDevice();
             } else {
                 if (command instanceof OnOffType && CHANNEL_SWITCH.equals(channelUID.getId())) {
-                    sendHttpGet("relay?state=" + (command == OnOffType.ON ? "1" : "0"));
+                    sendHttpRequest(HttpMethod.GET, "/relay?state=" + (command == OnOffType.ON ? "1" : "0"), null);
                     scheduler.schedule(this::pollDevice, 500, TimeUnit.MILLISECONDS);
                 }
             }
@@ -83,8 +80,8 @@ public class MyStromHandler extends MyStromAbstractHandler {
 
     private @Nullable MyStromReport getReport() {
         try {
-            String returnContent = sendHttpGet("report");
-            MyStromReport report = getGson().fromJson(returnContent, MyStromReport.class);
+            String returnContent = sendHttpRequest(HttpMethod.GET, "/report", null);
+            MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
             updateStatus(ThingStatus.ONLINE);
             return report;
         } catch (MyStromException e) {
@@ -95,36 +92,11 @@ public class MyStromHandler extends MyStromAbstractHandler {
 
     @Override
     protected void pollDevice() {
-        @Nullable
         MyStromReport report = cache.getValue();
         if (report != null) {
             updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
             updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
             updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));
         }
-    }
-
-    /**
-     * Given a URL and a set parameters, send a HTTP GET request to the URL location
-     * created by the URL and parameters.
-     *
-     * @param action The action we want to take
-     * @return String contents of the response for the GET request.
-     * @throws MyStromException Throws on communication error
-     */
-    public String sendHttpGet(String action) throws MyStromException {
-        String url = getHostname() + "/" + action;
-        ContentResponse response;
-        try {
-            response = getHttpClient().newRequest(url).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET).send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new MyStromException(COMMUNICATION_ERROR + e.getMessage());
-        }
-
-        if (response.getStatus() != HTTP_OK_CODE) {
-            throw new MyStromException(
-                    "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
-        }
-        return response.getContentAsString();
     }
 }

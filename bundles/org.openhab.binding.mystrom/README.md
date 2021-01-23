@@ -30,6 +30,7 @@ The following parameters are valid for all thing types:
 ## Properties
 
 In addition to the configuration a myStrom thing has the following properties.
+The properties are updated during initialize. Disabling/enabling the thing can be used to update the properties.
 
 | Property-Name | Description                                                           |
 | ------------- | --------------------------------------------------------------------- |
@@ -56,14 +57,6 @@ In addition to the configuration a myStrom thing has the following properties.
 | brightness       | Dimmer               | false     | The brightness of the bulb in mode 'mono'                             | mystrombulb                         |
 | ramp             | Number:Time          | false     | Transition time from the light’s current state to the new state. [ms] | mystrombulb                         |
 | mode             | String               | false     | The color mode we want the Bulb to set to (rgb, hsv or mono)          | mystrombulb                         |
-
-## Thing actions
-
-The myStrom things support the following actions.
-
-| Name                            | Description                                                    | Specification             |
-|---------------------------------|----------------------------------------------------------------|-------------------------- |
-| refreshProperties               | Query the device information and Refresh the device properties | void refreshProperties()  |
 
 ## Full Example
 

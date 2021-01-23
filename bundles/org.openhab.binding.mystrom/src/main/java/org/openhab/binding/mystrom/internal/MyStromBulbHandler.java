@@ -28,24 +28,15 @@ import static org.openhab.core.library.unit.Units.WATT;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -70,7 +61,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Frederic Chastagnol - Initial contribution
  */
 @NonNullByDefault
-public class MyStromBulbHandler extends MyStromAbstractHandler {
+public class MyStromBulbHandler extends AbstractMyStromHandler {
 
     private static class MyStromBulbResponse {
         public boolean on;
@@ -97,7 +88,10 @@ public class MyStromBulbHandler extends MyStromAbstractHandler {
             Duration.ofSeconds(3), this::getReport);
 
     private PercentType lastBrightness = PercentType.HUNDRED;
-    private QuantityType<Dimensionless> lastColorTemperature = QuantityType.ONE;
+    private DecimalType lastColorTemperature = new DecimalType(10);
+
+    private static final Type TYPE = new TypeToken<HashMap<String, MyStromDeviceSpecificInfo>>() {
+    }.getType();
 
     public MyStromBulbHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -109,58 +103,48 @@ public class MyStromBulbHandler extends MyStromAbstractHandler {
             if (command instanceof RefreshType) {
                 pollDevice();
             } else {
-                @Nullable
                 String sResp = null;
                 switch (channelUID.getId()) {
                     case CHANNEL_SWITCH:
                         if (command instanceof OnOffType) {
-                            sResp = sendHttpPost(command == OnOffType.ON ? "on" : "off", null, null, null);
+                            sResp = sendToBulb(command == OnOffType.ON ? "on" : "off", null, null, null);
                         }
                         break;
-
                     case CHANNEL_COLOR:
                         if (command instanceof HSBType) {
                             String hsv = command.toString().replaceAll(",", ";");
-                            sResp = sendHttpPost(null, hsv, null, HSV);
+                            sResp = sendToBulb(null, hsv, null, HSV);
                         }
                         break;
-
                     case CHANNEL_BRIGHTNESS:
                         if (command instanceof PercentType) {
                             String mono = lastColorTemperature.toString() + ";" + command.toString();
-                            sResp = sendHttpPost(null, mono, null, MONO);
+                            sResp = sendToBulb(null, mono, null, MONO);
                         }
                         break;
-
                     case CHANNEL_COLOR_TEMPERATURE:
                         if (command instanceof Number) {
                             String mono = command.toString() + ";" + lastBrightness.toString();
-                            sResp = sendHttpPost(null, mono, null, MONO);
+                            sResp = sendToBulb(null, mono, null, MONO);
                         }
                         break;
-
                     case CHANNEL_RAMP:
-                        if (command instanceof QuantityType) {
-                            sResp = sendHttpPost(null, null, command.toString(), null);
+                        if (command instanceof DecimalType) {
+                            sResp = sendToBulb(null, null, command.toString(), null);
                         }
                         break;
-
                     case CHANNEL_MODE:
                         if (command instanceof StringType) {
-                            sResp = sendHttpPost(null, null, null, command.toString());
+                            sResp = sendToBulb(null, null, null, command.toString());
                         }
                         break;
-
                     default:
                 }
 
                 if (sResp != null) {
-                    Type type = new TypeToken<HashMap<String, MyStromDeviceSpecificInfo>>() {
-                    }.getType();
-                    @Nullable
-                    Map<String, MyStromDeviceSpecificInfo> report = getGson().fromJson(sResp, type);
+                    Map<String, MyStromDeviceSpecificInfo> report = gson.fromJson(sResp, TYPE);
                     if (report != null) {
-                        report.entrySet().stream().filter(e -> e.getKey().equals(getMac())).findFirst()
+                        report.entrySet().stream().filter(e -> e.getKey().equals(mac)).findFirst()
                                 .ifPresent(info -> updateDevice(info.getValue()));
                     }
                 }
@@ -172,10 +156,8 @@ public class MyStromBulbHandler extends MyStromAbstractHandler {
 
     private @Nullable Map<String, MyStromDeviceSpecificInfo> getReport() {
         try {
-            String returnContent = getDeviceSpecificInformation();
-            Type type = new TypeToken<HashMap<String, MyStromDeviceSpecificInfo>>() {
-            }.getType();
-            Map<String, MyStromDeviceSpecificInfo> report = getGson().fromJson(returnContent, type);
+            String returnContent = sendHttpRequest(HttpMethod.GET, "/api/v1/device", null);
+            Map<String, MyStromDeviceSpecificInfo> report = gson.fromJson(returnContent, TYPE);
             updateStatus(ThingStatus.ONLINE);
             return report;
         } catch (MyStromException e) {
@@ -186,10 +168,9 @@ public class MyStromBulbHandler extends MyStromAbstractHandler {
 
     @Override
     protected void pollDevice() {
-        @Nullable
         Map<String, MyStromDeviceSpecificInfo> report = cache.getValue();
         if (report != null) {
-            report.entrySet().stream().filter(e -> e.getKey().equals(getMac())).findFirst()
+            report.entrySet().stream().filter(e -> e.getKey().equals(mac)).findFirst()
                     .ifPresent(info -> updateDevice(info.getValue()));
         }
     }
@@ -197,57 +178,37 @@ public class MyStromBulbHandler extends MyStromAbstractHandler {
     private void updateDevice(@Nullable MyStromBulbResponse deviceInfo) {
         if (deviceInfo != null) {
             updateState(CHANNEL_SWITCH, deviceInfo.on ? OnOffType.ON : OnOffType.OFF);
-            @Nullable
-            HSBType color = null;
-            long numSemicolon = deviceInfo.color.chars().filter(c -> c == ';').count();
-            if (numSemicolon == 1 && deviceInfo.mode.equals(MONO)) {
-                String[] xy = deviceInfo.color.split(";");
-                lastColorTemperature = new QuantityType<>(xy[0]);
-                lastBrightness = PercentType.valueOf(xy[1]);
-                updateState(CHANNEL_COLOR_TEMPERATURE, lastColorTemperature);
-                updateState(CHANNEL_BRIGHTNESS, lastBrightness);
-                updateState(CHANNEL_MODE, StringType.valueOf(deviceInfo.mode));
-            } else if (numSemicolon == 2 && deviceInfo.mode.equals(HSV)) {
-                color = HSBType.valueOf(deviceInfo.color.replaceAll(";", ","));
-            } else if (!deviceInfo.color.equals("") && deviceInfo.mode.equals(RGB)) {
-                int r = Integer.parseInt(deviceInfo.color.substring(2, 4), 16);
-                int g = Integer.parseInt(deviceInfo.color.substring(4, 6), 16);
-                int b = Integer.parseInt(deviceInfo.color.substring(6, 8), 16);
-                color = HSBType.fromRGB(r, g, b);
-            }
-            if (color != null) {
-                updateState(CHANNEL_COLOR, color);
-                updateState(CHANNEL_MODE, StringType.valueOf(deviceInfo.mode));
-            }
-            updateState(CHANNEL_RAMP, QuantityType.valueOf(deviceInfo.ramp, MetricPrefix.MILLI(SECOND)));
-            if (deviceInfo instanceof MyStromDeviceSpecificInfo) {
-                updateState(CHANNEL_POWER, QuantityType.valueOf(((MyStromDeviceSpecificInfo) deviceInfo).power, WATT));
+            try {
+                HSBType color = null;
+                long numSemicolon = deviceInfo.color.chars().filter(c -> c == ';').count();
+                if (numSemicolon == 1 && deviceInfo.mode.equals(MONO)) {
+                    String[] xy = deviceInfo.color.split(";");
+                    lastColorTemperature = new DecimalType(xy[0]);
+                    lastBrightness = PercentType.valueOf(xy[1]);
+                    updateState(CHANNEL_COLOR_TEMPERATURE, lastColorTemperature);
+                    updateState(CHANNEL_BRIGHTNESS, lastBrightness);
+                    updateState(CHANNEL_MODE, StringType.valueOf(deviceInfo.mode));
+                } else if (numSemicolon == 2 && deviceInfo.mode.equals(HSV)) {
+                    color = HSBType.valueOf(deviceInfo.color.replaceAll(";", ","));
+                } else if (!deviceInfo.color.equals("") && deviceInfo.mode.equals(RGB)) {
+                    int r = Integer.parseInt(deviceInfo.color.substring(2, 4), 16);
+                    int g = Integer.parseInt(deviceInfo.color.substring(4, 6), 16);
+                    int b = Integer.parseInt(deviceInfo.color.substring(6, 8), 16);
+                    color = HSBType.fromRGB(r, g, b);
+                }
+                if (color != null) {
+                    updateState(CHANNEL_COLOR, color);
+                    updateState(CHANNEL_MODE, StringType.valueOf(deviceInfo.mode));
+                }
+                updateState(CHANNEL_RAMP, QuantityType.valueOf(deviceInfo.ramp, MetricPrefix.MILLI(SECOND)));
+                if (deviceInfo instanceof MyStromDeviceSpecificInfo) {
+                    updateState(CHANNEL_POWER,
+                            QuantityType.valueOf(((MyStromDeviceSpecificInfo) deviceInfo).power, WATT));
+                }
+            } catch (IllegalArgumentException e) {
+                logger.warn("Error while updating {}", e.getMessage());
             }
         }
-    }
-
-    /**
-     * Given a URL, send a HTTP GET request to the URL location
-     * created by the URL.
-     *
-     * @return String contents of the response for the GET request.
-     * @throws MyStromException Throws on communication error
-     */
-    private String getDeviceSpecificInformation() throws MyStromException {
-        String url = getHostname() + "/api/v1/device";
-        ContentResponse response;
-        try {
-            Request request = getHttpClient().newRequest(url).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET);
-            response = request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new MyStromException(COMMUNICATION_ERROR + e.getMessage());
-        }
-
-        if (response.getStatus() != HTTP_OK_CODE) {
-            throw new MyStromException(
-                    "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
-        }
-        return response.getContentAsString();
     }
 
     /**
@@ -262,53 +223,30 @@ public class MyStromBulbHandler extends MyStromAbstractHandler {
      * @return String contents of the response for the GET request.
      * @throws MyStromException Throws on communication error
      */
-    private String sendHttpPost(@Nullable String action, @Nullable String color, @Nullable String ramp,
+    private String sendToBulb(@Nullable String action, @Nullable String color, @Nullable String ramp,
             @Nullable String mode) throws MyStromException {
-        String url = getHostname() + "/api/v1/device/" + getMac();
-        ContentResponse response;
-        try {
-            Fields fields = new Fields();
-            if (action != null) {
-                fields.put("action", action);
-            }
-            if (color != null) {
-                fields.put("color", color);
-            }
-            if (ramp != null) {
-                fields.put("ramp", ramp);
-            }
-            if (mode != null) {
-                fields.put("mode", mode);
-            }
-
-            // FormContentProvider contentProvider = new FormContentProvider(fields);
-            Iterator<Fields.Field> i = fields.iterator();
-            StringBuilder builder = new StringBuilder(fields.getSize() * 32);
-            while (i.hasNext()) {
-                Fields.Field field = i.next();
-
-                String value;
-                for (Iterator<String> var5 = field.getValues().iterator(); var5.hasNext(); builder
-                        .append(field.getName()).append("=").append(value)) {
-                    value = var5.next();
-                    if (builder.length() > 0) {
-                        builder.append("&");
-                    }
+        Fields fields = new Fields();
+        if (action != null) {
+            fields.put("action", action);
+        }
+        if (color != null) {
+            fields.put("color", color);
+        }
+        if (ramp != null) {
+            fields.put("ramp", ramp);
+        }
+        if (mode != null) {
+            fields.put("mode", mode);
+        }
+        StringBuilder builder = new StringBuilder(fields.getSize() * 32);
+        for (Fields.Field field : fields) {
+            for (String value : field.getValues()) {
+                if (builder.length() > 0) {
+                    builder.append("&");
                 }
+                builder.append(field.getName()).append("=").append(value);
             }
-            StringContentProvider contentProvider = new StringContentProvider(builder.toString());
-            Request request = getHttpClient().newRequest(url).timeout(10, TimeUnit.SECONDS).method(HttpMethod.POST)
-                    .content(contentProvider).header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-
-            response = request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new MyStromException(COMMUNICATION_ERROR + e.getMessage());
         }
-
-        if (response.getStatus() != HTTP_OK_CODE) {
-            throw new MyStromException(
-                    "Error sending HTTP POST request to " + url + ". Got response code: " + response.getStatus());
-        }
-        return response.getContentAsString();
+        return sendHttpRequest(HttpMethod.POST, "/api/v1/device/" + mac, builder.toString());
     }
 }

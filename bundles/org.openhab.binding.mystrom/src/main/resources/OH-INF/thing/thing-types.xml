@@ -54,7 +54,7 @@
 			<channel id="power" typeId="power-channel"/>
 			<channel id="color" typeId="system.color"/>
 			<channel id="colorTemperature" typeId="colorTemperature-channel"/>
-			<channel id="brightness" typeId="brightness-channel"/>
+			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="ramp" typeId="ramp-channel"/>
 			<channel id="mode" typeId="mode-channel"/>
 		</channels>
@@ -110,8 +110,8 @@
 	<channel-type id="ramp-channel">
 		<item-type>Number:Time</item-type>
 		<label>Ramp</label>
-		<description>Transition time from the light’s current state to the new state. [ms]</description>
-		<state readOnly="false" pattern="%d %unit%"/>
+		<description>Transition time from the light’s current state to the new state.</description>
+		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="mode-channel">
@@ -131,14 +131,8 @@
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
 		<description>Color Temperature from 1 (warm) to 18 (cold)</description>
-		<state readOnly="false" min="1" max="18" pattern="%d"/>
-	</channel-type>
-
-	<channel-type id="brightness-channel">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Brightness</description>
-		<state readOnly="false" min="0" max="100" pattern="%d"/>
+		<category>slider</category>
+		<state min="1" max="18" step="1" pattern="%d"/>
 	</channel-type>
 
 </thing:thing-descriptions>

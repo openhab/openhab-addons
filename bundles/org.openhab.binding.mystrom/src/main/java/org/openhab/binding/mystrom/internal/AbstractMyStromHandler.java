@@ -26,8 +26,6 @@ import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPE
 
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -40,35 +38,36 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 
 import com.google.gson.Gson;
 
 /**
- * The {@link MyStromAbstractHandler} is responsible for handling commands, which are
+ * The {@link AbstractMyStromHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Frederic Chastagnol - Initial contribution
  */
 @NonNullByDefault
-public abstract class MyStromAbstractHandler extends BaseThingHandler {
-    protected static final int HTTP_OK_CODE = 200;
+public abstract class AbstractMyStromHandler extends BaseThingHandler {
     protected static final String COMMUNICATION_ERROR = "Error while communicating to the myStrom plug: ";
     protected static final String HTTP_REQUEST_URL_PREFIX = "http://";
 
-    private final HttpClient httpClient;
-    private String hostname = "";
-    private String mac = "";
+    protected final HttpClient httpClient;
+    protected String hostname = "";
+    protected String mac = "";
 
     private @Nullable ScheduledFuture<?> pollingJob;
-    private final Gson gson = new Gson();
+    protected final Gson gson = new Gson();
 
-    public MyStromAbstractHandler(Thing thing, HttpClient httpClient) {
+    public AbstractMyStromHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
     }
@@ -84,21 +83,17 @@ public abstract class MyStromAbstractHandler extends BaseThingHandler {
 
     @Override
     public final void dispose() {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
         super.dispose();
     }
 
-    @Override
-    public final Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MyStromDeviceActions.class);
-    }
-
-    public final void updateProperties() throws MyStromException {
-        @Nullable
-        MyStromDeviceInfo deviceInfo = getDeviceInfo();
+    private void updateProperties() throws MyStromException {
+        String json = sendHttpRequest(HttpMethod.GET, "/api/v1/info", null);
+        MyStromDeviceInfo deviceInfo = gson.fromJson(json, MyStromDeviceInfo.class);
         if (deviceInfo == null) {
             throw new MyStromException("Cannot retrieve device info from myStrom device " + getThing().getUID());
         }
@@ -120,26 +115,33 @@ public abstract class MyStromAbstractHandler extends BaseThingHandler {
         updateProperties(properties);
     }
 
-    private @Nullable MyStromDeviceInfo getDeviceInfo() throws MyStromException {
-        String url = hostname + "/api/v1/info";
-        ContentResponse response;
+    /**
+     * Calls the API with the given http method, request path and actual data.
+     *
+     * @param method the http method to make the call with
+     * @param path The path of the API endpoint
+     * @param requestData the actual raw data to send in the request body, may be {@code null}
+     * @return String contents of the response for the GET request.
+     * @throws MyStromException Throws on communication error
+     */
+    protected final String sendHttpRequest(HttpMethod method, String path, @Nullable String requestData)
+            throws MyStromException {
+        String url = hostname + path;
         try {
-            Request request = httpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET);
-            response = request.send();
+            Request request = httpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).method(method);
+            if (requestData != null) {
+                request = request.content(new StringContentProvider(requestData)).header(HttpHeader.CONTENT_TYPE,
+                        "application/x-www-form-urlencoded");
+            }
+            ContentResponse response = request.send();
+            if (response.getStatus() != HttpStatus.OK_200) {
+                throw new MyStromException("Error sending HTTP " + method + " request to " + url
+                        + ". Got response code: " + response.getStatus());
+            }
+            return response.getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new MyStromException(COMMUNICATION_ERROR + e.getMessage());
         }
-
-        if (response.getStatus() != HTTP_OK_CODE) {
-            throw new MyStromException(
-                    "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
-        }
-
-        String gs = response.getContentAsString();
-        if (gs == null) {
-            return null;
-        }
-        return gson.fromJson(gs, MyStromDeviceInfo.class);
     }
 
     private void initializeInternal() {
@@ -151,22 +153,6 @@ public abstract class MyStromAbstractHandler extends BaseThingHandler {
         } catch (MyStromException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
-    }
-
-    protected final HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    protected final String getHostname() {
-        return hostname;
-    }
-
-    protected final String getMac() {
-        return mac;
-    }
-
-    protected final Gson getGson() {
-        return gson;
     }
 
     protected abstract void pollDevice();
