@@ -1,9 +1,8 @@
 package org.openhab.binding.mikrotik.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.joda.time.DateTime;
-
 import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class RouterosWirelessRegistration extends RouterosRegistrationBase {
@@ -11,7 +10,7 @@ public class RouterosWirelessRegistration extends RouterosRegistrationBase {
         super(props);
     }
 
-    public String getUptime(){ return propMap.get("uptime"); }
-
-
+    public String getUptime() {
+        return propMap.get("uptime");
+    }
 }

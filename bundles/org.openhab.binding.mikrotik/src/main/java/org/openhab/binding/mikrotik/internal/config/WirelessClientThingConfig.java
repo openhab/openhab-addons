@@ -32,6 +32,7 @@ public class WirelessClientThingConfig {
 
     @Override
     public String toString() {
-        return String.format("WirelessClientThingConfig{mac=%s, ssid=%s, considerContinuous=%ds}", mac, ssid, considerContinuous);
+        return String.format("WirelessClientThingConfig{mac=%s, ssid=%s, considerContinuous=%ds}", mac, ssid,
+                considerContinuous);
     }
 }

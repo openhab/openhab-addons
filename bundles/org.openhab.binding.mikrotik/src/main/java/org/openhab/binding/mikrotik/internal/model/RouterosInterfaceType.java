@@ -1,11 +1,11 @@
 package org.openhab.binding.mikrotik.internal.model;
 
 public enum RouterosInterfaceType {
-    ETHERNET ("ether"),
-    BRIDGE ("bridge"),
-    CAP ("cap"),
-    PPPOE_CLIENT ("pppoe-out"),
-    L2TP_SERVER ("l2tp-in");
+    ETHERNET("ether"),
+    BRIDGE("bridge"),
+    CAP("cap"),
+    PPPOE_CLIENT("pppoe-out"),
+    L2TP_SERVER("l2tp-in");
 
     private final String typeName;
 
@@ -22,13 +22,12 @@ public enum RouterosInterfaceType {
         return this.typeName;
     }
 
-    public static RouterosInterfaceType resolve(String routerosType){
-        for(RouterosInterfaceType current : RouterosInterfaceType.values()) {
-            if(current.typeName.equals(routerosType)) {
+    public static RouterosInterfaceType resolve(String routerosType) {
+        for (RouterosInterfaceType current : RouterosInterfaceType.values()) {
+            if (current.typeName.equals(routerosType)) {
                 return current;
             }
         }
         return null;
     }
-
 }

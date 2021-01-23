@@ -36,9 +36,9 @@ import org.osgi.service.component.annotations.Component;
 public class MikrotikHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return MikrotikRouterosBridgeHandler.supportsThingType(thingTypeUID) ||
-                MikrotikWirelessClientThingHandler.supportsThingType(thingTypeUID) ||
-                MikrotikInterfaceThingHandler.supportsThingType(thingTypeUID);
+        return MikrotikRouterosBridgeHandler.supportsThingType(thingTypeUID)
+                || MikrotikWirelessClientThingHandler.supportsThingType(thingTypeUID)
+                || MikrotikInterfaceThingHandler.supportsThingType(thingTypeUID);
     }
 
     @Override

@@ -34,8 +34,7 @@ public class RouterosThingConfig {
 
     @Override
     public String toString() {
-        return String.format("RouterosThingConfig{host=%s, port=%d, login=%s, password=*****, refresh=%ds}",
-                host, port, login, refresh);
+        return String.format("RouterosThingConfig{host=%s, port=%d, login=%s, password=*****, refresh=%ds}", host, port,
+                login, refresh);
     }
-
 }

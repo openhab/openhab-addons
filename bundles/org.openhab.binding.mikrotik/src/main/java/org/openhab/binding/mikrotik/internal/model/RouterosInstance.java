@@ -1,15 +1,17 @@
 package org.openhab.binding.mikrotik.internal.model;
 
-import me.legrange.mikrotik.*;
-import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.net.SocketFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.net.SocketFactory;
+
+import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import me.legrange.mikrotik.*;
 
 public class RouterosInstance {
     private final Logger logger = LoggerFactory.getLogger(RouterosInstance.class);
@@ -37,20 +39,23 @@ public class RouterosInstance {
     private RouterosSystemResources resourcesCache;
     private RouterosRouterboardInfo rbInfo;
 
-    private static Optional<RouterosInterfaceBase> createTypedInterface(Map<String,String> interfaceProps){
+    private static Optional<RouterosInterfaceBase> createTypedInterface(Map<String, String> interfaceProps) {
         RouterosInterfaceType ifaceType = RouterosInterfaceType.resolve(interfaceProps.get("type"));
-        switch (ifaceType){
+        switch (ifaceType) {
             case ETHERNET:
             case BRIDGE:
             case CAP:
                 return Optional.of(new RouterosEthernetInterface(interfaceProps));
-            case PPPOE_CLIENT: return Optional.of(new RouterosPPPoECliInterface(interfaceProps));
-            case L2TP_SERVER: return Optional.of(new RouterosL2TPSrvInterface(interfaceProps));
-            default: return Optional.empty();
+            case PPPOE_CLIENT:
+                return Optional.of(new RouterosPPPoECliInterface(interfaceProps));
+            case L2TP_SERVER:
+                return Optional.of(new RouterosL2TPSrvInterface(interfaceProps));
+            default:
+                return Optional.empty();
         }
     }
 
-    public RouterosInstance(String host, int port, String login, String password){
+    public RouterosInstance(String host, int port, String login, String password) {
         this.host = host;
         this.port = port;
         this.login = login;
@@ -58,7 +63,7 @@ public class RouterosInstance {
         this.connectionTimeout = ApiConnection.DEFAULT_CONNECTION_TIMEOUT;
     }
 
-    public boolean isConnected(){
+    public boolean isConnected() {
         return connection != null && connection.isConnected();
     }
 
@@ -80,7 +85,7 @@ public class RouterosInstance {
 
     public void logout() throws ApiConnectionException {
         logger.debug("Logging out of {}", host);
-        if(connection != null){
+        if (connection != null) {
             logger.debug("Closing connection to {}", host);
             connection.close();
         }
@@ -95,35 +100,34 @@ public class RouterosInstance {
         }
     }
 
-    public @Nullable RouterosRouterboardInfo getRouterboardInfo(){
+    public @Nullable RouterosRouterboardInfo getRouterboardInfo() {
         return rbInfo;
     }
-    public @Nullable RouterosSystemResources getSysResources(){ return resourcesCache; }
 
-    public @Nullable RouterosCapsmanRegistration findCapsmanRegistration(String macAddress){
+    public @Nullable RouterosSystemResources getSysResources() {
+        return resourcesCache;
+    }
+
+    public @Nullable RouterosCapsmanRegistration findCapsmanRegistration(String macAddress) {
         logger.trace("findCapsmanRegistration({}) called for {}", macAddress, host);
         Optional<RouterosCapsmanRegistration> searchResult = capsmanRegistrationCache.stream()
-                .filter(registration -> registration.getMacAddress().equalsIgnoreCase(macAddress))
-                .findFirst();
+                .filter(registration -> registration.getMacAddress().equalsIgnoreCase(macAddress)).findFirst();
         return searchResult.orElse(null);
     }
 
-    public @Nullable RouterosWirelessRegistration findWirelessRegistration(String macAddress){
+    public @Nullable RouterosWirelessRegistration findWirelessRegistration(String macAddress) {
         logger.trace("findWirelessRegistration({}) called for {}", macAddress, host);
         Optional<RouterosWirelessRegistration> searchResult = wirelessRegistrationCache.stream()
-                .filter(registration -> registration.getMacAddress().equalsIgnoreCase(macAddress))
-                .findFirst();
+                .filter(registration -> registration.getMacAddress().equalsIgnoreCase(macAddress)).findFirst();
         return searchResult.orElse(null);
     }
 
-    public @Nullable RouterosInterfaceBase findInterface(String name){
+    public @Nullable RouterosInterfaceBase findInterface(String name) {
         logger.trace("findInterface({}) called for {}", name, host);
         Optional<RouterosInterfaceBase> searchResult = interfaceCache.stream()
-                .filter(iface -> iface.getName() != null && iface.getName().equalsIgnoreCase(name))
-                .findFirst();
+                .filter(iface -> iface.getName() != null && iface.getName().equalsIgnoreCase(name)).findFirst();
         return searchResult.orElse(null);
     }
-
 
     private void updateInterfaces() throws MikrotikApiException {
         logger.trace("Executing '{}' on {}...", CMD_PRINT_IFACES, host);
@@ -134,16 +138,16 @@ public class RouterosInstance {
         interfaceCache = ifaceResponse.stream().map(props -> {
             logger.trace("Got interface props from {}: {}", host, props);
             Optional<RouterosInterfaceBase> ifaceOpt = createTypedInterface(props);
-            if(ifaceOpt.isPresent()){
+            if (ifaceOpt.isPresent()) {
                 RouterosInterfaceBase iface = ifaceOpt.get();
                 // Enrich with CAPsMAN data
                 Optional<Map<String, String>> capsProps = capsResponse.stream()
-                        .filter(sp -> sp.get(PROP_ID_KEY).equals(iface.getId()))
-                        .findFirst();
-                if(capsProps.isPresent()){
+                        .filter(sp -> sp.get(PROP_ID_KEY).equals(iface.getId())).findFirst();
+                if (capsProps.isPresent()) {
                     iface.mergeProps(capsProps.get());
                 } else {
-                    logger.trace("No CAPsMAN props found for interface #{} {}", props.get(PROP_ID_KEY), props.get("name"));
+                    logger.trace("No CAPsMAN props found for interface #{} {}", props.get(PROP_ID_KEY),
+                            props.get("name"));
                 }
             } else {
                 logger.trace("Skipping unsupported interface type: {}", props.get("type"));
@@ -155,16 +159,13 @@ public class RouterosInstance {
     private void updateCapsmanRegistrations() throws MikrotikApiException {
         logger.trace("Executing '{}' on {}...", CMD_PRINT_CAPSMAN_REGS, host);
         List<Map<String, String>> response = connection.execute(CMD_PRINT_CAPSMAN_REGS);
-        capsmanRegistrationCache = response.stream()
-                .map(RouterosCapsmanRegistration::new)
-                .collect(Collectors.toList());
+        capsmanRegistrationCache = response.stream().map(RouterosCapsmanRegistration::new).collect(Collectors.toList());
     }
 
     private void updateWirelessRegistrations() throws MikrotikApiException {
         logger.trace("Executing '{}' on {}...", CMD_PRINT_WIRELESS_REGS, host);
         List<Map<String, String>> response = connection.execute(CMD_PRINT_WIRELESS_REGS);
-        wirelessRegistrationCache = response.stream()
-                .map(RouterosWirelessRegistration::new)
+        wirelessRegistrationCache = response.stream().map(RouterosWirelessRegistration::new)
                 .collect(Collectors.toList());
     }
 
@@ -179,5 +180,4 @@ public class RouterosInstance {
         List<Map<String, String>> response = connection.execute(CMD_PRINT_RB_INFO);
         this.rbInfo = new RouterosRouterboardInfo(response.get(0));
     }
-
 }

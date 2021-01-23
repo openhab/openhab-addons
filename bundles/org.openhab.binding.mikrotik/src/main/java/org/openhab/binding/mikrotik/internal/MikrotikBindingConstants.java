@@ -44,7 +44,6 @@ public class MikrotikBindingConstants {
     public static final String CHANNEL_USED_MEM = "usedMemory";
     public static final String CHANNEL_CPU_LOAD = "cpuLoad";
 
-
     public static final String CHANNEL_COMMENT = "comment";
 
     // List of common interface channels
@@ -85,16 +84,14 @@ public class MikrotikBindingConstants {
     public static final String CHANNEL_UP_TIME = "uptime";
     public static final String CHANNEL_UP_SINCE = "upSince";
 
-    //Wireless client channels
+    // Wireless client channels
     public static final String CHANNEL_LAST_SEEN = "lastSeen";
     public static final String CHANNEL_SSID = "ssid";
     public static final String CHANNEL_SIGNAL = "signal";
-
 
     // List of common wired + wireless client channels
     public static final String CHANNEL_SITE = "site";
     public static final String CHANNEL_IP_ADDRESS = "ipAddress";
     public static final String CHANNEL_BLOCKED = "blocked";
     public static final String CHANNEL_RECONNECT = "reconnect";
-
 }

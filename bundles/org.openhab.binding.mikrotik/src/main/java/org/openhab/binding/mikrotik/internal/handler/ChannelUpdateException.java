@@ -20,5 +20,7 @@ public class ChannelUpdateException extends RuntimeException {
         return String.format("%s @ %s/%s", super.getMessage(), thingUID, channelID);
     }
 
-    public Throwable getInnerException(){ return this.innerException; }
+    public Throwable getInnerException() {
+        return this.innerException;
+    }
 }

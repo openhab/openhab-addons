@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
+import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.GONE;
+import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
+
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,21 +29,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.mikrotik.internal.config.InterfaceThingConfig;
 import org.openhab.binding.mikrotik.internal.MikrotikBindingConstants;
+import org.openhab.binding.mikrotik.internal.config.InterfaceThingConfig;
 import org.openhab.binding.mikrotik.internal.model.*;
 import org.openhab.binding.mikrotik.internal.util.RateCalculator;
 import org.openhab.binding.mikrotik.internal.util.StateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
-
-import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.GONE;
-import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
 
 /**
  * The {@link MikrotikInterfaceThingHandler} is responsible for handling commands, which are
@@ -68,7 +68,7 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         if (this.config == null) {
             logger.debug("Assigning {} config: {}", getClass().getSimpleName(), config);
             if (!config.isValid()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR,"InterfaceThingConfig is invalid");
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "InterfaceThingConfig is invalid");
                 return;
             }
             this.config = config;
@@ -77,11 +77,11 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     }
 
     @Override
-    protected void refreshModels(){
-        if(getRouteros() != null && config != null){
+    protected void refreshModels() {
+        if (getRouteros() != null && config != null) {
             logger.trace("Searching for {} interface", config.name);
             iface = getRouteros().findInterface(config.name);
-            if(iface == null){
+            if (iface == null) {
                 logger.warn("Interface {} is not found in RouterOS for thing {}", config.name, getThing().getUID());
                 updateStatus(OFFLINE, GONE, "Interface not found in RouterOS");
             } else {
@@ -101,7 +101,7 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         State oldState = currentState.getOrDefault(channelID, UnDefType.NULL);
         State newState = oldState;
 
-        if(iface == null){
+        if (iface == null) {
             newState = UnDefType.NULL;
         } else {
             switch (channelID) {
@@ -183,47 +183,55 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
         logger.trace("About to update state on channel {} for thing {} - newState({}) = {}, oldState = {}", channelUID,
                 getThing().getUID(), newState.getClass().getSimpleName(), newState, oldState);
-        if(newState != oldState){
+        if (newState != oldState) {
             updateState(channelID, newState);
             currentState.put(channelID, newState);
         }
-
     }
 
-    protected State getEtherIterfacefaceChannelState(String channelID){
+    protected State getEtherIterfacefaceChannelState(String channelID) {
         RouterosEthernetInterface etherIface = (RouterosEthernetInterface) iface;
-        switch(channelID){
-            case CHANNEL_DEFAULT_NAME: return StateUtil.stringOrNull(etherIface.getDefaultName());
+        switch (channelID) {
+            case CHANNEL_DEFAULT_NAME:
+                return StateUtil.stringOrNull(etherIface.getDefaultName());
             default:
                 return UnDefType.UNDEF;
         }
     }
-    protected State getCapIterfaceChannelState(String channelID){
+
+    protected State getCapIterfaceChannelState(String channelID) {
         RouterosCapInterface capIface = (RouterosCapInterface) iface;
-        switch(channelID){
-            case CHANNEL_STATE: return StateUtil.stringOrNull(capIface.getCurrentState());
-            case CHANNEL_REGISTERED_CLIENTS: return StateUtil.intOrNull(capIface.getRegisteredClients());
-            case CHANNEL_AUTHORIZED_CLIENTS: return StateUtil.intOrNull(capIface.getAuthorizedClients());
+        switch (channelID) {
+            case CHANNEL_STATE:
+                return StateUtil.stringOrNull(capIface.getCurrentState());
+            case CHANNEL_REGISTERED_CLIENTS:
+                return StateUtil.intOrNull(capIface.getRegisteredClients());
+            case CHANNEL_AUTHORIZED_CLIENTS:
+                return StateUtil.intOrNull(capIface.getAuthorizedClients());
             default:
                 return UnDefType.UNDEF;
         }
     }
 
-    protected State getPPPoECliChannelState(String channelID){
+    protected State getPPPoECliChannelState(String channelID) {
         RouterosPPPoECliInterface pppCli = (RouterosPPPoECliInterface) iface;
-        switch(channelID){
-            case CHANNEL_UP_TIME: return StateUtil.stringOrNull(pppCli.getUptime());
-            case CHANNEL_UP_SINCE: return StateUtil.timeOrNull(pppCli.calculateUptimeStart());
+        switch (channelID) {
+            case CHANNEL_UP_TIME:
+                return StateUtil.stringOrNull(pppCli.getUptime());
+            case CHANNEL_UP_SINCE:
+                return StateUtil.timeOrNull(pppCli.calculateUptimeStart());
             default:
                 return UnDefType.UNDEF;
         }
     }
 
-    protected State getL2TPSrvChannelState(String channelID){
+    protected State getL2TPSrvChannelState(String channelID) {
         RouterosL2TPSrvInterface vpnSrv = (RouterosL2TPSrvInterface) iface;
-        switch(channelID){
-            case CHANNEL_UP_TIME: return StateUtil.stringOrNull(vpnSrv.getUptime());
-            case CHANNEL_UP_SINCE: return StateUtil.timeOrNull(vpnSrv.calculateUptimeStart());
+        switch (channelID) {
+            case CHANNEL_UP_TIME:
+                return StateUtil.stringOrNull(vpnSrv.getUptime());
+            case CHANNEL_UP_SINCE:
+                return StateUtil.timeOrNull(vpnSrv.calculateUptimeStart());
             default:
                 return UnDefType.UNDEF;
         }
@@ -231,7 +239,8 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
     @Override
     protected void executeCommand(ChannelUID channelUID, Command command) {
-        if(iface == null) return;
+        if (iface == null)
+            return;
         logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
     }
 }

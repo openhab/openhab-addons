@@ -12,6 +12,16 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
+import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
+
+import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,16 +35,6 @@ import org.openhab.binding.mikrotik.internal.config.InterfaceThingConfig;
 import org.openhab.binding.mikrotik.internal.model.RouterosInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.ParameterizedType;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
-import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 
 /**
  * The {@link MikrotikBaseThingHandler} is responsible for handling commands, which are
@@ -54,24 +54,25 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
     protected DateTime lastModelsRefresh = DateTime.now();
     protected Map<String, State> currentState = new HashMap<>();
 
-
     // public static boolean supportsThingType(ThingTypeUID thingTypeUID) <- in subclasses
 
     public MikrotikBaseThingHandler(Thing thing) {
         super(thing);
     }
 
-    protected @Nullable MikrotikRouterosBridgeHandler getVerifiedBridgeHandler(){
-        @Nullable Bridge bridgeRef = getBridge();
-        if(bridgeRef != null && bridgeRef.getHandler() != null &&
-                (bridgeRef.getHandler() instanceof MikrotikRouterosBridgeHandler)){
+    protected @Nullable MikrotikRouterosBridgeHandler getVerifiedBridgeHandler() {
+        @Nullable
+        Bridge bridgeRef = getBridge();
+        if (bridgeRef != null && bridgeRef.getHandler() != null
+                && (bridgeRef.getHandler() instanceof MikrotikRouterosBridgeHandler)) {
             return (MikrotikRouterosBridgeHandler) bridgeRef.getHandler();
         }
         return null;
     }
 
     protected final @Nullable RouterosInstance getRouteros() {
-        @Nullable MikrotikRouterosBridgeHandler bridgeHandler = getVerifiedBridgeHandler();
+        @Nullable
+        MikrotikRouterosBridgeHandler bridgeHandler = getVerifiedBridgeHandler();
         return bridgeHandler == null ? null : bridgeHandler.getRouteros();
     }
 
@@ -88,8 +89,8 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
                     try {
                         executeCommand(channelUID, command);
                     } catch (Exception e) {
-                        logger.warn("Unexpected error handling command = {} for channel = {} : {}", command,
-                                channelUID, e.getMessage());
+                        logger.warn("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
+                                e.getMessage());
                     }
                 }
             }
@@ -101,7 +102,7 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
         logger.debug("Start initializing!");
         cancelRefreshJob();
         if (getVerifiedBridgeHandler() == null) {
-            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,"This thing requires a RouterOS bridge");
+            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "This thing requires a RouterOS bridge");
             return;
         }
 
@@ -109,9 +110,11 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
 
         // derive the config class from the generic type
         logger.trace("Getting config for {}", getThing().getUID());
-        Class<?> klass = (Class<?>)(((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
-        C config = (C)getConfigAs(klass);
-        logger.trace("Running initializer for {} ({}) with config: {}", getThing().getUID(), getThing().getStatus(), config);
+        Class<?> klass = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass())
+                .getActualTypeArguments()[0]);
+        C config = (C) getConfigAs(klass);
+        logger.trace("Running initializer for {} ({}) with config: {}", getThing().getUID(), getThing().getStatus(),
+                config);
         initialize(config);
         logger.debug("Finished initializing!");
     }
@@ -121,8 +124,8 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
         logger.trace("Updating {} status to {} / {}", getThing().getUID(), status, statusDetail);
         if (status == ONLINE || (status == OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
             scheduleRefreshJob();
-        } else if (status == OFFLINE &&
-                (statusDetail == ThingStatusDetail.CONFIGURATION_ERROR || statusDetail == ThingStatusDetail.GONE)) {
+        } else if (status == OFFLINE
+                && (statusDetail == ThingStatusDetail.CONFIGURATION_ERROR || statusDetail == ThingStatusDetail.GONE)) {
             cancelRefreshJob();
         }
         // update the status only if it's changed
@@ -138,7 +141,8 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
             if (refreshJob == null) {
                 int refreshPeriod = getVerifiedBridgeHandler().getBridgeConfig().refresh;
                 logger.debug("Scheduling refresh job every {}s", refreshPeriod);
-                refreshJob = scheduler.scheduleWithFixedDelay(this::scheduledRun, refreshPeriod, refreshPeriod, TimeUnit.SECONDS);
+                refreshJob = scheduler.scheduleWithFixedDelay(this::scheduledRun, refreshPeriod, refreshPeriod,
+                        TimeUnit.SECONDS);
             }
         }
     }
@@ -157,7 +161,7 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
         logger.trace("scheduledRun() called");
         try {
             if (getVerifiedBridgeHandler() == null) {
-                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,"Failed reaching out to RouterOS bridge");
+                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Failed reaching out to RouterOS bridge");
                 return;
             }
             if (getBridge() != null && getBridge().getStatus() == OFFLINE) {
@@ -165,7 +169,8 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
                 return;
             }
 
-            if(getThing().getStatus() != ONLINE) updateStatus(ONLINE);
+            if (getThing().getStatus() != ONLINE)
+                updateStatus(ONLINE);
             logger.debug("Refreshing all {} channels", getThing().getUID());
             for (Channel channel : getThing().getChannels()) {
                 refreshChannel(channel.getUID());
@@ -192,9 +197,9 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
         }
     }
 
-    protected void throttledRefreshModels(){
-        MikrotikRouterosBridgeHandler bridgeHandler = (MikrotikRouterosBridgeHandler)getBridge().getHandler();
-        if(DateTime.now().isAfter(lastModelsRefresh.plusSeconds(bridgeHandler.getBridgeConfig().refresh))){
+    protected void throttledRefreshModels() {
+        MikrotikRouterosBridgeHandler bridgeHandler = (MikrotikRouterosBridgeHandler) getBridge().getHandler();
+        if (DateTime.now().isAfter(lastModelsRefresh.plusSeconds(bridgeHandler.getBridgeConfig().refresh))) {
             lastModelsRefresh = DateTime.now();
             refreshModels();
         }
@@ -207,7 +212,10 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
     }
 
     protected abstract void initialize(@NonNull C config);
+
     protected abstract void refreshModels();
+
     protected abstract void refreshChannel(ChannelUID channelUID);
+
     protected abstract void executeCommand(ChannelUID channelUID, Command command);
 }

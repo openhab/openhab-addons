@@ -12,7 +12,15 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
-import me.legrange.mikrotik.MikrotikApiException;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
+import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.*;
@@ -31,15 +39,7 @@ import org.openhab.binding.mikrotik.internal.util.StateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
-import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
-import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
-
+import me.legrange.mikrotik.MikrotikApiException;
 
 /**
  * The {@link MikrotikRouterosBridgeHandler} is responsible for handling commands, which are
@@ -69,8 +69,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(RouterosThingConfig.class);
 
         logger.debug("Initializing MikrotikRouterosBridgeHandler with config = {}", config);
-        routeros = new RouterosInstance(config.host, config.port, config.login,
-                config.password);
+        routeros = new RouterosInstance(config.host, config.port, config.login, config.password);
 
         updateStatus(ThingStatus.INITIALIZING);
         scheduler.execute(() -> {
@@ -78,8 +77,9 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Starting routeros model");
                 routeros.start();
 
-                @Nullable RouterosRouterboardInfo rbInfo = routeros.getRouterboardInfo();
-                if(rbInfo != null){
+                @Nullable
+                RouterosRouterboardInfo rbInfo = routeros.getRouterboardInfo();
+                if (rbInfo != null) {
                     Map<String, String> bridgeProps = editProperties();
                     bridgeProps.put(PROPERTY_MODEL, rbInfo.getModel());
                     bridgeProps.put(PROPERTY_FIRMWARE, rbInfo.getFirmware());
@@ -98,8 +98,10 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         logger.debug("Finished initializing Mikrotik binding!");
     }
 
+    public @Nullable RouterosInstance getRouteros() {
+        return routeros;
+    }
 
-    public @Nullable RouterosInstance getRouteros() { return routeros; }
     public @Nullable RouterosThingConfig getBridgeConfig() {
         return config;
     }
@@ -107,7 +109,8 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         logger.trace("Attempt updating {} status to {}; detail = {}", getThing().getUID(), status, statusDetail);
-        if (status == ThingStatus.ONLINE || (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
+        if (status == ThingStatus.ONLINE
+                || (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
             scheduleRefreshJob();
         } else if (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.CONFIGURATION_ERROR) {
             cancelRefreshJob();
@@ -158,21 +161,21 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
             if (routeros != null && routeros.isConnected()) {
                 logger.debug("Refreshing RouterOS caches for {}", getThing().getUID());
                 routeros.refresh();
-                    //refresh own channels
-                    for (Channel channel : getThing().getChannels()) {
-                        try {
-                            refreshChannel(channel.getUID());
-                        } catch (RuntimeException e) {
-                            throw new ChannelUpdateException(getThing().getUID(), channel.getUID(), e);
-                        }
+                // refresh own channels
+                for (Channel channel : getThing().getChannels()) {
+                    try {
+                        refreshChannel(channel.getUID());
+                    } catch (RuntimeException e) {
+                        throw new ChannelUpdateException(getThing().getUID(), channel.getUID(), e);
                     }
-                    // refresh all the client things below
-                    getThing().getThings().forEach(thing -> {
-                        ThingHandler handler = thing.getHandler();
-                        if (handler instanceof MikrotikBaseThingHandler) {
-                            ((MikrotikBaseThingHandler) handler).refresh();
-                        }
-                    });
+                }
+                // refresh all the client things below
+                getThing().getThings().forEach(thing -> {
+                    ThingHandler handler = thing.getHandler();
+                    if (handler instanceof MikrotikBaseThingHandler) {
+                        ((MikrotikBaseThingHandler) handler).refresh();
+                    }
+                });
             } else {
                 logger.debug("Skipping RouterOS cache update as routeros {} is not available", getThing().getUID());
                 updateStatus(ThingStatus.OFFLINE);
@@ -188,17 +191,18 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling command = {} for channel = {}", command, channelUID);
         if (getThing().getStatus() == ONLINE) {
-            @Nullable RouterosInstance routeros = getRouteros();
+            @Nullable
+            RouterosInstance routeros = getRouteros();
             if (routeros != null) {
                 if (command == REFRESH) {
                     refreshChannel(channelUID);
                 } else {
-                    logger.warn("Ignoring command = {} for channel = {} as it is not yet supported", command, channelUID);
+                    logger.warn("Ignoring command = {} for channel = {} as it is not yet supported", command,
+                            channelUID);
                 }
             }
         }
@@ -210,7 +214,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         State oldState = currentState.getOrDefault(channelID, UnDefType.NULL);
         State newState = oldState;
 
-        if(rbRes == null){
+        if (rbRes == null) {
             newState = UnDefType.NULL;
         } else {
             switch (channelID) {
@@ -243,10 +247,9 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
 
         logger.trace("About to update state on channel {} for thing {}: newState({}) = {}, oldState = {}", channelUID,
                 getThing().getUID(), newState.getClass().getSimpleName(), newState, oldState);
-        if(newState != oldState){
+        if (newState != oldState) {
             updateState(channelID, newState);
             currentState.put(channelID, newState);
         }
     }
-
 }

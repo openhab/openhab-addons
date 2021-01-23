@@ -140,7 +140,8 @@
 				<label>SSID</label>
 				<description>
 					Constraining SSID for the WiFi client (optional). If client will connect to another SSID,
-					this thing will stay offline until client reconnects to specified SSID.
+					this thing
+					will stay offline until client reconnects to specified SSID.
 				</description>
 			</parameter>
 			<parameter name="considerHome" type="integer" required="false">
