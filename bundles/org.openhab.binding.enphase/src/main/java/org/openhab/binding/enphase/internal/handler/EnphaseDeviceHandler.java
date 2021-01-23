@@ -137,6 +137,10 @@ abstract class EnphaseDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         serialNumber = (String) getConfig().get(EnphaseBindingConstants.CONFIG_SERIAL_NUMBER);
-        updateStatus(ThingStatus.UNKNOWN);
+        if (!EnphaseBindingConstants.isValidSerial(serialNumber)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial Number is not valid");
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
     }
 }

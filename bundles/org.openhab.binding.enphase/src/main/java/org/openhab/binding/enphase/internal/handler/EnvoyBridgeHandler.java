@@ -325,11 +325,9 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     private void updateDevices() {
         final Map<String, @Nullable DeviceDTO> devices = getDevices(false);
 
-        if (devices != null) {
-            getThing().getThings().stream().map(Thing::getHandler).filter(h -> h instanceof EnphaseDeviceHandler)
-                    .map(EnphaseDeviceHandler.class::cast)
-                    .forEach(invHandler -> invHandler.refreshDeviceState(devices.get(invHandler.getSerialNumber())));
-        }
+        getThing().getThings().stream().map(Thing::getHandler).filter(h -> h instanceof EnphaseDeviceHandler)
+                .map(EnphaseDeviceHandler.class::cast).forEach(invHandler -> invHandler
+                        .refreshDeviceState(devices == null ? null : devices.get(invHandler.getSerialNumber())));
     }
 
     /**
