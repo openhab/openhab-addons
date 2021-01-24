@@ -41,14 +41,6 @@ public interface ValueTransformation {
      * @param command
      * @return Transformed command, or null if no transformation was possible
      */
-    /**
-     * Transform state to another state using this transformation
-     *
-     * @param context
-     * @param types types to used to parse the transformation result
-     * @param command
-     * @return Transformed command, or null if no transformation was possible
-     */
     default @Nullable State transformState(BundleContext context, List<Class<? extends State>> types, State state) {
         // Note that even identity transformations go through the State -> String -> State steps. This does add some
         // overhead but takes care of DecimalType -> PercentType conversions, for example.
