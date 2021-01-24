@@ -27,9 +27,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.doc.ModuleType;
-import org.openhab.binding.netatmo.internal.api.doc.ModuleType.RefreshPolicy;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants;
+import org.openhab.binding.netatmo.internal.api.ModuleType;
+import org.openhab.binding.netatmo.internal.api.ModuleType.RefreshPolicy;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;

@@ -16,8 +16,8 @@ import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.doc.EventType;
-import org.openhab.binding.netatmo.internal.api.doc.ModuleType;
+import org.openhab.binding.netatmo.internal.api.EventType;
+import org.openhab.binding.netatmo.internal.api.ModuleType;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

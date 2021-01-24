@@ -13,8 +13,8 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.utils.WeatherUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,7 +49,7 @@ public class HumidityChannelHelper extends AbstractChannelHelper {
         double humidex = getHumidex(temperature, humidity);
         switch (channelId) {
             case CHANNEL_HUMIDEX:
-                return new DecimalType(humidex);
+                return toDecimalType(humidex);
             case CHANNEL_HUMIDEX_SCALE:
                 return new DecimalType(humidexScale(humidex));
             case CHANNEL_HEAT_INDEX:

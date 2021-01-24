@@ -16,11 +16,11 @@ import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NAObjectMap;
-import org.openhab.binding.netatmo.internal.api.doc.EventType;
+import org.openhab.binding.netatmo.internal.api.EventType;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
-import org.openhab.binding.netatmo.internal.api.home.NAPerson;
-import org.openhab.binding.netatmo.internal.api.home.NASnapshot;
+import org.openhab.binding.netatmo.internal.api.dto.NAObjectMap;
+import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
+import org.openhab.binding.netatmo.internal.api.dto.NASnapshot;
 
 /**
  * The {@link NAWebhookEvent} is responsible to hold

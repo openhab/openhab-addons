@@ -14,7 +14,7 @@ package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.TrendDescription;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.TrendDescription;
 
 import com.google.gson.annotations.SerializedName;
 

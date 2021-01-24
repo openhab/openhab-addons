@@ -26,12 +26,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
-import org.openhab.binding.netatmo.internal.api.security.SecurityApi;
+import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
@@ -56,24 +57,22 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NetatmoServlet extends HttpServlet {
     private static final long serialVersionUID = -354583910860541214L;
-    private static final String APPLICATION_JSON = "application/json";
     private static final String CHARSET = "utf-8";
 
     private final Logger logger = LoggerFactory.getLogger(NetatmoServlet.class);
-
-    private final HttpService httpService;
-    private final ApiBridge apiBridge;
     private final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
-    private @Nullable URI webhookURI;
+    private final HttpService httpService;
+    private boolean hookSet = false;
+    private @Nullable SecurityApi api;
 
     @Activate
     public NetatmoServlet(@Reference HttpService httpService, @Reference ApiBridge apiBridge,
             ComponentContext componentContext) {
         this.httpService = httpService;
-        this.apiBridge = apiBridge;
         try {
             httpService.registerServlet(NETATMO_CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
             logger.debug("Started Netatmo Webhook Servlet at '{}'", NETATMO_CALLBACK_URI);
+            api = apiBridge.getRestManager(SecurityApi.class);
         } catch (ServletException | NamespaceException e) {
             logger.error("Could not start Netatmo Webhook Servlet : {}", e.getMessage());
         }
@@ -90,33 +89,27 @@ public class NetatmoServlet extends HttpServlet {
     @Modified
     protected void modified(Map<String, Object> config) {
         NetatmoBindingConfiguration configuration = new Configuration(config).as(NetatmoBindingConfiguration.class);
-        if (configuration.webHookUrl != null && !configuration.webHookUrl.isEmpty()) {
+        SecurityApi localApi = api;
+        if (configuration.webHookUrl != null && !configuration.webHookUrl.isEmpty() && localApi != null) {
             String tentative = configuration.webHookUrl + NETATMO_CALLBACK_URI;
             try {
-                webhookURI = new URI(tentative);
-                String uri = webhookURI.toString();
-
-                logger.info("Setting Netatmo Welcome WebHook to {}", uri);
-                SecurityApi api = apiBridge.getRestManager(SecurityApi.class);
-                if (api != null) {
-                    try {
-                        api.addwebhook(uri);
-                    } catch (NetatmoException e) {
-                        logger.warn("Error setting webhook : {}", e.getMessage());
-                    }
-                }
+                URI webhookURI = new URI(tentative);
+                logger.info("Setting Netatmo Welcome WebHook to {}", webhookURI.toString());
+                hookSet = localApi.addwebhook(webhookURI);
             } catch (URISyntaxException e) {
                 logger.warn("webhookUrl is not a valid URI '{}' : {}", tentative, e.getMessage());
+            } catch (NetatmoException e) {
+                logger.warn("Error setting webhook : {}", e.getMessage());
             }
         }
     }
 
     private void releaseWebHook() {
         logger.info("Releasing Netatmo Welcome WebHook");
-        SecurityApi api = apiBridge.getRestManager(SecurityApi.class);
-        if (api != null) {
+        SecurityApi localApi = api;
+        if (hookSet && localApi != null) {
             try {
-                api.dropWebhook();
+                localApi.dropWebhook();
             } catch (NetatmoException e) {
                 logger.warn("Error releasing webhook : {}", e.getMessage());
             }
@@ -140,18 +133,14 @@ public class NetatmoServlet extends HttpServlet {
                     logger.info("Unable to deserialize empty string");
                 }
             }
-            setHeaders(resp);
+            resp.setCharacterEncoding(CHARSET);
+            resp.setContentType(MediaType.APPLICATION_JSON);
+            resp.setHeader("Access-Control-Allow-Origin", "*");
+            resp.setHeader("Access-Control-Allow-Methods", "POST");
+            resp.setHeader("Access-Control-Max-Age", "3600");
+            resp.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             resp.getWriter().write("");
         }
-    }
-
-    private void setHeaders(HttpServletResponse response) {
-        response.setCharacterEncoding(CHARSET);
-        response.setContentType(APPLICATION_JSON);
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "POST");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     }
 
     public void registerDataListener(String id, NetatmoDeviceHandler dataListener) {

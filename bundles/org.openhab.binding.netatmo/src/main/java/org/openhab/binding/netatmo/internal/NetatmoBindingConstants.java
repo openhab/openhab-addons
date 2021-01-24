@@ -13,8 +13,8 @@
 package org.openhab.binding.netatmo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.NAObjectMap;
 import org.openhab.binding.netatmo.internal.api.NAObjectMapDeserializer;
+import org.openhab.binding.netatmo.internal.api.dto.NAObjectMap;
 import org.openhab.binding.netatmo.internal.webhook.NAPushType;
 import org.openhab.binding.netatmo.internal.webhook.NAPushTypeDeserializer;
 import org.openhab.core.library.types.OnOffType;

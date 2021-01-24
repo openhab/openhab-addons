@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.doc.ModuleType;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.MeasureType;
+import org.openhab.binding.netatmo.internal.api.ModuleType;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureType;
 
 import com.google.gson.annotations.SerializedName;
 

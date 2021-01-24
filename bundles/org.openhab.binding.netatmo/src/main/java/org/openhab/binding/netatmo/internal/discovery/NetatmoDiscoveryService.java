@@ -22,23 +22,23 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.ConnectionListener;
 import org.openhab.binding.netatmo.internal.api.ConnectionStatus;
+import org.openhab.binding.netatmo.internal.api.EnergyApi;
+import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
-import org.openhab.binding.netatmo.internal.api.aircare.AircareApi;
-import org.openhab.binding.netatmo.internal.api.doc.ModuleType;
+import org.openhab.binding.netatmo.internal.api.SecurityApi;
+import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NADevice;
 import org.openhab.binding.netatmo.internal.api.dto.NADeviceDataBody;
+import org.openhab.binding.netatmo.internal.api.dto.NAHome;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
+import org.openhab.binding.netatmo.internal.api.dto.NAMain;
+import org.openhab.binding.netatmo.internal.api.dto.NAPlug;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.api.energy.EnergyApi;
-import org.openhab.binding.netatmo.internal.api.energy.NAPlug;
-import org.openhab.binding.netatmo.internal.api.home.NAHome;
-import org.openhab.binding.netatmo.internal.api.home.NAHomeData;
-import org.openhab.binding.netatmo.internal.api.security.NAWelcome;
-import org.openhab.binding.netatmo.internal.api.security.SecurityApi;
-import org.openhab.binding.netatmo.internal.api.weather.NAMain;
-import org.openhab.binding.netatmo.internal.api.weather.WeatherApi;
+import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -83,7 +83,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         this.localeProvider = localeProvider;
         this.i18nProvider = translationProvider;
         // this.configProperties = BindingUtils.ComponentContextToMap(componentContext);
-        apiBridge.setConnectionListener(this);
+        apiBridge.addConnectionListener(this);
     }
 
     @Override

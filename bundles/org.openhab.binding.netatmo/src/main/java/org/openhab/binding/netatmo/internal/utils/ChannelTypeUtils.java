@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -92,14 +91,14 @@ public class ChannelTypeUtils {
         return textualDecimal == null ? UnDefType.NULL : new DecimalType(textualDecimal);
     }
 
-    public static State toOnOffType(@Nullable String yesno) {
-        return "on".equalsIgnoreCase(yesno) ? OnOffType.ON : OnOffType.OFF;
-    }
+    // public static State toOnOffType(@Nullable String yesno) {
+    // return "on".equalsIgnoreCase(yesno) ? OnOffType.ON : OnOffType.OFF;
+    // }
 
     public static State toQuantityType(@Nullable Double value, @Nullable Unit<?> unit) {
-        return value == null ? UnDefType.NULL
-                : value.isNaN() ? UnDefType.NULL
-                        : unit != null ? toQuantityType((Number) value, unit) : toDecimalType(value);
+        return value == null || value.isNaN() ? UnDefType.NULL
+                : unit == null ? toDecimalType(value)
+                        : toQuantityType(new BigDecimal(value).setScale(2, RoundingMode.HALF_UP), unit);
     }
 
     public static State toQuantityType(@Nullable Number value, Unit<?> unit) {

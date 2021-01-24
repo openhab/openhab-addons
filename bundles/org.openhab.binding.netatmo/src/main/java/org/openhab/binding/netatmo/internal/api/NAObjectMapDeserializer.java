@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.api.dto.NAObjectMap;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;

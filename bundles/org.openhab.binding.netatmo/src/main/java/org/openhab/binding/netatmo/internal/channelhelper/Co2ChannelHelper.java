@@ -17,7 +17,7 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuan
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;

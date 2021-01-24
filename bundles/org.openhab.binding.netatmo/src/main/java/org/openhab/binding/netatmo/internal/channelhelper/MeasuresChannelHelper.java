@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.MEASUREUNITS;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.MEASUREUNITS;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.MeasureLimit;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureLimit;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.config.MeasureChannelConfig;
 import org.openhab.core.i18n.TimeZoneProvider;

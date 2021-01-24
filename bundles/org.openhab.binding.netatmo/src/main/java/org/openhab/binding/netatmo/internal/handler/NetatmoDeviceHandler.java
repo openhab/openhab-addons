@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.VENDOR;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,21 +25,23 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
+import org.openhab.binding.netatmo.internal.api.ConnectionListener;
+import org.openhab.binding.netatmo.internal.api.ConnectionStatus;
+import org.openhab.binding.netatmo.internal.api.ModuleType;
+import org.openhab.binding.netatmo.internal.api.ModuleType.RefreshPolicy;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureLimit;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
-import org.openhab.binding.netatmo.internal.api.doc.ModuleType;
-import org.openhab.binding.netatmo.internal.api.doc.ModuleType.RefreshPolicy;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.MeasureLimit;
+import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.dto.NADevice;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.api.weather.WeatherApi;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.MeasuresChannelHelper;
 import org.openhab.binding.netatmo.internal.config.MeasureChannelConfig;
 import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
-import org.openhab.binding.netatmo.internal.handler.energy.NADescriptionProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -60,35 +61,34 @@ import org.slf4j.LoggerFactory;
  * {@link NetatmoDeviceHandler} is the abstract class that handles
  * common behaviors of all netatmo bridges (devices)
  *
- * @author Gaël L'hopital - Initial contribution OH2 version
+ * @author Gaël L'hopital - Initial contribution
  * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
 @NonNullByDefault
-public class NetatmoDeviceHandler extends BaseBridgeHandler {
+public class NetatmoDeviceHandler extends BaseBridgeHandler implements ConnectionListener {
     private final Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
 
     public final Map<String, NetatmoDeviceHandler> dataListeners = new ConcurrentHashMap<>();
 
-    protected final List<AbstractChannelHelper> channelHelpers = new ArrayList<>();
+    protected final List<AbstractChannelHelper> channelHelpers;
     protected final ZoneId zoneId;
-    protected final NADescriptionProvider descriptionProvider;
+    protected final NetatmoDescriptionProvider descriptionProvider;
     protected final Optional<MeasuresChannelHelper> measureChannelHelper;
+    protected final ApiBridge apiBridge;
 
     protected @Nullable NAThing naThing;
-    protected @Nullable ApiBridge apiBridge;
     protected @NonNullByDefault({}) NetatmoThingConfiguration config;
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable RefreshStrategy refreshStrategy;
 
-    public NetatmoDeviceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers,
-            @Nullable ApiBridge apiBridge, TimeZoneProvider timeZoneProvider,
-            NADescriptionProvider descriptionProvider) {
+    public NetatmoDeviceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
+            TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
         super(bridge);
         this.apiBridge = apiBridge;
         this.descriptionProvider = descriptionProvider;
-        this.channelHelpers.addAll(channelHelpers);
+        this.channelHelpers = channelHelpers;
         this.zoneId = timeZoneProvider.getTimeZone();
 
         measureChannelHelper = channelHelpers.stream().filter(c -> c instanceof MeasuresChannelHelper).findFirst()
@@ -111,22 +111,37 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
                         : null;
 
         measureChannelHelper.ifPresent(channelHelper -> channelHelper.collectMeasuredChannels());
+        apiBridge.addConnectionListener(this);
+    }
 
-        scheduleRefreshJob();
+    @Override
+    public void pushStatus(ConnectionStatus connectionStatus) {
+        if (connectionStatus.isConnected()) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, connectionStatus.getMessage());
+            scheduleRefreshJob();
+        } else {
+            freeRefreshJob();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, connectionStatus.getMessage());
+        }
     }
 
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
+        freeRefreshJob();
+        apiBridge.removeConnectionListener(this);
+        NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterDataListener(this);
+        }
+    }
+
+    private void freeRefreshJob() {
         ScheduledFuture<?> job = refreshJob;
         if (job != null) {
             job.cancel(true);
         }
         refreshJob = null;
-        NetatmoDeviceHandler bridgeHandler = getBridgeHandler(getBridge());
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterDataListener(this);
-        }
     }
 
     protected void scheduleRefreshJob() {
@@ -229,16 +244,13 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
         measures.keySet().forEach(measureDef -> {
             double result = Double.NaN;
             try {
-                ApiBridge localApiBridge = apiBridge;
-                if (localApiBridge != null) {
-                    WeatherApi api = localApiBridge.getRestManager(WeatherApi.class);
-                    if (api != null) {
-                        if (measureDef.limit == MeasureLimit.NONE) {
-                            result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type);
-                        } else {
-                            result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type,
-                                    measureDef.limit);
-                        }
+                WeatherApi api = apiBridge.getRestManager(WeatherApi.class);
+                if (api != null) {
+                    if (measureDef.limit == MeasureLimit.NONE) {
+                        result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type);
+                    } else {
+                        result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type,
+                                measureDef.limit);
                     }
                 }
             } catch (NetatmoException e) {
@@ -297,10 +309,6 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
     public void setEvent(NAEvent event) {
     }
 
-    public @Nullable State getHandlerProperty(ChannelUID channelUID) {
-        return null;
-    }
-
     protected void updateIfLinked(String group, String channelName, State state) {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), group, channelName);
         if (isLinked(channelUID)) {
@@ -315,8 +323,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler {
                 return state;
             }
         }
-        State state = getHandlerProperty(channelUID);
-        return state != null ? state : UnDefType.UNDEF;
+        return UnDefType.UNDEF;
     }
 
     protected @Nullable NetatmoDeviceHandler getBridgeHandler(@Nullable Bridge bridge) {

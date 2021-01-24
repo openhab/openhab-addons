@@ -13,8 +13,8 @@
 package org.openhab.binding.netatmo.internal.webhook;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.doc.EventType;
-import org.openhab.binding.netatmo.internal.api.doc.ModuleType;
+import org.openhab.binding.netatmo.internal.api.EventType;
+import org.openhab.binding.netatmo.internal.api.ModuleType;
 
 /**
  * This class holds informations of push_type field

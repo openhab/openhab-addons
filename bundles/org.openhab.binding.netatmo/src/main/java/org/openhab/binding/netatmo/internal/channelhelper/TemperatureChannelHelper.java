@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.TEMPERATURE_UNIT;
+import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.TEMPERATURE_UNIT;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;

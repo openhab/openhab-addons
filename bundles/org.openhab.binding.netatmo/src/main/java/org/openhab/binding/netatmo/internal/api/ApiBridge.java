@@ -38,14 +38,7 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.netatmo.internal.api.aircare.AircareApi;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.Scope;
-import org.openhab.binding.netatmo.internal.api.energy.EnergyApi;
-import org.openhab.binding.netatmo.internal.api.home.HomeApi;
-import org.openhab.binding.netatmo.internal.api.partner.PartnerApi;
-import org.openhab.binding.netatmo.internal.api.security.SecurityApi;
-import org.openhab.binding.netatmo.internal.api.weather.WeatherApi;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -79,7 +72,7 @@ public class ApiBridge {
     private final Map<HttpHeader, String> httpHeaders = new HashMap<>();
 
     private final HttpClient httpClient;
-    private final ConnectApi connectApi;
+    private final AuthenticationApi connectApi;
 
     private NetatmoBindingConfiguration configuration = new NetatmoBindingConfiguration();
     private Map<Class<? extends RestManager>, Object> managers = new HashMap<>();
@@ -91,7 +84,7 @@ public class ApiBridge {
             ComponentContext componentContext) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpHeaders.put(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
-        this.connectApi = new ConnectApi(this, oAuthFactory, configuration, scheduler);
+        this.connectApi = new AuthenticationApi(this, oAuthFactory, configuration, scheduler);
 
         modified(BindingUtils.ComponentContextToMap(componentContext));
     }
@@ -264,8 +257,12 @@ public class ApiBridge {
         httpHeaders.put(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
     }
 
-    public void setConnectionListener(ConnectionListener listener) {
+    public void addConnectionListener(ConnectionListener listener) {
         listeners.add(listener);
         listener.pushStatus(connectionStatus);
+    }
+
+    public void removeConnectionListener(ConnectionListener listener) {
+        listeners.remove(listener);
     }
 }

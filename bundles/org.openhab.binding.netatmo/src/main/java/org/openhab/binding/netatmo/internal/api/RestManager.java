@@ -17,7 +17,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.Scope;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 
 /**
  * Base class for all various rest managers

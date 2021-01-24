@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.config;
 
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.MeasureLimit;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.MeasureScale;
-import org.openhab.binding.netatmo.internal.api.doc.NetatmoConstants.MeasureType;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureLimit;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureScale;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureType;
 
 /**
  * The {@link MeasureChannelConfig} holds configuration parameters
