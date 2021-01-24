@@ -179,6 +179,9 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
         String serialNumber = player.serial;
         if (serialNumber != null) {
             prop.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
+        } else {
+            prop.put(Thing.PROPERTY_SERIAL_NUMBER, ""); // If no serial number is provided, write an empty string to
+                                                        // prevent error during runtime
         }
     }
 }
