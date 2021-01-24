@@ -21,6 +21,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereLightAutom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,9 +68,14 @@ public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
     }
 
     @Override
+    protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
+        return new WhereLightAutom(wStr);
+    }
+
+    @Override
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
         // do nothing
         logger.warn("handleMessage(): Nothing to do!");
     }
-} // class
+}
