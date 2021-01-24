@@ -441,6 +441,11 @@
       <artifactId>org.openhab.binding.groheondus</artifactId>
       <version>${project.version}</version>
     </dependency>
+	<dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.haassohnpelletstove</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.haassohnpelletstove</artifactId>
