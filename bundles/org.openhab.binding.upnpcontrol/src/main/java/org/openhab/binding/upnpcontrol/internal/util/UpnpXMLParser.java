@@ -79,9 +79,9 @@ public class UpnpXMLParser {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            factory.setFeature("https://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("https://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("https://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
@@ -138,9 +138,9 @@ public class UpnpXMLParser {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            factory.setFeature("https://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("https://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("https://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
@@ -185,9 +185,9 @@ public class UpnpXMLParser {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            factory.setFeature("https://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("https://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("https://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
