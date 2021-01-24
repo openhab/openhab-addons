@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Bernhard Bauer - Initial contribution
  */
 @NonNullByDefault
-@Component(service = HeliosEasyControlsTranslationProvider.class, configurationPid = "localization.helioseasycontrols")
+@Component(service = HeliosEasyControlsTranslationProvider.class)
 public class HeliosEasyControlsTranslationProvider {
 
     private final Bundle bundle;
