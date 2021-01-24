@@ -10,38 +10,45 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.haassohnpelletoven.data;
+package org.openhab.binding.haassohnpelletstove.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link HaassohnpelletstoveJsonData} is the Java class used to map the JSON
+ * The {@link HaasSohnpelletstoveJsonData} is the Java class used to map the JSON
  * response to a Oven request.
  *
  * @author Christian Feininger - Initial contribution
  */
 @NonNullByDefault
-public class HaassohnpelletstoveJsonData {
+public class HaasSohnpelletstoveJsonData {
     metadata meta = new metadata();
     boolean prg;
     boolean wprg;
     String mode = "";
-    String sp_temp = "";
-    String is_temp = "";
-    String ht_char = "";
+    @SerializedName("sp_temp")
+    String spTemp = "";
+    @SerializedName("is_temp")
+    String isTemp = "";
+    @SerializedName("ht_char")
+    String htChar = "";
     @SerializedName("weekprogram")
     private @NonNullByDefault({}) wprogram[] weekprogram;
     @SerializedName("error")
     private @NonNullByDefault({}) err[] error;
-    boolean eco_mode;
+    @SerializedName("eco_mode")
+    boolean ecoMode;
     boolean pgi;
     String ignitions = "";
-    String on_time = "";
+    @SerializedName("on_time")
+    String onTime = "";
     String consumption = "";
-    String maintenance_in = "";
-    String cleaning_in = "";
+    @SerializedName("maintenance_in")
+    String maintenanceIn = "";
+    @SerializedName("cleaning_in")
+    String cleaningIn = "";
 
     /***
      * Get the nonce
@@ -58,31 +65,31 @@ public class HaassohnpelletstoveJsonData {
      * @return
      */
     public String getisTemp() {
-        return is_temp;
+        return isTemp;
     }
 
-    public boolean getEco_mode() {
-        return eco_mode;
+    public boolean getEcoMode() {
+        return ecoMode;
     }
 
     public String getIgnitions() {
         return ignitions;
     }
 
-    public String getOn_time() {
-        return on_time;
+    public String getOnTime() {
+        return onTime;
     }
 
     public String getConsumption() {
         return consumption;
     }
 
-    public String getMaintenance_in() {
-        return maintenance_in;
+    public String getMaintenanceIn() {
+        return maintenanceIn;
     }
 
-    public String getCleaning_in() {
-        return cleaning_in;
+    public String getCleaningIn() {
+        return cleaningIn;
     }
 
     /***
@@ -90,21 +97,27 @@ public class HaassohnpelletstoveJsonData {
      *
      * @return JSON response as object
      */
-    public HaassohnpelletstoveJsonData getResponse() {
+    public HaasSohnpelletstoveJsonData getResponse() {
         return this;
     }
 
     public class metadata {
-        String sw_version = "";
-        String hw_version = "";
-        String bootl_version = "";
-        String wifi_sw_version = "";
-        String wifi_bootl_version = "";
+        @SerializedName("sw_version")
+        String swVersion = "";
+        @SerializedName("hw_version")
+        String hwVersion = "";
+        @SerializedName("bootl_version")
+        String bootlVersion = "";
+        @SerializedName("wifi_sw_version")
+        String wifiSWVersion = "";
+        @SerializedName("wifi_bootl_version")
+        String wifiBootlVersion = "";
         String sn = "";
         String typ = "";
         String language = "";
         String nonce = "";
-        String eco_editable = "";
+        @SerializedName("eco_editable")
+        String ecoEditable = "";
         String ts = "";
         String ean = "";
         boolean rau;
@@ -133,11 +146,10 @@ public class HaassohnpelletstoveJsonData {
     }
 
     public String getspTemp() {
-        return sp_temp;
+        return spTemp;
     }
 
     public boolean getPrg() {
         return prg;
     }
-
 }

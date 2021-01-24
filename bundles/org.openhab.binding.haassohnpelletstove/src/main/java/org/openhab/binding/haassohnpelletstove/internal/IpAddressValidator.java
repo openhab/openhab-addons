@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.haassohnpelletoven.validation;
+package org.openhab.binding.haassohnpelletstove.internal;
 
 import java.util.regex.Pattern;
 
@@ -25,9 +25,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class IpAddressValidator {
 
-    private static final String zeroTo255 = "([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])";
+    private static final String ZEROTO255 = "([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])";
 
-    private static final String IP_REGEXP = zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255;
+    private static final String IP_REGEXP = ZEROTO255 + "\\." + ZEROTO255 + "\\." + ZEROTO255 + "\\." + ZEROTO255;
 
     private static final Pattern IP_PATTERN = Pattern.compile(IP_REGEXP);
 

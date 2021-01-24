@@ -10,20 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.haassohnpelletoven.internal;
+package org.openhab.binding.haassohnpelletstove.internal;
+
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link HaassohnpelletstoveConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link PinValidator} is responsible for validating a given PIN.
  *
  * @author Christian Feininger - Initial contribution
  */
 @NonNullByDefault
-public class HaassohnpelletstoveConfiguration {
+public class PinValidator {
 
-    public @Nullable String hostIP = null;
-    public @Nullable String hostPIN = null;
-    public int refreshRate = 30;
+    Pattern pattern = Pattern.compile("(\\d{4})");
+
+    /***
+     * Verifies if a given String is a valid PIN.
+     *
+     * @param pin to be verified.
+     * @return true if valid, false otherwise.
+     */
+    public boolean isValid(@Nullable String pin) {
+        return pattern.matcher(pin).matches();
+    }
 }
