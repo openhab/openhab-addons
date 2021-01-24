@@ -16,6 +16,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * The {@link RouterosEthernetInterface} is a model class for `ether` interface models having casting accessors for
+ * data that is specific to this network interface kind. Is a subclass of {@link RouterosInterfaceBase}.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosEthernetInterface extends RouterosInterfaceBase {
     public RouterosEthernetInterface(Map<String, String> props) {

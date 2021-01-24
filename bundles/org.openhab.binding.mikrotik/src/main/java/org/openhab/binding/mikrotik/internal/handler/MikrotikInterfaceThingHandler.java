@@ -38,8 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MikrotikInterfaceThingHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link MikrotikInterfaceThingHandler} is a {@link MikrotikBaseThingHandler} subclass that wraps shared
+ * functionality for all interface things of different types. It is responsible for handling commands, which are
+ * sent to one of the channels and emit channel updates whenever required.
  *
  * @author Oleg Vivtash - Initial contribution
  */

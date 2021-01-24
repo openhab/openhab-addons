@@ -19,6 +19,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 
+/**
+ * The {@link RateCalculator} is used to calculate data changing rate as number per second. Has a separate method
+ * to get megabits per second rate out of byte number.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RateCalculator {
     public static final int BYTES_IN_MEGABIT = 125000;

@@ -17,6 +17,12 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.joda.time.DateTime;
 
+/**
+ * The {@link RouterosL2TPSrvInterface} is a model class for `l2tp-in` interface models having casting accessors for
+ * data that is specific to this network interface kind. Is a subclass of {@link RouterosInterfaceBase}.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosL2TPSrvInterface extends RouterosInterfaceBase {
     public RouterosL2TPSrvInterface(Map<String, String> props) {

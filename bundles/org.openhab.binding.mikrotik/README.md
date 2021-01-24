@@ -1,56 +1,364 @@
-# Mikrotik Binding
+# Mikrotik RouterOS Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding integrates [Mikrotik](https://mikrotik.com/) [RouterOS](https://help.mikrotik.com/docs/display/ROS/RouterOS)
+[devices](https://mikrotik.com/products) allowing system resources and network interfaces monitoring and WiFi client
+presence detection and monitoring.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+* `routeros` - An instance of the RouterOS device connection
+* `interface` - A network interface inside RouterOS device
+* `wifiRegistration` - Any wireless client connected to a RouterOS wireless network (regular or CAPsMAN-managed)
+
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Discovery is currently not supported, but may be implemented in future versions.
+
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+The binding has no configuration options, all configuration is done at the Bridge and Thing levels.
+
+
+## Bridge Configuration
+
+To use this binding you need at least one RouterOS-powered device (Bridge) accessible to the host running
+OpenHAB via network.
+Make sure your RouterOS have API enabled by visiting [<kbd>IP -> Services</kbd>](https://wiki.mikrotik.com/wiki/Manual:IP/Services) 
+configuration section in 
+[WinBox](https://wiki.mikrotik.com/wiki/Manual:Winbox). Note the API port number as you'll need it below.
+[SSL API connection](https://wiki.mikrotik.com/wiki/Manual:API-SSL) is not yet supported by this binding.
+To connect to RouterOS API you need to provide user credantials to the bridge config. You may use your current 
+credentials you use to manage device, but it is highly recommended to **create a read-only RouterOS user**, because
+this binding only reads the data from the device. To do so, proceed to <kbd>System -> Users</kbd> configuration section
+and add a user to the `read` group.
+
+> Thing type: `routeros`
+
+The RouterOS Bridge configuration parameters are:
+
+* `host` _(required text)_ [Default: `192.168.88.1`] - Hostname or IP address of the RouterOS device
+* `port` _(optional integer)_ [Default: `8729`] - API Port number of the RouterOS device
+* `login` _(required text)_ [Default: `admin`] - The user login to access the the RouterOS device
+* `password` _(required text)_ - The user password to access the RouterOS device
+* `refresh` _(optional integer)_ [Default: `10`] - The refresh interval in seconds to poll the RouterOS device
+
+**All things provided by this binding requires a working bridge to be set up.**
+
+
+### Bridge Channels
+* <kbd>Number</kbd> `freeSpace` _(read-only)_ - Amount of free storage left on device in bytes
+* <kbd>Number</kbd> `totalSpace` _(read-only)_ - Amount of total storage available on device in bytes
+* <kbd>Number</kbd> `usedSpace` _(read-only)_ - Percentage of used device storage space
+* <kbd>Number</kbd> `freeMemory` _(read-only)_ - Amount of free memory left on device in bytes
+* <kbd>Number</kbd> `totalMemory` _(read-only)_ - Amount of total memory available on device in bytes
+* <kbd>Number</kbd> `usedMemory` _(read-only)_ - Percentage of used device memory
+* <kbd>Number</kbd> `cpuLoad` _(read-only)_ - CPU load percentage
+* <kbd>String</kbd> `uptime` _(read-only)_ - Duration while thing is up
+
+## WiFi Client Thing Configuration
+> Thing type: `wifiRegistration`
+
+Represents a wireless client connected to a RouterOS wireless network (direct or CAPsMAN-managed).
+
+The WiFi client thing configuration parameters are:
+
+* `mac` _(required text)_ - WiFi client MAC address
+* `ssid` _(optional text)_ - Constraining SSID for the WiFi client (optional). If client will connect to another SSID, 
+  this thing will stay offline until client reconnects to specified SSID.
+* `considerContinuous` _(optional integer)_ [Default: `180`] - The interval in seconds to treat the client as connected 
+  permanently. For example, when this set to 60, the binding will report a client away as soon 
+  as `lastSeen` + `60` seconds < `now`
+
+### WiFi client Thing Channels
+* <kbd>String</kbd> `macAddress` _(read-only)_ - MAC address of the client or interface
+* <kbd>String</kbd> `comment` _(read-only)_ - User-defined comment
+* <kbd>Switch</kbd> `connected` _(read-only)_ - Reflects connected or disconnected state
+* <kbd>Switch</kbd> `continuous` _(read-only)_ - Connection is considered long-running
+* <kbd>String</kbd> `ssid` _(read-only)_ - Wireless Network (SSID) the wireless client is connected to
+* <kbd>String</kbd> `interface` _(read-only)_ - Network interface name
+* <kbd>Number</kbd> `signal` _(read-only)_ - Received Signal Strength Indicator (RSSI) of the wireless client
+* <kbd>String</kbd> `uptime` _(read-only)_ - Duration while thing is up
+* <kbd>DateTime</kbd> `upSince` _(read-only)_ - Time when thing got up
+* <kbd>DateTime</kbd> `lastSeen` _(read-only)_ - Time of when the client was last seen connected
+* <kbd>Number</kbd> `txRate` _(read-only)_ - Rate of data transmission in megabits per second
+* <kbd>Number</kbd> `rxRate` _(read-only)_ - Rate of data receiving in megabits per second
+* <kbd>Number</kbd> `txPacketRate` _(read-only)_ - Rate of data transmission in packets per second
+* <kbd>Number</kbd> `rxPacketRate` _(read-only)_ - Rate of data receiving in packets per second
+* <kbd>Number</kbd> `txBytes` _(read-only)_ - Amount of bytes transmitted
+* <kbd>Number</kbd> `rxBytes` _(read-only)_ - Amount of bytes received
+* <kbd>Number</kbd> `txPackets` _(read-only)_ - Amount of packets transmitted
+* <kbd>Number</kbd> `rxPackets` _(read-only)_ - Amount of packets received
+
+
+## Network Interface Thing Configuration
+> Thing type: `interface`
+
+Represents a network interface from RouterOS system (ethernet, wifi, vpn, etc.)
+
+The interface thing configuration parameters are:
+
+### Interface Thing Configuration
+* `name` _(required text)_ - RouterOS Interface name (i.e. ether1)
+
+### Interface Thing Channels
+Please note that different on RouterOS interfaces has different data available depending on the kind of interface.
+While the common dataset is same, some specific information for specific interface type may be missing. This may
+be improved in future binding versions.
+
+Common for all kinds of interfaces:
+* <kbd>String</kbd> `type` _(read-only)_ - Network interface type
+* <kbd>String</kbd> `name` _(read-only)_ - Network interface name
+* <kbd>String</kbd> `comment` _(read-only)_ - User-defined comment
+* <kbd>String</kbd> `macAddress` _(read-only)_ - MAC address of the client or interface
+* <kbd>Switch</kbd> `enabled` _(read-only)_ - Reflects enabled or disabled state
+* <kbd>Switch</kbd> `connected` _(read-only)_ - Reflects connected or disconnected state
+* <kbd>DateTime</kbd> `lastLinkDownTime` _(read-only)_ - Last time when link went down
+* <kbd>DateTime</kbd> `lastLinkUpTime` _(read-only)_ - Last time when link went up
+* <kbd>Number</kbd> `linkDowns` _(read-only)_ - Amount of link downs
+* <kbd>Number</kbd> `txRate` _(read-only)_ - Rate of data transmission in megabits per second
+* <kbd>Number</kbd> `rxRate` _(read-only)_ - Rate of data receiving in megabits per second
+* <kbd>Number</kbd> `txPacketRate` _(read-only)_ - Rate of data transmission in packets per second
+* <kbd>Number</kbd> `rxPacketRate` _(read-only)_ - Rate of data receiving in packets per second
+* <kbd>Number</kbd> `txBytes` _(read-only)_ - Amount of bytes transmitted
+* <kbd>Number</kbd> `rxBytes` _(read-only)_ - Amount of bytes received
+* <kbd>Number</kbd> `txPackets` _(read-only)_ - Amount of packets transmitted
+* <kbd>Number</kbd> `rxPackets` _(read-only)_ - Amount of packets received
+* <kbd>Number</kbd> `txDrops` _(read-only)_ - Amount of packets dropped during transmission
+* <kbd>Number</kbd> `rxDrops` _(read-only)_ - Amount of packets dropped during receiving
+* <kbd>Number</kbd> `txErrors` _(read-only)_ - Amount of errors during transmission
+* <kbd>Number</kbd> `rxErrors` _(read-only)_ - Amount of errors during receiving
+
+Populated only for `ether` interfaces:
+* <kbd>String</kbd> `defaultName` _(read-only)_ - Interface factory name
+* <kbd>String</kbd> `rate` _(read-only)_ - Ethernet link rate
+* <kbd>String</kbd> `autoNegotiation` _(read-only)_ - Ethernet auto-negotiation status
+
+Populated only for `cap` interfaces:
+* <kbd>Number</kbd> `registeredClients` _(read-only)_ - Amount of clients registered to WiFi interface
+* <kbd>Number</kbd> `authorizedClients` _(read-only)_ - Amount of clients authorized by WiFi interface
+* <kbd>String</kbd> `uptime` _(read-only)_ - Duration while thing is up
+* <kbd>DateTime</kbd> `upSince` _(read-only)_ - Time when thing got up
+
+## Text Configuration Example
+
+**Change config options accordingly.**
+
+_things/mikrotik.things_
 
 ```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
+Bridge mikrotik:routeros:rb1 "My RouterBoard" [ host="192.168.0.1", port=8728, login="openhab", password="thatsasecret", refresh=10 ] {
+	Thing interface eth1 "Eth1" [ name="ether1" ]
+	Thing interface eth2 "Eth2" [ name="ether2-wan1" ]
+	Thing interface cap1 "Cap1" [ name="cap5" ]
+	Thing interface ppp1 "PPPoE1" [ name="isp-pppoe" ]
+	Thing interface tun1 "L2TPSrv1" [ name="l2tp-parents" ]
+	Thing wifiRegistration wifi1 "Phone1" [ mac="F4:60:E2:C5:47:94", considerContinuous=60 ]
+	Thing wifiRegistration wifi2 "Tablet2" [ mac="18:1D:EA:A5:A2:9E" ]
+}
 ```
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
+_items/mikrotik.items_
 
-## Thing Configuration
+```
+Group gRB1 "RB3011 System"
+Number   My_RB_3011_Free_Space     "Free space"     (gRB1) {channel="mikrotik:routeros:rb1:freeSpace"}
+Number   My_RB_3011_Total_Space    "Total space"    (gRB1) {channel="mikrotik:routeros:rb1:totalSpace"}
+Number   My_RB_3011_Used_Space     "Used space %"   (gRB1) {channel="mikrotik:routeros:rb1:usedSpace"}
+Number   My_RB_3011_Free_Memory    "Free ram"       (gRB1) {channel="mikrotik:routeros:rb1:freeMemory"}
+Number   My_RB_3011_Total_Memory   "Total ram"      (gRB1) {channel="mikrotik:routeros:rb1:totalMemory"}
+Number   My_RB_3011_Used_Memory    "Used ram %"     (gRB1) {channel="mikrotik:routeros:rb1:usedMemory"}
+Number   My_RB_3011_Cpu_Load       "Cpu load %"     (gRB1) {channel="mikrotik:routeros:rb1:cpuLoad"}
+String   My_RB_3011_Uptime         "Uptime"         (gRB1) {channel="mikrotik:routeros:rb1:uptime"}
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+Group gRB1Eth1 "Ethernet Interface 1"
+String     Eth_1_Type                  "Type"                       (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:type"}
+String     Eth_1_Name                  "Name"                       (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:name"}
+String     Eth_1_Comment               "Comment"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:comment"}
+String     Eth_1_Mac_Address           "Mac address"                (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:macAddress"}
+Switch     Eth_1_Enabled               "Enabled"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:enabled"}
+Switch     Eth_1_Connected             "Connected"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:connected"}
+DateTime   Eth_1_Last_Link_Down_Time   "Last link down"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkDownTime"}
+DateTime   Eth_1_Last_Link_Up_Time     "Last link up"               (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkUpTime"}
+Number     Eth_1_Link_Downs            "Link downs"                 (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:linkDowns"}
+Number     Eth_1_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txRate"}
+Number     Eth_1_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxRate"}
+Number     Eth_1_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPacketRate"}
+Number     Eth_1_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxPacketRate"}
+Number     Eth_1_Tx_Bytes              "Transmitted bytes"          (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txBytes"}
+Number     Eth_1_Rx_Bytes              "Received bytes"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxBytes"}
+Number     Eth_1_Tx_Packets            "Transmitted packets"        (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPackets"}
+Number     Eth_1_Rx_Packets            "Received packets"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxPackets"}
+Number     Eth_1_Tx_Drops              "Transmission drops"         (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txDrops"}
+Number     Eth_1_Rx_Drops              "Receiving drops"            (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxDrops"}
+Number     Eth_1_Tx_Errors             "Transmission errors"        (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txErrors"}
+Number     Eth_1_Rx_Errors             "Receiving errors"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxErrors"}
+String     Eth_1_Default_Name          "Default name"               (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:defaultName"}
+String     Eth_1_Rate                  "Link rate"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rate [%.2f Mbps]"}
+String     Eth_1_Auto_Negotiation      "Auto negotiation"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:autoNegotiation"}
+String     Eth_1_State                 "State"                      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:state"}
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+Group gRB1Eth2 "Ethernet Interface 2"
+String     Eth_2_Type                  "Type"                       (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:type"}
+String     Eth_2_Name                  "Name"                       (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:name"}
+String     Eth_2_Comment               "Comment"                    (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:comment"}
+String     Eth_2_Mac_Address           "Mac address"                (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:macAddress"}
+Switch     Eth_2_Enabled               "Enabled"                    (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:enabled"}
+Switch     Eth_2_Connected             "Connected"                  (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:connected"}
+DateTime   Eth_2_Last_Link_Down_Time   "Last link down"             (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:lastLinkDownTime"}
+DateTime   Eth_2_Last_Link_Up_Time     "Last link up"               (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:lastLinkUpTime"}
+Number     Eth_2_Link_Downs            "Link downs"                 (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:linkDowns"}
+Number     Eth_2_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txRate"}
+Number     Eth_2_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxRate"}
+Number     Eth_2_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txPacketRate"}
+Number     Eth_2_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxPacketRate"}
+Number     Eth_2_Tx_Bytes              "Transmitted bytes"          (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txBytes"}
+Number     Eth_2_Rx_Bytes              "Received bytes"             (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxBytes"}
+Number     Eth_2_Tx_Packets            "Transmitted packets"        (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txPackets"}
+Number     Eth_2_Rx_Packets            "Received packets"           (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxPackets"}
+Number     Eth_2_Tx_Drops              "Transmission drops"         (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txDrops"}
+Number     Eth_2_Rx_Drops              "Receiving drops"            (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxDrops"}
+Number     Eth_2_Tx_Errors             "Transmission errors"        (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txErrors"}
+Number     Eth_2_Rx_Errors             "Receiving errors"           (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxErrors"}
+String     Eth_2_Default_Name          "Default name"               (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:defaultName"}
+String     Eth_2_Rate                  "Link rate"                  (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rate [%.2f Mbps]"}
+String     Eth_2_Auto_Negotiation      "Auto negotiation"           (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:autoNegotiation"}
+String     Eth_2_State                 "State"                      (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:state"}
 
-## Channels
+Group gRB1Cap1 "CAPsMAN Inerface 1"
+String     Cap_1_Type                  "Type"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:type"}
+String     Cap_1_Name                  "Name"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:name"}
+String     Cap_1_Comment               "Comment"                    (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:comment"}
+String     Cap_1_Mac_Address           "Mac address"                (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:macAddress"}
+Switch     Cap_1_Enabled               "Enabled"                    (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:enabled"}
+Switch     Cap_1_Connected             "Connected"                  (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:connected"}
+DateTime   Cap_1_Last_Link_Down_Time   "Last link down"             (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:lastLinkDownTime"}
+DateTime   Cap_1_Last_Link_Up_Time     "Last link up"               (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:lastLinkUpTime"}
+Number     Cap_1_Link_Downs            "Link downs"                 (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:linkDowns"}
+Number     Cap_1_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txRate"}
+Number     Cap_1_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxRate"}
+Number     Cap_1_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txPacketRate"}
+Number     Cap_1_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxPacketRate"}
+Number     Cap_1_Tx_Bytes              "Transmitted bytes"          (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txBytes"}
+Number     Cap_1_Rx_Bytes              "Received bytes"             (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxBytes"}
+Number     Cap_1_Tx_Packets            "Transmitted packets"        (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txPackets"}
+Number     Cap_1_Rx_Packets            "Received packets"           (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxPackets"}
+Number     Cap_1_Tx_Drops              "Transmission drops"         (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txDrops"}
+Number     Cap_1_Rx_Drops              "Receiving drops"            (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxDrops"}
+Number     Cap_1_Tx_Errors             "Transmission errors"        (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txErrors"}
+Number     Cap_1_Rx_Errors             "Receiving errors"           (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxErrors"}
+String     Cap_1_State                 "State"                      (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:state"}
+Number     Cap_1_Registered_Clients    "Registered clients"         (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:registeredClients"}
+Number     Cap_1_Authorized_Clients    "Authorized clients"         (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:authorizedClients"}
+String     Cap_1_Uptime                "Uptime"                     (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:uptime"}
+DateTime   Cap_1_Up_Since              "Up since"                   (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:upSince"}
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Group gRB1Ppp1 "PPPoE Client 1"
+String     PP_Po_E_1_Type                  "Type"                       (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:type"}
+String     PP_Po_E_1_Name                  "Name"                       (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:name"}
+String     PP_Po_E_1_Comment               "Comment"                    (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:comment"}
+String     PP_Po_E_1_Mac_Address           "Mac address"                (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:macAddress"}
+Switch     PP_Po_E_1_Enabled               "Enabled"                    (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:enabled"}
+Switch     PP_Po_E_1_Connected             "Connected"                  (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:connected"}
+DateTime   PP_Po_E_1_Last_Link_Down_Time   "Last link down"             (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:lastLinkDownTime"}
+DateTime   PP_Po_E_1_Last_Link_Up_Time     "Last link up"               (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:lastLinkUpTime"}
+Number     PP_Po_E_1_Link_Downs            "Link downs"                 (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:linkDowns"}
+Number     PP_Po_E_1_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txRate"}
+Number     PP_Po_E_1_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxRate"}
+Number     PP_Po_E_1_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txPacketRate"}
+Number     PP_Po_E_1_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxPacketRate"}
+Number     PP_Po_E_1_Tx_Bytes              "Transmitted bytes"          (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txBytes"}
+Number     PP_Po_E_1_Rx_Bytes              "Received bytes"             (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxBytes"}
+Number     PP_Po_E_1_Tx_Packets            "Transmitted packets"        (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txPackets"}
+Number     PP_Po_E_1_Rx_Packets            "Received packets"           (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxPackets"}
+Number     PP_Po_E_1_Tx_Drops              "Transmission drops"         (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txDrops"}
+Number     PP_Po_E_1_Rx_Drops              "Receiving drops"            (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxDrops"}
+Number     PP_Po_E_1_Tx_Errors             "Transmission errors"        (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txErrors"}
+Number     PP_Po_E_1_Rx_Errors             "Receiving errors"           (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxErrors"}
+String     PP_Po_E_1_State                 "State"                      (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:state"}
+String     PP_Po_E_1_Uptime                "Uptime"                     (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:uptime"}
+DateTime   PP_Po_E_1_Up_Since              "Up since"                   (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:upSince"}
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+Group gRB1Tun1 "L2TP Server 1"
+String     L_2_TP_Srv_1_Type                  "Type"                       (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:type"}
+String     L_2_TP_Srv_1_Name                  "Name"                       (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:name"}
+String     L_2_TP_Srv_1_Comment               "Comment"                    (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:comment"}
+String     L_2_TP_Srv_1_Mac_Address           "Mac address"                (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:macAddress"}
+Switch     L_2_TP_Srv_1_Enabled               "Enabled"                    (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:enabled"}
+Switch     L_2_TP_Srv_1_Connected             "Connected"                  (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:connected"}
+DateTime   L_2_TP_Srv_1_Last_Link_Down_Time   "Last link down"             (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:lastLinkDownTime"}
+DateTime   L_2_TP_Srv_1_Last_Link_Up_Time     "Last link up"               (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:lastLinkUpTime"}
+Number     L_2_TP_Srv_1_Link_Downs            "Link downs"                 (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:linkDowns"}
+Number     L_2_TP_Srv_1_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txRate"}
+Number     L_2_TP_Srv_1_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxRate"}
+Number     L_2_TP_Srv_1_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txPacketRate"}
+Number     L_2_TP_Srv_1_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxPacketRate"}
+Number     L_2_TP_Srv_1_Tx_Bytes              "Transmitted bytes"          (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txBytes"}
+Number     L_2_TP_Srv_1_Rx_Bytes              "Received bytes"             (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxBytes"}
+Number     L_2_TP_Srv_1_Tx_Packets            "Transmitted packets"        (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txPackets"}
+Number     L_2_TP_Srv_1_Rx_Packets            "Received packets"           (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxPackets"}
+Number     L_2_TP_Srv_1_Tx_Drops              "Transmission drops"         (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txDrops"}
+Number     L_2_TP_Srv_1_Rx_Drops              "Receiving drops"            (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxDrops"}
+Number     L_2_TP_Srv_1_Tx_Errors             "Transmission errors"        (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txErrors"}
+Number     L_2_TP_Srv_1_Rx_Errors             "Receiving errors"           (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxErrors"}
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+Group gRB1Wifi1 "WiFi Client 1"
+String     Phone_1_Mac_Address      "Mac address"                          (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:macAddress"}
+String     Phone_1_Comment          "Comment"                              (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:comment"}
+Switch     Phone_1_Connected        "Connected"                            (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:connected"}
+Switch     Phone_1_Continuous       "Continuous"                           (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:continuous"}
+String     Phone_1_Ssid             "Wi fi network"                        (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:ssid"}
+String     Phone_1_Interface        "Name"                                 (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:interface"}
+Number     Phone_1_Signal           "Received signal strength indicator"   (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:signal"}
+String     Phone_1_Uptime           "Uptime"                               (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:uptime"}
+DateTime   Phone_1_Up_Since         "Up since"                             (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:upSince"}
+DateTime   Phone_1_Last_Seen        "Last seen"                            (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:lastSeen"}
+Number     Phone_1_Tx_Rate          "Transmission rate [%.2f Mbps]"                    (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txRate"}
+Number     Phone_1_Rx_Rate          "Receiving rate [%.2f Mbps]"                       (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:rxRate"}
+Number     Phone_1_Tx_Packet_Rate   "Transmission packet rate [%.2f Mbps]"             (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txPacketRate"}
+Number     Phone_1_Rx_Packet_Rate   "Receiving packet rate [%.2f Mbps]"                (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:rxPacketRate"}
+Number     Phone_1_Tx_Bytes         "Transmitted bytes"                    (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txBytes"}
+Number     Phone_1_Rx_Bytes         "Received bytes"                       (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:rxBytes"}
+Number     Phone_1_Tx_Packets       "Transmitted packets"                  (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txPackets"}
+Number     Phone_1_Rx_Packets       "Received packets"                     (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:rxPackets"}
 
-## Full Example
+Group gRB1Wifi2 "WiFi Client 2"
+String     Tablet_2_Mac_Address      "Mac address"                          (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:macAddress"}
+String     Tablet_2_Comment          "Comment"                              (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:comment"}
+Switch     Tablet_2_Connected        "Connected"                            (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:connected"}
+Switch     Tablet_2_Continuous       "Continuous"                           (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:continuous"}
+String     Tablet_2_Ssid             "Wi fi network"                        (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:ssid"}
+String     Tablet_2_Interface        "Name"                                 (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:interface"}
+Number     Tablet_2_Signal           "Received signal strength indicator"   (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:signal"}
+String     Tablet_2_Uptime           "Uptime"                               (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:uptime"}
+DateTime   Tablet_2_Up_Since         "Up since"                             (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:upSince"}
+DateTime   Tablet_2_Last_Seen        "Last seen"                            (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:lastSeen"}
+Number     Tablet_2_Tx_Rate          "Transmission rate [%.2f Mbps]"                    (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txRate"}
+Number     Tablet_2_Rx_Rate          "Receiving rate [%.2f Mbps]"                       (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxRate"}
+Number     Tablet_2_Tx_Packet_Rate   "Transmission packet rate [%.2f Mbps]"             (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txPacketRate"}
+Number     Tablet_2_Rx_Packet_Rate   "Receiving packet rate [%.2f Mbps]"                (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxPacketRate"}
+Number     Tablet_2_Tx_Bytes         "Transmitted bytes"                    (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txBytes"}
+Number     Tablet_2_Rx_Bytes         "Received bytes"                       (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxBytes"}
+Number     Tablet_2_Tx_Packets       "Transmitted packets"                  (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txPackets"}
+Number     Tablet_2_Rx_Packets       "Received packets"                     (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxPackets"}
+```
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+_sitemaps/mikrotik.sitemap_
 
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+```
+sitemap mikrotik label="Mikrotik Binding Demo"
+{
+	Frame label="RouterBOARD 1" {
+		Group item=gRB1
+		Group item=gRB1Eth1
+		Group item=gRB1Eth2
+		Group item=gRB1Ppp1
+		Group item=gRB1Tun1
+		Group item=gRB1Cap1
+		Group item=gRB1Wifi1
+		Group item=gRB1Wifi2
+	}
+}
+```

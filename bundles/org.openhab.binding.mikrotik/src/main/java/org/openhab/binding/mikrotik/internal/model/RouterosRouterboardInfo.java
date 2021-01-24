@@ -16,6 +16,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * The {@link RouterosRouterboardInfo} is a model class for RouterOS system info used as bridge thing property values.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosRouterboardInfo {
     protected Map<String, String> propMap;

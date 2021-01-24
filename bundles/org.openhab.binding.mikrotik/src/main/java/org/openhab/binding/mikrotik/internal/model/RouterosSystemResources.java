@@ -16,6 +16,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * The {@link RouterosSystemResources} is a model class for RouterOS system info having casting accessors for
+ * data that is available through bridge thing channels.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosSystemResources {
     protected Map<String, String> propMap;

@@ -16,7 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link WirelessClientThingConfig} class contains fields mapping thing configuration parameters.
+ * The {@link WirelessClientThingConfig} class contains fields mapping thing configuration parameters for
+ * WiFi client thing.
  *
  * @author Oleg Vivtash - Initial contribution
  */

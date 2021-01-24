@@ -17,6 +17,12 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.joda.time.DateTime;
 
+/**
+ * The {@link RouterosPPPoECliInterface} is a model class for `pppoe-out` interface models having casting accessors for
+ * data that is specific to this network interface kind. Is a subclass of {@link RouterosInterfaceBase}.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosPPPoECliInterface extends RouterosInterfaceBase {
     public RouterosPPPoECliInterface(Map<String, String> props) {

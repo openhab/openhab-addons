@@ -16,7 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link RouterosThingConfig} class contains fields mapping thing configuration parameters.
+ * The {@link RouterosThingConfig} class contains fields mapping thing configuration parameters for
+ * RouterOS bridge thing.
  *
  * @author Oleg Vivtash - Initial contribution
  */

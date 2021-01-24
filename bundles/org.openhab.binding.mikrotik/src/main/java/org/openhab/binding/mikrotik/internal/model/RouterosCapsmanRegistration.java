@@ -21,6 +21,12 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.openhab.binding.mikrotik.internal.util.Converter;
 
+/**
+ * The {@link RouterosCapsmanRegistration} is a model class for WiFi client data retrieced from CAPsMAN controller
+ * in RouterOS. Is a subclass of {@link RouterosRegistrationBase}.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosCapsmanRegistration extends RouterosRegistrationBase {
     public RouterosCapsmanRegistration(Map<String, String> props) {

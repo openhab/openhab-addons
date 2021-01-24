@@ -14,7 +14,15 @@ package org.openhab.binding.mikrotik.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.mikrotik.internal.MikrotikBindingConstants;
 
+/**
+ * The {@link ChannelUpdateException} is used to bubble up channel update errors which are mainly
+ * happens during data conversion. But those errors should not bring bridge offline and break normal
+ * operation.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 public class ChannelUpdateException extends RuntimeException {
     private final ThingUID thingUID;
     private final ChannelUID channelID;

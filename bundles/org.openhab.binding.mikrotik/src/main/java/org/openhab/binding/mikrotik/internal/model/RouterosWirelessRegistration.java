@@ -16,6 +16,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * The {@link RouterosWirelessRegistration} is a model class for WiFi client data retrieced from RouterOS
+ * physical wireless interface. Is a subclass of {@link RouterosRegistrationBase}.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosWirelessRegistration extends RouterosRegistrationBase {
     public RouterosWirelessRegistration(Map<String, String> props) {

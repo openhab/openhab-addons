@@ -37,8 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MikrotikBaseThingHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link MikrotikBaseThingHandler} is a base class for all other RouterOS things of map-value nature.
+ * It is responsible for handling commands, which are sent to one of the channels and emit channel updates
+ * whenever required.
  *
  * @author Oleg Vivtash - Initial contribution
  *

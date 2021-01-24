@@ -21,6 +21,12 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.openhab.binding.mikrotik.internal.util.Converter;
 
+/**
+ * The {@link RouterosInterfaceBase} is a base model class for network interface models having casting accessors for
+ * data that is same for all interface types.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 public abstract class RouterosInterfaceBase {
     protected Map<String, String> propMap;
     protected RouterosInterfaceType type;

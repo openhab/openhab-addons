@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.mikrotik.internal.model;
 
+/**
+ * The {@link RouterosInterfaceType} enum wraps RouterOS network interface type strings.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 public enum RouterosInterfaceType {
     ETHERNET("ether"),
     BRIDGE("bridge"),

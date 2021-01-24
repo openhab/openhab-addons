@@ -18,6 +18,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * The {@link RouterosRegistrationBase} is a base model class for WiFi client models having casting accessors for
+ * data that is same for all WiFi client types.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosRegistrationBase {
     protected Map<String, String> propMap;

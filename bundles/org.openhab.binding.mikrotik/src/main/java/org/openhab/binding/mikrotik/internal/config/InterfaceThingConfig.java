@@ -16,7 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link InterfaceThingConfig} class contains fields mapping thing configuration parameters.
+ * The {@link InterfaceThingConfig} class contains fields mapping thing configuration parameters for
+ * network interface things.
  *
  * @author Oleg Vivtash - Initial contribution
  */

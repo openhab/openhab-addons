@@ -24,6 +24,11 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.joda.time.DateTime;
 
+/**
+ * The {@link StateUtil} class holds static methods to cast Java native/class types to OpenHAB values
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class StateUtil {
 

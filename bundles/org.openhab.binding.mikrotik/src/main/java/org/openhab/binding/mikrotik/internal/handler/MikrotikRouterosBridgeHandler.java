@@ -42,8 +42,9 @@ import org.slf4j.LoggerFactory;
 import me.legrange.mikrotik.MikrotikApiException;
 
 /**
- * The {@link MikrotikRouterosBridgeHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link MikrotikRouterosBridgeHandler} is a main binding class that wraps a {@link RouterosInstance} and
+ * manages fetching data from RouterOS. It is also responsible for updating brindge thing properties and
+ * handling commands, which are sent to one of the channels and emit channel updates whenever required.
  *
  * @author Oleg Vivtash - Initial contribution
  */

@@ -28,7 +28,7 @@
 			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>
 				<description>Hostname or IP address of the RouterOS device</description>
-				<default>192.168.0.1</default>
+				<default>192.168.88.1</default>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" max="65535" min="1" required="false">
@@ -39,11 +39,11 @@
 			<parameter name="login" type="text" required="true">
 				<label>Login</label>
 				<default>admin</default>
-				<description>The login to access the the RouterOS device</description>
+				<description>The user login to access the the RouterOS device</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>The password to access the RouterOS device</description>
+				<description>The user password to access the RouterOS device</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
@@ -59,7 +59,7 @@
 			<bridge-type-ref id="routeros"/>
 		</supported-bridge-type-refs>
 		<label>RouterOS Interface</label>
-		<description>An network interface from RouterOS system (ethernet, wifi, vpn, etc.)</description>
+		<description>A network interface from RouterOS system (ethernet, wifi, vpn, etc.)</description>
 		<channels>
 			<!-- common channels for all interface types -->
 			<channel id="type" typeId="interfaceType"/>

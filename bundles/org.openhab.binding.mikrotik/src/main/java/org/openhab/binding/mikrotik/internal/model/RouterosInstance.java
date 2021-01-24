@@ -20,11 +20,18 @@ import java.util.stream.Collectors;
 import javax.net.SocketFactory;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mikrotik.internal.util.StateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import me.legrange.mikrotik.*;
 
+/**
+ * The {@link RouterosInstance} class is wrapped inside a bridge thing and responsible for communication with
+ * Mikrotik device, data fetching, caching and aggregation.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 public class RouterosInstance {
     private final Logger logger = LoggerFactory.getLogger(RouterosInstance.class);
 

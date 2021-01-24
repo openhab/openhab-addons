@@ -16,6 +16,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * The {@link RouterosCapInterface} is a model class for `cap` interface models having casting accessors for
+ * data that is specific to this network interface kind. Is a subclass of {@link RouterosInterfaceBase}.
+ *
+ * @author Oleg Vivtash - Initial contribution
+ */
 @NonNullByDefault
 public class RouterosCapInterface extends RouterosInterfaceBase {
     public RouterosCapInterface(Map<String, String> props) {

@@ -40,8 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MikrotikWirelessClientThingHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link MikrotikWirelessClientThingHandler} is a {@link MikrotikBaseThingHandler} subclass that wraps shared
+ * functionality for all wireless clients listed either in CAPsMAN or Wireless RouterOS sections.
+ * It is responsible for handling commands, which are sent to one of the channels and emit channel updates whenever
+ * required.
  *
  * @author Oleg Vivtash - Initial contribution
  */
