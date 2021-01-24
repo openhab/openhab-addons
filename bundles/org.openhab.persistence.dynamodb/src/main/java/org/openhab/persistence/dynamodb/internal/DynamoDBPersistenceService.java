@@ -45,7 +45,6 @@ import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
-import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
@@ -92,8 +91,8 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
  *
  */
 @NonNullByDefault
-@Component(service = { PersistenceService.class, QueryablePersistenceService.class,
-        ModifiablePersistenceService.class }, configurationPid = "org.openhab.dynamodb", //
+@Component(service = { PersistenceService.class,
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.dynamodb", //
         property = Constants.SERVICE_PID + "=org.openhab.dynamodb")
 @ConfigurableService(category = "persistence", label = "DynamoDB Persistence Service", description_uri = DynamoDBPersistenceService.CONFIG_URI)
 public class DynamoDBPersistenceService implements QueryablePersistenceService {
@@ -153,7 +152,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     /**
      * For tests
      */
-    DynamoDBPersistenceService(final @Reference ItemRegistry itemRegistry, @Nullable URI endpointOverride) {
+    DynamoDBPersistenceService(final ItemRegistry itemRegistry, @Nullable URI endpointOverride) {
         this.itemRegistry = itemRegistry;
         this.endpointOverride = endpointOverride;
     }
@@ -279,7 +278,10 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         DynamoDbAsyncTable<DynamoDBItem> table = tableCache.computeIfAbsent(dtoClass, clz -> {
             return (DynamoDbAsyncTable<DynamoDBItem>) localClient.table(tableName, schema);
         });
-        assert table != null; // Invariant
+        if (table == null) {
+            // Invariant. To make null checker happy
+            throw new IllegalStateException();
+        }
         return table;
     }
 

@@ -380,7 +380,9 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                 @Override
                 public void visit(DynamoDBStringItem dynamoStringItem) {
                     String stringState = dynamoStringItem.getState();
-                    assert stringState != null;
+                    if (stringState == null) {
+                        return;
+                    }
                     if (item instanceof ColorItem) {
                         deserializedState[0] = new HSBType(stringState);
                     } else if (item instanceof LocationItem) {
@@ -417,7 +419,9 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                 @Override
                 public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {
                     BigDecimal numberState = dynamoBigDecimalItem.getState();
-                    assert numberState != null;
+                    if (numberState == null) {
+                        return;
+                    }
                     if (item instanceof NumberItem) {
                         NumberItem numberItem = ((NumberItem) item);
                         Unit<? extends Quantity<?>> unit = targetUnit == null ? numberItem.getUnit() : targetUnit;
@@ -458,6 +462,9 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                     }
                 }
             });
+            if (deserializedState[0] == null) {
+                return null;
+            }
             return new DynamoDBHistoricItem(getName(), deserializedState[0], getTime());
         } catch (
 
