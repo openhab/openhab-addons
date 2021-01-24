@@ -63,24 +63,8 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class MyStromBulbHandler extends AbstractMyStromHandler {
 
-    private static class MyStromBulbResponse {
-        public boolean on;
-        public String color = "";
-        public String mode = "";
-        public long ramp;
-
-        @Override
-        public String toString() {
-            return "MyStromBulbResponse{" + "on=" + on + ", color='" + color + '\'' + ", mode='" + mode + '\''
-                    + ", ramp=" + ramp + '}';
-        }
-    }
-
-    private static class MyStromDeviceSpecificInfo extends MyStromBulbResponse {
-        public double power;
-    }
-
-    private static final String COMMUNICATION_ERROR = "Error while communicating to the myStrom bulb: ";
+    private static final Type DEVICE_INFO_MAP_TYPE = new TypeToken<HashMap<String, MyStromDeviceSpecificInfo>>() {
+    }.getType();
 
     private final Logger logger = LoggerFactory.getLogger(MyStromBulbHandler.class);
 
@@ -89,9 +73,6 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
 
     private PercentType lastBrightness = PercentType.HUNDRED;
     private DecimalType lastColorTemperature = new DecimalType(10);
-
-    private static final Type TYPE = new TypeToken<HashMap<String, MyStromDeviceSpecificInfo>>() {
-    }.getType();
 
     public MyStromBulbHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -142,7 +123,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
                 }
 
                 if (sResp != null) {
-                    Map<String, MyStromDeviceSpecificInfo> report = gson.fromJson(sResp, TYPE);
+                    Map<String, MyStromDeviceSpecificInfo> report = gson.fromJson(sResp, DEVICE_INFO_MAP_TYPE);
                     if (report != null) {
                         report.entrySet().stream().filter(e -> e.getKey().equals(mac)).findFirst()
                                 .ifPresent(info -> updateDevice(info.getValue()));
@@ -157,7 +138,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
     private @Nullable Map<String, MyStromDeviceSpecificInfo> getReport() {
         try {
             String returnContent = sendHttpRequest(HttpMethod.GET, "/api/v1/device", null);
-            Map<String, MyStromDeviceSpecificInfo> report = gson.fromJson(returnContent, TYPE);
+            Map<String, MyStromDeviceSpecificInfo> report = gson.fromJson(returnContent, DEVICE_INFO_MAP_TYPE);
             updateStatus(ThingStatus.ONLINE);
             return report;
         } catch (MyStromException e) {
@@ -248,5 +229,22 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
             }
         }
         return sendHttpRequest(HttpMethod.POST, "/api/v1/device/" + mac, builder.toString());
+    }
+
+    private static class MyStromBulbResponse {
+        public boolean on;
+        public String color = "";
+        public String mode = "";
+        public long ramp;
+
+        @Override
+        public String toString() {
+            return "MyStromBulbResponse{" + "on=" + on + ", color='" + color + '\'' + ", mode='" + mode + '\''
+                    + ", ramp=" + ramp + '}';
+        }
+    }
+
+    private static class MyStromDeviceSpecificInfo extends MyStromBulbResponse {
+        public double power;
     }
 }
