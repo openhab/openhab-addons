@@ -27,7 +27,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.bluetooth.govee.internal.GoveeModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -91,8 +90,20 @@ public class ThingTypeTableGenerator {
         String infix = paddingChar + "|" + paddingChar;
         String suffix = paddingChar + "|";
 
-        return Stream.of(0, 1, 2).map(i -> StringUtils.rightPad(row[i], maxColumns[i], paddingChar))
+        return Stream.of(0, 1, 2).map(i -> rightPad(row[i], maxColumns[i], paddingChar))
                 .collect(Collectors.joining(infix, prefix, suffix));
+    }
+
+    private static String rightPad(String str, int minLength, char paddingChar) {
+        if (str.length() >= minLength) {
+            return str;
+        }
+        StringBuilder builder = new StringBuilder(minLength);
+        builder.append(str);
+        while (builder.length() < minLength) {
+            builder.append(paddingChar);
+        }
+        return builder.toString();
     }
 
     private static int maxColumnSize(List<String[]> rows, int column) {

@@ -45,13 +45,11 @@
 
 			<parameter name="temperatureCalibration" type="decimal" min="-1.6" max="1.6" groupName="calibration"
 				unit="Cel">
-				<required>false</required>
 				<label>Temperature Calibration</label>
 				<description>Adds offset to reported temperature</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="humidityCalibration" type="decimal" min="-9" max="9" groupName="calibration" unit="%">
-				<required>false</required>
 				<label>Humidity Calibration</label>
 				<description>Adds offset to reported humidity</description>
 				<advanced>true</advanced>
@@ -109,7 +107,6 @@
 
 			<parameter name="temperatureCalibration" type="decimal" min="-1.6" max="1.6" groupName="calibration"
 				unit="Cel">
-				<required>false</required>
 				<label>Temperature Calibration</label>
 				<description>Adds offset to reported temperature</description>
 				<advanced>true</advanced>

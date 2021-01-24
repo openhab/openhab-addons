@@ -33,8 +33,6 @@ public class GetOrSetHumCaliCommand extends GoveeCommand {
     private final CompletableFuture<@Nullable QuantityType<Dimensionless>> resultHandler;
     private final @Nullable QuantityType<Dimensionless> value;
 
-    // private @Nullable Integer value;
-
     public GetOrSetHumCaliCommand(CompletableFuture<@Nullable QuantityType<Dimensionless>> resultHandler) {
         this.value = null;
         this.resultHandler = resultHandler;
