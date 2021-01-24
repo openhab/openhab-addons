@@ -124,15 +124,14 @@ public class RokuCommunicator {
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
                             .createXMLStreamReader(new StringReader(getCommand(urlQryActiveApp)));
-                    ActiveApp activeApp = (ActiveApp) unmarshaller
-                            .unmarshal(xsr));
+                    ActiveApp activeApp = (ActiveApp) unmarshaller.unmarshal(xsr);
                     if (activeApp != null) {
                         return activeApp;
                     }
                 }
             }
             throw new RokuHttpException("No ActiveApp model in response");
-        } catch (JAXBException e) {
+        } catch (JAXBException | XMLStreamException e) {
             throw new RokuHttpException("Exception creating ActiveApp Unmarshaller: " + e.getLocalizedMessage());
         }
     }
