@@ -103,9 +103,51 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String LINEINCONNECTED = "LineInConnected";
     private static final String TOSLINEINCONNECTED = "TOSLinkConnected";
 
-    private static final Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList("DeviceProperties", "AVTransport",
-            "ZoneGroupTopology", "GroupManagement", "RenderingControl", "AudioIn", "HTControl", "ContentDirectory");
+    private static final String SERVICE_DEVICE_PROPERTIES = "DeviceProperties";
+    private static final String SERVICE_AV_TRANSPORT = "AVTransport";
+    private static final String SERVICE_RENDERING_CONTROL = "RenderingControl";
+    private static final String SERVICE_ZONE_GROUP_TOPOLOGY = "ZoneGroupTopology";
+    private static final String SERVICE_GROUP_MANAGEMENT = "GroupManagement";
+    private static final String SERVICE_AUDIO_IN = "AudioIn";
+    private static final String SERVICE_HT_CONTROL = "HTControl";
+    private static final String SERVICE_CONTENT_DIRECTORY = "ContentDirectory";
+    private static final String SERVICE_ALARM_CLOCK = "AlarmClock";
+
+    private static final Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(SERVICE_DEVICE_PROPERTIES,
+            SERVICE_AV_TRANSPORT, SERVICE_ZONE_GROUP_TOPOLOGY, SERVICE_GROUP_MANAGEMENT, SERVICE_RENDERING_CONTROL,
+            SERVICE_AUDIO_IN, SERVICE_HT_CONTROL, SERVICE_CONTENT_DIRECTORY);
     protected static final int SUBSCRIPTION_DURATION = 1800;
+
+    private static final String ACTION_GET_ZONE_ATTRIBUTES = "GetZoneAttributes";
+    private static final String ACTION_GET_ZONE_INFO = "GetZoneInfo";
+    private static final String ACTION_GET_LED_STATE = "GetLEDState";
+    private static final String ACTION_SET_LED_STATE = "SetLEDState";
+
+    private static final String ACTION_GET_POSITION_INFO = "GetPositionInfo";
+    private static final String ACTION_SET_AV_TRANSPORT_URI = "SetAVTransportURI";
+    private static final String ACTION_SEEK = "Seek";
+    private static final String ACTION_PLAY = "Play";
+    private static final String ACTION_STOP = "Stop";
+    private static final String ACTION_PAUSE = "Pause";
+    private static final String ACTION_PREVIOUS = "Previous";
+    private static final String ACTION_NEXT = "Next";
+    private static final String ACTION_ADD_URI_TO_QUEUE = "AddURIToQueue";
+    private static final String ACTION_REMOVE_TRACK_RANGE_FROM_QUEUE = "RemoveTrackRangeFromQueue";
+    private static final String ACTION_REMOVE_ALL_TRACKS_FROM_QUEUE = "RemoveAllTracksFromQueue";
+    private static final String ACTION_SAVE_QUEUE = "SaveQueue";
+    private static final String ACTION_SET_PLAY_MODE = "SetPlayMode";
+    private static final String ACTION_BECOME_COORDINATOR_OF_STANDALONE_GROUP = "BecomeCoordinatorOfStandaloneGroup";
+    private static final String ACTION_GET_RUNNING_ALARM_PROPERTIES = "GetRunningAlarmProperties";
+    private static final String ACTION_SNOOZE_ALARM = "SnoozeAlarm";
+    private static final String ACTION_GET_REMAINING_SLEEP_TIMER_DURATION = "GetRemainingSleepTimerDuration";
+    private static final String ACTION_CONFIGURE_SLEEP_TIMER = "ConfigureSleepTimer";
+
+    private static final String ACTION_SET_VOLUME = "SetVolume";
+    private static final String ACTION_SET_MUTE = "SetMute";
+    private static final String ACTION_SET_BASS = "SetBass";
+    private static final String ACTION_SET_TREBLE = "SetTreble";
+    private static final String ACTION_SET_LOUDNESS = "SetLoudness";
+    private static final String ACTION_SET_EQ = "SetEQ";
 
     private static final int SOCKET_TIMEOUT = 5000;
 
@@ -440,33 +482,33 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             this.stateMap.put(variable, value);
 
             // pre-process some variables, eg XML processing
-            if (service.equals("AVTransport") && variable.equals("LastChange")) {
+            if (service.equals(SERVICE_AV_TRANSPORT) && variable.equals("LastChange")) {
                 Map<String, String> parsedValues = SonosXMLParser.getAVTransportFromXML(value);
-                for (String parsedValue : parsedValues.keySet()) {
+                parsedValues.forEach((variable1, value1) -> {
                     // Update the transport state after the update of the media information
                     // to not break the notification mechanism
-                    if (!parsedValue.equals("TransportState")) {
-                        onValueReceived(parsedValue, parsedValues.get(parsedValue), "AVTransport");
+                    if (!variable1.equals("TransportState")) {
+                        onValueReceived(variable1, value1, SERVICE_AV_TRANSPORT);
                     }
                     // Translate AVTransportURI/AVTransportURIMetaData to CurrentURI/CurrentURIMetaData
                     // for a compatibility with the result of the action GetMediaInfo
-                    if (parsedValue.equals("AVTransportURI")) {
-                        onValueReceived("CurrentURI", parsedValues.get(parsedValue), service);
-                    } else if (parsedValue.equals("AVTransportURIMetaData")) {
-                        onValueReceived("CurrentURIMetaData", parsedValues.get(parsedValue), service);
+                    if (variable1.equals("AVTransportURI")) {
+                        onValueReceived("CurrentURI", value1, service);
+                    } else if (variable1.equals("AVTransportURIMetaData")) {
+                        onValueReceived("CurrentURIMetaData", value1, service);
                     }
-                }
+                });
                 updateMediaInformation();
                 if (parsedValues.get("TransportState") != null) {
-                    onValueReceived("TransportState", parsedValues.get("TransportState"), "AVTransport");
+                    onValueReceived("TransportState", parsedValues.get("TransportState"), SERVICE_AV_TRANSPORT);
                 }
             }
 
-            if (service.equals("RenderingControl") && variable.equals("LastChange")) {
+            if (service.equals(SERVICE_RENDERING_CONTROL) && variable.equals("LastChange")) {
                 Map<String, String> parsedValues = SonosXMLParser.getRenderingControlFromXML(value);
-                for (String parsedValue : parsedValues.keySet()) {
-                    onValueReceived(parsedValue, parsedValues.get(parsedValue), "RenderingControl");
-                }
+                parsedValues.forEach((variable1, value1) -> {
+                    onValueReceived(variable1, value1, SERVICE_RENDERING_CONTROL);
+                });
             }
 
             List<StateOption> options = new ArrayList<>();
@@ -501,12 +543,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     // Update state and control channels for the group members with the coordinator values
                     String transportState = getTransportState();
                     if (transportState != null) {
-                        dispatchOnAllGroupMembers("TransportState", transportState, "AVTransport");
+                        dispatchOnAllGroupMembers("TransportState", transportState, SERVICE_AV_TRANSPORT);
                     }
                     // Update shuffle and repeat channels for the group members with the coordinator values
                     String playMode = getPlayMode();
                     if (playMode != null) {
-                        dispatchOnAllGroupMembers("CurrentPlayMode", playMode, "AVTransport");
+                        dispatchOnAllGroupMembers("CurrentPlayMode", playMode, SERVICE_AV_TRANSPORT);
                     }
                     break;
                 case "LocalGroupUUID":
@@ -1031,6 +1073,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
+    private Map<String, String> executeAction(String serviceId, String actionId, @Nullable Map<String, String> inputs) {
+        Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
+        result.forEach((variable, value) -> {
+            this.onValueReceived(variable, value, serviceId);
+        });
+        return result;
+    }
+
     private void updatePlayerState() {
         if (!updateZoneInfo()) {
             if (!ThingStatus.OFFLINE.equals(getThing().getStatus())) {
@@ -1048,39 +1098,23 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     protected void updateCurrentZoneName() {
-        Map<String, String> result = service.invokeAction(this, "DeviceProperties", "GetZoneAttributes", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "DeviceProperties");
-        }
+        executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_ZONE_ATTRIBUTES, null);
     }
 
     protected void updateLed() {
-        Map<String, String> result = service.invokeAction(this, "DeviceProperties", "GetLEDState", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "DeviceProperties");
-        }
+        executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_LED_STATE, null);
     }
 
     protected void updateTime() {
-        Map<String, String> result = service.invokeAction(this, "AlarmClock", "GetTimeNow", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AlarmClock");
-        }
+        executeAction(SERVICE_ALARM_CLOCK, "GetTimeNow", null);
     }
 
     protected void updatePosition() {
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "GetPositionInfo", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_GET_POSITION_INFO, null);
     }
 
     protected void updateRunningAlarmProperties() {
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "GetRunningAlarmProperties", null);
+        Map<String, String> result = executeAction(SERVICE_AV_TRANSPORT, ACTION_GET_RUNNING_ALARM_PROPERTIES, null);
 
         String alarmID = result.get("AlarmID");
         String loggedStartTime = result.get("LoggedStartTime");
@@ -1090,18 +1124,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         } else {
             newStringValue = "No running alarm";
         }
-        result.put("RunningAlarmProperties", newStringValue);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        onValueReceived("RunningAlarmProperties", newStringValue, SERVICE_AV_TRANSPORT);
     }
 
     protected boolean updateZoneInfo() {
-        Map<String, String> result = service.invokeAction(this, "DeviceProperties", "GetZoneInfo", null);
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "DeviceProperties");
-        }
+        Map<String, String> result = executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_ZONE_INFO, null);
 
         Map<String, String> properties = editProperties();
         String value = stateMap.get("HardwareVersion");
@@ -1255,14 +1282,17 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                         handlerForImageUpdate = memberHandler;
                     }
                     memberHandler.onValueReceived("CurrentTuneInStationId", (stationID != null) ? stationID : "",
-                            "AVTransport");
+                            SERVICE_AV_TRANSPORT);
                     if (needsUpdating) {
-                        memberHandler.onValueReceived("CurrentArtist", (artist != null) ? artist : "", "AVTransport");
-                        memberHandler.onValueReceived("CurrentAlbum", (album != null) ? album : "", "AVTransport");
-                        memberHandler.onValueReceived("CurrentTitle", (title != null) ? title : "", "AVTransport");
+                        memberHandler.onValueReceived("CurrentArtist", (artist != null) ? artist : "",
+                                SERVICE_AV_TRANSPORT);
+                        memberHandler.onValueReceived("CurrentAlbum", (album != null) ? album : "",
+                                SERVICE_AV_TRANSPORT);
+                        memberHandler.onValueReceived("CurrentTitle", (title != null) ? title : "",
+                                SERVICE_AV_TRANSPORT);
                         memberHandler.onValueReceived("CurrentURIFormatted", (resultString != null) ? resultString : "",
-                                "AVTransport");
-                        memberHandler.onValueReceived("CurrentAlbumArtURI", albumArtURI, "AVTransport");
+                                SERVICE_AV_TRANSPORT);
+                        memberHandler.onValueReceived("CurrentAlbumArtURI", albumArtURI, SERVICE_AV_TRANSPORT);
                     }
                 }
             } catch (IllegalStateException e) {
@@ -1489,7 +1519,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         inputs.put("RequestedCount", Integer.toString(200));
         inputs.put("SortCriteria", "");
 
-        Map<String, String> result = service.invokeAction(this, "ContentDirectory", "Browse", inputs);
+        Map<String, String> result = service.invokeAction(this, SERVICE_CONTENT_DIRECTORY, "Browse", inputs);
 
         String initialResult = result.get("Result");
         if (initialResult == null) {
@@ -1504,7 +1534,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
         while (startAt < totalMatches) {
             inputs.put("StartingIndex", Long.toString(startAt));
-            result = service.invokeAction(this, "ContentDirectory", "Browse", inputs);
+            result = service.invokeAction(this, SERVICE_CONTENT_DIRECTORY, "Browse", inputs);
 
             // Execute this action synchronously
             String nextResult = result.get("Result");
@@ -1531,7 +1561,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         inputs.put("RequestedCount", "1");
         inputs.put("SortCriteria", "");
 
-        Map<String, String> result = service.invokeAction(this, "ContentDirectory", "Browse", inputs);
+        Map<String, String> result = service.invokeAction(this, SERVICE_CONTENT_DIRECTORY, "Browse", inputs);
 
         return getResultEntry(result, "TotalMatches", type, "dc:title");
     }
@@ -1705,12 +1735,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         Map<String, String> inputs = new HashMap<>();
         inputs.put("Title", name);
         inputs.put("ObjectID", queueID);
-
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "SaveQueue", inputs);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_SAVE_QUEUE, inputs);
     }
 
     public void setVolume(Command command) {
@@ -1738,12 +1763,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             inputs.put("InstanceID", "0");
             inputs.put("Channel", "Master");
             inputs.put("DesiredVolume", newValue);
-
-            Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetVolume", inputs);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "RenderingControl");
-            }
+            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_VOLUME, inputs);
         }
     }
 
@@ -1771,12 +1791,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 Map<String, String> inputs = new HashMap<>();
                 inputs.put("InstanceID", "0");
                 inputs.put("DesiredBass", newValue);
-
-                Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetBass", inputs);
-
-                for (String variable : result.keySet()) {
-                    this.onValueReceived(variable, result.get(variable), "RenderingControl");
-                }
+                executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_BASS, inputs);
             }
         }
     }
@@ -1788,12 +1803,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 Map<String, String> inputs = new HashMap<>();
                 inputs.put("InstanceID", "0");
                 inputs.put("DesiredTreble", newValue);
-
-                Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetTreble", inputs);
-
-                for (String variable : result.keySet()) {
-                    this.onValueReceived(variable, result.get(variable), "RenderingControl");
-                }
+                executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_TREBLE, inputs);
             }
         }
     }
@@ -1829,11 +1839,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 inputs.put("DesiredLoudness", "False");
             }
 
-            Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetLoudness", inputs);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "RenderingControl");
-            }
+            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_LOUDNESS, inputs);
         }
     }
 
@@ -1926,11 +1932,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
         }
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "AddURIToQueue", inputs);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_ADD_URI_TO_QUEUE, inputs);
     }
 
     public void setCurrentURI(SonosEntry newEntry) {
@@ -1950,11 +1952,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
             }
 
-            Map<String, String> result = service.invokeAction(this, "AVTransport", "SetAVTransportURI", inputs);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "AVTransport");
-            }
+            executeAction(SERVICE_AV_TRANSPORT, ACTION_SET_AV_TRANSPORT_URI, inputs);
         }
     }
 
@@ -1982,39 +1980,22 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
             }
 
-            Map<String, String> result = service.invokeAction(this, "AVTransport", "Seek", inputs);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "AVTransport");
-            }
+            executeAction(SERVICE_AV_TRANSPORT, ACTION_SEEK, inputs);
         }
     }
 
     public void play() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("Speed", "1");
-
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Play", inputs);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_PLAY, inputs);
     }
 
     public void stop() {
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Stop", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_STOP, null);
     }
 
     public void pause() {
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Pause", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_PAUSE, null);
     }
 
     public void setShuffle(Command command) {
@@ -2138,11 +2119,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             inputs.put("InstanceID", "0");
             inputs.put("EQType", eqType);
             inputs.put("DesiredValue", value);
-            Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetEQ", inputs);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "RenderingControl");
-            }
+            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_EQ, inputs);
         } catch (IllegalStateException e) {
             logger.debug("Cannot handle {} command ({})", eqType, e.getMessage());
         }
@@ -2192,12 +2169,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
         inputs.put("NewPlayMode", playMode);
-
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "SetPlayMode", inputs);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_SET_PLAY_MODE, inputs);
     }
 
     /**
@@ -2207,12 +2179,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void removeAllTracksFromQueue() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
-
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "RemoveAllTracksFromQueue", inputs);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_REMOVE_ALL_TRACKS_FROM_QUEUE, inputs);
     }
 
     /**
@@ -2347,21 +2314,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 inputs.put("DesiredMute", "False");
             }
 
-            Map<String, String> result = service.invokeAction(this, "RenderingControl", "SetMute", inputs);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "RenderingControl");
-            }
+            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_MUTE, inputs);
         }
     }
 
     public List<SonosAlarm> getCurrentAlarmList() {
-        Map<String, String> result = service.invokeAction(this, "AlarmClock", "ListAlarms", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AlarmClock");
-        }
-
+        Map<String, String> result = executeAction(SERVICE_ALARM_CLOCK, "ListAlarms", null);
         String alarmList = result.get("CurrentAlarmList");
         return alarmList == null ? Collections.emptyList() : SonosXMLParser.getAlarmsFromStringResult(alarmList);
     }
@@ -2394,11 +2352,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
         }
 
-        Map<String, String> result = service.invokeAction(this, "AlarmClock", "UpdateAlarm", inputs);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AlarmClock");
-        }
+        executeAction(SERVICE_ALARM_CLOCK, "UpdateAlarm", inputs);
     }
 
     public void setAlarm(Command command) {
@@ -2501,11 +2455,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
             }
 
-            Map<String, String> result = service.invokeAction(this, "AVTransport", "SnoozeAlarm", inputs);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "AVTransport");
-            }
+            executeAction(SERVICE_AV_TRANSPORT, ACTION_SNOOZE_ALARM, inputs);
         } else {
             logger.debug("There is no alarm running on {}", getUDN());
         }
@@ -2528,12 +2478,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void becomeStandAlonePlayer() {
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "BecomeCoordinatorOfStandaloneGroup",
-                null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_BECOME_COORDINATOR_OF_STANDALONE_GROUP, null);
     }
 
     public void addMember(Command command) {
@@ -2921,12 +2866,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             inputs.put("InstanceID", "0");
             inputs.put("StartingIndex", startIndex);
             inputs.put("NumberOfTracks", numberOfTracks);
-
-            Map<String, String> result = service.invokeAction(this, "AVTransport", "RemoveTrackRangeFromQueue", inputs);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "AVTransport");
-            }
+            executeAction(SERVICE_AV_TRANSPORT, ACTION_REMOVE_TRACK_RANGE_FROM_QUEUE, inputs);
         }
     }
 
@@ -2968,14 +2908,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 inputs.put("DesiredLEDState", "Off");
             }
 
-            Map<String, String> result = service.invokeAction(this, "DeviceProperties", "SetLEDState", inputs);
-            Map<String, String> result2 = service.invokeAction(this, "DeviceProperties", "GetLEDState", null);
-
-            result.putAll(result2);
-
-            for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "DeviceProperties");
-            }
+            executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_SET_LED_STATE, inputs);
+            executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_LED_STATE, null);
         }
     }
 
@@ -2995,19 +2929,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void previous() {
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Previous", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_PREVIOUS, null);
     }
 
     public void next() {
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Next", null);
-
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_NEXT, null);
     }
 
     public void stopPlaying(Command command) {
@@ -3333,15 +3259,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             inputs.put("InstanceID", "0");
             inputs.put("NewSleepTimerDuration", sleepSecondsToTimeStr(((DecimalType) command).longValue()));
 
-            this.service.invokeAction(this, "AVTransport", "ConfigureSleepTimer", inputs);
+            this.service.invokeAction(this, SERVICE_AV_TRANSPORT, ACTION_CONFIGURE_SLEEP_TIMER, inputs);
         }
     }
 
     protected void updateSleepTimerDuration() {
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "GetRemainingSleepTimerDuration", null);
-        for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
-        }
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_GET_REMAINING_SLEEP_TIMER_DURATION, null);
     }
 
     private String sleepSecondsToTimeStr(long sleepSeconds) {
