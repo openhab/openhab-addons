@@ -35,11 +35,12 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
-
+    private Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(YamahaMusiccastBridgeHandler.class);
 
     private final ScheduledExecutorService udpScheduler = ThreadPoolManager
             .getScheduledPool("YamahaMusiccastListener" + "-" + thing.getUID().getId());
+
     private @Nullable ScheduledFuture<?> listenerJob;
     private final UdpListener udpListener;
 
@@ -91,7 +92,7 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
                             trackingID);
 
                     @Nullable
-                    UdpMessage targetObject = new Gson().fromJson(json, UdpMessage.class);
+                    UdpMessage targetObject = gson.fromJson(json, UdpMessage.class);
                     udpDeviceId = targetObject.getDeviceId();
                     if (udpDeviceId.equals(handler.getDeviceId())) {
                         handler.processUDPEvent(json, trackingID);

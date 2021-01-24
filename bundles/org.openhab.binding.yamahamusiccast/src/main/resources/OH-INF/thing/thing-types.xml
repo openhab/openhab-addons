@@ -242,12 +242,12 @@
 		<description>MusicCast Status</description>
 	</channel-type>
 	<channel-type id="playTime">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Play Time</label>
 		<description>Play Time</description>
 	</channel-type>
 	<channel-type id="totalTime">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Total Time</label>
 		<description>Total Time</description>
 	</channel-type>
