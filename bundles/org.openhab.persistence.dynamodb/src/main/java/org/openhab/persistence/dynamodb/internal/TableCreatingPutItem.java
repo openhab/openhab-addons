@@ -35,6 +35,39 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
  * Designed such that competing PutItem requests should complete successfully, only one of them
  * 'winning the race' and creating the table.
  *
+ *
+ * PutItem
+ * . |
+ * . \ (ERR: ResourceNotFoundException) (1)
+ * ....|
+ * ....CreateTable
+ * ....|.........\
+ * .... \ (OK)....\ (ERR: ResourceInUseException) (2)
+ * ......|..................|
+ * ..... |..................|
+ * ..... |...........Wait for table to become active
+ * ..... |......................\
+ * ..... |......................| (OK)
+ * ..... |......................|
+ * ..... |......................PutItem
+ * ..... |
+ * ..... |
+ * ..... Wait for table to become active
+ * ......|
+ * .......\
+ * ........| (OK)
+ * ........|
+ * ........\
+ * ....... Configure TTL (no-op with legacy schema)
+ * ..........|
+ * ...........\ (OK)
+ * ...........|
+ * ...........PutItem
+ *
+ *
+ * (1) Most likely table does not exist yet
+ * (2) Raised when Table created by someone else
+ *
  * @author Sami Salonen - Initial contribution
  *
  */
@@ -63,67 +96,99 @@ class TableCreatingPutItem {
 
     private CompletableFuture<Void> internalPutItemAsync(boolean createTable, boolean recursionAllowed) {
         if (createTable) {
-            // Try again, first create the table and wait for table to become active, and finally retry PutItem
+            // Try again, first creating the table
             Instant tableCreationStart = Instant.now();
             table.createTable(CreateTableEnhancedRequest.builder()
                     .provisionedThroughput(ProvisionedThroughput.builder()
                             .readCapacityUnits(this.service.dbConfig.getReadCapacityUnits())
                             .writeCapacityUnits(this.service.dbConfig.getWriteCapacityUnits()).build())
-                    .build()).thenComposeAsync(_void -> waitForTableToBeActive(), this.service.executor)
-                    .thenComposeAsync(_void -> {
-                        boolean legacy = this.service.tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
-                        if (legacy) {
-                            return CompletableFuture.completedFuture(null);
-                        } else {
-                            // new table schema, we also configure TTL for the table
-                            return this.service.lowLevelClient
-                                    .updateTimeToLive(req -> req.overrideConfiguration(this.service::overrideConfig)
+                    .build())//
+                    .whenCompleteAsync((resultTableCreation, exceptionTableCreation) -> {
+                        if (exceptionTableCreation == null) {
+                            logger.trace("PutItem: Table created in {} ms. Proceeding to TTL creation.",
+                                    Duration.between(tableCreationStart, Instant.now()).toMillis());
+                            //
+                            // Table creation OK. Configure TTL
+                            //
+                            boolean legacy = this.service.tableNameResolver
+                                    .getTableSchema() == ExpectedTableSchema.LEGACY;
+                            waitForTableToBeActive().thenComposeAsync(_void -> {
+                                if (legacy) {
+                                    // We have legacy table schema. TTL configuration is skipped
+                                    return CompletableFuture.completedFuture(null);
+                                } else {
+                                    // We have the new table schema -> configure TTL
+                                    // for the newly created table
+                                    return this.service.lowLevelClient.updateTimeToLive(req -> req
+                                            .overrideConfiguration(this.service::overrideConfig)
                                             .tableName(table.tableName()).timeToLiveSpecification(spec -> spec
                                                     .attributeName(DynamoDBItem.ATTRIBUTE_NAME_EXPIRY).enabled(true)));
-                        }
-                    }, this.service.executor).thenComposeAsync(_void -> table.putItem(dto), this.service.executor)
-                    .whenCompleteAsync((result, exception) -> {
-                        // PutItem failed even after creating the table. We give up and complete the aggregate
-                        // future
-                        if (exception == null) {
-                            Instant now = Instant.now();
-                            logger.trace(
-                                    "PutItem: DTO {} was successfully written in {} ms. Table was created in {} ms.",
-                                    dto, Duration.between(start, now).toMillis(),
-                                    Duration.between(tableCreationStart, now).toMillis());
-                            aggregateFuture.complete(result);
+                                }
+                            }, this.service.executor)
+                                    //
+                                    // Table is ready and TTL configured (possibly with error)
+                                    //
+                                    .whenCompleteAsync((resultTTL, exceptionTTL) -> {
+                                        if (exceptionTTL == null) {
+                                            //
+                                            // TTL configuration OK, continue with PutItem
+                                            //
+                                            logger.trace("PutItem: TTL configured successfully");
+                                            internalPutItemAsync(false, false);
+                                        } else {
+                                            //
+                                            // TTL configuration failed, abort
+                                            //
+                                            logger.trace("PutItem: TTL configuration failed");
+                                            Throwable exceptionTTLCause = exceptionTTL.getCause();
+                                            aggregateFuture.completeExceptionally(
+                                                    exceptionTTLCause == null ? exceptionTTL : exceptionTTLCause);
+                                        }
+                                    }, this.service.executor);
                         } else {
-                            Throwable cause = exception.getCause();
+                            // Table creation failed. We give up and complete the aggregate
+                            // future -- unless the error was ResourceInUseException, in which case wait for
+                            // table to become active and try again
+                            Throwable cause = exceptionTableCreation.getCause();
                             if (cause instanceof ResourceInUseException) {
                                 logger.trace(
                                         "PutItem: table creation failed (will be retried) with {} {}. Perhaps tried to create table that already exists. Trying one more time without creating table.",
                                         cause.getClass().getSimpleName(), cause.getMessage());
                                 // Wait table to be active, then retry PutItem
-                                waitForTableToBeActive().whenComplete((r, e) -> {
-                                    if (e != null) {
-                                        Throwable c = e.getCause();
+                                waitForTableToBeActive().whenCompleteAsync((_tableWaitResponse, tableWaitException) -> {
+                                    if (tableWaitException != null) {
+                                        // error when waiting for table to become active
+                                        Throwable tableWaitExceptionCause = tableWaitException.getCause();
                                         logger.warn(
                                                 "PutItem: failed (final) with {} {} when waiting to become active. Aborting.",
-                                                c == null ? exception.getClass().getSimpleName()
-                                                        : c.getClass().getSimpleName(),
-                                                c == null ? exception.getMessage() : c.getMessage());
+                                                tableWaitExceptionCause == null
+                                                        ? tableWaitException.getClass().getSimpleName()
+                                                        : tableWaitExceptionCause.getClass().getSimpleName(),
+                                                tableWaitExceptionCause == null ? tableWaitException.getMessage()
+                                                        : tableWaitExceptionCause.getMessage());
+                                        aggregateFuture.completeExceptionally(
+                                                tableWaitExceptionCause == null ? tableWaitException
+                                                        : tableWaitExceptionCause);
                                     }
-                                }).thenRunAsync(() -> internalPutItemAsync(false, false), this.service.executor);
+                                }, this.service.executor)
+                                        // table wait OK, retry PutItem
+                                        .thenRunAsync(() -> internalPutItemAsync(false, false), this.service.executor);
                             } else {
                                 logger.warn("PutItem: failed (final) with {} {}. Aborting.",
-                                        cause == null ? exception.getClass().getSimpleName()
+                                        cause == null ? exceptionTableCreation.getClass().getSimpleName()
                                                 : cause.getClass().getSimpleName(),
-                                        cause == null ? exception.getMessage() : cause.getMessage());
-                                aggregateFuture.completeExceptionally(exception);
+                                        cause == null ? exceptionTableCreation.getMessage() : cause.getMessage());
+                                aggregateFuture.completeExceptionally(cause == null ? exceptionTableCreation : cause);
                             }
                         }
                     }, this.service.executor);
+
         } else {
             // First try, optimistically assuming that table exists
             table.putItem(dto).whenCompleteAsync((result, exception) -> {
                 if (exception == null) {
-                    logger.trace("PutItem: DTO {} was successfully written in {} ms. There was no need to create table",
-                            dto, Duration.between(start, Instant.now()).toMillis());
+                    logger.trace("PutItem: DTO {} was successfully written in {} ms.", dto,
+                            Duration.between(start, Instant.now()).toMillis());
                     aggregateFuture.complete(result);
                 } else {
                     // PutItem failed. We retry i failure was due to non-existing table. Retry is triggered by calling
