@@ -43,6 +43,7 @@ public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest 
     private static final DateTimeType STATE2 = new DateTimeType(ZDT2.withZoneSameInstant(ZoneOffset.ofHours(5)));
     private static final DateTimeType STATE_BETWEEN = new DateTimeType(ZDT_BETWEEN);
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         DateTimeItem item = (DateTimeItem) ITEMS.get(NAME);

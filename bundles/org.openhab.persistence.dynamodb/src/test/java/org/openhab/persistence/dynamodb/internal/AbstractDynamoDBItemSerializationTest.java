@@ -105,7 +105,8 @@ public class AbstractDynamoDBItemSerializationTest {
     public HistoricItem testAsHistoricGeneric(DynamoDBItem<?> dbItem, GenericItem item, Object expectedState)
             throws IOException {
         HistoricItem historicItem = dbItem.asHistoricItem(item);
-
+        assertNotNull(historicItem);
+        assert historicItem != null; // getting rid off null pointer access warning
         assertEquals("foo", historicItem.getName());
         assertEquals(date, historicItem.getTimestamp());
         assertEquals(expectedState.getClass(), historicItem.getState().getClass());

@@ -39,6 +39,7 @@ public class CallItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final StringListType STATE2 = new StringListType("part3", "bar");
     private static final StringListType STATE_BETWEEN = new StringListType("part2", "zzz");
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         CallItem item = (CallItem) ITEMS.get(NAME);

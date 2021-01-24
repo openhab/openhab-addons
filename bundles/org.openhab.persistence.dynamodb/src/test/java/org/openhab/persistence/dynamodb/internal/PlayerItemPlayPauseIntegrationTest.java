@@ -35,6 +35,7 @@ public class PlayerItemPlayPauseIntegrationTest extends AbstractTwoItemIntegrati
     private static final PlayPauseType STATE2 = PlayPauseType.PLAY;
     private static final @Nullable PlayPauseType STATE_BETWEEN = null;
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         PlayerItem item = (PlayerItem) ITEMS.get(NAME);

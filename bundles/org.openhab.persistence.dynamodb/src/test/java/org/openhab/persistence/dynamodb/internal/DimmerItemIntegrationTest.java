@@ -35,6 +35,7 @@ public class DimmerItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final PercentType STATE2 = new PercentType(68);
     private static final PercentType STATE_BETWEEN = new PercentType(67);
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         DimmerItem item = (DimmerItem) ITEMS.get(NAME);

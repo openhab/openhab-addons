@@ -37,6 +37,7 @@ public class ContactItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     // Omit extended query tests AbstractTwoItemIntegrationTest by setting stateBetween to null.
     private static final @Nullable OnOffType STATE_BETWEEN = null;
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         ContactItem item = (ContactItem) ITEMS.get(NAME);

@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.persistence.FilterCriteria;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -38,7 +36,6 @@ import com.google.common.collect.Lists;
 @NonNullByDefault
 public class DynamoDBTableNameResolverTest extends BaseIntegrationTest {
 
-    private final Logger logger = LoggerFactory.getLogger(DynamoDBTableNameResolverTest.class);
     public static final boolean LEGACY_MODE = false; // not relevant for these tests but required by BaseIntegrationTest
 
     @Test

@@ -50,6 +50,7 @@ public class ColorItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final HSBType STATE2 = color(75, 100, 90);
     private static final HSBType STATE_BETWEEN = color(60, 50, 50);
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         ColorItem item = (ColorItem) ITEMS.get(NAME);

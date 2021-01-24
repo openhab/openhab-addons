@@ -40,6 +40,7 @@ public class NumberItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final DecimalType STATE2 = new DecimalType(600.9123);
     private static final DecimalType STATE_BETWEEN = new DecimalType(500);
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         NumberItem item = (NumberItem) ITEMS.get(NAME);

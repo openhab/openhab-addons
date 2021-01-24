@@ -66,6 +66,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         System.err.println("ending population");
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPagingFirstPage() {
         waitForAssert(() -> {
@@ -79,6 +80,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         });
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPagingSecondPage() {
         waitForAssert(() -> {
@@ -92,6 +94,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         });
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPagingPagePartialPage() {
         waitForAssert(() -> {
@@ -105,6 +108,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         });
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPagingPageOutOfBounds() {
         waitForAssert(() -> {
@@ -118,6 +122,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         });
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPagingPage0Descending() {
         waitForAssert(() -> {
@@ -131,6 +136,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         });
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPagingPage0HugePageSize() {
         waitForAssert(() -> {
@@ -144,6 +150,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         });
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPagingFirstPageWithFilter() {
         waitForAssert(() -> {

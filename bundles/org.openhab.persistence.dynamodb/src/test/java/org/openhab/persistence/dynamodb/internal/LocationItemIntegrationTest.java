@@ -39,6 +39,7 @@ public class LocationItemIntegrationTest extends AbstractTwoItemIntegrationTest 
     private static final PointType STATE2 = new PointType(new DecimalType(61.0), new DecimalType(30.));
     private static final PointType STATE_BETWEEN = new PointType(new DecimalType(60.5), new DecimalType(30.));
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         LocationItem item = (LocationItem) ITEMS.get(NAME);
