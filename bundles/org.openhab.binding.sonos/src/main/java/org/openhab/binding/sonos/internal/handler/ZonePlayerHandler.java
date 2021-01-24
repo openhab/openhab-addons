@@ -1732,10 +1732,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void saveQueue(String name, String queueID) {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("Title", name);
-        inputs.put("ObjectID", queueID);
-        executeAction(SERVICE_AV_TRANSPORT, ACTION_SAVE_QUEUE, inputs);
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_SAVE_QUEUE, Map.of("Title", name, "ObjectID", queueID));
     }
 
     public void setVolume(Command command) {
@@ -1758,12 +1755,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             } else {
                 return;
             }
-
-            Map<String, String> inputs = new HashMap<>();
-            inputs.put("InstanceID", "0");
-            inputs.put("Channel", "Master");
-            inputs.put("DesiredVolume", newValue);
-            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_VOLUME, inputs);
+            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_VOLUME,
+                    Map.of("InstanceID", "0", "Channel", "Master", "DesiredVolume", newValue));
         }
     }
 
@@ -1788,10 +1781,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         if (!isOutputLevelFixed()) {
             String newValue = getNewNumericValue(command, getBass(), MIN_BASS, MAX_BASS);
             if (newValue != null) {
-                Map<String, String> inputs = new HashMap<>();
-                inputs.put("InstanceID", "0");
-                inputs.put("DesiredBass", newValue);
-                executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_BASS, inputs);
+                executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_BASS,
+                        Map.of("InstanceID", "0", "DesiredBass", newValue));
             }
         }
     }
@@ -1800,10 +1791,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         if (!isOutputLevelFixed()) {
             String newValue = getNewNumericValue(command, getTreble(), MIN_TREBLE, MAX_TREBLE);
             if (newValue != null) {
-                Map<String, String> inputs = new HashMap<>();
-                inputs.put("InstanceID", "0");
-                inputs.put("DesiredTreble", newValue);
-                executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_TREBLE, inputs);
+                executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_TREBLE,
+                        Map.of("InstanceID", "0", "DesiredTreble", newValue));
             }
         }
     }
@@ -1828,18 +1817,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void setLoudness(Command command) {
         if (!isOutputLevelFixed() && (command instanceof OnOffType || command instanceof OpenClosedType
                 || command instanceof UpDownType)) {
-            Map<String, String> inputs = new HashMap<>();
-            inputs.put("InstanceID", "0");
-            inputs.put("Channel", "Master");
-
-            if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
-                inputs.put("DesiredLoudness", "True");
-            } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)
-                    || command.equals(OpenClosedType.CLOSED)) {
-                inputs.put("DesiredLoudness", "False");
-            }
-
-            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_LOUDNESS, inputs);
+            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
+                    || command.equals(OpenClosedType.OPEN)) ? "True" : "False";
+            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_LOUDNESS,
+                    Map.of("InstanceID", "0", "Channel", "Master", "DesiredLoudness", value));
         }
     }
 
@@ -1942,17 +1923,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void setCurrentURI(@Nullable String URI, @Nullable String URIMetaData) {
         if (URI != null && URIMetaData != null) {
             logger.debug("setCurrentURI URI {} URIMetaData {}", URI, URIMetaData);
-            Map<String, String> inputs = new HashMap<>();
-
             try {
-                inputs.put("InstanceID", "0");
-                inputs.put("CurrentURI", URI);
-                inputs.put("CurrentURIMetaData", URIMetaData);
+                executeAction(SERVICE_AV_TRANSPORT, ACTION_SET_AV_TRANSPORT_URI,
+                        Map.of("InstanceID", "0", "CurrentURI", URI, "CurrentURIMetaData", URIMetaData));
             } catch (NumberFormatException ex) {
                 logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
             }
-
-            executeAction(SERVICE_AV_TRANSPORT, ACTION_SET_AV_TRANSPORT_URI, inputs);
         }
     }
 
@@ -1970,24 +1946,17 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     protected void seek(String unit, @Nullable String target) {
         if (target != null) {
-            Map<String, String> inputs = new HashMap<>();
-
             try {
-                inputs.put("InstanceID", "0");
-                inputs.put("Unit", unit);
-                inputs.put("Target", target);
+                executeAction(SERVICE_AV_TRANSPORT, ACTION_SEEK,
+                        Map.of("InstanceID", "0", "Unit", unit, "Target", target));
             } catch (NumberFormatException ex) {
                 logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
             }
-
-            executeAction(SERVICE_AV_TRANSPORT, ACTION_SEEK, inputs);
         }
     }
 
     public void play() {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("Speed", "1");
-        executeAction(SERVICE_AV_TRANSPORT, ACTION_PLAY, inputs);
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_PLAY, Map.of("Speed", "1"));
     }
 
     public void stop() {
@@ -2115,11 +2084,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private void setEQ(String eqType, String value) {
         try {
-            Map<String, String> inputs = new HashMap<>();
-            inputs.put("InstanceID", "0");
-            inputs.put("EQType", eqType);
-            inputs.put("DesiredValue", value);
-            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_EQ, inputs);
+            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_EQ,
+                    Map.of("InstanceID", "0", "EQType", eqType, "DesiredValue", value));
         } catch (IllegalStateException e) {
             logger.debug("Cannot handle {} command ({})", eqType, e.getMessage());
         }
@@ -2166,10 +2132,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     protected void updatePlayMode(String playMode) {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", "0");
-        inputs.put("NewPlayMode", playMode);
-        executeAction(SERVICE_AV_TRANSPORT, ACTION_SET_PLAY_MODE, inputs);
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_SET_PLAY_MODE, Map.of("InstanceID", "0", "NewPlayMode", playMode));
     }
 
     /**
@@ -2177,9 +2140,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      *
      */
     public void removeAllTracksFromQueue() {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", "0");
-        executeAction(SERVICE_AV_TRANSPORT, ACTION_REMOVE_ALL_TRACKS_FROM_QUEUE, inputs);
+        executeAction(SERVICE_AV_TRANSPORT, ACTION_REMOVE_ALL_TRACKS_FROM_QUEUE, Map.of("InstanceID", "0"));
     }
 
     /**
@@ -2303,18 +2264,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public void setMute(Command command) {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            Map<String, String> inputs = new HashMap<>();
-            inputs.put("InstanceID", "0");
-            inputs.put("Channel", "Master");
-
-            if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
-                inputs.put("DesiredMute", "True");
-            } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)
-                    || command.equals(OpenClosedType.CLOSED)) {
-                inputs.put("DesiredMute", "False");
-            }
-
-            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_MUTE, inputs);
+            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
+                    || command.equals(OpenClosedType.OPEN)) ? "True" : "False";
+            executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_MUTE,
+                    Map.of("InstanceID", "0", "Channel", "Master", "DesiredMute", value));
         }
     }
 
@@ -2856,17 +2809,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     public void removeRangeOfTracksFromQueue(Command command) {
         if (command instanceof StringType) {
-            Map<String, String> inputs = new HashMap<>();
             String[] rangeInputSplit = command.toString().split(",");
-
             // If range input is incorrect, remove the first song by default
             String startIndex = rangeInputSplit[0] != null ? rangeInputSplit[0] : "1";
             String numberOfTracks = rangeInputSplit[1] != null ? rangeInputSplit[1] : "1";
-
-            inputs.put("InstanceID", "0");
-            inputs.put("StartingIndex", startIndex);
-            inputs.put("NumberOfTracks", numberOfTracks);
-            executeAction(SERVICE_AV_TRANSPORT, ACTION_REMOVE_TRACK_RANGE_FROM_QUEUE, inputs);
+            executeAction(SERVICE_AV_TRANSPORT, ACTION_REMOVE_TRACK_RANGE_FROM_QUEUE,
+                    Map.of("InstanceID", "0", "StartingIndex", startIndex, "NumberOfTracks", numberOfTracks));
         }
     }
 
@@ -2899,16 +2847,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public void setLed(Command command) {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            Map<String, String> inputs = new HashMap<>();
-
-            if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
-                inputs.put("DesiredLEDState", "On");
-            } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)
-                    || command.equals(OpenClosedType.CLOSED)) {
-                inputs.put("DesiredLEDState", "Off");
-            }
-
-            executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_SET_LED_STATE, inputs);
+            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
+                    || command.equals(OpenClosedType.OPEN)) ? "On" : "Off";
+            executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_SET_LED_STATE, Map.of("DesiredLEDState", value));
             executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_LED_STATE, null);
         }
     }
@@ -3255,11 +3196,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     public void setSleepTimer(Command command) {
         if (command instanceof DecimalType) {
-            Map<String, String> inputs = new HashMap<>();
-            inputs.put("InstanceID", "0");
-            inputs.put("NewSleepTimerDuration", sleepSecondsToTimeStr(((DecimalType) command).longValue()));
-
-            this.service.invokeAction(this, SERVICE_AV_TRANSPORT, ACTION_CONFIGURE_SLEEP_TIMER, inputs);
+            this.service.invokeAction(this, SERVICE_AV_TRANSPORT, ACTION_CONFIGURE_SLEEP_TIMER, Map.of("InstanceID",
+                    "0", "NewSleepTimerDuration", sleepSecondsToTimeStr(((DecimalType) command).longValue())));
         }
     }
 
