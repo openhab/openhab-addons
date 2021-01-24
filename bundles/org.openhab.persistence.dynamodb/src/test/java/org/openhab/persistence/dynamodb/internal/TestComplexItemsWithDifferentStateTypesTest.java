@@ -14,15 +14,18 @@ package org.openhab.persistence.dynamodb.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.DateTimeType;
@@ -30,9 +33,11 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
@@ -110,6 +115,7 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
     public static void storeDimmerItemData() {
         DimmerItem item = (DimmerItem) ITEMS.get("dimmer");
         try {
+            Thread.sleep(10);
             item.setState(new PercentType(33));
             service.store(item);
             Thread.sleep(10);
@@ -124,8 +130,6 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
 
             item.setState(OnOffType.ON);
             service.store(item);
-            Thread.sleep(10);
-
         } catch (InterruptedException e) {
             fail("interrupted");
         }
@@ -136,13 +140,57 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
     public static void storeStringItemData() {
         StringItem item = (StringItem) ITEMS.get("string");
         try {
+            Thread.sleep(10);
             item.setState(new StringType("mystring"));
             service.store(item);
             Thread.sleep(10);
 
             item.setState(DateTimeType.valueOf("2021-01-17T11:18:00+02:00"));
             service.store(item);
+        } catch (InterruptedException e) {
+            fail("interrupted");
+        }
+    }
+
+    @BeforeAll
+    @SuppressWarnings("null")
+    public static void storeTemperatureNumberItemData() {
+        NumberItem item = (NumberItem) ITEMS.get("numberTemperature");
+        assertEquals(TEMP_ITEM_UNIT, item.getUnit());
+        try {
             Thread.sleep(10);
+            item.setState(new QuantityType<>("2.0 °C"));
+            service.store(item);
+
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("2.0 K"));
+            service.store(item);
+
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("5.1 °F"));
+            service.store(item);
+        } catch (InterruptedException e) {
+            fail("interrupted");
+        }
+    }
+
+    @BeforeAll
+    @SuppressWarnings("null")
+    public static void storeDimensionlessNumberItemData() {
+        NumberItem item = (NumberItem) ITEMS.get("numberDimensionless");
+        assertEquals(DIMENSIONLESS_ITEM_UNIT, item.getUnit());
+        try {
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("2 %"));
+            service.store(item);
+
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("3.5"));
+            service.store(item);
+
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("510 ppm"));
+            service.store(item);
         } catch (InterruptedException e) {
             fail("interrupted");
         }
@@ -185,10 +233,41 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
         });
     }
 
+    @Test
+    public void testTemperatureItemNumber() {
+        waitForAssert(() -> {
+            assertQueryAll("numberTemperature",
+                    new State[] { new QuantityType<>("2.0 °C"), /* 2 K = -271.15 °C */ new QuantityType<>("-271.15 °C"),
+                            new QuantityType<>("-14.9444444444444444444444444444444 °C") });
+            assertQueryFilterByState("numberTemperature", Operator.GT, new QuantityType<>("-20 °C"), new State[] {
+                    new QuantityType<>("2.0 °C"), new QuantityType<>("-14.9444444444444444444444444444444 °C") });
+            assertQueryFilterByState("numberTemperature", Operator.LT, new QuantityType<>("273.15 K"), new State[] {
+                    new QuantityType<>("-271.15 °C"), new QuantityType<>("-14.9444444444444444444444444444444 °C") });
+            assertQueryFilterByState("numberTemperature", Operator.EQ, new QuantityType<>("5.1 °F"),
+                    new State[] { new QuantityType<>("-14.9444444444444444444444444444444 °C") });
+            assertQueryFilterByState("numberTemperature", Operator.EQ, new QuantityType<>("5.1 m/s"), new State[] {});
+        });
+    }
+
+    @Test
+    public void testDimensionlessItemNumber() {
+        waitForAssert(() -> {
+            assertQueryAll("numberDimensionless", new State[] { /* 2 % */ new QuantityType<>("0.02"),
+                    new QuantityType<>("3.5"), new QuantityType<>("510").divide(new BigDecimal(1_000_000)) });
+        });
+    }
+
     private void assertQueryAll(String item, State[] expectedStates) {
+        assertQueryFilterByState(item, null, null, expectedStates);
+    }
+
+    private void assertQueryFilterByState(String item, @Nullable Operator operator, @Nullable State state,
+            State[] expectedStates) {
         FilterCriteria criteria = new FilterCriteria();
         criteria.setOrdering(Ordering.ASCENDING);
         criteria.setItemName(item);
+        criteria.setOperator(operator);
+        criteria.setState(state);
         @SuppressWarnings("null")
         Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
         List<State> actualStatesList = new ArrayList<>();

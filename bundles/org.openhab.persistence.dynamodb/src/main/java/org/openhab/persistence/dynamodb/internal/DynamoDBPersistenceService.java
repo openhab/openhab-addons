@@ -29,6 +29,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
@@ -37,6 +39,8 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.ModifiablePersistenceService;
@@ -333,17 +337,17 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             Boolean resolved = resolveTableSchema().get();
             if (!resolved) {
                 logger.warn("Table schema not resolved, cannot query data.");
-                return Collections.<HistoricItem> emptyList();
+                return Collections.<HistoricItem>emptyList();
             }
         } catch (InterruptedException e) {
             logger.warn("Table schema resolution interrupted, cannot query data");
-            return Collections.<HistoricItem> emptyList();
+            return Collections.<HistoricItem>emptyList();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             logger.warn("Table schema resolution errored, cannot query data: {} {}",
                     cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
                     cause == null ? e.getMessage() : cause.getMessage());
-            return Collections.<HistoricItem> emptyList();
+            return Collections.<HistoricItem>emptyList();
         }
 
         Instant start = Instant.now();
@@ -351,69 +355,73 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         logger.trace("Got a query with filter {}", filterDescription);
         DynamoDbEnhancedAsyncClient localClient = client;
         if (!isProperlyConfigured) {
-            logger.debug("Configuration for dynamodb not yet loaded or broken. Not storing item.");
-            return Collections.<HistoricItem> emptyList();
+            logger.debug("Configuration for dynamodb not yet loaded or broken. Returning empty query results.");
+            return Collections.<HistoricItem>emptyList();
         }
         if (!ensureClient() || localClient == null) {
-            logger.warn("DynamoDB not connected. Not storing item.");
-            return Collections.<HistoricItem> emptyList();
+            logger.warn("DynamoDB not connected. Returning empty query results.");
+            return Collections.<HistoricItem>emptyList();
         }
-
-        String itemName = filter.getItemName();
-        Item item = getItemFromRegistry(itemName);
-        if (item == null) {
-            logger.warn("Could not get item {} from registry!", itemName);
-            return Collections.<HistoricItem> emptyList();
-        }
-        boolean legacy = tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
-        Class<DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass(), legacy);
-        String tableName = tableNameResolver.fromClass(dtoClass);
-        DynamoDbAsyncTable<DynamoDBItem> table = getTable(dtoClass);
-        logger.debug("Item {} (of type {}) will be tried to query using DTO class {} from table {}", itemName,
-                item.getClass().getSimpleName(), dtoClass.getSimpleName(), tableName);
-
-        QueryEnhancedRequest queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
-                tableNameResolver.getTableSchema(), item, filter);
-
-        CompletableFuture<List<DynamoDBItem>> itemsFuture = new CompletableFuture<>();
-        final SdkPublisher<DynamoDBItem> itemPublisher = table.query(queryExpression).items();
-        Subscriber<DynamoDBItem> pageSubscriber = new PageOfInterestSubscriber<DynamoDBItem>(itemsFuture,
-                filter.getPageNumber(), filter.getPageSize());
-        itemPublisher.subscribe(pageSubscriber);
-
         try {
-            @SuppressWarnings("null")
-            List<HistoricItem> results = itemsFuture.get().stream().map(dynamoItem -> {
-                HistoricItem historicItem = dynamoItem.asHistoricItem(item);
-                if (historicItem == null) {
-                    logger.warn(
-                            "Dynamo item {} serialized state '{}' cannot be converted to item {} {}. Item type changed since persistence. Ignoring",
-                            dynamoItem.getClass().getSimpleName(), dynamoItem.getState(),
-                            item.getClass().getSimpleName(), item.getName());
-                    return null;
-                }
-                logger.trace("Dynamo item {} converted to historic item: {}", item, historicItem);
-                return historicItem;
-            }).filter(value -> value != null).collect(Collectors.toList());
-            logger.debug("Query completed in {} ms. Filter was {}", Duration.between(start, Instant.now()).toMillis(),
-                    filterDescription);
-            return results;
-        } catch (InterruptedException e) {
-            logger.warn("Query interrupted. Filter was {}", filterDescription);
-            return Collections.<HistoricItem> emptyList();
-        } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof ResourceNotFoundException) {
-                logger.trace("Query failed since the DynamoDB table '{}' does not exist. Filter was {}", tableName,
-                        filterDescription);
-            } else if (logger.isTraceEnabled()) {
-                logger.trace("Query failed. Filter was {}", filterDescription, e);
-            } else {
-                logger.warn("Query failed {} {}. Filter was {}",
-                        cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
-                        cause == null ? e.getMessage() : cause.getMessage(), filterDescription);
+            String itemName = filter.getItemName();
+            Item item = getItemFromRegistry(itemName);
+            if (item == null) {
+                logger.warn("Could not get item {} from registry! Returning empty query results.", itemName);
+                return Collections.<HistoricItem>emptyList();
             }
-            return Collections.<HistoricItem> emptyList();
+            boolean legacy = tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
+            Class<DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass(), legacy);
+            String tableName = tableNameResolver.fromClass(dtoClass);
+            DynamoDbAsyncTable<DynamoDBItem> table = getTable(dtoClass);
+            logger.debug("Item {} (of type {}) will be tried to query using DTO class {} from table {}", itemName,
+                    item.getClass().getSimpleName(), dtoClass.getSimpleName(), tableName);
+
+            QueryEnhancedRequest queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
+                    tableNameResolver.getTableSchema(), item, filter);
+
+            CompletableFuture<List<DynamoDBItem>> itemsFuture = new CompletableFuture<>();
+            final SdkPublisher<DynamoDBItem> itemPublisher = table.query(queryExpression).items();
+            Subscriber<DynamoDBItem> pageSubscriber = new PageOfInterestSubscriber<DynamoDBItem>(itemsFuture,
+                    filter.getPageNumber(), filter.getPageSize());
+            itemPublisher.subscribe(pageSubscriber);
+            try {
+                @SuppressWarnings("null")
+                List<HistoricItem> results = itemsFuture.get().stream().map(dynamoItem -> {
+                    HistoricItem historicItem = dynamoItem.asHistoricItem(item);
+                    if (historicItem == null) {
+                        logger.warn(
+                                "Dynamo item {} serialized state '{}' cannot be converted to item {} {}. Item type changed since persistence. Ignoring",
+                                dynamoItem.getClass().getSimpleName(), dynamoItem.getState(),
+                                item.getClass().getSimpleName(), item.getName());
+                        return null;
+                    }
+                    logger.trace("Dynamo item {} converted to historic item: {}", item, historicItem);
+                    return historicItem;
+                }).filter(value -> value != null).collect(Collectors.toList());
+                logger.debug("Query completed in {} ms. Filter was {}",
+                        Duration.between(start, Instant.now()).toMillis(), filterDescription);
+                return results;
+            } catch (InterruptedException e) {
+                logger.warn("Query interrupted. Filter was {}", filterDescription);
+                return Collections.<HistoricItem>emptyList();
+            } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof ResourceNotFoundException) {
+                    logger.trace("Query failed since the DynamoDB table '{}' does not exist. Filter was {}", tableName,
+                            filterDescription);
+                } else if (logger.isTraceEnabled()) {
+                    logger.trace("Query failed. Filter was {}", filterDescription, e);
+                } else {
+                    logger.warn("Query failed {} {}. Filter was {}",
+                            cause == null ? e.getClass().getSimpleName() : cause.getClass().getSimpleName(),
+                            cause == null ? e.getMessage() : cause.getMessage(), filterDescription);
+                }
+                return Collections.<HistoricItem>emptyList();
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected error with query having filter {}: {} {}. Returning empty query results.",
+                    filterDescription, e.getClass().getSimpleName(), e.getMessage());
+            return Collections.<HistoricItem>emptyList();
         }
     }
 
@@ -466,7 +474,8 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
         String effectiveName = (alias != null) ? alias : item.getName();
 
-        // item.state is not reliable in async context below since item state can change. We 'copy' the item.
+        // We do not want to rely item.state since async context below can execute much later.
+        // We 'copy' the item for local use. copyItem also normalizes the unit with NumberItems.
         final GenericItem copiedItem = copyItem(item, effectiveName, null);
 
         resolveTableSchema().thenAcceptAsync(resolved -> {
@@ -509,18 +518,45 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         });
     }
 
+    /**
+     * Copy item and optionally override name and state
+     *
+     * State is normalized to source item's unit with Quantity NumberItems and QuantityTypes
+     *
+     * @throws IllegalArgumentException when state is QuantityType and not compatible with item
+     */
     static GenericItem copyItem(Item item, @Nullable String nameOverride, @Nullable State stateOverride) {
-        GenericItem copiedItem;
+        final GenericItem copiedItem;
         try {
-            copiedItem = (GenericItem) item.getClass().getDeclaredConstructor(String.class)
-                    .newInstance(nameOverride == null ? item.getName() : nameOverride);
+            if (item instanceof NumberItem) {
+                copiedItem = (GenericItem) item.getClass().getDeclaredConstructor(String.class, String.class)
+                        .newInstance(item.getType(), nameOverride == null ? item.getName() : nameOverride);
+            } else {
+                copiedItem = (GenericItem) item.getClass().getDeclaredConstructor(String.class)
+                        .newInstance(nameOverride == null ? item.getName() : nameOverride);
+            }
+
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             LoggerFactory.getLogger(DynamoDBPersistenceService.class).error("Could not copy item of type {}. Bug",
-                    item.getClass().getSimpleName());
-            throw new IllegalArgumentException();
+                    item.getClass().getSimpleName(), e);
+            throw new IllegalArgumentException(e);
         }
-        copiedItem.setState(stateOverride == null ? item.getState() : stateOverride);
+        State state = stateOverride == null ? item.getState() : stateOverride;
+        if (state instanceof QuantityType<?> && item instanceof NumberItem) {
+            Unit<?> itemUnit = ((NumberItem) item).getUnit();
+            if (itemUnit != null) {
+                State convertedState = ((QuantityType<?>) state).toUnit(itemUnit);
+                if (convertedState == null) {
+                    LoggerFactory.getLogger(DynamoDBPersistenceService.class)
+                            .error("Unexpected unit conversion failure: {} to item unit {}", state, itemUnit);
+                    throw new IllegalArgumentException(
+                            String.format("Unexpected unit conversion failure: %s to item unit %s", state, itemUnit));
+                }
+                state = convertedState;
+            }
+        }
+        copiedItem.setState(state);
         return copiedItem;
     }
 

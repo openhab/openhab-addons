@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -46,6 +49,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
@@ -174,7 +178,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
         }
 
         @Override
@@ -213,7 +217,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
         }
 
         @Override
@@ -420,7 +424,13 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                     BigDecimal numberState = dynamoBigDecimalItem.getState();
                     assert numberState != null;
                     if (item instanceof NumberItem) {
-                        deserializedState[0] = new DecimalType(numberState);
+                        NumberItem numberItem = ((NumberItem) item);
+                        Unit<? extends Quantity<?>> unit = numberItem.getUnit();
+                        if (unit != null) {
+                            deserializedState[0] = new QuantityType<>(numberState, unit);
+                        } else {
+                            deserializedState[0] = new DecimalType(numberState);
+                        }
                     } else if (item instanceof DimmerItem) {
                         // % values have been stored as-is
                         deserializedState[0] = new PercentType(numberState);

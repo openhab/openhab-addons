@@ -13,15 +13,21 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 import java.net.ServerSocket;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,7 +35,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInfo;
+import org.mockito.Mockito;
 import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.i18n.UnitProvider;
+import org.openhab.core.internal.i18n.I18nProviderImpl;
+import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemNotUniqueException;
@@ -46,7 +56,11 @@ import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.test.java.JavaTest;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,9 +85,23 @@ public class BaseIntegrationTest extends JavaTest {
     protected static @Nullable DynamoDBPersistenceService service;
     protected static final Map<String, Item> ITEMS = new HashMap<>();
     protected static @Nullable DynamoDBProxyServer embeddedServer;
-    private static @Nullable DynamoDBPersistenceService legacyService;
-    private static @Nullable DynamoDBPersistenceService newService;
+    /*
+     * SI system has Celsius as temperature unit
+     */
+    protected static final Unit<Temperature> TEMP_ITEM_UNIT = SIUnits.CELSIUS;
+    protected static final Unit<Dimensionless> DIMENSIONLESS_ITEM_UNIT = Units.ONE;
     private static @Nullable URI endpointOverride;
+
+    protected static UnitProvider UNIT_PROVIDER;
+    static {
+        ComponentContext context = Mockito.mock(ComponentContext.class);
+        BundleContext bundleContext = Mockito.mock(BundleContext.class);
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        properties.put("measurementSystem", SIUnits.MEASUREMENT_SYSTEM_NAME);
+        when(context.getProperties()).thenReturn(properties);
+        when(context.getBundleContext()).thenReturn(bundleContext);
+        UNIT_PROVIDER = new I18nProviderImpl(context);
+    }
 
     /**
      * Whether tests are run in Continuous Integration environment, i.e. Jenkins or Travis CI
@@ -116,6 +144,8 @@ public class BaseIntegrationTest extends JavaTest {
     protected static void populateItems() {
         ITEMS.put("dimmer", new DimmerItem("dimmer"));
         ITEMS.put("number", new NumberItem("number"));
+        ITEMS.put("numberTemperature", new NumberItem("Number:Temperature", "numberTemperature"));
+        ITEMS.put("numberDimensionless", new NumberItem("Number:Dimensionless", "numberDimensionless"));
         ITEMS.put("string", new StringItem("string"));
         ITEMS.put("switch", new SwitchItem("switch"));
         ITEMS.put("contact", new ContactItem("contact"));
@@ -126,6 +156,8 @@ public class BaseIntegrationTest extends JavaTest {
         ITEMS.put("location", new LocationItem("location"));
         ITEMS.put("player_playpause", new PlayerItem("player_playpause"));
         ITEMS.put("player_rewindfastforward", new PlayerItem("player_rewindfastforward"));
+
+        injectItemServices();
     }
 
     @BeforeAll
@@ -202,6 +234,7 @@ public class BaseIntegrationTest extends JavaTest {
                 if (item == null) {
                     throw new ItemNotFoundException(name);
                 }
+                injectItemServices(item);
                 return item;
             }
 
@@ -283,6 +316,17 @@ public class BaseIntegrationTest extends JavaTest {
 
         service.activate(null, config);
         return service;
+    }
+
+    protected static void injectItemServices() {
+        ITEMS.values().forEach(BaseIntegrationTest::injectItemServices);
+    }
+
+    protected static void injectItemServices(Item item) {
+        if (item instanceof GenericItem) {
+            GenericItem genericItem = (GenericItem) item;
+            genericItem.setUnitProvider(UNIT_PROVIDER);
+        }
     }
 
     private static Map<String, Object> getConfig(@Nullable Boolean legacy, @Nullable String table,
