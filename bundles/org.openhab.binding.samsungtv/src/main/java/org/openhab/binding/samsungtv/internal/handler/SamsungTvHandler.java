@@ -259,9 +259,6 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     private synchronized boolean createService(RemoteDevice device) {
-	logger.debug("Check Device: {} {} {} {} {}",configuration.hostName,device.getIdentity().getDescriptorURL().getHost(),
-			device.getDetails().getModelDetails().getModelName(),device.getDetails().getModelDetails().getModelName(),
-			device.getType().getType());
     	    if (configuration.hostName != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
             String modelName = device.getDetails().getModelDetails().getModelName();
@@ -291,10 +288,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 logger.debug("Service rediscovered, clearing caches: {}, {} ({})", modelName, type, udn);
                 existingService.clearCache();
             }
-		logger.debug("Device IS online: {} {}",configuration.hostName,device.getIdentity().getDescriptorURL().getHost());
 	    	return true;
-        } else {
-		logger.debug("Device is NOT online: {}, {}",configuration.hostName,device.getIdentity().getDescriptorURL().getHost());
 	}
 	return false;
     }
