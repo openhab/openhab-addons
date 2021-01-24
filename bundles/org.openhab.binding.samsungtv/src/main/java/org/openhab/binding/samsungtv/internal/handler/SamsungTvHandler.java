@@ -190,7 +190,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         }
     }
 
-    public synchronized void putOffline() {
+    private synchronized void putOffline() {
         setPowerState(false);
         updateStatus(ThingStatus.OFFLINE);
         updateState(ART_MODE, OnOffType.OFF);
@@ -239,15 +239,30 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private void checkAndCreateServices() {
         logger.debug("Check and create missing UPnP services");
 
+	boolean isOnline = false;
+
         for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
-            createService((RemoteDevice) device);
+            if ( createService((RemoteDevice) device) == true ) { 
+		    isOnline = true;
+		    }
         }
+
+	if ( isOnline == true ) {
+		logger.debug("Device was online");
+		putOnline();
+	} else {
+		logger.debug("Device was NOT online");
+		putOffline();
+	}
 
         checkCreateManualConnection();
     }
 
-    private synchronized void createService(RemoteDevice device) {
-        if (configuration.hostName != null
+    private synchronized boolean createService(RemoteDevice device) {
+	logger.debug("Check Device: {} {} {} {} {}",configuration.hostName,device.getIdentity().getDescriptorURL().getHost(),
+			device.getDetails().getModelDetails().getModelName(),device.getDetails().getModelDetails().getModelName(),
+			device.getType().getType());
+    	    if (configuration.hostName != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
             String modelName = device.getDetails().getModelDetails().getModelName();
             String udn = device.getIdentity().getUdn().getIdentifierString();
@@ -267,7 +282,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                     } else {
                         startService(newService);
                         logger.debug("Started service for: {}, {} ({})", modelName, type, udn);
-                    }
+			return true;
+		    }
                 } else {
                     logger.trace("Skipping unknown UPnP service: {}, {} ({})", modelName, type, udn);
                 }
@@ -275,8 +291,12 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 logger.debug("Service rediscovered, clearing caches: {}, {} ({})", modelName, type, udn);
                 existingService.clearCache();
             }
-            putOnline();
-        }
+		logger.debug("Device IS online: {} {}",configuration.hostName,device.getIdentity().getDescriptorURL().getHost());
+	    	return true;
+        } else {
+		logger.debug("Device is NOT online: {}, {}",configuration.hostName,device.getIdentity().getDescriptorURL().getHost());
+	}
+	return false;
     }
 
     private @Nullable SamsungTvService findServiceInstance(String serviceName) {

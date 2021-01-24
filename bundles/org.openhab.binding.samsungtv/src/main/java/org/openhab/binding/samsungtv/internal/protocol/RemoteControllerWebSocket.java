@@ -189,6 +189,8 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         } catch (RemoteControllerException | URISyntaxException e) {
             logger.warn("Problem connecting to V2 websocket", e);
         }
+
+	logger.info("Check WS {} {} {}",webSocketRemote.isConnected(),webSocketArt.isConnected(),webSocketV2.isConnected());
     }
 
     private void closeConnection() throws RemoteControllerException {
