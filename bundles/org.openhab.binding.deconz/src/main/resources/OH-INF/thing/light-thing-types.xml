@@ -44,6 +44,7 @@
 		<description>A light that can be turned on or off.</description>
 		<channels>
 			<channel typeId="onoff" id="switch"/>
+			<channel typeId="ontime" id="ontime"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -60,6 +61,7 @@
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
+			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
@@ -78,6 +80,7 @@
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
@@ -95,6 +98,7 @@
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="color" id="color"/>
+			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
@@ -113,6 +117,7 @@
 		<channels>
 			<channel typeId="color" id="color"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
@@ -179,6 +184,12 @@
 			<tag>Lighting</tag>
 		</tags>
 		<state pattern="%d K" min="15" max="100000" step="100"/>
+	</channel-type>
+
+	<channel-type id="ontime">
+		<item-type>Number:Time</item-type>
+		<label>On Time</label>
+		<description>Time that the light stays on before switched off automatically (0=forever)</description>
 	</channel-type>
 
 	<channel-type id="effect">
