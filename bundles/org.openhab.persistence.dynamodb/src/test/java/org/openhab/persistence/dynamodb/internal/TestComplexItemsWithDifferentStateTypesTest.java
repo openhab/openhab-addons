@@ -13,6 +13,7 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
@@ -176,6 +178,27 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
 
     @BeforeAll
     @SuppressWarnings("null")
+    public static void storeGroupTemperatureNumberItemData() {
+        GroupItem item = (GroupItem) ITEMS.get("groupNumberTemperature");
+        try {
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("3.0 °C"));
+            service.store(item);
+
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("3.0 K"));
+            service.store(item);
+
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("5.1 °F"));
+            service.store(item);
+        } catch (InterruptedException e) {
+            fail("interrupted");
+        }
+    }
+
+    @BeforeAll
+    @SuppressWarnings("null")
     public static void storeDimensionlessNumberItemData() {
         NumberItem item = (NumberItem) ITEMS.get("numberDimensionless");
         assertEquals(DIMENSIONLESS_ITEM_UNIT, item.getUnit());
@@ -190,6 +213,19 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
 
             Thread.sleep(10);
             item.setState(new QuantityType<>("510 ppm"));
+            service.store(item);
+        } catch (InterruptedException e) {
+            fail("interrupted");
+        }
+    }
+
+    @BeforeAll
+    @SuppressWarnings("null")
+    public static void storeDummyGroupItemData() {
+        GroupItem item = (GroupItem) ITEMS.get("groupDummy");
+        try {
+            Thread.sleep(10);
+            item.setState(new QuantityType<>("2 %")); // Will not write anything
             service.store(item);
         } catch (InterruptedException e) {
             fail("interrupted");
@@ -247,6 +283,41 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
                     new State[] { new QuantityType<>("-14.9444444444444444444444444444444 °C") });
             assertQueryFilterByState("numberTemperature", Operator.EQ, new QuantityType<>("5.1 m/s"), new State[] {});
         });
+    }
+
+    @Test
+    public void testGroupTemperatureItemNumber() {
+        waitForAssert(() -> {
+            assertQueryAll("groupNumberTemperature",
+                    new State[] { new QuantityType<>("3.0 °C"), /* 3 K = -270.15 °C */ new QuantityType<>("-270.15 °C"),
+                            new QuantityType<>("-14.9444444444444444444444444444444 °C") });
+            assertQueryFilterByState("groupNumberTemperature", Operator.GT, new QuantityType<>("-20 °C"), new State[] {
+                    new QuantityType<>("3.0 °C"), new QuantityType<>("-14.9444444444444444444444444444444 °C") });
+            assertQueryFilterByState("groupNumberTemperature", Operator.LT, new QuantityType<>("273.15 K"),
+                    new State[] { new QuantityType<>("-270.15 °C"),
+                            new QuantityType<>("-14.9444444444444444444444444444444 °C") });
+            assertQueryFilterByState("groupNumberTemperature", Operator.EQ, new QuantityType<>("5.1 °F"),
+                    new State[] { new QuantityType<>("-14.9444444444444444444444444444444 °C") });
+            assertQueryFilterByState("groupNumberTemperature", Operator.EQ, new QuantityType<>("5.1 m/s"),
+                    new State[] {});
+        });
+    }
+
+    @Test
+    public void testGroupDummyItem() {
+        // Do not want to slow down CI runs
+        assumeFalse(isRunningInCI());
+        // only with the fast local server
+        assumeTrue(hasFakeServer());
+        try {
+            // 5 seconds should be enough that any writes go through
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+            return;
+        }
+        // We expect no results
+        assertQueryAll("groupDummy", new State[] {});
     }
 
     @Test

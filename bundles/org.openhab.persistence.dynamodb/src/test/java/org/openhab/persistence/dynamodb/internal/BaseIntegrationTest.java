@@ -40,6 +40,7 @@ import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.internal.i18n.I18nProviderImpl;
 import org.openhab.core.items.GenericItem;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemNotUniqueException;
@@ -111,7 +112,7 @@ public class BaseIntegrationTest extends JavaTest {
      *
      * @return
      */
-    private static boolean isRunningInCI() {
+    protected static boolean isRunningInCI() {
         return "true".equals(System.getenv("CI")) || StringUtils.isNotBlank(System.getenv("JENKINS_HOME"));
     }
 
@@ -144,8 +145,20 @@ public class BaseIntegrationTest extends JavaTest {
     protected static void populateItems() {
         ITEMS.put("dimmer", new DimmerItem("dimmer"));
         ITEMS.put("number", new NumberItem("number"));
-        ITEMS.put("numberTemperature", new NumberItem("Number:Temperature", "numberTemperature"));
-        ITEMS.put("numberDimensionless", new NumberItem("Number:Dimensionless", "numberDimensionless"));
+
+        NumberItem temperatureItem = new NumberItem("Number:Temperature", "numberTemperature");
+        ITEMS.put("numberTemperature", temperatureItem);
+        GroupItem groupTemperature = new GroupItem("groupNumberTemperature", temperatureItem);
+        ITEMS.put("groupNumberTemperature", groupTemperature);
+
+        NumberItem dimensionlessItem = new NumberItem("Number:Dimensionless", "numberDimensionless");
+        ITEMS.put("numberDimensionless", dimensionlessItem);
+        GroupItem groupDimensionless = new GroupItem("groupNumberDimensionless", dimensionlessItem);
+        ITEMS.put("groupNumberDimensionless", groupDimensionless);
+
+        GroupItem groupDummy = new GroupItem("dummyGroup", null);
+        ITEMS.put("groupDummy", groupDummy);
+
         ITEMS.put("string", new StringItem("string"));
         ITEMS.put("switch", new SwitchItem("switch"));
         ITEMS.put("contact", new ContactItem("contact"));

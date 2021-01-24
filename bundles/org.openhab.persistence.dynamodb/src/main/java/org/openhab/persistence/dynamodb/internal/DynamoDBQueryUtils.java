@@ -111,7 +111,7 @@ public class DynamoDBQueryUtils {
             // Convert filter's state to DynamoDBItem in order get suitable string representation for the state
             Expression.Builder stateFilterExpressionBuilder = Expression.builder()
                     .expression(String.format("#attr %s :value", operatorAsString(filter.getOperator())));
-            GenericItem stateToFind = DynamoDBPersistenceService.copyItem(item, filter.getItemName(),
+            GenericItem stateToFind = DynamoDBPersistenceService.copyItem(item, item, filter.getItemName(),
                     filter.getState());
             acceptAsDTO(stateToFind, legacy, new DynamoDBItemVisitor() {
                 @Override

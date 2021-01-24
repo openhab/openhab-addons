@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.GenericItem;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -369,6 +371,18 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                 logger.warn("Could not get item {} from registry! Returning empty query results.", itemName);
                 return Collections.<HistoricItem> emptyList();
             }
+            if (item instanceof GroupItem) {
+                item = ((GroupItem) item).getBaseItem();
+                logger.debug("Item is instanceof GroupItem '{}'", itemName);
+                if (item == null) {
+                    logger.debug("BaseItem of GroupItem is null. Ignore and give up!");
+                    return List.of();
+                }
+                if (item instanceof GroupItem) {
+                    logger.debug("BaseItem of GroupItem is a GroupItem too. Ignore and give up!");
+                    return List.of();
+                }
+            }
             boolean legacy = tableNameResolver.getTableSchema() == ExpectedTableSchema.LEGACY;
             Class<DynamoDBItem<?>> dtoClass = AbstractDynamoDBItem.getDynamoItemClass(item.getClass(), legacy);
             String tableName = tableNameResolver.fromClass(dtoClass);
@@ -386,20 +400,21 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             itemPublisher.subscribe(pageSubscriber);
             // NumberItem.getUnit() is expensive, we avoid calling it in the loop
             // by fetching the unit here.
-            final Unit<?> itemUnit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
+            final Item localItem = item;
+            final Unit<?> itemUnit = localItem instanceof NumberItem ? ((NumberItem) localItem).getUnit() : null;
             try {
                 @SuppressWarnings("null")
                 List<HistoricItem> results = itemsFuture.get().stream().map(dynamoItem -> {
                     @SuppressWarnings("unchecked")
-                    HistoricItem historicItem = dynamoItem.asHistoricItem(item, itemUnit);
+                    HistoricItem historicItem = dynamoItem.asHistoricItem(localItem, itemUnit);
                     if (historicItem == null) {
                         logger.warn(
                                 "Dynamo item {} serialized state '{}' cannot be converted to item {} {}. Item type changed since persistence. Ignoring",
                                 dynamoItem.getClass().getSimpleName(), dynamoItem.getState(),
-                                item.getClass().getSimpleName(), item.getName());
+                                localItem.getClass().getSimpleName(), localItem.getName());
                         return null;
                     }
-                    logger.trace("Dynamo item {} converted to historic item: {}", item, historicItem);
+                    logger.trace("Dynamo item {} converted to historic item: {}", localItem, historicItem);
                     return historicItem;
                 }).filter(value -> value != null).collect(Collectors.toList());
                 logger.debug("Query completed in {} ms. Filter was {}",
@@ -439,13 +454,11 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         if (itemRegistry == null) {
             return null;
         }
-        Item item = null;
         try {
-            item = itemRegistry.getItem(itemName);
+            return itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
-            logger.error("Unable to get item {} from registry", itemName);
+            return null;
         }
-        return item;
     }
 
     @Override
@@ -475,12 +488,23 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             logger.warn("Not ready to store (config error?), not storing item {}.", item.getName());
             return;
         }
+        // Get Item describing the real type of data
+        // With non-group items this is same as the argument item. With Group items, this is item describing the type of
+        // state stored in the group.
+        final Item itemTemplate;
+        try {
+            itemTemplate = getEffectiveItem(item);
+        } catch (IllegalStateException e) {
+            // Exception is raised when underlying item type cannot be determined with Group item
+            // Logged already
+            return;
+        }
 
         String effectiveName = (alias != null) ? alias : item.getName();
 
         // We do not want to rely item.state since async context below can execute much later.
         // We 'copy' the item for local use. copyItem also normalizes the unit with NumberItems.
-        final GenericItem copiedItem = copyItem(item, effectiveName, null);
+        final GenericItem copiedItem = copyItem(itemTemplate, item, effectiveName, null);
 
         resolveTableSchema().thenAcceptAsync(resolved -> {
             if (!resolved) {
@@ -522,21 +546,55 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         });
     }
 
+    private Item getEffectiveItem(Item item) {
+        final Item effectiveItem;
+        if (item instanceof GroupItem) {
+            Item baseItem = ((GroupItem) item).getBaseItem();
+            if (baseItem == null) {
+                // if GroupItem:<ItemType> is not defined in
+                // *.items using StringType
+                logger.debug(
+                        "Cannot detect ItemType for {} because the GroupItems' base type isn't set in *.items File.",
+                        item.getName());
+                Iterator<Item> firstGroupMemberItem = ((GroupItem) item).getMembers().iterator();
+                if (firstGroupMemberItem.hasNext()) {
+                    effectiveItem = firstGroupMemberItem.next();
+                } else {
+                    logger.warn(
+                            "GroupItem {} does not have children nor base item set, cannot determine underlying item type. Aborting!",
+                            item.getName());
+                    throw new IllegalStateException();
+                }
+            } else {
+                effectiveItem = baseItem;
+            }
+        } else {
+            effectiveItem = item;
+        }
+        return effectiveItem;
+    }
+
     /**
      * Copy item and optionally override name and state
      *
      * State is normalized to source item's unit with Quantity NumberItems and QuantityTypes
      *
+     * @param itemTemplate 'template item' to be used to construct the new copy. It is also used to determine UoM unit
+     *            and get GenericItem.type
+     * @param item item that is used to acquire name and state
+     * @param nameOverride name override for the resulting copy
+     * @param stateOverride state override for the resulting copy
      * @throws IllegalArgumentException when state is QuantityType and not compatible with item
      */
-    static GenericItem copyItem(Item item, @Nullable String nameOverride, @Nullable State stateOverride) {
+    static GenericItem copyItem(Item itemTemplate, Item item, @Nullable String nameOverride,
+            @Nullable State stateOverride) {
         final GenericItem copiedItem;
         try {
-            if (item instanceof NumberItem) {
-                copiedItem = (GenericItem) item.getClass().getDeclaredConstructor(String.class, String.class)
-                        .newInstance(item.getType(), nameOverride == null ? item.getName() : nameOverride);
+            if (itemTemplate instanceof NumberItem) {
+                copiedItem = (GenericItem) itemTemplate.getClass().getDeclaredConstructor(String.class, String.class)
+                        .newInstance(itemTemplate.getType(), nameOverride == null ? item.getName() : nameOverride);
             } else {
-                copiedItem = (GenericItem) item.getClass().getDeclaredConstructor(String.class)
+                copiedItem = (GenericItem) itemTemplate.getClass().getDeclaredConstructor(String.class)
                         .newInstance(nameOverride == null ? item.getName() : nameOverride);
             }
 
@@ -547,8 +605,8 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             throw new IllegalArgumentException(e);
         }
         State state = stateOverride == null ? item.getState() : stateOverride;
-        if (state instanceof QuantityType<?> && item instanceof NumberItem) {
-            Unit<?> itemUnit = ((NumberItem) item).getUnit();
+        if (state instanceof QuantityType<?> && itemTemplate instanceof NumberItem) {
+            Unit<?> itemUnit = ((NumberItem) itemTemplate).getUnit();
             if (itemUnit != null) {
                 State convertedState = ((QuantityType<?>) state).toUnit(itemUnit);
                 if (convertedState == null) {
