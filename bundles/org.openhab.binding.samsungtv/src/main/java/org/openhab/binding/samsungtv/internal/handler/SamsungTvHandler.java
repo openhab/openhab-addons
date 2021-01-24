@@ -259,7 +259,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     private synchronized boolean createService(RemoteDevice device) {
-    	    if (configuration.hostName != null
+    	if (configuration.hostName != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
             String modelName = device.getDetails().getModelDetails().getModelName();
             String udn = device.getIdentity().getUdn().getIdentifierString();
