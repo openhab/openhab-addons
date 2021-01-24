@@ -63,8 +63,7 @@ class TableCreatingPutItem {
 
     private CompletableFuture<Void> internalPutItemAsync(boolean createTable, boolean recursionAllowed) {
         if (createTable) {
-            // Try again, first create the table, calculate new deadline, wait for table to become active (before
-            // new deadline), and finally retry PutItem
+            // Try again, first create the table and wait for table to become active, and finally retry PutItem
             Instant tableCreationStart = Instant.now();
             table.createTable(CreateTableEnhancedRequest.builder()
                     .provisionedThroughput(ProvisionedThroughput.builder()
@@ -127,8 +126,9 @@ class TableCreatingPutItem {
                             dto, Duration.between(start, Instant.now()).toMillis());
                     aggregateFuture.complete(result);
                 } else {
-                    // PutItem failed. We retry (calling this method again with parameter true) if it failed due to
-                    // table not existing, otherwise we abort.
+                    // PutItem failed. We retry i failure was due to non-existing table. Retry is triggered by calling
+                    // this method again with createTable=true)
+                    // With other errors, we abort.
                     if (!(exception instanceof CompletionException)) {
                         logger.error("PutItem: Expecting only CompletionException, got {} {}. BUG",
                                 exception.getClass().getName(), exception.getMessage());
