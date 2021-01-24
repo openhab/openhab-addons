@@ -178,7 +178,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
         }
 
         @Override
@@ -217,7 +217,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime>of(ZonedDateTime.class);
+            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
         }
 
         @Override
@@ -364,17 +364,13 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         }
     }
 
-    /**
-     * Convert this AbstractDynamoItem as HistoricItem.
-     *
-     * Returns null when this instance has null state.
-     * The implementation can deal with legacy schema as well.
-     *
-     * @param item Item representing this item. Used to determine item type.
-     * @return HistoricItem representing this DynamoDBItem.
-     */
     @Override
     public @Nullable HistoricItem asHistoricItem(final Item item) {
+        return asHistoricItem(item, null);
+    }
+
+    @Override
+    public @Nullable HistoricItem asHistoricItem(final Item item, @Nullable Unit<?> targetUnit) {
         final State[] deserializedState = new State[1];
         if (this.getState() == null) {
             return null;
@@ -425,7 +421,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                     assert numberState != null;
                     if (item instanceof NumberItem) {
                         NumberItem numberItem = ((NumberItem) item);
-                        Unit<? extends Quantity<?>> unit = numberItem.getUnit();
+                        Unit<? extends Quantity<?>> unit = targetUnit == null ? numberItem.getUnit() : targetUnit;
                         if (unit != null) {
                             deserializedState[0] = new QuantityType<>(numberState, unit);
                         } else {

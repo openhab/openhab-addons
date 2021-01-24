@@ -14,6 +14,8 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.time.ZonedDateTime;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -45,11 +47,29 @@ public interface DynamoDBItem<T> {
      *
      * Returns null when this instance has null state.
      *
+     * If item is NumberItem and has an unit, the data is converted to QuantityType with item.getUnit().
+     *
      * @param item Item representing this item. Used to determine item type.
      * @return HistoricItem representing this DynamoDBItem.
      */
     @Nullable
     HistoricItem asHistoricItem(Item item);
+
+    /**
+     * Convert this AbstractDynamoItem as HistoricItem.
+     *
+     * Returns null when this instance has null state.
+     * The implementation can deal with legacy schema as well.
+     *
+     * Use this method when repeated calls are expected for same item (avoids the expensive call to item.getUnit())
+     *
+     * @param item Item representing this item. Used to determine item type.
+     * @param targetUnit unit to convert the data if item is with Dimension. Has only effect with NumberItems and with
+     *            numeric DynamoDBItems.
+     * @return HistoricItem representing this DynamoDBItem.
+     */
+    @Nullable
+    HistoricItem asHistoricItem(Item item, @Nullable Unit<?> targetUnit);
 
     /**
      * Get item name
