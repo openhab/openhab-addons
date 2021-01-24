@@ -32,11 +32,11 @@
 				<advanced>true</advanced>
 			</parameter-group>
 
-			<parameter name="address" type="text">
+			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s">
+			<parameter name="refreshInterval" type="integer" unit="s" required="true">
 				<label>Refresh Interval</label>
 				<description>The frequency at which battery, temperature, and humidity data will refresh</description>
 				<default>300</default>
@@ -94,11 +94,11 @@
 			</parameter-group>
 
 
-			<parameter name="address" type="text">
+			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s">
+			<parameter name="refreshInterval" type="integer" unit="s" required="true">
 				<label>Refresh Interval</label>
 				<description>The frequency at which battery, temperature, and humidity data will refresh</description>
 				<default>300</default>
@@ -111,21 +111,21 @@
 				<description>Adds offset to reported temperature</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="temperatureWarningAlarm" type="boolean" groupName="alarms">
+			<parameter name="temperatureWarningAlarm" type="boolean" groupName="alarms" required="true">
 				<label>Broadcast Temperature Warning</label>
 				<description>If enabled, the Govee device will notify openHAB if temperature is out of the specified range</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="temperatureWarningMin" type="decimal" min="-20" max="60" step="0.2" groupName="alarms"
-				unit="Cel">
+				unit="Cel" required="true">
 				<label>Min Warning Temperature</label>
 				<description>Sets the lowest acceptable temperature value before a warning should be issued</description>
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="temperatureWarningMax" type="decimal" min="-20" max="60" step="0.2" groupName="alarms"
-				unit="Cel">
+				unit="Cel" required="true">
 				<label>Max Warning Temperature</label>
 				<description>Sets the highest acceptable temperature value before a warning should be issued</description>
 				<default>0</default>
@@ -133,26 +133,25 @@
 			</parameter>
 
 			<parameter name="humidityCalibration" type="decimal" min="-9" max="9" groupName="calibration" unit="%">
-				<required>false</required>
 				<label>Humidity Calibration</label>
 				<description>Adds offset to reported humidity</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="humidityWarningAlarm" type="boolean" groupName="alarms">
+			<parameter name="humidityWarningAlarm" type="boolean" groupName="alarms" required="true">
 				<label>Broadcast Humidity Warning</label>
 				<description>If enabled, the Govee device will notify openHAB if humidity is out of the specified range</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="humidityWarningMin" type="decimal" min="0" max="100" step="0.1" groupName="alarms"
-				unit="%">
+				unit="%" required="true">
 				<label>Min Warning Humidity</label>
 				<description>Sets the lowest acceptable humidity value before a warning should be issued</description>
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="humidityWarningMax" type="decimal" min="0" max="100" step="0.1" groupName="alarms"
-				unit="%">
+				unit="%" required="true">
 				<label>Max Warning Humidity</label>
 				<description>Sets the highest acceptable humidity value before a warning should be issued</description>
 				<default>0</default>
