@@ -17,15 +17,11 @@ import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
@@ -127,8 +123,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private volatile @Nullable ModbusDataConfiguration config;
     private volatile @Nullable ValueType readValueType;
     private volatile @Nullable ValueType writeValueType;
-    private volatile @Nullable Transformation readTransformation;
-    private volatile @Nullable Transformation writeTransformation;
+    private volatile @Nullable ValueTransformation readTransformation;
+    private volatile @Nullable ValueTransformation writeTransformation;
     private volatile Optional<Integer> readIndex = Optional.empty();
     private volatile Optional<Integer> readSubIndex = Optional.empty();
     private volatile @Nullable Integer writeStart;
@@ -237,7 +233,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private @Nullable Optional<Command> transformCommandAndProcessJSON(ChannelUID channelUID, Command command) {
         String transformOutput;
         Optional<Command> transformedCommand;
-        Transformation writeTransformation = this.writeTransformation;
+        ValueTransformation writeTransformation = this.writeTransformation;
         if (writeTransformation == null || writeTransformation.isIdentityTransform()) {
             transformedCommand = Optional.of(command);
         } else {
@@ -251,7 +247,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                         command, channelUID));
                 return null;
             } else {
-                transformedCommand = Transformation.tryConvertToCommand(transformOutput);
+                transformedCommand = SingleValueTransformation.tryConvertToCommand(transformOutput);
                 logger.trace("Converted transform output '{}' to command '{}' (type {})", transformOutput,
                         transformedCommand.map(c -> c.toString()).orElse("<conversion failed>"),
                         transformedCommand.map(c -> c.getClass().getName()).orElse("<conversion failed>"));
@@ -502,7 +498,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 throw new ModbusConfigurationException(errmsg);
             }
         }
-        readTransformation = new Transformation(config.getReadTransform());
+        readTransformation = new SingleValueTransformation(config.getReadTransform());
         validateReadIndex();
     }
 
@@ -511,7 +507,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         boolean writeStartMissing = config.getWriteStart() == null || config.getWriteStart().isBlank();
         boolean writeValueTypeMissing = config.getWriteValueType() == null || config.getWriteValueType().isBlank();
         boolean writeTransformationMissing = config.getWriteTransform() == null || config.getWriteTransform().isBlank();
-        writeTransformation = new Transformation(config.getWriteTransform());
+        writeTransformation = new SingleValueTransformation(config.getWriteTransform());
         boolean writingCoil = WRITE_TYPE_COIL.equals(config.getWriteType());
         writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing && writeValueTypeMissing
                 && !writeTransformationMissing);
