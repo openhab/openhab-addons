@@ -30,7 +30,8 @@ The following parameters are valid for all thing types:
 ## Properties
 
 In addition to the configuration a myStrom thing has the following properties.
-The properties are updated during initialize. Disabling/enabling the thing can be used to update the properties.
+The properties are updated during initialize.
+Disabling/enabling the thing can be used to update the properties.
 
 | Property-Name | Description                                                           |
 | ------------- | --------------------------------------------------------------------- |
