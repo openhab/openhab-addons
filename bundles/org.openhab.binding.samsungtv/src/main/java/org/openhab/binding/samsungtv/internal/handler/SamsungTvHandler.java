@@ -239,27 +239,27 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private void checkAndCreateServices() {
         logger.debug("Check and create missing UPnP services");
 
-	boolean isOnline = false;
+        boolean isOnline = false;
 
         for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
-            if ( createService((RemoteDevice) device) == true ) { 
-		    isOnline = true;
-		    }
+            if (createService((RemoteDevice) device) == true) {
+                isOnline = true;
+            }
         }
 
-	if ( isOnline == true ) {
-		logger.debug("Device was online");
-		putOnline();
-	} else {
-		logger.debug("Device was NOT online");
-		putOffline();
-	}
+        if (isOnline == true) {
+            logger.debug("Device was online");
+            putOnline();
+        } else {
+            logger.debug("Device was NOT online");
+            putOffline();
+        }
 
         checkCreateManualConnection();
     }
 
     private synchronized boolean createService(RemoteDevice device) {
-    	if (configuration.hostName != null
+        if (configuration.hostName != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
             String modelName = device.getDetails().getModelDetails().getModelName();
             String udn = device.getIdentity().getUdn().getIdentifierString();
@@ -279,8 +279,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                     } else {
                         startService(newService);
                         logger.debug("Started service for: {}, {} ({})", modelName, type, udn);
-			return true;
-		    }
+                        return true;
+                    }
                 } else {
                     logger.trace("Skipping unknown UPnP service: {}, {} ({})", modelName, type, udn);
                 }
@@ -288,9 +288,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 logger.debug("Service rediscovered, clearing caches: {}, {} ({})", modelName, type, udn);
                 existingService.clearCache();
             }
-	    	return true;
-	}
-	return false;
+            return true;
+        }
+        return false;
     }
 
     private @Nullable SamsungTvService findServiceInstance(String serviceName) {
