@@ -115,6 +115,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final int MAX_BASS = 10;
     private static final int MIN_TREBLE = -10;
     private static final int MAX_TREBLE = 10;
+    private static final int MIN_SUBWOOFER_GAIN = -15;
+    private static final int MAX_SUBWOOFER_GAIN = 15;
+    private static final int MIN_SURROUND_LEVEL = -15;
+    private static final int MAX_SURROUND_LEVEL = 15;
 
     private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
 
@@ -272,6 +276,24 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     break;
                 case LOUDNESS:
                     setLoudness(command);
+                    break;
+                case SUBWOOFER:
+                    setSubwoofer(command);
+                    break;
+                case SUBWOOFERGAIN:
+                    setSubwooferGain(command);
+                    break;
+                case SURROUND:
+                    setSurround(command);
+                    break;
+                case SURROUNDMUSICMODE:
+                    setSurroundMusicMode(command);
+                    break;
+                case SURROUNDMUSICLEVEL:
+                    setSurroundMusicLevel(command);
+                    break;
+                case SURROUNDTVLEVEL:
+                    setSurroundTvLevel(command);
                     break;
                 case ADD:
                     addMember(command);
@@ -513,6 +535,24 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     updateChannel(TREBLE);
                     updateChannel(LOUDNESS);
                     break;
+                case "SubEnabled":
+                    updateChannel(SUBWOOFER);
+                    break;
+                case "SubGain":
+                    updateChannel(SUBWOOFERGAIN);
+                    break;
+                case "SurroundEnabled":
+                    updateChannel(SURROUND);
+                    break;
+                case "SurroundMode":
+                    updateChannel(SURROUNDMUSICMODE);
+                    break;
+                case "SurroundLevel":
+                    updateChannel(SURROUNDTVLEVEL);
+                    break;
+                case "MusicSurroundLevel":
+                    updateChannel(SURROUNDMUSICLEVEL);
+                    break;
                 case "NightMode":
                     updateChannel(NIGHTMODE);
                     break;
@@ -745,6 +785,42 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 value = getMute();
                 if (value != null) {
                     newState = OnOffType.from(value);
+                }
+                break;
+            case SUBWOOFER:
+                value = getSubwooferEnabled();
+                if (value != null) {
+                    newState = OnOffType.from(value);
+                }
+                break;
+            case SUBWOOFERGAIN:
+                value = getSubwooferGain();
+                if (value != null) {
+                    newState = new DecimalType(value);
+                }
+                break;
+            case SURROUND:
+                value = getSurroundEnabled();
+                if (value != null) {
+                    newState = OnOffType.from(value);
+                }
+                break;
+            case SURROUNDMUSICMODE:
+                value = getSurroundMusicMode();
+                if (value != null) {
+                    newState = new StringType(value);
+                }
+                break;
+            case SURROUNDMUSICLEVEL:
+                value = getSurroundMusicLevel();
+                if (value != null) {
+                    newState = new DecimalType(value);
+                }
+                break;
+            case SURROUNDTVLEVEL:
+                value = getSurroundTvLevel();
+                if (value != null) {
+                    newState = new DecimalType(value);
                 }
                 break;
             case NIGHTMODE:
@@ -1299,6 +1375,30 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getLoudness() {
         return stateMap.get("LoudnessMaster");
+    }
+
+    public @Nullable String getSurroundEnabled() {
+        return stateMap.get("SurroundEnabled");
+    }
+
+    public @Nullable String getSurroundMusicMode() {
+        return stateMap.get("SurroundMode");
+    }
+
+    public @Nullable String getSurroundTvLevel() {
+        return stateMap.get("SurroundLevel");
+    }
+
+    public @Nullable String getSurroundMusicLevel() {
+        return stateMap.get("MusicSurroundLevel");
+    }
+
+    public @Nullable String getSubwooferEnabled() {
+        return stateMap.get("SubEnabled");
+    }
+
+    public @Nullable String getSubwooferGain() {
+        return stateMap.get("SubGain");
     }
 
     public @Nullable String getTransportState() {
@@ -1981,17 +2081,54 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
+    public void setSubwoofer(Command command) {
+        setEqualizerBooleanSetting(command, "SubEnabled");
+    }
+
+    public void setSubwooferGain(Command command) {
+        setEqualizerNumericSetting(command, "SubGain", getSubwooferGain(), MIN_SUBWOOFER_GAIN, MAX_SUBWOOFER_GAIN);
+    }
+
+    public void setSurround(Command command) {
+        setEqualizerBooleanSetting(command, "SurroundEnabled");
+    }
+
+    public void setSurroundMusicMode(Command command) {
+        if (command instanceof StringType) {
+            setEQ("SurroundMode", command.toString());
+        }
+    }
+
+    public void setSurroundMusicLevel(Command command) {
+        setEqualizerNumericSetting(command, "MusicSurroundLevel", getSurroundMusicLevel(), MIN_SURROUND_LEVEL,
+                MAX_SURROUND_LEVEL);
+    }
+
+    public void setSurroundTvLevel(Command command) {
+        setEqualizerNumericSetting(command, "SurroundLevel", getSurroundTvLevel(), MIN_SURROUND_LEVEL,
+                MAX_SURROUND_LEVEL);
+    }
+
     public void setNightMode(Command command) {
+        setEqualizerBooleanSetting(command, "NightMode");
+    }
+
+    public void setSpeechEnhancement(Command command) {
+        setEqualizerBooleanSetting(command, "DialogLevel");
+    }
+
+    private void setEqualizerBooleanSetting(Command command, String eqType) {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            setEQ("NightMode", (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
+            setEQ(eqType, (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
                     || command.equals(OpenClosedType.OPEN)) ? "1" : "0");
         }
     }
 
-    public void setSpeechEnhancement(Command command) {
-        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            setEQ("DialogLevel", (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
-                    || command.equals(OpenClosedType.OPEN)) ? "1" : "0");
+    private void setEqualizerNumericSetting(Command command, String eqType, @Nullable String currentValue, int minValue,
+            int maxValue) {
+        String newValue = getNewNumericValue(command, currentValue, minValue, maxValue);
+        if (newValue != null) {
+            setEQ(eqType, newValue);
         }
     }
 

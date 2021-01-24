@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- The bridge to communicate with Hayward's server -->
+	<bridge-type id="bridge">
+		<label>Hayward OmniLogix Connection</label>
+		<description>Connection to Hayward's Server</description>
+
+		<config-description>
+			<parameter name="endpointUrl" type="text" required="true">
+				<context>url</context>
+				<label>Endpoint URL</label>
+				<default>https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx</default>
+				<description>The URL of the Hayward API Server</description>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>User Name</label>
+				<description>The username to connect to the server.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password to connect to the server.</description>
+			</parameter>
+			<parameter name="telemetryPollTime" type="integer" min="10" max="60" unit="s" required="true">
+				<label>Telemetry Poll Delay</label>
+				<default>12</default>
+				<description>How often to request telemetry data from Hayward Server</description>
+			</parameter>
+			<parameter name="alarmPollTime" type="integer" min="0" max="120" unit="s" required="true">
+				<label>Alarm Poll Delay</label>
+				<default>60</default>
+				<description>How often to request alarm data from Hayward Server. Enter 0 to disable.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

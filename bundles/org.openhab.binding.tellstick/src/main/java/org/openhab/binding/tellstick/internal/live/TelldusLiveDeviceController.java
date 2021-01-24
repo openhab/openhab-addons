@@ -309,6 +309,8 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         // TelldusLiveHandler.logger.info("Devices" + resp.getResponseBody());
         JAXBContext jc = JAXBContext.newInstance(response);
         XMLInputFactory xif = XMLInputFactory.newInstance();
+        xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         XMLStreamReader xsr = xif.createXMLStreamReader(resp.getResponseBodyAsStream());
         // xsr = new PropertyRenamerDelegate(xsr);
 
