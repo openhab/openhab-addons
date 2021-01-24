@@ -78,6 +78,12 @@ public class DeviceTypeLoader {
      */
     public void loadDeviceTypesXML(InputStream in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+        dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        dbFactory.setXIncludeAware(false);
+        dbFactory.setExpandEntityReferences(false);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(in);
         doc.getDocumentElement().normalize();

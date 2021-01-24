@@ -134,6 +134,7 @@ public class SonosXMLParser {
      */
     public static @Nullable SonosResourceMetaData getResourceMetaData(String xml) throws SAXException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
+        reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         ResourceMetaDataHandler handler = new ResourceMetaDataHandler();
         reader.setContentHandler(handler);
         try {

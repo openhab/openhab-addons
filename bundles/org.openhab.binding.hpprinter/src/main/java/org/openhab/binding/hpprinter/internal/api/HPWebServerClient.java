@@ -50,7 +50,7 @@ public class HPWebServerClient {
 
     /**
      * Creates a new HP Web Server Client object.
-     * 
+     *
      * @param httpClient {HttpClient} The HttpClient to use for HTTP requests.
      * @param address The address for the Embedded Web Server.
      */
@@ -63,7 +63,7 @@ public class HPWebServerClient {
 
     /**
      * Gets the Status information from the Embedded Web Server.
-     * 
+     *
      * @return The status information.
      */
     public HPServerResult<HPStatus> getStatus() {
@@ -84,7 +84,7 @@ public class HPWebServerClient {
 
     /**
      * Gets the Usage information from the Embedded Web Server.
-     * 
+     *
      * @return The usage information.
      */
     public HPServerResult<HPUsage> getUsage() {
@@ -120,6 +120,12 @@ public class HPWebServerClient {
 
     private synchronized Document getDocument(String contentAsString)
             throws ParserConfigurationException, SAXException, IOException {
+        // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
         DocumentBuilder builder = factory.newDocumentBuilder();
         InputSource source = new InputSource(new StringReader(contentAsString));
         return builder.parse(source);
