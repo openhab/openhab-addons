@@ -30,7 +30,10 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 /**
- * TODO: documentation
+ * PutItem request which creates table if needed.
+ *
+ * Designed such that competing PutItem requests should complete successfully, only one of them
+ * 'winning the race' and creating the table.
  *
  * @author Sami Salonen - Initial contribution
  *

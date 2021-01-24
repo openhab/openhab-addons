@@ -311,7 +311,6 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         } else if (item instanceof LocationItem) {
             return new DynamoDBStringItem(name, state.toFullString(), time, expireDays);
         } else if (item instanceof NumberItem) {
-            // XXX: quantitytype
             return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time, expireDays);
         } else if (item instanceof PlayerItem) {
             if (state instanceof PlayPauseType) {
