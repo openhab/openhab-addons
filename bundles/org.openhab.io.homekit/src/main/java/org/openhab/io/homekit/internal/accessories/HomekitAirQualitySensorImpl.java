@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal.accessories;
 
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.AIR_QUALITY;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -46,10 +47,13 @@ public class HomekitAirQualitySensorImpl extends AbstractHomekitAccessoryImpl im
         }
     };
 
+    private final List<AirQualityEnum> customAirQualityStateList;
+
     public HomekitAirQualitySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        updateMapping(AIR_QUALITY, qualityStateMapping);
+        customAirQualityStateList = new ArrayList<>();
+        updateMapping(AIR_QUALITY, qualityStateMapping, customAirQualityStateList);
         getServices().add(new AirQualityService(this));
     }
 
