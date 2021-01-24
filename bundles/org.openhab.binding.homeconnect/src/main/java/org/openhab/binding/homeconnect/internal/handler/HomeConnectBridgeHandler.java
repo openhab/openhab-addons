@@ -127,39 +127,42 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
         eventSourceClient = new HomeConnectEventSourceClient(oAuthClientService, config.isSimulator(), scheduler,
                 eventHistory);
 
-        try {
-            @Nullable
-            AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+        updateStatus(ThingStatus.UNKNOWN);
 
-            if (accessTokenResponse == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect).");
-                logger.info(
-                        "Configuration is pending. Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect). bridge={}",
+        scheduler.submit(() -> {
+            try {
+                @Nullable
+                AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+
+                if (accessTokenResponse == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                            "Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect).");
+                    logger.info(
+                            "Configuration is pending. Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect). bridge={}",
+                            getThing().getLabel());
+                } else {
+                    apiClient.getHomeAppliances();
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } catch (OAuthException | IOException | OAuthResponseException | CommunicationException
+                    | AuthorizationException e) {
+                ZonedDateTime nextReinitializeDateTime = ZonedDateTime.now().plusSeconds(REINITIALIZATION_DELAY);
+
+                String infoMessage = String.format(
+                        "Home Connect service is not reachable or a problem occurred! Retrying at %s (%s). bridge=%s",
+                        nextReinitializeDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME), e.getMessage(),
                         getThing().getLabel());
-            } else {
-                apiClient.getHomeAppliances();
-                updateStatus(ThingStatus.ONLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, infoMessage);
+                logger.info("{}", infoMessage);
+
+                scheduleReinitialize();
             }
-        } catch (OAuthException | IOException | OAuthResponseException | CommunicationException
-                | AuthorizationException e) {
-            ZonedDateTime nextReinitializeDateTime = ZonedDateTime.now().plusSeconds(REINITIALIZATION_DELAY);
-
-            String infoMessage = String.format(
-                    "Home Connect service is not reachable or a problem occurred! Retrying at %s (%s). bridge=%s",
-                    nextReinitializeDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME), e.getMessage(),
-                    getThing().getLabel());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, infoMessage);
-            logger.info("{}", infoMessage);
-
-            scheduleReinitialize();
-        }
+        });
     }
 
     @Override
     public void dispose() {
         logger.debug("Dispose bridge {}", getThing().getLabel());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
         stopReinitializer();
         cleanup();
     }

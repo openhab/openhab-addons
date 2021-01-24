@@ -308,3 +308,10 @@ Not all appliance programs and program options are supported by the Home Connect
   }
 }
 ```
+
+### How to find the Home Appliance ID (HaID) of my device?
+
+You have two options to find the right HaID of your device.
+
+1. You can use the OpenHAB UI and start a scan. ![Screenshot OpenHAB UI Scan for new devices](doc/ui-scan-for-haid.png "Scan")
+2. You can use Home Connect binding UI. Please have a look at the first API request. ![Screenshot Home Connect Binding UI](doc/binding-ui-haid.png "First request")

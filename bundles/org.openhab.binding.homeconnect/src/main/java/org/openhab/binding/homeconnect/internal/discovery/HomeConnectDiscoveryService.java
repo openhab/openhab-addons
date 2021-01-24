@@ -61,8 +61,7 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
     private @NonNullByDefault({}) HomeConnectBridgeHandler bridgeHandler;
 
     /**
-     * Construct an {@link HomeConnectDiscoveryService} with the given
-     * {@link org.openhab.core.thing.binding.BridgeHandler}.
+     * Construct an {@link HomeConnectDiscoveryService}.
      *
      */
     public HomeConnectDiscoveryService() {

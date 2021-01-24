@@ -52,7 +52,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -69,7 +68,6 @@ import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationEx
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -96,7 +94,6 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     private static final int CAVITY_TEMPERATURE_SCHEDULER_PERIOD = 90;
 
     private final Logger logger = LoggerFactory.getLogger(HomeConnectOvenHandler.class);
-    private final ScheduledExecutorService scheduler;
 
     private @Nullable ScheduledFuture<?> cavityTemperatureFuture;
     private boolean manuallyUpdateCavityTemperature;
@@ -104,7 +101,6 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     public HomeConnectOvenHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(thing, dynamicStateDescriptionProvider);
-        scheduler = ThreadPoolManager.getScheduledPool(getClass().getSimpleName());
         manuallyUpdateCavityTemperature = true;
     }
 
@@ -208,10 +204,10 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
 
                     @Nullable
                     String operationState = getOperationState();
-                    if (operationState != null && INACTIVE_STATE.contains(operationState)) {
+                    if (operationState != null && INACTIVE_STATE.contains(operationState)
+                            && command instanceof QuantityType) {
                         // set setpoint temperature
-                        if (command instanceof QuantityType
-                                && CHANNEL_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
+                        if (CHANNEL_SETPOINT_TEMPERATURE.equals(channelUID.getId())) {
                             @SuppressWarnings("unchecked")
                             QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command);
 
@@ -240,10 +236,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
                                 logger.warn("Could not set setpoint! haId={}, error={}", getThingHaId(),
                                         e.getMessage());
                             }
-                        }
-
-                        // set duration
-                        if (command instanceof QuantityType && CHANNEL_DURATION.equals(channelUID.getId())) {
+                        } else if (CHANNEL_DURATION.equals(channelUID.getId())) {
                             @SuppressWarnings("unchecked")
                             QuantityType<Time> quantity = ((QuantityType<Time>) command);
 
@@ -305,12 +298,12 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         @Nullable
         ScheduledFuture<?> cavityTemperatureFuture = this.cavityTemperatureFuture;
         if (cavityTemperatureFuture != null) {
             cavityTemperatureFuture.cancel(true);
         }
+        super.dispose();
     }
 
     @Override

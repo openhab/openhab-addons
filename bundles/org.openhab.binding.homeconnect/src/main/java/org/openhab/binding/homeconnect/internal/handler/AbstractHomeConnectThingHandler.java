@@ -78,6 +78,7 @@ import static org.openhab.core.library.unit.Units.PERCENT;
 import static org.openhab.core.library.unit.Units.SECOND;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatus.UNKNOWN;
 
 import java.time.Duration;
 import java.util.List;
@@ -146,6 +147,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private @Nullable String operationState;
     private @Nullable ScheduledFuture<?> reinitializationFuture1;
     private @Nullable ScheduledFuture<?> reinitializationFuture2;
+    private boolean ignoreEventSourceClosedEvent;
 
     private final ConcurrentHashMap<String, EventHandler> eventHandlers;
     private final ConcurrentHashMap<String, ChannelUpdateHandler> channelUpdateHandlers;
@@ -171,23 +173,32 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     public void initialize() {
         logger.debug("Initialize thing handler ({}). haId={}", getThingLabel(), getThingHaId());
 
-        if (isBridgeOnline()) {
-            refreshThingStatus(); // set ONLINE / OFFLINE
-            updateSelectedProgramStateDescription();
-            updateChannels();
-            registerEventListener();
-            scheduleOfflineMonitor1();
-            scheduleOfflineMonitor2();
-        } else {
+        if (!getBridgeHandler().isPresent()) {
+            logger.debug("Update status to OFFLINE (BRIDGE_UNINITIALIZED). thing={}, haId={}", getThingLabel(),
+                    getThingHaId());
+            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            accessible.set(false);
+        } else if (isBridgeOffline()) {
             logger.debug("Bridge is offline ({}), skip initialization of thing handler. haId={}", getThingLabel(),
                     getThingHaId());
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             accessible.set(false);
+        } else {
+            updateStatus(UNKNOWN);
+            scheduler.submit(() -> {
+                refreshThingStatus(); // set ONLINE / OFFLINE
+                updateSelectedProgramStateDescription();
+                updateChannels();
+                registerEventListener();
+                scheduleOfflineMonitor1();
+                scheduleOfflineMonitor2();
+            });
         }
     }
 
     @Override
     public void dispose() {
+        logger.debug("Dispose thing handler ({}). haId={}", getThingLabel(), getThingHaId());
         unregisterEventListener();
         stopOfflineMonitor1();
         stopOfflineMonitor2();
@@ -195,9 +206,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
         logger.debug("Bridge status changed to {} ({}). haId={}", bridgeStatusInfo, getThingLabel(), getThingHaId());
-
         dispose();
         initialize();
     }
@@ -297,9 +306,13 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void onClosed() {
-        unregisterEventListener();
-        refreshThingStatus();
-        registerEventListener();
+        if (ignoreEventSourceClosedEvent) {
+            logger.debug("Ignoring event source close event. thing={}, haId={}", getThing().getLabel(), getThingHaId());
+        } else {
+            unregisterEventListener();
+            refreshThingStatus();
+            registerEventListener();
+        }
     }
 
     @Override
@@ -322,6 +335,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             getEventSourceClient().ifPresent(client -> {
                 try {
                     client.registerEventListener(getThingHaId(), this);
+                    ignoreEventSourceClosedEvent = false;
                 } catch (CommunicationException | AuthorizationException e) {
                     logger.warn("Could not open event source connection. thing={}, haId={}, error={}", getThingLabel(),
                             getThingHaId(), e.getMessage());
@@ -334,7 +348,10 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * Unregister event listener.
      */
     protected void unregisterEventListener() {
-        getEventSourceClient().ifPresent(client -> client.unregisterEventListener(this));
+        getEventSourceClient().ifPresent(client -> {
+            ignoreEventSourceClosedEvent = true;
+            client.unregisterEventListener(this);
+        });
     }
 
     /**

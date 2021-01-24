@@ -46,7 +46,6 @@ public class HomeConnectCooktopHandler extends AbstractHomeConnectThingHandler {
     public HomeConnectCooktopHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(thing, dynamicStateDescriptionProvider);
-        resetProgramStateChannels();
     }
 
     @Override

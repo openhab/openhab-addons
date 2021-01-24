@@ -76,7 +76,6 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
     public HomeConnectDishwasherHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(thing, dynamicStateDescriptionProvider);
-        resetProgramStateChannels();
     }
 
     @Override

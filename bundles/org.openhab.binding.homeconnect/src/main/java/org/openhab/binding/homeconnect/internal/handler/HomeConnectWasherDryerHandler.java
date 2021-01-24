@@ -145,23 +145,21 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
             getApiClient().ifPresent(apiClient -> {
                 try {
                     // only handle these commands if operation state allows it
-                    if (operationState != null && INACTIVE_STATE.contains(operationState)) {
-                        // set temperature option
-                        if (command instanceof StringType && CHANNEL_WASHER_TEMPERATURE.equals(channelUID.getId())) {
-                            apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_TEMPERATURE,
-                                    command.toFullString(), null, false, false);
-                        }
-
-                        // set spin speed option
-                        if (command instanceof StringType && CHANNEL_WASHER_SPIN_SPEED.equals(channelUID.getId())) {
-                            apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_SPIN_SPEED,
-                                    command.toFullString(), null, false, false);
-                        }
-
-                        // set drying target option
-                        if (command instanceof StringType && CHANNEL_DRYER_DRYING_TARGET.equals(channelUID.getId())) {
-                            apiClient.setProgramOptions(getThingHaId(), OPTION_DRYER_DRYING_TARGET,
-                                    command.toFullString(), null, false, false);
+                    if (operationState != null && INACTIVE_STATE.contains(operationState)
+                            && command instanceof StringType) {
+                        switch (channelUID.getId()) {
+                            case CHANNEL_WASHER_TEMPERATURE:
+                                apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_TEMPERATURE,
+                                        command.toFullString(), null, false, false);
+                                break;
+                            case CHANNEL_WASHER_SPIN_SPEED:
+                                apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_SPIN_SPEED,
+                                        command.toFullString(), null, false, false);
+                                break;
+                            case CHANNEL_DRYER_DRYING_TARGET:
+                                apiClient.setProgramOptions(getThingHaId(), OPTION_DRYER_DRYING_TARGET,
+                                        command.toFullString(), null, false, false);
+                                break;
                         }
                     } else {
                         logger.debug("Device can not handle command {} in current operation state ({}). haId={}",

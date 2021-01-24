@@ -123,7 +123,6 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
     public HomeConnectHoodHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(thing, dynamicStateDescriptionProvider);
-        resetProgramStateChannels();
     }
 
     @Override

@@ -153,29 +153,25 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
 
             try {
                 // only handle these commands if operation state allows it
-                if (operationState != null && INACTIVE_STATE.contains(operationState) && apiClient.isPresent()) {
-                    // set temperature option
-                    if (command instanceof StringType && CHANNEL_WASHER_TEMPERATURE.equals(channelUID.getId())) {
-                        apiClient.get().setProgramOptions(getThingHaId(), OPTION_WASHER_TEMPERATURE,
-                                command.toFullString(), null, false, false);
-                    }
-
-                    // set spin speed option
-                    if (command instanceof StringType && CHANNEL_WASHER_SPIN_SPEED.equals(channelUID.getId())) {
-                        apiClient.get().setProgramOptions(getThingHaId(), OPTION_WASHER_SPIN_SPEED,
-                                command.toFullString(), null, false, false);
-                    }
-
-                    // set iDos 1 option
-                    if (command instanceof StringType && CHANNEL_WASHER_IDOS1.equals(channelUID.getId())) {
-                        apiClient.get().setProgramOptions(getThingHaId(), OPTION_WASHER_IDOS_1_DOSING_LEVEL,
-                                command.toFullString(), null, false, false);
-                    }
-
-                    // set iDos 2 option
-                    if (command instanceof StringType && CHANNEL_WASHER_IDOS2.equals(channelUID.getId())) {
-                        apiClient.get().setProgramOptions(getThingHaId(), OPTION_WASHER_IDOS_2_DOSING_LEVEL,
-                                command.toFullString(), null, false, false);
+                if (operationState != null && INACTIVE_STATE.contains(operationState) && apiClient.isPresent()
+                        && command instanceof StringType) {
+                    switch (channelUID.getId()) {
+                        case CHANNEL_WASHER_TEMPERATURE:
+                            apiClient.get().setProgramOptions(getThingHaId(), OPTION_WASHER_TEMPERATURE,
+                                    command.toFullString(), null, false, false);
+                            break;
+                        case CHANNEL_WASHER_SPIN_SPEED:
+                            apiClient.get().setProgramOptions(getThingHaId(), OPTION_WASHER_SPIN_SPEED,
+                                    command.toFullString(), null, false, false);
+                            break;
+                        case CHANNEL_WASHER_IDOS1:
+                            apiClient.get().setProgramOptions(getThingHaId(), OPTION_WASHER_IDOS_1_DOSING_LEVEL,
+                                    command.toFullString(), null, false, false);
+                            break;
+                        case CHANNEL_WASHER_IDOS2:
+                            apiClient.get().setProgramOptions(getThingHaId(), OPTION_WASHER_IDOS_2_DOSING_LEVEL,
+                                    command.toFullString(), null, false, false);
+                            break;
                     }
                 } else {
                     logger.debug("Device can not handle command {} in current operation state ({}). haId={}", command,

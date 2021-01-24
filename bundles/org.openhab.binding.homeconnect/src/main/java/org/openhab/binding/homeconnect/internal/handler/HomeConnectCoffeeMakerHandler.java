@@ -65,7 +65,6 @@ public class HomeConnectCoffeeMakerHandler extends AbstractHomeConnectThingHandl
     public HomeConnectCoffeeMakerHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(thing, dynamicStateDescriptionProvider);
-        resetProgramStateChannels();
     }
 
     @Override
