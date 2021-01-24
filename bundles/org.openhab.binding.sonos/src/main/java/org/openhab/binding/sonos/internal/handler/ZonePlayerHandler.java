@@ -744,7 +744,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             case SUBWOOFER:
                 value = getSubwooferEnabled();
                 if (value != null) {
-                    newState = isSubwooferEnabled() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(value);
                 }
                 break;
             case SUBWOOFERGAIN:
@@ -756,7 +756,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             case SURROUND:
                 value = getSurroundEnabled();
                 if (value != null) {
-                    newState = isSurroundEnabled() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(value);
                 }
                 break;
             case SURROUNDMUSICMODE:
@@ -1319,10 +1319,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return stateMap.get("SurroundEnabled");
     }
 
-    public boolean isSurroundEnabled() {
-        return "1".equals(getSurroundEnabled());
-    }
-
     public @Nullable String getSurroundMusicMode() {
         return stateMap.get("SurroundMode");
     }
@@ -1337,10 +1333,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getSubwooferEnabled() {
         return stateMap.get("SubEnabled");
-    }
-
-    public boolean isSubwooferEnabled() {
-        return "1".equals(getSubwooferEnabled());
     }
 
     public @Nullable String getSubwooferGain() {
