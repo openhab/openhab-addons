@@ -67,7 +67,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNELpower)) {
+        if (channelUID.getId().equals(CHANNELPOWER)) {
             String postData = null;
             if (command.equals(OnOffType.ON)) {
                 postData = "{\"prg\":true}";
@@ -75,22 +75,22 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                 postData = "{\"prg\":false}";
             }
             if (postData != null) {
-                logger.debug("Executing {} command", CHANNELpower);
+                logger.debug("Executing {} command", CHANNELPOWER);
                 updateOvenData(postData);
             }
-        } else if (channelUID.getId().equals(CHANNELspTemp)) {
+        } else if (channelUID.getId().equals(CHANNELSPTEMP)) {
             if (command instanceof QuantityType<?>) {
                 QuantityType<?> value = null;
                 value = (QuantityType<?>) command;
                 double a = value.doubleValue();
 
                 String postdata = "{\"sp_temp\":" + a + "}";
-                logger.debug("Executing {} command", CHANNELspTemp);
+                logger.debug("Executing {} command", CHANNELSPTEMP);
                 updateOvenData(postdata);
             } else {
                 logger.debug("Error. Command is the wrong type: {}", command.toString());
             }
-        } else if (channelUID.getId().equals(CHANNELecoMode)) {
+        } else if (channelUID.getId().equals(CHANNELECOMODE)) {
             String postData = null;
             if (command.equals(OnOffType.ON)) {
                 postData = "{\"eco_mode\":true}";
@@ -98,7 +98,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                 postData = "{\"eco_mode\":false}";
             }
             if (postData != null) {
-                logger.debug("Executing {} command", CHANNELecoMode);
+                logger.debug("Executing {} command", CHANNELECOMODE);
                 updateOvenData(postData);
             }
         }
@@ -162,11 +162,9 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                     updateLinkedChannels();
                 }
             } else {
-
                 logger.info("Setting thing '{}' to OFFLINE: {}", getThing().getUID(), errors);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
             }
-
         } else {
             logger.info("Setting thing '{}' to OFFLINE: {}", getThing().getUID(), errors);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
@@ -174,16 +172,16 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     }
 
     private void updateLinkedChannels() {
-        verifyLinkedChannel(CHANNELisTemp);
-        verifyLinkedChannel(CHANNELmode);
-        verifyLinkedChannel(CHANNELpower);
-        verifyLinkedChannel(CHANNELspTemp);
-        verifyLinkedChannel(CHANNELecoMode);
-        verifyLinkedChannel(CHANNELignitions);
-        verifyLinkedChannel(CHANNELmaintenanceIn);
-        verifyLinkedChannel(CHANNELcleaningIn);
-        verifyLinkedChannel(CHANNELconsumption);
-        verifyLinkedChannel(CHANNELonTime);
+        verifyLinkedChannel(CHANNEL_ISTEMP);
+        verifyLinkedChannel(CHANNELMODE);
+        verifyLinkedChannel(CHANNELPOWER);
+        verifyLinkedChannel(CHANNELSPTEMP);
+        verifyLinkedChannel(CHANNELECOMODE);
+        verifyLinkedChannel(CHANNELIGNITIONS);
+        verifyLinkedChannel(CHANNELMAINTENANCEIN);
+        verifyLinkedChannel(CHANNELCLEANINGIN);
+        verifyLinkedChannel(CHANNELCONSUMPTION);
+        verifyLinkedChannel(CHANNELONTIME);
         if (!linkedChannels.isEmpty()) {
             logger.info("Start automatic refreshing");
             updateOvenData(null);
@@ -263,25 +261,25 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             HaasSohnpelletstoveJsonData data = serviceCommunication.getOvenData();
             if (data != null) {
                 switch (channelId) {
-                    case CHANNELisTemp:
+                    case CHANNEL_ISTEMP:
                         state = new QuantityType<>(Double.valueOf(data.getisTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;
-                    case CHANNELmode:
+                    case CHANNELMODE:
                         state = new StringType(data.getMode());
                         update(state, channelId);
                         break;
-                    case CHANNELpower:
+                    case CHANNELPOWER:
                         update(OnOffType.from(data.getPrg()), channelId);
                         break;
-                    case CHANNELecoMode:
+                    case CHANNELECOMODE:
                         update(OnOffType.from(data.getEcoMode()), channelId);
                         break;
-                    case CHANNELspTemp:
+                    case CHANNELSPTEMP:
                         state = new QuantityType<>(Double.valueOf(data.getspTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;
-                    case CHANNELcleaningIn:
+                    case CHANNELCLEANINGIN:
                         String cleaning = data.getCleaningIn();
                         double time = Double.parseDouble(cleaning);
                         time = time / 60;
@@ -289,19 +287,19 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                         state = new StringType(df.format(time));
                         update(state, channelId);
                         break;
-                    case CHANNELconsumption:
+                    case CHANNELCONSUMPTION:
                         state = new StringType(data.getConsumption());
                         update(state, channelId);
                         break;
-                    case CHANNELignitions:
+                    case CHANNELIGNITIONS:
                         state = new StringType(data.getIgnitions());
                         update(state, channelId);
                         break;
-                    case CHANNELmaintenanceIn:
+                    case CHANNELMAINTENANCEIN:
                         state = new StringType(data.getMaintenanceIn());
                         update(state, channelId);
                         break;
-                    case CHANNELonTime:
+                    case CHANNELONTIME:
                         state = new StringType(data.getOnTime());
                         update(state, channelId);
                         break;

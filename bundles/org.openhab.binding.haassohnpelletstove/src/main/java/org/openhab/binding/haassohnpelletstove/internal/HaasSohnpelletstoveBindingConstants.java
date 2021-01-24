@@ -28,14 +28,14 @@ public class HaasSohnpelletstoveBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_OVEN = new ThingTypeUID(BINDING_ID, "oven");
 
-    public static final String CHANNELisTemp = "channelIsTemp";
-    public static final String CHANNELmode = "channelMode";
-    public static final String CHANNELspTemp = "channelSpTemp";
-    public static final String CHANNELpower = "system.power";
-    public static final String CHANNELecoMode = "channelEcoMode";
-    public static final String CHANNELignitions = "channelIgnitions";
-    public static final String CHANNELmaintenanceIn = "channelMaintenanceIn";
-    public static final String CHANNELcleaningIn = "channelCleaningIn";
-    public static final String CHANNELconsumption = "channelConsumption";
-    public static final String CHANNELonTime = "channelOnTime";
+    public static final String CHANNEL_ISTEMP = "channelIsTemp";
+    public static final String CHANNELMODE = "channelMode";
+    public static final String CHANNELSPTEMP = "channelSpTemp";
+    public static final String CHANNELPOWER = "system.power";
+    public static final String CHANNELECOMODE = "channelEcoMode";
+    public static final String CHANNELIGNITIONS = "channelIgnitions";
+    public static final String CHANNELMAINTENANCEIN = "channelMaintenanceIn";
+    public static final String CHANNELCLEANINGIN = "channelCleaningIn";
+    public static final String CHANNELCONSUMPTION = "channelConsumption";
+    public static final String CHANNELONTIME = "channelOnTime";
 }

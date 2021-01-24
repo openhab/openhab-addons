@@ -190,7 +190,6 @@ public class HaasSohnpelletstoveJSONCommunication {
      * @return
      */
     private @Nullable String getValidXHSPIN(@Nullable HaasSohnpelletstoveJsonData ovenData) {
-
         if (ovenData != null && config.hostPIN != null) {
             String nonce = ovenData.getNonce();
             String hostPIN = config.hostPIN;
