@@ -78,8 +78,6 @@ public class VDRHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
-
         config = getConfigAs(VDRConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -96,7 +94,7 @@ public class VDRHandler extends BaseThingHandler {
                 con.closeConnection();
             } catch (SVDRPException se) {
                 logger.trace("VDR not online: Thing {}, Message: {}", this.getThing().getUID(), se.getMessage());
-                // also update power channel when thing is initially offline
+                // also update power channel when thing is offline when initializing
                 thing.getChannels().stream().map(c -> c.getUID()).filter(this::isLinked).forEach(channelUID -> {
                     try {
                         if ("power".equals(channelUID.getIdWithoutGroup())) {
@@ -113,7 +111,6 @@ public class VDRHandler extends BaseThingHandler {
             scheduleRefreshThread();
         });
 
-        logger.debug("Finished initializing!");
     }
 
     /**

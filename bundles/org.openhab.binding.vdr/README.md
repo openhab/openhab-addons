@@ -10,7 +10,7 @@ The binding provides only one thing type: VDR. You can create one thing for each
 
 ## Thing Configuration
 
-To configure a VDR Hostname or IP Address and the actual SVDRP Port are required. Please note that until VDR version 1.7.15 the standard SVDRP port was 2001 and after that version it changed to 6419. The VDR configuration file svdrphosts.conf must be configured to allow SVDRP access from Hostname of openHAB instance. Please check VDR documentation if you are unsure about this.
+To configure a VDR Hostname or IP Address and the actual SVDRP Port are required. Please note that until VDR version 1.7.15 the standard SVDRP port was 2001 and after that version it changed to 6419. The VDR configuration file svdrphosts.conf needs to be configured to allow SVDRP access from host where openHAB instance is running. Please check VDR documentation if you are unsure about this.
 
 | Configuration Parameter | Default          | Required | Description                                                  |
 |-------------------------|------------------|:--------:|--------------------------------------------------------------|
@@ -18,7 +18,7 @@ To configure a VDR Hostname or IP Address and the actual SVDRP Port are required
 | port                    | 6419             |   Yes    | SVDRP Port of VDR instance                                   |
 | refresh                 | 30               |   No     | Interval in seconds the data from VDR instance is refreshed  |
 
-A typical thing configuration would look like this
+A typical thing configuration would look like this:
 
 ```
 Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"	[ host="192.168.0.51", port=6419, refresh=30 ]
@@ -31,7 +31,7 @@ Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"	[ host="192.168.0.51", port=6419, 
 
 Also you can show information about the current channel's program on your VDR by displaying the EPG Event Channels in your favorite openHAB user interface.
 
-To turn on a VDR please use Wake-On-LAN functionality from Network Binding.
+To turn on the device VDR is running on please use Wake-On-LAN functionality from Network Binding.
 
 
 | channel              | type     | description                             |
@@ -58,13 +58,13 @@ To turn on a VDR please use Wake-On-LAN functionality from Network Binding.
 
 ## Full Example
 
-###Things
+### Things
 
 ```
 Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"	[ host="192.168.0.77", port=6419, refresh=30 ]
 ```
 
-###Items
+### Items
 
 ```
 Switch   VDR_LivingRoom_Power                "Power"                                     {channel="vdr:vdr:livingRoom:power" }
@@ -87,7 +87,7 @@ DateTime VDR_LivingRoom_NextEventEnd         "End (next) [%1$td.%1$tm.%1$tY %1$t
 Number   VDR_LivingRoom_NextEventDuration    "Duration (next) [%d min]"                  {channel="vdr:vdr:livingRoom:nextEventDuration" }
 ```
 
-###Sitemap
+### Sitemap
 
 ```
 Frame label="VDR" {
