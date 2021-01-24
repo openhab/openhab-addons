@@ -1,8 +1,7 @@
 # Mikrotik RouterOS Binding
 
 This binding integrates [Mikrotik](https://mikrotik.com/) [RouterOS](https://help.mikrotik.com/docs/display/ROS/RouterOS)
-[devices](https://mikrotik.com/products) allowing system resources and network interfaces monitoring and WiFi client
-presence detection and monitoring.
+[devices](https://mikrotik.com/products) allowing monitoring of system resources, network interfaces and WiFi clients.
 
 ## Supported Things
 
@@ -30,8 +29,8 @@ configuration section in
 [WinBox](https://wiki.mikrotik.com/wiki/Manual:Winbox). Note the API port number as you'll need it below.
 [SSL API connection](https://wiki.mikrotik.com/wiki/Manual:API-SSL) is not yet supported by this binding.
 To connect to RouterOS API you need to provide user credantials to the bridge config. You may use your current 
-credentials you use to manage device, but it is highly recommended to **create a read-only RouterOS user**, because
-this binding only reads the data from the device. To do so, proceed to <kbd>System -> Users</kbd> configuration section
+credentials you use to manage device, but it is highly recommended to **create a read-only RouterOS user** since
+this binding only reads data from the device. To do so, proceed to <kbd>System -> Users</kbd> configuration section
 and add a user to the `read` group.
 
 > Thing type: `routeros`
@@ -185,8 +184,8 @@ DateTime   Eth_1_Last_Link_Up_Time     "Last link up"               (gRB1Eth1) {
 Number     Eth_1_Link_Downs            "Link downs"                 (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:linkDowns"}
 Number     Eth_1_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txRate"}
 Number     Eth_1_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxRate"}
-Number     Eth_1_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPacketRate"}
-Number     Eth_1_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxPacketRate"}
+Number     Eth_1_Tx_Packet_Rate        "Transmission packet rate"   (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPacketRate"}
+Number     Eth_1_Rx_Packet_Rate        "Receiving packet rate"      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxPacketRate"}
 Number     Eth_1_Tx_Bytes              "Transmitted bytes"          (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txBytes"}
 Number     Eth_1_Rx_Bytes              "Received bytes"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxBytes"}
 Number     Eth_1_Tx_Packets            "Transmitted packets"        (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPackets"}
@@ -212,8 +211,8 @@ DateTime   Eth_2_Last_Link_Up_Time     "Last link up"               (gRB1Eth2) {
 Number     Eth_2_Link_Downs            "Link downs"                 (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:linkDowns"}
 Number     Eth_2_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txRate"}
 Number     Eth_2_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxRate"}
-Number     Eth_2_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txPacketRate"}
-Number     Eth_2_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxPacketRate"}
+Number     Eth_2_Tx_Packet_Rate        "Transmission packet rate"   (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txPacketRate"}
+Number     Eth_2_Rx_Packet_Rate        "Receiving packet rate"      (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxPacketRate"}
 Number     Eth_2_Tx_Bytes              "Transmitted bytes"          (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txBytes"}
 Number     Eth_2_Rx_Bytes              "Received bytes"             (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rxBytes"}
 Number     Eth_2_Tx_Packets            "Transmitted packets"        (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:txPackets"}
@@ -239,8 +238,8 @@ DateTime   Cap_1_Last_Link_Up_Time     "Last link up"               (gRB1Cap1) {
 Number     Cap_1_Link_Downs            "Link downs"                 (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:linkDowns"}
 Number     Cap_1_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txRate"}
 Number     Cap_1_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxRate"}
-Number     Cap_1_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txPacketRate"}
-Number     Cap_1_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxPacketRate"}
+Number     Cap_1_Tx_Packet_Rate        "Transmission packet rate"   (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txPacketRate"}
+Number     Cap_1_Rx_Packet_Rate        "Receiving packet rate"      (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxPacketRate"}
 Number     Cap_1_Tx_Bytes              "Transmitted bytes"          (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txBytes"}
 Number     Cap_1_Rx_Bytes              "Received bytes"             (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:rxBytes"}
 Number     Cap_1_Tx_Packets            "Transmitted packets"        (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:txPackets"}
@@ -267,8 +266,8 @@ DateTime   PP_Po_E_1_Last_Link_Up_Time     "Last link up"               (gRB1Ppp
 Number     PP_Po_E_1_Link_Downs            "Link downs"                 (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:linkDowns"}
 Number     PP_Po_E_1_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txRate"}
 Number     PP_Po_E_1_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxRate"}
-Number     PP_Po_E_1_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txPacketRate"}
-Number     PP_Po_E_1_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxPacketRate"}
+Number     PP_Po_E_1_Tx_Packet_Rate        "Transmission packet rate"   (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txPacketRate"}
+Number     PP_Po_E_1_Rx_Packet_Rate        "Receiving packet rate"      (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxPacketRate"}
 Number     PP_Po_E_1_Tx_Bytes              "Transmitted bytes"          (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txBytes"}
 Number     PP_Po_E_1_Rx_Bytes              "Received bytes"             (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxBytes"}
 Number     PP_Po_E_1_Tx_Packets            "Transmitted packets"        (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txPackets"}
@@ -293,8 +292,8 @@ DateTime   L_2_TP_Srv_1_Last_Link_Up_Time     "Last link up"               (gRB1
 Number     L_2_TP_Srv_1_Link_Downs            "Link downs"                 (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:linkDowns"}
 Number     L_2_TP_Srv_1_Tx_Rate               "Transmission rate [%.2f Mbps]"          (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txRate"}
 Number     L_2_TP_Srv_1_Rx_Rate               "Receiving rate [%.2f Mbps]"             (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxRate"}
-Number     L_2_TP_Srv_1_Tx_Packet_Rate        "Transmission packet rate [%.2f Mbps]"   (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txPacketRate"}
-Number     L_2_TP_Srv_1_Rx_Packet_Rate        "Receiving packet rate [%.2f Mbps]"      (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxPacketRate"}
+Number     L_2_TP_Srv_1_Tx_Packet_Rate        "Transmission packet rate"   (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txPacketRate"}
+Number     L_2_TP_Srv_1_Rx_Packet_Rate        "Receiving packet rate"      (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxPacketRate"}
 Number     L_2_TP_Srv_1_Tx_Bytes              "Transmitted bytes"          (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txBytes"}
 Number     L_2_TP_Srv_1_Rx_Bytes              "Received bytes"             (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:rxBytes"}
 Number     L_2_TP_Srv_1_Tx_Packets            "Transmitted packets"        (gRB1Tun1) {channel="mikrotik:interface:rb1:tun1:txPackets"}
@@ -317,8 +316,8 @@ DateTime   Phone_1_Up_Since         "Up since"                             (gRB1
 DateTime   Phone_1_Last_Seen        "Last seen"                            (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:lastSeen"}
 Number     Phone_1_Tx_Rate          "Transmission rate [%.2f Mbps]"                    (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txRate"}
 Number     Phone_1_Rx_Rate          "Receiving rate [%.2f Mbps]"                       (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:rxRate"}
-Number     Phone_1_Tx_Packet_Rate   "Transmission packet rate [%.2f Mbps]"             (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txPacketRate"}
-Number     Phone_1_Rx_Packet_Rate   "Receiving packet rate [%.2f Mbps]"                (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:rxPacketRate"}
+Number     Phone_1_Tx_Packet_Rate   "Transmission packet rate"             (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txPacketRate"}
+Number     Phone_1_Rx_Packet_Rate   "Receiving packet rate"                (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:rxPacketRate"}
 Number     Phone_1_Tx_Bytes         "Transmitted bytes"                    (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txBytes"}
 Number     Phone_1_Rx_Bytes         "Received bytes"                       (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:rxBytes"}
 Number     Phone_1_Tx_Packets       "Transmitted packets"                  (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txPackets"}
@@ -337,8 +336,8 @@ DateTime   Tablet_2_Up_Since         "Up since"                             (gRB
 DateTime   Tablet_2_Last_Seen        "Last seen"                            (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:lastSeen"}
 Number     Tablet_2_Tx_Rate          "Transmission rate [%.2f Mbps]"                    (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txRate"}
 Number     Tablet_2_Rx_Rate          "Receiving rate [%.2f Mbps]"                       (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxRate"}
-Number     Tablet_2_Tx_Packet_Rate   "Transmission packet rate [%.2f Mbps]"             (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txPacketRate"}
-Number     Tablet_2_Rx_Packet_Rate   "Receiving packet rate [%.2f Mbps]"                (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxPacketRate"}
+Number     Tablet_2_Tx_Packet_Rate   "Transmission packet rate"             (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txPacketRate"}
+Number     Tablet_2_Rx_Packet_Rate   "Receiving packet rate"                (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxPacketRate"}
 Number     Tablet_2_Tx_Bytes         "Transmitted bytes"                    (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txBytes"}
 Number     Tablet_2_Rx_Bytes         "Received bytes"                       (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxBytes"}
 Number     Tablet_2_Tx_Packets       "Transmitted packets"                  (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txPackets"}

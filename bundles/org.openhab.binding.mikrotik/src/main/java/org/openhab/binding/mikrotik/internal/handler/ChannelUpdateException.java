@@ -14,7 +14,6 @@ package org.openhab.binding.mikrotik.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mikrotik.internal.MikrotikBindingConstants;
 
 /**
  * The {@link ChannelUpdateException} is used to bubble up channel update errors which are mainly

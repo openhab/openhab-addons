@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mikrotik.internal.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,9 +23,6 @@ import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * The {@link Converter} is a utility class having functions to convert RouterOS-specific data representation strings

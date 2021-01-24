@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import javax.net.SocketFactory;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mikrotik.internal.util.StateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
