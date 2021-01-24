@@ -5,9 +5,9 @@ WIFI module. More information about the WIFI module can be found here: https://w
 
 ## Supported Things
 
-| Things                    | Description                                                                  | Thing Type |
-|---------------------------|------------------------------------------------------------------------------|------------|
-| haassohnpellestove        | Control of a Haas & Sohn Pellet Stove                                        | oven	    |
+| Things                     | Description                                                                  | Thing Type |
+|----------------------------|------------------------------------------------------------------------------|------------|
+| haassohnpelletstove        | Control of a Haas & Sohn Pellet Stove                                        | oven	     |
 
 
 ## Thing Configuration
@@ -16,7 +16,7 @@ In general two parameters are required. The IP-Address of the WIFI-Modul of the 
 The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN
 
 ```
-Thing haassohnpellestove:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", hostPIN="1234"]
+Thing haassohnpelletstove:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", hostPIN="1234"]
 ```
 
 ## Channels
