@@ -13,10 +13,12 @@
 package org.openhab.binding.modbus.internal;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -30,9 +32,15 @@ import org.osgi.framework.BundleContext;
 public class CascadedValueTransformationImpl implements ValueTransformation {
     private final List<SingleValueTransformation> transformations;
 
-    public CascadedValueTransformationImpl(final String transformationString) {
-        transformations = Arrays.stream(transformationString.split("∩")).filter(s -> !s.isEmpty())
-                .map(transformation -> new SingleValueTransformation(transformation)).collect(Collectors.toList());
+    public CascadedValueTransformationImpl(@Nullable String transformationString) {
+        String transformationNonNull = transformationString == null ? "" : transformationString;
+        List<SingleValueTransformation> localTransformations = Arrays.stream(transformationNonNull.split("∩"))
+                .filter(s -> !s.isEmpty()).map(transformation -> new SingleValueTransformation(transformation))
+                .collect(Collectors.toList());
+        if (localTransformations.isEmpty()) {
+            localTransformations = Collections.singletonList(new SingleValueTransformation(transformationString));
+        }
+        transformations = localTransformations;
     }
 
     @Override

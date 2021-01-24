@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.modbus.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.osgi.framework.BundleContext;
 
 /**
  * @author Sami Salonen - Initial contribution
@@ -47,5 +49,33 @@ public class SingleValueTransformationTest {
         SingleValueTransformation transformation = new SingleValueTransformation("REGEX::myregex(.*)");
         assertEquals("REGEX", transformation.transformationServiceName);
         assertEquals(":myregex(.*)", transformation.transformationServiceParam);
+    }
+
+    @Test
+    public void testTransformationEmpty() {
+        SingleValueTransformation transformation = new SingleValueTransformation("");
+        assertFalse(transformation.isIdentityTransform());
+        assertEquals("", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
+    }
+
+    @Test
+    public void testTransformationNull() {
+        SingleValueTransformation transformation = new SingleValueTransformation(null);
+        assertFalse(transformation.isIdentityTransform());
+        assertEquals("", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
+    }
+
+    @Test
+    public void testTransformationDefault() {
+        SingleValueTransformation transformation = new SingleValueTransformation("deFault");
+        assertTrue(transformation.isIdentityTransform());
+        assertEquals("xx", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
+    }
+
+    @Test
+    public void testTransformationDefaultChainedWithStatic() {
+        SingleValueTransformation transformation = new SingleValueTransformation("static");
+        assertFalse(transformation.isIdentityTransform());
+        assertEquals("static", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
     }
 }

@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.modbus.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.osgi.framework.BundleContext;
 
 /**
  * @author Sami Salonen - Initial contribution
@@ -36,5 +38,41 @@ public class CascadedValueTransformationImplTest {
         assertEquals("test", transformation.getTransformations().get(2).transformationServiceParam);
 
         assertEquals(3, transformation.toString().split("∩").length);
+    }
+
+    @Test
+    public void testTransformationEmpty() {
+        CascadedValueTransformationImpl transformation = new CascadedValueTransformationImpl("");
+        assertFalse(transformation.isIdentityTransform());
+        assertEquals("", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
+    }
+
+    @Test
+    public void testTransformationNull() {
+        CascadedValueTransformationImpl transformation = new CascadedValueTransformationImpl(null);
+        assertFalse(transformation.isIdentityTransform());
+        assertEquals("", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
+    }
+
+    @Test
+    public void testTransformationDefault() {
+        CascadedValueTransformationImpl transformation = new CascadedValueTransformationImpl("deFault");
+        assertTrue(transformation.isIdentityTransform());
+        assertEquals("xx", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
+    }
+
+    @Test
+    public void testTransformationDefaultChained() {
+        CascadedValueTransformationImpl transformation = new CascadedValueTransformationImpl("deFault∩DEFAULT∩default");
+        assertTrue(transformation.isIdentityTransform());
+        assertEquals("xx", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
+    }
+
+    @Test
+    public void testTransformationDefaultChainedWithStatic() {
+        CascadedValueTransformationImpl transformation = new CascadedValueTransformationImpl(
+                "deFault∩DEFAULT∩default∩static");
+        assertFalse(transformation.isIdentityTransform());
+        assertEquals("static", transformation.transform(Mockito.mock(BundleContext.class), "xx"));
     }
 }

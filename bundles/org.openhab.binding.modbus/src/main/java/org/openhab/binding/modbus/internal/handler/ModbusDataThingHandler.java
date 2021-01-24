@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
+import org.openhab.binding.modbus.internal.CascadedValueTransformationImpl;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
@@ -123,8 +124,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private volatile @Nullable ModbusDataConfiguration config;
     private volatile @Nullable ValueType readValueType;
     private volatile @Nullable ValueType writeValueType;
-    private volatile @Nullable ValueTransformation readTransformation;
-    private volatile @Nullable ValueTransformation writeTransformation;
+    private volatile @Nullable CascadedValueTransformationImpl readTransformation;
+    private volatile @Nullable CascadedValueTransformationImpl writeTransformation;
     private volatile Optional<Integer> readIndex = Optional.empty();
     private volatile Optional<Integer> readSubIndex = Optional.empty();
     private volatile @Nullable Integer writeStart;
@@ -498,7 +499,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 throw new ModbusConfigurationException(errmsg);
             }
         }
-        readTransformation = new SingleValueTransformation(config.getReadTransform());
+        readTransformation = new CascadedValueTransformationImpl(config.getReadTransform());
         validateReadIndex();
     }
 
@@ -507,7 +508,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         boolean writeStartMissing = config.getWriteStart() == null || config.getWriteStart().isBlank();
         boolean writeValueTypeMissing = config.getWriteValueType() == null || config.getWriteValueType().isBlank();
         boolean writeTransformationMissing = config.getWriteTransform() == null || config.getWriteTransform().isBlank();
-        writeTransformation = new SingleValueTransformation(config.getWriteTransform());
+        writeTransformation = new CascadedValueTransformationImpl(config.getWriteTransform());
         boolean writingCoil = WRITE_TYPE_COIL.equals(config.getWriteType());
         writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing && writeValueTypeMissing
                 && !writeTransformationMissing);
@@ -814,7 +815,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(State numericState, boolean boolValue) {
-        Transformation localReadTransformation = readTransformation;
+        ValueTransformation localReadTransformation = readTransformation;
         if (localReadTransformation == null) {
             // We should always have transformation available if thing is initalized properly
             logger.trace("No transformation available, aborting processUpdatedValue");
