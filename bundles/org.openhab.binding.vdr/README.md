@@ -6,7 +6,7 @@ The binding is based on VDR's own SVDRP (Simple VDR Protocol) connectivity. It s
 
 ## Supported Things
 
-The binding provides only one thing type: VDR. You can create one thing for each VDR present at your home.
+The binding provides only one thing type: VDR. You can create one thing for each VDR instance at your home.
 
 ## Thing Configuration
 

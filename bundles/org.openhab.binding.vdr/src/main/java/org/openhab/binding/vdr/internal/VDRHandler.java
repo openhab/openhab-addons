@@ -110,7 +110,6 @@ public class VDRHandler extends BaseThingHandler {
 
             scheduleRefreshThread();
         });
-
     }
 
     /**
