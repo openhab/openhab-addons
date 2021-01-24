@@ -18,6 +18,8 @@ import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
@@ -62,15 +64,16 @@ public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
         logger.trace("Received State response {}", response);
         if (isValidRequest()) {
             try {
+                XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                 Unmarshaller unmarshaller = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
-                DeviceListModel model = (DeviceListModel) unmarshaller.unmarshal(new StringReader(response));
+                DeviceListModel model = (DeviceListModel) unmarshaller.unmarshal(xsr);
                 if (model != null) {
                     handler.onDeviceListAdded(model.getDevicelist());
                 } else {
                     logger.debug("no model in response");
                 }
                 handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-            } catch (JAXBException e) {
+            } catch (JAXBException | XMLStreamException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
                 handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         e.getLocalizedMessage());

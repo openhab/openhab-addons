@@ -47,6 +47,9 @@ public class XmlRpcResponse implements RpcResponse {
             throws SAXException, ParserConfigurationException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
+        factory.setFeature("https://xml.org/sax/features/external-general-entities", false);
+        saxParser.getXMLReader().setFeature("https://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("https://apache.org/xml/features/disallow-doctype-decl", true);
         InputSource inputSource = new InputSource(is);
         inputSource.setEncoding(encoding);
         saxParser.parse(inputSource, new XmlRpcHandler());

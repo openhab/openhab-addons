@@ -81,9 +81,16 @@ public class Enigma2Client {
     private final Enigma2HttpClient enigma2HttpClient;
     private final DocumentBuilderFactory factory;
 
-    public Enigma2Client(String host, @Nullable String user, @Nullable String password, int requestTimeout) {
-        this.enigma2HttpClient = new Enigma2HttpClient(requestTimeout);
-        this.factory = DocumentBuilderFactory.newInstance();
+    public Enigma2Client(String host, @Nullable String user, @Nullable String password, int requestTimeout)
+            throws ParserConfigurationException {
+        enigma2HttpClient = new Enigma2HttpClient(requestTimeout);
+        factory = DocumentBuilderFactory.newInstance();
+        // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
         if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
             this.host = "http://" + user + ":" + password + "@" + host;
         } else {
