@@ -49,11 +49,13 @@ public class SonosBindingConstants {
     public static final ThingTypeUID CONNECTAMP_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "CONNECTAMP");
     public static final ThingTypeUID AMP_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Amp");
     public static final ThingTypeUID SYMFONISK_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "SYMFONISK");
+    public static final ThingTypeUID ARC_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Arc");
+    public static final ThingTypeUID ARC_SL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "ArcSL");
     public static final ThingTypeUID ZONEPLAYER_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "zoneplayer");
 
-    public static final Set<ThingTypeUID> WITH_LINEIN_THING_TYPES_UIDS = Stream
-            .of(PLAY5_THING_TYPE_UID, PLAYBAR_THING_TYPE_UID, PLAYBASE_THING_TYPE_UID, BEAM_THING_TYPE_UID,
-                    CONNECT_THING_TYPE_UID, CONNECTAMP_THING_TYPE_UID, PORT_THING_TYPE_UID)
+    public static final Set<ThingTypeUID> WITH_LINEIN_THING_TYPES_UIDS = Stream.of(PLAY5_THING_TYPE_UID,
+            PLAYBAR_THING_TYPE_UID, PLAYBASE_THING_TYPE_UID, BEAM_THING_TYPE_UID, CONNECT_THING_TYPE_UID,
+            CONNECTAMP_THING_TYPE_UID, PORT_THING_TYPE_UID, ARC_THING_TYPE_UID, ARC_SL_THING_TYPE_UID)
             .collect(Collectors.toSet());
 
     public static final Set<ThingTypeUID> WITH_ANALOG_LINEIN_THING_TYPES_UIDS = Stream.of(AMP_THING_TYPE_UID)
@@ -62,10 +64,11 @@ public class SonosBindingConstants {
     public static final Set<ThingTypeUID> WITH_DIGITAL_LINEIN_THING_TYPES_UIDS = Stream.of(AMP_THING_TYPE_UID)
             .collect(Collectors.toSet());
 
-    public static final Set<ThingTypeUID> SUPPORTED_KNOWN_THING_TYPES_UIDS = Stream.of(ONE_THING_TYPE_UID,
-            ONE_SL_THING_TYPE_UID, PLAY1_THING_TYPE_UID, PLAY3_THING_TYPE_UID, PLAY5_THING_TYPE_UID,
-            PLAYBAR_THING_TYPE_UID, PLAYBASE_THING_TYPE_UID, BEAM_THING_TYPE_UID, CONNECT_THING_TYPE_UID,
-            CONNECTAMP_THING_TYPE_UID, PORT_THING_TYPE_UID, AMP_THING_TYPE_UID, SYMFONISK_THING_TYPE_UID)
+    public static final Set<ThingTypeUID> SUPPORTED_KNOWN_THING_TYPES_UIDS = Stream
+            .of(ONE_THING_TYPE_UID, ONE_SL_THING_TYPE_UID, PLAY1_THING_TYPE_UID, PLAY3_THING_TYPE_UID,
+                    PLAY5_THING_TYPE_UID, PLAYBAR_THING_TYPE_UID, PLAYBASE_THING_TYPE_UID, BEAM_THING_TYPE_UID,
+                    CONNECT_THING_TYPE_UID, CONNECTAMP_THING_TYPE_UID, PORT_THING_TYPE_UID, AMP_THING_TYPE_UID,
+                    SYMFONISK_THING_TYPE_UID, ARC_THING_TYPE_UID, ARC_SL_THING_TYPE_UID)
             .collect(Collectors.toSet());
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(SUPPORTED_KNOWN_THING_TYPES_UIDS);
@@ -120,6 +123,12 @@ public class SonosBindingConstants {
     public static final String STANDALONE = "standalone";
     public static final String STATE = "state";
     public static final String STOP = "stop";
+    public static final String SUBWOOFER = "subwoofer";
+    public static final String SUBWOOFERGAIN = "subwoofergain";
+    public static final String SURROUND = "surround";
+    public static final String SURROUNDMUSICMODE = "surroundmusicmode";
+    public static final String SURROUNDMUSICLEVEL = "surroundmusiclevel";
+    public static final String SURROUNDTVLEVEL = "surroundtvlevel";
     public static final String TUNEINSTATIONID = "tuneinstationid";
     public static final String VOLUME = "volume";
     public static final String ZONEGROUPID = "zonegroupid";

@@ -251,6 +251,51 @@
 		<description>Stop the Zone Player. ON if the player is stopped.</description>
 	</channel-type>
 
+	<channel-type id="subwoofer" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Subwoofer</label>
+		<description>Enable or disable the subwoofer</description>
+	</channel-type>
+
+	<channel-type id="subwoofergain" advanced="true">
+		<item-type>Number</item-type>
+		<label>Subwoofer Gain</label>
+		<description>Set or get the subwoofer gain adjustment</description>
+		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="surround" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Surround Audio</label>
+		<description>Enable or disable the surround audio</description>
+	</channel-type>
+
+	<channel-type id="surroundmusicmode" advanced="true">
+		<item-type>String</item-type>
+		<label>Surround Music Mode</label>
+		<description>Set or get the surround playback mode for music</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Ambient</option>
+				<option value="1">Full</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="surroundmusiclevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Surround Music Level</label>
+		<description>Set or get the surround level adjustment for music</description>
+		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="surroundtvlevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Surround TV Level</label>
+		<description>Set or get the surround level adjustment for TV</description>
+		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
 	<channel-type id="tuneinstationid" advanced="true">
 		<item-type>String</item-type>
 		<label>TuneIn Station Id</label>
