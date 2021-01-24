@@ -279,7 +279,6 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                     } else {
                         startService(newService);
                         logger.debug("Started service for: {}, {} ({})", modelName, type, udn);
-                        return true;
                     }
                 } else {
                     logger.trace("Skipping unknown UPnP service: {}, {} ({})", modelName, type, udn);
