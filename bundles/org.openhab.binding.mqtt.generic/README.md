@@ -286,4 +286,4 @@ Any outgoing value transformation will **always** result in a __string__ value.
 ## Troubleshooting
 
 * If you get the error "No MQTT client": Please update your installation.
-* If you use the Mosquitto broker: Please be aware that there is a relatively low setting for retained messages. At some point messages will just not being delivered anymore: Change the setting. 
+* If you use the Mosquitto broker: Please be aware that there is a relatively low setting for retained messages. If at some point messages stop being delivered change the setting. 
