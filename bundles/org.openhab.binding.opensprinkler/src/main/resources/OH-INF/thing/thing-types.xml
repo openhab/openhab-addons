@@ -86,7 +86,7 @@
 
 	<channel-type id="rainsensor">
 		<item-type>Switch</item-type>
-		<label>Rain</label>
+		<label>Rain Sensor</label>
 		<description>Provides feedback on whether the OpenSprinkler device has detected rain or not.</description>
 		<category>Sensor</category>
 		<state readOnly="true"/>
@@ -95,7 +95,7 @@
 	<channel-type id="waterlevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Water Level</label>
-		<description>The current water level in percent</description>
+		<description>The current watering level in percent</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -115,7 +115,7 @@
 
 	<channel-type id="stationState">
 		<item-type>Switch</item-type>
-		<label>Station</label>
+		<label>Station State</label>
 		<description>Controls a station on the OpenSprinkler device.</description>
 		<category>Switch</category>
 	</channel-type>
@@ -145,7 +145,7 @@
 
 	<channel-type id="nextDuration">
 		<item-type>Number:Time</item-type>
-		<label>Next Open Duration</label>
+		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
 		<state readOnly="false" pattern="%.0f min"/>
 	</channel-type>

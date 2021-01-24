@@ -58,25 +58,26 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
 
     @Override
     public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
-        int stationStatus = -1;
-        if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
-                    + " but station " + station + " was requested for a status update.");
-        }
-        if (jsReply.isEmpty()) {
-            refresh();
-        }
-        try {
-            stationStatus = Parse.jsonIntAtArrayIndex(jsReply, JSON_OPTION_STATION, station);
-        } catch (Exception exp) {
-            throw new GeneralApiException("There was a problem parsing the station status for station " + station
-                    + ". Got the error: " + exp.getMessage());
-        }
-        if (stationStatus == 1) {
-            return true;
+        JsResponse localReply = jsReply;
+        if (localReply == null) {
+            jsReply = getStationStatus();
         } else {
-            return false;
+            if (station < 0 || station >= numberOfStations) {
+                throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
+                        + station + " was requested for a status update.");
+            }
+            if (localReply.sn.length > 0) {
+                int stationStatus = localReply.sn[station];
+                if (stationStatus == 1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                throw new GeneralApiException("There was a problem parsing the station status for the sn value.");
+            }
         }
+        return false;
     }
 
     @Override
@@ -84,13 +85,13 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         String returnContent;
 
         if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
-                    + " but station " + station + " was requested to be opened.");
+            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
+                    + station + " was requested to be opened.");
         }
 
         try {
-            returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL, getRequestRequiredOptions() + "&"
-                    + CMD_STATION + station + "&" + CMD_STATION_ENABLE + "&t=" + duration);
+            returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL,
+                    getRequestRequiredOptions() + CMD_STATION + station + "&" + CMD_STATION_ENABLE + "&t=" + duration);
         } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
@@ -104,13 +105,13 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         String returnContent;
 
         if (station < 0 || station > numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
-                    + " but station " + station + " was requested to be closed.");
+            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
+                    + station + " was requested to be closed.");
         }
 
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL,
-                    getRequestRequiredOptions() + "&" + CMD_STATION + station + "&" + CMD_STATION_DISABLE);
+                    getRequestRequiredOptions() + CMD_STATION + station + CMD_STATION_DISABLE);
         } catch (Exception exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
@@ -126,8 +127,8 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      */
     @Override
     public void enterManualMode() throws CommunicationApiException, UnauthorizedApiException {
-        this.firmwareVersion = getFirmwareVersion();
-        this.numberOfStations = getNumberOfStations();
+        firmwareVersion = getFirmwareVersion();
+        numberOfStations = getNumberOfStations();
         isInManualMode = true;
     }
 

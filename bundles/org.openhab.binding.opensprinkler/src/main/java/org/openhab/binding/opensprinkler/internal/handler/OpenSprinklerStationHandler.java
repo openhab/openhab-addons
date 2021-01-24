@@ -27,7 +27,6 @@ import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerStationCon
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -46,7 +45,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerStationHandler.class);
 
     private OpenSprinklerStationConfig config = new OpenSprinklerStationConfig();
-    private BigDecimal nextDurationTime = BigDecimal.ZERO;
+    private BigDecimal nextDurationTime = BigDecimal.TEN;
 
     public OpenSprinklerStationHandler(Thing thing) {
         super(thing);
@@ -54,8 +53,8 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
         config = getConfig().as(OpenSprinklerStationConfig.class);
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -78,8 +77,12 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
                     handleQueuedCommand(api, command);
                     break;
             }
+            OpenSprinklerHttpBridgeHandler localBridge = bridgeHandler;
+            if (localBridge == null) {
+                return;
+            }
+            localBridge.refreshStations();
         }
-        updateChannels();
     }
 
     @SuppressWarnings("null")
@@ -89,7 +92,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             return;
         }
         QuantityType<?> quantity = (QuantityType<?>) command;
-        this.nextDurationTime = quantity.toUnit(Units.SECOND).toBigDecimal();
+        nextDurationTime = quantity.toUnit(Units.SECOND).toBigDecimal();
         updateState(channelUID, quantity);
     }
 
@@ -100,7 +103,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         }
         try {
             if (command == OnOffType.ON) {
-                api.openStation(config.stationIndex, nextStationDuration());
+                api.openStation(config.stationIndex, nextDurationValue());
             } else {
                 api.closeStation(config.stationIndex);
             }
@@ -116,15 +119,6 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             return;
         }
         handleStationStateCommand(api, command);
-    }
-
-    private BigDecimal nextStationDuration() {
-        BigDecimal nextDurationItemValue = nextDurationValue();
-        Channel nextDuration = getThing().getChannel(NEXT_DURATION);
-        if (nextDuration != null && isLinked(nextDuration.getUID()) && nextDurationItemValue != null) {
-            return nextDurationItemValue;
-        }
-        return new BigDecimal(64800);
     }
 
     /**
@@ -201,9 +195,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
                 break;
             case NEXT_DURATION:
                 BigDecimal duration = nextDurationValue();
-                if (duration != null) {
-                    updateState(channel, new QuantityType<>(duration, Units.SECOND));
-                }
+                updateState(channel, new QuantityType<>(duration, Units.SECOND));
                 break;
             case STATION_QUEUED:
                 if (remainingWaterTime != null && currentDeviceState != null && currentDeviceState == OnOffType.OFF
@@ -218,7 +210,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         }
     }
 
-    private @Nullable BigDecimal nextDurationValue() {
+    private BigDecimal nextDurationValue() {
         return nextDurationTime;
     }
 }

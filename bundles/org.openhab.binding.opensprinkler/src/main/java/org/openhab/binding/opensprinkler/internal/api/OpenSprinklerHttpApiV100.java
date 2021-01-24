@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,6 @@ import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiExcept
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
-import org.openhab.binding.opensprinkler.internal.util.Parse;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -59,7 +57,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected JcResponse jcReply;
     @Nullable
     protected JoResponse joReply;
-    protected String jsReply = "";
+    @Nullable
+    protected JsResponse jsReply;
     protected int firmwareVersion = -1;
     protected int numberOfStations = DEFAULT_STATION_COUNT;
     protected boolean isInManualMode = false;
@@ -100,10 +99,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public void refresh() throws CommunicationApiException, UnauthorizedApiException {
         joReply = getOptions();
-        jsReply = http.sendHttpGet(getBaseUrl() + CMD_STATION_INFO, getRequestRequiredOptions());
-        if (jsReply.equals("{\"result\":2}")) {
-            throw new UnauthorizedApiException("Unauthorized, check your password is correct");
-        }
+        jsReply = getStationStatus();
         jcReply = statusInfo();
     }
 
@@ -115,8 +111,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-        this.firmwareVersion = getFirmwareVersion();
-        this.numberOfStations = getNumberOfStations();
+        firmwareVersion = getFirmwareVersion();
+        numberOfStations = getNumberOfStations();
         isInManualMode = true;
     }
 
@@ -134,8 +130,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public void openStation(int station, BigDecimal duration) throws CommunicationApiException, GeneralApiException {
         if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
-                    + " but station " + station + " was requested to be opened.");
+            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
+                    + station + " was requested to be opened.");
         }
 
         try {
@@ -149,8 +145,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public void closeStation(int station) throws CommunicationApiException, GeneralApiException {
         if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
-                    + " but station " + station + " was requested to be closed.");
+            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
+                    + station + " was requested to be closed.");
         }
         http.sendHttpGet(getBaseUrl() + "sn" + station + "=0", null);
     }
@@ -159,8 +155,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
         String returnContent;
         if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
-                    + " but station " + station + " was requested for a status update.");
+            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
+                    + station + " was requested for a status update.");
         }
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + "sn" + station, null);
@@ -218,11 +214,14 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public int getNumberOfStations() throws CommunicationApiException, UnauthorizedApiException {
-        if (jsReply.isEmpty()) {
-            refresh();
+        if (jsReply == null) {
+            jsReply = getStationStatus();
         }
-        this.numberOfStations = Parse.jsonInt(jsReply, JSON_OPTION_STATION_COUNT);
-        return this.numberOfStations;
+        JsResponse localReply = jsReply;
+        if (localReply != null) {
+            numberOfStations = localReply.nstations;
+        }
+        return numberOfStations;
     }
 
     @Override
@@ -267,7 +266,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         return new StationProgram(0);
     }
 
-    private @Nullable JcResponse statusInfo() throws CommunicationApiException {
+    private @Nullable JcResponse statusInfo() throws CommunicationApiException, UnauthorizedApiException {
         String returnContent;
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATUS_INFO, getRequestRequiredOptions());
@@ -288,7 +287,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public int curr = -1;
     }
 
-    private @Nullable JoResponse getOptions() throws CommunicationApiException {
+    private @Nullable JoResponse getOptions() throws CommunicationApiException, UnauthorizedApiException {
         String returnContent;
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_OPTIONS_INFO, getRequestRequiredOptions());
@@ -303,6 +302,23 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     private static class JoResponse {
         public int wl;
         public int fwv = -1;
+    }
+
+    protected @Nullable JsResponse getStationStatus() throws CommunicationApiException, UnauthorizedApiException {
+        String returnContent;
+        try {
+            returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_INFO, getRequestRequiredOptions());
+        } catch (CommunicationApiException exp) {
+            throw new CommunicationApiException(
+                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+        }
+        JsResponse resp = gson.fromJson(returnContent, JsResponse.class);
+        return resp;
+    }
+
+    protected static class JsResponse {
+        public int sn[] = new int[8];
+        public int nstations = 8;
     }
 
     /**
@@ -332,7 +348,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
          * @return String contents of the response for the GET request.
          * @throws Exception
          */
-        public String sendHttpGet(String url, @Nullable String urlParameters) throws CommunicationApiException {
+        public String sendHttpGet(String url, @Nullable String urlParameters)
+                throws CommunicationApiException, UnauthorizedApiException {
             String location = null;
             if (urlParameters != null) {
                 location = url + "?" + urlParameters;
@@ -341,17 +358,19 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             }
             ContentResponse response;
             try {
-                response = withGeneralProperties(httpClient.newRequest(location)).method(HttpMethod.GET)
-                        .timeout(4, TimeUnit.SECONDS).send();
+                response = withGeneralProperties(httpClient.newRequest(location)).method(HttpMethod.GET).send();
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
             }
-
             if (response.getStatus() != HTTP_OK_CODE) {
                 throw new CommunicationApiException(
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
             }
-            return response.getContentAsString();
+            String content = response.getContentAsString();
+            if (content.equals("{\"result\":2}")) {
+                throw new UnauthorizedApiException("Unauthorized, check your password is correct");
+            }
+            return content;
         }
 
         private Request withGeneralProperties(Request request) {

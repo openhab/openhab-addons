@@ -60,7 +60,7 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
         return api;
     }
 
-    private void refreshStations() {
+    public void refreshStations() {
         OpenSprinklerApi localApi = openSprinklerDevice;
         if (localApi != null && localApi.isManualModeEnabled()) {
             try {
@@ -73,11 +73,12 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
                 });
             } catch (CommunicationApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "Could not sync status with the OpenSprinkler.");
+                        "Could not sync status with the OpenSprinkler. " + e.getMessage());
             } catch (UnauthorizedApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Unauthorized, check your password is correct");
             }
+            updateStatus(ThingStatus.ONLINE);
         } else {
             setupAPI();
         }

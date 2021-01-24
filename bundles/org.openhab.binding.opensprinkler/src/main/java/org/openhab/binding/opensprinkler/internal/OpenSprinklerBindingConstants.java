@@ -32,9 +32,9 @@ public class OpenSprinklerBindingConstants {
     public static final String CMD_ENABLE_MANUAL_MODE = "mm=1";
     public static final String CMD_DISABLE_MANUAL_MODE = "mm=0";
     public static final String CMD_PASSWORD = "pw=";
-    public static final String CMD_STATION = "sid=";
+    public static final String CMD_STATION = "&sid=";
     public static final String CMD_STATION_ENABLE = "en=1";
-    public static final String CMD_STATION_DISABLE = "en=0";
+    public static final String CMD_STATION_DISABLE = "&en=0";
     public static final String CMD_STATUS_INFO = "jc";
     public static final String CMD_OPTIONS_INFO = "jo";
     public static final String CMD_STATION_INFO = "js";

@@ -66,12 +66,12 @@ public class OpenSprinklerApiFactory {
             throw new CommunicationApiException(
                     "Problem fetching the firmware version from the OpenSprinkler: " + exp.getMessage());
         }
+        logger.debug("Firmware was reported as VER:{}", version);
         if (version >= 210 && version < 213) {
             return new OpenSprinklerHttpApiV210(this.httpClient, config);
         } else if (version >= 213) {
             return new OpenSprinklerHttpApiV213(this.httpClient, config);
         } else {
-            logger.debug("Firmware was reported as VER:{}", version);
             /* Need to make sure we have an older OpenSprinkler device by checking the first station. */
             try {
                 lowestSupportedApi.isStationOpen(0);

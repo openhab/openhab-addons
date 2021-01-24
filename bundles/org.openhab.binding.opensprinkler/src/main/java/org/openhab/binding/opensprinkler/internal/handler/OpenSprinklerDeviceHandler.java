@@ -29,7 +29,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -80,6 +79,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
         OpenSprinklerApi localAPI = getApi();
         if (localAPI != null) {
             ArrayList<Channel> removeChannels = new ArrayList<>();
@@ -102,7 +102,6 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 updateThing(thingBuilder.build());
             }
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

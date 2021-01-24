@@ -22,7 +22,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 
 /**
  * @author Chris Graham - Initial contribution
@@ -30,6 +29,8 @@ import org.openhab.core.thing.binding.BridgeHandler;
  */
 @NonNullByDefault
 public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
+    @Nullable
+    OpenSprinklerHttpBridgeHandler bridgeHandler;
 
     public OpenSprinklerBaseHandler(Thing thing) {
         super(thing);
@@ -38,25 +39,18 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN);
-        }
+        // if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+        // updateStatus(ThingStatus.UNKNOWN);
+        // }
     }
 
     protected @Nullable OpenSprinklerApi getApi() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No HTTP Bridge thing selected");
-            return null;
-        }
-        BridgeHandler handler = bridge.getHandler();
-        if (!(handler instanceof OpenSprinklerHttpBridgeHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "Bridge is not a valid OpenSprinklerBaseBridgeHandler");
+        OpenSprinklerHttpBridgeHandler localBridge = bridgeHandler;
+        if (localBridge == null) {
             return null;
         }
         try {
-            return ((OpenSprinklerHttpBridgeHandler) handler).getApi();
+            return localBridge.getApi();
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return null;
@@ -74,6 +68,12 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No HTTP Bridge thing selected");
+            return;
+        }
+        bridgeHandler = (OpenSprinklerHttpBridgeHandler) bridge.getHandler();
         updateStatus(ThingStatus.ONLINE);
     }
 
