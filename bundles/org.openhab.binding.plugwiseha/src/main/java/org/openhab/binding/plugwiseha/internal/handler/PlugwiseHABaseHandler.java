@@ -117,7 +117,6 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
             if (bridge.getStatus() == OFFLINE) {
                 updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                         "The Plugwise Home Automation bridge is currently offline.");
-                return;
             }
 
             PlugwiseHABridgeHandler bridgeHandler = (PlugwiseHABridgeHandler) bridge.getHandler();

@@ -77,7 +77,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
     // Private member variables/constants
 
     private @Nullable PlugwiseHABridgeThingConfig config;
-    private @Nullable GatewayInfo gatewayInfo;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable volatile PlugwiseHAController controller;
 
@@ -102,17 +101,8 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             try {
                 this.controller = new PlugwiseHAController(httpClient, config.getHost(), config.getPort(),
                         config.getUsername(), config.getsmileId());
-                this.controller.start(() -> {
-                    setBridgeProperties();
-                    updateStatus(ONLINE);
-                    scheduleRefreshJob();
-                });
-            } catch (PlugwiseHAInvalidHostException e) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME);
-            } catch (PlugwiseHAUnauthorizedException | PlugwiseHANotAuthorizedException e) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS);
-            } catch (PlugwiseHACommunicationException e) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.INITIALIZING);
+                scheduleRefreshJob();
             } catch (PlugwiseHAException e) {
                 logger.debug("Unknown error while configuring the Plugwise Home Automation Controller", e);
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, e.getMessage());
@@ -184,6 +174,10 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         try {
             logger.trace("Executing refresh job");
             refresh();
+
+            if (super.thing.getStatus() == ThingStatus.INITIALIZING) {
+                setBridgeProperties();
+            }
             updateStatus(ONLINE);
         } catch (PlugwiseHAInvalidHostException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME);
@@ -250,8 +244,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             PlugwiseHAController controller = this.getController();
             GatewayInfo localGatewayInfo = null;
             if (controller != null) {
-                this.gatewayInfo = controller.getGatewayInfo();
-                localGatewayInfo = this.gatewayInfo;
+                localGatewayInfo = controller.getGatewayInfo();
             }
 
             if (localGatewayInfo != null) {
