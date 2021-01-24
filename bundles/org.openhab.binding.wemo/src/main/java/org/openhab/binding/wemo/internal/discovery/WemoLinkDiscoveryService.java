@@ -156,6 +156,13 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
 
                         // Build parser for received <DeviceList>
                         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                        // see
+                        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+                        dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                        dbf.setXIncludeAware(false);
+                        dbf.setExpandEntityReferences(false);
                         DocumentBuilder db = dbf.newDocumentBuilder();
                         InputSource is = new InputSource();
                         is.setCharacterStream(new StringReader(stringParser));
