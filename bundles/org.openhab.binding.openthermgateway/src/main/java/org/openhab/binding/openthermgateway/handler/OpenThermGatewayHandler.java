@@ -148,11 +148,8 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
         // retry connection if disconnect is not explicitly requested
         if (!explicitDisconnect && conf != null && conf.connectionRetryInterval > 0) {
-            logger.debug("Scheduling to reconnect in {} seconds.", conf.connectionRetryInterval);
-
-            scheduler.schedule(() -> {
-                connect();
-            }, conf.connectionRetryInterval, TimeUnit.SECONDS);
+            logger.debug("Scheduling to reconnect in {} seconds.", conf.connectionRetryInterval);			
+			scheduler.schedule(this::connect, conf.connectionRetryInterval, TimeUnit.SECONDS);
         }
     }
 
