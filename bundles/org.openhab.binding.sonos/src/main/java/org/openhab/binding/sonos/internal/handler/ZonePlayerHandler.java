@@ -678,12 +678,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             case STOP:
                 value = getTransportState();
                 if (value != null) {
-                    newState = STATE_STOPPED.equals(value) ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(STATE_STOPPED.equals(value));
                 }
                 break;
             case SHUFFLE:
                 if (getPlayMode() != null) {
-                    newState = isShuffleActive() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(isShuffleActive());
                 }
                 break;
             case REPEAT:
@@ -692,8 +692,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case LED:
-                if (getLed() != null) {
-                    newState = isLedOn() ? OnOffType.ON : OnOffType.OFF;
+                value = getLed();
+                if (value != null) {
+                    newState = OnOffType.from(value);
                 }
                 break;
             case ZONENAME:
@@ -713,7 +714,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 break;
             case LOCALCOORDINATOR:
                 if (getGroupCoordinatorIsLocal() != null) {
-                    newState = isGroupCoordinator() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(isGroupCoordinator());
                 }
                 break;
             case VOLUME:
@@ -737,47 +738,47 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             case LOUDNESS:
                 value = getLoudness();
                 if (value != null && !isOutputLevelFixed()) {
-                    newState = isLoudnessEnabled() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(value);
                 }
                 break;
             case MUTE:
                 value = getMute();
                 if (value != null) {
-                    newState = isMuted() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(value);
                 }
                 break;
             case NIGHTMODE:
                 value = getNightMode();
                 if (value != null) {
-                    newState = isNightModeOn() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(value);
                 }
                 break;
             case SPEECHENHANCEMENT:
                 value = getDialogLevel();
                 if (value != null) {
-                    newState = isSpeechEnhanced() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(value);
                 }
                 break;
             case LINEIN:
                 if (getAnalogLineInConnected() != null) {
-                    newState = isAnalogLineInConnected() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(isAnalogLineInConnected());
                 } else if (getOpticalLineInConnected() != null) {
-                    newState = isOpticalLineInConnected() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(isOpticalLineInConnected());
                 }
                 break;
             case ANALOGLINEIN:
                 if (getAnalogLineInConnected() != null) {
-                    newState = isAnalogLineInConnected() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(isAnalogLineInConnected());
                 }
                 break;
             case DIGITALLINEIN:
                 if (getOpticalLineInConnected() != null) {
-                    newState = isOpticalLineInConnected() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(isOpticalLineInConnected());
                 }
                 break;
             case ALARMRUNNING:
                 if (getAlarmRunning() != null) {
-                    newState = isAlarmRunning() ? OnOffType.ON : OnOffType.OFF;
+                    newState = OnOffType.from(isAlarmRunning());
                 }
                 break;
             case ALARMPROPERTIES:
@@ -1298,10 +1299,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getLoudness() {
         return stateMap.get("LoudnessMaster");
-    }
-
-    public boolean isLoudnessEnabled() {
-        return "1".equals(getLoudness());
     }
 
     public @Nullable String getTransportState() {
@@ -2018,16 +2015,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return stateMap.get("NightMode");
     }
 
-    public boolean isNightModeOn() {
-        return "1".equals(getNightMode());
-    }
-
     public @Nullable String getDialogLevel() {
         return stateMap.get("DialogLevel");
-    }
-
-    public boolean isSpeechEnhanced() {
-        return "1".equals(getDialogLevel());
     }
 
     public @Nullable String getPlayMode() {
@@ -3135,16 +3124,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return stateMap.get("MuteMaster");
     }
 
-    public boolean isMuted() {
-        return "1".equals(getMute());
-    }
-
     public @Nullable String getLed() {
         return stateMap.get("CurrentLEDState");
-    }
-
-    public boolean isLedOn() {
-        return "On".equals(getLed());
     }
 
     public @Nullable String getCurrentZoneName() {
