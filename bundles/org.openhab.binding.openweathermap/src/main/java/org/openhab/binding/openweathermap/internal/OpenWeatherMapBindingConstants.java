@@ -52,7 +52,8 @@ public class OpenWeatherMapBindingConstants {
             "hourlyForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DAILY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
             "dailyForecast");
-    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_UVINDEX = new ChannelGroupTypeUID(BINDING_ID, "uvindex");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_UVINDEX_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
+            "uvindexForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_MINUTELY_FORECAST = new ChannelGroupTypeUID(
             BINDING_ID, "oneCallMinutely");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_HOURLY_FORECAST = new ChannelGroupTypeUID(
