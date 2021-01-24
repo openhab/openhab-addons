@@ -488,7 +488,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     // Update the transport state after the update of the media information
                     // to not break the notification mechanism
                     if (!variable1.equals("TransportState")) {
-                        onValueReceived(variable1, value1, SERVICE_AV_TRANSPORT);
+                        onValueReceived(variable1, value1, service);
                     }
                     // Translate AVTransportURI/AVTransportURIMetaData to CurrentURI/CurrentURIMetaData
                     // for a compatibility with the result of the action GetMediaInfo
@@ -500,14 +500,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 });
                 updateMediaInformation();
                 if (parsedValues.get("TransportState") != null) {
-                    onValueReceived("TransportState", parsedValues.get("TransportState"), SERVICE_AV_TRANSPORT);
+                    onValueReceived("TransportState", parsedValues.get("TransportState"), service);
                 }
             }
 
             if (service.equals(SERVICE_RENDERING_CONTROL) && variable.equals("LastChange")) {
                 Map<String, String> parsedValues = SonosXMLParser.getRenderingControlFromXML(value);
                 parsedValues.forEach((variable1, value1) -> {
-                    onValueReceived(variable1, value1, SERVICE_RENDERING_CONTROL);
+                    onValueReceived(variable1, value1, service);
                 });
             }
 
@@ -1114,7 +1114,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     protected void updateRunningAlarmProperties() {
-        Map<String, String> result = executeAction(SERVICE_AV_TRANSPORT, ACTION_GET_RUNNING_ALARM_PROPERTIES, null);
+        Map<String, String> result = service.invokeAction(this, SERVICE_AV_TRANSPORT,
+                ACTION_GET_RUNNING_ALARM_PROPERTIES, null);
 
         String alarmID = result.get("AlarmID");
         String loggedStartTime = result.get("LoggedStartTime");
@@ -1124,7 +1125,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         } else {
             newStringValue = "No running alarm";
         }
-        onValueReceived("RunningAlarmProperties", newStringValue, SERVICE_AV_TRANSPORT);
+        result.put("RunningAlarmProperties", newStringValue);
+
+        result.forEach((variable, value) -> {
+            this.onValueReceived(variable, value, SERVICE_AV_TRANSPORT);
+        });
     }
 
     protected boolean updateZoneInfo() {
@@ -1756,7 +1761,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 return;
             }
             executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_VOLUME,
-                    Map.of("InstanceID", "0", "Channel", "Master", "DesiredVolume", newValue));
+                    Map.of("Channel", "Master", "DesiredVolume", newValue));
         }
     }
 
@@ -1923,12 +1928,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void setCurrentURI(@Nullable String URI, @Nullable String URIMetaData) {
         if (URI != null && URIMetaData != null) {
             logger.debug("setCurrentURI URI {} URIMetaData {}", URI, URIMetaData);
-            try {
-                executeAction(SERVICE_AV_TRANSPORT, ACTION_SET_AV_TRANSPORT_URI,
-                        Map.of("InstanceID", "0", "CurrentURI", URI, "CurrentURIMetaData", URIMetaData));
-            } catch (NumberFormatException ex) {
-                logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
-            }
+            executeAction(SERVICE_AV_TRANSPORT, ACTION_SET_AV_TRANSPORT_URI,
+                    Map.of("InstanceID", "0", "CurrentURI", URI, "CurrentURIMetaData", URIMetaData));
         }
     }
 
@@ -1946,12 +1947,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     protected void seek(String unit, @Nullable String target) {
         if (target != null) {
-            try {
-                executeAction(SERVICE_AV_TRANSPORT, ACTION_SEEK,
-                        Map.of("InstanceID", "0", "Unit", unit, "Target", target));
-            } catch (NumberFormatException ex) {
-                logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
-            }
+            executeAction(SERVICE_AV_TRANSPORT, ACTION_SEEK, Map.of("InstanceID", "0", "Unit", unit, "Target", target));
         }
     }
 
@@ -2267,7 +2263,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
                     || command.equals(OpenClosedType.OPEN)) ? "True" : "False";
             executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_MUTE,
-                    Map.of("InstanceID", "0", "Channel", "Master", "DesiredMute", value));
+                    Map.of("Channel", "Master", "DesiredMute", value));
         }
     }
 
