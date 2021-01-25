@@ -14,4 +14,17 @@
 
   <name>openHAB Add-ons :: Bundles :: HEOS Binding</name>
 
+  <properties>
+    <dep.noembedding>commons-net</dep.noembedding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>${commons.net.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
 </project>
