@@ -17,14 +17,20 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.dto.Query;
 import org.influxdb.querybuilder.Appender;
 import org.influxdb.querybuilder.BuiltQuery;
 import org.influxdb.querybuilder.Select;
 import org.influxdb.querybuilder.Where;
 import org.influxdb.querybuilder.clauses.SimpleClause;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
+import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
+import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
 
 /**
@@ -35,20 +41,32 @@ import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
 @NonNullByDefault
 public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
 
+    private InfluxDBConfiguration configuration;
+    private MetadataRegistry metadataRegistry;
+
+    public Influx1FilterCriteriaQueryCreatorImpl(InfluxDBConfiguration configuration,
+            MetadataRegistry metadataRegistry) {
+        this.configuration = configuration;
+        this.metadataRegistry = metadataRegistry;
+    }
+
     @Override
     public String createQuery(FilterCriteria criteria, String retentionPolicy) {
         final String tableName;
-        boolean hasCriteriaName = criteria.getItemName() != null;
-        if (hasCriteriaName) {
-            tableName = criteria.getItemName();
-        } else {
-            tableName = "/.*/";
-        }
+        final String itemName = criteria.getItemName();
+        boolean hasCriteriaName = itemName != null;
+
+        tableName = calculateTableName(itemName);
 
         Select select = select(COLUMN_VALUE_NAME_V1).fromRaw(null,
                 fullQualifiedTableName(retentionPolicy, tableName, hasCriteriaName));
 
         Where where = select.where();
+
+        if (configuration.isUseMetaMeasurementName() && hasCriteriaName) {
+            where = where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, itemName));
+        }
+
         if (criteria.getBeginDate() != null) {
             where = where.and(
                     BuiltQuery.QueryBuilder.gte(COLUMN_TIME_NAME_V1, criteria.getBeginDate().toInstant().toString()));
@@ -80,6 +98,34 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         final Query query = (Query) select;
         return query.getCommand();
+    }
+
+    private String calculateTableName(@Nullable String itemName) {
+        if (itemName == null) {
+            return "/.*/";
+        }
+
+        String name = itemName;
+
+        if (configuration.isUseMetaMeasurementName()) {
+            final MetadataRegistry currentMetadataRegistry = metadataRegistry;
+            if (currentMetadataRegistry != null) {
+                MetadataKey key = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, itemName);
+                Metadata metadata = currentMetadataRegistry.get(key);
+                if (metadata != null) {
+                    String metaName = metadata.getValue();
+                    if (!metaName.isBlank()) {
+                        name = metaName;
+                    }
+                }
+            }
+        }
+
+        if (configuration.isReplaceUnderscore()) {
+            name = name.replace('_', '.');
+        }
+
+        return name;
     }
 
     private String fullQualifiedTableName(String retentionPolicy, String tableName, boolean escapeTableName) {

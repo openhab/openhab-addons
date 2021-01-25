@@ -64,7 +64,7 @@ public class ItemToStorePointCreator {
     private String calculateMeasurementName(Item item, @Nullable String storeAlias) {
         String name = storeAlias != null && !storeAlias.isBlank() ? storeAlias : item.getName();
 
-        if (configuration.isMetaMeasurementName()) {
+        if (configuration.isUseMetaMeasurementName()) {
             final MetadataRegistry currentMetadataRegistry = metadataRegistry;
             if (currentMetadataRegistry != null) {
                 MetadataKey key = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, item.getName());
