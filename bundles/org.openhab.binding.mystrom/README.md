@@ -54,7 +54,7 @@ Disabling/enabling the thing can be used to update the properties.
 | power            | Number:Power         | true      | The currently delivered power                                         | mystromplug, mystrombulb            |
 | temperature      | Number:Temperature   | true      | The temperature at the plug                                           | mystromplug                         |
 | color            | Color                | false     | The color we set the bulb to (mode 'hsv')                             | mystrombulb                         |
-| colorTemperature | Number               | false     | The color temperature of the bulb in mode 'mono'                      | mystrombulb                         |
+| colorTemperature | Dimmer               | false     | The color temperature of the bulb in mode 'mono' (percentage)         | mystrombulb                         |
 | brightness       | Dimmer               | false     | The brightness of the bulb in mode 'mono'                             | mystrombulb                         |
 | ramp             | Number:Time          | false     | Transition time from the light’s current state to the new state. [ms] | mystrombulb                         |
 | mode             | String               | false     | The color mode we want the Bulb to set to (rgb, hsv or mono)          | mystrombulb                         |

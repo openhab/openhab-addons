@@ -72,7 +72,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
             Duration.ofSeconds(3), this::getReport);
 
     private PercentType lastBrightness = PercentType.HUNDRED;
-    private DecimalType lastColorTemperature = new DecimalType(10);
+    private PercentType lastColorTemperature = new PercentType(50);
 
     public MyStromBulbHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -99,13 +99,14 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
                         break;
                     case CHANNEL_BRIGHTNESS:
                         if (command instanceof PercentType) {
-                            String mono = lastColorTemperature.toString() + ";" + command.toString();
+                            String mono = convertPercentageToMyStromCT(lastColorTemperature) + ";" + command.toString();
                             sResp = sendToBulb(null, mono, null, MONO);
                         }
                         break;
                     case CHANNEL_COLOR_TEMPERATURE:
-                        if (command instanceof Number) {
-                            String mono = command.toString() + ";" + lastBrightness.toString();
+                        if (command instanceof PercentType) {
+                            String mono = convertPercentageToMyStromCT((PercentType) command) + ";"
+                                    + lastBrightness.toString();
                             sResp = sendToBulb(null, mono, null, MONO);
                         }
                         break;
@@ -164,7 +165,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
                 long numSemicolon = deviceInfo.color.chars().filter(c -> c == ';').count();
                 if (numSemicolon == 1 && deviceInfo.mode.equals(MONO)) {
                     String[] xy = deviceInfo.color.split(";");
-                    lastColorTemperature = new DecimalType(xy[0]);
+                    lastColorTemperature = new PercentType(convertMyStromCTToPercentage(xy[0]));
                     lastBrightness = PercentType.valueOf(xy[1]);
                     updateState(CHANNEL_COLOR_TEMPERATURE, lastColorTemperature);
                     updateState(CHANNEL_BRIGHTNESS, lastBrightness);
@@ -229,6 +230,33 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
             }
         }
         return sendHttpRequest(HttpMethod.POST, "/api/v1/device/" + mac, builder.toString());
+    }
+
+    /**
+     * Convert the color temperature from myStrom (1-18) to openHAB (percentage)
+     *
+     * @param ctValue Color temperature in myStrom: "1" = warm to "18" = cold.
+     * @return Color temperature (0-100%). 0% is the coldest setting.
+     * @throws NumberFormatException if the argument is not an integer
+     */
+    private int convertMyStromCTToPercentage(String ctValue) throws NumberFormatException {
+        int ct = Integer.parseInt(ctValue);
+        return (int) ((18 - limitColorTemperature(ct)) / 17.0 * 100);
+    }
+
+    /**
+     * Convert the color temperature from openHAB (percentage) to myStrom (1-18)
+     *
+     * @param colorTemperature Color temperature from openHab. 0 = coldest, 100 = warmest
+     * @return Color temperature from myStrom. 1 = warmest, 18 = coldest
+     */
+    private String convertPercentageToMyStromCT(PercentType colorTemperature) {
+        int ct = 18 - (int) (colorTemperature.doubleValue() * 17.0 / 100);
+        return Integer.toString(limitColorTemperature(ct));
+    }
+
+    private int limitColorTemperature(int colorTemperature) {
+        return Math.max(1, Math.min(colorTemperature, 18));
     }
 
     private static class MyStromBulbResponse {

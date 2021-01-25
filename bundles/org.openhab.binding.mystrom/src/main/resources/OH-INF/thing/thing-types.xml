@@ -53,7 +53,7 @@
 			<channel id="switch" typeId="system.power"/>
 			<channel id="power" typeId="power-channel"/>
 			<channel id="color" typeId="system.color"/>
-			<channel id="colorTemperature" typeId="colorTemperature-channel"/>
+			<channel id="colorTemperature" typeId="system.color-temperature"/>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="ramp" typeId="ramp-channel"/>
 			<channel id="mode" typeId="mode-channel"/>
@@ -125,14 +125,6 @@
 				<option value="mono">MONO</option>
 			</options>
 		</command>
-	</channel-type>
-
-	<channel-type id="colorTemperature-channel">
-		<item-type>Number</item-type>
-		<label>Color Temperature</label>
-		<description>Color Temperature from 1 (warm) to 18 (cold)</description>
-		<category>slider</category>
-		<state min="1" max="18" step="1" pattern="%d"/>
 	</channel-type>
 
 </thing:thing-descriptions>
