@@ -158,6 +158,8 @@ In this case you have to use the `wifi5GHzEnable` channel for switching the gues
 | `wanTotalBytesReceived`    | `Number:DataAmount`       |     x    | Total Bytes Received                                           |
 | `wanTotalBytesSent`        | `Number:DataAmount`       |     x    | Total Bytes Sent                                               |
  
+**Note:** AVM Fritzbox devices use 4-byte-unsigned-integers for `wanTotalBytesReceived` and `wanTotalBytesSent`, because of that the counters are reset after around 4GB data.
+
 ## `PHONEBOOK` Profile
 
 The binding provides a profile for using the FritzBox phonebooks for resolving numbers to names.
