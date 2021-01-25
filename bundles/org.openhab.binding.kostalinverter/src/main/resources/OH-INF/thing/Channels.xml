@@ -494,7 +494,7 @@
 	<channel-type id="statistic-yield-day-second-gen">
 		<item-type>Number:Energy</item-type>
 		<label>Yield Day</label>
-		<description>Total produced power today</description>
+		<description>Total produced power day</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -578,7 +578,7 @@
 	<channel-type id="device-local-dc-power-pv">
 		<item-type>Number:Power</item-type>
 		<label>DC Power PV</label>
-		<description>Current power from all solar panels</description>
+		<description>Current power from solar panels</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -647,21 +647,21 @@
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-solar">
 		<item-type>Number:Power</item-type>
-		<label>Actual Home Consumption Solar</label>
+		<label>Akt Home Consumption Solar</label>
 		<description>Current consumption from solar panels</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-bat">
 		<item-type>Number:Power</item-type>
-		<label>Actual Home Consumption Battery</label>
+		<label>Akt Home Consumption Bat</label>
 		<description>Current consumption from battery</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-grid">
 		<item-type>Number:Power</item-type>
-		<label>Actual Home Consumption Grid</label>
+		<label>Act Home Consumption Grid</label>
 		<description>Current consumption from grid</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -669,27 +669,27 @@
 	<channel-type id="device-local-phase-sel-home-consump-l1">
 		<item-type>Number:Power</item-type>
 		<label>Home Consumption L1</label>
-		<description>Current consumption, L1</description>
+		<description>Current home consumption, L1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-phase-sel-home-consump-l2">
 		<item-type>Number:Power</item-type>
 		<label>Home Consumption L2</label>
-		<description>Current consumption, L2</description>
+		<description>Current home consumption, L2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-phase-sel-home-consump-l3">
 		<item-type>Number:Power</item-type>
 		<label>Home Consumption L3</label>
-		<description>Current consumption, L3</description>
+		<description>Current home consumption, L3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-freq">
 		<item-type>Number:Frequency</item-type>
-		<label>Grid Frequency</label>
+		<label>Grid Freq</label>
 		<description>Current frequency on grid</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -704,21 +704,21 @@
 	<channel-type id="statistic-home-consumption-day">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Day</label>
-		<description>Total home consumption today</description>
+		<description>Total home consumption day</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-consumption-day">
 		<item-type>Number:Energy</item-type>
 		<label>Own Consumption Day</label>
-		<description>Total own consumption today</description>
+		<description>Total own consumption day</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-cons-rate-day">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Own Cons Rate Day</label>
-		<description>Total own consumption rate today</description>
+		<description>Total own consumption rate day</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -732,21 +732,21 @@
 	<channel-type id="statistic-home-consumption-total">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Total</label>
-		<description>Total home consumption</description>
+		<description>Home consumption total</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-consumption-total">
 		<item-type>Number:Energy</item-type>
-		<label>Total Own Consumption</label>
-		<description>Total own consumption</description>
+		<label>Own Consumption Total</label>
+		<description>Own consumption total</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-operating-time-total">
 		<item-type>Number:Time</item-type>
 		<label>Operating Time Total</label>
-		<description>Total Operating Time</description>
+		<description>Operating time total</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -780,14 +780,14 @@
 	</channel-type>
 	<channel-type id="device-local-loginterval">
 		<item-type>Number:Time</item-type>
-		<label>Log Interval</label>
+		<label>Loginterval</label>
 		<description>Current value for log interval</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-s0-inpulse-cnt">
 		<item-type>Number:Dimensionless</item-type>
-		<label>S0 Input Pulses Counter</label>
+		<label>S0 Inpulse Cnt</label>
 		<description>S0-pulse counter</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d"/>
@@ -815,7 +815,7 @@
 	</channel-type>
 	<channel-type id="device-local-bat-state-of-charge">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Bat State Of Charge</label>
+		<label>Bat State of Charge</label>
 		<description>Current battery charge state</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -843,7 +843,7 @@
 	</channel-type>
 	<channel-type id="device-local-max-depth-of-discharge">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max Depth Of Discharge</label>
+		<label>Max Depth of Discharge</label>
 		<description>Max depth of discharge</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d"/>
@@ -899,7 +899,7 @@
 	</channel-type>
 	<channel-type id="device-local-max-depth-of-discharge-set">
 		<item-type>String</item-type>
-		<label>Max Depth Of Discharge Set</label>
+		<label>Max Depth of Discharge Set</label>
 		<description>Set max depth of discharge</description>
 		<category>Energy</category>
 		<state readOnly="false"/>

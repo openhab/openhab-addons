@@ -32,5 +32,5 @@ public class SecondGenerationInverterConfig {
     public String password = "";
     public String dxsIdConf = "";
     public String valueConf = "";
-    public String invertertype = "";
+    public boolean hasBattery;
 }

@@ -237,17 +237,17 @@ Second generation inverters require 5 mandatory parameters:
 | username                 | Username for your inverter                             | Text    | ---     | ---           | myUsername    |
 | password                 | Password for your inverter                             | Text    | ---     | ---           | myPassword    |
 | refreshInterval          | Pollingintervall of your inverter                      | Integer | Seconds | 60            | 60            |
-| invertertype             | Type of PIKO 10-20 inverter, with or without battery   | Text    | ---     | --            | withBattery/withoutBattery   |   
+| hasBattery               | Type of PIKO 10-20 inverter, with or without battery   | boolean | ---     | --            | false/true    |   
 
 demo.things
 
 ```
 
-Thing kostalinverter:piko1020:mypiko1020 [ url="http://'inverter-ip'", username="'myUsername'", password="'myPassword'", refreshInterval=60, invertertype = "withBattery"]
+Thing kostalinverter:piko1020:mypiko1020 [ url="http://'inverter-ip'", username="'myUsername'", password="'myPassword'", refreshInterval=60, hasBattery=false]
 
 ```
 
-You can define which type of PIKO10-20 inverter you will connect to with parameter invertertype.
+You can define which type of PIKO10-20 inverter you will connect to with parameter hasBattery.
 
 
 
@@ -348,6 +348,7 @@ Number:Dimensionless        ExternalModuleControl       "External Module Control
 
 
 ```
+
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
 demo.items:

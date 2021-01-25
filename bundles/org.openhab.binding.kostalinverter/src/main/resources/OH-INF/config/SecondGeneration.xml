@@ -7,7 +7,7 @@
 		<parameter name="url" type="text" required="true">
 			<label> IP Address</label>
 			<description>IP address of the inverter.</description>
-			<context>network-address</context>
+			<context>url</context>
 		</parameter>
 		<parameter name="username" type="text" required="true">
 			<label>Username</label>
@@ -23,7 +23,7 @@
 			<description>Refresh Interval in seconds.</description>
 			<default>60</default>
 		</parameter>
-		<parameter name="invertertype" type="text" required="true">
+		<parameter name="hasBattery" type="boolean" required="true">
 			<label>Inverter Typel</label>
 			<description>Type of inverter, with/without battery.</description>
 		</parameter>

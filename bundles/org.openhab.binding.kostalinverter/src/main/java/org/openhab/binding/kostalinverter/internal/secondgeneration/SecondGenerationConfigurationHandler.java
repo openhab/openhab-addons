@@ -126,8 +126,7 @@ public class SecondGenerationConfigurationHandler {
     }
 
     // Method extractSessionId extracts sessionId from JsonObject
-    static String extractSessionId(JsonObject extractJsonObjectSessionId) throws TimeoutException {
-
+    static String extractSessionId(JsonObject extractJsonObjectSessionId) {
         Logger sessionIdLogger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
         String extractSessionId = "";
         JsonArray extractJsonArraySessionId = extractJsonObjectSessionId.getAsJsonArray("session");
@@ -144,8 +143,7 @@ public class SecondGenerationConfigurationHandler {
     }
 
     // Method extractCode extracts code from JsonObject
-    static String extractCode(JsonObject extractJsonObjectCode) throws TimeoutException {
-
+    static String extractCode(JsonObject extractJsonObjectCode) {
         Logger codeLogger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
         String extractCode = "";
         JsonArray extractJsonArrayCode = extractJsonObjectCode.getAsJsonArray("status");
