@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:kostalpiko1020_config">
 		<parameter name="url" type="text" required="true">
-			<label> IP Address</label>
+			<label>IP Address</label>
 			<description>IP address of the inverter.</description>
 			<context>url</context>
 		</parameter>
@@ -24,7 +24,7 @@
 			<default>60</default>
 		</parameter>
 		<parameter name="hasBattery" type="boolean" required="true">
-			<label>Inverter Typel</label>
+			<label>Inverter Type</label>
 			<description>Type of inverter, with/without battery.</description>
 		</parameter>
 	</config-description>

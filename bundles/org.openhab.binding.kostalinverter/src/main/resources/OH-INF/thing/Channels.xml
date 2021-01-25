@@ -32,7 +32,7 @@
 	<channel-type id="device-local-ownconsumption">
 		<item-type>Number:Power</item-type>
 		<label>Own Consumption</label>
-		<description>Current own comsumption</description>
+		<description>Current own consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -46,7 +46,7 @@
 	<channel-type id="device-local-homeconsumption-total">
 		<item-type>Number:Power</item-type>
 		<label>Home Consumption</label>
-		<description>Current total homeconsumption</description>
+		<description>Current total home consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -521,8 +521,8 @@
 	</channel-type>
 	<channel-type id="device-local-grid-current-l1">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Grid Current L1</label>
-		<description>Current output current to the grid, L1</description>
+		<label>Grid Amperage L1</label>
+		<description>Current output amperage to the grid, L1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f  %unit%"/>
 	</channel-type>
@@ -542,8 +542,8 @@
 	</channel-type>
 	<channel-type id="device-local-grid-current-l2">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Grid Current L2</label>
-		<description>Current output current to the grid, L2</description>
+		<label>Grid Amperage L2</label>
+		<description>Current output amperage to the grid, L2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -563,8 +563,8 @@
 	</channel-type>
 	<channel-type id="device-local-grid-current-l3">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Grid Current L3</label>
-		<description>Current output current to the grid, L3</description>
+		<label>Grid Amperage L3</label>
+		<description>Current output amperage to the grid, L3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -591,8 +591,8 @@
 	</channel-type>
 	<channel-type id="device-local-dc1-current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>DC1 Current</label>
-		<description>Current current from solar panels, DC1</description>
+		<label>DC1 Amperage</label>
+		<description>Current amperage from solar panels, DC1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -612,8 +612,8 @@
 	</channel-type>
 	<channel-type id="device-local-dc2-current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>DC2 Current</label>
-		<description>Current current from solar panels, DC2</description>
+		<label>DC2 Amperage</label>
+		<description>Current amperage from solar panels, DC2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -633,8 +633,8 @@
 	</channel-type>
 	<channel-type id="device-local-dc3-current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>DC3 Current</label>
-		<description>Current current from solar panels, DC3</description>
+		<label>DC3 Amperage</label>
+		<description>Current amperage from solar panels, DC3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -647,21 +647,21 @@
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-solar">
 		<item-type>Number:Power</item-type>
-		<label>Akt Home Consumption Solar</label>
+		<label>Home Consumption PV</label>
 		<description>Current consumption from solar panels</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-bat">
 		<item-type>Number:Power</item-type>
-		<label>Akt Home Consumption Bat</label>
+		<label>Home Consumption Bat</label>
 		<description>Current consumption from battery</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-grid">
 		<item-type>Number:Power</item-type>
-		<label>Act Home Consumption Grid</label>
+		<label>Home Consumption Grid</label>
 		<description>Current consumption from grid</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -732,21 +732,21 @@
 	<channel-type id="statistic-home-consumption-total">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Total</label>
-		<description>Home consumption total</description>
+		<description>Total home consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-consumption-total">
 		<item-type>Number:Energy</item-type>
 		<label>Own Consumption Total</label>
-		<description>Own consumption total</description>
+		<description>Total own consumptionl</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-operating-time-total">
 		<item-type>Number:Time</item-type>
 		<label>Operating Time Total</label>
-		<description>Operating time total</description>
+		<description>Total operating time</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -781,7 +781,7 @@
 	<channel-type id="device-local-loginterval">
 		<item-type>Number:Time</item-type>
 		<label>Loginterval</label>
-		<description>Current value for log interval</description>
+		<description>Value for log interval</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -885,14 +885,14 @@
 	</channel-type>
 	<channel-type id="device-local-battery-charge-time-from-set">
 		<item-type>String</item-type>
-		<label>Battery Charge Time From Set</label>
+		<label>Battery Charge Time from Set</label>
 		<description>Set battery charge time from</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-charge-time-to-set">
 		<item-type>String</item-type>
-		<label>Battery Charge Time To Set</label>
+		<label>Battery Charge Time to Set</label>
 		<description>Set battery charge time to</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
@@ -914,7 +914,7 @@
 	<channel-type id="device-local-external-module-control-set">
 		<item-type>String</item-type>
 		<label>External Module Control Set</label>
-		<description>External Module Control Set</description>
+		<description>Set External Module Control</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>

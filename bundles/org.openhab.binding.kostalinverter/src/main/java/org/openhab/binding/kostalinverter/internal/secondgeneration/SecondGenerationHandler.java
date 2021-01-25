@@ -71,16 +71,12 @@ public class SecondGenerationHandler extends BaseThingHandler {
     private List<String> channelPostsTempExtExt = new ArrayList<>();
     private List<String> channelPostsTempAll = new ArrayList<>();
 
-    private @NonNullByDefault({}) SecondGenerationInverterConfig inverterConfig;
-    private @NonNullByDefault({}) Gson gson;
+    private SecondGenerationInverterConfig inverterConfig = new SecondGenerationInverterConfig();
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public SecondGenerationHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
-
-        // Initialize Gson object gson
-        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        this.gson = gson;
     }
 
     @Override
@@ -281,7 +277,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 channelValuesCounterAll++;
             }
         }
-
         // Create and update actual values for all channels
         if (inverterConfig.hasBattery) {
             // Part for updating non-configurable channels
