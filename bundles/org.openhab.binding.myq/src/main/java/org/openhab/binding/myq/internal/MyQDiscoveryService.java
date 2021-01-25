@@ -63,7 +63,7 @@ public class MyQDiscoveryService extends AbstractDiscoveryService implements Dis
                         ThingUID thingUID = new ThingUID(thingTypeUID, accountHandler.getThing().getUID(),
                                 device.serialNumber.toLowerCase());
                         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("MyQ " + device.name)
-                                .withProperty("serialNumber", thingUID.getId())
+                                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, thingUID.getId())
                                 .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                                 .withBridge(accountHandler.getThing().getUID()).build();
                         thingDiscovered(result);
