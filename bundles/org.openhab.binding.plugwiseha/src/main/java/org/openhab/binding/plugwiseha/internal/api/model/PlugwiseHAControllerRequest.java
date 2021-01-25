@@ -15,6 +15,7 @@ package org.openhab.binding.plugwiseha.internal.api.model;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -236,6 +237,8 @@ public class PlugwiseHAControllerRequest<T> {
             } else if (cause instanceof ConnectException) {
                 // Cannot connect
                 throw new PlugwiseHAException(cause);
+            } else if (cause instanceof SocketTimeoutException) {
+                throw new PlugwiseHATimeoutException(cause);
             } else if (cause == null) {
                 // Unable to unwrap
                 throw new PlugwiseHAException(e);

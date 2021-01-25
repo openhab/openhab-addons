@@ -97,6 +97,7 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                     updateStatus(OFFLINE, BRIDGE_OFFLINE);
                 }
             } catch (PlugwiseHAException e) {
+                logger.debug("Failed initializing zone handler with config = {} message = {}", config, e.getMessage());
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
             }
         }
