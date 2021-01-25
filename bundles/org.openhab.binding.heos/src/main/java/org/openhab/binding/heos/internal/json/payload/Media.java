@@ -24,6 +24,31 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Media {
+    public static final int SOURCE_PANDORA = 1;
+    public static final int SOURCE_RHAPSODY = 2;
+    public static final int SOURCE_TUNE_IN = 3;
+    public static final int SOURCE_SPOTIFY = 4;
+    public static final int SOURCE_DEEZER = 5;
+    public static final int SOURCE_NAPSTER = 6;
+    public static final int SOURCE_I_HEART_RADIO = 7;
+    public static final int SOURCE_SIRIUS_XM = 8;
+    public static final int SOURCE_SOUNDCLOUD = 9;
+    public static final int SOURCE_TIDAL = 10;
+    // public static final int SOURCE_FUTURE_SERVICE = 11;
+    public static final int SOURCE_RDIO = 12;
+    public static final int SOURCE_AMAZON_MUSIC = 13;
+    // public static final int SOURCE_FUTURE_SERVICE = 14;
+    public static final int SOURCE_MOODMIX = 15;
+    public static final int SOURCE_JUKE = 16;
+    // public static final int SOURCE_FUTURE_SERVICE = 17;
+    public static final int SOURCE_Q_Q_MUSIC = 18;
+
+    public static final int SOURCE_LOCAL = 1024;
+    public static final int SOURCE_PLAYLIST = 1025;
+    public static final int SOURCE_HISTORY = 1026;
+    public static final int SOURCE_AUX = 1027;
+    public static final int SOURCE_FAVORITES = 1028;
+
     public @Nullable String type;
     public @Nullable String song;
     public @Nullable String station;
