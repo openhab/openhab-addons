@@ -36,6 +36,6 @@ public class OpenSprinklerHttpApiV217 extends OpenSprinklerHttpApiV213 {
 
     @Override
     public void runProgram(Command command) throws UnauthorizedApiException, CommunicationApiException {
-        http.sendHttpGet(getBaseUrl() + "mp=" + command, getRequestRequiredOptions() + "&uwt=1");
+        http.sendHttpGet(getBaseUrl() + "mp", getRequestRequiredOptions() + "&pid=" + command);
     }
 }
