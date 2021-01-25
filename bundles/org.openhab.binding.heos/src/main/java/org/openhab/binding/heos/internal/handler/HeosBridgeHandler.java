@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -52,6 +53,7 @@ import org.openhab.binding.heos.internal.json.payload.Group;
 import org.openhab.binding.heos.internal.json.payload.Media;
 import org.openhab.binding.heos.internal.json.payload.Player;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.HeosMediaEventListener;
 import org.openhab.binding.heos.internal.resources.Telnet;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.openhab.core.library.types.OnOffType;
@@ -77,6 +79,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Johannes Einig - Initial contribution
+ * @author Martin van Wingerden - change handling of stop/pause depending on playing item type
  */
 @NonNullByDefault
 public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventListener {
@@ -84,6 +87,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     private static final int HEOS_PORT = 1255;
 
+    private final Set<HeosMediaEventListener> heosMediaEventListeners = new CopyOnWriteArraySet<>();
     private final List<HeosPlayerDiscoveryListener> playerDiscoveryList = new CopyOnWriteArrayList<>();
     private final HeosChannelManager channelManager = new HeosChannelManager(this);
     private final HeosChannelHandlerFactory channelHandlerFactory;
@@ -408,7 +412,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     @Override
     public void playerMediaChangeEvent(String pid, Media media) {
-        // do nothing
+        heosMediaEventListeners.forEach(element -> element.playerMediaChangeEvent(pid, media));
     }
 
     @Override
@@ -517,5 +521,9 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(HeosActions.class);
+    }
+
+    public void registerMediaEventListener(HeosMediaEventListener heosMediaEventListener) {
+        heosMediaEventListeners.add(heosMediaEventListener);
     }
 }
