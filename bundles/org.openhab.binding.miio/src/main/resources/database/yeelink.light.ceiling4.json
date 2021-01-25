@@ -56,7 +56,7 @@
 				"friendlyName": "Ambient Brightness",
 				"channel": "ambientBrightness",
 				"channelType": "ambientBrightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
