@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.actions.OpenWebNetBridgeActions;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
@@ -271,9 +272,13 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         reconnecting = false;
     }
 
+    public @Nullable OpenGateway getGateway() {
+        return gateway;
+    }
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(OpenWebNetDeviceDiscoveryService.class);
+        return Set.of(OpenWebNetDeviceDiscoveryService.class, OpenWebNetBridgeActions.class);
     }
 
     /**
@@ -391,7 +396,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Register a device ThingHandler to this BridgHandler
      *
-     * @param ownId the device OpenWebNet id
+     * @param ownId        the device OpenWebNet id
      * @param thingHandler the thing handler to be registered
      */
     protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
@@ -682,7 +687,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Return a ownId string (=WHO.WHERE) from the device Where address and handler
      *
-     * @param where the Where address (to be normalized)
+     * @param where   the Where address (to be normalized)
      * @param handler the device handler
      * @return the ownId String
      */
@@ -693,7 +698,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Returns a ownId string (=WHO.WHERE) from a Who and Where address
      *
-     * @param who the Who
+     * @param who   the Who
      * @param where the Where address (to be normalized)
      * @return the ownId String
      */
