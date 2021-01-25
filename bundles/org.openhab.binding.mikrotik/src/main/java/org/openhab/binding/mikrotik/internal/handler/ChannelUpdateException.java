@@ -25,11 +25,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 public class ChannelUpdateException extends RuntimeException {
     private final ThingUID thingUID;
     private final ChannelUID channelID;
-    private final Throwable innerException;
 
-    public ChannelUpdateException(ThingUID thingUID, ChannelUID channelUID, Throwable innerEx) {
-        super(innerEx);
-        this.innerException = innerEx;
+    public ChannelUpdateException(ThingUID thingUID, ChannelUID channelUID, Throwable cause) {
+        super(cause);
         this.thingUID = thingUID;
         this.channelID = channelUID;
     }
@@ -37,9 +35,5 @@ public class ChannelUpdateException extends RuntimeException {
     @Override
     public String getMessage() {
         return String.format("%s @ %s/%s", super.getMessage(), thingUID, channelID);
-    }
-
-    public Throwable getInnerException() {
-        return this.innerException;
     }
 }

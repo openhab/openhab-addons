@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.mikrotik.internal.MikrotikBindingConstants;
 import org.openhab.binding.mikrotik.internal.config.RouterosThingConfig;
-import org.openhab.binding.mikrotik.internal.model.RouterosInstance;
+import org.openhab.binding.mikrotik.internal.model.RouterosDevice;
 import org.openhab.binding.mikrotik.internal.model.RouterosRouterboardInfo;
 import org.openhab.binding.mikrotik.internal.model.RouterosSystemResources;
 import org.openhab.binding.mikrotik.internal.util.StateUtil;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import me.legrange.mikrotik.MikrotikApiException;
 
 /**
- * The {@link MikrotikRouterosBridgeHandler} is a main binding class that wraps a {@link RouterosInstance} and
+ * The {@link MikrotikRouterosBridgeHandler} is a main binding class that wraps a {@link RouterosDevice} and
  * manages fetching data from RouterOS. It is also responsible for updating brindge thing properties and
  * handling commands, which are sent to one of the channels and emit channel updates whenever required.
  *
@@ -52,7 +52,7 @@ import me.legrange.mikrotik.MikrotikApiException;
 public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MikrotikRouterosBridgeHandler.class);
     private @Nullable RouterosThingConfig config;
-    private @Nullable volatile RouterosInstance routeros;
+    private @Nullable volatile RouterosDevice routeros;
     private @Nullable ScheduledFuture<?> refreshJob;
     private Map<String, State> currentState = new HashMap<>();
 
@@ -70,36 +70,17 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(RouterosThingConfig.class);
 
         logger.debug("Initializing MikrotikRouterosBridgeHandler with config = {}", config);
-        routeros = new RouterosInstance(config.host, config.port, config.login, config.password);
-
-        updateStatus(ThingStatus.INITIALIZING);
-        scheduler.execute(() -> {
-            try {
-                logger.debug("Starting routeros model");
-                routeros.start();
-
-                @Nullable
-                RouterosRouterboardInfo rbInfo = routeros.getRouterboardInfo();
-                if (rbInfo != null) {
-                    Map<String, String> bridgeProps = editProperties();
-                    bridgeProps.put(PROPERTY_MODEL, rbInfo.getModel());
-                    bridgeProps.put(PROPERTY_FIRMWARE, rbInfo.getFirmware());
-                    bridgeProps.put(PROPERTY_SERIAL_NUMBER, rbInfo.getSerialNumber());
-                    updateProperties(bridgeProps);
-                } else {
-                    logger.warn("Failed to set RouterBOARD properties to bridge {}", getThing().getUID());
-                }
-
-                updateStatus(ThingStatus.ONLINE);
-            } catch (MikrotikApiException e) {
-                logger.warn("Error while logging in to RouterOS", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            }
-        });
+        if (config.isValid()) {
+            routeros = new RouterosDevice(config.host, config.port, config.login, config.password);
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, String.format("Connecting to %s", config.host));
+            scheduleRefreshJob();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is not valid");
+        }
         logger.debug("Finished initializing Mikrotik binding!");
     }
 
-    public @Nullable RouterosInstance getRouteros() {
+    public @Nullable RouterosDevice getRouteros() {
         return routeros;
     }
 
@@ -129,11 +110,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         logger.debug("Disposing RouterOS bridge");
         cancelRefreshJob();
         if (routeros != null) {
-            try {
-                routeros.stop();
-            } catch (MikrotikApiException e) {
-                logger.debug("Error during bridge dispose", e);
-            }
+            routeros.stop();
             routeros = null;
         }
     }
@@ -158,33 +135,68 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduledRun() {
-        try {
-            if (routeros != null && routeros.isConnected()) {
-                logger.debug("Refreshing RouterOS caches for {}", getThing().getUID());
-                routeros.refresh();
-                // refresh own channels
-                for (Channel channel : getThing().getChannels()) {
-                    try {
-                        refreshChannel(channel.getUID());
-                    } catch (RuntimeException e) {
-                        throw new ChannelUpdateException(getThing().getUID(), channel.getUID(), e);
-                    }
+        if (!routeros.isConnected()) {
+            // Perform connection
+            try {
+                logger.debug("Starting routeros model");
+                routeros.start();
+
+                @Nullable
+                RouterosRouterboardInfo rbInfo = routeros.getRouterboardInfo();
+                if (rbInfo != null) {
+                    Map<String, String> bridgeProps = editProperties();
+                    bridgeProps.put(PROPERTY_MODEL, rbInfo.getModel());
+                    bridgeProps.put(PROPERTY_FIRMWARE, rbInfo.getFirmware());
+                    bridgeProps.put(PROPERTY_SERIAL_NUMBER, rbInfo.getSerialNumber());
+                    updateProperties(bridgeProps);
+                } else {
+                    logger.warn("Failed to set RouterBOARD properties for bridge {}", getThing().getUID());
                 }
-                // refresh all the client things below
-                getThing().getThings().forEach(thing -> {
-                    ThingHandler handler = thing.getHandler();
-                    if (handler instanceof MikrotikBaseThingHandler) {
-                        ((MikrotikBaseThingHandler) handler).refresh();
-                    }
-                });
-            } else {
-                logger.debug("Skipping RouterOS cache update as routeros {} is not available", getThing().getUID());
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.ONLINE);
+            } catch (MikrotikApiException e) {
+                logger.warn("Error while logging in to RouterOS {}", getThing().getUID(), e);
+                logger.debug("RouterOS connection exception cause", e.getCause());
+
+                if (e.getMessage().contains("Command timed out") || e.getMessage().contains("Error connecting")) {
+                    routeros.stop();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                } else if (e.getMessage().contains("Connection refused")) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Remote host refused to connect, make sure port is correct");
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                }
             }
+        } else {
+            // We're connected - do a usual polling cycle
+            performRefresh();
+        }
+    }
+
+    private void performRefresh() {
+        try {
+            logger.debug("Refreshing RouterOS caches for {}", getThing().getUID());
+            routeros.refresh();
+            // refresh own channels
+            for (Channel channel : getThing().getChannels()) {
+                try {
+                    refreshChannel(channel.getUID());
+                } catch (RuntimeException e) {
+                    throw new ChannelUpdateException(getThing().getUID(), channel.getUID(), e);
+                }
+            }
+            // refresh all the client things below
+            getThing().getThings().forEach(thing -> {
+                ThingHandler handler = thing.getHandler();
+                if (handler instanceof MikrotikBaseThingHandler) {
+                    ((MikrotikBaseThingHandler) handler).refresh();
+                }
+            });
         } catch (ChannelUpdateException e) {
-            logger.error("Error updating channel! {}", e.getMessage(), e.getInnerException());
+            logger.error("Error updating channel! {}", e.getMessage(), e.getCause());
         } catch (MikrotikApiException e) {
             logger.error("Failed to refresh RouterOS cache in {}", getThing().getUID(), e);
+            routeros.stop();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Exception e) {
             logger.error("Unhandled exception while refreshing the {} RouterOS model", getThing().getUID(), e);
@@ -197,7 +209,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         logger.debug("Handling command = {} for channel = {}", command, channelUID);
         if (getThing().getStatus() == ONLINE) {
             @Nullable
-            RouterosInstance routeros = getRouteros();
+            RouterosDevice routeros = getRouteros();
             if (routeros != null) {
                 if (command == REFRESH) {
                     refreshChannel(channelUID);

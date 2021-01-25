@@ -26,13 +26,14 @@ import org.slf4j.LoggerFactory;
 import me.legrange.mikrotik.*;
 
 /**
- * The {@link RouterosInstance} class is wrapped inside a bridge thing and responsible for communication with
+ * The {@link RouterosDevice} class is wrapped inside a bridge thing and responsible for communication with
  * Mikrotik device, data fetching, caching and aggregation.
  *
  * @author Oleg Vivtash - Initial contribution
  */
-public class RouterosInstance {
-    private final Logger logger = LoggerFactory.getLogger(RouterosInstance.class);
+// @NonNullByDefault
+public class RouterosDevice {
+    private final Logger logger = LoggerFactory.getLogger(RouterosDevice.class);
 
     private final String host;
     private final int port;
@@ -73,7 +74,7 @@ public class RouterosInstance {
         }
     }
 
-    public RouterosInstance(String host, int port, String login, String password) {
+    public RouterosDevice(String host, int port, String login, String password) {
         this.host = host;
         this.port = port;
         this.login = login;
@@ -90,8 +91,10 @@ public class RouterosInstance {
         updateRouterboardInfo();
     }
 
-    public void stop() throws ApiConnectionException {
-        logout();
+    public void stop() {
+        if (connection != null && connection.isConnected()) {
+            logout();
+        }
     }
 
     public void login() throws MikrotikApiException {
@@ -101,11 +104,17 @@ public class RouterosInstance {
         logger.debug("Logged in to RouterOS at {} !", host);
     }
 
-    public void logout() throws ApiConnectionException {
+    public void logout() {
         logger.debug("Logging out of {}", host);
         if (connection != null) {
             logger.debug("Closing connection to {}", host);
-            connection.close();
+            try {
+                connection.close();
+            } catch (ApiConnectionException e) {
+                logger.debug("Logout error", e);
+            } finally {
+                connection = null;
+            }
         }
     }
 

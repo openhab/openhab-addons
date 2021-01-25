@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.joda.time.DateTime;
 import org.openhab.binding.mikrotik.internal.config.InterfaceThingConfig;
-import org.openhab.binding.mikrotik.internal.model.RouterosInstance;
+import org.openhab.binding.mikrotik.internal.model.RouterosDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +71,7 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
         return null;
     }
 
-    protected final @Nullable RouterosInstance getRouteros() {
+    protected final @Nullable RouterosDevice getRouteros() {
         @Nullable
         MikrotikRouterosBridgeHandler bridgeHandler = getVerifiedBridgeHandler();
         return bridgeHandler == null ? null : bridgeHandler.getRouteros();
@@ -81,7 +81,7 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling command = {} for channel = {}", command, channelUID);
         if (getThing().getStatus() == ONLINE) {
-            RouterosInstance routeros = getRouteros();
+            RouterosDevice routeros = getRouteros();
             if (routeros != null) {
                 if (command == REFRESH) {
                     throttledRefreshModels();

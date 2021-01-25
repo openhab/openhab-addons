@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mikrotik.internal.model;
 
-import static org.openhab.binding.mikrotik.internal.model.RouterosInstance.PROP_ID_KEY;
+import static org.openhab.binding.mikrotik.internal.model.RouterosDevice.PROP_ID_KEY;
 
 import java.util.Map;
 
