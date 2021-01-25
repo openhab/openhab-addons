@@ -19,7 +19,8 @@ It can be extended with different channels.
 | `username`        | yes      |    -    | Username for authentication (advanced parameter). |
 | `password`        | yes      |    -    | Password for authentication (advanced parameter). |
 | `authMode`        | no       |  BASIC  | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE` or `DIGEST` (advanced parameter). |
-| `commandMethod`   | no       |   GET   | Method used for sending commands `GET`, `PUT`, `POST`. |
+| `stateMethod`     | no       |   GET   | Method used for requesting the state: `GET`, `PUT`, `POST`. |
+| `commandMethod`   | no       |   GET   | Method used for sending commands: `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
 | `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  
 | `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value".| 
@@ -155,7 +156,7 @@ The URL is used as format string and two parameters are added:
 - the transformed command (referenced as `%2$`)
 
 After the parameter reference the format needs to be appended.
-See the link above for more information about the available format parameters (e.g. to use the string representation, you need to append `s` to the reference).
+See the link above for more information about the available format parameters (e.g. to use the string representation, you need to append `s` to the reference, for a timestamp `t`).
 When sending an OFF command on 2020-07-06, the URL
 
 ```

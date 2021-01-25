@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
 
 /**
  * The {@link RateLimitedHttpClient} is a wrapper for a Jetty HTTP client that limits the number of requests by delaying
@@ -81,13 +82,13 @@ public class RateLimitedHttpClient {
      * @param finalUrl the request URL
      * @return a CompletableFuture that completes with the request
      */
-    public CompletableFuture<Request> newRequest(URI finalUrl) {
+    public CompletableFuture<Request> newRequest(URI finalUrl, HttpMethod method) {
         // if no delay is set, return a completed CompletableFuture
         if (delay == 0) {
-            return CompletableFuture.completedFuture(httpClient.newRequest(finalUrl));
+            return CompletableFuture.completedFuture(httpClient.newRequest(finalUrl).method(method));
         }
         CompletableFuture<Request> future = new CompletableFuture<>();
-        if (!requestQueue.offer(new RequestQueueEntry(finalUrl, future))) {
+        if (!requestQueue.offer(new RequestQueueEntry(finalUrl, method, future))) {
             future.completeExceptionally(new RejectedExecutionException("Maximum queue size exceeded."));
         }
         return future;
@@ -113,16 +114,18 @@ public class RateLimitedHttpClient {
     private void processQueue() {
         RequestQueueEntry queueEntry = requestQueue.poll();
         if (queueEntry != null) {
-            queueEntry.future.complete(httpClient.newRequest(queueEntry.finalUrl));
+            queueEntry.future.complete(httpClient.newRequest(queueEntry.finalUrl).method(queueEntry.method));
         }
     }
 
     private static class RequestQueueEntry {
         public URI finalUrl;
+        public HttpMethod method;
         public CompletableFuture<Request> future;
 
-        public RequestQueueEntry(URI finalUrl, CompletableFuture<Request> future) {
+        public RequestQueueEntry(URI finalUrl, HttpMethod method, CompletableFuture<Request> future) {
             this.finalUrl = finalUrl;
+            this.method = method;
             this.future = future;
         }
     }
