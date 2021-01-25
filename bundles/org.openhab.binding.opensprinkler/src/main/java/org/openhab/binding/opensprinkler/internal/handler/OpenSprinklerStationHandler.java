@@ -41,7 +41,7 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     private OpenSprinklerStationConfig config = new OpenSprinklerStationConfig();
-    private BigDecimal nextDurationTime = BigDecimal.TEN;
+    private BigDecimal nextDurationTime = MAX_TIME_SECONDS;
 
     public OpenSprinklerStationHandler(Thing thing) {
         super(thing);

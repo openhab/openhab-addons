@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.opensprinkler.internal;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -50,6 +52,7 @@ public class OpenSprinklerBindingConstants {
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
     public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
     public static final int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE = 750;
+    public static final BigDecimal MAX_TIME_SECONDS = new BigDecimal(64800);
 
     // List of all Thing ids
     public static final String HTTP_BRIDGE = "http";
