@@ -81,10 +81,10 @@
 			<default>false</default>
 		</parameter>
 
-		<parameter name="useMetaMeasurementName" type="boolean" required="true" groupName="misc">
+		<parameter name="useMetadataMeasurementName" type="boolean" required="true" groupName="misc">
 			<label>Use metadata name</label>
-			<description>Should the measurement name set by metadata influxdb value if exists? If no metadata is set, item name
-				is used.
+			<description>If true uses metadata from item influxdb metadata value as name for measurement instead of item name. If
+				metadata value is not set item name is used again.
 			</description>
 			<default>false</default>
 		</parameter>

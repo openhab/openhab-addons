@@ -59,7 +59,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
 
     @BeforeEach
     public void before() {
-        when(influxDBConfiguration.isUseMetaMeasurementName()).thenReturn(false);
+        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(false);
 
         instanceV1 = new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
         instanceV2 = new Influx2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
@@ -100,7 +100,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
                 + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")"));
 
-        when(influxDBConfiguration.isUseMetaMeasurementName()).thenReturn(true);
+        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(true);
 
         queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV1, equalTo("SELECT value FROM origin.measurementName WHERE item = 'sampleItem';"));

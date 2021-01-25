@@ -54,7 +54,7 @@ public class ItemToStorePointCreatorTest {
         when(influxDBConfiguration.isAddLabelTag()).thenReturn(false);
         when(influxDBConfiguration.isAddTypeTag()).thenReturn(false);
         when(influxDBConfiguration.isReplaceUnderscore()).thenReturn(false);
-        when(influxDBConfiguration.isUseMetaMeasurementName()).thenReturn(false);
+        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(false);
 
         instance = new ItemToStorePointCreator(influxDBConfiguration, metadataRegistry);
     }
@@ -150,7 +150,7 @@ public class ItemToStorePointCreatorTest {
         InfluxPoint point = instance.convert(item, null);
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
 
-        when(influxDBConfiguration.isUseMetaMeasurementName()).thenReturn(true);
+        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(true);
 
         point = instance.convert(item, null);
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
@@ -163,7 +163,7 @@ public class ItemToStorePointCreatorTest {
         assertThat(point.getMeasurementName(), equalTo("measurementName"));
         assertThat(point.getTags(), hasEntry("item", "myitem"));
 
-        when(influxDBConfiguration.isUseMetaMeasurementName()).thenReturn(false);
+        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(false);
 
         point = instance.convert(item, null);
         assertThat(point.getMeasurementName(), equalTo(item.getName()));

@@ -63,7 +63,7 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         Where where = select.where();
 
-        if (configuration.isUseMetaMeasurementName() && hasCriteriaName) {
+        if (configuration.isUseMetadataMeasurementName() && hasCriteriaName) {
             where = where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, itemName));
         }
 
@@ -107,7 +107,7 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         String name = itemName;
 
-        if (configuration.isUseMetaMeasurementName()) {
+        if (configuration.isUseMetadataMeasurementName()) {
             final MetadataRegistry currentMetadataRegistry = metadataRegistry;
             if (currentMetadataRegistry != null) {
                 MetadataKey key = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, itemName);
