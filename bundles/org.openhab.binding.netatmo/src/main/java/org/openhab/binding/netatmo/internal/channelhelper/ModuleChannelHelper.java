@@ -41,9 +41,8 @@ public class ModuleChannelHelper extends AbstractChannelHelper {
     protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
         NAModule module = (NAModule) naThing;
 
-        long timestamp = CHANNEL_LAST_SEEN.equals(channelId) ? Math.max(module.getLastSeen(), module.getLastMessage())
-                : -1;
-
-        return timestamp != -1 ? ChannelTypeUtils.toDateTimeType(timestamp, zoneId) : null;
+        return CHANNEL_LAST_SEEN.equals(channelId)
+                ? ChannelTypeUtils.toDateTimeType(Math.max(module.getLastSeen(), module.getLastMessage()), zoneId)
+                : null;
     }
 }

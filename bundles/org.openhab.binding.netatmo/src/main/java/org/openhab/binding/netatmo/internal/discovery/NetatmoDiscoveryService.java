@@ -87,7 +87,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void pushStatus(ConnectionStatus connectionStatus) {
+    public void notifyStatusChange(ConnectionStatus connectionStatus) {
         if (connectionStatus.isConnected()) {
             super.activate(null /* configProperties */);
         } else {

@@ -115,7 +115,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     }
 
     @Override
-    public void pushStatus(ConnectionStatus connectionStatus) {
+    public void notifyStatusChange(ConnectionStatus connectionStatus) {
         if (connectionStatus.isConnected()) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, connectionStatus.getMessage());
             scheduleRefreshJob();

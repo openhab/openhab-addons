@@ -123,7 +123,7 @@ public class ApiBridge {
         if (!connectionStatus.isConnected()) {
             onAccessTokenResponse("", List.of());
         }
-        listeners.forEach(listener -> listener.pushStatus(status));
+        listeners.forEach(listener -> listener.notifyStatusChange(status));
     }
 
     @SuppressWarnings("unchecked")
@@ -179,20 +179,6 @@ public class ApiBridge {
         }
         return homeApi;
     }
-
-    // public <T> T post(String anUrl, @Nullable String payload, Class<T> classOfT, boolean baseUrl)
-    // throws NetatmoException {
-    // return executeUrl(anUrl, HttpMethod.POST, payload, classOfT, baseUrl);
-    // }
-
-    // public <T> T get(String anUrl, Class<T> classOfT) throws NetatmoException {
-    // return executeUrl(anUrl, HttpMethod.GET, null, classOfT, true);
-    // }
-
-    // public <T> T execute(String anUrl, String aMethod, @Nullable String aPayload, Class<T> classOfT, boolean baseUrl)
-    // throws NetatmoException {
-    // return executeUrl(anUrl, aMethod, aPayload, classOfT, baseUrl);
-    // }
 
     synchronized <T> T executeUrl(String anUrl, HttpMethod method, @Nullable String payload, Class<T> classOfT,
             boolean baseUrl) throws NetatmoException {
@@ -259,7 +245,7 @@ public class ApiBridge {
 
     public void addConnectionListener(ConnectionListener listener) {
         listeners.add(listener);
-        listener.pushStatus(connectionStatus);
+        listener.notifyStatusChange(connectionStatus);
     }
 
     public void removeConnectionListener(ConnectionListener listener) {

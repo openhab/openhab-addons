@@ -14,7 +14,4 @@
 
   <name>openHAB Add-ons :: Bundles :: Netatmo Binding</name>
 
-  <properties>
-    <bnd.exportpackage>org.openhab.binding.netatmo.*</bnd.exportpackage>
-  </properties>
 </project>

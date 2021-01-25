@@ -94,12 +94,4 @@ public class SecurityApi extends RestManager {
         }
         return true;
     }
-
-    // private class NAPersonsHomeResponse extends ApiResponse<Object> {
-    //
-    // }
-    //
-    // private class NAWelcomeEventResponse extends ApiResponse<NAWelcomeEventData> {
-    //
-    // }
 }

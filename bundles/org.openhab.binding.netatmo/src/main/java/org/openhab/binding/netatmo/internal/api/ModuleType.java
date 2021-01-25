@@ -20,12 +20,17 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.BatteryHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.Co2ChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.DeviceChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HomeCoachChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HomeEnergyChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HomeSecurityChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HumidityChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.MeasuresChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.ModuleChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.NoiseChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.PersonChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.PlugChannelHelper;
@@ -57,53 +62,58 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public enum ModuleType {
     // Security Group
-    NAHomeSecurity(HomeSecurityHandler.class, Set.of(HomeSecurityChannelHelper.class), List.of(GROUP_HOME_SECURITY),
-            null, RefreshPolicy.CONFIG, null),
-    NAPerson(PersonHandler.class, Set.of(PersonChannelHelper.class), List.of(GROUP_PERSON, GROUP_PERSON_EVENT), null,
-            RefreshPolicy.PARENT, NAHomeSecurity),
-    NACamera(CameraHandler.class, Set.of(CameraChannelHelper.class), List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT), null,
-            RefreshPolicy.PARENT, NAHomeSecurity),
-    NOC(PresenceHandler.class, Set.of(CameraChannelHelper.class, PresenceChannelHelper.class),
-            List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT, GROUP_PRESENCE), null, RefreshPolicy.PARENT, NAHomeSecurity),
+    NAHomeSecurity(HomeSecurityHandler.class, RefreshPolicy.CONFIG, null, null, Set.of(HomeSecurityChannelHelper.class),
+            List.of(GROUP_HOME_SECURITY)),
+    NAPerson(PersonHandler.class, RefreshPolicy.PARENT, NAHomeSecurity, null, Set.of(PersonChannelHelper.class),
+            List.of(GROUP_PERSON, GROUP_PERSON_EVENT)),
+    NACamera(CameraHandler.class, RefreshPolicy.PARENT, NAHomeSecurity, null, Set.of(CameraChannelHelper.class),
+            List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT)),
+    NOC(PresenceHandler.class, RefreshPolicy.PARENT, NAHomeSecurity, null,
+            Set.of(CameraChannelHelper.class, PresenceChannelHelper.class),
+            List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT, GROUP_PRESENCE)),
 
     // Weather group
-    NAMain(MainHandler.class,
+    NAMain(MainHandler.class, RefreshPolicy.AUTO, null, List.of("measure", "measure-timestamp"),
             Set.of(PressureChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
-                    TemperatureChannelHelper.class, Co2ChannelHelper.class),
+                    TemperatureChannelHelper.class, Co2ChannelHelper.class, DeviceChannelHelper.class,
+                    MeasuresChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_NOISE, GROUP_PRESSURE, GROUP_DEVICE,
-                    GROUP_SIGNAL),
-            List.of("measure", "measure-timestamp"), RefreshPolicy.AUTO, null),
-    NAModule1(NetatmoDeviceHandler.class, Set.of(HumidityChannelHelper.class, TemperatureChannelHelper.class),
-            List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY),
-            List.of("measure", "measure-timestamp"), RefreshPolicy.PARENT, NAMain),
-    NAModule2(NetatmoDeviceHandler.class, Set.of(WindChannelHelper.class),
-            List.of(GROUP_WIND, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY), null, RefreshPolicy.PARENT, NAMain),
-    NAModule3(NetatmoDeviceHandler.class, Set.of(RainChannelHelper.class),
-            List.of(GROUP_RAIN, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY), List.of("sum-rain"), RefreshPolicy.PARENT,
-            NAMain),
-    NAModule4(NetatmoDeviceHandler.class,
-            Set.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class),
-            List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY),
-            List.of("measure", "measure-timestamp"), RefreshPolicy.PARENT, NAMain),
+                    GROUP_SIGNAL)),
+    NAModule1(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, NAMain, List.of("measure", "measure-timestamp"),
+            Set.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, BatteryHelper.class,
+                    ModuleChannelHelper.class, MeasuresChannelHelper.class),
+            List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY)),
+    NAModule2(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, NAMain, null,
+            Set.of(WindChannelHelper.class, BatteryHelper.class, ModuleChannelHelper.class),
+            List.of(GROUP_WIND, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY)),
+    NAModule3(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, NAMain, List.of("sum-rain"),
+            Set.of(RainChannelHelper.class, BatteryHelper.class, ModuleChannelHelper.class,
+                    MeasuresChannelHelper.class),
+            List.of(GROUP_RAIN, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY)),
+    NAModule4(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, NAMain, List.of("measure", "measure-timestamp"),
+            Set.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class,
+                    BatteryHelper.class, ModuleChannelHelper.class, MeasuresChannelHelper.class),
+            List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_MODULE, GROUP_SIGNAL, GROUP_BATTERY)),
 
     // Aircare group
-    NHC(HomeCoachHandler.class,
+    NHC(HomeCoachHandler.class, RefreshPolicy.AUTO, null, List.of("measure", "measure-timestamp"),
             Set.of(NoiseChannelHelper.class, HumidityChannelHelper.class, PressureChannelHelper.class,
-                    TemperatureChannelHelper.class, Co2ChannelHelper.class, HomeCoachChannelHelper.class),
+                    TemperatureChannelHelper.class, Co2ChannelHelper.class, HomeCoachChannelHelper.class,
+                    DeviceChannelHelper.class, MeasuresChannelHelper.class),
             List.of(GROUP_HEALTH, GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_PRESSURE, GROUP_CO2, GROUP_NOISE,
-                    GROUP_DEVICE, GROUP_SIGNAL),
-            List.of("measure", "measure-timestamp"), RefreshPolicy.AUTO, null),
+                    GROUP_DEVICE, GROUP_SIGNAL)),
 
     // Energy group
-    NAHomeEnergy(HomeEnergyHandler.class, Set.of(HomeEnergyChannelHelper.class), List.of(GROUP_HOME_ENERGY), null,
-            RefreshPolicy.CONFIG, null),
-    NAPlug(PlugHandler.class, Set.of(PlugChannelHelper.class), List.of(GROUP_PLUG, GROUP_DEVICE, GROUP_SIGNAL), null,
-            RefreshPolicy.CONFIG, NAHomeEnergy),
-    NATherm1(Therm1Handler.class,
-            Set.of(Therm1PropsChannelHelper.class, Therm1SetpointChannelHelper.class, Therm1TempChannelHelper.class),
+    NAHomeEnergy(HomeEnergyHandler.class, RefreshPolicy.CONFIG, null, null, Set.of(HomeEnergyChannelHelper.class),
+            List.of(GROUP_HOME_ENERGY)),
+    NAPlug(PlugHandler.class, RefreshPolicy.CONFIG, NAHomeEnergy, null,
+            Set.of(PlugChannelHelper.class, DeviceChannelHelper.class),
+            List.of(GROUP_PLUG, GROUP_DEVICE, GROUP_SIGNAL)),
+    NATherm1(Therm1Handler.class, RefreshPolicy.PARENT, NAPlug, null,
+            Set.of(Therm1PropsChannelHelper.class, Therm1SetpointChannelHelper.class, Therm1TempChannelHelper.class,
+                    BatteryHelper.class, ModuleChannelHelper.class),
             List.of(GROUP_TH_PROPERTIES, GROUP_TH_SETPOINT, GROUP_TH_TEMPERATURE, GROUP_MODULE, GROUP_SIGNAL,
-                    GROUP_BATTERY),
-            null, RefreshPolicy.PARENT, NAPlug),
+                    GROUP_BATTERY)),
 
     // Left for future implementation
     // NACamDoorTag,
@@ -124,10 +134,11 @@ public enum ModuleType {
     public final @Nullable ThingTypeUID bridgeThingType;
     public final ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, this.name());
     public final Class<?> handlerClass;
-    public final Set<Class<?>> channelHelpers;
+    public final Set<Class<? extends AbstractChannelHelper>> channelHelpers;
 
-    ModuleType(Class<?> handlerClass, Set<Class<?>> setOfHelpers, List<String> groups,
-            @Nullable List<String> extensions, RefreshPolicy refreshPeriod, @Nullable ModuleType bridge) {
+    ModuleType(Class<?> handlerClass, RefreshPolicy refreshPeriod, @Nullable ModuleType bridge,
+            @Nullable List<String> extensions, Set<Class<? extends AbstractChannelHelper>> setOfHelpers,
+            List<String> groups) {
         this.handlerClass = handlerClass;
         this.groups = groups;
         this.refreshPeriod = refreshPeriod;
@@ -141,11 +152,9 @@ public enum ModuleType {
         return thingTypeUID.equals(otherThingTypeUID);
     }
 
-    public boolean hasBattery() {
-        return groups.contains(GROUP_BATTERY);
-    }
-
     public int[] getSignalLevels() {
-        return groups.contains(GROUP_SIGNAL) ? (hasBattery() ? RADIO_SIGNAL_LEVELS : WIFI_SIGNAL_LEVELS) : NO_RADIO;
+        return groups.contains(GROUP_SIGNAL)
+                ? (groups.contains(GROUP_BATTERY) ? RADIO_SIGNAL_LEVELS : WIFI_SIGNAL_LEVELS)
+                : NO_RADIO;
     }
 }

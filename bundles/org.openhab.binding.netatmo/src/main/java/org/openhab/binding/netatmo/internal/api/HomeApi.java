@@ -102,18 +102,4 @@ public class HomeApi extends RestManager {
         }
         return true;
     }
-
-    // TODO : did not find a way to have this work
-    // public boolean changeSetpointDefaultDuration(String homeId, int intValue) throws NetatmoException {
-    // String req = "api/sethomedata";
-    // String payload = String.format("{\"home\":{\"id\":\"%s\",\"therm_setpoint_default_duration\":%d}}", homeId,
-    // intValue);
-    //
-    // NAOkResponse response = apiHandler.post(req, payload, NAOkResponse.class, false);
-    // if (!response.isSuccess()) {
-    // throw new NetatmoException(
-    // String.format("Unsuccessfull setpoint duration change : %s", response.getStatus()));
-    // }
-    // return true;
-    // }
 }

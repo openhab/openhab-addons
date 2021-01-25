@@ -53,18 +53,20 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
     @Override
     public void setNewData(NAThing naThing) {
         super.setNewData(naThing);
-        NAHome home = (NAHome) naThing;
+        if (naThing instanceof NAHome) {
+            NAHome home = (NAHome) naThing;
 
-        persons = 0;
-        unknowns = 0;
+            persons = 0;
+            unknowns = 0;
 
-        logger.debug("welcome home '{}' counts Persons at home", home.getId());
+            logger.debug("welcome home '{}' counts Persons at home", home.getId());
 
-        List<NAPerson> present = home.getPersons().values().stream().filter(p -> !p.isOutOfSight())
-                .collect(Collectors.toList());
-        persons = present.size();
-        present = present.stream().filter(p -> p.getName() != null).collect(Collectors.toList());
-        unknowns = persons - present.size();
+            List<NAPerson> present = home.getPersons().values().stream().filter(p -> !p.isOutOfSight())
+                    .collect(Collectors.toList());
+            persons = present.size();
+            present = present.stream().filter(p -> p.getName() != null).collect(Collectors.toList());
+            unknowns = persons - present.size();
+        }
     }
 
     @Override
