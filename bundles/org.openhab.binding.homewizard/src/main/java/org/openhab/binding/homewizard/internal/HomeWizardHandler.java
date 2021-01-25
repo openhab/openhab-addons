@@ -15,8 +15,6 @@ package org.openhab.binding.homewizard.internal;
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,8 +30,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -48,19 +44,13 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class HomeWizardHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(HomeWizardHandler.class);
-
     private HomeWizardConfiguration config = new HomeWizardConfiguration();
-
-    private final Lock pollingJobLock = new ReentrantLock();
     private @Nullable ScheduledFuture<?> pollingJob;
-    private int currentRefreshDelay = 0;
 
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
     private String apiURL = "";
-
     private String meterModel = "";
     private int meterVersion = 0;
 
@@ -86,9 +76,8 @@ public class HomeWizardHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(HomeWizardConfiguration.class);
-
         if (configure()) {
-            startPolling();
+            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshDelay, TimeUnit.SECONDS);
         }
     }
 
@@ -110,51 +99,15 @@ public class HomeWizardHandler extends BaseThingHandler {
     }
 
     /**
-     * Stop the poller unconditionally
+     * dispose: stop the poller
      */
     @Override
     public void dispose() {
-        stopPolling();
-    }
-
-    /**
-     * Stop the polling job
-     */
-    private void stopPolling() {
-        try {
-            pollingJobLock.lock();
-            if (pollingJob != null && !pollingJob.isCancelled()) {
-                if (pollingJob != null) {
-                    pollingJob.cancel(true);
-                }
-                pollingJob = null;
-            }
-        } finally {
-            pollingJobLock.unlock();
+        var job = pollingJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
         }
-    }
-
-    /**
-     * Start a polling job if it is not already running.
-     */
-    private void startPolling() {
-        try {
-            pollingJobLock.lock();
-            boolean startPoller = false;
-            if (pollingJob != null) {
-                startPoller = pollingJob.isCancelled();
-            } else {
-                startPoller = true;
-            }
-
-            if (startPoller) {
-                currentRefreshDelay = config.refreshDelay;
-                pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, currentRefreshDelay,
-                        TimeUnit.SECONDS);
-            }
-        } finally {
-            pollingJobLock.unlock();
-        }
+        pollingJob = null;
     }
 
     /**

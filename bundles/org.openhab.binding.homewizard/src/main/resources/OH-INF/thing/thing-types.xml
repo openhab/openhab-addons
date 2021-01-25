@@ -31,7 +31,7 @@
 				<description>The IP or host name of the P1 Meter.</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="refreshDelay" type="integer" min="1">
+			<parameter name="refreshDelay" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in seconds for polling the P1 Meter.</description>
 				<default>5</default>
