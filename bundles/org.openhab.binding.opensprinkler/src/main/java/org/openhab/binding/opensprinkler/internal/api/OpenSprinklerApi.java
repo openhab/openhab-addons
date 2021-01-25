@@ -13,12 +13,15 @@
 package org.openhab.binding.opensprinkler.internal.api;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.StateOption;
 
 /**
  * The {@link OpenSprinklerApi} interface defines the functions which are
@@ -29,6 +32,7 @@ import org.openhab.binding.opensprinkler.internal.model.StationProgram;
  */
 @NonNullByDefault
 public interface OpenSprinklerApi {
+
     /**
      * Whether the device entered manual mode and accepts API requests to control the stations.
      *
@@ -138,10 +142,36 @@ public interface OpenSprinklerApi {
     public abstract int getFirmwareVersion() throws CommunicationApiException, UnauthorizedApiException;
 
     /**
-     * Sends GET requests and stores the responses for use by the API.
+     * Sends all the GET requests and stores/cache the responses for use by the API to prevent the need for multiple
+     * requests.
      *
      * @throws CommunicationApiException
      * @throws UnauthorizedApiException
      */
     public abstract void refresh() throws CommunicationApiException, UnauthorizedApiException;
+
+    /**
+     * Ask the OpenSprinkler for the program names and store these for future use in a List.
+     *
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
+     */
+    public abstract void getProgramData() throws CommunicationApiException, UnauthorizedApiException;
+
+    /**
+     * Returns the string names of all internal programs from the stored List.
+     *
+     * @return List of Program names
+     */
+    public abstract List<StateOption> getPrograms();
+
+    /**
+     * Runs a Program that is setup and stored inside the OpenSprinkler
+     *
+     * @param Program index number that you wish to run.
+     *
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
+     */
+    public abstract void runProgram(Command command) throws CommunicationApiException, UnauthorizedApiException;
 }

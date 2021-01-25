@@ -22,6 +22,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCurrent;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerStateDescriptionProvider;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -29,10 +30,11 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.types.RefreshType;
 
 /**
  * @author Chris Graham - Initial contribution
@@ -40,10 +42,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDeviceHandler.class);
+    public final OpenSprinklerStateDescriptionProvider stateDescriptionProvider;
 
-    public OpenSprinklerDeviceHandler(Thing thing) {
+    public OpenSprinklerDeviceHandler(Thing thing, OpenSprinklerStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -72,6 +75,8 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
             case SENSOR_FLOW_COUNT:
                 updateState(channel, new QuantityType<Dimensionless>(localAPI.flowSensorCount(), Units.ONE));
                 break;
+            case CHANNEL_PROGRAMS:
+                break;
             default:
                 logger.debug("Can not update the unknown channel {}", channel);
         }
@@ -81,6 +86,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     public void initialize() {
         super.initialize();
         OpenSprinklerApi localAPI = getApi();
+        // Remove channels due to missing sensors or old firmware
         if (localAPI != null) {
             ArrayList<Channel> removeChannels = new ArrayList<>();
             Channel channel = thing.getChannel(SENSOR_CURRENT_DRAW);
@@ -89,7 +95,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 removeChannels.add(channel);
             }
             channel = thing.getChannel(SENSOR_SIGNAL_STRENGTH);
-            if (localAPI.signalStrength() == 0 && channel != null) {
+            if (localAPI.signalStrength() == 1 && channel != null) {
                 removeChannels.add(channel);
             }
             channel = thing.getChannel(SENSOR_FLOW_COUNT);
@@ -101,11 +107,49 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 thingBuilder.withoutChannels(removeChannels);
                 updateThing(thingBuilder.build());
             }
+            updatePrograms(localAPI);
         }
+    }
+
+    /**
+     * Fetch the stored Program list and update the StateOptions on the channel so they match.
+     *
+     * @param api
+     */
+    private void updatePrograms(OpenSprinklerApi api) {
+        stateDescriptionProvider.setStateOptions(new ChannelUID(this.getThing().getUID(), CHANNEL_PROGRAMS),
+                api.getPrograms());
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // nothing to do here
+        OpenSprinklerApi api = getApi();
+        if (api == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "OpenSprinkler bridge returned no API.");
+            return;
+        }
+        OpenSprinklerHttpBridgeHandler localBridge = bridgeHandler;
+        if (localBridge == null) {
+            return;
+        }
+        try {
+            if (command instanceof RefreshType) {
+                switch (channelUID.getIdWithoutGroup()) {
+                    case CHANNEL_PROGRAMS:
+                        api.getProgramData();
+                        updatePrograms(api);
+                        break;
+                }
+            } else {
+                switch (channelUID.getIdWithoutGroup()) {
+                    case CHANNEL_PROGRAMS:
+                        api.runProgram(command);
+                        break;
+                }
+                localBridge.refreshStations();// update sensors and controls after command is sent
+            }
+        } catch (Exception e) {
+            localBridge.communicationError(e);
+        }
     }
 }

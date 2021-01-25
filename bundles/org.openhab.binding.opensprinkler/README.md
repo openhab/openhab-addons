@@ -52,7 +52,7 @@ The following channels are supported by the `station` thing.
 When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.
 
 The following channels are supported by the `device` thing.
-Some channels will only show up if the needed sensor is setup correctly and the firmware version supports this feature.
+NOTE: Some channels will only show up if the hardware has the required sensor and is setup correctly, and the firmware version supports this feature.
 
 | Channel Type ID | Item Type              |    | Description                                                                        |
 |-----------------|------------------------|----|------------------------------------------------------------------------------------|
@@ -62,7 +62,8 @@ Some channels will only show up if the needed sensor is setup correctly and the 
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
 |                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
 | signalStrength  | Number:Dimensionless   | RO | Shows the reported RSSI value in dB to indicate how strong the WiFi Signal is.     |
-| flowSensorCount  | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
+| flowSensorCount | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
+| programs        | String                 | RW | Displays a list of the programs that are setup in your OpenSprinkler and when selected will start that program for you. |
 
 ## Textual Example
 

@@ -16,6 +16,7 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -35,6 +36,10 @@ import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiExcept
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.StateOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -48,6 +53,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final String hostname;
     protected final int port;
     protected String password;
@@ -59,11 +65,14 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected JoResponse joReply;
     @Nullable
     protected JsResponse jsReply;
+    @Nullable
+    protected JpResponse jpReply;
     protected int firmwareVersion = -1;
     protected int numberOfStations = DEFAULT_STATION_COUNT;
     protected boolean isInManualMode = false;
-    private final Gson gson = new Gson();
+    protected final Gson gson = new Gson();
     protected HttpRequestSender http;
+    protected List<StateOption> programs = new ArrayList<>();
 
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the
@@ -77,7 +86,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      * @param basicPassword only needed if basic auth is required
      * @throws Exception
      */
-    OpenSprinklerHttpApiV100(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config) {
+    OpenSprinklerHttpApiV100(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config)
+            throws CommunicationApiException, UnauthorizedApiException {
         if (config.hostname.startsWith(HTTP_REQUEST_URL_PREFIX)
                 || config.hostname.startsWith(HTTPS_REQUEST_URL_PREFIX)) {
             this.hostname = config.hostname;
@@ -94,6 +104,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public boolean isManualModeEnabled() {
         return isInManualMode;
+    }
+
+    @Override
+    public List<StateOption> getPrograms() {
+        return programs;
     }
 
     @Override
@@ -282,7 +297,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public @Nullable List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
-        public int RSSI = 0; // json reply uses all uppercase
+        public int RSSI = 1; // json reply uses all uppercase
         public int flcrt = -1;
         public int curr = -1;
     }
@@ -319,6 +334,20 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected static class JsResponse {
         public int sn[] = new int[8];
         public int nstations = 8;
+    }
+
+    @Override
+    public void getProgramData() throws CommunicationApiException, UnauthorizedApiException {
+    }
+
+    @Override
+    public void runProgram(Command command) throws CommunicationApiException, UnauthorizedApiException {
+        logger.warn("OpenSprinkler requires at least firmware 217 for the runProgram feature to work");
+    }
+
+    protected static class JpResponse {
+        public int nprogs = 0;
+        public Object[] pd = {};
     }
 
     /**

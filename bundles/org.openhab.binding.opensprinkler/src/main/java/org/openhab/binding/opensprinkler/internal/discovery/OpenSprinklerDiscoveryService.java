@@ -72,15 +72,20 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE);
         try {
             ipAddressScan();
-            discoverySearchPool.shutdown();
         } catch (Exception exp) {
             logger.debug("OpenSprinkler discovery service encountered an error while scanning for devices: {}",
                     exp.getMessage());
         }
         logger.debug("Completed discovery of OpenSprinkler devices.");
-        stopScan();
+    }
+
+    @Override
+    protected void stopScan() {
+        discoverySearchPool.shutdownNow();
+        super.stopScan();
     }
 
     /**
@@ -89,14 +94,18 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
      * @param ip IP address of the OpenSprinkler device as a string.
      */
     public void submitDiscoveryResults(String ip) {
-        ThingUID uid = new ThingUID(OPENSPRINKLER_HTTP_BRIDGE, ip.replace('.', '_'));
+        ThingUID bridgeUID = new ThingUID(OPENSPRINKLER_HTTP_BRIDGE, ip.replace('.', '_'));
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hostname", ip);
         properties.put("port", 80);
         properties.put("password", DEFAULT_ADMIN_PASSWORD);
         properties.put("refresh", 60);
-        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("OpenSprinkler @" + ip)
-                .withRepresentationProperty("hostname").build());
+        thingDiscovered(DiscoveryResultBuilder.create(bridgeUID).withProperties(properties)
+                .withLabel("OpenSprinkler HTTP Bridge").withRepresentationProperty("hostname").build());
+        // Now create the Device thing
+        ThingUID uid = new ThingUID(OPENSPRINKLER_DEVICE, bridgeUID, ip.replace('.', '_'));
+        thingDiscovered(
+                DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel("OpenSprinkler Device").build());
     }
 
     private void ipAddressScan() {

@@ -39,10 +39,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerHttpBridgeHandler.class);
+
     @Nullable
     private ScheduledFuture<?> pollingJob;
     @Nullable
-    protected OpenSprinklerApi openSprinklerDevice;
+    private OpenSprinklerApi openSprinklerDevice;
 
     private OpenSprinklerHttpInterfaceConfig openSprinklerConfig = new OpenSprinklerHttpInterfaceConfig();
     private OpenSprinklerApiFactory apiFactory;
@@ -58,6 +59,11 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
             throw new IllegalStateException();
         }
         return api;
+    }
+
+    public void communicationError(Exception e) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                "Communication Error with the OpenSprinkler: " + e.getMessage());
     }
 
     public void refreshStations() {

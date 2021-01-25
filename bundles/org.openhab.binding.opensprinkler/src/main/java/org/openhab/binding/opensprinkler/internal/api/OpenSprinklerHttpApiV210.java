@@ -15,6 +15,7 @@ package org.openhab.binding.opensprinkler.internal.api;
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -30,6 +31,7 @@ import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiE
 import org.openhab.binding.opensprinkler.internal.api.exception.UnknownApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
+import org.openhab.core.types.StateOption;
 
 /**
  * The {@link OpenSprinklerHttpApiV210} class is used for communicating with
@@ -49,11 +51,33 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      * @param password Admin password for the OpenSprinkler device.
      * @param basicUsername only needed if basic auth is required
      * @param basicPassword only needed if basic auth is required
+     * @throws CommunicationApiException
      * @throws Exception
      */
     OpenSprinklerHttpApiV210(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config)
-            throws GeneralApiException {
+            throws GeneralApiException, CommunicationApiException {
         super(httpClient, config);
+    }
+
+    @Override
+    public void getProgramData() throws CommunicationApiException, UnauthorizedApiException {
+        String returnContent;
+        try {
+            returnContent = http.sendHttpGet(getBaseUrl() + CMD_PROGRAM_DATA, getRequestRequiredOptions());
+        } catch (CommunicationApiException exp) {
+            throw new CommunicationApiException(
+                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+        }
+        JpResponse resp = gson.fromJson(returnContent, JpResponse.class);
+        if (resp != null && resp.pd.length > 0) {
+            programs = new ArrayList<>();
+            int counter = 0;
+            for (Object x : resp.pd) {
+                String temp = x.toString();
+                temp = temp.substring(temp.lastIndexOf(',') + 2, temp.length() - 1);
+                programs.add(new StateOption(Integer.toString(counter++), temp));
+            }
+        }
     }
 
     @Override

@@ -33,8 +33,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Chris Graham - Initial contribution
@@ -42,8 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(OpenSprinklerStationHandler.class);
-
     private OpenSprinklerStationConfig config = new OpenSprinklerStationConfig();
     private BigDecimal nextDurationTime = BigDecimal.TEN;
 
@@ -81,6 +77,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             if (localBridge == null) {
                 return;
             }
+            // update all controls after a command is sent in case a long poll time is set.
             localBridge.refreshStations();
         }
     }

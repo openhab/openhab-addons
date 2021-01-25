@@ -81,6 +81,7 @@
 			<channel id="currentDraw" typeId="currentDraw"></channel>
 			<channel id="signalStrength" typeId="signalStrength"></channel>
 			<channel id="flowSensorCount" typeId="flowSensorCount"></channel>
+			<channel id="programs" typeId="programs"></channel>
 		</channels>
 	</thing-type>
 
@@ -148,5 +149,13 @@
 		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
 		<state readOnly="false" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="programs">
+		<item-type>String</item-type>
+		<label>Programs</label>
+		<description>Run or Stop a program</description>
+		<state readOnly="false">
+		</state>
 	</channel-type>
 </thing:thing-descriptions>

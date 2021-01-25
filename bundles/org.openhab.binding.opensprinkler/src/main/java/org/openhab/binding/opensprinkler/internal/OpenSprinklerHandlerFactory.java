@@ -46,11 +46,14 @@ import org.osgi.service.component.annotations.Reference;
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_HTTP_BRIDGE, OPENSPRINKLER_STATION, OPENSPRINKLER_DEVICE));
+    private final OpenSprinklerStateDescriptionProvider stateDescriptionProvider;
     private OpenSprinklerApiFactory apiFactory;
 
     @Activate
-    public OpenSprinklerHandlerFactory(@Reference OpenSprinklerApiFactory apiFactory) {
+    public OpenSprinklerHandlerFactory(@Reference OpenSprinklerApiFactory apiFactory,
+            final @Reference OpenSprinklerStateDescriptionProvider stateDescriptionProvider) {
         this.apiFactory = apiFactory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -67,7 +70,7 @@ public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(OPENSPRINKLER_STATION)) {
             return new OpenSprinklerStationHandler(thing);
         } else if (thingTypeUID.equals(OPENSPRINKLER_DEVICE)) {
-            return new OpenSprinklerDeviceHandler(thing);
+            return new OpenSprinklerDeviceHandler(thing, stateDescriptionProvider);
         }
 
         return null;
