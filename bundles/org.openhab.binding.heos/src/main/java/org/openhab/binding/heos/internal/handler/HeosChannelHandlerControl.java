@@ -12,12 +12,18 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import static org.openhab.binding.heos.internal.resources.HeosConstants.SONG;
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
+import org.openhab.binding.heos.internal.json.payload.Media;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.HeosMediaEventListener;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
@@ -28,13 +34,16 @@ import org.openhab.core.types.RefreshType;
  * coming from the implementing thing
  *
  * @author Johannes Einig - Initial contribution
+ * @author Martin van Wingerden - change handling of stop/pause depending on playing item type
  */
 @NonNullByDefault
-public class HeosChannelHandlerControl extends BaseHeosChannelHandler {
+public class HeosChannelHandlerControl extends BaseHeosChannelHandler implements HeosMediaEventListener {
     private final HeosEventListener eventListener;
+    private final Map<String, Media> playingMediaCache = new HashMap<>();
 
     public HeosChannelHandlerControl(HeosEventListener eventListener, HeosBridgeHandler bridge) {
         super(bridge);
+        bridge.registerMediaEventListener(this);
         this.eventListener = eventListener;
     }
 
@@ -69,7 +78,11 @@ public class HeosChannelHandlerControl extends BaseHeosChannelHandler {
                 break;
             case "PAUSE":
             case "OFF":
-                getApi().pause(id);
+                if (shouldPause(id)) {
+                    getApi().pause(id);
+                } else {
+                    getApi().stop(id);
+                }
                 break;
             case "NEXT":
                 getApi().next(id);
@@ -78,5 +91,29 @@ public class HeosChannelHandlerControl extends BaseHeosChannelHandler {
                 getApi().previous(id);
                 break;
         }
+    }
+
+    private boolean shouldPause(String id) {
+        Media applicableMedia = playingMediaCache.get(id);
+        if (applicableMedia == null || SONG.equals(applicableMedia.type)) {
+            return true;
+        } else {
+            // we have a station here, just have to check which one
+            switch (applicableMedia.sourceId) {
+                case Media.SOURCE_TUNE_IN:
+                case Media.SOURCE_I_HEART_RADIO:
+                case Media.SOURCE_SIRIUS_XM:
+                case Media.SOURCE_AUX:
+                    return false;
+
+                default:
+                    return true;
+            }
+        }
+    }
+
+    @Override
+    public void playerMediaChangeEvent(String pid, Media media) {
+        playingMediaCache.put(pid, media);
     }
 }
