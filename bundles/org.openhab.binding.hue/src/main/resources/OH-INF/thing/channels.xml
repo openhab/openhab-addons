@@ -11,14 +11,6 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
-	<channel-type id="ct" advanced="true">
-		<item-type>Number</item-type>
-		<label>Color Temperature</label>
-		<description>This channel supports adjusting the color temperature in Kelvin.</description>
-		<category>ColorLight</category>
-		<state min="15" max="100000" step="100" pattern="%.0f K"/>
-	</channel-type>
-
 	<channel-type id="illuminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
