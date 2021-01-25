@@ -92,4 +92,10 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         }
         return null;
     }
+
+    @Override
+    public int getRemovalGracePeriodSeconds(RemoteDevice device) {
+        // Hue bridges have maxAge 100 seconds, so apply a grace period of half that
+        return 50;
+    }
 }
