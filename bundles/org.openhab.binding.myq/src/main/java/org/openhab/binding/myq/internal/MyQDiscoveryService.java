@@ -24,6 +24,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -36,14 +37,14 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  */
 @NonNullByDefault
 public class MyQDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
-    public MyQDiscoveryService() throws IllegalArgumentException {
-        super(SUPPORTED_DISCOVERY_THING_TYPES_UIDS, 1, true);
-    }
 
     private static final Set<ThingTypeUID> SUPPORTED_DISCOVERY_THING_TYPES_UIDS = Set
             .of(MyQBindingConstants.THING_TYPE_GARAGEDOOR, MyQBindingConstants.THING_TYPE_LAMP);
-
     private @Nullable MyQAccountHandler accountHandler;
+
+    public MyQDiscoveryService() {
+        super(SUPPORTED_DISCOVERY_THING_TYPES_UIDS, 1, true);
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
@@ -63,7 +64,7 @@ public class MyQDiscoveryService extends AbstractDiscoveryService implements Dis
                                 device.serialNumber.toLowerCase());
                         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("MyQ " + device.name)
                                 .withProperty("serialNumber", thingUID.getId())
-                                .withRepresentationProperty("serialNumber")
+                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                                 .withBridge(accountHandler.getThing().getUID()).build();
                         thingDiscovered(result);
                     }

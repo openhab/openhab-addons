@@ -117,7 +117,7 @@ public class MyQAccountHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         DevicesDTO localDeviceCaches = devicesCache;
-        if (localDeviceCaches != null) {
+        if (localDeviceCaches != null && childHandler instanceof MyQDeviceHandler) {
             DeviceDTO device = localDeviceCaches.items.stream()
                     .filter(d -> ((MyQDeviceHandler) childHandler).getSerialNumber().equalsIgnoreCase(d.serialNumber))
                     .findFirst().orElse(null);
