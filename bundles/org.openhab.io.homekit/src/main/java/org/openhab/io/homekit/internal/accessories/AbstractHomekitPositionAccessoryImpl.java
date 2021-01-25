@@ -45,7 +45,6 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     protected int closedPosition;
     protected int openPosition;
     private final Map<PositionStateEnum, String> positionStateMapping;
-    private final List<PositionStateEnum> customPositionStateList;
 
     public AbstractHomekitPositionAccessoryImpl(HomekitTaggedItem taggedItem,
             List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater,
@@ -59,8 +58,7 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         positionStateMapping.put(PositionStateEnum.DECREASING, "DECREASING");
         positionStateMapping.put(PositionStateEnum.INCREASING, "INCREASING");
         positionStateMapping.put(PositionStateEnum.STOPPED, "STOPPED");
-        customPositionStateList = new ArrayList<>();
-        updateMapping(POSITION_STATE, positionStateMapping, customPositionStateList);
+        updateMapping(POSITION_STATE, positionStateMapping, new ArrayList<PositionStateEnum>());
     }
 
     public CompletableFuture<Integer> getCurrentPosition() {
