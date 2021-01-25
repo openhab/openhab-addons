@@ -64,9 +64,9 @@ public class SVDRPEpgEventTest {
         assertEquals("Tagesschau", event.getTitle());
         assertEquals("Aktuelle Nachrichten aus der Welt", event.getSubtitle());
         assertEquals(15, event.getDuration());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        assertEquals(sdf.parse("2021-01-11 20:00:00"), event.getBegin());
-        assertEquals(sdf.parse("2021-01-11 20:15:00"), event.getEnd());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        assertEquals(sdf.parse("2021-01-11 19:00:00 UTC"), event.getBegin());
+        assertEquals(sdf.parse("2021-01-11 19:15:00 UTC"), event.getEnd());
     }
 
     @Test
@@ -89,9 +89,9 @@ public class SVDRPEpgEventTest {
         assertEquals("Tagesschau", event.getTitle());
         assertEquals("", event.getSubtitle());
         assertEquals(15, event.getDuration());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        assertEquals(sdf.parse("2021-01-11 20:00:00"), event.getBegin());
-        assertEquals(sdf.parse("2021-01-11 20:15:00"), event.getEnd());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        assertEquals(sdf.parse("2021-01-11 19:00:00 UTC"), event.getBegin());
+        assertEquals(sdf.parse("2021-01-11 19:15:00 UTC"), event.getEnd());
     }
 
     @Test
