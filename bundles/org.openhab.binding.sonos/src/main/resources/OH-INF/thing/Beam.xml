@@ -60,6 +60,12 @@
 			<channel id="linein" typeId="linein"/>
 			<channel id="nightmode" typeId="nightmode"/>
 			<channel id="speechenhancement" typeId="speechenhancement"/>
+			<channel id="subwoofer" typeId="subwoofer"/>
+			<channel id="subwoofergain" typeId="subwoofergain"/>
+			<channel id="surround" typeId="surround"/>
+			<channel id="surroundmusicmode" typeId="surroundmusicmode"/>
+			<channel id="surroundmusiclevel" typeId="surroundmusiclevel"/>
+			<channel id="surroundtvlevel" typeId="surroundtvlevel"/>
 		</channels>
 
 		<properties>
