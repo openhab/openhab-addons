@@ -16,6 +16,7 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -78,6 +79,25 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
                 programs.add(new StateOption(Integer.toString(counter++), temp));
             }
         }
+    }
+
+    @Override
+    public List<StateOption> getStationNames() throws CommunicationApiException, UnauthorizedApiException {
+        String returnContent;
+        try {
+            returnContent = http.sendHttpGet(getBaseUrl() + "jn", getRequestRequiredOptions());
+        } catch (CommunicationApiException exp) {
+            throw new CommunicationApiException(
+                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+        }
+        JnResponse resp = gson.fromJson(returnContent, JnResponse.class);
+        if (resp != null) {
+            int counter = 0;
+            for (String x : resp.snames) {
+                stations.add(new StateOption(Integer.toString(counter++), x));
+            }
+        }
+        return stations;
     }
 
     @Override

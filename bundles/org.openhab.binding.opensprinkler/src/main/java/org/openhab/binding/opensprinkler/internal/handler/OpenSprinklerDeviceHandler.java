@@ -16,6 +16,7 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import javax.measure.quantity.Dimensionless;
@@ -24,8 +25,11 @@ import javax.measure.quantity.ElectricCurrent;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.OpenSprinklerStateDescriptionProvider;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -77,6 +81,10 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 break;
             case CHANNEL_PROGRAMS:
                 break;
+            case CHANNEL_STATIONS:
+                break;
+            case NEXT_DURATION:
+                break;
             default:
                 logger.debug("Can not update the unknown channel {}", channel);
         }
@@ -108,6 +116,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 updateThing(thingBuilder.build());
             }
             updatePrograms(localAPI);
+            updateStations(localAPI);
         }
     }
 
@@ -119,6 +128,14 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     private void updatePrograms(OpenSprinklerApi api) {
         stateDescriptionProvider.setStateOptions(new ChannelUID(this.getThing().getUID(), CHANNEL_PROGRAMS),
                 api.getPrograms());
+    }
+
+    private void updateStations(OpenSprinklerApi api) {
+        try {
+            stateDescriptionProvider.setStateOptions(new ChannelUID(this.getThing().getUID(), CHANNEL_STATIONS),
+                    api.getStationNames());
+        } catch (UnauthorizedApiException | CommunicationApiException e) {
+        }
     }
 
     @Override
@@ -144,6 +161,15 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PROGRAMS:
                         api.runProgram(command);
+                        break;
+                    case NEXT_DURATION:
+                        handleNextDurationCommand(channelUID, command);
+                        break;
+                    case CHANNEL_STATIONS:
+                        if (command instanceof StringType) {
+                            BigDecimal temp = new BigDecimal(command.toString());
+                            api.openStation(temp.intValue(), nextDurationValue());
+                        }
                         break;
                 }
                 localBridge.refreshStations();// update sensors and controls after command is sent

@@ -64,6 +64,8 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 | signalStrength  | Number:Dimensionless   | RO | Shows the reported RSSI value in dB to indicate how strong the WiFi Signal is.     |
 | flowSensorCount | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
 | programs        | String                 | RW | Displays a list of the programs that are setup in your OpenSprinkler and when selected will start that program for you. |
+| stations        | String                 | RW | Display a list of stations that can run when selected to the length of time set in `nextDuration` channel for this device thing. |
+| nextDuration | Number:Time               | RW | The time the station will open for when any stations are selected from the `stations` channel. |
 
 ## Textual Example
 

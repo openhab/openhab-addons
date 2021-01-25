@@ -41,7 +41,6 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     private OpenSprinklerStationConfig config = new OpenSprinklerStationConfig();
-    private BigDecimal nextDurationTime = MAX_TIME_SECONDS;
 
     public OpenSprinklerStationHandler(Thing thing) {
         super(thing);
@@ -80,17 +79,6 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             // update all controls after a command is sent in case a long poll time is set.
             localBridge.refreshStations();
         }
-    }
-
-    @SuppressWarnings("null")
-    private void handleNextDurationCommand(ChannelUID channelUID, Command command) {
-        if (!(command instanceof QuantityType<?>)) {
-            logger.info("Ignoring implausible non-QuantityType command for NEXT_DURATION");
-            return;
-        }
-        QuantityType<?> quantity = (QuantityType<?>) command;
-        nextDurationTime = quantity.toUnit(Units.SECOND).toBigDecimal();
-        updateState(channelUID, quantity);
     }
 
     private void handleStationStateCommand(OpenSprinklerApi api, Command command) {
@@ -205,9 +193,5 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             default:
                 logger.debug("Not updating unknown channel {}", channel);
         }
-    }
-
-    private BigDecimal nextDurationValue() {
-        return nextDurationTime;
     }
 }

@@ -82,6 +82,8 @@
 			<channel id="signalStrength" typeId="signalStrength"></channel>
 			<channel id="flowSensorCount" typeId="flowSensorCount"></channel>
 			<channel id="programs" typeId="programs"></channel>
+			<channel id="stations" typeId="stations"></channel>
+			<channel id="nextDuration" typeId="nextDuration"></channel>
 		</channels>
 	</thing-type>
 
@@ -155,6 +157,14 @@
 		<item-type>String</item-type>
 		<label>Programs</label>
 		<description>Run or Stop a program</description>
+		<state readOnly="false">
+		</state>
+	</channel-type>
+
+	<channel-type id="stations">
+		<item-type>String</item-type>
+		<label>Stations</label>
+		<description>Open a Station</description>
 		<state readOnly="false">
 		</state>
 	</channel-type>

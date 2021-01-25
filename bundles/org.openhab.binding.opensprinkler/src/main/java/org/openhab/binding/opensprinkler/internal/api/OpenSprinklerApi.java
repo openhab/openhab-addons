@@ -174,4 +174,6 @@ public interface OpenSprinklerApi {
      * @throws UnauthorizedApiException
      */
     public abstract void runProgram(Command command) throws CommunicationApiException, UnauthorizedApiException;
+
+    public abstract List<StateOption> getStationNames() throws CommunicationApiException, UnauthorizedApiException;
 }

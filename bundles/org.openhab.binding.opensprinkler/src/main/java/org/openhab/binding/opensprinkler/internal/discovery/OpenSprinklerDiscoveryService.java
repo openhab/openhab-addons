@@ -103,9 +103,11 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(DiscoveryResultBuilder.create(bridgeUID).withProperties(properties)
                 .withLabel("OpenSprinkler HTTP Bridge").withRepresentationProperty("hostname").build());
         // Now create the Device thing
+        properties.clear();
+        properties.put("hostname", ip);
         ThingUID uid = new ThingUID(OPENSPRINKLER_DEVICE, bridgeUID, ip.replace('.', '_'));
-        thingDiscovered(
-                DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel("OpenSprinkler Device").build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
+                .withRepresentationProperty("hostname").withLabel("OpenSprinkler Device").build());
     }
 
     private void ipAddressScan() {
@@ -123,8 +125,8 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
                         for (int i = 1; i < 254; i++) {
                             String host = temp + "." + i;
                             try {
-                                // Try to reach each IP with a timeout of 300ms which is enough for local network
-                                if (InetAddress.getByName(host).isReachable(300)) {
+                                // Try to reach each IP with a timeout of 500ms which is enough for local network
+                                if (InetAddress.getByName(host).isReachable(500)) {
                                     logger.trace("Unknown device was found at:{}", host);
                                     discoverySearchPool.execute(new OpenSprinklerDiscoveryJob(this, host));
                                 }

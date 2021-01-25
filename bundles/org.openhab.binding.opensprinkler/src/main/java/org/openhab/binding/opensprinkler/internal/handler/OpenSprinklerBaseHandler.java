@@ -12,15 +12,22 @@
  */
 package org.openhab.binding.opensprinkler.internal.handler;
 
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.MAX_TIME_SECONDS;
+
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +38,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected BigDecimal nextDurationTime = MAX_TIME_SECONDS;
 
     @Nullable
     OpenSprinklerHttpBridgeHandler bridgeHandler;
@@ -59,6 +67,21 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
         if (getApi() != null) {
             updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    @SuppressWarnings("null")
+    protected void handleNextDurationCommand(ChannelUID channelUID, Command command) {
+        if (!(command instanceof QuantityType<?>)) {
+            logger.info("Ignoring implausible non-QuantityType command for NEXT_DURATION");
+            return;
+        }
+        QuantityType<?> quantity = (QuantityType<?>) command;
+        nextDurationTime = quantity.toUnit(Units.SECOND).toBigDecimal();
+        updateState(channelUID, quantity);
+    }
+
+    protected BigDecimal nextDurationValue() {
+        return nextDurationTime;
     }
 
     @Override

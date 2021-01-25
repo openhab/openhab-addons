@@ -73,6 +73,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected final Gson gson = new Gson();
     protected HttpRequestSender http;
     protected List<StateOption> programs = new ArrayList<>();
+    protected List<StateOption> stations = new ArrayList<>();
 
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the
@@ -302,6 +303,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public int curr = -1;
     }
 
+    protected static class JnResponse {
+        public List<String> snames = new ArrayList<>();
+    }
+
     private @Nullable JoResponse getOptions() throws CommunicationApiException, UnauthorizedApiException {
         String returnContent;
         try {
@@ -348,6 +353,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected static class JpResponse {
         public int nprogs = 0;
         public Object[] pd = {};
+    }
+
+    @Override
+    public List<StateOption> getStationNames() throws CommunicationApiException, UnauthorizedApiException {
+        return stations;
     }
 
     /**

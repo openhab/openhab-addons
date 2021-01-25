@@ -70,6 +70,7 @@ public class OpenSprinklerBindingConstants {
     public static final String SENSOR_WATERLEVEL = "waterlevel";
     public static final String SENSOR_CURRENT_DRAW = "currentDraw";
     public static final String CHANNEL_PROGRAMS = "programs";
+    public static final String CHANNEL_STATIONS = "stations";
     public static final String SENSOR_SIGNAL_STRENGTH = "signalStrength";
     public static final String SENSOR_FLOW_COUNT = "flowSensorCount";
     public static final String STATION_STATE = "stationState";
