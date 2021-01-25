@@ -34,6 +34,8 @@ import org.joda.time.format.DateTimeFormatter;
 public class Converter {
     private static final DateTimeFormatter routerosFormat = DateTimeFormat.forPattern("MMM/dd/YYYY kk:mm:ss");
 
+    private static final Pattern PERIOD_PATTERN = Pattern.compile("(\\d+)([a-z]+){1,3}");
+
     @Nullable
     public static DateTime fromRouterosTime(@Nullable String dateTimeString) {
         if (dateTimeString == null)
@@ -46,15 +48,8 @@ public class Converter {
     public static Period fromRouterosPeriod(@Nullable String durationString) {
         if (durationString == null)
             return null;
-        /*
-         * uptime = 6w6h31m31s
-         * uptime = 3d7h6m43s710ms
-         * uptime = 16h39m58s220ms
-         * uptime = 1h38m53s110ms
-         * uptime = 53m53s950ms
-         */
-        Pattern pat = Pattern.compile("(\\d+)([a-z]){1,3}");
-        Matcher m = pat.matcher(durationString);
+
+        Matcher m = PERIOD_PATTERN.matcher(durationString);
         MutablePeriod per = new MutablePeriod();
         while (m.find()) {
             int amount = Integer.parseInt(m.group(1));
