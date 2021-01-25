@@ -27,9 +27,11 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +76,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
     protected abstract void initialize(C config, PlugwiseHABridgeHandler bridge);
 
     /**
-     * Get the Plugwise Entity that this class handles.
+     * Get the Plugwise Entity that belongs to this ThingHandler
      *
      * @param controller the controller for this ThingHandler
      * @param forceRefresh indicated if the entity should be refreshed from the Plugwise API
@@ -196,22 +198,43 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
         }
     }
 
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            setLinkedChannelsUndef();
+        }
+    }
+
+    private void setLinkedChannelsUndef() {
+        for (Channel channel : getThing().getChannels()) {
+            ChannelUID channelUID = channel.getUID();
+            if (this.isLinked(channelUID)) {
+                updateState(channelUID, UnDefType.UNDEF);
+            }
+        }
+    }
+
     protected final void refresh() {
-        if (getThing().getStatus() == ONLINE) {
+        PlugwiseHABridgeHandler bridgeHandler = getPlugwiseHABridge();
+        if (bridgeHandler.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
             PlugwiseHAController controller = getController();
             if (controller != null) {
+                E entity = null;
                 try {
-                    E entity = getEntity(controller, false);
-                    if (entity != null) {
-                        for (Channel channel : getThing().getChannels()) {
-                            ChannelUID channelUID = channel.getUID();
-                            if (this.isLinked(channelUID)) {
-                                refreshChannel(entity, channelUID);
-                            }
+                    entity = getEntity(controller, false);
+                } catch (PlugwiseHAException e) {
+                    logger.debug("Unexpected error handling refresh {}", e.getMessage());
+                    updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    setLinkedChannelsUndef();
+                }
+                if (entity != null) {
+                    for (Channel channel : getThing().getChannels()) {
+                        ChannelUID channelUID = channel.getUID();
+                        if (this.isLinked(channelUID)) {
+                            refreshChannel(entity, channelUID);
                         }
                     }
-                } catch (PlugwiseHAException e) {
-                    logger.warn("Unexpected error handling refresh {}", e.getMessage());
                 }
             }
         }

@@ -42,13 +42,10 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +98,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             try {
                 this.controller = new PlugwiseHAController(httpClient, config.getHost(), config.getPort(),
                         config.getUsername(), config.getsmileId());
-                updateStatus(ThingStatus.INITIALIZING);
                 scheduleRefreshJob();
             } catch (PlugwiseHAException e) {
                 logger.debug("Unknown error while configuring the Plugwise Home Automation Controller", e);
@@ -178,7 +174,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             if (super.thing.getStatus() == ThingStatus.INITIALIZING) {
                 setBridgeProperties();
             }
-            updateStatus(ONLINE);
+
         } catch (PlugwiseHAInvalidHostException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME);
         } catch (PlugwiseHAUnauthorizedException | PlugwiseHANotAuthorizedException e) {
@@ -207,6 +203,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             PlugwiseHAController controller = this.getController();
             if (controller != null) {
                 controller.refresh();
+                updateStatus(ONLINE);
             }
 
             getThing().getThings().forEach((thing) -> {
@@ -225,16 +222,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
                 this.refreshJob.cancel(true);
                 this.refreshJob = null;
             }
-        }
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        // Only update bridge status if statusInfo has changed
-        ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(status, statusDetail).withDescription(description)
-                .build();
-        if (!statusInfo.equals(getThing().getStatusInfo())) {
-            super.updateStatus(status, statusDetail, description);
         }
     }
 
