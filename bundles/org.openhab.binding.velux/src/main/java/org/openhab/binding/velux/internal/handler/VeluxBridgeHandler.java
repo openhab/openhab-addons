@@ -200,7 +200,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @param channelUID for type {@link ChannelUID}.
      * @return thingTypeUID of type {@link ThingTypeUID}.
      */
-    ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
+    public ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
         String[] segments = channelUID.getAsString().split(AbstractUID.SEPARATOR);
         if (segments.length > 1) {
             return new ThingTypeUID(segments[0], segments[1]);

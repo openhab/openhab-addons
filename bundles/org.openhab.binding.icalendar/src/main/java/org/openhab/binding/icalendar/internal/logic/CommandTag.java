@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -45,9 +46,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CommandTag {
 
-    private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(QuantityType.class,
-            OnOffType.class, OpenClosedType.class, UpDownType.class, HSBType.class, PlayPauseType.class,
-            RewindFastforwardType.class, StringType.class);
+    private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(DecimalType.class,
+            QuantityType.class, OnOffType.class, OpenClosedType.class, UpDownType.class, HSBType.class,
+            PlayPauseType.class, RewindFastforwardType.class, StringType.class);
 
     private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);
 
