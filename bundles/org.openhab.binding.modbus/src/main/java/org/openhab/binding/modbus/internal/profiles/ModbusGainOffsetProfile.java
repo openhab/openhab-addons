@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -174,6 +174,11 @@ public class ModbusGainOffsetProfile implements StateProfile {
                     "Gain '{}' cannot be applied to the incompatible state '{}' of type {} sent from the binding (towardsItem={}). Returning original state.",
                     gain, state, state.getClass().getSimpleName(), towardsItem);
             result = state;
+        }
+        if (result == null) {
+            // Should not happen, unit conversions are bound to succeed
+            // This is here to make the compiler happy
+            throw new IllegalStateException();
         }
         return result;
     }
