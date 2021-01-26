@@ -568,16 +568,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private Optional<Thing> getUnitThing(int unitId) {
-        Optional<Thing> theThing = Optional.empty();
-
-        for (ThingTypeUID uid : SUPPORTED_UNIT_TYPES_UIDS) {
-            theThing = getChildThing(uid, unitId);
-            if (theThing.isPresent()) {
-                return theThing;
-            }
-        }
-
-        return theThing;
+        return SUPPORTED_UNIT_TYPES_UIDS.stream().map(uid -> getChildThing(uid, unitId)).flatMap(Optional::stream)
+                .findFirst();
     }
 
     public Optional<AudioPlayer> getAudioPlayer() {
