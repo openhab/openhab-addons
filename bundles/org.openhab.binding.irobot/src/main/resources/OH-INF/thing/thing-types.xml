@@ -10,6 +10,7 @@
 
 		<channels>
 			<channel id="command" typeId="command"/>
+			<channel id="last_command" typeId="lastCommand"/>
 			<channel id="cycle" typeId="cycle"/>
 			<channel id="phase" typeId="phase"/>
 			<channel id="battery" typeId="battery"/>
@@ -252,6 +253,14 @@
 				<option value="1">One pass</option>
 				<option value="2">Two passes</option>
 			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lastCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Command</label>
+		<description>The last command which has been received by the iRobot</description>
+		<state readOnly="true">
 		</state>
 	</channel-type>
 
