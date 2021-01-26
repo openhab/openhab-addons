@@ -58,6 +58,7 @@ public class HueBindingConstants {
 
     // List all channels
     public static final String CHANNEL_COLORTEMPERATURE = "color_temperature";
+    public static final String CHANNEL_COLORTEMPERATURE_ABS = "color_temperature_abs";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_ALERT = "alert";
