@@ -59,7 +59,8 @@ public class DescriptionLoader {
      */
     public WebThingDescription loadWebthingDescription(URI webthingURI, Duration timeout) throws IOException {
         try {
-            var response = httpClient.newRequest(webthingURI).timeout(30, TimeUnit.SECONDS).send();
+            var response = httpClient.newRequest(webthingURI).timeout(30, TimeUnit.SECONDS).accept("application/json")
+                    .send();
             if (response.getStatus() < 200 || response.getStatus() >= 300) {
                 throw new IOException(
                         "could not read resource description " + webthingURI + ". Got " + response.getStatus());
