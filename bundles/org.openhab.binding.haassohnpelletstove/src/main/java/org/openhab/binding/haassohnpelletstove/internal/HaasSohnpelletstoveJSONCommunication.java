@@ -70,6 +70,10 @@ public class HaasSohnpelletstoveJSONCommunication {
         try {
             response = HttpUtil.executeUrl("GET", urlStr, 10000);
             logger.debug("OvenData = {}", response);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7502035b5 (Fixed bugs due to naming refactoring. Fixed code review comments.)
             result = gson.fromJson(response, HaasSohnpelletstoveJsonDataDTO.class);
             resultOk = true;
         } catch (IOException e) {

@@ -83,7 +83,12 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             }
         } else if (channelUID.getId().equals(CHANNELSPTEMP)) {
             if (command instanceof QuantityType<?>) {
+<<<<<<< HEAD
                 QuantityType<?> value = (QuantityType<?>) command;
+=======
+                @SuppressWarnings("unchecked")
+                QuantityType<Temperature> value = (QuantityType<Temperature>) command;
+>>>>>>> 7502035b5 (Fixed bugs due to naming refactoring. Fixed code review comments.)
                 Unit<Temperature> unit = SIUnits.CELSIUS;
                 value = value.toUnit(unit);
                 if (value != null) {

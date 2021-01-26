@@ -27,6 +27,7 @@ The following channels are yet supported:
 | Channel | Type  | Access| Description|
 |---------|-------|-------|------------|
 | power| Switch | read/write|Turn the stove on/off|
+<<<<<<< HEAD
 |channelIsTemp|Number:Temperature|read|Receives the actual temperature of the stove|
 |channelSpTemp|Number:Temperature|read/write|Receives and sets the target temperature of the stove|
 |channelMode|String|read|Receives the actual mode the stove is in like heating, cooling, error, ....|
@@ -36,6 +37,17 @@ The following channels are yet supported:
 |channelCleaningIn|String|read|States the next cleaning window in hours:minutes as string|
 |channelConsumption|Number:Mass|read|Total consumption of the stove|
 |channelOnTime|Number|read|Operation hours of the stove|
+=======
+|channelIsTemp|Number:Temperature|read|Receivestheactualtemperatureofthestove|
+|channelSpTemp|Number:Temperature|read/write|Receivesandsetsthetargettemperatureofthestove|
+|channelMode|String|read|Receivestheactualmodethestoveisinlikeheating,cooling,error,....|
+|channelEcoMode|Switch|read/write|Turntheecomodeofthestoveon/off|
+|channelIngitions|String|read|Amountofignition'softhestove|
+|channelMaintenanceIn|String|read|Statesthenextmaintenanceinkg|
+|channelCleaningIn|String|read|Statesthenextcleaningwindowinhours|
+|channelConsumption|String|read|Totalconsumptionofthestove|
+|channelOnTime|String|read|Operationhoursofthestove|
+>>>>>>> 7502035b5 (Fixed bugs due to naming refactoring. Fixed code review comments.)
 
 ## Full Example
 
