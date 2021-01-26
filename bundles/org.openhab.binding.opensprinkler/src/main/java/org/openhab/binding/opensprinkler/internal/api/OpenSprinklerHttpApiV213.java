@@ -44,5 +44,6 @@ class OpenSprinklerHttpApiV213 extends OpenSprinklerHttpApiV210 {
         super(httpClient, config);
         password = Hash.getMD5Hash(password);
         getProgramData();
+        getStationNames();
     }
 }

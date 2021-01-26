@@ -25,8 +25,6 @@ import javax.measure.quantity.ElectricCurrent;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.OpenSprinklerStateDescriptionProvider;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
-import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
-import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -115,8 +113,8 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 thingBuilder.withoutChannels(removeChannels);
                 updateThing(thingBuilder.build());
             }
-            updatePrograms(localAPI);
-            updateStations(localAPI);
+            updateProgramsChanOptions(localAPI);
+            updateStationsChanOptions(localAPI);
         }
     }
 
@@ -125,17 +123,14 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
      *
      * @param api
      */
-    private void updatePrograms(OpenSprinklerApi api) {
+    private void updateProgramsChanOptions(OpenSprinklerApi api) {
         stateDescriptionProvider.setStateOptions(new ChannelUID(this.getThing().getUID(), CHANNEL_PROGRAMS),
                 api.getPrograms());
     }
 
-    private void updateStations(OpenSprinklerApi api) {
-        try {
-            stateDescriptionProvider.setStateOptions(new ChannelUID(this.getThing().getUID(), CHANNEL_STATIONS),
-                    api.getStationNames());
-        } catch (UnauthorizedApiException | CommunicationApiException e) {
-        }
+    private void updateStationsChanOptions(OpenSprinklerApi api) {
+        stateDescriptionProvider.setStateOptions(new ChannelUID(this.getThing().getUID(), CHANNEL_STATIONS),
+                api.getStations());
     }
 
     @Override
@@ -154,7 +149,11 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_PROGRAMS:
                         api.getProgramData();
-                        updatePrograms(api);
+                        updateProgramsChanOptions(api);
+                        break;
+                    case CHANNEL_STATIONS:
+                        api.getStationNames();
+                        updateStationsChanOptions(api);
                         break;
                 }
             } else {

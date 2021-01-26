@@ -159,11 +159,18 @@ public interface OpenSprinklerApi {
     public abstract void getProgramData() throws CommunicationApiException, UnauthorizedApiException;
 
     /**
-     * Returns the string names of all internal programs from the stored List.
+     * Returns a list of all internal programs as a list of StateOptions.
      *
-     * @return List of Program names
+     * @return List<StateOption>
      */
     public abstract List<StateOption> getPrograms();
+
+    /**
+     * Return a list of all the stations the device has as List of StateOptions
+     *
+     * @return List<StateOption>
+     */
+    public abstract List<StateOption> getStations();
 
     /**
      * Runs a Program that is setup and stored inside the OpenSprinkler
@@ -175,5 +182,12 @@ public interface OpenSprinklerApi {
      */
     public abstract void runProgram(Command command) throws CommunicationApiException, UnauthorizedApiException;
 
-    public abstract List<StateOption> getStationNames() throws CommunicationApiException, UnauthorizedApiException;
+    /**
+     * Fetch the station names and place them in a list of List<StateOption>.
+     * Use getStations() to retrieve this list.
+     *
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
+     */
+    public abstract void getStationNames() throws CommunicationApiException, UnauthorizedApiException;
 }

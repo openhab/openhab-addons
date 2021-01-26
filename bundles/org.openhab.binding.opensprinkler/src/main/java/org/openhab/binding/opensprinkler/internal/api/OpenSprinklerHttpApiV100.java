@@ -113,6 +113,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
+    public List<StateOption> getStations() {
+        return stations;
+    }
+
+    @Override
     public void refresh() throws CommunicationApiException, UnauthorizedApiException {
         joReply = getOptions();
         jsReply = getStationStatus();
@@ -294,10 +299,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         return resp;
     }
 
-    private static class JcResponse {
+    protected static class JcResponse {
         public @Nullable List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
+        public int sn1;
         public int RSSI = 1; // json reply uses all uppercase
         public int flcrt = -1;
         public int curr = -1;
@@ -356,8 +362,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public List<StateOption> getStationNames() throws CommunicationApiException, UnauthorizedApiException {
-        return stations;
+    public void getStationNames() throws CommunicationApiException, UnauthorizedApiException {
     }
 
     /**
