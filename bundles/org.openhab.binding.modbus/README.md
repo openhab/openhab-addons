@@ -338,7 +338,7 @@ Commands then modify this internal cache and full 16-bit register data is writte
 Profile has two parameters:
 
 1. `bit-index`, index of the bit to be manipulated. `bit-index=0` refers to least-significant bit while `bit-index=15` refers to most-significant bit of the register.
-2. `inverted` whether to invert the value logically on read/write. When inverted=true, set bit value (0) turns into 1/OFF/OPEN and unset bit value (1) turns into 0/ON/CLOSED.
+2. `inverted` whether to invert the value logically on read/write. Whether to invert the bit value. When inverted=true, set bit value (1) corresponds to 0/OFF/CLOSED and unset bit value (0) corresponds to 1/ON/OPEN.
 
 Note: use the profile only with `readValueType=int16` / `writeValueType=int16`.
 Channel can be linked with `number` channel.
