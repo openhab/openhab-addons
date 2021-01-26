@@ -215,11 +215,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     if (packetsList.get(i).packet.getData()[j] != 0) {
                         // recupero tipico dalla memoria
                         typ = getHandler(_iPAddressOnLAN, node, iSlot);
-
-                        if (typ == null) {
-                            break;
-                        }
-
                         bExpected = typ.getExpectedRawState(packetsList.get(i).packet.getData()[j]);
 
                         // se il valore atteso dal tipico è -1 allora vuol dire che il tipico non supporta la
