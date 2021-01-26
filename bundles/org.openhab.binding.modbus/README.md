@@ -335,11 +335,14 @@ This profile is meant for reading _AND_ writing individual bit of a Modbus regis
 On read, the profile updates its internal cache of the register value.
 Commands then modify this internal cache and full 16-bit register data is written.
 
-Profile has ony parameter, `bit-index`, index of the bit to be manipulated.
-`bit-index=0` refers to least-significant bit while `bit-index=15` refers to most-significant bit of the register.
+Profile has two parameters:
+
+1. `bit-index`, index of the bit to be manipulated. `bit-index=0` refers to least-significant bit while `bit-index=15` refers to most-significant bit of the register.
+2. `inverted` whether to invert the value logically on read/write. When inverted=true, set bit value (0) turns into 1/OFF/OPEN and unset bit value (1) turns into 0/ON/CLOSED.
 
 Note: use the profile only with `readValueType=int16` / `writeValueType=int16`.
-Channel should be linked with `number` channel.
+Channel can be linked with `number` channel.
+You can use the profile with `Number`, `Contact` or `Switch` items.
 
 Having multiple items linked to same register but different `bit-index` using this profile can cause race conditions if items receive commands in close succession, effectively dropping some of the commands.
 It is good to have a pause between the commands so that all the internal caches are updated with the next poll of data.

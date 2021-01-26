@@ -48,38 +48,57 @@ public class ModbusBitProfile implements StateProfile {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusBitProfile.class);
     private static final String BIT_INDEX_PARAM = "bit-index";
+    private static final String INVERTED_PARAM = "inverted";
 
     private final ProfileCallback callback;
     private final ProfileContext context;
 
     private OptionalInt bitIndex;
     private Optional<byte[]> lastState = Optional.empty();
+    private boolean inverted;
 
     public ModbusBitProfile(ProfileCallback callback, ProfileContext context) {
         this.callback = callback;
         this.context = context;
 
-        Object paramValue = this.context.getConfiguration().get(BIT_INDEX_PARAM);
-        logger.debug("Configuring profile with {} parameter '{}'", BIT_INDEX_PARAM, paramValue);
-        bitIndex = OptionalInt.empty();
-        if (paramValue instanceof String) {
-            try {
-                bitIndex = OptionalInt.of(Integer.parseInt((String) paramValue));
-            } catch (IllegalArgumentException e) {
-                logger.error("Cannot convert value '{}' of parameter '{}' into a integer.", paramValue,
-                        BIT_INDEX_PARAM);
+        {
+            Object paramValue = this.context.getConfiguration().get(BIT_INDEX_PARAM);
+            logger.debug("Configuring profile with {} parameter '{}'", BIT_INDEX_PARAM, paramValue);
+            bitIndex = OptionalInt.empty();
+            if (paramValue instanceof String) {
+                try {
+                    bitIndex = OptionalInt.of(Integer.parseInt((String) paramValue));
+                } catch (IllegalArgumentException e) {
+                    logger.error("Cannot convert value '{}' of parameter '{}' into a integer.", paramValue,
+                            BIT_INDEX_PARAM);
+                }
+            } else if (paramValue instanceof BigDecimal) {
+                BigDecimal bd = (BigDecimal) paramValue;
+                bitIndex = OptionalInt.of(bd.toBigInteger().intValue());
+            } else {
+                logger.error("Parameter '{}' is not of type String or BigDecimal", BIT_INDEX_PARAM);
             }
-        } else if (paramValue instanceof BigDecimal) {
-            BigDecimal bd = (BigDecimal) paramValue;
-            bitIndex = OptionalInt.of(bd.toBigInteger().intValue());
-        } else {
-            logger.error("Parameter '{}' is not of type String or BigDecimal", BIT_INDEX_PARAM);
+            bitIndex.ifPresent(i -> {
+                if (i < 0) {
+                    logger.error("Parameter '{}' is negative", BIT_INDEX_PARAM);
+                }
+            });
         }
-        bitIndex.ifPresent(i -> {
-            if (i < 0) {
-                logger.error("Parameter '{}' is negative", BIT_INDEX_PARAM);
+
+        {
+            Object paramValue = this.context.getConfiguration().get(INVERTED_PARAM);
+            if (paramValue instanceof Boolean) {
+                inverted = (boolean) paramValue;
+            } else if (paramValue == null || paramValue instanceof String) {
+                inverted = Boolean.parseBoolean((String) paramValue);
+            } else {
+                logger.warn("Unexpected parameter type for '{}': {} {}. Assuming inverted=false", INVERTED_PARAM,
+                        paramValue.getClass().getClass().getSimpleName(), paramValue);
+                inverted = false;
             }
-        });
+            logger.debug("Configuring profile with {} parameter '{}' (=> inverted={})", INVERTED_PARAM, paramValue,
+                    inverted);
+        }
     }
 
     @Override
@@ -108,8 +127,9 @@ public class ModbusBitProfile implements StateProfile {
         final Optional<byte[]> localState = updateLastState(command);
         Command result = (Command) extractBit(localState);
         logger.trace(
-                "Command '{}' update from handler, updating internal state to {}. Result {} after extracting bit {}.",
-                command, localState.map(b -> HexUtils.bytesToHex(b)).orElse("<null>"), result, bitIndex.orElse(-1));
+                "Command '{}' update from handler, updating internal state to {}. Result {} after extracting bit {} with inverted={}.",
+                command, localState.map(b -> HexUtils.bytesToHex(b)).orElse("<null>"), result, bitIndex.orElse(-1),
+                inverted);
         callback.sendCommand(result);
     }
 
@@ -118,8 +138,9 @@ public class ModbusBitProfile implements StateProfile {
         final Optional<byte[]> localState = updateLastState(state);
         State result = (State) extractBit(localState);
         logger.trace(
-                "State '{}' update from handler, updating internal state to {}. Result {} after extracting bit {}.",
-                state, localState.map(b -> HexUtils.bytesToHex(b)).orElse("<null>"), result, bitIndex.orElse(-1));
+                "State '{}' update from handler, updating internal state to {}. Result {} after extracting bit {} with inverted={}.",
+                state, localState.map(b -> HexUtils.bytesToHex(b)).orElse("<null>"), result, bitIndex.orElse(-1),
+                inverted);
         callback.sendUpdate(result);
     }
 
@@ -138,15 +159,16 @@ public class ModbusBitProfile implements StateProfile {
             }
             int bitIndex = localBitIndexOptional.orElse(0);
 
-            Optional<Boolean> commandBool = ModbusBitUtilities.translateCommand2Boolean(command);
+            Optional<Boolean> commandBool = ModbusBitUtilities.translateCommand2Boolean(command)
+                    .map(b -> inverted ? (b ? false : true) : b);
             commandBool.ifPresentOrElse(b -> {
                 BigInteger val = new BigInteger(bytes);
                 val = b ? val.setBit(bitIndex) : val.clearBit(bitIndex);
                 DecimalType combinedCommand = new DecimalType(new BigDecimal(val));
                 Optional<byte[]> newState = updateLastState(combinedCommand);
                 logger.trace(
-                        "Update '{}' from item, combining command with internal state ({}) with bitIndex={}, resulting state {} and combined {}",
-                        command, HexUtils.bytesToHex(bytes), bitIndex,
+                        "Update '{}' from item, combining command with internal state ({}) with bitIndex={}, inverted={}, resulting state {} and combined {}",
+                        command, HexUtils.bytesToHex(bytes), bitIndex, inverted,
                         newState.map(stateBytes -> HexUtils.bytesToHex(stateBytes)).orElse("<null>"), combinedCommand);
                 updateLastState(combinedCommand);
                 callback.handleCommand(combinedCommand);
@@ -200,7 +222,7 @@ public class ModbusBitProfile implements StateProfile {
         }
         int bitIndex = localBitIndexOptional.orElse(0);
         int extractedBit = ModbusBitUtilities.extractBit(localState.get(), bitIndex);
-        return new DecimalType(extractedBit);
+        return new DecimalType(inverted ? (extractedBit != 0 ? 0 : 1) : extractedBit);
     }
 
     public Optional<byte[]> getLastState() {
