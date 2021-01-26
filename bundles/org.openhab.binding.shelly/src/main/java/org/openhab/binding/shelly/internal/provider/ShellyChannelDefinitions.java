@@ -367,7 +367,6 @@ public class ShellyChannelDefinitions {
         ShellyBaseHandler handler = (ShellyBaseHandler) thing.getHandler();
         if (handler != null) {
             ShellySettingsGlobal settings = handler.getProfile().settings;
-            ;
             if (getBool(settings.favoritesEnabled) && (settings.favorites != null)) {
                 addChannel(thing, add, roller.currentPos != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_FAV);
             }
