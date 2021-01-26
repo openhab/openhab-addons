@@ -52,7 +52,7 @@ All devices support the following channels:
 |-----------------|-----------------|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | channelSet      | Number (1-9999) | Current Channel - Request (SETCH)     | Displays the current channel number. When changed, tunes the DVR to the specified channel (unless a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work.                                                 |
 | channelForce    | Number (1-9999) | Current Channel - Forced (FORCECH)    | Displays the current channel number. When changed, tunes the DVR to the specified channel, **cancelling any recordings in progress if necessary** i.e. when all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work. |
-| menuTeleport    | String          | Change Special/Menu Screen (TELEPORT) | Change to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My Shows), NETFLIX.                                                                                                                                                   |
+| menuTeleport    | String          | Change Special/Menu Screen (TELEPORT) | Change to one of the following TiVo menu screens: TIVO (Home), LIVETV, GUIDE, NOWPLAYING (My Shows), SEARCH, NETFLIX.                                                                                                                                                   |
 | irCommand       | String          | Remote Control Button (IRCOMMAND)     | Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes.                                                                                                                         |
 | kbdCommand      | String          | Keyboard Command (KEYBOARD)           | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes.                                                                                 |
 | dvrStatus       | String          | TiVo Status                           | Action return code / channel information returned by the TiVo.                                                                                                                                                                                                    |
@@ -98,7 +98,7 @@ sitemap tivo label="Tivo Central" {
         Text        item=TiVo_Recording       label="Recording"    icon="screen"
         Switch      item=TiVo_IRCmd           label="Channel"      icon="screen"   mappings=["CHANNELDOWN"="CH -","CHANNELUP"="CH +"]
         Switch      item=TiVo_IRCmd           label="Media"        icon="screen"   mappings=["REVERSE"="⏪", "PAUSE"="⏸", "PLAY"="▶", /*(DVD TiVo only!) "STOP"="⏹",*/ "FORWARD"="⏩", "RECORD"="⏺" ]
-        Switch      item=TiVo_MenuScreen      label="Menus"        icon="screen"   mappings=["TIVO"="Home", "LIVETV"="Live Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows", "NETFLIX"="Netflix" ]
+        Switch      item=TiVo_MenuScreen      label="Menus"        icon="screen"   mappings=["TIVO"="Home", "LIVETV"="Live Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows", "NETFLIX"="Netflix", SEARCH="Search" ]
         Switch      item=TiVo_SetChannel      label="Fav TV"       icon="screen"   mappings=[2.1="CBS", 4.1="NBC", 7.1="ABC", 11.1="FOX", 5.2="AntennaTV"]            
         Switch      item=TiVo_IRCmd           label="Navigation"   icon="screen"   mappings=["UP"="˄", "DOWN"="˅", "LEFT"="<", "RIGHT"=">", "SELECT"="Select", "EXIT"="Exit" ]                
         Switch      item=TiVo_IRCmd           label="Actions"      icon="screen"   mappings=["ACTION_A"="Red","ACTION_B"="Green","ACTION_C"="Yellow","ACTION_D"="Blue"]
@@ -118,6 +118,8 @@ sitemap tivo label="Tivo Central" {
 ```
 NULL=Unknown
 -=Unknown
+rec-NULL=Unknown
+rec-=Unknown
 rec-0=Not Recording
 rec-1=Recording
 100=HBO
@@ -156,11 +158,9 @@ when
 then
     if (TiVo_KeyboardStr.state != NULL && TiVo_KeyboardStr.state.toString.length > 0) {
         
-        // Commands to get us to the TiVo/Home menu and select the search menu using the 'remote' number keys
-        sendCommand(TiVo_MenuScreen, "TIVO")
-        Thread::sleep(1500)
-        sendCommand(TiVo_KbdCmd, "NUM4")
-        Thread::sleep(1500)
+        // Command to get us to the TiVo search menu
+        sendCommand(TiVo_MenuScreen, "SEARCH")
+        Thread::sleep(1000)
         
         var i = 0
         var char txt = ""
@@ -189,6 +189,3 @@ then
 end
 
 ```
-
-* You may need to adjust the two `Thread::sleep(1500)` lines, depending on the performance of your TiVo
-* In testing, response times have varied considerably at different times of the day, etc. You may need to increase the delay until there is sufficient time added for the system to respond consistently to the 'remote control' menu commands.
