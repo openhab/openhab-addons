@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.openthermgateway.handler;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
@@ -56,11 +57,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
     private @Nullable OpenThermGatewayConfiguration config;
-
     private @Nullable OpenThermGatewayConnector connector;
+    private @Nullable ScheduledFuture<?> reconnectTask;
 
     private boolean connecting = false;
-
     private boolean explicitDisconnect = false;
 
     public OpenThermGatewayHandler(Thing thing) {
@@ -149,7 +149,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         // retry connection if disconnect is not explicitly requested
         if (!explicitDisconnect && conf != null && conf.connectionRetryInterval > 0) {
             logger.debug("Scheduling to reconnect in {} seconds.", conf.connectionRetryInterval);
-            scheduler.schedule(this::connect, conf.connectionRetryInterval, TimeUnit.SECONDS);
+            reconnectTask = scheduler.schedule(this::connect, conf.connectionRetryInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -208,6 +208,13 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void dispose() {
         disconnect();
+
+        ScheduledFuture<?> localReconnectTask = reconnectTask;
+        if (localReconnectTask != null) {
+            localReconnectTask.cancel(true);
+            reconnectTask = null;
+        }
+
         super.dispose();
     }
 
@@ -241,11 +248,11 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         @Nullable
         OpenThermGatewayConnector conn = connector;
 
+        explicitDisconnect = true;
+
         if (conn != null) {
             if (conn.isConnected()) {
                 logger.debug("Stopping OpenTherm Gateway connector");
-
-                explicitDisconnect = true;
                 conn.stop();
             }
 
