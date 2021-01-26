@@ -595,11 +595,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 logger.debug("'{}' channel '{}' has unit '{}' with symbol '{}'.", getThing().getUID(),
                         basicChannel.getChannel(), basicChannel.getUnit(), unit);
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), unit));
-                return;
             } else {
-                logger.debug("Unit '{}' used by '{}' channel '{}' is not found.. using default unit.",
-                        getThing().getUID(), basicChannel.getUnit(), basicChannel.getChannel());
+                logger.debug(
+                        "Unit '{}' used by '{}' channel '{}' is not found in conversion table... Trying anyway to submit as the update.",
+                        basicChannel.getUnit(), getThing().getUID(), basicChannel.getChannel());
+                updateState(basicChannel.getChannel(),
+                        new QuantityType<>(val.getAsBigDecimal().toPlainString() + " " + basicChannel.getUnit()));
             }
+            return;
         }
         // if no unit is provided or unit not found use default units, these units have so far been seen for miio
         // devices
