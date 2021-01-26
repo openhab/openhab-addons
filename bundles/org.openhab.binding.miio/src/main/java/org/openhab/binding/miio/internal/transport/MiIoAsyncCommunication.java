@@ -18,6 +18,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -293,8 +295,8 @@ public class MiIoAsyncCommunication {
         byte[] sendMsg = new byte[0];
         if (!command.isBlank()) {
             byte[] encr;
-            encr = MiIoCrypto.encrypt(command.getBytes(), token);
-            timeStamp = (int) TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTime().getTime());
+            encr = MiIoCrypto.encrypt(command.getBytes(StandardCharsets.UTF_8), token);
+            timeStamp = (int) Instant.now().getEpochSecond();
             sendMsg = Message.createMsgData(encr, token, deviceId, timeStamp + timeDelta);
         }
         Message miIoResponseMsg = sendData(sendMsg, ip);
