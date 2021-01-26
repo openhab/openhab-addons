@@ -50,10 +50,6 @@ import org.slf4j.LoggerFactory;
 import com.digitaldan.jomnilinkII.Connection;
 import com.digitaldan.jomnilinkII.DisconnectListener;
 import com.digitaldan.jomnilinkII.Message;
-import com.digitaldan.jomnilinkII.NotificationListener;
-import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
-import com.digitaldan.jomnilinkII.OmniNotConnectedException;
-import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.EventLogData;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
@@ -74,6 +70,10 @@ import com.digitaldan.jomnilinkII.MessageTypes.systemevents.ButtonEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemevents.SwitchPressEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemevents.SystemEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemevents.UPBLinkEvent;
+import com.digitaldan.jomnilinkII.NotificationListener;
+import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
+import com.digitaldan.jomnilinkII.OmniNotConnectedException;
+import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.google.gson.Gson;
 
 /**
