@@ -2028,7 +2028,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setSubwoofer(Command command) {
-        setEqualizerBooleanSetting(command, "SubEnabled");
+        setEqualizerBooleanSetting(command, "SubEnable");
     }
 
     public void setSubwooferGain(Command command) {
@@ -2036,7 +2036,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setSurround(Command command) {
-        setEqualizerBooleanSetting(command, "SurroundEnabled");
+        setEqualizerBooleanSetting(command, "SurroundEnable");
     }
 
     public void setSurroundMusicMode(Command command) {
