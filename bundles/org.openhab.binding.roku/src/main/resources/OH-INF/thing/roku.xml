@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="roku"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Roku Player Thing -->
+	<thing-type id="roku_player">
+		<label>Roku</label>
+		<description>
+			A Roku Streaming Media Player
+		</description>
+
+		<channels>
+			<channel id="activeApp" typeId="activeApp"/>
+			<channel id="button" typeId="button"/>
+			<channel id="playMode" typeId="playMode"/>
+			<channel id="timeElapsed" typeId="timeElapsed"/>
+			<channel id="timeTotal" typeId="timeTotal"/>
+		</channels>
+
+		<properties>
+			<property name="Model Name">unknown</property>
+			<property name="Model Number">unknown</property>
+			<property name="Device Location">unknown</property>
+			<property name="Serial Number">unknown</property>
+			<property name="Device Id">unknown</property>
+			<property name="Software Version">unknown</property>
+		</properties>
+
+		<representation-property>uuid</representation-property>
+
+		<config-description-ref uri="thing-type:roku:rokuconfig"/>
+	</thing-type>
+
+	<!-- Roku TV Thing -->
+	<thing-type id="roku_tv">
+		<label>Roku TV</label>
+		<description>
+			A Roku Streaming Media TV
+		</description>
+
+		<channels>
+			<channel id="activeApp" typeId="activeApp"/>
+			<channel id="button" typeId="buttonTv"/>
+			<channel id="playMode" typeId="playMode"/>
+			<channel id="timeElapsed" typeId="timeElapsed"/>
+			<channel id="timeTotal" typeId="timeTotal"/>
+		</channels>
+
+		<properties>
+			<property name="Model Name">unknown</property>
+			<property name="Model Number">unknown</property>
+			<property name="Device Location">unknown</property>
+			<property name="Serial Number">unknown</property>
+			<property name="Device Id">unknown</property>
+			<property name="Software Version">unknown</property>
+		</properties>
+
+		<representation-property>uuid</representation-property>
+
+		<config-description-ref uri="thing-type:roku:rokuconfig"/>
+	</thing-type>
+
+	<channel-type id="button">
+		<item-type>String</item-type>
+		<label>Remote Button</label>
+		<description>A Remote Button Press to Send to the Roku</description>
+		<state>
+			<options>
+				<option value="Home">Home</option>
+				<option value="Rev">Reverse</option>
+				<option value="Fwd">Forward</option>
+				<option value="Play">Play</option>
+				<option value="Select">Select</option>
+				<option value="Left">Left</option>
+				<option value="Right">Right</option>
+				<option value="Down">Down</option>
+				<option value="Up">Up</option>
+				<option value="Back">Back</option>
+				<option value="InstantReplay">Instant Replay</option>
+				<option value="Info">Info</option>
+				<option value="Backspace">Backspace</option>
+				<option value="Search">Search</option>
+				<option value="Enter">Enter</option>
+				<option value="FindRemote">Find Remote</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="buttonTv">
+		<item-type>String</item-type>
+		<label>Remote Button</label>
+		<description>A Remote Button Press to Send to the Roku TV</description>
+		<state>
+			<options>
+				<option value="Home">Home</option>
+				<option value="Rev">Reverse</option>
+				<option value="Fwd">Forward</option>
+				<option value="Play">Play</option>
+				<option value="Select">Select</option>
+				<option value="Left">Left</option>
+				<option value="Right">Right</option>
+				<option value="Down">Down</option>
+				<option value="Up">Up</option>
+				<option value="Back">Back</option>
+				<option value="InstantReplay">Instant Replay</option>
+				<option value="Info">Info</option>
+				<option value="Backspace">Backspace</option>
+				<option value="Search">Search</option>
+				<option value="Enter">Enter</option>
+				<option value="FindRemote">Find Remote</option>
+				<option value="VolumeUp">Volume Up</option>
+				<option value="VolumeDown">Volume Down</option>
+				<option value="VolumeMute">Volume Mute</option>
+				<option value="ChannelUp">Channel Up</option>
+				<option value="Channel Down">Channel Down</option>
+				<option value="InputTuner">Input Tuner</option>
+				<option value="InputHDMI1">Input HDMI1</option>
+				<option value="InputHDMI2">Input HDMI2</option>
+				<option value="InputHDMI3">Input HDMI3</option>
+				<option value="InputHDMI4">Input HDMI4</option>
+				<option value="InputAV1">Input AV1</option>
+				<option value="PowerOff">Power Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="activeApp">
+		<item-type>String</item-type>
+		<label>Active App</label>
+		<description>The Currently Running App on the Roku</description>
+	</channel-type>
+
+	<channel-type id="playMode">
+		<item-type>String</item-type>
+		<label>Play Mode</label>
+		<description>The Current Playback Mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeElapsed">
+		<item-type>Number:Time</item-type>
+		<label>Playback Time</label>
+		<description>The Current Playback Time Elapsed</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="timeTotal">
+		<item-type>Number:Time</item-type>
+		<label>Total Time</label>
+		<description>The Total Length of the Current Title</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

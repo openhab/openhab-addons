@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import com.google.gson.JsonSyntaxException;
 public abstract class ChannelHandler {
 
     public abstract boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
-            throws IOException, URISyntaxException;
+            throws IOException, URISyntaxException, InterruptedException;
 
     protected final IAmazonThingHandler thingHandler;
     protected final Gson gson;

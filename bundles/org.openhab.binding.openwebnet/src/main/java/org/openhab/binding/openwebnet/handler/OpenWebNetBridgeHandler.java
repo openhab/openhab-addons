@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,7 +111,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.UNKNOWN);
-                logger.debug("Trying to connect gateway...");
+                logger.debug("Trying to connect gateway {}... ", gw);
                 try {
                     gw.connect();
                     scheduler.schedule(() -> {
@@ -139,7 +139,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         OpenWebNetZigBeeBridgeConfig zbBridgeConfig = getConfigAs(OpenWebNetZigBeeBridgeConfig.class);
         String serialPort = zbBridgeConfig.getSerialPort();
         if (serialPort == null || serialPort.isEmpty()) {
-            logger.info("Cannot connect ZigBee USB Gateway. No serial port has been provided in Bridge configuration.");
+            logger.warn("Cannot connect ZigBee USB Gateway. No serial port has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-serial-port");
             return null;
@@ -156,7 +156,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         OpenWebNetBusBridgeConfig busBridgeConfig = getConfigAs(OpenWebNetBusBridgeConfig.class);
         String host = busBridgeConfig.getHost();
         if (host == null || host.isEmpty()) {
-            logger.info("Cannot connect to BUS Gateway. No host/IP has been provided in Bridge configuration.");
+            logger.warn("Cannot connect to BUS Gateway. No host/IP has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ip-address");
             return null;
@@ -181,7 +181,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.debug("handleCommand (command={} - channel={})", command, channelUID);
         OpenGateway gw = gateway;
         if (gw != null && !gw.isConnected()) {
-            logger.info("Gateway is NOT connected, skipping command");
+            logger.warn("Gateway is NOT connected, skipping command");
             return;
         } else {
             logger.warn("Channel not supported: channel={}", channelUID);
@@ -233,22 +233,22 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         if (gw != null) {
             if (!gw.isDiscovering()) {
                 if (!gw.isConnected()) {
-                    logger.debug("------$$ Gateway is NOT connected, cannot search for devices");
+                    logger.debug("------$$ Gateway '{}' is NOT connected, cannot search for devices", gw);
                     return;
                 }
-                logger.info("------$$ STARTED active SEARCH for devices on gateway '{}'", this.getThing().getUID());
+                logger.info("------$$ STARTED active SEARCH for devices on bridge '{}'", thing.getUID());
                 try {
                     gw.discoverDevices();
                 } catch (OWNException e) {
-                    logger.warn("------$$ OWNException while discovering devices on gateway {}: {}",
-                            this.getThing().getUID(), e.getMessage());
+                    logger.warn("------$$ OWNException while discovering devices on bridge '{}': {}", thing.getUID(),
+                            e.getMessage());
                 }
             } else {
-                logger.debug("------$$ Searching devices on gateway {} already activated", this.getThing().getUID());
+                logger.debug("------$$ Searching devices on bridge '{}' already activated", thing.getUID());
                 return;
             }
         } else {
-            logger.debug("------$$ Cannot search devices: no gateway associated to this handler");
+            logger.warn("------$$ Cannot search devices: no gateway associated to this handler");
         }
     }
 
@@ -268,7 +268,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public void onDiscoveryCompleted() {
-        logger.info("------$$ FINISHED active SEARCH for devices on gateway '{}'", this.getThing().getUID());
+        logger.info("------$$ FINISHED active SEARCH for devices on bridge '{}'", thing.getUID());
     }
 
     /**
@@ -307,7 +307,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                                         Long.valueOf(System.currentTimeMillis()));
                                 gw.send(Lighting.requestStatus(baseMsg.getWhere().value()));
                                 return;
-
                             } catch (OWNException e) {
                                 logger.warn("discoverByActivation: Exception while requesting light state: {}",
                                         e.getMessage());
@@ -419,10 +418,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         }
         if (gw instanceof USBGateway) {
-            logger.info("------------------- CONNECTED to ZigBee USB gateway - USB port: {}",
+            logger.info("---- CONNECTED to ZigBee USB gateway bridge '{}' (serialPort: {})", thing.getUID(),
                     ((USBGateway) gw).getSerialPortName());
         } else {
-            logger.info("------------------- CONNECTED to BUS gateway '{}' ({}:{})", thing.getUID(),
+            logger.info("---- CONNECTED to BUS gateway bridge '{}' ({}:{})", thing.getUID(),
                     ((BUSGateway) gw).getHost(), ((BUSGateway) gw).getPort());
             // update serial number property (with MAC address)
             if (properties.get(PROPERTY_SERIAL_NO) != gw.getMACAddr().toUpperCase()) {
@@ -438,7 +437,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         if (propertiesChanged) {
             updateProperties(properties);
-            logger.info("properties updated for '{}'", thing.getUID());
+            logger.info("properties updated for bridge '{}'", thing.getUID());
         }
         updateStatus(ThingStatus.ONLINE);
     }
@@ -451,7 +450,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         } else {
             errMsg = error.getMessage();
         }
-        logger.info("------------------- ON CONNECTION ERROR: {}", errMsg);
+        logger.info("---- ON CONNECTION ERROR for gateway {}: {}", gateway, errMsg);
         isGatewayConnected = false;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errMsg);
         tryReconnectGateway();
@@ -473,7 +472,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         } else {
             errMsg = e.getMessage();
         }
-        logger.info("------------------- DISCONNECTED from gateway. OWNException={}", errMsg);
+        logger.info("---- DISCONNECTED from gateway {}. OWNException: {}", gateway, errMsg);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                 "Disconnected from gateway (onDisconnected - " + errMsg + ")");
         tryReconnectGateway();
@@ -484,29 +483,29 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         if (gw != null) {
             if (!reconnecting) {
                 reconnecting = true;
-                logger.info("------------------- Starting RECONNECT cycle to gateway");
+                logger.info("---- Starting RECONNECT cycle to gateway {}", gw);
                 try {
                     gw.reconnect();
                 } catch (OWNAuthException e) {
-                    logger.info("------------------- AUTH error from gateway. Stopping reconnect");
+                    logger.info("---- AUTH error from gateway. Stopping re-connect");
                     reconnecting = false;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "Authentication error. Check gateway password in Thing Configuration Parameters (" + e
                                     + ")");
                 }
             } else {
-                logger.debug("------------------- reconnecting=true, do nothing");
+                logger.debug("---- reconnecting=true, do nothing");
             }
         } else {
-            logger.debug("------------------- cannot start RECONNECT, gateway is null");
+            logger.warn("---- cannot start RECONNECT, gateway is null");
         }
     }
 
     @Override
     public void onReconnected() {
         reconnecting = false;
-        logger.info("------------------- RE-CONNECTED to gateway!");
         OpenGateway gw = gateway;
+        logger.info("---- RE-CONNECTED to bridge {}", thing.getUID());
         if (gw != null) {
             updateStatus(ThingStatus.ONLINE);
             if (gw.getFirmwareVersion() != null) {
@@ -569,12 +568,12 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         if (where instanceof WhereZigBee) {
             str = ((WhereZigBee) where).valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
-            if (str.indexOf("#4#") > 0) { // local bus: APL#4#bus
-                // no change needed
-            } else if (str.indexOf('#') == 0) { // Thermo zone via central unit: #0 or #Z (Z=[1-99]) --> Z
-                str = str.substring(1);
-            } else if (str.indexOf('#') > 0) { // Thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) --> Z
-                str = str.substring(0, str.indexOf('#'));
+            if (str.indexOf("#4#") == -1) { // skip APL#4#bus case
+                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z
+                    str = str.substring(1);
+                } else if (str.indexOf('#') > 0) { // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z
+                    str = str.substring(0, str.indexOf('#'));
+                }
             }
         }
         return str.replace('#', 'h');

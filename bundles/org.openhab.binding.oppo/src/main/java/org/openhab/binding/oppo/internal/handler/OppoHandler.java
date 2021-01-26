@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -753,7 +753,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 if (timeArr.length == 3) {
                     int seconds = (Integer.parseInt(timeArr[0]) * 3600) + (Integer.parseInt(timeArr[1]) * 60)
                             + Integer.parseInt(timeArr[2]);
-                    state = new QuantityType<>(seconds, SmartHomeUnits.SECOND);
+                    state = new QuantityType<>(seconds, Units.SECOND);
                 } else {
                     state = UnDefType.UNDEF;
                 }

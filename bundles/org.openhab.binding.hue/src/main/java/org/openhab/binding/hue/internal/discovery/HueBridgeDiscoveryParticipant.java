@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,11 +57,18 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
             properties.put(HOST, device.getDetails().getBaseURL().getHost());
             properties.put(PORT, device.getDetails().getBaseURL().getPort());
             properties.put(PROTOCOL, device.getDetails().getBaseURL().getProtocol());
-            properties.put(PROPERTY_SERIAL_NUMBER, device.getDetails().getSerialNumber());
+            String serialNumber = device.getDetails().getSerialNumber();
+            DiscoveryResult result;
+            if (serialNumber != null && !serialNumber.isBlank()) {
+                properties.put(PROPERTY_SERIAL_NUMBER, serialNumber.toLowerCase());
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(PROPERTY_SERIAL_NUMBER)
-                    .build();
+                result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withLabel(device.getDetails().getFriendlyName())
+                        .withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
+            } else {
+                result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withLabel(device.getDetails().getFriendlyName()).build();
+            }
             return result;
         } else {
             return null;
@@ -73,11 +80,12 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         DeviceDetails details = device.getDetails();
         if (details != null) {
             ModelDetails modelDetails = details.getModelDetails();
-            if (modelDetails != null) {
+            String serialNumber = details.getSerialNumber();
+            if (modelDetails != null && serialNumber != null && !serialNumber.isBlank()) {
                 String modelName = modelDetails.getModelName();
                 if (modelName != null) {
                     if (modelName.startsWith("Philips hue bridge")) {
-                        return new ThingUID(THING_TYPE_BRIDGE, details.getSerialNumber());
+                        return new ThingUID(THING_TYPE_BRIDGE, serialNumber.toLowerCase());
                     }
                 }
             }

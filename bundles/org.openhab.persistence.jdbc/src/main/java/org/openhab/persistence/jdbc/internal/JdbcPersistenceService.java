@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -31,9 +33,9 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -47,15 +49,21 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", configurationPolicy = ConfigurationPolicy.REQUIRE)
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", //
+        property = Constants.SERVICE_PID + "=org.openhab.jdbc")
+@ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceService.CONFIG_URI)
 public class JdbcPersistenceService extends JdbcMapper implements QueryablePersistenceService {
+
+    protected static final String CONFIG_URI = "persistence:jdbc";
 
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
     private final ItemRegistry itemRegistry;
 
     @Activate
-    public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry) {
+    public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        super(timeZoneProvider);
         this.itemRegistry = itemRegistry;
     }
 
@@ -120,7 +128,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
      */
     @Override
     public void store(Item item, @Nullable String alias) {
-        // Don not store undefined/uninitialised data
+        // Do not store undefined/uninitialized data
         if (item.getState() instanceof UnDefType) {
             logger.debug("JDBC::store: ignore Item '{}' because it is UnDefType", item.getName());
             return;
@@ -133,8 +141,8 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         }
         long timerStart = System.currentTimeMillis();
         storeItemValue(item);
-        logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(),
-                item.getState().toString(), (new java.util.Date()).toString(), System.currentTimeMillis() - timerStart);
+        logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), item.getState(),
+                new java.util.Date(), System.currentTimeMillis() - timerStart);
     }
 
     @Override
@@ -196,7 +204,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         long timerStart = System.currentTimeMillis();
         List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
 
-        logger.debug("JDBC::query: query for {} returned {} rows in {} ms", item.getName(), items.size(),
+        logger.debug("JDBC::query: query for {} returned {} rows in {} ms", itemName, items.size(),
                 System.currentTimeMillis() - timerStart);
 
         // Success

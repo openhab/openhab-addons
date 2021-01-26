@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,8 +55,23 @@ public class Conversions {
     }
 
     public static JsonElement divideTen(JsonElement value10) {
-        double value = value10.getAsDouble() / 10;
+        double value = value10.getAsDouble() / 10.0;
         return new JsonPrimitive(value);
+    }
+
+    public static JsonElement divideHundred(JsonElement value10) {
+        double value = value10.getAsDouble() / 100.0;
+        return new JsonPrimitive(value);
+    }
+
+    public static JsonElement tankLevel(JsonElement value12) {
+        // 127 without water tank. 120 = 100% water
+        if (value12.getAsInt() == 127) {
+            return new JsonPrimitive(-1);
+        } else {
+            double value = value12.getAsDouble();
+            return new JsonPrimitive(value / 1.2);
+        }
     }
 
     public static JsonElement execute(String transfortmation, JsonElement value) {
@@ -67,6 +82,10 @@ public class Conversions {
                 return secondsToHours(value);
             case "/10":
                 return divideTen(value);
+            case "/100":
+                return divideHundred(value);
+            case "TANKLEVEL":
+                return tankLevel(value);
             default:
                 LOGGER.debug("Transformation {} not found. Returning '{}'", transfortmation, value.toString());
                 return value;

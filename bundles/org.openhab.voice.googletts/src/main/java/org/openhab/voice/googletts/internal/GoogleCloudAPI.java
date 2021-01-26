@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -303,7 +303,7 @@ class GoogleCloudAPI {
     }
 
     /**
-     * Converts ESH audio format to Google parameters.
+     * Converts audio format to Google parameters.
      *
      * @param codec Requested codec
      * @return String array of Google audio format and the file extension to use.

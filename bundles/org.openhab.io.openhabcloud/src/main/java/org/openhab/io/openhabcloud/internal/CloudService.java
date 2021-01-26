@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,22 +13,18 @@
 package org.openhab.io.openhabcloud.internal;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.ConfigurableService;
@@ -59,8 +55,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  */
-@Component(service = { EventSubscriber.class,
+@Component(service = { CloudService.class, EventSubscriber.class,
         ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = Constants.SERVICE_PID
                 + "=org.openhab.openhabcloud")
 @ConfigurableService(category = "io", label = "openHAB Cloud", description_uri = "io:openhabcloud")
@@ -84,21 +78,33 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private static final int DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS = 200;
     private static final int DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT = 30000;
     private static final String HTTPCLIENT_NAME = "openhabcloud";
+    private static final String CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final SecureRandom SR = new SecureRandom();
 
-    private Logger logger = LoggerFactory.getLogger(CloudService.class);
+    private final Logger logger = LoggerFactory.getLogger(CloudService.class);
 
     public static String clientVersion = null;
     private CloudClient cloudClient;
     private String cloudBaseUrl = null;
-    private HttpClient httpClient;
-    protected ItemRegistry itemRegistry = null;
-    protected EventPublisher eventPublisher = null;
+    private final HttpClient httpClient;
+    protected final ItemRegistry itemRegistry;
+    protected final EventPublisher eventPublisher;
 
     private boolean remoteAccessEnabled = true;
     private Set<String> exposedItems = null;
     private int localPort;
 
-    public CloudService() {
+    @Activate
+    public CloudService(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference ItemRegistry itemRegistry, final @Reference EventPublisher eventPublisher) {
+        this.httpClient = httpClientFactory.createHttpClient(HTTPCLIENT_NAME);
+        this.httpClient.setStopTimeout(0);
+        this.httpClient.setMaxConnectionsPerDestination(DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS);
+        this.httpClient.setConnectTimeout(DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT);
+        this.httpClient.setFollowRedirects(false);
+
+        this.itemRegistry = itemRegistry;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -109,7 +115,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param icon the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
-    public void sendNotification(String userId, String message, String icon, String severity) {
+    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity) {
         logger.debug("Sending message '{}' to user id {}", message, userId);
         cloudClient.sendNotification(userId, message, icon, severity);
     }
@@ -122,7 +128,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param icon the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
-    public void sendLogNotification(String message, String icon, String severity) {
+    public void sendLogNotification(String message, @Nullable String icon, @Nullable String severity) {
         logger.debug("Sending log message '{}'", message);
         cloudClient.sendLogNotification(message, icon, severity);
     }
@@ -135,14 +141,19 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param icon the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
-    public void sendBroadcastNotification(String message, String icon, String severity) {
+    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
         logger.debug("Sending broadcast message '{}' to all users", message);
         cloudClient.sendBroadcastNotification(message, icon, severity);
     }
 
+    private String substringBefore(String str, String separator) {
+        int index = str.indexOf(separator);
+        return index == -1 ? str : str.substring(0, index);
+    }
+
     @Activate
     protected void activate(BundleContext context, Map<String, ?> config) {
-        clientVersion = StringUtils.substringBefore(context.getBundle().getVersion().toString(), ".qualifier");
+        clientVersion = substringBefore(context.getBundle().getVersion().toString(), ".qualifier");
         localPort = HttpServiceUtil.getHttpServicePort(context);
         if (localPort == -1) {
             logger.warn("openHAB Cloud connector not started, since no local HTTP port could be determined");
@@ -221,9 +232,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             cloudClient.shutdown();
         }
 
-        httpClient.setMaxConnectionsPerDestination(DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS);
-        httpClient.setConnectTimeout(DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT);
-        httpClient.setFollowRedirects(false);
         if (!httpClient.isRunning()) {
             try {
                 httpClient.start();
@@ -257,12 +265,12 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     private String readFirstLine(File file) {
         List<String> lines = null;
-        try (InputStream fis = new FileInputStream(file)) {
-            lines = IOUtils.readLines(fis);
-        } catch (IOException ioe) {
+        try {
+            lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
             // no exception handling - we just return the empty String
         }
-        return lines != null && !lines.isEmpty() ? lines.get(0) : "";
+        return lines == null || lines.isEmpty() ? "" : lines.get(0);
     }
 
     /**
@@ -272,14 +280,22 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private void writeFile(File file, String content) {
         // create intermediary directories
         file.getParentFile().mkdirs();
-        try (OutputStream fos = new FileOutputStream(file)) {
-            IOUtils.write(content, fos);
+        try {
+            Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
             logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), content);
         } catch (FileNotFoundException e) {
             logger.error("Couldn't create file '{}'.", file.getPath(), e);
         } catch (IOException e) {
             logger.error("Couldn't write to file '{}'.", file.getPath(), e);
         }
+    }
+
+    private String randomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(CHARS.charAt(SR.nextInt(CHARS.length())));
+        }
+        return sb.toString();
     }
 
     /**
@@ -292,7 +308,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         String newSecretString = "";
 
         if (!file.exists()) {
-            newSecretString = RandomStringUtils.randomAlphanumeric(20);
+            newSecretString = randomString(20);
             logger.debug("New secret = {}", newSecretString);
             writeFile(file, newSecretString);
         } else {
@@ -306,77 +322,39 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     @Override
     public void sendCommand(String itemName, String commandString) {
         try {
-            if (itemRegistry != null) {
-                Item item = itemRegistry.getItem(itemName);
-                Command command = null;
-                if (item != null) {
-                    if (this.eventPublisher != null) {
-                        if ("toggle".equalsIgnoreCase(commandString)
-                                && (item instanceof SwitchItem || item instanceof RollershutterItem)) {
-                            if (OnOffType.ON.equals(item.getStateAs(OnOffType.class))) {
-                                command = OnOffType.OFF;
-                            }
-                            if (OnOffType.OFF.equals(item.getStateAs(OnOffType.class))) {
-                                command = OnOffType.ON;
-                            }
-                            if (UpDownType.UP.equals(item.getStateAs(UpDownType.class))) {
-                                command = UpDownType.DOWN;
-                            }
-                            if (UpDownType.DOWN.equals(item.getStateAs(UpDownType.class))) {
-                                command = UpDownType.UP;
-                            }
-                        } else {
-                            command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), commandString);
-                        }
-                        if (command != null) {
-                            logger.debug("Received command '{}' for item '{}'", commandString, itemName);
-                            this.eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
-                        } else {
-                            logger.warn("Received invalid command '{}' for item '{}'", commandString, itemName);
-                        }
-                    }
-                } else {
-                    logger.warn("Received command '{}' for non-existent item '{}'", commandString, itemName);
+            Item item = itemRegistry.getItem(itemName);
+            Command command = null;
+            if ("toggle".equalsIgnoreCase(commandString)
+                    && (item instanceof SwitchItem || item instanceof RollershutterItem)) {
+                if (OnOffType.ON.equals(item.getStateAs(OnOffType.class))) {
+                    command = OnOffType.OFF;
+                }
+                if (OnOffType.OFF.equals(item.getStateAs(OnOffType.class))) {
+                    command = OnOffType.ON;
+                }
+                if (UpDownType.UP.equals(item.getStateAs(UpDownType.class))) {
+                    command = UpDownType.DOWN;
+                }
+                if (UpDownType.DOWN.equals(item.getStateAs(UpDownType.class))) {
+                    command = UpDownType.UP;
                 }
             } else {
-                return;
+                command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), commandString);
+            }
+            if (command != null) {
+                logger.debug("Received command '{}' for item '{}'", commandString, itemName);
+                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
+            } else {
+                logger.warn("Received invalid command '{}' for item '{}'", commandString, itemName);
             }
         } catch (ItemNotFoundException e) {
-            logger.warn("Received command for a non-existent item '{}'", itemName);
+            logger.warn("Received command '{}' for a non-existent item '{}'", commandString, itemName);
         }
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient(HTTPCLIENT_NAME);
-        this.httpClient.setStopTimeout(0);
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
-    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
-    public void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
-    }
-
-    public void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
-    }
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    public void setEventPublisher(EventPublisher eventPublisher) {
-        this.eventPublisher = eventPublisher;
-    }
-
-    public void unsetEventPublisher(EventPublisher eventPublisher) {
-        this.eventPublisher = null;
     }
 
     @Override
     public Set<String> getSubscribedEventTypes() {
-        return Collections.singleton(ItemStateEvent.TYPE);
+        return Set.of(ItemStateEvent.TYPE);
     }
 
     @Override

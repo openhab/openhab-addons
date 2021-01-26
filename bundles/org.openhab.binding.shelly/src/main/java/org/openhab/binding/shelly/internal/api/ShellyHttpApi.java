@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,13 +43,12 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRela
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
-import tec.uom.se.unit.Units;
 
 /**
  * {@link ShellyHttpApi} wraps the Shelly REST API and provides various low level function to access the device api (not
@@ -187,10 +186,10 @@ public class ShellyHttpApi {
         if (profile.isSense) {
             // complete reported data, map C to F or vice versa: C=(F - 32) * 0.5556;
             status.tmp.tC = status.tmp.units.equals(SHELLY_TEMP_CELSIUS) ? status.tmp.value
-                    : ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(getDouble(status.tmp.value))
+                    : ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(getDouble(status.tmp.value))
                             .doubleValue();
             status.tmp.tF = status.tmp.units.equals(SHELLY_TEMP_FAHRENHEIT) ? status.tmp.value
-                    : Units.CELSIUS.getConverterTo(ImperialUnits.FAHRENHEIT).convert(getDouble(status.tmp.value))
+                    : SIUnits.CELSIUS.getConverterTo(ImperialUnits.FAHRENHEIT).convert(getDouble(status.tmp.value))
                             .doubleValue();
         }
         if ((status.charger == null) && (status.externalPower != null)) {

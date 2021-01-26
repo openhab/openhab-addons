@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -563,7 +563,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     public synchronized void deviceRemoved() {
         deviceDeletionPending = false;
         if (getThing().getStatus() == ThingStatus.REMOVING) {
-            // thing removal was initiated on ESH side
+            // thing removal was initiated
             updateStatus(ThingStatus.REMOVED);
         } else {
             // device removal was initiated on homematic side, thing is not removed

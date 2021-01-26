@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Angle;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openuv.internal.config.ReportConfiguration;
@@ -33,7 +31,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -174,7 +172,6 @@ public class OpenUVReportHandler extends BaseThingHandler {
         uvMaxJob = null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -184,8 +181,8 @@ public class OpenUVReportHandler extends BaseThingHandler {
             });
         } else if (ELEVATION.equals(channelUID.getId()) && command instanceof QuantityType) {
             QuantityType<?> qtty = (QuantityType<?>) command;
-            if ("°".equals(qtty.getUnit().toString())) {
-                suspendUpdates = ((QuantityType<Angle>) qtty).doubleValue() < 0;
+            if (qtty.getUnit() == Units.DEGREE_ANGLE) {
+                suspendUpdates = qtty.doubleValue() < 0;
             } else {
                 logger.info("The OpenUV Report handles Sun Elevation of Number:Angle type, {} does not fit.", command);
             }
@@ -208,7 +205,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
             if (channelTypeUID != null) {
                 switch (channelTypeUID.getId()) {
                     case UV_INDEX:
-                        updateState(channelUID, asDecimalType(openUVData.getUv()));
+                        updateState(channelUID, new DecimalType(openUVData.getUv()));
                         break;
                     case ALERT_LEVEL:
                         updateState(channelUID, asAlertLevel(openUVData.getUv()));
@@ -218,10 +215,10 @@ public class OpenUVReportHandler extends BaseThingHandler {
                                 ALERT_COLORS.getOrDefault(asAlertLevel(openUVData.getUv()), ALERT_UNDEF));
                         break;
                     case UV_MAX:
-                        updateState(channelUID, asDecimalType(openUVData.getUvMax()));
+                        updateState(channelUID, new DecimalType(openUVData.getUvMax()));
                         break;
                     case OZONE:
-                        updateState(channelUID, new QuantityType<>(openUVData.getOzone(), SmartHomeUnits.DOBSON_UNIT));
+                        updateState(channelUID, new QuantityType<>(openUVData.getOzone(), Units.DOBSON_UNIT));
                         break;
                     case OZONE_TIME:
                         updateState(channelUID, openUVData.getOzoneTime());
@@ -235,24 +232,14 @@ public class OpenUVReportHandler extends BaseThingHandler {
                     case SAFE_EXPOSURE:
                         SafeExposureConfiguration configuration = channel.getConfiguration()
                                 .as(SafeExposureConfiguration.class);
-                        if (configuration.index != -1) {
-                            updateState(channelUID,
-                                    openUVData.getSafeExposureTime().getSafeExposure(configuration.index));
-                        }
+                        updateState(channelUID, openUVData.getSafeExposureTime(configuration.index));
                         break;
                 }
             }
         }
     }
 
-    private State asDecimalType(int uv) {
-        if (uv >= 1) {
-            return new DecimalType(uv);
-        }
-        return UnDefType.NULL;
-    }
-
-    private State asAlertLevel(int uv) {
+    private State asAlertLevel(double uv) {
         if (uv >= 11) {
             return ALERT_PURPLE;
         } else if (uv >= 8) {
@@ -261,7 +248,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
             return ALERT_ORANGE;
         } else if (uv >= 3) {
             return ALERT_YELLOW;
-        } else if (uv >= 1) {
+        } else if (uv > 0) {
             return ALERT_GREEN;
         }
         return UnDefType.NULL;

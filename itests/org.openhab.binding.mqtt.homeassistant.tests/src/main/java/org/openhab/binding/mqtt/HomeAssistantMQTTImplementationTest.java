@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +36,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
@@ -68,6 +71,8 @@ import com.google.gson.GsonBuilder;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     private @NonNullByDefault({}) ConfigurationAdmin configurationAdmin;
@@ -76,8 +81,6 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     private @NonNullByDefault({}) MqttBrokerConnection connection;
     private int registeredTopics = 100;
     private @Nullable Throwable failure;
-
-    private @NonNullByDefault({}) AutoCloseable mocksCloseable;
 
     private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListener;
     private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
@@ -95,7 +98,6 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     @BeforeEach
     public void beforeEach() throws Exception {
         registerVolatileStorageService();
-        mocksCloseable = openMocks(this);
         configurationAdmin = getService(ConfigurationAdmin.class);
         mqttService = getService(MqttService.class);
 
@@ -133,8 +135,6 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
             connection.removeConnectionObserver(failIfChange);
             connection.stop().get(2, TimeUnit.SECONDS);
         }
-
-        mocksCloseable.close();
     }
 
     @Test

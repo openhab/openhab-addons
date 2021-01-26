@@ -27,18 +27,24 @@ You can also choose for which hours and which days you would like to get forecas
 
 ## Channels
 
-The channels are the same for all forecasts: 
+The channels are the same for all forecasts, but the daily forecast provides some additional aggregated values.
+For the other daily forecast channels, the values are for 12:00 UTC.
 
 #### Basic channels
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | Temperature  | Number:Temperature | Temperature in Celsius  |
+| Max Temperature  | Number:Temperature | Highest temperature of the day (daily forecast only)  |
+| Min Temperature  | Number:Temperature | Lowest temperature of the day (daily forecast only)  |
 | Wind direction  | Number:Angle | Wind direction in degrees  |
 | Wind Speed  | Number:Speed | Wind speed in m/s  |
+| Max Wind Speed  | Number:Speed | Highest wind speed of the day (daily forecast only)  |
+| Min Wind Speed  | Number:Speed | Lowest wind speed of the day (daily forecast only)  |
 | Wind gust speed  | Number:Speed | Wind gust speed in m/s  |
 | Minimum precipitation  | Number:Speed | Minimum precipitation intensity in mm/h  |
 | Maximum precipitation  | Number:Speed | Maximum precipitation intensity in mm/h  |
+| Total precipitation  | Number:Length | Total amount of precipitation during the day, in mm (daily forecast only)  |
 | Precipitation category*  | Number | Type of precipitation  |
 | Air pressure  | Number:Pressure | Air pressure in hPa  |
 | Relative humidity  | Number:Dimensionless | Relative humidity in percent  |

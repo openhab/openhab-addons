@@ -114,7 +114,7 @@ To pair an EnOcean device with its openHAB thing representation, you have to dif
 
 ### Sensors
 
-To pair a sensor with its thing, you first have to start the discovery scan for this binding in PaperUI.
+To pair a sensor with its thing, you first have to start the discovery scan for this binding.
 Then press the "teach-in" button of the sensor.
 The sensor sends a teach-in message which contains the information about the EEP and the EnOceanId of the sensor.
 If the EEP is known by this binding the thing representation of the device is created.
@@ -123,7 +123,7 @@ The corresponding channels are created dynamically, too.
 ### Actuators
  
 If the actuator supports UTE teach-in, the corresponding thing can be created and paired automatically.
-First you have to **start the discovery scan for a gateway** in PaperUI.
+First you have to **start the discovery scan for a gateway**.
 Then press the teach-in button of the actuator.
 If the EEP of the actuator is known, the binding sends an UTE teach-in response with a new SenderId and creates a new thing with its channels. 
 
@@ -287,6 +287,7 @@ Some channels can be configured with parameters.
 | teachInCMD    | manufacturerId | Id is used for 4BS teach in with EEP                                 | HEX                                                                                                                                 |
 |               | teachInMSG     | Use this message if teach in type and/or manufacturer id are unknown | HEX                                                                                                                                 |
 |  totalusage   | validateValue  | Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh | true / false                                                                                                                     |
+|               | tariff         | Tariff info or measurement channel to listen to | 0-15 |
 |  contact      | inverted       | Swap OPEN / CLOSED. Set True for Eltako FPE-2.                    | true / false. Defaults to false.                                                                                                    |
 
 Possible declaration in Thing DSL:

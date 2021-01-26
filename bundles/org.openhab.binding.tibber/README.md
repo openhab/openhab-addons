@@ -23,6 +23,7 @@ Tibber Default:
 |--------------------|-----------------------------------------|-----------|
 | Current Total      | Current Total Price (energy + tax)      | True      |
 | Starts At          | Current Price Timestamp                 | True      |
+| Current Level      | Current Price Level                     | True      |
 | Daily Cost         | Daily Cost (last/previous day)          | True      |
 | Daily Consumption  | Daily Consumption (last/previous day)   | True      |
 | Daily From         | Timestamp (daily from)                  | True      |
@@ -71,8 +72,7 @@ Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibb
 * Sign in (Tibber user account) and "load" personal token.
 * Copy query from below and paste into the Tibber API Explorer, and run query. 
 * If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
-* Copy HomeId from Tibber API Explorer, without quotation marks, and paste into Paper UI configuration
-
+* Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
 
 ```
 {
@@ -87,16 +87,15 @@ Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibb
 }
 ```
 
-If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds in Paper UI.
-
+If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds.
 
 ## Thing Configuration
 
-When Tibber Binding is installed, Tibber API should be autodiscovered in Paper UI. 
+When Tibber Binding is installed, Tibber API should be auto discovered. 
 
-Retrieve personal token and HomeId from description above, and initialize/start Binding from Paper UI. 
+Retrieve personal token and HomeId from description above, and initialize/start a scan with the binding. 
 
-Tibber API will be autodiscovered if provided input is correct.
+Tibber API will be auto discovered if provided input is correct.
 
 
 ## Full Example
@@ -106,6 +105,7 @@ demo.items:
 ```
 Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
 DateTime                   TibberAPICurrentStartsAt              "Timestamp - Current Price"                 {channel="tibber:tibberapi:7cfae492:current_startsAt"}
+String                     TibberAPICurrentLevel                 "Price Level"                               {channel="tibber:tibberapi:7cfae492:current_level"}
 DateTime                   TibberAPIDailyFrom                    "Timestamp - Daily From"                    {channel="tibber:tibberapi:7cfae492:daily_from"}
 DateTime                   TibberAPIDailyTo                      "Timestamp - Daily To"                      {channel="tibber:tibberapi:7cfae492:daily_to"}
 Number:Dimensionless       TibberAPIDailyCost                    "Total Daily Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:daily_cost"}
@@ -115,22 +115,22 @@ DateTime                   TibberAPIHourlyTo                     "Timestamp - Ho
 Number:Dimensionless       TibberAPIHourlyCost                   "Total Hourly Cost [%.2f NOK]"              {channel="tibber:tibberapi:7cfae492:hourly_cost"}
 Number:Energy              TibberAPIHourlyConsumption            "Total Hourly Consumption [%.2f kWh]"       {channel="tibber:tibberapi:7cfae492:hourly_consumption"}
 DateTime                   TibberAPILiveTimestamp                "Timestamp - Live Measurement"              {channel="tibber:tibberapi:7cfae492:live_timestamp"}
-Number:Power               TibberAPILivePower                    "Live Power Consumption [W]"                {channel="tibber:tibberapi:7cfae492:live_power"}
+Number:Power               TibberAPILivePower                    "Live Power Consumption [%.0f W]"           {channel="tibber:tibberapi:7cfae492:live_power"}
 Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
 Number:Energy              TibberAPILiveAccumulatedConsumption   "Accumulated Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumption"}
 Number:Dimensionless       TibberAPILiveAccumulatedCost          "Accumulated Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:live_accumulatedCost"}
 String                     TibberAPILiveCurrency                 "Currency"                                  {channel="tibber:tibberapi:7cfae492:live_currency"}
-Number:Power               TibberAPILiveMinPower                 "Min Power Consumption [W]"                 {channel="tibber:tibberapi:7cfae492:live_minPower"}
-Number:Power               TibberAPILiveAveragePower             "Average Power Consumption [W]"             {channel="tibber:tibberapi:7cfae492:live_averagePower"}
-Number:Power               TibberAPILiveMaxPower                 "Max Power Consumption [W]"                 {channel="tibber:tibberapi:7cfae492:live_maxPower"}
-Number:ElectricPotential   TibberAPILiveVoltage1                 "Live Voltage Phase 1 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage1"}
-Number:ElectricPotential   TibberAPILiveVoltage2                 "Live Voltage Phase 2 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage2"}
-Number:ElectricPotential   TibberAPILiveVoltage3                 "Live Voltage Phase 3 [V]"                  {channel="tibber:tibberapi:7cfae492:live_voltage3"}
-Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current Phase 1 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current1"}
-Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current2"}
-Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [V]"                  {channel="tibber:tibberapi:7cfae492:live_current3"}
-Number:Power               TibberAPILivePowerProduction          "Live Power Production [W]"                 {channel="tibber:tibberapi:7cfae492:live_powerProduction"}
-Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [W]"                  {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
-Number:Power               TibberAPILiveMaxPowerproduction       "Power consumption/production"              {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
+Number:Power               TibberAPILiveMinPower                 "Min Power Consumption [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_minPower"}
+Number:Power               TibberAPILiveAveragePower             "Average Power Consumption [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_averagePower"}
+Number:Power               TibberAPILiveMaxPower                 "Max Power Consumption [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_maxPower"}
+Number:ElectricPotential   TibberAPILiveVoltage1                 "Live Voltage Phase 1 [%.0 V]"              {channel="tibber:tibberapi:7cfae492:live_voltage1"}
+Number:ElectricPotential   TibberAPILiveVoltage2                 "Live Voltage Phase 2 [%.0 V]"              {channel="tibber:tibberapi:7cfae492:live_voltage2"}
+Number:ElectricPotential   TibberAPILiveVoltage3                 "Live Voltage Phase 3 [%.0 V]"              {channel="tibber:tibberapi:7cfae492:live_voltage3"}
+Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current Phase 1 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current1"}
+Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current2"}
+Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current3"}
+Number:Power               TibberAPILivePowerProduction          "Live Power Production [%.0f W]"                 {channel="tibber:tibberapi:7cfae492:live_powerProduction"}
+Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [%.0f W]"                  {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
+Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [%.0f W]"                  {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
 Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
 ```

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -556,23 +556,23 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT);
     }
 
-    public void sendCommand(String io, String command, String params) {
+    public void sendCommand(String io, String command, String params, String url) {
         if (ThingStatus.OFFLINE == thing.getStatus() && !reLogin()) {
             return;
         }
 
-        Boolean result = sendCommandInternal(io, command, params);
+        Boolean result = sendCommandInternal(io, command, params, url);
         if (!result) {
-            sendCommandInternal(io, command, params);
+            sendCommandInternal(io, command, params, url);
         }
     }
 
-    private Boolean sendCommandInternal(String io, String command, String params) {
+    private Boolean sendCommandInternal(String io, String command, String params, String url) {
         String value = params.equals("[]") ? command : params.replace("\"", "");
         String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value
                 + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\"" + command
                 + "\",\"parameters\":" + params + "}]}]}";
-        SomfyTahomaApplyResponse response = invokeCallToURL(EXEC_URL + "apply", urlParameters, HttpMethod.POST,
+        SomfyTahomaApplyResponse response = invokeCallToURL(url, urlParameters, HttpMethod.POST,
                 SomfyTahomaApplyResponse.class);
         if (response != null) {
             if (!response.getExecId().isEmpty()) {
@@ -699,6 +699,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                     break;
                 case DELETE:
                     response = sendDeleteToTahomaWithCookie(url);
+                default:
             }
             return classOfT != null ? gson.fromJson(response, classOfT) : null;
         } catch (JsonSyntaxException e) {

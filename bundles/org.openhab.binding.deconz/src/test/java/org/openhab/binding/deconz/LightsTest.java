@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.deconz.internal.CommandDescriptionProvider;
 import org.openhab.binding.deconz.internal.StateDescriptionProvider;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
@@ -60,6 +61,7 @@ public class LightsTest {
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
     private @Mock @NonNullByDefault({}) StateDescriptionProvider stateDescriptionProvider;
+    private @Mock @NonNullByDefault({}) CommandDescriptionProvider commandDescriptionProvider;
 
     @BeforeEach
     public void initialize() {
@@ -81,7 +83,8 @@ public class LightsTest {
         Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID)
                 .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build())
                 .withChannel(ChannelBuilder.create(channelUID_ct, "Number").build()).build();
-        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider);
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
         lightThingHandler.messageReceived("", lightMessage);
@@ -102,7 +105,8 @@ public class LightsTest {
         Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID).withProperties(properties)
                 .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build())
                 .withChannel(ChannelBuilder.create(channelUID_ct, "Number").build()).build();
-        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider) {
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider) {
             // avoid warning when initializing
             @Override
             public @Nullable Bridge getBridge() {
@@ -125,7 +129,8 @@ public class LightsTest {
 
         Thing light = ThingBuilder.create(THING_TYPE_DIMMABLE_LIGHT, thingUID)
                 .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build()).build();
-        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider);
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
         lightThingHandler.messageReceived("", lightMessage);
@@ -142,7 +147,8 @@ public class LightsTest {
 
         Thing light = ThingBuilder.create(THING_TYPE_DIMMABLE_LIGHT, thingUID)
                 .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build()).build();
-        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider);
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
         lightThingHandler.messageReceived("", lightMessage);
@@ -159,7 +165,8 @@ public class LightsTest {
 
         Thing light = ThingBuilder.create(THING_TYPE_DIMMABLE_LIGHT, thingUID)
                 .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build()).build();
-        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider);
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
         lightThingHandler.messageReceived("", lightMessage);
@@ -176,7 +183,8 @@ public class LightsTest {
 
         Thing light = ThingBuilder.create(THING_TYPE_WINDOW_COVERING, thingUID)
                 .withChannel(ChannelBuilder.create(channelUID_pos, "Rollershutter").build()).build();
-        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider);
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
         lightThingHandler.messageReceived("", lightMessage);

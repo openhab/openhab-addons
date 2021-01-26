@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.knowm.yank.Yank;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
@@ -38,6 +39,8 @@ import org.slf4j.LoggerFactory;
 public class JdbcMapper {
     private final Logger logger = LoggerFactory.getLogger(JdbcMapper.class);
 
+    private final TimeZoneProvider timeZoneProvider;
+
     // Error counter - used to reconnect to database on error
     protected int errCnt;
     protected boolean initialized = false;
@@ -46,6 +49,10 @@ public class JdbcMapper {
     private long afterAccessMin = 10000;
     private long afterAccessMax = 0;
     private static final String ITEM_NAME_PATTERN = "[^a-zA-Z_0-9\\-]";
+
+    public JdbcMapper(TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     /*****************
      * MAPPER ITEMS *
@@ -139,7 +146,7 @@ public class JdbcMapper {
     }
 
     public Item storeItemValue(Item item) {
-        logger.debug("JDBC::storeItemValue: item={}", item.toString());
+        logger.debug("JDBC::storeItemValue: item={}", item);
         String tableName = getTable(item);
         if (tableName == null) {
             logger.error("JDBC::store: Unable to store item '{}'.", item.getName());
@@ -159,10 +166,11 @@ public class JdbcMapper {
                 (filter != null), numberDecimalcount, table, item, item.getName());
         if (table != null) {
             long timerStart = System.currentTimeMillis();
-            List<HistoricItem> r = conf.getDBDAO().doGetHistItemFilterQuery(item, filter, numberDecimalcount, table,
-                    item.getName());
-            logTime("insertItemValue", timerStart, System.currentTimeMillis());
-            return r;
+            List<HistoricItem> result = conf.getDBDAO().doGetHistItemFilterQuery(item, filter, numberDecimalcount,
+                    table, item.getName(), timeZoneProvider.getTimeZone());
+            logTime("getHistItemFilterQuery", timerStart, System.currentTimeMillis());
+            errCnt = 0;
+            return result;
         } else {
             logger.error("JDBC::getHistItemFilterQuery: TABLE is NULL; cannot get data from non-existent table.");
         }
@@ -223,13 +231,10 @@ public class JdbcMapper {
             logger.info(
                     "JDBC::checkDBSchema: Rebuild complete, configure the 'rebuildTableNames' setting to 'false' to stop rebuilds on startup");
         } else {
-            List<ItemsVO> al;
             // Reset the error counter
             errCnt = 0;
-            al = getItemIDTableNames();
-            for (int i = 0; i < al.size(); i++) {
-                String t = getTableName(al.get(i).getItemid(), al.get(i).getItemname());
-                sqlTables.put(al.get(i).getItemname(), t);
+            for (ItemsVO vo : getItemIDTableNames()) {
+                sqlTables.put(vo.getItemname(), getTableName(vo.getItemid(), vo.getItemname()));
             }
         }
     }
@@ -296,19 +301,17 @@ public class JdbcMapper {
             initialized = false;
         }
 
-        List<ItemsVO> al;
         Map<Integer, String> tableIds = new HashMap<>();
 
         //
-        al = getItemIDTableNames();
-        for (int i = 0; i < al.size(); i++) {
-            String t = getTableName(al.get(i).getItemid(), al.get(i).getItemname());
-            sqlTables.put(al.get(i).getItemname(), t);
-            tableIds.put(al.get(i).getItemid(), t);
+        for (ItemsVO vo : getItemIDTableNames()) {
+            String t = getTableName(vo.getItemid(), vo.getItemname());
+            sqlTables.put(vo.getItemname(), t);
+            tableIds.put(vo.getItemid(), t);
         }
 
         //
-        al = getItemTables();
+        List<ItemsVO> al = getItemTables();
 
         String oldName = "";
         String newName = "";
@@ -368,7 +371,7 @@ public class JdbcMapper {
         // TODO: in general it would be possible to query the count, earliest and latest values for each item too but it
         // would be a very costly operation
         return sqlTables.keySet().stream().map(itemName -> new JdbcPersistenceItemInfo(itemName))
-                .collect(Collectors.<PersistenceItemInfo> toUnmodifiableSet());
+                .collect(Collectors.<PersistenceItemInfo> toSet());
     }
 
     private static String formatRight(final Object value, final int len) {

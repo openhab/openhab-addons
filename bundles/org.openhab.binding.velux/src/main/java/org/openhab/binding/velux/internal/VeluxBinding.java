@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
                 this.password = uncheckedConfiguration.password;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_TIMEOUT_MSECS);
-            if ((uncheckedConfiguration.timeoutMsecs > 0) && (uncheckedConfiguration.timeoutMsecs <= 10000)) {
+            if ((uncheckedConfiguration.timeoutMsecs >= 500) && (uncheckedConfiguration.timeoutMsecs <= 5000)) {
                 this.timeoutMsecs = uncheckedConfiguration.timeoutMsecs;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_RETRIES);
@@ -87,7 +87,7 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
                 this.retries = uncheckedConfiguration.retries;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_REFRESH_MSECS);
-            if ((uncheckedConfiguration.refreshMSecs > 0) && (uncheckedConfiguration.refreshMSecs <= 10000)) {
+            if ((uncheckedConfiguration.refreshMSecs >= 1000) && (uncheckedConfiguration.refreshMSecs <= 60000)) {
                 this.refreshMSecs = uncheckedConfiguration.refreshMSecs;
             }
             this.isBulkRetrievalEnabled = uncheckedConfiguration.isBulkRetrievalEnabled;
@@ -106,15 +106,20 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
      */
     public VeluxBridgeConfiguration checked() {
         logger.trace("checked() called.");
+        // @formatter:off
         logger.debug("{}Config[{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={}]",
-                VeluxBindingConstants.BINDING_ID, VeluxBridgeConfiguration.BRIDGE_PROTOCOL, protocol,
-                VeluxBridgeConfiguration.BRIDGE_IPADDRESS, this.ipAddress, VeluxBridgeConfiguration.BRIDGE_TCPPORT,
-                tcpPort, VeluxBridgeConfiguration.BRIDGE_PASSWORD, password.replaceAll(".", "*"),
-                VeluxBridgeConfiguration.BRIDGE_TIMEOUT_MSECS, timeoutMsecs, VeluxBridgeConfiguration.BRIDGE_RETRIES,
-                retries, VeluxBridgeConfiguration.BRIDGE_REFRESH_MSECS, refreshMSecs,
+                VeluxBindingConstants.BINDING_ID,
+                VeluxBridgeConfiguration.BRIDGE_PROTOCOL, protocol,
+                VeluxBridgeConfiguration.BRIDGE_IPADDRESS, this.ipAddress,
+                VeluxBridgeConfiguration.BRIDGE_TCPPORT, tcpPort,
+                VeluxBridgeConfiguration.BRIDGE_PASSWORD, password.replaceAll(".", "*"),
+                VeluxBridgeConfiguration.BRIDGE_TIMEOUT_MSECS, timeoutMsecs,
+                VeluxBridgeConfiguration.BRIDGE_RETRIES, retries,
+                VeluxBridgeConfiguration.BRIDGE_REFRESH_MSECS, refreshMSecs,
                 VeluxBridgeConfiguration.BRIDGE_IS_BULK_RETRIEVAL_ENABLED, isBulkRetrievalEnabled,
                 VeluxBridgeConfiguration.BRIDGE_IS_SEQUENTIAL_ENFORCED, isSequentialEnforced,
                 VeluxBridgeConfiguration.BRIDGE_PROTOCOL_TRACE_ENABLED, isProtocolTraceEnabled);
+        // @formatter:off
         logger.trace("checked() done.");
         return this;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,14 +22,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDeviceAlias;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
@@ -145,6 +144,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
 
             if (smartHomeDevice instanceof SmartHomeDevice) {
                 SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
+                logger.trace("Found SmartHome device: {}", shd);
 
                 String entityId = shd.entityId;
                 if (entityId == null) {
@@ -169,32 +169,31 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     continue;
                 }
 
-                JsonSmartHomeCapabilities.SmartHomeCapability[] capabilities = shd.capabilities;
-                if (capabilities == null || Stream.of(capabilities).noneMatch(capability -> capability != null
-                        && Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName))) {
+                if (shd.getCapabilities().stream()
+                        .noneMatch(capability -> Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName))) {
                     // No supported interface found
                     continue;
                 }
 
                 thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, entityId.replace(".", "-"));
 
+                List<JsonSmartHomeDeviceAlias> aliases = shd.aliases;
                 if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "SonarCloudService".equals(driverIdentity.identifier)) {
                     deviceName = "Alexa Guard on " + shd.friendlyName;
                 } else if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "OnGuardSmartHomeBridgeService".equals(driverIdentity.identifier)) {
                     deviceName = "Alexa Guard";
-                } else if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0] != null
-                        && shd.aliases[0].friendlyName != null) {
-                    deviceName = shd.aliases[0].friendlyName;
+                } else if (aliases != null && !aliases.isEmpty() && aliases.get(0).friendlyName != null) {
+                    deviceName = aliases.get(0).friendlyName;
                 } else {
                     deviceName = shd.friendlyName;
                 }
                 props.put(DEVICE_PROPERTY_ID, id);
-            }
-
-            if (smartHomeDevice instanceof SmartHomeGroup) {
+            } else if (smartHomeDevice instanceof SmartHomeGroup) {
                 SmartHomeGroup shg = (SmartHomeGroup) smartHomeDevice;
+                logger.trace("Found SmartHome device: {}", shg);
+
                 String id = shg.findId();
                 if (id == null) {
                     // No id

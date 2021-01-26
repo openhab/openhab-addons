@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunProductDiscovery;
 import org.openhab.binding.velux.internal.bridge.common.RunProductIdentification;
 import org.openhab.binding.velux.internal.bridge.common.RunProductSearch;
+import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.common.RunScene;
 import org.openhab.binding.velux.internal.bridge.common.SetHouseStatusMonitor;
 import org.openhab.binding.velux.internal.bridge.common.SetProductLimitation;
@@ -102,6 +103,7 @@ class SlipBridgeAPI implements BridgeAPI {
     private final SetHouseStatusMonitor slipSetHouseMonitor = new SCsetHouseStatusMonitor();
     private final SetProductLimitation slipSetProductLimitation = new SCsetLimitation();
     private final SetSceneVelocity slipSetSceneVelocity = new SCsetSceneVelocity();
+    private final RunReboot slipRunReboot = new SCrunReboot();
 
     /**
      * Constructor.
@@ -209,5 +211,10 @@ class SlipBridgeAPI implements BridgeAPI {
     @Override
     public SetSceneVelocity setSceneVelocity() {
         return slipSetSceneVelocity;
+    }
+
+    @Override
+    public @Nullable RunReboot runReboot() {
+        return slipRunReboot;
     }
 }

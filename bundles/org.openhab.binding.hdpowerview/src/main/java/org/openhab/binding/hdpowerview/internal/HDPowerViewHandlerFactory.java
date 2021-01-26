@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.hdpowerview.internal;
 
 import java.util.Hashtable;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewShadeDiscoveryService;
@@ -26,7 +28,9 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HDPowerViewHandlerFactory} is responsible for creating things and thing
@@ -37,6 +41,12 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.hdpowerview")
 public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
+    private final ClientBuilder clientBuilder;
+
+    @Activate
+    public HDPowerViewHandlerFactory(@Reference ClientBuilder clientBuilder) {
+        this.clientBuilder = clientBuilder;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +58,7 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_HUB)) {
-            HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing);
+            HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, clientBuilder);
             registerService(new HDPowerViewShadeDiscoveryService(handler));
             return handler;
         } else if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_SHADE)) {

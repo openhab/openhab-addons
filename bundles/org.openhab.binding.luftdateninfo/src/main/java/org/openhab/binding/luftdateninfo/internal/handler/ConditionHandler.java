@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -40,7 +40,7 @@ import org.openhab.core.thing.Thing;
 public class ConditionHandler extends BaseSensorHandler {
 
     protected QuantityType<Temperature> temperatureCache = QuantityType.valueOf(-1, SIUnits.CELSIUS);
-    protected QuantityType<Dimensionless> humidityCache = QuantityType.valueOf(-1, SmartHomeUnits.PERCENT);
+    protected QuantityType<Dimensionless> humidityCache = QuantityType.valueOf(-1, Units.PERCENT);
     protected QuantityType<Pressure> pressureCache = QuantityType.valueOf(-1, SIUnits.PASCAL);
     protected QuantityType<Pressure> pressureSeaCache = QuantityType.valueOf(-1, SIUnits.PASCAL);
 
@@ -60,8 +60,7 @@ public class ConditionHandler extends BaseSensorHandler {
                                     SIUnits.CELSIUS);
                             updateState(TEMPERATURE_CHANNEL, temperatureCache);
                         } else if (v.getValueType().equals(HUMIDITY)) {
-                            humidityCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
-                                    SmartHomeUnits.PERCENT);
+                            humidityCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), Units.PERCENT);
                             updateState(HUMIDITY_CHANNEL, humidityCache);
                         } else if (v.getValueType().equals(PRESSURE)) {
                             pressureCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), SIUnits.PASCAL);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,7 +88,7 @@ public abstract class RpcClient<T> {
         request.addArg(getRpcCallbackUrl());
         request.addArg(clientId);
         if (config.getGatewayInfo().isHomegear()) {
-            request.addArg(new Integer(0x22));
+            request.addArg(Integer.valueOf(0x22));
         }
         sendMessage(config.getRpcPort(hmInterface), request);
     }

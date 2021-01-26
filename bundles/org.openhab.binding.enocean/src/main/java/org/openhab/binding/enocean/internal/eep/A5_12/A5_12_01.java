@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.A5_12;
 
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
@@ -29,11 +29,11 @@ public class A5_12_01 extends A5_12 {
 
     @Override
     protected State calcCumulativeValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.KILOWATT_HOUR);
+        return new QuantityType<>(value, Units.KILOWATT_HOUR);
     }
 
     @Override
     protected State calcCurrentValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.WATT);
+        return new QuantityType<>(value, Units.WATT);
     }
 }

@@ -30,7 +30,7 @@
 		</parameter>
 		<parameter name="mode" type="text" required="true">
 			<label>Dimming Mode</label>
-			<description><![CDATA[<strong>IMPORTANT:</strong> Dimming range of all modules. Must be the same value as configured in LCN-PRO (Options/Settings/Expert Settings). If you <em>only</em> have modules with firmware newer than Feb. 2013, you probably want to choose 0 - 200.]]></description>
+			<description><![CDATA[<strong>ATTENTION:</strong> Dimming range of all modules. Must be the same value as configured in LCN-PRO (Options/Settings/Expert Settings). If you <em>only</em> have modules with firmware newer than Feb. 2013, you probably want to choose 0 - 200.]]></description>
 			<default>native200</default>
 			<options>
 				<option value="native50">0 - 50</option>
@@ -42,7 +42,7 @@
 			<label>Connection Timeout</label>
 			<description>Period after which an LCN command is resent, when no acknowledge has been received (in ms).</description>
 			<default>3500</default>
-			<required>true</required>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 

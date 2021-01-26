@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,7 @@
 package org.openhab.binding.homematic.internal.communicator.client;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -24,12 +21,11 @@ import java.util.concurrent.TimeoutException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BytesContentProvider;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcRequest;
@@ -111,39 +107,18 @@ public class XmlRpcClient extends RpcClient<String> {
             }
             Request req = httpClient.POST(url).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
                     .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding());
-            try {
-                ret = req.send().getContent();
-            } catch (IllegalArgumentException e) { // Returned buffer too large
-                logger.info("Blocking XmlRpcRequest failed: {}, trying non-blocking request", e.getMessage());
-                InputStreamResponseListener respListener = new InputStreamResponseListener();
-                req.send(respListener);
-                Response resp = respListener.get(config.getTimeout(), TimeUnit.SECONDS);
-                ByteArrayOutputStream respData = new ByteArrayOutputStream(RESP_BUFFER_SIZE);
-
-                int httpStatus = resp.getStatus();
-                if (httpStatus == HttpStatus.OK_200) {
-                    byte[] recvBuffer = new byte[RESP_BUFFER_SIZE];
-                    try (InputStream input = respListener.getInputStream()) {
-                        while (true) {
-                            int read = input.read(recvBuffer);
-                            if (read == -1) {
-                                break;
-                            }
-                            respData.write(recvBuffer, 0, read);
-                        }
-                        ret = respData.toByteArray();
-                    }
-                } else {
-                    logger.warn("Non-blocking XmlRpcRequest failed, status code: {} / request: {}", httpStatus,
-                            request);
-                    resp.abort(new IOException());
-                }
+            FutureResponseListener listener = new FutureResponseListener(req, config.getBufferSize() * 1024);
+            req.send(listener);
+            ContentResponse response = listener.get(config.getTimeout(), TimeUnit.SECONDS);
+            ret = response.getContent();
+            if (ret == null || ret.length == 0) {
+                throw new IOException("Received no data from the Homematic gateway");
             }
             if (logger.isTraceEnabled()) {
                 String result = new String(ret, config.getEncoding());
                 logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
             }
-        } catch (UnsupportedEncodingException | ExecutionException | TimeoutException | InterruptedException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException | IllegalArgumentException e) {
             throw new IOException(e);
         }
         return ret;

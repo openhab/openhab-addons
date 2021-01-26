@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -60,13 +60,12 @@ public class RevoltSensorHandler extends JeeLinkSensorHandler<RevoltReading> {
                             getThing().getUID().getId(), power, powerFactor, consumption, current, reading.getVoltage(),
                             reading.getFrequency());
 
-                    updateState(CURRENT_POWER_CHANNEL, new QuantityType<>(power, SmartHomeUnits.WATT));
+                    updateState(CURRENT_POWER_CHANNEL, new QuantityType<>(power, Units.WATT));
                     updateState(POWER_FACTOR_CHANNEL, new DecimalType(powerFactor));
-                    updateState(CONSUMPTION_CHANNEL, new QuantityType<>(consumption, SmartHomeUnits.WATT_HOUR));
-                    updateState(ELECTRIC_CURRENT_CHANNEL, new QuantityType<>(current, SmartHomeUnits.AMPERE));
-                    updateState(ELECTRIC_POTENTIAL_CHANNEL,
-                            new QuantityType<>(reading.getVoltage(), SmartHomeUnits.VOLT));
-                    updateState(FREQUENCY_CHANNEL, new QuantityType<>(reading.getFrequency(), SmartHomeUnits.HERTZ));
+                    updateState(CONSUMPTION_CHANNEL, new QuantityType<>(consumption, Units.WATT_HOUR));
+                    updateState(ELECTRIC_CURRENT_CHANNEL, new QuantityType<>(current, Units.AMPERE));
+                    updateState(ELECTRIC_POTENTIAL_CHANNEL, new QuantityType<>(reading.getVoltage(), Units.VOLT));
+                    updateState(FREQUENCY_CHANNEL, new QuantityType<>(reading.getFrequency(), Units.HERTZ));
                 }
             }
 

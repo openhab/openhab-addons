@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,24 @@ public class VeluxProduct {
         }
     }
 
+    // State (of movement) of an actuator
+    public static enum State {
+        NON_EXECUTING(0),
+        ERROR(1),
+        NOT_USED(2),
+        WAITING_FOR_POWER(3),
+        EXECUTING(4),
+        DONE(5),
+        MANUAL_OVERRIDE(0x80),
+        UNKNOWN(0xFF);
+
+        public final int value;
+
+        private State(int value) {
+            this.value = value;
+        }
+    }
+
     // Class internal
 
     private VeluxProductName name;
@@ -70,9 +88,9 @@ public class VeluxProduct {
     private int variation = 0;
     private int powerMode = 0;
     private String serialNumber = VeluxProductSerialNo.UNKNOWN;
-    private int state = 0;
+    private int state = State.UNKNOWN.value;
     private int currentPosition = 0;
-    private int target = 0;
+    private int targetPosition = 0;
     private int remainingTime = 0;
     private int timeStamp = 0;
 
@@ -143,7 +161,7 @@ public class VeluxProduct {
         this.serialNumber = serialNumber;
         this.state = state;
         this.currentPosition = currentPosition;
-        this.target = target;
+        this.targetPosition = target;
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
     }
@@ -155,7 +173,7 @@ public class VeluxProduct {
         if (this.v2) {
             return new VeluxProduct(this.name, this.typeId, this.bridgeProductIndex, this.order, this.placement,
                     this.velocity, this.variation, this.powerMode, this.serialNumber, this.state, this.currentPosition,
-                    this.target, this.remainingTime, this.timeStamp);
+                    this.targetPosition, this.remainingTime, this.timeStamp);
         } else {
             return new VeluxProduct(this.name, this.typeId, this.bridgeProductIndex);
         }
@@ -199,7 +217,10 @@ public class VeluxProduct {
     // Class helper methods
 
     public String getProductUniqueIndex() {
-        return this.name.toString().concat("#").concat(this.typeId.toString());
+        if (!v2 || serialNumber.startsWith(VeluxProductSerialNo.UNKNOWN)) {
+            return name.toString();
+        }
+        return VeluxProductSerialNo.cleaned(serialNumber);
     }
 
     // Getter and Setter methods
@@ -302,7 +323,7 @@ public class VeluxProduct {
      * @return <b>target</b> as type int shows the target position of the current operation.
      */
     public int getTarget() {
-        return target;
+        return targetPosition;
     }
 
     /**
@@ -310,12 +331,12 @@ public class VeluxProduct {
      * @return <b>modified</b> as boolean to signal a real modification.
      */
     public boolean setTarget(int newTarget) {
-        if (this.target == newTarget) {
+        if (this.targetPosition == newTarget) {
             return false;
         } else {
             logger.trace("setCurrentPosition(name={},index={}) target {} replaced by {}.", name.toString(),
-                    bridgeProductIndex.toInt(), this.target, newTarget);
-            this.target = newTarget;
+                    bridgeProductIndex.toInt(), this.targetPosition, newTarget);
+            this.targetPosition = newTarget;
             return true;
         }
     }
@@ -332,5 +353,36 @@ public class VeluxProduct {
      */
     public int getTimeStamp() {
         return timeStamp;
+    }
+
+    /**
+     * Returns the display position of the actuator.
+     * <li>As a general rule it returns <b>currentPosition</b>, except as follows..
+     * <li>If the actuator is in a motion state it returns <b>targetPosition</b>
+     * <li>If the motion state is 'done' but the currentPosition is invalid it returns <b>targetPosition</b>
+     * <li>If the manual override flag is set it returns the <b>unknown</b> position value
+     *
+     * @return The display position of the actuator
+     */
+    public int getDisplayPosition() {
+        // manual override flag set: position is 'unknown'
+        if ((state & State.MANUAL_OVERRIDE.value) != 0) {
+            return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+        }
+        // only check other conditions if targetPosition is valid and differs from currentPosition
+        if ((targetPosition != currentPosition) && (targetPosition <= VeluxProductPosition.VPP_VELUX_MAX)
+                && (targetPosition >= VeluxProductPosition.VPP_VELUX_MIN)) {
+            int state = this.state & 0xf;
+            // actuator is in motion: for quicker UI update, return targetPosition
+            if ((state > State.ERROR.value) && (state < State.DONE.value)) {
+                return targetPosition;
+            }
+            // motion complete but currentPosition is not valid: return targetPosition
+            if ((state == State.DONE.value) && ((currentPosition > VeluxProductPosition.VPP_VELUX_MAX)
+                    || (currentPosition < VeluxProductPosition.VPP_VELUX_MIN))) {
+                return targetPosition;
+            }
+        }
+        return currentPosition;
     }
 }

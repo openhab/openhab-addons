@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:playstation:PS3">
+		<parameter name="ipAddress" type="text" required="true">
+			<context>network-address</context>
+			<label>IP Address</label>
+			<description>The IP Address of the PlayStation 3.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:playstation:PS4">
+		<parameter name="userCredential" type="text" required="true" min="64" max="64" pattern="[0-9A-Fa-f]*">
+			<label>User Credential</label>
+			<description>User Credential to Communicate with the PlayStation 4.</description>
+		</parameter>
+		<parameter name="passCode" type="text" min="4" max="4" pattern="[0-9]*">
+			<context>password</context>
+			<label>Pass Code</label>
+			<description>Pass Code to Log in to PlayStation 4.</description>
+		</parameter>
+		<parameter name="pairingCode" type="text" min="8" max="8" pattern="[0-9]*">
+			<label>Pairing Code</label>
+			<description>Code to Pair openHAB Device to PlayStation 4. Only Needed During Pairing.</description>
+		</parameter>
+		<parameter name="connectionTimeout" type="integer" min="0" unit="s">
+			<label>Connection Timeout</label>
+			<description>How Many Seconds After the Last Command the Connection to the PS4 Closes Down. Use 0 to Never Close
+				Connection.</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="autoConnect" type="boolean">
+			<label>Auto Connect</label>
+			<description>Should the Binding Try to Connect to the PS4 as Soon as it's Turned On.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="artworkSize" type="integer" min="128" max="1024">
+			<label>Artwork Size</label>
+			<description>The Width and Height of the Downloaded Artwork.</description>
+			<default>320</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="ipAddress" type="text" required="true">
+			<context>network-address</context>
+			<label>IP Address</label>
+			<description>The IP Address of the PlayStation 4.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="ipPort" type="integer">
+			<label>IP Port</label>
+			<description>The IP Port Used to Communicate with the PlayStation 4.</description>
+			<default>997</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="outboundIP" type="text">
+			<context>network-address</context>
+			<label>Outbound IP</label>
+			<description>IP Address of the Network Interface to Use.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

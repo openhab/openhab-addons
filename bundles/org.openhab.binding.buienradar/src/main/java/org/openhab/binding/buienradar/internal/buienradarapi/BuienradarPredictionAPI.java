@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -143,7 +143,7 @@ public class BuienradarPredictionAPI implements PredictionAPI {
         try {
             result = HttpUtil.executeUrl("GET", address, TIMEOUT_MS);
         } catch (IOException e) {
-            logger.warn("IO Exception when trying to retrieve Buienradar results", e);
+            logger.debug("IO Exception when trying to retrieve Buienradar results: {}", e.getMessage());
             return Optional.empty();
         }
 

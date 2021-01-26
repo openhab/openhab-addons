@@ -13,7 +13,7 @@
 		<description>A dimmable light with changeable colors.</description>
 
 		<channels>
-			<channel id="color" typeId="color"/>
+			<channel id="color" typeId="system.color"/>
 			<channel id="alert" typeId="alert"/>
 			<channel id="effect" typeId="effect"/>
 		</channels>

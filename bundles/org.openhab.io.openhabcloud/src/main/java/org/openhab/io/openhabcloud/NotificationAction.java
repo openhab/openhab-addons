@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.io.openhabcloud;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.model.script.engine.action.ActionDoc;
 import org.openhab.io.openhabcloud.internal.CloudService;
 import org.slf4j.Logger;
@@ -23,14 +25,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to ESH APIs
- *
  */
-
+@NonNullByDefault
 public class NotificationAction {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationAction.class);
 
-    public static CloudService cloudService = null;
+    public static @Nullable CloudService cloudService;
 
     /**
      * Sends a simple push notification to mobile devices of user
@@ -54,7 +55,8 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    public static void sendNotification(String userId, String message, String icon, String severity) {
+    public static void sendNotification(String userId, String message, @Nullable String icon,
+            @Nullable String severity) {
         logger.debug("sending notification '{}' to user {}", message, userId);
         if (cloudService != null) {
             cloudService.sendNotification(userId, message, icon, severity);
@@ -83,7 +85,7 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a log notification which is shown in notifications log to all account users")
-    public static void sendLogNotification(String message, String icon, String severity) {
+    public static void sendLogNotification(String message, @Nullable String icon, @Nullable String severity) {
         logger.debug("sending log notification '{}'", message);
         if (cloudService != null) {
             cloudService.sendLogNotification(message, icon, severity);
@@ -112,7 +114,7 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    public static void sendBroadcastNotification(String message, String icon, String severity) {
+    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
         logger.debug("sending broadcast notification '{}' to all users", message);
         if (cloudService != null) {
             cloudService.sendBroadcastNotification(message, icon, severity);

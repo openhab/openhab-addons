@@ -99,6 +99,10 @@
 		<item-type>String</item-type>
 		<label>Execute Command</label>
 	</channel-type>
+	<channel-type id="rpc" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute RPC (cloud) Command</label>
+	</channel-type>
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power On/Off</label>
@@ -110,6 +114,10 @@
 	<channel-type id="eyecare">
 		<item-type>Switch</item-type>
 		<label>Eyecare Mode On/Off</label>
+	</channel-type>
+	<channel-type id="clean">
+		<item-type>Switch</item-type>
+		<label>Cleaning On/Off</label>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
@@ -220,7 +228,7 @@
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
-		<state pattern="%.1f" readOnly="true"/>
+		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pm25">
 		<item-type>Number</item-type>
@@ -261,19 +269,24 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="filterhours">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Filter Use Time</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f  %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="usedhours">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Run Time</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerhours">
+		<item-type>Number:Time</item-type>
+		<label>Powered On Time</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="motorspeed">
 		<item-type>Number</item-type>
 		<label>Motor Speed</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f rpm" readOnly="true"/>
 	</channel-type>
 	<channel-type id="filterlive">
 		<item-type>Number</item-type>
@@ -303,6 +316,11 @@
 	<channel-type id="translevel">
 		<item-type>Number</item-type>
 		<label>Trans Level</label>
+	</channel-type>
+	<channel-type id="waterlevel">
+		<item-type>Number</item-type>
+		<label>Water Level</label>
+		<state pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="dry">
 		<item-type>Switch</item-type>
@@ -748,4 +766,57 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="humidifierOperationMode">
+		<item-type>Number</item-type>
+		<label>Operation Mode</label>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="humidifierLedBrightness">
+		<item-type>Number</item-type>
+		<label>LED Brightness</label>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Dim</option>
+				<option value="2">Bright</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="humidifierLastPressedButton">
+		<item-type>Number</item-type>
+		<label>Last Pressed Button</label>
+		<state>
+			<options>
+				<option value="0">No</option>
+				<option value="1">LED</option>
+				<option value="2">Power</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="countryCode">
+		<item-type>Number</item-type>
+		<label>Country</label>
+		<state>
+			<options>
+				<option value="0">Unlocked</option>
+				<option value="1">US</option>
+				<option value="82">KR</option>
+				<option value="44">EU</option>
+				<option value="81">JP</option>
+				<option value="7">RU</option>
+				<option value="86">CN</option>
+				<option value="852">HK</option>
+				<option value="886">TW</option>
+				<option value="33">FR</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

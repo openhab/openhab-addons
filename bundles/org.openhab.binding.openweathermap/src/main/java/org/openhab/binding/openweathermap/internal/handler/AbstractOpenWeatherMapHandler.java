@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,8 +69,9 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenWeatherMapHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_WEATHER_AND_FORECAST, THING_TYPE_UVINDEX).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_WEATHER_AND_FORECAST, THING_TYPE_UVINDEX,
+                    THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY).collect(Collectors.toSet()));
 
     private final TimeZoneProvider timeZoneProvider;
 
@@ -151,8 +152,8 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
      *
      * @param connection {@link OpenWeatherMapConnection} instance
      * @return true, if the request for the OpenWeatherMap data was successful
-     * @throws OpenWeatherMapCommunicationException
-     * @throws OpenWeatherMapConfigurationException
+     * @throws OpenWeatherMapCommunicationException if there is a problem retrieving the data
+     * @throws OpenWeatherMapConfigurationException if there is a configuration error
      */
     protected abstract boolean requestData(OpenWeatherMapConnection connection)
             throws OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException;
@@ -205,7 +206,8 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     }
 
     protected List<Channel> createChannelsForGroup(String channelGroupId, ChannelGroupTypeUID channelGroupTypeUID) {
-        logger.debug("Building channel group '{}' for thing '{}'.", channelGroupId, getThing().getUID());
+        logger.debug("Building channel group '{}' for thing '{}' and GroupType '{}'.", channelGroupId,
+                getThing().getUID(), channelGroupTypeUID);
         List<Channel> channels = new ArrayList<>();
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
@@ -221,6 +223,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
                 channels.add(newChannel);
             }
         }
+        logger.debug("Built channels: {}", channels);
         return channels;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -224,13 +224,11 @@ public class SDS011Handler extends BaseThingHandler {
         if (sensorData.isValidData()) {
             logger.debug("Updating channels with data: {}", sensorData);
 
-            QuantityType<Density> statePM10 = new QuantityType<>(sensorData.getPm10(),
-                    SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+            QuantityType<Density> statePM10 = new QuantityType<>(sensorData.getPm10(), Units.MICROGRAM_PER_CUBICMETRE);
             updateState(NovaFineDustBindingConstants.CHANNEL_PM10, statePM10);
             this.statePM10 = statePM10;
 
-            QuantityType<Density> statePM25 = new QuantityType<>(sensorData.getPm25(),
-                    SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+            QuantityType<Density> statePM25 = new QuantityType<>(sensorData.getPm25(), Units.MICROGRAM_PER_CUBICMETRE);
             updateState(NovaFineDustBindingConstants.CHANNEL_PM25, statePM25);
             this.statePM25 = statePM25;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,14 @@ import static org.openhab.binding.velux.internal.VeluxBindingConstants.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
+import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
@@ -45,11 +49,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Guenther Schreiner - Initial contribution.
  */
-//
-// To-be-discussed: check whether an immediate activation is preferable.
-// Might be activated by:
-// @Component(service = DiscoveryService.class, configurationPid = "discovery.velux")
-//
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.velux")
 public class VeluxDiscoveryService extends AbstractDiscoveryService implements Runnable {
@@ -57,12 +56,15 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
 
     // Class internal
 
-    private static final int DISCOVER_TIMEOUT_SECONDS = 300;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 60;
 
     private @NonNullByDefault({}) LocaleProvider localeProvider;
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
     private Localization localization = Localization.UNKNOWN;
     private final Set<VeluxBridgeHandler> bridgeHandlers = new HashSet<>();
+
+    @Nullable
+    private ScheduledFuture<?> backgroundTask = null;
 
     // Private
 
@@ -80,7 +82,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
      * Initializes the {@link VeluxDiscoveryService} without any further information.
      */
     public VeluxDiscoveryService() {
-        super(VeluxBindingConstants.SUPPORTED_THINGS_ITEMS, DISCOVER_TIMEOUT_SECONDS);
+        super(VeluxBindingConstants.DISCOVERABLE_THINGS, DISCOVER_TIMEOUT_SECONDS);
         logger.trace("VeluxDiscoveryService(without Bridge) just initialized.");
     }
 
@@ -107,7 +109,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
      * @param localizationHandler Initialized localization handler.
      */
     public VeluxDiscoveryService(Localization localizationHandler) {
-        super(VeluxBindingConstants.SUPPORTED_THINGS_ITEMS, DISCOVER_TIMEOUT_SECONDS);
+        super(VeluxBindingConstants.DISCOVERABLE_THINGS, DISCOVER_TIMEOUT_SECONDS);
         logger.trace("VeluxDiscoveryService(locale={},i18n={}) just initialized.", localeProvider, i18nProvider);
         localization = localizationHandler;
     }
@@ -143,9 +145,14 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withProperty(VeluxBindingProperties.PROPERTY_BINDING_BUNDLEVERSION,
                         ManifestInformation.getBundleVersion())
+                .withRepresentationProperty(VeluxBindingProperties.PROPERTY_BINDING_BUNDLEVERSION)
                 .withLabel(localization.getText("discovery.velux.binding...label")).build();
         logger.debug("startScan(): registering new thing {}.", discoveryResult);
         thingDiscovered(discoveryResult);
+
+        scheduler.execute(() -> {
+            discoverBridges();
+        });
 
         if (bridgeHandlers.isEmpty()) {
             logger.debug("startScan(): VeluxDiscoveryService cannot proceed due to missing Velux bridge(s).");
@@ -161,7 +168,6 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     public synchronized void stopScan() {
         logger.trace("stopScan() called.");
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
         logger.trace("stopScan() done.");
     }
 
@@ -285,5 +291,40 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
      */
     public boolean isEmpty() {
         return bridgeHandlers.isEmpty();
+    }
+
+    /**
+     * Discover any bridges on the network that are not yet instantiated.
+     */
+    private void discoverBridges() {
+        // discover the list of IP addresses of bridges on the network
+        Set<String> foundBridgeIpAddresses = VeluxBridgeFinder.discoverIpAddresses(scheduler);
+        // publish discovery results
+        for (String ipAddr : foundBridgeIpAddresses) {
+            ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE, ipAddr.replace(".", "_"));
+            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_BRIDGE)
+                    .withProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS, ipAddr)
+                    .withRepresentationProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS)
+                    .withLabel(String.format("Velux Bridge (%s)", ipAddr)).build();
+            thingDiscovered(result);
+        }
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.trace("startBackgroundDiscovery() called.");
+        ScheduledFuture<?> task = this.backgroundTask;
+        if (task == null || task.isCancelled()) {
+            this.backgroundTask = scheduler.scheduleWithFixedDelay(this::startScan, 10, 600, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.trace("stopBackgroundDiscovery() called.");
+        ScheduledFuture<?> task = this.backgroundTask;
+        if (task != null) {
+            task.cancel(true);
+        }
     }
 }

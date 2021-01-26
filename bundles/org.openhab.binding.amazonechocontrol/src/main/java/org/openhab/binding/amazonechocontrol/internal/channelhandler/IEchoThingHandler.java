@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
  */
 @NonNullByDefault
 public interface IEchoThingHandler extends IAmazonThingHandler {
-    void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+    void startAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer volume) throws IOException, URISyntaxException;
 }

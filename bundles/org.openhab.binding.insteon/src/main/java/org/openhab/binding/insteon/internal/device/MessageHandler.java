@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -752,9 +752,8 @@ public abstract class MessageHandler {
                             batteryPercentage = (batteryLevel - 0x70) * 100 / (0xd2 - 0x70);
                         }
                         logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
-                        feature.publish(new QuantityType<>(batteryPercentage, SmartHomeUnits.PERCENT),
-                                StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
-                                InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
+                        feature.publish(new QuantityType<>(batteryPercentage, Units.PERCENT), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
@@ -804,7 +803,7 @@ public abstract class MessageHandler {
                     batteryPercentage = (batteryLevel - 0x70) * 100 / (0xd2 - 0x70);
                 }
                 logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
-                feature.publish(new QuantityType<>(batteryPercentage, SmartHomeUnits.PERCENT), StateChangeType.CHANGED,
+                feature.publish(new QuantityType<>(batteryPercentage, Units.PERCENT), StateChangeType.CHANGED,
                         InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
             } catch (FieldException e) {
                 logger.warn("error parsing {}: ", msg, e);
@@ -875,9 +874,9 @@ public abstract class MessageHandler {
                     }
 
                     logger.debug("{}:{} watts: {} kwh: {} ", nm(), f.getDevice().getAddress(), watts, kwh);
-                    feature.publish(new QuantityType<>(kwh, SmartHomeUnits.KILOWATT_HOUR), StateChangeType.CHANGED,
+                    feature.publish(new QuantityType<>(kwh, Units.KILOWATT_HOUR), StateChangeType.CHANGED,
                             InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_KWH);
-                    feature.publish(new QuantityType<>(watts, SmartHomeUnits.WATT), StateChangeType.CHANGED,
+                    feature.publish(new QuantityType<>(watts, Units.WATT), StateChangeType.CHANGED,
                             InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_WATTS);
                 } catch (FieldException e) {
                     logger.warn("error parsing {}: ", msg, e);

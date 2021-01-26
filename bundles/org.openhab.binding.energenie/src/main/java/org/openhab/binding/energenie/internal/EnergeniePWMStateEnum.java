@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public enum EnergeniePWMStateEnum {
-    VOLTAGE("var V  = ", 9, 20, 10, SmartHomeUnits.VOLT),
-    CURRENT("var V  = ", 9, 20, 100, SmartHomeUnits.AMPERE),
-    POWER("var P=", 6, 20, 466, SmartHomeUnits.WATT),
-    ENERGY("var E=", 6, 20, 25600, SmartHomeUnits.WATT_HOUR);
+    VOLTAGE("var V  = ", 9, 20, 10, Units.VOLT),
+    CURRENT("var V  = ", 9, 20, 100, Units.AMPERE),
+    POWER("var P=", 6, 20, 466, Units.WATT),
+    ENERGY("var E=", 6, 20, 25600, Units.WATT_HOUR);
 
     private final Logger logger = LoggerFactory.getLogger(EnergeniePWMStateEnum.class);
 

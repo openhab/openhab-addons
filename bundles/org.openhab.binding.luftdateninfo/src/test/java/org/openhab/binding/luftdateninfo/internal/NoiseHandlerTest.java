@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.openhab.binding.luftdateninfo.internal.mock.NoiseHandlerExtension;
 import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link NoiseHandlerTest} Test Noise Handler updates
@@ -47,12 +47,9 @@ public class NoiseHandlerTest {
         if (pmJson != null) {
             UpdateStatus result = noiseHandler.updateChannels(pmJson);
             assertEquals(UpdateStatus.OK, result, "Valid update");
-            assertEquals(QuantityType.valueOf(51.0, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseEQCache(),
-                    "Noise EQ");
-            assertEquals(QuantityType.valueOf(47.2, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseMinCache(),
-                    "Noise Min");
-            assertEquals(QuantityType.valueOf(57.0, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseMaxCache(),
-                    "Noise Max");
+            assertEquals(QuantityType.valueOf(51.0, Units.DECIBEL), noiseHandler.getNoiseEQCache(), "Noise EQ");
+            assertEquals(QuantityType.valueOf(47.2, Units.DECIBEL), noiseHandler.getNoiseMinCache(), "Noise Min");
+            assertEquals(QuantityType.valueOf(57.0, Units.DECIBEL), noiseHandler.getNoiseMaxCache(), "Noise Max");
         } else {
             assertTrue(false);
         }
@@ -72,12 +69,9 @@ public class NoiseHandlerTest {
         if (pmJson != null) {
             UpdateStatus result = noiseHandler.updateChannels(pmJson);
             assertEquals(UpdateStatus.VALUE_ERROR, result, "Valid update");
-            assertEquals(QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseEQCache(),
-                    "Values undefined");
-            assertEquals(QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseMinCache(),
-                    "Values undefined");
-            assertEquals(QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseMaxCache(),
-                    "Values undefined");
+            assertEquals(QuantityType.valueOf(-1, Units.DECIBEL), noiseHandler.getNoiseEQCache(), "Values undefined");
+            assertEquals(QuantityType.valueOf(-1, Units.DECIBEL), noiseHandler.getNoiseMinCache(), "Values undefined");
+            assertEquals(QuantityType.valueOf(-1, Units.DECIBEL), noiseHandler.getNoiseMaxCache(), "Values undefined");
         } else {
             assertTrue(false);
         }

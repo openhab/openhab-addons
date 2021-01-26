@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,12 +35,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.modbus.internal.ModbusHandlerFactory;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusManager;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemProvider;
 import org.openhab.core.items.ItemRegistry;
@@ -60,14 +65,14 @@ import org.openhab.core.thing.link.ItemChannelLinkProvider;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.State;
-import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Sami Salonen - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
@@ -101,8 +106,6 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusOSGiTest.class);
 
-    private @NonNullByDefault({}) AutoCloseable mocksCloseable;
-
     protected @Mock @NonNullByDefault({}) ModbusManager mockedModbusManager;
     protected @NonNullByDefault({}) ManagedThingProvider thingProvider;
     protected @NonNullByDefault({}) ManagedItemProvider itemProvider;
@@ -128,7 +131,6 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     @BeforeEach
     public void setUpAbstractModbusOSGiTest() {
         logger.debug("setUpAbstractModbusOSGiTest BEGIN");
-        mocksCloseable = openMocks(this);
         registerVolatileStorageService();
         registerService(mockedModbusManager);
         registerService(stateSubscriber);
@@ -167,7 +169,6 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
             logger.debug("Unlinking {} <-> {}", link.getItemName(), link.getLinkedUID());
             assertNotNull(itemChannelLinkProvider.remove(link.getUID()));
         }
-        mocksCloseable.close();
         logger.debug("tearDownAbstractModbusOSGiTest END");
     }
 
@@ -217,7 +218,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
     protected void mockTransformation(String name, TransformationService service) {
         Dictionary<String, Object> params = new Hashtable<>();
-        params.put("smarthome.transform", name);
+        params.put("openhab.transform", name);
         registerService(service, params);
     }
 

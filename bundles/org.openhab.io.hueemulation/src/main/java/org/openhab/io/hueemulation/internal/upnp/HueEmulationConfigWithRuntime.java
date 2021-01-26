@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,8 +95,7 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
         }
     }
 
-    public synchronized CompletableFuture<@Nullable HueEmulationConfigWithRuntime> startNow(
-            @Nullable HueEmulationConfigWithRuntime ignored) {
+    public synchronized CompletableFuture<@Nullable HueEmulationConfigWithRuntime> startNow() {
         if (hasAlreadyBeenStarted) {
             logger.debug("Cannot restart thread");
             return future;

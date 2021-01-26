@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import static org.openhab.core.library.unit.MetricPrefix.MICRO;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.SIUnits.CUBIC_METRE;
 import static org.openhab.core.library.unit.SIUnits.GRAM;
-import static org.openhab.core.library.unit.SmartHomeUnits.ONE;
-import static org.openhab.core.library.unit.SmartHomeUnits.PARTS_PER_MILLION;
-import static org.openhab.core.library.unit.SmartHomeUnits.PERCENT;
+import static org.openhab.core.library.unit.Units.ONE;
+import static org.openhab.core.library.unit.Units.PARTS_PER_MILLION;
+import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.io.IOException;
 import java.math.BigDecimal;

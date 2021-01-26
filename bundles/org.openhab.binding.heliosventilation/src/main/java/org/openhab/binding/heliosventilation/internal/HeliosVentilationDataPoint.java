@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -179,7 +179,7 @@ public class HeliosVentilationDataPoint {
                 return new QuantityType<>(TEMP_MAP[val], SIUnits.CELSIUS);
             case BYTE_PERCENT:
                 return new QuantityType<>((int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)),
-                        SmartHomeUnits.PERCENT);
+                        Units.PERCENT);
             case SWITCH:
                 if (bitLength != 1) {
                     return UnDefType.UNDEF;
@@ -192,7 +192,7 @@ public class HeliosVentilationDataPoint {
                 int value = (b & bitMask()) >> bitStart;
                 return new DecimalType(value);
             case PERCENT:
-                return new QuantityType<>(val, SmartHomeUnits.PERCENT);
+                return new QuantityType<>(val, Units.PERCENT);
             case FANSPEED:
                 int i = 1;
                 while (i < FANSPEED_MAP.length && FANSPEED_MAP[i] < val) {

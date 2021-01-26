@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,12 +58,14 @@ public class VeluxProductPosition {
 
     private static final int VPP_OPENHAB_MIN = 0;
     private static final int VPP_OPENHAB_MAX = 100;
-    private static final int VPP_VELUX_MIN = 0x0000;
-    private static final int VPP_VELUX_MAX = 0xc800;
-    private static final int VPP_VELUX_UNKNOWN = 0xF7FF;
 
-    private static final int VPP_VELUX_PERCENTAGE_MIN = 0xc900;
-    private static final int VPP_VELUX_PERCENTAGE_MAX = 0xd0d0;
+    public static final int VPP_VELUX_MIN = 0x0000;
+    public static final int VPP_VELUX_MAX = 0xc800;
+    public static final int VPP_VELUX_UNKNOWN = 0xF7FF;
+
+    // relative mode commands
+    private static final int VPP_VELUX_RELATIVE_ORIGIN = 0xCCE8;
+    private static final int VPP_VELUX_RELATIVE_RANGE = 1000; // same for positive and negative offsets
 
     // Class internal
 
@@ -159,15 +161,8 @@ public class VeluxProductPosition {
 
     // Helper methods
 
-    public static int getRelativePositionAsVeluxType(boolean upwards, PercentType position) {
-        float result = (VPP_VELUX_PERCENTAGE_MAX + VPP_VELUX_PERCENTAGE_MIN) / 2;
-        if (upwards) {
-            result = result + (ONE * position.intValue() - VPP_OPENHAB_MIN) / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN)
-                    * ((VPP_VELUX_PERCENTAGE_MAX - VPP_VELUX_PERCENTAGE_MIN) / 2);
-        } else {
-            result = result - (ONE * position.intValue() - VPP_OPENHAB_MIN) / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN)
-                    * ((VPP_VELUX_PERCENTAGE_MAX - VPP_VELUX_PERCENTAGE_MIN) / 2);
-        }
-        return (int) result;
+    public int getAsRelativePosition(boolean positive) {
+        int offset = position.intValue() * VPP_VELUX_RELATIVE_RANGE / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN);
+        return positive ? VPP_VELUX_RELATIVE_ORIGIN + offset : VPP_VELUX_RELATIVE_ORIGIN - offset;
     }
 }

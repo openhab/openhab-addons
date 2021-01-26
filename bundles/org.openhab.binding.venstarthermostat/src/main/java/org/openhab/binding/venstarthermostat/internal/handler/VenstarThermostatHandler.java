@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -262,7 +262,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         Optional<VenstarSensor> optSensor = sensorData.stream()
                 .filter(sensor -> sensor.getName().equalsIgnoreCase("Thermostat")).findAny();
         if (optSensor.isPresent()) {
-            return new QuantityType<Dimensionless>(optSensor.get().getHum(), SmartHomeUnits.PERCENT);
+            return new QuantityType<Dimensionless>(optSensor.get().getHum(), Units.PERCENT);
         }
 
         return UnDefType.UNDEF;

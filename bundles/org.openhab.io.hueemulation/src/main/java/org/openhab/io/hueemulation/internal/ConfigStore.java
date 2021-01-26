@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.io.hueemulation.internal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.IllegalFormatException;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -77,7 +78,7 @@ import com.google.gson.GsonBuilder;
 public class ConfigStore {
 
     public static final String METAKEY = "HUEEMU";
-    public static final String EVENT_ADDRESS_CHANGED = "ESH_EMU_CONFIG_ADDR_CHANGED";
+    public static final String EVENT_ADDRESS_CHANGED = "HUE_EMU_CONFIG_ADDR_CHANGED";
 
     private final Logger logger = LoggerFactory.getLogger(ConfigStore.class);
 
@@ -120,6 +121,8 @@ public class ConfigStore {
     public Set<String> ignoreItemsFilter = Collections.emptySet();
 
     private int highestAssignedHueID = 1;
+
+    private String hueIDPrefix = "";
 
     public ConfigStore() {
         scheduler = ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -233,6 +236,8 @@ public class ConfigStore {
             ds.config.bridgeid = ds.config.bridgeid.substring(0, 12);
         }
 
+        hueIDPrefix = getHueIDPrefixFromUUID(config.uuid);
+
         if (config.permanentV1bridge) {
             ds.config.makeV1bridge();
         }
@@ -256,6 +261,32 @@ public class ConfigStore {
         } else {
             return hostAddress;
         }
+    }
+
+    /**
+     * Get the prefix used to create a unique id
+     *
+     * @param uuid The uuid
+     * @return The prefix in the format of AA:BB:CC:DD:EE:FF:00:11 if uuid is a valid UUID, otherwise uuid is returned.
+     */
+    private String getHueIDPrefixFromUUID(final String uuid) {
+        // Hue API example of a unique id is AA:BB:CC:DD:EE:FF:00:11-XX
+        // XX is generated from the item.
+        String prefix = uuid;
+        try {
+            // Generate prefix if uuid is a randomly generated UUID
+            if (UUID.fromString(uuid).version() == 4) {
+                final StringBuilder sb = new StringBuilder(23);
+                sb.append(uuid, 0, 2).append(":").append(uuid, 2, 4).append(":").append(uuid, 4, 6).append(":")
+                        .append(uuid, 6, 8).append(":").append(uuid, 9, 11).append(":").append(uuid, 11, 13).append(":")
+                        .append(uuid, 14, 16).append(":").append(uuid, 16, 18);
+                prefix = sb.toString().toUpperCase();
+            }
+        } catch (final IllegalArgumentException e) {
+            // uuid is not a valid UUID
+        }
+
+        return prefix;
     }
 
     @Deactivate
@@ -312,6 +343,23 @@ public class ConfigStore {
         }
 
         return String.valueOf(hueId);
+    }
+
+    /**
+     * Get the unique id
+     *
+     * @param hueId The item hueID
+     * @return The unique id
+     */
+    public String getHueUniqueId(final String hueId) {
+        String unique = hueId;
+        try {
+            unique = String.format("%02X", Integer.valueOf(hueId));
+        } catch (final NumberFormatException | IllegalFormatException e) {
+            // Use the hueId as is
+        }
+
+        return hueIDPrefix + "-" + unique;
     }
 
     public boolean isReady() {

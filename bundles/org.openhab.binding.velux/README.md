@@ -34,8 +34,9 @@ The binding supports the following types of Thing.
 ## Discovery
 
 To simplify the initial provisioning, the binding provides one thing which can be found by autodiscovery.
-Unfortunately there is no way to discover Velux bridges themselves within the local network.
-But after configuring a Velux Bridge, it is possible to discover all scenes and actuators like windows and rollershutters in that hub.
+The binding will automatically discover Velux Bridges within the local network, and place them in the Inbox.
+Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
+And once the Velux Bridge is fully configured, the binding will automatically discover all its respective scenes and actuators (like windows and rollershutters), and place them in the Inbox.
 
 ## Thing Configuration
 
@@ -51,7 +52,7 @@ In addition there are some optional Configuration Parameters.
 |-------------------------|------------------|:--------:|--------------------------------------------------------------|
 | ipAddress               |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
 | password                | velux123         |   Yes    | Password for authentication against the Velux Bridge.(\*\*)  |
-| timeoutMsecs            | 500              |    No    | Communication timeout in milliseconds.                       |
+| timeoutMsecs            | 2000             |    No    | Communication timeout in milliseconds.                       |
 | protocol                | slip             |    No    | Underlying communication protocol (http/https/slip).         |
 | tcpPort                 | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
 | retries                 | 5                |    No    | Number of retries during I/O.                                |
@@ -81,17 +82,17 @@ These types of Thing only supported in the Velux Bridge in API version two or hi
 These types of Thing are configured by means of their serial number in the hub.
 In addition there are some optional Configuration Parameters.
 
-| Configuration Parameter | Default                | Required | Description                                                       |
-|-------------------------|------------------------|:--------:|-------------------------------------------------------------------|
-| serial                  |                        |   Yes    | Serial number of the io-homecontrol device in the hub.            |
-| name                    |                        |    No    | (Optional) name of the io-homecontrol device in the hub.          |
-| inverted                | false                  |    No    | (Optional) the position is inverted (i.e. 0% translates to 100%). |
+| Configuration Parameter | Default | Type    | Required | Description                                                                            |
+|-------------------------|---------|---------|:--------:|----------------------------------------------------------------------------------------|
+| serial                  |         | custom  |   Yes    | Serial number of the device in the hub (custom format 00:00:00:00:00:00:00:00)         |
+| name                    |         | text    |    No    | Name of the device in the hub.                                                         |
+| inverted                | false   | boolean |    No    | The `position` and `state` (if available) are inverted (i.e. 0% <-> 100%, OFF <-> ON). |
 
 Notes:
 
-1. To enable a complete invertion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number. For an example, see below at item `Velux DG Window Bathroom`.
+1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number. For an example, see below at item `Velux DG Window Bathroom`.
 
-2. Somfy devices do not provide a valid serial number to the Velux KLF200 gateway. The bridge reports a registration of the serial number 00:00:00:00:00:00:00:00. Therefore the binding implements a fallback to allow an item specification with a actuator `name` instead of actuator serial number whenever such an invalid serial number occurs. For an example, see below at item `Velux OG Somfy Shutter`.
+2. Somfy devices do not provide a valid serial number to the Velux KLF200 gateway. In this case you should enter the default `serial` number 00:00:00:00:00:00:00:00, and in addition enter the `name` parameter; this is the name that you gave to the actuator when you first registered it in the KLF200 Bridge. For an example, see below at item `Velux OG Somfy Shutter`.
 
 ### Thing Configuration for "scene"
 
@@ -99,9 +100,10 @@ The Velux Bridge in API version one (firmware version 0.1.1.*) allows activating
 So besides the bridge, only one real Thing type exists, namely "scene".
 This type of Thing is configured by means of its scene name in the hub.
 
-| Configuration Parameter | Default                | Required | Description                                               |
-|-------------------------|------------------------|:--------:|-----------------------------------------------------------|
-| sceneName               |                        |   Yes    | Name of the scene in the hub.                             |
+| Configuration Parameter | Default   | Type | Required | Description                                                                 |
+|-------------------------|-----------|------|:--------:|-----------------------------------------------------------------------------|
+| sceneName               |           | text |   Yes    | Name of the scene in the hub.                                               |
+| velocity                | 'default' | text |    No    | The speed at which the scene will be executed ('default', 'silent', 'fast') |
 
 ### Thing Configuration for "vshutter"
 
@@ -110,10 +112,10 @@ So besides the bridge, this binding provides a virtual rollershutter Thing consi
 Therefore the respective Item definition contains multiple pairs of rollershutter levels each followed by a scene name.
 The virtual shutter Thing must be configured with pairs of level (0..10%) combined with the appropriate scene names (text) as follows.
 
-| Configuration Parameter | Default                | Required | Description                                               |
-|-------------------------|------------------------|:--------:|-----------------------------------------------------------|
-| sceneLevels             |                        |   Yes    | <Level1>,<Scene1>,<Level2>,<Scene2>,....                  |
-| currentLevel            | 0                      |    No    | Inverts any device values.                                |
+| Configuration Parameter | Default | Type    | Required | Description                             |
+|-------------------------|---------|---------|:--------:|-----------------------------------------|
+| sceneLevels             |         | text    |   Yes    | {Level1},{Scene1},{Level2},{Scene2},..  |
+| currentLevel            | 0       | integer |    No    | Inverts any device values (0..100).     |
 
 ## Supported Channels for Thing Types
 
@@ -128,7 +130,7 @@ The supported Channels and their associated channel types are shown below.
 | downtime    | Number    | Time interval (sec) between last successful and most recent device interaction. |
 | doDetection | Switch    | Command to activate bridge detection mode.                                      |
 
-### Channels for "window", "rollershutter" Things
+### Channels for "window" / "rollershutter" Things
 
 The supported Channels and their associated channel types are shown below.
 
@@ -137,6 +139,15 @@ The supported Channels and their associated channel types are shown below.
 | position     | Rollershutter | Actual position of the window or device.        |
 | limitMinimum | Rollershutter | Minimum limit position of the window or device. |
 | limitMaximum | Rollershutter | Maximum limit position of the window or device. |
+
+The `position` Channel indicates the open/close state of the window (resp. roller shutter) in percent (0% .. 100%) as follows..
+
+- As a general rule the display is the actual physical position.
+- If it is moving towards a new target position, the display is the target position.
+- After the movement has completed, the display is the final physical position.
+- If a window is opened manually, the display is `UNDEF`.
+- In case of errors (e.g. window jammed) the display is `UNDEF`.
+- If a Somfy actuator is commanded to its 'favorite' position via a Somfy remote control, under some circumstances the display is `UNDEF`. See also Rules below.
 
 ### Channels for "actuator" Things
 
@@ -148,6 +159,8 @@ The supported Channels and their associated channel types are shown below.
 | state        | Switch        | Device control (ON, OFF).                       |
 | limitMinimum | Rollershutter | Minimum limit position of the window or device. |
 | limitMaximum | Rollershutter | Maximum limit position of the window or device. |
+
+See the section above for "window" / "rollershutter" Things for further information concerning the `position` Channel.
 
 ### Channels for "scene" Things
 
@@ -165,6 +178,8 @@ The supported Channel and its associated channel type is shown below.
 | Channel      | Data Type     | Description                             |
 |--------------|---------------|-----------------------------------------|
 | position     | Rollershutter | Position of the virtual roller shutter. |
+
+See the section above for "window" / "rollershutter" Things for further information concerning the `position` Channel.
 
 ### Channels for "information" Thing
 
@@ -187,13 +202,13 @@ The bridge Thing provides the following properties.
 
 | Property          | Description                                                     |
 |-------------------|-----------------------------------------------------------------|
+| address           | IP address of the Bridge                                        |
 | check             | Result of the check of current item configuration               |
 | connectionAttempt | Date-Time of last connection attampt                            |
 | connectionSuccess | Date-Time of last successful connection attampt                 |
 | defaultGW         | IP address of the Default Gateway of the Bridge                 |
 | DHCP              | Flag whether automatic IP configuration is enabled              |
 | firmware          | Software version of the Bridge                                  |
-| ipAddress         | IP address of the Bridge                                        |
 | products          | List of all recognized products                                 |
 | scenes            | List of all defined scenes                                      |
 | subnetMask        | IP subnetmask of the Bridge                                     |
@@ -231,11 +246,13 @@ Frame label="Velux Windows" {
 
 [=> download sample sitemaps file for textual configuration](./doc/conf/sitemaps/velux.sitemap)
 
-### Rules
+### Rule for closing windows after a period of time
 
-**Rule for closing windows after a period of time**:
-Especially in the colder months, it is advisable to close the window after adequate ventilation. Therefore, automatic closing after one minute is good to save on heating costs.
+Especially in the colder months, it is advisable to close the window after adequate ventilation.
+Therefore, automatic closing after one minute is good to save on heating costs.
 However, to allow the case of intentional prolonged opening, an automatic closure is made only with the window fully open.
+
+Example:
 
 ```java
 rule "V_WINDOW_changed"
@@ -245,14 +262,14 @@ then
 	logInfo("rules.V_WINDOW",	"V_WINDOW_changes() called.")
 	// Get the sensor value
 	val Number windowState = V_WINDOW.state as DecimalType
-	logWarn("rules.V_WINDOW", "Window state is "+windowState+".")
+	logWarn("rules.V_WINDOW", "Window state is " + windowState + ".")
 	if (windowState < 80) {
 		if (windowState == 0) {
 			logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
 			var int interval = 1
-				createTimer(now.plusMinutes(interval)) [ |
+			createTimer(now.plusMinutes(interval)) [ |
 					logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
-					sendCommand(V_WINDOW,100)
+					sendCommand(V_WINDOW, 100)
 					V_WINDOW.postUpdate(100)
     				logWarn("rules.V_WINDOW:event", "event-V_WINDOW done.")
         		]
@@ -266,6 +283,69 @@ end
 ```
 
 [=> download sample rules file for textual configuration](./doc/conf/rules/velux.rules)
+
+### Rule for rebooting the Bridge
+
+This binding includes a rule action to reboot the Velux Bridge by remote command:
+
+- `boolean isRebooting = rebootBridge()`
+
+_Warning: use this command carefully..._
+
+Example:
+
+```java
+rule "Reboot KLF 200"
+when
+	...
+then
+	val veluxActions = getActions("velux", "velux:klf200:myhubname")
+	if (veluxActions !== null) {
+		val isRebooting = veluxActions.rebootBridge()
+		logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
+	} else {
+		logWarn("Rules", "Velux KLF 200 actions not found, check thing ID")
+	}
+end
+```
+
+### Rule for checking if a Window has been manually opened
+
+In the case that a window has been manually opened, and you then try to move it via the binding, its `position` will become `UNDEF`.
+You can exploit this behaviour in a rule to check regularly if a window has been manually opened.
+
+```java
+rule "Every 10 minutes, check if window is in manual mode"
+when
+	Time cron "0 0/10 * * * ?" // every 10 minutes
+then
+	if (Velux_Window.state != UNDEF) {
+		// command the window to its actual position; this will either
+		// - succeed: the actual position will not change, or
+		// - fail: the position becomes UNDEF (logged next time this rule executes)
+		Velux_Window.sendCommand(Velux_Window.state)
+	} else {
+		logWarn("Rules", "Velux in Manual mode, trying to close again")
+		// try to close it
+		Velux_Window.sendCommand(0)
+	}
+end
+```
+
+### Rule for Somfy actuators
+
+If a Somfy actuator is commanded to its 'favorite' position via a Somfy remote control, under some circumstances the display is `UNDEF`.
+You can resolve this behaviour in a rule that detects the `UNDEF` position and (re-)commands it to its favorite position.
+
+```java
+rule "Somfy Actuator: resolve undefined position"
+when
+    Item Somfy_Actuator changed to UNDEF
+then
+    val favoritePosition = 91
+    Somfy_Actuator.sendCommand(favoritePosition)
+end
+```
 
 ## Debugging
 

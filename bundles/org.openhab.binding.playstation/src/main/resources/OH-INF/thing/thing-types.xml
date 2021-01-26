@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="playstation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="PS3">
+		<label>PlayStation 3</label>
+		<description>Sony PlayStation 3 console.</description>
+
+		<channels>
+			<channel id="power" typeId="power-channel"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Sony</property>
+			<property name="modelId">PlayStation 3</property>
+		</properties>
+		<config-description-ref uri="thing-type:playstation:PS3"/>
+
+	</thing-type>
+
+	<thing-type id="PS4">
+		<label>PlayStation 4</label>
+		<description>Sony PlayStation 4 console.</description>
+
+		<channels>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="applicationName" typeId="application-channel"/>
+			<channel id="applicationId" typeId="applicationId-channel"/>
+			<channel id="applicationImage" typeId="applicationImage-channel"/>
+			<channel id="oskText" typeId="oskText-channel"/>
+			<channel id="connect" typeId="connect-channel"/>
+			<channel id="sendKey" typeId="sendKey-channel"/>
+			<channel id="secondScreen" typeId="secondScreen-channel"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Sony</property>
+			<property name="modelId">PlayStation 4</property>
+		</properties>
+		<config-description-ref uri="thing-type:playstation:PS4"/>
+
+	</thing-type>
+
+	<channel-type id="power-ps3-channel">
+		<item-type>Switch</item-type>
+		<label>PlayStation 3 Power</label>
+		<description>Shows if PlayStation 3 is On or Off.</description>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="power-channel">
+		<item-type>Switch</item-type>
+		<label>PlayStation 4 Power</label>
+		<description>Shows if PlayStation 4 is On or in Standby/Off.</description>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="application-channel">
+		<item-type>String</item-type>
+		<label>Application</label>
+		<description>Name of the Currently Running Application.</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="applicationId-channel">
+		<item-type>String</item-type>
+		<label>Application ID</label>
+		<description>ID of the Currently running application.</description>
+		<category>MediaControl</category>
+	</channel-type>
+	<channel-type id="applicationImage-channel">
+		<item-type>Image</item-type>
+		<label>Artwork</label>
+		<description>Application Artwork.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="oskText-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>OSK Text</label>
+		<description>The Text from the OnScreenKeyboard.</description>
+	</channel-type>
+	<channel-type id="sendKey-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Send a Key Press</label>
+		<description>Send a Key Press to the PS4 UI.</description>
+		<category>MoveControl</category>
+		<command>
+			<options>
+				<option value="keyUp">Up</option>
+				<option value="keyDown">Down</option>
+				<option value="keyRight">Right</option>
+				<option value="keyLeft">Left</option>
+				<option value="keyEnter">Enter</option>
+				<option value="keyBack">Back</option>
+				<option value="keyOption">Option</option>
+				<option value="keyPS">PS</option>
+			</options>
+		</command>
+	</channel-type>
+	<channel-type id="secondScreen-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Second screen</label>
+		<description>Link to 2ndScreen HTTP Server.</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="connect-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Connected</label>
+		<description>Connect/Disconnect to/from PS4 without Sending Command.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

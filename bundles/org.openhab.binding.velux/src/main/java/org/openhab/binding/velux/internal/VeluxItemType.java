@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,7 @@ public enum VeluxItemType {
     BRIDGE_DO_DETECTION(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.CHANNEL_BRIDGE_DO_DETECTION,   TypeFlavor.INITIATOR),
 
     BRIDGE_FIRMWARE(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.PROPERTY_BRIDGE_FIRMWARE,      TypeFlavor.PROPERTY),
-    BRIDGE_IPADDRESS(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.PROPERTY_BRIDGE_IPADDRESS,     TypeFlavor.PROPERTY),
+    BRIDGE_ADDRESS(VeluxBindingConstants.THING_TYPE_BRIDGE,                     VeluxBindingConstants.PROPERTY_BRIDGE_ADDRESS,       TypeFlavor.PROPERTY),
     BRIDGE_SUBNETMASK(VeluxBindingConstants.THING_TYPE_BRIDGE,                  VeluxBindingConstants.PROPERTY_BRIDGE_SUBNETMASK,    TypeFlavor.PROPERTY),
     BRIDGE_DEFAULTGW(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.PROPERTY_BRIDGE_DEFAULTGW,     TypeFlavor.PROPERTY),
     BRIDGE_DHCP(VeluxBindingConstants.THING_TYPE_BRIDGE,                        VeluxBindingConstants.PROPERTY_BRIDGE_DHCP,          TypeFlavor.PROPERTY),

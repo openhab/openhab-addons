@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.OpenClosedType;
@@ -81,6 +81,10 @@ public class HandlerSecurityPanelController extends HandlerBase {
     private static final ChannelInfo WATER_ALARM = new ChannelInfo("waterAlarm" /* propertyName */ ,
             "waterAlarm" /* ChannelId */, CHANNEL_TYPE_WATER_ALARM /* Channel Type */ ,
             ITEM_TYPE_CONTACT /* Item Type */);
+
+    public HandlerSecurityPanelController(SmartHomeDeviceHandler smartHomeDeviceHandler) {
+        super(smartHomeDeviceHandler);
+    }
 
     private ChannelInfo[] getAlarmChannels() {
         return new ChannelInfo[] { BURGLARY_ALARM, CARBON_MONOXIDE_ALARM, FIRE_ALARM, WATER_ALARM };
@@ -147,12 +151,13 @@ public class HandlerSecurityPanelController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            List<SmartHomeCapability> capabilities, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(ARM_STATE.channelId)) {
-            if (containsCapabilityProperty(capabilties, ARM_STATE.propertyName)) {
+            if (containsCapabilityProperty(capabilities, ARM_STATE.propertyName)) {
                 if (command instanceof StringType) {
-                    String armStateValue = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(armStateValue)) {
+                    String armStateValue = command.toFullString();
+                    if (!armStateValue.isEmpty()) {
                         connection.smartHomeCommand(entityId, "controlSecurityPanel", ARM_STATE.propertyName,
                                 armStateValue);
                         return true;

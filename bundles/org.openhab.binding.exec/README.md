@@ -67,6 +67,9 @@ All Things support the following channels:
 | run             | Switch    | Send ON to execute the command, the current state tells whether it is running or not |
 | lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format        |
 
+**Attention:** Linking `input` to any other item type than `String` will result in erroneous behavior.
+If needed, please use a rule to convert your item's state to a string.
+Also note that only commands (e.g. `sendCommand`) to the `input` channel are recognized, updating the item's state will not work (e.g. `postUpdate`).
 
 ## Minimal Example
 

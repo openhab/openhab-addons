@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.ojelectronics.internal.models.userprofile;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ojelectronics.internal.models.ResponseModelBase;
 
 /**
  * Response-Model after signing in
@@ -20,26 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christian Kittel - Initial Contribution
  */
 @NonNullByDefault
-public class PostSignInResponseModel {
+public class PostSignInResponseModel extends ResponseModelBase {
 
     public String sessionId = "";
 
     public String userName = "";
-
-    public int errorCode;
-
-    public PostSignInResponseModel withSessionId(String sessionId) {
-        this.sessionId = sessionId;
-        return this;
-    }
-
-    public PostSignInResponseModel withUserName(String userName) {
-        this.userName = userName;
-        return this;
-    }
-
-    public PostSignInResponseModel withErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-        return this;
-    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -76,7 +76,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
                 newState = new QuantityType<>(measurement.getTemperature(), SIUnits.CELSIUS);
                 break;
             case CHANNEL_HUMIDITY:
-                newState = new QuantityType<>(measurement.getHumidity(), SmartHomeUnits.PERCENT);
+                newState = new QuantityType<>(measurement.getHumidity(), Units.PERCENT);
                 break;
             case CHANNEL_BATTERY:
                 newState = new DecimalType(getBatteryStatus(appliance));

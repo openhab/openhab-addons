@@ -24,8 +24,8 @@
 				"friendlyName": "status",
 				"channel": "Status",
 				"type": "String",
-				"customRefreshCommand": true,
 				"refresh": true,
+				"customRefreshCommand": "true",
 				"ChannelGroup": "actions",
 				"actions": []
 			},
@@ -86,7 +86,7 @@
 				"readmeComment": "Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature"
 			}
 		],
-		"experimental": true,
-		"readmeComment": "This device does not allow for regular querying for the status. Hence the status is not updated for the action channels."
+		"readmeComment": "This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.",
+		"experimental": true
 	}
 }

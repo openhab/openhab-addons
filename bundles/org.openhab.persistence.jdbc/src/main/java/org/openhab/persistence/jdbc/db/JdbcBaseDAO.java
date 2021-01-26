@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,12 +18,16 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
@@ -41,7 +45,9 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
@@ -150,8 +156,10 @@ public class JdbcBaseDAO {
         sqlTypes.put("CONTACTITEM", "VARCHAR(6)");
         sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
         sqlTypes.put("DIMMERITEM", "TINYINT");
+        sqlTypes.put("IMAGEITEM", "VARCHAR(65500)");// jdbc max 21845
         sqlTypes.put("LOCATIONITEM", "VARCHAR(30)");
         sqlTypes.put("NUMBERITEM", "DOUBLE");
+        sqlTypes.put("PLAYERITEM", "VARCHAR(20)");
         sqlTypes.put("ROLLERSHUTTERITEM", "TINYINT");
         sqlTypes.put("STRINGITEM", "VARCHAR(65500)");// jdbc max 21845
         sqlTypes.put("SWITCHITEM", "VARCHAR(6)");
@@ -328,16 +336,15 @@ public class JdbcBaseDAO {
     }
 
     public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
-            String table, String name) {
-        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name);
+            String table, String name, ZoneId timeZone) {
+        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
         logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
-
-        List<HistoricItem> items = new ArrayList<>();
-        for (int i = 0; i < m.size(); i++) {
-            items.add(new JdbcHistoricItem(item.getName(), getState(item, m.get(i)[1]), objectAsDate(m.get(i)[0])));
-        }
-        return items;
+        // we already retrieve the unit here once as it is a very costly operation
+        String itemName = item.getName();
+        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
+        return m.stream().map(o -> new JdbcHistoricItem(itemName, getState(item, unit, o[1]), objectAsDate(o[0])))
+                .collect(Collectors.<HistoricItem> toList());
     }
 
     /*************
@@ -345,20 +352,22 @@ public class JdbcBaseDAO {
      *************/
     static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
-            String simpleName) {
+    protected String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
+            String simpleName, ZoneId timeZone) {
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
-                filter.toString(), numberDecimalcount, table, simpleName);
+                filter, numberDecimalcount, table, simpleName);
 
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'";
+            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
+                    + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'";
+            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
+                    + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC ";
         if (filter.getPageSize() != 0x7fffffff) {
@@ -391,67 +400,86 @@ public class JdbcBaseDAO {
         String itemType = getItemType(item);
 
         logger.debug("JDBC::storeItemValueProvider: item '{}' as Type '{}' in '{}' with state '{}'", item.getName(),
-                itemType, vo.getTableName(), item.getState().toString());
+                itemType, vo.getTableName(), item.getState());
 
         // insertItemValue
-        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", item.getState().toString());
-        if ("COLORITEM".equals(itemType)) {
-            vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
-            vo.setValue(item.getState().toString());
-        } else if ("NUMBERITEM".equals(itemType)) {
-            String it = getSqlTypes().get(itemType);
-            if (it.toUpperCase().contains("DOUBLE")) {
-                vo.setValueTypes(it, java.lang.Double.class);
-                Number newVal = (Number) item.getState();
-                logger.debug("JDBC::storeItemValueProvider: newVal.doubleValue: '{}'", newVal.doubleValue());
-                vo.setValue(newVal.doubleValue());
-            } else if (it.toUpperCase().contains("DECIMAL") || it.toUpperCase().contains("NUMERIC")) {
-                vo.setValueTypes(it, java.math.BigDecimal.class);
-                DecimalType newVal = (DecimalType) item.getState();
-                logger.debug("JDBC::storeItemValueProvider: newVal.toBigDecimal: '{}'", newVal.toBigDecimal());
-                vo.setValue(newVal.toBigDecimal());
-            } else if (it.toUpperCase().contains("INT")) {
-                vo.setValueTypes(it, java.lang.Integer.class);
-                Number newVal = (Number) item.getState();
-                logger.debug("JDBC::storeItemValueProvider: newVal.intValue: '{}'", newVal.intValue());
-                vo.setValue(newVal.intValue());
-            } else {// fall back to String
-                vo.setValueTypes(it, java.lang.String.class);
-                logger.warn("JDBC::storeItemValueProvider: item.getState().toString(): '{}'",
-                        item.getState().toString());
+        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", item.getState());
+        /*
+         * !!ATTENTION!!
+         *
+         * 1. DimmerItem.getStateAs(PercentType.class).toString() always
+         * returns 0
+         * RollershutterItem.getStateAs(PercentType.class).toString() works
+         * as expected
+         *
+         * 2. (item instanceof ColorItem) == (item instanceof DimmerItem) =
+         * true Therefore for instance tests ColorItem always has to be
+         * tested before DimmerItem
+         *
+         * !!ATTENTION!!
+         */
+        switch (itemType) {
+            case "COLORITEM":
+                vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
                 vo.setValue(item.getState().toString());
-            }
-        } else if ("ROLLERSHUTTERITEM".equals(itemType) || "DIMMERITEM".equals(itemType)) {
-            vo.setValueTypes(getSqlTypes().get(itemType), java.lang.Integer.class);
-            Number newVal = (DecimalType) item.getState();
-            logger.debug("JDBC::storeItemValueProvider: newVal.intValue: '{}'", newVal.intValue());
-            vo.setValue(newVal.intValue());
-        } else if ("DATETIMEITEM".equals(itemType)) {
-            vo.setValueTypes(getSqlTypes().get(itemType), java.sql.Timestamp.class);
-            java.sql.Timestamp d = new java.sql.Timestamp(
-                    ((DateTimeType) item.getState()).getZonedDateTime().toInstant().toEpochMilli());
-            logger.debug("JDBC::storeItemValueProvider: DateTimeItem: '{}'", d);
-            vo.setValue(d);
-        } else {
-            /*
-             * !!ATTENTION!!
-             *
-             * 1. DimmerItem.getStateAs(PercentType.class).toString() always
-             * returns 0
-             * RollershutterItem.getStateAs(PercentType.class).toString() works
-             * as expected
-             *
-             * 2. (item instanceof ColorItem) == (item instanceof DimmerItem) =
-             * true Therefore for instance tests ColorItem always has to be
-             * tested before DimmerItem
-             *
-             * !!ATTENTION!!
-             */
-            // All other items should return the best format by default
-            vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
-            logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'",
-                    item.getState().toString());
-            vo.setValue(item.getState().toString());
+                break;
+            case "NUMBERITEM":
+                State state = item.getState();
+                State convertedState = state;
+                if (item instanceof NumberItem && state instanceof QuantityType) {
+                    Unit<? extends Quantity<?>> unit = ((NumberItem) item).getUnit();
+                    if (unit != null && !Units.ONE.equals(unit)) {
+                        convertedState = ((QuantityType<?>) state).toUnit(unit);
+                        if (convertedState == null) {
+                            logger.warn(
+                                    "JDBC::storeItemValueProvider: Failed to convert state '{}' to unit '{}'. Please check your item definition for correctness.",
+                                    state, unit);
+                            convertedState = state;
+                        }
+                    }
+                }
+                String it = getSqlTypes().get(itemType);
+                if (it.toUpperCase().contains("DOUBLE")) {
+                    vo.setValueTypes(it, java.lang.Double.class);
+                    double value = ((Number) convertedState).doubleValue();
+                    logger.debug("JDBC::storeItemValueProvider: newVal.doubleValue: '{}'", value);
+                    vo.setValue(value);
+                } else if (it.toUpperCase().contains("DECIMAL") || it.toUpperCase().contains("NUMERIC")) {
+                    vo.setValueTypes(it, java.math.BigDecimal.class);
+                    BigDecimal value = BigDecimal.valueOf(((Number) convertedState).doubleValue());
+                    logger.debug("JDBC::storeItemValueProvider: newVal.toBigDecimal: '{}'", value);
+                    vo.setValue(value);
+                } else if (it.toUpperCase().contains("INT")) {
+                    vo.setValueTypes(it, java.lang.Integer.class);
+                    int value = ((Number) convertedState).intValue();
+                    logger.debug("JDBC::storeItemValueProvider: newVal.intValue: '{}'", value);
+                    vo.setValue(value);
+                } else {// fall back to String
+                    vo.setValueTypes(it, java.lang.String.class);
+                    logger.warn("JDBC::storeItemValueProvider: item.getState().toString(): '{}'", convertedState);
+                    vo.setValue(convertedState.toString());
+                }
+                break;
+            case "ROLLERSHUTTERITEM":
+            case "DIMMERITEM":
+                vo.setValueTypes(getSqlTypes().get(itemType), java.lang.Integer.class);
+                int value = ((DecimalType) item.getState()).intValue();
+                logger.debug("JDBC::storeItemValueProvider: newVal.intValue: '{}'", value);
+                vo.setValue(value);
+                break;
+            case "DATETIMEITEM":
+                vo.setValueTypes(getSqlTypes().get(itemType), java.sql.Timestamp.class);
+                java.sql.Timestamp d = new java.sql.Timestamp(
+                        ((DateTimeType) item.getState()).getZonedDateTime().toInstant().toEpochMilli());
+                logger.debug("JDBC::storeItemValueProvider: DateTimeItem: '{}'", d);
+                vo.setValue(d);
+                break;
+            default:
+                // All other items should return the best format by default
+                vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
+                logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'", item.getState());
+                vo.setValue(item.getState().toString());
+                break;
         }
         return vo;
     }
@@ -459,20 +487,24 @@ public class JdbcBaseDAO {
     /*****************
      * H E L P E R S *
      *****************/
-    protected State getState(Item item, Object v) {
-        String clazz = v.getClass().getSimpleName();
-        logger.debug("JDBC::ItemResultHandler::handleResult getState value = '{}', getClass = '{}', clazz = '{}'",
-                v.toString(), v.getClass(), clazz);
+    protected State getState(Item item, @Nullable Unit<? extends Quantity<?>> unit, Object v) {
+        logger.debug(
+                "JDBC::ItemResultHandler::handleResult getState value = '{}', unit = '{}', getClass = '{}', clazz = '{}'",
+                v, unit, v.getClass(), v.getClass().getSimpleName());
         if (item instanceof NumberItem) {
             String it = getSqlTypes().get("NUMBERITEM");
             if (it.toUpperCase().contains("DOUBLE")) {
-                return new DecimalType(((Number) v).doubleValue());
+                return unit == null ? new DecimalType(((Number) v).doubleValue())
+                        : QuantityType.valueOf(((Number) v).doubleValue(), unit);
             } else if (it.toUpperCase().contains("DECIMAL") || it.toUpperCase().contains("NUMERIC")) {
-                return new DecimalType((BigDecimal) v);
+                return unit == null ? new DecimalType((BigDecimal) v)
+                        : QuantityType.valueOf(((BigDecimal) v).doubleValue(), unit);
             } else if (it.toUpperCase().contains("INT")) {
-                return new DecimalType(((Integer) v).intValue());
+                return unit == null ? new DecimalType(((Integer) v).intValue())
+                        : QuantityType.valueOf(((Integer) v).doubleValue(), unit);
             }
-            return DecimalType.valueOf(((String) v).toString());
+            return unit == null ? DecimalType.valueOf(((String) v).toString())
+                    : QuantityType.valueOf(((String) v).toString());
         } else if (item instanceof ColorItem) {
             return HSBType.valueOf(((String) v).toString());
         } else if (item instanceof DimmerItem) {
@@ -488,7 +520,7 @@ public class JdbcBaseDAO {
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsLong(v)), ZoneId.systemDefault()));
         } else if (item instanceof StringItem) {
             return StringType.valueOf(((String) v).toString());
-        } else {// Call, Location, String
+        } else {// Call, Image, Location, Player, String
             return StringType.valueOf(((String) v).toString());
         }
     }
@@ -522,11 +554,7 @@ public class JdbcBaseDAO {
         if (i instanceof GroupItem) {
             item = ((GroupItem) i).getBaseItem();
             if (item == null) {
-                // if GroupItem:<ItemType> is not defined in
-                // *.items using StringType
-                // logger.debug("JDBC: BaseItem GroupItem:<ItemType> is not
-                // defined in *.items searching for first Member and try to use
-                // as ItemType");
+                // if GroupItem:<ItemType> is not defined in *.items using StringType
                 logger.debug(
                         "JDBC::getItemType: Cannot detect ItemType for {} because the GroupItems' base type isn't set in *.items File.",
                         i.getName());

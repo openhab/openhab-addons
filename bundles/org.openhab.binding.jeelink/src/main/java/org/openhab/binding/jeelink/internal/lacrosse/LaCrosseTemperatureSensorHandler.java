@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.openhab.binding.jeelink.internal.config.LaCrosseTemperatureSensorConf
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -130,8 +130,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                                 getThing().getLabel(), getThing().getUID().getId(), temp, reading.getTemperature(),
                                 reading.getHumidity(), reading.isBatteryNew(), reading.isBatteryLow());
                         updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temp, SIUnits.CELSIUS));
-                        updateState(HUMIDITY_CHANNEL,
-                                new QuantityType<>(reading.getHumidity(), SmartHomeUnits.PERCENT));
+                        updateState(HUMIDITY_CHANNEL, new QuantityType<>(reading.getHumidity(), Units.PERCENT));
                         updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
                         updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
                     } else {
@@ -141,7 +140,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                         updateState(TEMPERATURE_CHANNEL + reading.getChannel(),
                                 new QuantityType<>(temp, SIUnits.CELSIUS));
                         updateState(HUMIDITY_CHANNEL + reading.getChannel(),
-                                new QuantityType<>(reading.getHumidity(), SmartHomeUnits.PERCENT));
+                                new QuantityType<>(reading.getHumidity(), Units.PERCENT));
                     }
                 }
             }

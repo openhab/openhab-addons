@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,11 +51,6 @@ public class IRCodeSendMessage {
     }
 
     public String getIRcodeSendMessageString() {
-        JsonObject irCodeSendMessage = new JsonObject();
-        irCodeSendMessage.addProperty("type", type);
-        irCodeSendMessage.addProperty("command", command);
-        irCodeSendMessage.addProperty("code", ircode.getCode());
-        irCodeSendMessage.addProperty("format", ircode.getFormat());
-        return irCodeSendMessage.toString();
+        return getIRcodeSendMessageJsonObject().toString();
     }
 }

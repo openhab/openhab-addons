@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,9 @@ import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-
-import tec.uom.se.AbstractUnit;
 
 /**
  * The {@link CoronaStatsCountry} class holds the internal data representation of each Country
@@ -59,7 +58,7 @@ public class CoronaStatsCases {
         if (count == -1) {
             return UnDefType.NULL;
         } else {
-            return new QuantityType<Dimensionless>(count, AbstractUnit.ONE);
+            return new QuantityType<Dimensionless>(count, Units.ONE);
         }
     }
 }
