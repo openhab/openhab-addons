@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Christian Feininger - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.haassohnpellestove", service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.haassohnpelletstove", service = ThingHandlerFactory.class)
 public class HaasSohnpelletstoveHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OVEN);

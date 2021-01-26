@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="haassohnpellestove"
+<thing:thing-descriptions bindingId="haassohnpelletstove"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
@@ -17,7 +17,7 @@
 			<channel id="channelIsTemp" typeId="isTemp"/>
 			<channel id="channelMode" typeId="mode"/>
 			<channel id="channelSpTemp" typeId="spTemp"/>
-			<channel id="power" typeId="system.power"/>
+			<channel id="power" typeId="power"/>
 			<channel id="channelEcoMode" typeId="ecoMode"/>
 			<channel id="channelIgnitions" typeId="ignitions"/>
 			<channel id="channelMaintenanceIn" typeId="maintenanceIn"/>
@@ -27,11 +27,12 @@
 		</channels>
 
 		<config-description>
-			<parameter name="hostIP" type="text" required="true" pattern="[0-9]{4}">
+			<parameter name="hostIP" type="text" required="true">
 				<label>IP Address</label>
 				<description>Please add the IP Address of the WIFI Module of the Haas and Sohn oven here</description>
+				<context>network-address</context>
 			</parameter>
-			<parameter name="hostPIN" type="text" required="true">
+			<parameter name="hostPIN" type="text" required="true" pattern="[0-9]{4}">
 				<label>PIN</label>
 				<description>Please add the PIN of your oven here. You can find it in the Menu directly in your oven.</description>
 			</parameter>

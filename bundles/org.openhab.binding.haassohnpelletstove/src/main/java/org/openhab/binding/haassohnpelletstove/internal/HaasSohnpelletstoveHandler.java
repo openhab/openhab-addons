@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
@@ -80,13 +83,16 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             }
         } else if (channelUID.getId().equals(CHANNELSPTEMP)) {
             if (command instanceof QuantityType<?>) {
-                QuantityType<?> value = null;
-                value = (QuantityType<?>) command;
-                double a = value.doubleValue();
-
-                String postdata = "{\"sp_temp\":" + a + "}";
-                logger.debug("Executing {} command", CHANNELSPTEMP);
-                updateOvenData(postdata);
+                @SuppressWarnings("unchecked")
+                QuantityType<Temperature> value = (QuantityType<Temperature>) command;
+                Unit<Temperature> unit = SIUnits.CELSIUS;
+                value = value.toUnit(unit);
+                if (value != null) {
+                    double a = value.doubleValue();
+                    String postdata = "{\"sp_temp\":" + a + "}";
+                    logger.debug("Executing {} command", CHANNELSPTEMP);
+                    updateOvenData(postdata);
+                }
             } else {
                 logger.debug("Error. Command is the wrong type: {}", command.toString());
             }
@@ -137,18 +143,10 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             errors += " Parameter 'hostIP' must be configured.";
             statusDescr = "IP Address must be configured!";
             validConfig = false;
-        } else if (!new IpAddressValidator().isValid(config.hostIP)) {
-            errors += " 'hostIP' is no valid IP address.";
-            statusDescr = "No valid IP-Adress configured.";
-            validConfig = false;
         }
         if (config.hostPIN == null) {
             errors += " Parameter 'hostPin' must be configured.";
             statusDescr = "PIN must be configured!";
-            validConfig = false;
-        } else if (!new PinValidator().isValid(config.hostPIN)) {
-            errors += " 'hostPIN' is no valid PIN. PIN consists of 4-digit numbers.";
-            statusDescr = "No valid PIN configure. A valid PIN consists of 4-digit numbers.";
             validConfig = false;
         }
         errors = errors.trim();
@@ -258,7 +256,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     private void updateChannel(String channelId) {
         if (isLinked(channelId)) {
             State state = null;
-            HaasSohnpelletstoveJsonData data = serviceCommunication.getOvenData();
+            HaasSohnpelletstoveJsonDataDTO data = serviceCommunication.getOvenData();
             if (data != null) {
                 switch (channelId) {
                     case CHANNEL_ISTEMP:

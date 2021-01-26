@@ -24,14 +24,14 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class HaasSohnpelletstoveBindingConstants {
 
-    private static final String BINDING_ID = "haassohnpellestove";
+    private static final String BINDING_ID = "haassohnpelletstove";
 
     public static final ThingTypeUID THING_TYPE_OVEN = new ThingTypeUID(BINDING_ID, "oven");
 
     public static final String CHANNEL_ISTEMP = "channelIsTemp";
     public static final String CHANNELMODE = "channelMode";
     public static final String CHANNELSPTEMP = "channelSpTemp";
-    public static final String CHANNELPOWER = "system.power";
+    public static final String CHANNELPOWER = "power";
     public static final String CHANNELECOMODE = "channelEcoMode";
     public static final String CHANNELIGNITIONS = "channelIgnitions";
     public static final String CHANNELMAINTENANCEIN = "channelMaintenanceIn";

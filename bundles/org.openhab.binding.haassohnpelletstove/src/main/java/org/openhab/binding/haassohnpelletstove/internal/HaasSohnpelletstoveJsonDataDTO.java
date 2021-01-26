@@ -12,18 +12,15 @@
  */
 package org.openhab.binding.haassohnpelletstove.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link HaasSohnpelletstoveJsonData} is the Java class used to map the JSON
+ * The {@link HaasSohnpelletstoveJsonDataDTO} is the Java class used to map the JSON
  * response to a Oven request.
  *
  * @author Christian Feininger - Initial contribution
  */
-@NonNullByDefault
-public class HaasSohnpelletstoveJsonData {
+public class HaasSohnpelletstoveJsonDataDTO {
     metadata meta = new metadata();
     boolean prg;
     boolean wprg;
@@ -35,9 +32,9 @@ public class HaasSohnpelletstoveJsonData {
     @SerializedName("ht_char")
     String htChar = "";
     @SerializedName("weekprogram")
-    private @NonNullByDefault({}) wprogram[] weekprogram;
+    private wprogram[] weekprogram;
     @SerializedName("error")
-    private @NonNullByDefault({}) err[] error;
+    private err[] error;
     @SerializedName("eco_mode")
     boolean ecoMode;
     boolean pgi;
@@ -97,7 +94,7 @@ public class HaasSohnpelletstoveJsonData {
      *
      * @return JSON response as object
      */
-    public HaasSohnpelletstoveJsonData getResponse() {
+    public HaasSohnpelletstoveJsonDataDTO getResponse() {
         return this;
     }
 
@@ -122,7 +119,7 @@ public class HaasSohnpelletstoveJsonData {
         String ean = "";
         boolean rau;
         @SerializedName("wlan_features")
-        private @NonNullByDefault({}) String[] wlan_features;
+        private String[] wlan_features;
 
         public String getNonce() {
             return nonce;

@@ -19,7 +19,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.util.HexUtils;
 
 /**
  * The {@link MD5Utils} is responsible for generating the MD5 hash
@@ -43,6 +42,14 @@ public class MD5Utils {
         return result;
     }
 
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
     /***
      * Returns an encrypted MD5 string
      *
@@ -52,7 +59,7 @@ public class MD5Utils {
     public static String getMD5String(@Nullable String input) {
         if (input != null) {
             byte[] md5InBytes = MD5Utils.digest(input.getBytes(UTF_8));
-            return HexUtils.bytesToHex(md5InBytes);
+            return bytesToHex(md5InBytes);
         }
         return "";
     }

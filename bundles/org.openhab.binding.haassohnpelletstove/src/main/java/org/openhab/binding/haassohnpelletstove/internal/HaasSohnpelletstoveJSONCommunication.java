@@ -39,11 +39,11 @@ public class HaasSohnpelletstoveJSONCommunication {
 
     private Gson gson;
     private @Nullable String xhspin;
-    private @Nullable HaasSohnpelletstoveJsonData ovenData;
+    private @Nullable HaasSohnpelletstoveJsonDataDTO ovenData;
 
     public HaasSohnpelletstoveJSONCommunication() {
         gson = new Gson();
-        ovenData = new HaasSohnpelletstoveJsonData();
+        ovenData = new HaasSohnpelletstoveJsonDataDTO();
         xhspin = "";
         config = new HaasSohnpelletstoveConfiguration();
     }
@@ -60,7 +60,7 @@ public class HaasSohnpelletstoveJSONCommunication {
             message.setStatusDescription("Error in configuration. Please recreate Thing.");
             return false;
         }
-        HaasSohnpelletstoveJsonData result = null;
+        HaasSohnpelletstoveJsonDataDTO result = null;
         boolean resultOk = false;
         String error = "", errorDetail = "", statusDescr = "";
         String urlStr = "http://" + config.hostIP + "/status.cgi";
@@ -70,7 +70,7 @@ public class HaasSohnpelletstoveJSONCommunication {
             response = HttpUtil.executeUrl("GET", urlStr, 10000);
             logger.debug("OvenData = {}", response);
 
-            result = gson.fromJson(response, HaasSohnpelletstoveJsonData.class);
+            result = gson.fromJson(response, HaasSohnpelletstoveJsonDataDTO.class);
             resultOk = true;
         } catch (IOException e) {
             logger.debug("Error processiong Get request {}", urlStr);
@@ -88,7 +88,7 @@ public class HaasSohnpelletstoveJSONCommunication {
             xhspin = getValidXHSPIN(ovenData);
         } else {
             logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, error, errorDetail);
-            ovenData = new HaasSohnpelletstoveJsonData();
+            ovenData = new HaasSohnpelletstoveJsonDataDTO();
         }
         message.setStatusDescription(statusDescr);
         return resultOk;
@@ -134,25 +134,20 @@ public class HaasSohnpelletstoveJSONCommunication {
                 resultOk = true;
                 logger.debug("Execute POST request to {} with header: {}", urlStr, httpHeader.toString());
             } catch (IOException e) {
-                if (e != null) {
-                    logger.debug("Error processiong POST request {}", e.getMessage());
-                    if (e.getMessage().contains("Authentication challenge without WWW-Authenticate ")) {
-                        statusDescr = "Cannot connect to stove. Given PIN: " + config.hostPIN + " is incorrect!";
-                    } else {
-                        statusDescr = "Cannot connect to Stove. Please verify conection " + config.hostIP + " and PIN:"
-                                + config.hostPIN;
-                    }
+                logger.debug("Error processiong POST request {}", e.getMessage());
+                String message = e.getMessage();
+                if (message != null && message.contains("Authentication challenge without WWW-Authenticate ")) {
+                    statusDescr = "Cannot connect to stove. Given PIN: " + config.hostPIN + " is incorrect!";
                 }
                 resultOk = false;
             }
-
         }
         if (resultOk) {
             logger.debug("OvenData = {}", response);
-            ovenData = gson.fromJson(response, HaasSohnpelletstoveJsonData.class);
+            ovenData = gson.fromJson(response, HaasSohnpelletstoveJsonDataDTO.class);
         } else {
             logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, error, errorDetail);
-            ovenData = new HaasSohnpelletstoveJsonData();
+            ovenData = new HaasSohnpelletstoveJsonDataDTO();
         }
         helper.setStatusDescription(statusDescr);
         return resultOk;
@@ -189,7 +184,7 @@ public class HaasSohnpelletstoveJSONCommunication {
      * @param ovenData
      * @return
      */
-    private @Nullable String getValidXHSPIN(@Nullable HaasSohnpelletstoveJsonData ovenData) {
+    private @Nullable String getValidXHSPIN(@Nullable HaasSohnpelletstoveJsonDataDTO ovenData) {
         if (ovenData != null && config.hostPIN != null) {
             String nonce = ovenData.getNonce();
             String hostPIN = config.hostPIN;
@@ -217,7 +212,7 @@ public class HaasSohnpelletstoveJSONCommunication {
      * @return
      */
     @Nullable
-    public HaasSohnpelletstoveJsonData getOvenData() {
+    public HaasSohnpelletstoveJsonDataDTO getOvenData() {
         return this.ovenData;
     }
 }
