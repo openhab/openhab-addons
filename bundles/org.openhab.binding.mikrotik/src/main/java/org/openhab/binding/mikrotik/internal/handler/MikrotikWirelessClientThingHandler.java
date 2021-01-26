@@ -12,15 +12,11 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
 
 import java.math.BigDecimal;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -51,7 +47,6 @@ import org.slf4j.LoggerFactory;
 public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler<WirelessClientThingConfig> {
     private final Logger logger = LoggerFactory.getLogger(MikrotikWirelessClientThingHandler.class);
 
-    private @Nullable WirelessClientThingConfig config;
     private @Nullable RouterosWirelessRegistration wirelessRegistration;
     private @Nullable RouterosCapsmanRegistration capsmanRegistration;
 
@@ -70,19 +65,6 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
 
     public MikrotikWirelessClientThingHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    protected void initialize(@NonNull WirelessClientThingConfig config) {
-        if (this.config == null) {
-            logger.debug("Initializing WirelessClientThingHandler with config = {}", config);
-            if (!config.isValid()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "WirelessClientThingConfig is invalid");
-                return;
-            }
-            this.config = config;
-            updateStatus(ONLINE);
-        }
     }
 
     private boolean fetchModels() {
@@ -106,24 +88,20 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
 
     @Override
     protected void refreshModels() {
-        if (getRouteros() != null && config != null) {
-            online = fetchModels();
-            if (online) {
-                lastSeen = DateTime.now();
-            } else {
-                continuousConnection = false;
-            }
-            if (capsmanRegistration != null) {
-                // TODO Should be applied to wirelessRegistration as well
-                txByteRate.update(capsmanRegistration.getTxBytes());
-                rxByteRate.update(capsmanRegistration.getRxBytes());
-                txPacketRate.update(capsmanRegistration.getTxPackets());
-                rxPacketRate.update(capsmanRegistration.getRxPackets());
-                continuousConnection = DateTime.now()
-                        .isAfter(capsmanRegistration.getUptimeStart().plusSeconds(config.considerContinuous));
-            }
+        online = fetchModels();
+        if (online) {
+            lastSeen = DateTime.now();
         } else {
-            logger.trace("getRouteros() || config is null in refreshModels()");
+            continuousConnection = false;
+        }
+        if (capsmanRegistration != null) {
+            // TODO Should be applied to wirelessRegistration as well
+            txByteRate.update(capsmanRegistration.getTxBytes());
+            rxByteRate.update(capsmanRegistration.getRxBytes());
+            txPacketRate.update(capsmanRegistration.getTxPackets());
+            rxPacketRate.update(capsmanRegistration.getRxPackets());
+            continuousConnection = DateTime.now()
+                    .isAfter(capsmanRegistration.getUptimeStart().plusSeconds(config.considerContinuous));
         }
     }
 

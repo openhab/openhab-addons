@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Oleg Vivtash - Initial contribution
  */
 @NonNullByDefault
-public class WirelessClientThingConfig {
+public class WirelessClientThingConfig implements ConfigValidation {
     public String mac = "";
     public String ssid = "";
     public int considerContinuous = 180;

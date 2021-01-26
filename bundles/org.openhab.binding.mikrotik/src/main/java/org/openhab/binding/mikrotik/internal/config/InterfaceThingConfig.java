@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Oleg Vivtash - Initial contribution
  */
 @NonNullByDefault
-public class InterfaceThingConfig {
+public class InterfaceThingConfig implements ConfigValidation {
     public String name = "";
 
     public boolean isValid() {

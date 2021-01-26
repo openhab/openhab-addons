@@ -12,15 +12,12 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.GONE;
 import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
 
 import java.math.BigDecimal;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -48,7 +45,6 @@ import org.slf4j.LoggerFactory;
 public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<InterfaceThingConfig> {
     private final Logger logger = LoggerFactory.getLogger(MikrotikInterfaceThingHandler.class);
 
-    private @Nullable InterfaceThingConfig config;
     private @Nullable RouterosInterfaceBase iface;
 
     private final RateCalculator txByteRate = new RateCalculator(BigDecimal.ZERO);
@@ -65,34 +61,17 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     }
 
     @Override
-    protected void initialize(@NonNull InterfaceThingConfig config) {
-        if (this.config == null) {
-            logger.debug("Assigning {} config: {}", getClass().getSimpleName(), config);
-            if (!config.isValid()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "InterfaceThingConfig is invalid");
-                return;
-            }
-            this.config = config;
-            updateStatus(ONLINE);
-        }
-    }
-
-    @Override
     protected void refreshModels() {
-        if (getRouteros() != null && config != null) {
-            logger.trace("Searching for {} interface", config.name);
-            iface = getRouteros().findInterface(config.name);
-            if (iface == null) {
-                logger.warn("Interface {} is not found in RouterOS for thing {}", config.name, getThing().getUID());
-                updateStatus(OFFLINE, GONE, "Interface not found in RouterOS");
-            } else {
-                txByteRate.update(iface.getTxBytes());
-                rxByteRate.update(iface.getRxBytes());
-                txPacketRate.update(iface.getTxPackets());
-                rxPacketRate.update(iface.getRxPackets());
-            }
+        logger.trace("Searching for {} interface", config.name);
+        iface = getRouteros().findInterface(config.name);
+        if (iface == null) {
+            logger.warn("Interface {} is not found in RouterOS for thing {}", config.name, getThing().getUID());
+            updateStatus(OFFLINE, GONE, "Interface not found in RouterOS");
         } else {
-            logger.trace("getRouteros() || config is null in refreshModels()");
+            txByteRate.update(iface.getTxBytes());
+            rxByteRate.update(iface.getRxBytes());
+            txPacketRate.update(iface.getTxPackets());
+            rxPacketRate.update(iface.getRxPackets());
         }
     }
 

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.*;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 
 import java.lang.reflect.ParameterizedType;
@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.*;
@@ -31,7 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.joda.time.DateTime;
-import org.openhab.binding.mikrotik.internal.config.InterfaceThingConfig;
+import org.openhab.binding.mikrotik.internal.config.ConfigValidation;
 import org.openhab.binding.mikrotik.internal.model.RouterosDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +47,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
+public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(MikrotikBaseThingHandler.class);
-    private @Nullable InterfaceThingConfig config;
+    protected @Nullable C config;
     private @Nullable ScheduledFuture<?> refreshJob;
     protected DateTime lastModelsRefresh = DateTime.now();
     protected Map<String, State> currentState = new HashMap<>();
@@ -100,24 +99,25 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Start initializing {}!", getThing().getUID());
         cancelRefreshJob();
         if (getVerifiedBridgeHandler() == null) {
             updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "This thing requires a RouterOS bridge");
             return;
         }
 
-        updateStatus(ONLINE);
-
-        // derive the config class from the generic type
-        logger.trace("Getting config for {}", getThing().getUID());
         Class<?> klass = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass())
                 .getActualTypeArguments()[0]);
-        C config = (C) getConfigAs(klass);
-        logger.trace("Running initializer for {} ({}) with config: {}", getThing().getUID(), getThing().getStatus(),
-                config);
-        initialize(config);
-        logger.debug("Finished initializing!");
+        this.config = (C) getConfigAs(klass);
+        logger.trace("Config for for {} ({}) is {}", getThing().getUID(), getThing().getStatus(), config);
+
+        if (!config.isValid()) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, String.format("%s is invalid", klass.getSimpleName()));
+            return;
+        }
+
+        updateStatus(ONLINE);
+        logger.debug("Finished initializing {}!", getThing().getUID());
     }
 
     @Override
@@ -129,6 +129,7 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
                 && (statusDetail == ThingStatusDetail.CONFIGURATION_ERROR || statusDetail == ThingStatusDetail.GONE)) {
             cancelRefreshJob();
         }
+
         // update the status only if it's changed
         ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(status, statusDetail).withDescription(description)
                 .build();
@@ -159,7 +160,7 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
     }
 
     private void scheduledRun() {
-        logger.trace("scheduledRun() called");
+        logger.trace("scheduledRun() called for {}", getThing().getUID());
         try {
             if (getVerifiedBridgeHandler() == null) {
                 updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Failed reaching out to RouterOS bridge");
@@ -202,17 +203,20 @@ public abstract class MikrotikBaseThingHandler<C> extends BaseThingHandler {
         MikrotikRouterosBridgeHandler bridgeHandler = (MikrotikRouterosBridgeHandler) getBridge().getHandler();
         if (DateTime.now().isAfter(lastModelsRefresh.plusSeconds(bridgeHandler.getBridgeConfig().refresh))) {
             lastModelsRefresh = DateTime.now();
-            refreshModels();
+            if (getRouteros() != null && config != null) {
+                refreshModels();
+            } else {
+                logger.trace("getRouteros() || config is null, skipping {}.refreshModels()",
+                        getClass().getSimpleName());
+            }
         }
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Mikrotik Thing");
+        logger.debug("Disposing Mikrotik Thing {}", getThing().getUID());
         cancelRefreshJob();
     }
-
-    protected abstract void initialize(@NonNull C config);
 
     protected abstract void refreshModels();
 

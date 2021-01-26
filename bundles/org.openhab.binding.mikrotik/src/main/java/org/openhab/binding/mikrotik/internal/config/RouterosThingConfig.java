@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Oleg Vivtash - Initial contribution
  */
 @NonNullByDefault
-public class RouterosThingConfig {
+public class RouterosThingConfig implements ConfigValidation {
     public String host = "rb3011";
     public int port = 8728;
     public String login = "admin";
