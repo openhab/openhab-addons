@@ -869,6 +869,14 @@ public class SonosXMLParser {
                 case "Bass":
                 case "Treble":
                 case "OutputFixed":
+                case "NightMode":
+                case "DialogLevel":
+                case "SubEnabled":
+                case "SubGain":
+                case "SurroundEnabled":
+                case "SurroundMode":
+                case "SurroundLevel":
+                case "MusicSurroundLevel":
                     val = attributes == null ? null : attributes.getValue("val");
                     if (val != null) {
                         changes.put(qName, val);
