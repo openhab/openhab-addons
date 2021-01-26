@@ -1,16 +1,15 @@
 # OpenSprinkler Binding
 
-This binding allows basic control of OpenSprinkler devices.
-Stations can be controlled (turned on or off) and rain sensor state can be read.
+This binding allows control of your OpenSprinkler devices.
 
 ## Supported Bridges
 
-* `OpenSprinkler HTTP Bridge` (`http`) is required to communicate with an OpenSprinkler device through the network and should be added first.
+* `OpenSprinkler HTTP Bridge` is required to communicate with an OpenSprinkler device through the network and should be added first.
 
 ## Supported Things
 
-* `OpenSprinkler Station` (`station`) is used to control a single station (zone) of a device, e.g. to turn it on or off
-* `OpenSprinkler Device` (`device`) is for getting device-specific information, e.g. if rain was detected
+* `OpenSprinkler Station` is for advanced control over a single station (zone) of a device, e.g. to turn it on or off.
+* `OpenSprinkler Device` is for device-specific controls that usually apply to multiple stations or main unit sensors, e.g. if rain was detected.
 
 ## Discovery
 
@@ -38,13 +37,12 @@ The following channels are supported by the `station` thing.
 
 | Channel Type ID    | Item Type   |    | Description                                              |
 |--------------------|-------------|----|----------------------------------------------------------|
-| stationState       | Switch      | RW | This channel indicates whether station 01 is on or off.  |
+| stationState       | Switch      | RW | This channel indicates whether the station is on or off. |
 | remainingWaterTime | Number:Time | R  | The time the station remains to be open.                 |
-| nextDuration       | Number:Time | RW | A configuration item, which time, if linked, will be     |
-|                    |             |    | used as the time the station will be kept open when      |
-|                    |             |    | switched on. It is advised to add persistence for items  |
-|                    |             |    | linked to this channel, the binding does not persist     |
-|                    |             |    | values of it.                                            |
+| nextDuration       | Number:Time | RW | The amount of time that will be used to keep the station |
+|                    |             |    | open when next manually switched on. If not set, this    |
+|                    |             |    | value will default to 18 hours which is the maximum time | 
+|                    |             |    | supported.                                               |
 | queued             | Switch      | RW | Indicates that the station is queued to be turned on.    |
 |                    |             |    | The channel cannot be turned on, only turning it off is  |
 |                    |             |    | supported (which removes the station from the queue).    |
@@ -52,20 +50,22 @@ The following channels are supported by the `station` thing.
 When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.
 
 The following channels are supported by the `device` thing.
-NOTE: Some channels will only show up if the hardware has the required sensor and is setup correctly, and the firmware version supports this feature.
+NOTE: Some channels will only show up if the hardware has the required sensor and is setup correctly.
 
 | Channel Type ID | Item Type              |    | Description                                                                        |
 |-----------------|------------------------|----|------------------------------------------------------------------------------------|
 | rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.              |
-| currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device. If the device does not have sensors          |
-|                 |                        |    | for this metric, the channel will not be available.                                |
+| currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device.                                              |
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
 |                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
 | signalStrength  | Number:Dimensionless   | RO | Shows the reported RSSI value in dB to indicate how strong the WiFi Signal is.     |
 | flowSensorCount | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
-| programs        | String                 | RW | Displays a list of the programs that are setup in your OpenSprinkler and when selected will start that program for you. |
-| stations        | String                 | RW | Display a list of stations that can run when selected to the length of time set in `nextDuration` channel for this device thing. |
-| nextDuration | Number:Time               | RW | The time the station will open for when any stations are selected from the `stations` channel. |
+| programs        | String                 | RW | Displays a list of the programs that are setup in your OpenSprinkler and when      |
+|                 |                        |    | selected will start that program for you.                                          |
+| stations        | String                 | RW | Display a list of stations that can be run when selected to the length of time set |
+|                 |                        |    | in the `nextDuration` channel.                                                  |
+| nextDuration    | Number:Time            | RW | The time the station will open for when any stations are selected from the         |
+|                 |                        |    | `stations` channel.                                                              |
 
 ## Textual Example
 
