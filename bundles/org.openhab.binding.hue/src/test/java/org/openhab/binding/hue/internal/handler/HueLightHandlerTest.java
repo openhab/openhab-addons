@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
@@ -27,6 +27,7 @@ import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -37,6 +38,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
@@ -134,6 +136,24 @@ public class HueLightHandlerTest {
     public void assertCommandForColorTemperatureChannel1000Percent() {
         String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
         assertSendCommandForColorTemp(new PercentType(100), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertCommandForColorTemperatureAbsChannel6500Kelvin() {
+        String expectedReply = "{\"ct\" : 153, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new DecimalType(6500), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertCommandForColorTemperatureAbsChannel4500Kelvin() {
+        String expectedReply = "{\"ct\" : 222, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new DecimalType(4500), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertCommandForColorTemperatureAbsChannel2000Kelvin() {
+        String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new DecimalType(2000), new HueLightState(), expectedReply);
     }
 
     @Test
@@ -337,6 +357,10 @@ public class HueLightHandlerTest {
         assertSendCommand(CHANNEL_COLORTEMPERATURE, command, currentState, expectedReply);
     }
 
+    private void assertSendCommandForColorTempAbs(Command command, HueLightState currentState, String expectedReply) {
+        assertSendCommand(CHANNEL_COLORTEMPERATURE_ABS, command, currentState, expectedReply);
+    }
+
     private void asserttoColorTemperaturePercentType(int ctValue, int expectedPercent) {
         int percent = (int) Math.round(((ctValue - MIN_COLOR_TEMPERATURE) * 100.0) / COLOR_TEMPERATURE_RANGE);
         assertEquals(percent, expectedPercent);
@@ -373,7 +397,8 @@ public class HueLightHandlerTest {
 
         long fadeTime = 400;
 
-        HueLightHandler hueLightHandler = new HueLightHandler(mockThing) {
+        HueLightHandler hueLightHandler = new HueLightHandler(mockThing,
+                new HueStateDescriptionOptionProvider(mock(ChannelTypeI18nLocalizationService.class))) {
             @Override
             protected synchronized HueClient getHueClient() {
                 return mockClient;
