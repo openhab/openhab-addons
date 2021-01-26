@@ -777,7 +777,7 @@ This example divides value on read, and multiplies them on write, using JS trans
 ```xtend
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
-        Thing data holding5Scaled [ readStart="5", readValueType="int16", readTransform="JS(divide10.js)", writeStart="5", writeValueType="int16", writeType="holding", writeTransform="JS(multiply10.js)" ]
+        Thing data holding5Scaled [ readStart="5", readValueType="int16", readTransform="JS:divide10.js", writeStart="5", writeValueType="int16", writeType="holding", writeTransform="JS:multiply10.js" ]
     }
 }
 ```
@@ -815,7 +815,7 @@ Example for a dimmer device where 255 register value = 100% for fully ON:
 ```xtend
 Bridge modbus:tcp:remoteTCP [ host="192.168.0.10", port=502 ]  {
    Bridge poller MBDimmer [ start=4700, length=2, refresh=1000, type="holding" ]  {
-	         Thing data DimmerReg [ readStart="4700", readValueType="uint16", readTransform="JS(dimread255.js)", writeStart="4700", writeValueType="uint16", writeType="holding", writeTransform="JS(dimwrite255.js)" ]
+	         Thing data DimmerReg [ readStart="4700", readValueType="uint16", readTransform="JS:dimread255.js", writeStart="4700", writeValueType="uint16", writeType="holding", writeTransform="JS:dimwrite255.js" ]
    }
 }
 ```
@@ -895,7 +895,7 @@ Bridge modbus:tcp:localhostTCPRollerShutter [ host="127.0.0.1", port=502 ] {
     Bridge poller holding [ start=0, length=3, refresh=1000, type="holding" ] {
         // Since we are using advanced transformation outputting JSON,
         // other write parameters (writeValueType, writeStart, writeType) can be omitted
-        Thing data rollershutterData [ readStart="0", readValueType="int16", writeTransform="JS(rollershutter.js)" ]
+        Thing data rollershutterData [ readStart="0", readValueType="int16", writeTransform="JS:rollershutter.js" ]
 
         // For diagnostics
         Thing data rollershutterDebug0 [ readStart="0", readValueType="int16", writeStart="0", writeValueType="int16", writeType="holding" ]
