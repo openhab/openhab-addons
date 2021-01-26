@@ -13,7 +13,8 @@
 		<parameter name="inverted" type="boolean">
 			<label>Whether to invert the output</label>
 			<default>false</default>
-			<description>Whether to invert the bit value. When inverted=true, set bit value (1) corresponds to 0/OFF/CLOSED and unset bit
+			<description>Whether to invert the bit value. When inverted=true, set bit value (1) corresponds to 0/OFF/CLOSED and
+				unset bit
 				value (0) corresponds to 1/ON/OPEN.</description>
 		</parameter>
 	</config-description>
