@@ -13,6 +13,8 @@
 
 package org.openhab.binding.mqtt.espmilighthub.internal;
 
+import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
+
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -27,7 +29,6 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class EspMilightHubBindingConstants {
-    public static final String BINDING_ID = "mqtt";
     public static final String STATES_BASE_TOPIC = "milight/states/";
     public static final String COMMANDS_BASE_TOPIC = "milight/commands/";
     public static final BigDecimal BIG_DECIMAL_100 = new BigDecimal(100);

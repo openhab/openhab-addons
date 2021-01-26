@@ -12,8 +12,8 @@
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
-			<label>When globes are off, default to the lowest level of light if the power fails.</label>
-			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
+			<label>Dimmed on Power Fail</label>
+			<description>If lights loose power when soft off, the lights will default back to the minimum brightness.</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
@@ -66,7 +66,7 @@
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
-			<label>When globes are off, default to the lowest level of light if the power fails.</label>
+			<label>Dimmed on Power Fail</label>
 			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
 			<default>true</default>
 		</parameter>
@@ -94,7 +94,7 @@
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
-			<label>When globes are off, default to the lowest level of light if the power fails.</label>
+			<label>Dimmed on Power Fail</label>
 			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
 			<default>false</default>
 		</parameter>

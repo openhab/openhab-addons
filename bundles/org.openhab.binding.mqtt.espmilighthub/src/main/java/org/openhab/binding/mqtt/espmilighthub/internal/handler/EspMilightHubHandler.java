@@ -13,6 +13,7 @@
 
 package org.openhab.binding.mqtt.espmilighthub.internal.handler;
 
+import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
 import static org.openhab.binding.mqtt.espmilighthub.internal.EspMilightHubBindingConstants.*;
 
 import java.math.BigDecimal;
