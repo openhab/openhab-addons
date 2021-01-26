@@ -38,7 +38,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -347,7 +346,10 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                     "Bridge is missing or offline, you need to setup a working MQTT broker first.");
             return;
         }
-        ThingUID thingUID = new ThingUID(new ThingTypeUID("mqtt", "broker"), localBridge.getUID().getId());
+        ThingUID thingUID = localBridge.getBridgeUID();
+        if (thingUID == null) {
+            return;
+        }
         Thing thing = thingRegistry.get(thingUID);
         if (thing == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
