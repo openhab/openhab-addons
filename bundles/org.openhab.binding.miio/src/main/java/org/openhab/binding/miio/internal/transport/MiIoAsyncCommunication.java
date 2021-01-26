@@ -189,7 +189,7 @@ public class MiIoAsyncCommunication {
             response = parser.parse(decryptedResponse);
             if (!response.isJsonObject()) {
                 errorMsg = "Received message is not a JSON object ";
-            } else{
+            } else {
                 needPing = false;
                 logger.trace("Received  JSON message {}", response.toString());
                 JsonObject resJson = response.getAsJsonObject();
@@ -211,7 +211,7 @@ public class MiIoAsyncCommunication {
                 } else {
                     errorMsg = "Received message is without id";
                 }
-           
+
             }
             logger.debug("{}: {}", errorMsg, decryptedResponse);
         } catch (MiIoCryptoException | IOException e) {
