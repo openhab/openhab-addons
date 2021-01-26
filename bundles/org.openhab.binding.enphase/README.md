@@ -48,12 +48,12 @@ There are channel groups for `production` and `consumption` data.
 The `consumption` data is only available if the gateway reports this.
 A example of a production channel name is: `production#wattsNow`.
 
-| channel            | type          | description            |
-|--------------------|---------------|------------------------|
-| wattHoursToday     | Number:Energy | Watt Hours Today       |
-| wattHoursSevenDays | Number:Energy | Watt Hours Last 7 Days |
-| wattHoursLifetime  | Number:Energy | Watt Hours Lifetime    |
-| wattsNow           | Number:Power  | Watts Now              |
+| channel            | type          | description                           |
+|--------------------|---------------|---------------------------------------|
+| wattHoursToday     | Number:Energy | Watt hours produced today             |
+| wattHoursSevenDays | Number:Energy | Watt hours produced the last 7 days   |
+| wattHoursLifetime  | Number:Energy | Watt hours produced over the lifetime |
+| wattsNow           | Number:Power  | Latest watts produced                 |
 
 The `inverter` thing has the following channels:
 

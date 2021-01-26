@@ -135,6 +135,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
         configuration = getConfigAs(EnvoyConfiguration.class);
         if (!EnphaseBindingConstants.isValidSerial(configuration.serialNumber)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial Number is not valid");
+            return;
         }
         if (configuration.hostname.isEmpty()) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
