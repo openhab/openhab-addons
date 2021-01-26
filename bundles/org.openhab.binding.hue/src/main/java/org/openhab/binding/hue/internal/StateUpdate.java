@@ -14,6 +14,7 @@ package org.openhab.binding.hue.internal;
 
 import org.openhab.binding.hue.internal.State.AlertMode;
 import org.openhab.binding.hue.internal.State.Effect;
+import org.openhab.binding.hue.internal.dto.ColorTemperature;
 
 /**
  * Collection of updates to the state of a light.
@@ -139,12 +140,13 @@ public class StateUpdate extends ConfigUpdate {
     /**
      * Switch to CT color mode and set color temperature in mired.
      *
-     * @param colorTemperature color temperature [153..500]
+     * @param colorTemperature color temperature
      * @return this object for chaining calls
      */
-    public StateUpdate setColorTemperature(int colorTemperature) {
-        if (colorTemperature < 153 || colorTemperature > 500) {
-            throw new IllegalArgumentException("Color temperature out of range");
+    public StateUpdate setColorTemperature(int colorTemperature, ColorTemperature capabilities) {
+        if (colorTemperature < capabilities.min || colorTemperature > capabilities.max) {
+            throw new IllegalArgumentException(String.format("Color temperature %d is out of range [%d..%d]",
+                    colorTemperature, capabilities.min, capabilities.max));
         }
 
         commands.add(new Command("ct", colorTemperature));
