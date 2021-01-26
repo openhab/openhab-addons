@@ -216,7 +216,7 @@ public class SoulissBindingUDPDecoder {
                     // creates Souliss nodes
                     for (int j = 0; j < numberOf; j++) {
                         if (mac.get(5 + j) != 0) {// create only not-empty typicals
-                            if (!(mac.get(5 + j) == SoulissBindingProtocolConstants.Souliss_T_related)) {
+                            if (!(mac.get(5 + j) == SoulissBindingProtocolConstants.SOULISS_T_RELATED)) {
                                 byte typical = mac.get(5 + j);
                                 byte slot = (byte) (j % typXnodo);
                                 byte node = (byte) (j / typXnodo + tgtnode);

@@ -33,36 +33,36 @@ public class SoulissBindingProtocolConstants {
     /**
      * /** // Defines for Typicals C LIBRARY
      *
-     * #define Souliss_T31 31 // Temperature control #define Souliss_T41 41 //
+     * #define SOULISS_T31 31 // Temperature control #define Souliss_T41 41 //
      * Anti-theft integration (Main) #define Souliss_T42 42 // Anti-theft
      * integration (Peer)
      */
-    public static final byte Souliss_T_empty = 0;
-    public static final byte Souliss_T_related = (byte) 0xFF;
+    public static final byte SOULISS_T_EMPTY = 0;
+    public static final byte SOULISS_T_RELATED = (byte) 0xFF;
 
-    public static final byte Souliss_TService_NODE_HEALTY = (byte) 0x98;
-    public static final byte Souliss_TService_NODE_TIMESTAMP = (byte) 0x99;
+    public static final byte SOULISS_TSERVICE_NODE_HEALTY = (byte) 0x98;
+    public static final byte SOULISS_TSERVICE_NODE_TIMESTAMP = (byte) 0x99;
 
-    public static final int Souliss_TService_NODE_HEALTY_VIRTUAL_SLOT = 998;
-    public static final int Souliss_TService_NODE_TIMESTAMP_VIRTUAL_SLOT = 999;
+    public static final int SOULISS_TSERVICE_NODE_HEALTY_VIRTUAL_SLOT = 998;
+    public static final int SOULISS_TSERVICE_NODE_TIMESTAMP_VIRTUAL_SLOT = 999;
 
     // Defines for Typicals
-    public static final byte Souliss_T11 = 0x11;
-    public static final byte Souliss_T12 = 0x12;
-    public static final byte Souliss_T13 = 0x13;
-    public static final byte Souliss_T14 = 0x14;
-    public static final byte Souliss_T1n_RGB = 0x15;// RGB Light
-    public static final byte Souliss_T16 = 0x16;
-    public static final byte Souliss_T18 = 0x18;
-    public static final byte Souliss_T19 = 0x19;
-    public static final byte Souliss_T1A = 0x1A;
+    public static final byte SOULISS_T11 = 0x11;
+    public static final byte SOULISS_T12 = 0x12;
+    public static final byte SOULISS_T13 = 0x13;
+    public static final byte SOULISS_T14 = 0x14;
+    public static final byte SOULISS_T1N_RGB = 0x15;// RGB Light
+    public static final byte SOULISS_T16 = 0x16;
+    public static final byte SOULISS_T18 = 0x18;
+    public static final byte SOULISS_T19 = 0x19;
+    public static final byte SOULISS_T1A = 0x1A;
 
-    public static final byte Souliss_T21 = 0x21;// Motorized devices with limit
+    public static final byte SOULISS_T21 = 0x21;// Motorized devices with limit
                                                 // switches
-    public static final byte Souliss_T22 = 0x22;// Motorized devices with limit
+    public static final byte SOULISS_T22 = 0x22;// Motorized devices with limit
                                                 // switches and middle
                                                 // position
-    public static final byte Souliss_T31 = 0x31;
+    public static final byte SOULISS_T31 = 0x31;
     public static final byte Souliss_T32_IrCom_AirCon = 0x32;
 
     public static final byte Souliss_T42_Antitheft_Group = 0x40; // Anti-theft
