@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="profile:modbus:bitMask">
+	<config-description uri="profile:modbus:bit">
 		<parameter name="bit-index" type="integer" min="0" required="true">
 			<label>Bit Index</label>
 			<description>Index of the bit to extract/write from the value. Index=0 refers to the least significant bit.</description>
