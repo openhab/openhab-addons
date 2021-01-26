@@ -197,43 +197,43 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             if (lastByteGatewayIP == (byte) Integer.parseInt(gw.IPAddressOnLAN.split("\\.")[3])) {
                 String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
                 switch (typical) {
-                    case SoulissBindingProtocolConstants.Souliss_T11:
+                    case SoulissBindingProtocolConstants.SOULISS_T11:
                         thingUID = new ThingUID(SoulissBindingConstants.T11_THING_TYPE, gatewayUID, sNodeId);
                         label = "T11: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T12:
+                    case SoulissBindingProtocolConstants.SOULISS_T12:
                         thingUID = new ThingUID(SoulissBindingConstants.T12_THING_TYPE, gatewayUID, sNodeId);
                         label = "T12: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T13:
+                    case SoulissBindingProtocolConstants.SOULISS_T13:
                         thingUID = new ThingUID(SoulissBindingConstants.T13_THING_TYPE, gatewayUID, sNodeId);
                         label = "T13: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T14:
+                    case SoulissBindingProtocolConstants.SOULISS_T14:
                         thingUID = new ThingUID(SoulissBindingConstants.T14_THING_TYPE, gatewayUID, sNodeId);
                         label = "T14: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T16:
+                    case SoulissBindingProtocolConstants.SOULISS_T16:
                         thingUID = new ThingUID(SoulissBindingConstants.T16_THING_TYPE, gatewayUID, sNodeId);
                         label = "T16: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T18:
+                    case SoulissBindingProtocolConstants.SOULISS_T18:
                         thingUID = new ThingUID(SoulissBindingConstants.T18_THING_TYPE, gatewayUID, sNodeId);
                         label = "T18: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T19:
+                    case SoulissBindingProtocolConstants.SOULISS_T19:
                         thingUID = new ThingUID(SoulissBindingConstants.T19_THING_TYPE, gatewayUID, sNodeId);
                         label = "T19: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T1A:
+                    case SoulissBindingProtocolConstants.SOULISS_T1A:
                         thingUID = new ThingUID(SoulissBindingConstants.T1A_THING_TYPE, gatewayUID, sNodeId);
                         label = "T1A: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T21:
+                    case SoulissBindingProtocolConstants.SOULISS_T21:
                         thingUID = new ThingUID(SoulissBindingConstants.T21_THING_TYPE, gatewayUID, sNodeId);
                         label = "T21: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T22:
+                    case SoulissBindingProtocolConstants.SOULISS_T22:
                         thingUID = new ThingUID(SoulissBindingConstants.T22_THING_TYPE, gatewayUID, sNodeId);
                         label = "T22: node " + node + ", slot " + slot;
                         break;
@@ -245,7 +245,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
                         thingUID = new ThingUID(SoulissBindingConstants.T42_THING_TYPE, gatewayUID, sNodeId);
                         label = "T42: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T31:
+                    case SoulissBindingProtocolConstants.SOULISS_T31:
                         thingUID = new ThingUID(SoulissBindingConstants.T31_THING_TYPE, gatewayUID, sNodeId);
                         label = "T31: node " + node + ", slot " + slot;
                         break;
