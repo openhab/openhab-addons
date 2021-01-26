@@ -16,7 +16,6 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.POSITION_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_POSITION;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         positionStateMapping.put(PositionStateEnum.DECREASING, "DECREASING");
         positionStateMapping.put(PositionStateEnum.INCREASING, "INCREASING");
         positionStateMapping.put(PositionStateEnum.STOPPED, "STOPPED");
-        updateMapping(POSITION_STATE, positionStateMapping, new ArrayList<PositionStateEnum>());
+        updateMapping(POSITION_STATE, positionStateMapping);
     }
 
     public CompletableFuture<Integer> getCurrentPosition() {
