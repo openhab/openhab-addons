@@ -31,13 +31,4 @@ public class OpenSprinklerHttpApiV219 extends OpenSprinklerHttpApiV217 {
             throws GeneralApiException, CommunicationApiException {
         super(httpClient, config);
     }
-
-    @Override
-    public boolean isRainDetected() {
-        JcResponse localReply = jcReply;
-        if (localReply != null && localReply.sn1 == 1) {
-            return true;
-        }
-        return false;
-    }
 }

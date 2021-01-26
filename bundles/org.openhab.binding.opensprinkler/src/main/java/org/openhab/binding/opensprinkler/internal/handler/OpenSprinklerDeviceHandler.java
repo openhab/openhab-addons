@@ -115,6 +115,8 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
             }
             updateProgramsChanOptions(localAPI);
             updateStationsChanOptions(localAPI);
+            nextDurationTime = new BigDecimal(1800);
+            updateState(NEXT_DURATION, new QuantityType<>(nextDurationTime, Units.SECOND));
         }
     }
 

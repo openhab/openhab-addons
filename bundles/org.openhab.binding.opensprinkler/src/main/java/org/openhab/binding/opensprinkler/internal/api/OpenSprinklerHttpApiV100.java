@@ -303,7 +303,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public @Nullable List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
-        public int sn1;
         public int RSSI = 1; // json reply uses all uppercase
         public int flcrt = -1;
         public int curr = -1;

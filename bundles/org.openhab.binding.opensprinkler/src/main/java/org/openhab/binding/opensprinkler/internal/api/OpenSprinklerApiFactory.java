@@ -71,8 +71,10 @@ public class OpenSprinklerApiFactory {
             return new OpenSprinklerHttpApiV210(this.httpClient, config);
         } else if (version >= 213 && version < 217) {
             return new OpenSprinklerHttpApiV213(this.httpClient, config);
-        } else if (version >= 217) {
+        } else if (version >= 217 && version < 219) {
             return new OpenSprinklerHttpApiV217(this.httpClient, config);
+        } else if (version >= 219) {
+            return new OpenSprinklerHttpApiV219(this.httpClient, config);
         } else {
             /* Need to make sure we have an older OpenSprinkler device by checking the first station. */
             try {
