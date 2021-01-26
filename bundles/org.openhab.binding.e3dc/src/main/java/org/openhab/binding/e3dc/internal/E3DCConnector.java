@@ -29,7 +29,10 @@ import org.openhab.binding.e3dc.internal.rscp.util.AES256Helper;
 import org.openhab.binding.e3dc.internal.rscp.util.BouncyAES256Helper;
 import org.openhab.binding.e3dc.internal.rscp.util.ByteUtils;
 import org.openhab.binding.e3dc.internal.rscp.util.FrameLoggerHelper;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -93,47 +96,126 @@ public class E3DCConnector {
         if (isNotConnected()) {
             connectE3DC();
         }
-        try {
-            byte[] reqFrame = E3DCRequests.buildRequestFrame();
-            Integer bytesSent = sendFrameToServer(aesHelper::encrypt, reqFrame);
-            byte[] decBytesReceived = receiveFrameFromServer(aesHelper::decrypt);
-            logger.warn("Decrypted frame received: {}", ByteUtils.byteArrayToHexString(decBytesReceived));
-            RSCPFrame responseFrame = RSCPFrame.builder().buildFromRawBytes(decBytesReceived);
+        byte[] reqFrame = E3DCRequests.buildRequestFrame();
+        Integer bytesSent = sendFrameToServer(aesHelper::encrypt, reqFrame);
+        byte[] decBytesReceived = receiveFrameFromServer(aesHelper::decrypt);
+        logger.warn("Decrypted frame received: {}", ByteUtils.byteArrayToHexString(decBytesReceived));
+        RSCPFrame responseFrame = RSCPFrame.builder().buildFromRawBytes(decBytesReceived);
 
-            handleE3DCResponse(responseFrame);
-            FrameLoggerHelper.logFrame(responseFrame);
-
-        } catch (Exception e) {
-            handle.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Could not establish connection");
-        }
+        handleE3DCResponse(responseFrame);
+        FrameLoggerHelper.logFrame(responseFrame);
     }
 
     public void handleE3DCResponse(RSCPFrame responseFrame) {
         List<RSCPData> dataList = responseFrame.getData();
         for (RSCPData data : dataList) {
-            handleUpdateDate(data);
+            handleUpdateData(data);
         }
     }
 
-    public void handleUpdateDate(RSCPData data) {
+    public void handleUpdateData(RSCPData data) {
         String dt = data.getDataTag().name();
 
-        if (dt.equals("TAG_EMS_POWER_PV")) {
+        if ("TAG_EMS_POWER_PV".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPowerPV,
-                    new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
-        } else if (dt.equals("TAG_EMS_POWER_BAT")) {
+                    new QuantityType<>(data.getValueAsInt().orElse(-1), Units.WATT));
+        } else if ("TAG_EMS_POWER_BAT".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPowerBat,
-                    new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
-        } else if (dt.equals("TAG_EMS_POWER_HOME")) {
+                    new QuantityType<>(data.getValueAsInt().orElse(-1), Units.WATT));
+        } else if ("TAG_EMS_POWER_HOME".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPowerHome,
-                    new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
-        } else if (dt.equals("TAG_EMS_POWER_GRID")) {
+                    new QuantityType<>(data.getValueAsInt().orElse(-1), Units.WATT));
+        } else if ("TAG_EMS_POWER_GRID".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPowerGrid,
-                    new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
-        } else if (dt.equals("TAG_EMS_POWER_ADD")) {
+                    new QuantityType<>(data.getValueAsInt().orElse(-1), Units.WATT));
+        } else if ("TAG_EMS_POWER_ADD".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPowerAdd,
+                    new QuantityType<>(data.getValueAsInt().orElse(-1), Units.WATT));
+        } else if ("TAG_EMS_BAT_SOC".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_BatterySOC,
+                    new QuantityType<>(data.getValueAsInt().orElse(-1), Units.PERCENT));
+        } else if ("TAG_EMS_SELF_CONSUMPTION".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_SelfConsumption,
+                    new QuantityType<>(data.getValueAsFloat().orElse((float) -1.0), Units.PERCENT));
+        } else if ("TAG_EMS_AUTARKY".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_Autarky,
+                    new QuantityType<>(data.getValueAsFloat().orElse((float) -1.0), Units.PERCENT));
+        } else if ("TAG_PM_DATA".equals(dt)) {
+            List<RSCPData> containedDataList = data.getContainerData();
+            for (RSCPData containedData : containedDataList) {
+                handleUpdatePMData(containedData);
+            }
+        } else if ("TAG_EMS_GET_POWER_SETTINGS".equals(dt)) {
+            List<RSCPData> containedDataList = data.getContainerData();
+            for (RSCPData containedData : containedDataList) {
+                handleUpdatePowerSettingsData(containedData);
+            }
+        } else if ("TAG_EMS_EMERGENCY_POWER_STATUS".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_EmergencyPowerStatus,
+                    new DecimalType(data.getValueAsInt().orElse(-1)));
+        } else if ("TAG_EP_IS_GRID_CONNECTED".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_GridConnected,
+                    OnOffType.from(data.getValueAsBool().orElse(false)));
+        } else if ("TAG_INFO_SW_RELEASE".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_SWRelease,
+                    new StringType(data.getValueAsString().orElse("ERR")));
+        }
+    }
+
+    private void handleUpdatePMData(RSCPData data) {
+        String dt = data.getDataTag().name();
+
+        if ("TAG_PM_ENERGY_L1".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMEnergyL1,
+                    new QuantityType<>(data.getValueAsDouble().orElse(-1.0), Units.WATT_HOUR));
+        } else if ("TAG_PM_ENERGY_L2".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMEnergyL2,
+                    new QuantityType<>(data.getValueAsDouble().orElse(-1.0), Units.WATT_HOUR));
+        } else if ("TAG_PM_ENERGY_L3".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMEnergyL3,
+                    new QuantityType<>(data.getValueAsDouble().orElse(-1.0), Units.WATT_HOUR));
+        } else if ("TAG_PM_POWER_L1".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMPowerL1,
+                    new QuantityType<>(data.getValueAsDouble().orElse(-1.0), Units.WATT));
+        } else if ("TAG_PM_POWER_L2".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMPowerL2,
+                    new QuantityType<>(data.getValueAsDouble().orElse(-1.0), Units.WATT));
+        } else if ("TAG_PM_POWER_L3".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMPowerL3,
+                    new QuantityType<>(data.getValueAsDouble().orElse(-1.0), Units.WATT));
+        } else if ("TAG_PM_VOLTAGE_L1".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMVoltageL1,
+                    new QuantityType<>(data.getValueAsFloat().orElse((float) -1.0), Units.VOLT));
+        } else if ("TAG_PM_VOLTAGE_L2".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMVoltageL2,
+                    new QuantityType<>(data.getValueAsFloat().orElse((float) -1.0), Units.VOLT));
+        } else if ("TAG_PM_VOLTAGE_L3".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_CurrentPMVoltageL3,
+                    new QuantityType<>(data.getValueAsFloat().orElse((float) -1.0), Units.VOLT));
+        } else if ("TAG_PM_MODE".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_Mode, new DecimalType(data.getValueAsInt().get()));
+        }
+    }
+
+    private void handleUpdatePowerSettingsData(RSCPData data) {
+        String dt = data.getDataTag().name();
+
+        if ("TAG_EMS_POWER_LIMITS_USED".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_PowerLimitsUsed,
+                    OnOffType.from(data.getValueAsBool().orElse(false)));
+        } else if ("TAG_EMS_MAX_DISCHARGE_POWER".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_MaxDischarge,
                     new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
+        } else if ("TAG_EMS_MAX_CHARGE_POWER".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_MaxCharge,
+                    new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
+        } else if ("TAG_EMS_WEATHER_REGULATED_CHARGE_ENABLED".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_WeatherRegulatedCharge,
+                    OnOffType.from(data.getValueAsBool().orElse(false)));
+        } else if ("TAG_EMS_POWERSAVE_ENABLED".equals(dt)) {
+            boolean result = data.getValueAsBool().orElse(false);
+
+            handle.updateState(E3DCBindingConstants.CHANNEL_PowerSave, OnOffType.from(result));
         }
     }
 

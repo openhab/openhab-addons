@@ -48,20 +48,7 @@ public class E3DCHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        /*
-         * if (CHANNEL_1.equals(channelUID.getId())) {
-         * if (command instanceof RefreshType) {
-         * // TODO: handle data refresh
-         * }
-         *
-         * // TODO: handle command
-         *
-         * // Note: if communication with thing fails for some reason,
-         * // indicate that by setting the status with detail information:
-         * // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-         * // "Could not control device at IP address x.x.x.x");
-         * }
-         */
+
     }
 
     @Override

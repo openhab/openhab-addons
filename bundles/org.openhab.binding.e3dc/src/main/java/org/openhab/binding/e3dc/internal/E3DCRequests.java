@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.e3dc.internal;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.openhab.binding.e3dc.internal.rscp.RSCPData;
 import org.openhab.binding.e3dc.internal.rscp.RSCPFrame;
+import org.openhab.binding.e3dc.internal.rscp.RSCPFrame.Builder;
 import org.openhab.binding.e3dc.internal.rscp.RSCPTag;
 import org.openhab.binding.e3dc.internal.rscp.util.ByteUtils;
 
@@ -46,68 +44,221 @@ public class E3DCRequests {
         return authFrame.getAsByteArray();
     }
 
-    /**
-     * Builds a sample request frame to request E3DC history data, starting from start epoch secs, for a duration of
-     * intervalSeconds each, for a number of intervals.
-     *
-     * @param startEpochSeconds Epoch seconds as start time to request data for.
-     * @param intervalSeconds How many seconds to put in each interval.
-     * @param numberOfIntervals How many intervals to request.
-     * @return A byte array ready to be encrypted and sent.
-     */
+    public static void buildFrame01(Builder buildFrame) {
+        MultiReqGen(buildFrame,
+                new RSCPTag[] { RSCPTag.TAG_EMS_REQ_POWER_PV, RSCPTag.TAG_EMS_REQ_POWER_BAT,
+                        RSCPTag.TAG_EMS_REQ_POWER_HOME, RSCPTag.TAG_EMS_REQ_POWER_GRID, RSCPTag.TAG_EMS_REQ_POWER_ADD,
+                        RSCPTag.TAG_EMS_REQ_AUTARKY, RSCPTag.TAG_EMS_REQ_SELF_CONSUMPTION, RSCPTag.TAG_EMS_REQ_BAT_SOC,
+                        RSCPTag.TAG_EMS_REQ_COUPLING_MODE, RSCPTag.TAG_EMS_REQ_STORED_ERRORS, RSCPTag.TAG_EMS_REQ_MODE,
+                        RSCPTag.TAG_EMS_REQ_BALANCED_PHASES, RSCPTag.TAG_EMS_REQ_INSTALLED_PEAK_POWER,
+                        RSCPTag.TAG_EMS_REQ_DERATE_AT_PERCENT_VALUE, RSCPTag.TAG_EMS_REQ_DERATE_AT_POWER_VALUE,
+                        RSCPTag.TAG_EMS_REQ_POWER_WB_ALL, RSCPTag.TAG_EMS_REQ_POWER_WB_SOLAR,
+                        RSCPTag.TAG_EMS_REQ_EXT_SRC_AVAILABLE });
+        MultiReqGen(buildFrame, new RSCPTag[] { RSCPTag.TAG_EMS_REQ_STATUS, RSCPTag.TAG_EMS_REQ_USED_CHARGE_LIMIT,
+                RSCPTag.TAG_EMS_REQ_BAT_CHARGE_LIMIT, RSCPTag.TAG_EMS_REQ_DCDC_CHARGE_LIMIT,
+                RSCPTag.TAG_EMS_REQ_USER_CHARGE_LIMIT, RSCPTag.TAG_EMS_REQ_USED_DISCHARGE_LIMIT,
+                RSCPTag.TAG_EMS_REQ_BAT_DISCHARGE_LIMIT, RSCPTag.TAG_EMS_REQ_DCDC_DISCHARGE_LIMIT,
+                RSCPTag.TAG_EMS_REQ_USER_DISCHARGE_LIMIT, RSCPTag.TAG_EMS_REQ_REMAINING_BAT_CHARGE_POWER,
+                RSCPTag.TAG_EMS_REQ_REMAINING_BAT_DISCHARGE_POWER, RSCPTag.TAG_EMS_REQ_EMERGENCY_POWER_STATUS });
+        MultiReqGen(buildFrame,
+                new RSCPTag[] { RSCPTag.TAG_EMS_REQ_BATTERY_TO_CAR_MODE, RSCPTag.TAG_EMS_REQ_BATTERY_BEFORE_CAR_MODE });
+        MultiReqGen(buildFrame,
+                new RSCPTag[] { RSCPTag.TAG_EMS_REQ_GET_IDLE_PERIODS /* ? */, RSCPTag.TAG_EMS_REQ_GET_POWER_SETTINGS,
+                        RSCPTag.TAG_EMS_REQ_GET_MANUAL_CHARGE, RSCPTag.TAG_EMS_REQ_GET_GENERATOR_STATE,
+                        RSCPTag.TAG_EMS_REQ_EMERGENCYPOWER_TEST_STATUS });
+        MultiReqGen(buildFrame, new RSCPTag[] { RSCPTag.TAG_EMS_REQ_GET_SYS_SPECS, RSCPTag.TAG_EMS_REQ_ALIVE });
+    }
+
+    public static void buildFrame02(Builder buildFrame) {
+        buildFrame = buildFrame.addData(RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DATA).containerValues(Arrays.asList(
+                RSCPData.builder().tag(RSCPTag.TAG_PVI_INDEX).int16Value((short) 0).build(),
+                ReqGen(RSCPTag.TAG_PVI_REQ_ON_GRID), ReqGen(RSCPTag.TAG_PVI_REQ_STATE),
+                ReqGen(RSCPTag.TAG_PVI_REQ_LAST_ERROR), ReqGen(RSCPTag.TAG_PVI_REQ_IS_FLASHING),
+                ReqGen(RSCPTag.TAG_PVI_REQ_SERVICE_PROGRESS_STATE), ReqGen(RSCPTag.TAG_PVI_REQ_DEVICE_STATE),
+                ReqGen(RSCPTag.TAG_PVI_REQ_TYPE), ReqGen(RSCPTag.TAG_PVI_REQ_LAND_CODE_LIST),
+                ReqGen(RSCPTag.TAG_PVI_REQ_UZK_VOLTAGE), ReqGen(RSCPTag.TAG_PVI_REQ_COS_PHI),
+                ReqGen(RSCPTag.TAG_PVI_REQ_VOLTAGE_MONITORING), ReqGen(RSCPTag.TAG_PVI_REQ_FREQUENCY_UNDER_OVER),
+                ReqGen(RSCPTag.TAG_PVI_REQ_SYSTEM_MODE), ReqGen(RSCPTag.TAG_PVI_REQ_POWER_MODE),
+                ReqGen(RSCPTag.TAG_PVI_REQ_USED_STRING_COUNT), ReqGen(RSCPTag.TAG_PVI_REQ_DERATE_TO_POWER),
+                ReqGen(RSCPTag.TAG_PVI_REQ_TEMPERATURE), ReqGen(RSCPTag.TAG_PVI_REQ_TEMPERATURE_COUNT),
+                ReqGen(RSCPTag.TAG_PVI_REQ_MAX_TEMPERATURE), ReqGen(RSCPTag.TAG_PVI_REQ_MIN_TEMPERATURE),
+                ReqGen(RSCPTag.TAG_PVI_REQ_VERSION), ReqGen(RSCPTag.TAG_PVI_REQ_AC_MAX_PHASE_COUNT),
+                ReqGen(RSCPTag.TAG_PVI_REQ_AC_POWER), ReqGen(RSCPTag.TAG_PVI_REQ_AC_VOLTAGE),
+                ReqGen(RSCPTag.TAG_PVI_REQ_AC_CURRENT), ReqGen(RSCPTag.TAG_PVI_REQ_AC_APPARENTPOWER),
+                ReqGen(RSCPTag.TAG_PVI_REQ_AC_REACTIVEPOWER), ReqGen(RSCPTag.TAG_PVI_REQ_AC_ENERGY_ALL),
+                ReqGen(RSCPTag.TAG_PVI_REQ_AC_MAX_APPARENTPOWER), ReqGen(RSCPTag.TAG_PVI_REQ_AC_ENERGY_DAY),
+                ReqGen(RSCPTag.TAG_PVI_REQ_AC_ENERGY_GRID_CONSUMPTION), ReqGen(RSCPTag.TAG_PVI_REQ_DC_MAX_STRING_COUNT),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_POWER, (short) 0), ReqGeni(RSCPTag.TAG_PVI_REQ_DC_POWER, (short) 1),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_VOLTAGE, (short) 0), ReqGeni(RSCPTag.TAG_PVI_REQ_DC_VOLTAGE, (short) 1),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_CURRENT, (short) 0), ReqGeni(RSCPTag.TAG_PVI_REQ_DC_CURRENT, (short) 1),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MAX_POWER, (short) 0),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MAX_POWER, (short) 1),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MAX_VOLTAGE, (short) 0),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MAX_VOLTAGE, (short) 1),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MIN_VOLTAGE, (short) 0),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MIN_VOLTAGE, (short) 1),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MAX_CURRENT, (short) 0),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MAX_CURRENT, (short) 1),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MIN_CURRENT, (short) 0),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_MIN_CURRENT, (short) 1),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_STRING_ENERGY_ALL, (short) 0),
+                ReqGeni(RSCPTag.TAG_PVI_REQ_DC_STRING_ENERGY_ALL, (short) 1))).build());
+    }
+
+    public static void buildFrame03(Builder buildFrame) {
+        buildFrame = buildFrame.addData(RSCPData.builder().tag(RSCPTag.TAG_BAT_REQ_DATA).containerValues(Arrays.asList(
+                RSCPData.builder().tag(RSCPTag.TAG_BAT_INDEX).int16Value((short) 0).build(),
+                ReqGen(RSCPTag.TAG_BAT_REQ_RSOC), ReqGen(RSCPTag.TAG_BAT_REQ_MODULE_VOLTAGE),
+                ReqGen(RSCPTag.TAG_BAT_REQ_CURRENT), ReqGen(RSCPTag.TAG_BAT_REQ_MAX_BAT_VOLTAGE),
+                ReqGen(RSCPTag.TAG_BAT_REQ_MAX_CHARGE_CURRENT), ReqGen(RSCPTag.TAG_BAT_REQ_EOD_VOLTAGE),
+                ReqGen(RSCPTag.TAG_BAT_REQ_MAX_DISCHARGE_CURRENT), ReqGen(RSCPTag.TAG_BAT_REQ_CHARGE_CYCLES),
+                ReqGen(RSCPTag.TAG_BAT_REQ_TERMINAL_VOLTAGE), ReqGen(RSCPTag.TAG_BAT_REQ_STATUS_CODE),
+                ReqGen(RSCPTag.TAG_BAT_REQ_ERROR_CODE), ReqGen(RSCPTag.TAG_BAT_REQ_DEVICE_NAME),
+                ReqGen(RSCPTag.TAG_BAT_REQ_DCB_COUNT), ReqGen(RSCPTag.TAG_BAT_REQ_RSOC_REAL),
+                ReqGen(RSCPTag.TAG_BAT_REQ_ASOC), ReqGen(RSCPTag.TAG_BAT_REQ_FCC), ReqGen(RSCPTag.TAG_BAT_REQ_RC),
+                ReqGen(RSCPTag.TAG_BAT_REQ_MAX_DCB_CELL_CURRENT), ReqGen(RSCPTag.TAG_BAT_REQ_FIRMWARE_VERSION),
+                ReqGen(RSCPTag.TAG_BAT_REQ_INFO), ReqGen(RSCPTag.TAG_BAT_REQ_TRAINING_MODE),
+                ReqGen(RSCPTag.TAG_BAT_REQ_UPDATE_STATUS), ReqGen(RSCPTag.TAG_BAT_REQ_TIME_LAST_RESPONSE),
+                ReqGen(RSCPTag.TAG_BAT_REQ_MANUFACTURER_NAME), ReqGen(RSCPTag.TAG_BAT_REQ_USABLE_CAPACITY),
+                ReqGen(RSCPTag.TAG_BAT_REQ_USABLE_REMAINING_CAPACITY), ReqGen(RSCPTag.TAG_BAT_REQ_CONTROL_CODE)))
+                .build());
+        // MultiReqGen(buildFrame, new RSCPTag[] { RSCPTag.TAG_BAT_REQ_DCB_INFO, RSCPTag.TAG_BAT_REQ_DEVICE_STATE });
+    }
+
+    public static void buildFrame04(Builder buildFrame) {
+        buildFrame = buildFrame.addData(RSCPData.builder().tag(RSCPTag.TAG_DCDC_REQ_DATA)
+                .containerValues(Arrays.asList(
+                        RSCPData.builder().tag(RSCPTag.TAG_DCDC_INDEX).int16Value((short) 0).build(),
+                        ReqGen(RSCPTag.TAG_DCDC_REQ_I_BAT), ReqGen(RSCPTag.TAG_DCDC_REQ_U_BAT),
+                        ReqGen(RSCPTag.TAG_DCDC_REQ_P_BAT), ReqGen(RSCPTag.TAG_DCDC_REQ_I_DCL),
+                        ReqGen(RSCPTag.TAG_DCDC_REQ_U_DCL), ReqGen(RSCPTag.TAG_DCDC_REQ_P_DCL),
+                        ReqGen(RSCPTag.TAG_DCDC_REQ_FIRMWARE_VERSION), ReqGen(RSCPTag.TAG_DCDC_REQ_FPGA_FIRMWARE),
+                        ReqGen(RSCPTag.TAG_DCDC_REQ_SERIAL_NUMBER), ReqGen(RSCPTag.TAG_DCDC_REQ_BOARD_VERSION),
+                        ReqGen(RSCPTag.TAG_DCDC_REQ_IS_FLASHING), ReqGen(RSCPTag.TAG_DCDC_REQ_STATUS),
+                        ReqGen(RSCPTag.TAG_DCDC_REQ_STATUS_AS_STRING), ReqGen(RSCPTag.TAG_DCDC_REQ_DEVICE_STATE)))
+                .build());
+    }
+
+    public static void buildFrame05(Builder buildFrame) {
+        buildFrame = buildFrame
+                .addData(RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_DATA)
+                        .containerValues(Arrays.asList(
+                                RSCPData.builder().tag(RSCPTag.TAG_PM_INDEX).int16Value((short) 0).build(),
+                                ReqGen(RSCPTag.TAG_PM_REQ_POWER_L1), ReqGen(RSCPTag.TAG_PM_REQ_POWER_L2),
+                                ReqGen(RSCPTag.TAG_PM_REQ_POWER_L3), ReqGen(RSCPTag.TAG_PM_REQ_ACTIVE_PHASES),
+                                ReqGen(RSCPTag.TAG_PM_REQ_MODE), ReqGen(RSCPTag.TAG_PM_REQ_ENERGY_L1),
+                                ReqGen(RSCPTag.TAG_PM_REQ_ENERGY_L2), ReqGen(RSCPTag.TAG_PM_REQ_ENERGY_L3),
+                                ReqGen(RSCPTag.TAG_PM_REQ_DEVICE_ID), ReqGen(RSCPTag.TAG_PM_REQ_ERROR_CODE),
+                                ReqGen(RSCPTag.TAG_PM_REQ_GET_PHASE_ELIMINATION), ReqGen(RSCPTag.TAG_PM_REQ_VOLTAGE_L1),
+                                ReqGen(RSCPTag.TAG_PM_REQ_VOLTAGE_L2), ReqGen(RSCPTag.TAG_PM_REQ_VOLTAGE_L3),
+                                ReqGen(RSCPTag.TAG_PM_REQ_TYPE), ReqGen(RSCPTag.TAG_PM_REQ_COMM_STATE),
+                                ReqGen(RSCPTag.TAG_PM_REQ_DEVICE_STATE)))
+                        .build());
+    }
+
+    public static void buildFrame08(Builder buildFrame) {
+        MultiReqGen(buildFrame, new RSCPTag[] { RSCPTag.TAG_SRV_REQ_IS_ONLINE });
+    }
+
+    public static void buildFrame09(Builder buildFrame) {
+        MultiReqGen(buildFrame,
+                new RSCPTag[] { RSCPTag.TAG_HA_REQ_DATAPOINT_LIST, RSCPTag.TAG_HA_REQ_ACTUATOR_STATES });
+    }
+
+    public static void buildFrame0A(Builder buildFrame) {
+        MultiReqGen(buildFrame,
+                new RSCPTag[] { RSCPTag.TAG_INFO_REQ_SERIAL_NUMBER, RSCPTag.TAG_INFO_REQ_PRODUCTION_DATE,
+                        RSCPTag.TAG_INFO_REQ_IP_ADDRESS, RSCPTag.TAG_INFO_REQ_SUBNET_MASK,
+                        RSCPTag.TAG_INFO_REQ_MAC_ADDRESS, RSCPTag.TAG_INFO_REQ_GATEWAY, RSCPTag.TAG_INFO_REQ_DNS,
+                        RSCPTag.TAG_INFO_REQ_DHCP_STATUS, RSCPTag.TAG_INFO_REQ_TIME, RSCPTag.TAG_INFO_REQ_UTC_TIME,
+                        RSCPTag.TAG_INFO_REQ_TIME_ZONE, RSCPTag.TAG_INFO_REQ_SW_RELEASE });
+    }
+
+    public static void buildFrame0B(Builder buildFrame) {
+        MultiReqGen(buildFrame,
+                new RSCPTag[] { RSCPTag.TAG_EP_REQ_IS_READY_FOR_SWITCH, RSCPTag.TAG_EP_REQ_IS_GRID_CONNECTED,
+                        RSCPTag.TAG_EP_REQ_IS_ISLAND_GRID, RSCPTag.TAG_EP_REQ_IS_INVALID_STATE,
+                        RSCPTag.TAG_EP_REQ_IS_POSSIBLE });
+    }
+
+    public static void buildFrame0E(Builder buildFrame) {
+        buildFrame = buildFrame.addData(RSCPData.builder().tag(RSCPTag.TAG_WB_REQ_DATA)
+                .containerValues(Arrays.asList(
+                        RSCPData.builder().tag(RSCPTag.TAG_WB_INDEX).int16Value((short) 0).build(),
+                        ReqGen(RSCPTag.TAG_WB_REQ_ENERGY_ALL), ReqGen(RSCPTag.TAG_WB_REQ_ENERGY_SOLAR),
+                        ReqGen(RSCPTag.TAG_WB_REQ_SOC), ReqGen(RSCPTag.TAG_WB_REQ_STATUS),
+                        ReqGen(RSCPTag.TAG_WB_REQ_ERROR_CODE), ReqGen(RSCPTag.TAG_WB_REQ_MODE),
+                        ReqGen(RSCPTag.TAG_WB_REQ_APP_SOFTWARE), ReqGen(RSCPTag.TAG_WB_REQ_BOOTLOADER_SOFTWARE),
+                        ReqGen(RSCPTag.TAG_WB_REQ_HW_VERSION), ReqGen(RSCPTag.TAG_WB_REQ_FLASH_VERSION),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DEVICE_ID), ReqGen(RSCPTag.TAG_WB_REQ_DEVICE_STATE),
+                        ReqGen(RSCPTag.TAG_WB_REQ_PM_POWER_L1), ReqGen(RSCPTag.TAG_WB_REQ_PM_POWER_L2),
+                        ReqGen(RSCPTag.TAG_WB_REQ_PM_POWER_L3), ReqGen(RSCPTag.TAG_WB_REQ_PM_ACTIVE_PHASES),
+                        ReqGen(RSCPTag.TAG_WB_REQ_PM_MODE), ReqGen(RSCPTag.TAG_WB_REQ_PM_ENERGY_L1),
+                        ReqGen(RSCPTag.TAG_WB_REQ_PM_ENERGY_L2), ReqGen(RSCPTag.TAG_WB_REQ_PM_ENERGY_L3),
+                        ReqGen(RSCPTag.TAG_WB_REQ_PM_DEVICE_ID), ReqGen(RSCPTag.TAG_WB_REQ_PM_ERROR_CODE),
+                        ReqGen(RSCPTag.TAG_WB_REQ_PM_DEVICE_STATE), ReqGen(RSCPTag.TAG_WB_REQ_PM_FIRMWARE_VERSION),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_DEVICE_ID), ReqGen(RSCPTag.TAG_WB_REQ_DIAG_BAT_CAPACITY),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_USER_PARAM), ReqGen(RSCPTag.TAG_WB_REQ_DIAG_MAX_CURRENT),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_PHASE_VOLTAGE), ReqGen(RSCPTag.TAG_WB_REQ_DIAG_DISPLAY_SPEECH),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_DESIGN), ReqGen(RSCPTag.TAG_WB_REQ_DIAG_INFOS),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_WARNINGS), ReqGen(RSCPTag.TAG_WB_REQ_DIAG_ERRORS),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_TEMP_1), ReqGen(RSCPTag.TAG_WB_REQ_DIAG_TEMP_2),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_CP_PEGEL), ReqGen(RSCPTag.TAG_WB_REQ_DIAG_PP_IN_A),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_STATUS_DIODE), ReqGen(RSCPTag.TAG_WB_REQ_DIAG_DIG_IN_1),
+                        ReqGen(RSCPTag.TAG_WB_REQ_DIAG_DIG_IN_2)))
+                .build());
+    }
+
     public static byte[] buildRequestFrame() {
-        // build parameters
+        Builder buildFrame = RSCPFrame.builder().timestamp(Instant.now());
 
-        RSCPData reqTimeStart = RSCPData.builder().tag(RSCPTag.TAG_DB_REQ_HISTORY_TIME_START)
-                .timestampValue(
-                        Instant.now().atZone(ZoneId.of("CET")).truncatedTo(ChronoUnit.DAYS).minusDays(1).toInstant())
-                .build();
+        // Full request:
+        // buildFrame01(buildFrame); // "01" - Requests - Basis details
+        // buildFrame02(buildFrame); // "02" - Requests
+        // buildFrame03(buildFrame); // "03" - Requests - Battery
+        // buildFrame04(buildFrame); // "04" - Request
+        // buildFrame05(buildFrame); // "05" - Request
+        // buildFrame08(buildFrame); // "08" - Requests - Server Online
+        // buildFrame09(buildFrame); // "09" - Requests - Connected Homeautomation devices
+        // buildFrame0A(buildFrame); // "0A" - Requests - E3DC network/status details
+        // buildFrame0B(buildFrame); // "0B" - Requests - Switch between Grid/Island
+        // buildFrame0E(buildFrame); // "0E" - Request - Wallbox
 
-        RSCPData reqInterval = RSCPData.builder().tag(RSCPTag.TAG_DB_REQ_HISTORY_TIME_INTERVAL)
-                .timestampValue(Duration.ofSeconds(24 * 60 * 60)).build();
+        MultiReqGen(buildFrame,
+                new RSCPTag[] { RSCPTag.TAG_EMS_REQ_POWER_PV, RSCPTag.TAG_EMS_REQ_POWER_BAT,
+                        RSCPTag.TAG_EMS_REQ_POWER_HOME, RSCPTag.TAG_EMS_REQ_POWER_GRID, RSCPTag.TAG_EMS_REQ_POWER_ADD,
+                        RSCPTag.TAG_EMS_REQ_AUTARKY, RSCPTag.TAG_EMS_REQ_SELF_CONSUMPTION, RSCPTag.TAG_EMS_REQ_BAT_SOC,
+                        RSCPTag.TAG_EMS_REQ_GET_POWER_SETTINGS, RSCPTag.TAG_EMS_REQ_EMERGENCY_POWER_STATUS,
+                        RSCPTag.TAG_EP_REQ_IS_GRID_CONNECTED, RSCPTag.TAG_INFO_REQ_SW_RELEASE });
 
-        RSCPData reqTimeSpan = RSCPData.builder().tag(RSCPTag.TAG_DB_REQ_HISTORY_TIME_SPAN)
-                .timestampValue(Duration.ofSeconds(24 * 60 * 60)).build();
+        buildFrame = buildFrame
+                .addData(RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_DATA)
+                        .containerValues(Arrays.asList(
+                                RSCPData.builder().tag(RSCPTag.TAG_PM_INDEX).int16Value((short) 0).build(),
+                                ReqGen(RSCPTag.TAG_PM_REQ_POWER_L1), ReqGen(RSCPTag.TAG_PM_REQ_POWER_L2),
+                                ReqGen(RSCPTag.TAG_PM_REQ_POWER_L3), ReqGen(RSCPTag.TAG_PM_REQ_ACTIVE_PHASES),
+                                ReqGen(RSCPTag.TAG_PM_REQ_MODE), ReqGen(RSCPTag.TAG_PM_REQ_ENERGY_L1),
+                                ReqGen(RSCPTag.TAG_PM_REQ_ENERGY_L2), ReqGen(RSCPTag.TAG_PM_REQ_ENERGY_L3),
+                                ReqGen(RSCPTag.TAG_PM_REQ_VOLTAGE_L1), ReqGen(RSCPTag.TAG_PM_REQ_VOLTAGE_L2),
+                                ReqGen(RSCPTag.TAG_PM_REQ_VOLTAGE_L3)))
+                        .build());
 
-        // build request starting with a container
-        RSCPData reqHistContainer = RSCPData.builder().tag(RSCPTag.TAG_DB_REQ_HISTORY_DATA_DAY)
-                .containerValues(Arrays.asList(reqTimeStart, reqInterval, reqTimeSpan)).build();
-
-        RSCPData req1 = RSCPData.builder().tag(RSCPTag.TAG_EMS_REQ_POWER_PV).boolValue(true).build();
-        RSCPData req2 = RSCPData.builder().tag(RSCPTag.TAG_EMS_REQ_POWER_BAT).boolValue(true).build();
-        RSCPData req3 = RSCPData.builder().tag(RSCPTag.TAG_EMS_REQ_POWER_HOME).boolValue(true).build();
-        RSCPData req4 = RSCPData.builder().tag(RSCPTag.TAG_EMS_REQ_POWER_GRID).boolValue(true).build();
-        RSCPData req5 = RSCPData.builder().tag(RSCPTag.TAG_EMS_REQ_POWER_ADD).boolValue(true).build();
-        RSCPData req6 = RSCPData.builder().tag(RSCPTag.TAG_EMS_REQ_EMERGENCY_POWER_STATUS).boolValue(true).build();
-        RSCPData req7 = RSCPData.builder().tag(RSCPTag.TAG_EMS_REQ_AUTARKY).boolValue(true).build();
-        RSCPData req8 = RSCPData.builder().tag(RSCPTag.TAG_EMS_REQ_BAT_SOC).boolValue(true).build();
-
-        RSCPData reqPM1 = RSCPData.builder().tag(RSCPTag.TAG_PM_INDEX).char8Value((char) 0).build();
-        RSCPData reqPM2 = RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_POWER_L1).boolValue(true).build();
-        RSCPData reqPM3 = RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_POWER_L2).boolValue(true).build();
-        RSCPData reqPM4 = RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_POWER_L3).boolValue(true).build();
-        RSCPData reqPM5 = RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_VOLTAGE_L1).boolValue(true).build();
-        RSCPData reqPM6 = RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_VOLTAGE_L2).boolValue(true).build();
-        RSCPData reqPM7 = RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_VOLTAGE_L3).boolValue(true).build();
-        RSCPData reqPM = RSCPData.builder().tag(RSCPTag.TAG_PM_REQ_DATA)
-                .containerValues(Arrays.asList(reqPM1, reqPM2, reqPM3, reqPM4, reqPM5, reqPM6, reqPM7)).build();
-
-        RSCPData reqDC1 = RSCPData.builder().tag(RSCPTag.TAG_PVI_INDEX).char8Value((char) 0).build();
-        RSCPData reqDC2 = RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DC_POWER).char8Value((char) 0).build();
-        RSCPData reqDC3 = RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DC_VOLTAGE).char8Value((char) 0).build();
-        RSCPData reqDC4 = RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DC_CURRENT).char8Value((char) 0).build();
-        RSCPData reqDC5 = RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DC_POWER).char8Value((char) 1).build();
-        RSCPData reqDC6 = RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DC_VOLTAGE).char8Value((char) 1).build();
-        RSCPData reqDC7 = RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DC_CURRENT).char8Value((char) 1).build();
-        RSCPData reqDC = RSCPData.builder().tag(RSCPTag.TAG_PVI_REQ_DATA)
-                .containerValues(Arrays.asList(reqDC1, reqDC2, reqDC3, reqDC4, reqDC5, reqDC6, reqDC7)).build();
-
-        // build frame and append the request container
-        RSCPFrame reqFrame1 = RSCPFrame.builder().timestamp(Instant.now()).addData(req1).addData(req2).addData(req3)
-                .addData(req4).addData(req5).addData(req6).addData(req7).addData(req8).addData(reqPM).addData(reqDC)
-                .addData(reqHistContainer).build();
-
+        RSCPFrame reqFrame1 = buildFrame.build();
         return reqFrame1.getAsByteArray();
+    }
+
+    public static RSCPData ReqGeni(RSCPTag tag, short s) {
+        return RSCPData.builder().tag(tag).int16Value(s).build();
+    }
+
+    public static RSCPData ReqGen(RSCPTag tag) {
+        return RSCPData.builder().tag(tag).noneValue().build();
+    }
+
+    public static void MultiReqGen(Builder buildFrame, RSCPTag[] TagsToAdd) {
+        for (RSCPTag tag : TagsToAdd) {
+            buildFrame = buildFrame.addData(ReqGen(tag));
+        }
     }
 
     public static boolean isAuthenticationRequestReplyFrameComplete(byte[] frame) {

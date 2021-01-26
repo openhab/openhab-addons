@@ -35,4 +35,25 @@ public class E3DCBindingConstants {
     public static final String CHANNEL_CurrentPowerHome = "CurrentPowerHome";
     public static final String CHANNEL_CurrentPowerGrid = "CurrentPowerGrid";
     public static final String CHANNEL_CurrentPowerAdd = "CurrentPowerAdd";
+    public static final String CHANNEL_BatterySOC = "BatterySOC";
+    public static final String CHANNEL_SelfConsumption = "SelfConsumption";
+    public static final String CHANNEL_Autarky = "Autarky";
+    public static final String CHANNEL_CurrentPMEnergyL1 = "CurrentPMEnergyL1";
+    public static final String CHANNEL_CurrentPMEnergyL2 = "CurrentPMEnergyL2";
+    public static final String CHANNEL_CurrentPMEnergyL3 = "CurrentPMEnergyL3";
+    public static final String CHANNEL_CurrentPMPowerL1 = "CurrentPMPowerL1";
+    public static final String CHANNEL_CurrentPMPowerL2 = "CurrentPMPowerL2";
+    public static final String CHANNEL_CurrentPMPowerL3 = "CurrentPMPowerL3";
+    public static final String CHANNEL_CurrentPMVoltageL1 = "CurrentPMVoltageL1";
+    public static final String CHANNEL_CurrentPMVoltageL2 = "CurrentPMVoltageL2";
+    public static final String CHANNEL_CurrentPMVoltageL3 = "CurrentPMVoltageL3";
+    public static final String CHANNEL_Mode = "Mode";
+    public static final String CHANNEL_PowerLimitsUsed = "PowerLimitsUsed";
+    public static final String CHANNEL_MaxDischarge = "MaxDischarge";
+    public static final String CHANNEL_MaxCharge = "MaxCharge";
+    public static final String CHANNEL_WeatherRegulatedCharge = "WeatherRegulatedCharge";
+    public static final String CHANNEL_PowerSave = "PowerSave";
+    public static final String CHANNEL_EmergencyPowerStatus = "EmergencyPowerStatus";
+    public static final String CHANNEL_GridConnected = "GridConnected";
+    public static final String CHANNEL_SWRelease = "SWRelease";
 }

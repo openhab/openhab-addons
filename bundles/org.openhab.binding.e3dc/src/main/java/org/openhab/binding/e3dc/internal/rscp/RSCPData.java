@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * The {@link RSCPData} is responsible for the RSCP date inside a {@link RSCPFrame}.
  *
  * @author Brendon Votteler - Initial Contribution
+ * @author Björn Brings - Minor updates
  */
 public class RSCPData {
     private static final Logger logger = LoggerFactory.getLogger(RSCPData.class);
@@ -116,6 +117,20 @@ public class RSCPData {
      */
     public int getByteCount() {
         return offsetData + dataLength;
+    }
+
+    /**
+     * Try to get the value contained in this RSCPData instance.
+     *
+     * @return An {@link Optional} containing a value if the raw data can be interpreted as bool. Otherwise, returns
+     *         {@link Optional#empty()}.
+     */
+    public Optional<Boolean> getValueAsBool() {
+        if (!RSCPDataType.BOOL.equals(dataType)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(this.value[0] == 1);
     }
 
     /**
@@ -273,6 +288,8 @@ public class RSCPData {
             case TIMESTAMP:
                 return getValueAsInstant().map(instant -> DateTimeFormatter.ISO_LOCAL_DATE_TIME
                         .withZone(ZoneId.from(ZoneOffset.UTC)).format(instant));
+            case NONE:
+                return Optional.of("[none]");
             // TODO: Should be able to get a few more done here eventually
             default:
                 return Optional.empty();
@@ -340,6 +357,11 @@ public class RSCPData {
 
             byte[] tagNameBytes = ByteUtils.copyBytesIntoNewArray(bytes, offsetDataTag, sizeDataTag);
             RSCPTag tag = RSCPTag.getTagForBytes(ByteUtils.reverseByteArray(tagNameBytes));
+            if (tag == null) {
+                logger.warn("Tag could not be matched: {}", ByteUtils.byteArrayToHexString(tagNameBytes));
+                tag = RSCPTag.getTagForBytes(
+                        ByteUtils.reverseByteArray(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }));
+            }
 
             // single byte, no need to reverse
             RSCPDataType dataType = RSCPDataType.getDataTypeForBytes(bytes[offsetDataType]);
@@ -561,6 +583,15 @@ public class RSCPData {
         }
 
         /**
+         * Set the data type ({@link RSCPDataType#NONE}) with no value.
+         *
+         * @return The builder.
+         */
+        public Builder noneValue() {
+            return valueOfType(NONE, new byte[0]);
+        }
+
+        /**
          * Set the data type ({@link RSCPDataType#BYTEARRAY}) and value.
          *
          * @param value The value.
@@ -624,7 +655,10 @@ public class RSCPData {
             if (dataType == null) {
                 throw new IllegalStateException("DataType value is required.");
             }
-            if (value == null || value.length == 0) {
+            if (value == null) {
+                throw new IllegalStateException("Data must not be null.");
+            }
+            if (!NONE.equals(dataType) && !CONTAINER.equals(dataType) && value.length == 0) {
                 throw new IllegalStateException("Data must not be empty.");
             }
         }
