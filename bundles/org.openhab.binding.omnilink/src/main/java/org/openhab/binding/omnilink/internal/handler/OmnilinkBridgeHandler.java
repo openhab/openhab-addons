@@ -50,6 +50,10 @@ import org.slf4j.LoggerFactory;
 import com.digitaldan.jomnilinkII.Connection;
 import com.digitaldan.jomnilinkII.DisconnectListener;
 import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.NotificationListener;
+import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
+import com.digitaldan.jomnilinkII.OmniNotConnectedException;
+import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.EventLogData;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
@@ -70,10 +74,6 @@ import com.digitaldan.jomnilinkII.MessageTypes.systemevents.ButtonEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemevents.SwitchPressEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemevents.SystemEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemevents.UPBLinkEvent;
-import com.digitaldan.jomnilinkII.NotificationListener;
-import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
-import com.digitaldan.jomnilinkII.OmniNotConnectedException;
-import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.google.gson.Gson;
 
 /**
@@ -568,21 +568,13 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private Optional<Thing> getUnitThing(int unitId) {
-        Optional<Thing> theThing = getChildThing(THING_TYPE_UNIT_UPB, unitId);
-        if (!(theThing.isPresent())) {
-            theThing = getChildThing(THING_TYPE_ROOM, unitId);
-        }
-        if (!(theThing.isPresent())) {
-            theThing = getChildThing(THING_TYPE_FLAG, unitId);
-        }
-        if (!(theThing.isPresent())) {
-            theThing = getChildThing(THING_TYPE_OUTPUT, unitId);
-        }
-        if (!(theThing.isPresent())) {
-            theThing = getChildThing(THING_TYPE_DIMMABLE, unitId);
-        }
-        if (!(theThing.isPresent())) {
-            theThing = getChildThing(THING_TYPE_UNIT, unitId);
+        Optional<Thing> theThing = Optional.empty();
+
+        for (ThingTypeUID uid : SUPPORTED_UNIT_TYPES_UIDS) {
+            theThing = getChildThing(uid, unitId);
+            if (theThing.isPresent()) {
+                return theThing;
+            }
         }
 
         return theThing;
