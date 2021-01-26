@@ -67,7 +67,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public int souliss_gateway_port;
     public byte userIndex;
     public byte nodeIndex;
-    public @Nullable String IPAddressOnLAN;
+    public String IPAddressOnLAN = "";
     private int nodes;
     private int maxTypicalXnode;
     private int countPING_KO = 0;
@@ -221,26 +221,26 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         }
     }
 
-    @Override
-    public void handleRemoval() {
-        if (IPAddressOnLAN != null) {
-            SoulissBindingNetworkParameters.removeGateway((byte) gwIp());
-            // UDP_Server_DefaultPort_RunnableClass = null;
-            logger.debug("Gateway handler removing");
-        }
+    private int gwIpByte() {
+        return Integer.parseInt(IPAddressOnLAN.split("\\.")[3]);
     }
 
-    private int gwIp() {
-        return Integer.parseInt(IPAddressOnLAN.split("\\.")[3]);
+    @Override
+    public void handleRemoval() {
+        // if (IPAddressOnLAN != null) {
+        SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
+        // UDP_Server_DefaultPort_RunnableClass = null;
+        logger.debug("Gateway handler removing");
+        // }
     }
 
     @Override
     public void thingUpdated(Thing thing) {
         logger.debug("Thing Updated: {}", thing.getThingTypeUID());
-        if (IPAddressOnLAN != null) {
-            SoulissBindingNetworkParameters.removeGateway((byte) gwIp());
-            // .removeGateway((byte) (Byte.parseByte((IPAddressOnLAN.split("\\.")[3]) & (byte) 0xFF));
-        }
+        // if (IPAddressOnLAN != null) {
+        SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
+        // .removeGateway((byte) (Byte.parseByte((IPAddressOnLAN.split("\\.")[3]) & (byte) 0xFF));
+        // }
         this.thing = thing;
     }
 
@@ -335,7 +335,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void sendSubscription() {
         // logger.debug("Sending subscription packet");
-        if (IPAddressOnLAN != null && IPAddressOnLAN.length() > 0) {
+        if ( /* IPAddressOnLAN != null && */ IPAddressOnLAN.length() > 0) {
             SoulissCommonCommands.sendSUBSCRIPTIONframe(SoulissBindingNetworkParameters.getDatagramSocket(),
                     IPAddressOnLAN, nodeIndex, userIndex, getNodes());
         }

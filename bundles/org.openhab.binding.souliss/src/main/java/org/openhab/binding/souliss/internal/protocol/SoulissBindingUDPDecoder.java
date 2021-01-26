@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.binding.souliss.SoulissBindingUDPConstants;
@@ -180,8 +181,8 @@ public class SoulissBindingUDPDecoder {
 
     private void decodePingBroadcast(ArrayList<Byte> macaco) throws UnknownHostException {
         String IP = macaco.get(5) + "." + macaco.get(6) + "." + macaco.get(7) + "." + macaco.get(8);
-        byte[] addr = { new Byte(macaco.get(5)).byteValue(), new Byte(macaco.get(6)).byteValue(),
-                new Byte(macaco.get(7)).byteValue(), new Byte(macaco.get(8)).byteValue() };
+        byte[] addr = { (macaco.get(5)).byteValue(), (macaco.get(6)).byteValue(), (macaco.get(7)).byteValue(),
+                (macaco.get(8)).byteValue() };
         logger.debug("decodePingBroadcast. Gateway Discovery. IP: {}", IP);
 
         if (discoverResult != null) {
@@ -364,20 +365,21 @@ public class SoulissBindingUDPDecoder {
             for (int i = 5; i < 5 + numberOf; i++) {
 
                 // build an array containing healths
-                List<Thing> listaThings = gateway.getThing().getThings();
+                @NonNull
+                List<@NonNull Thing> listaThings = gateway.getThing().getThings();
                 ThingHandler handler = null;
                 for (Thing thing : listaThings) {
-                    if (thing != null) {
-                        handler = thing.getHandler();
-                        if (handler != null) {
-                            int tgtnode = i - 5;
-                            if (((SoulissGenericHandler) handler).getNode() == tgtnode) {
-                                ((SoulissGenericHandler) handler).setHealty(Byte.valueOf(mac.get(i)));
-                            }
-                        } else {
-                            logger.debug("decode Healthy Request Warning. Thing handler is null");
+                    // if (thing != null) {
+                    handler = thing.getHandler();
+                    if (handler != null) {
+                        int tgtnode = i - 5;
+                        if (((SoulissGenericHandler) handler).getNode() == tgtnode) {
+                            ((SoulissGenericHandler) handler).setHealty(Byte.valueOf(mac.get(i)));
                         }
+                    } else {
+                        logger.debug("decode Healthy Request Warning. Thing handler is null");
                     }
+                    // }
                 }
             }
         } else {
@@ -394,8 +396,9 @@ public class SoulissBindingUDPDecoder {
         } catch (Exception ex) {
         }
 
-        Iterator<Thing> thingsIterator;
-        if (gateway != null && gateway.IPAddressOnLAN != null
+        @NonNull
+        Iterator<@NonNull Thing> thingsIterator;
+        if (gateway != null /* && gateway.IPAddressOnLAN != null */
                 && ((byte) Integer.parseInt(gateway.IPAddressOnLAN.split("\\.")[3])) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
             boolean bFound = false;

@@ -18,6 +18,7 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingUDPConstants;
 import org.openhab.binding.souliss.handler.SoulissGatewayHandler;
@@ -319,8 +320,9 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
             logger.error("exception getting gw handler {}", ex.getMessage());
         }
 
-        Iterator<Thing> thingsIterator;
-        if (gateway != null && gateway.IPAddressOnLAN != null
+        @NonNull
+        Iterator<@NonNull Thing> thingsIterator;
+        if (gateway != null /* && gateway.IPAddressOnLAN != null */
                 && (byte) Integer.parseInt(gateway.IPAddressOnLAN.split("\\.")[3]) == _lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
             boolean bFound = false;
