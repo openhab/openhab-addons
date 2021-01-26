@@ -158,11 +158,9 @@ when
 then
     if (TiVo_KeyboardStr.state != NULL && TiVo_KeyboardStr.state.toString.length > 0) {
         
-        // Commands to get us to the TiVo/Home menu and select the search menu using the 'remote' number keys
-        sendCommand(TiVo_MenuScreen, "TIVO")
-        Thread::sleep(1500)
-        sendCommand(TiVo_KbdCmd, "NUM4")
-        Thread::sleep(1500)
+        // Command to get us to the TiVo search menu
+        sendCommand(TiVo_MenuScreen, "SEARCH")
+        Thread::sleep(1000)
         
         var i = 0
         var char txt = ""
@@ -191,6 +189,3 @@ then
 end
 
 ```
-
-* You may need to adjust the two `Thread::sleep(1500)` lines, depending on the performance of your TiVo
-* In testing, response times have varied considerably at different times of the day, etc. You may need to increase the delay until there is sufficient time added for the system to respond consistently to the 'remote control' menu commands.
