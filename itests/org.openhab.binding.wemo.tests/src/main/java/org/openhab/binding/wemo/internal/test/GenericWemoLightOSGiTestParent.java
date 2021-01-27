@@ -91,7 +91,6 @@ public class GenericWemoLightOSGiTestParent extends GenericWemoOSGiTest {
         ThingHandler handler = thing.getHandler();
         if (handler != null) {
             AbstractWemoHandler h = (AbstractWemoHandler) handler;
-            h.setWemoHttpCaller(wemoHttpCaller);
         }
 
         return thing;

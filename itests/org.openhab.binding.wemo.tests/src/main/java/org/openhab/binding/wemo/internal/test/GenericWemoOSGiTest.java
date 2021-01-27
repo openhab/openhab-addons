@@ -142,7 +142,6 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
         ThingHandler handler = thing.getHandler();
         if (handler != null) {
             AbstractWemoHandler h = (AbstractWemoHandler) handler;
-            h.setWemoHttpCaller(wemoHttpCaller);
         }
 
         return thing;
@@ -153,8 +152,8 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
         UDN udn = new UDN(DEVICE_UDN);
         URL deviceURL = new URL(DEVICE_URL + DEVICE_DESCRIPTION_PATH);
 
-        RemoteDeviceIdentity identity = new RemoteDeviceIdentity(udn, WemoBindingConstants.SUBSCRIPTION_DURATION,
-                deviceURL, new byte[1], null);
+        RemoteDeviceIdentity identity = new RemoteDeviceIdentity(udn,
+                WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS, deviceURL, new byte[1], null);
         DeviceType type = new DeviceType(DEVICE_MANUFACTURER, DEVICE_TYPE, DEVICE_VERSION);
 
         ManufacturerDetails manufacturerDetails = new ManufacturerDetails(DEVICE_MANUFACTURER);
