@@ -94,8 +94,8 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     /**
-     * Send a command as hexadecimal, e.g.: Souliss_T1n_OnCmd = 0x02; short
-     * Souliss_T1n_OffCmd = 0x04;
+     * Send a command as hexadecimal, e.g.: SOULISS_T1N_ON_CMD = 0x02; short
+     * SOULISS_T1N_OFF_CMD = 0x04;
      *
      * @param command
      */
@@ -191,17 +191,17 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     protected OnOffType getOHState_OnOff_FromSoulissVal(byte sVal) {
-        if (sVal == SoulissBindingProtocolConstants.Souliss_T1n_OnCoil) {
+        if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OnOffType.ON;
-        } else if (sVal == SoulissBindingProtocolConstants.Souliss_T1n_OffCoil) {
+        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL) {
             return OnOffType.OFF;
-        } else if (sVal == SoulissBindingProtocolConstants.Souliss_T1n_OnFeedback) {
+        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_FEEDBACK) {
             return OnOffType.ON;
-        } else if (sVal == SoulissBindingProtocolConstants.Souliss_T1n_OffFeedback) {
+        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_FEEDBACK) {
             return OnOffType.OFF;
-        } else if (sVal == SoulissBindingProtocolConstants.Souliss_T4n_NotArmed) {
+        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T4N_NOT_ARMED) {
             return OnOffType.OFF;
-        } else if (sVal == SoulissBindingProtocolConstants.Souliss_T4n_Armed) {
+        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T4N_ARMED) {
             return OnOffType.ON;
         }
 
@@ -209,9 +209,9 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     protected OpenClosedType getOHState_OpenClose_FromSoulissVal(byte sVal) {
-        if (sVal == SoulissBindingProtocolConstants.Souliss_T1n_OnCoil) {
+        if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OpenClosedType.CLOSED;
-        } else if (sVal == SoulissBindingProtocolConstants.Souliss_T1n_OffCoil) {
+        } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL) {
             return OpenClosedType.OPEN;
         }
         return null;

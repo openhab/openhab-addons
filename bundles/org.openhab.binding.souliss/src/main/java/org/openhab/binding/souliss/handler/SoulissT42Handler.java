@@ -47,7 +47,7 @@ public class SoulissT42Handler extends SoulissGenericHandler {
             if (command instanceof OnOffType) {
                 switch (command.toFullString()) {
                     case "ON":
-                        commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_ReArm);
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_REARM);
                         this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
                         break;
                 }
@@ -104,8 +104,8 @@ public class SoulissT42Handler extends SoulissGenericHandler {
     @Override
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
-            if (bCmd == SoulissBindingProtocolConstants.Souliss_T4n_ReArm) {
-                return SoulissBindingProtocolConstants.Souliss_T4n_Antitheft;
+            if (bCmd == SoulissBindingProtocolConstants.SOULISS_T4N_REARM) {
+                return SoulissBindingProtocolConstants.SOULISS_T4N_ANTITHEFT;
             }
         }
         return -1;

@@ -237,11 +237,11 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
                         thingUID = new ThingUID(SoulissBindingConstants.T22_THING_TYPE, gatewayUID, sNodeId);
                         label = "T22: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T41_Antitheft_Main:
+                    case SoulissBindingProtocolConstants.SOULISS_T41_ANTITHEFT_MAIN:
                         thingUID = new ThingUID(SoulissBindingConstants.T41_THING_TYPE, gatewayUID, sNodeId);
                         label = "T41: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T42_Antitheft_Peer:
+                    case SoulissBindingProtocolConstants.SOULISS_T42_ANTITHEFT_PEER:
                         thingUID = new ThingUID(SoulissBindingConstants.T42_THING_TYPE, gatewayUID, sNodeId);
                         label = "T42: node " + node + ", slot " + slot;
                         break;
@@ -249,55 +249,55 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
                         thingUID = new ThingUID(SoulissBindingConstants.T31_THING_TYPE, gatewayUID, sNodeId);
                         label = "T31: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T52_TemperatureSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T52_TEMPERATURE_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T52_THING_TYPE, gatewayUID, sNodeId);
                         label = "T52: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T53_HumiditySensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T53_HUMIDITY_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T53_THING_TYPE, gatewayUID, sNodeId);
                         label = "T53: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T54_LuxSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T54_LUX_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T54_THING_TYPE, gatewayUID, sNodeId);
                         label = "T54: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T55_VoltageSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T55_VOLTAGE_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T55_THING_TYPE, gatewayUID, sNodeId);
                         label = "T55: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T56_CurrentSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T56_CURRENT_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T56_THING_TYPE, gatewayUID, sNodeId);
                         label = "T56: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T57_PowerSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T57_POWER_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T57_THING_TYPE, gatewayUID, sNodeId);
                         label = "T57: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T61:
+                    case SoulissBindingProtocolConstants.SOULISS_T61:
                         thingUID = new ThingUID(SoulissBindingConstants.T61_THING_TYPE, gatewayUID, sNodeId);
                         label = "T61: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T62_TemperatureSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T62_TEMPERATURE_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T62_THING_TYPE, gatewayUID, sNodeId);
                         label = "T62: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T63_HumiditySensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T63_HUMIDITY_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T63_THING_TYPE, gatewayUID, sNodeId);
                         label = "T63: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T64_LuxSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T64_LUX_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T64_THING_TYPE, gatewayUID, sNodeId);
                         label = "T64: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T65_VoltageSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T65_VOLTAGE_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T65_THING_TYPE, gatewayUID, sNodeId);
                         label = "T65: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T66_CurrentSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T66_CURRENT_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T66_THING_TYPE, gatewayUID, sNodeId);
                         label = "T66: node " + node + ", slot " + slot;
                         break;
-                    case SoulissBindingProtocolConstants.Souliss_T67_PowerSensor:
+                    case SoulissBindingProtocolConstants.SOULISS_T67_POWER_SENSOR:
                         thingUID = new ThingUID(SoulissBindingConstants.T67_THING_TYPE, gatewayUID, sNodeId);
                         label = "T67: node " + node + ", slot " + slot;
                         break;
