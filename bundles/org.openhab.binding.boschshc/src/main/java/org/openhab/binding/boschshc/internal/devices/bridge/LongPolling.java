@@ -122,10 +122,6 @@ public class LongPolling {
         }
     }
 
-    private void executeResubscribe(BoschHttpClient httpClient) {
-        scheduler.execute(() -> this.resubscribe(httpClient));
-    }
-
     /**
      * Create a new subscription for long polling.
      * 
@@ -164,23 +160,10 @@ public class LongPolling {
         request.send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
-                Throwable failure = result != null ? result.getFailure() : null;
-                if (failure != null) {
-                    if (failure instanceof ExecutionException) {
-                        if (failure.getCause() instanceof AbortLongPolling) {
-                            logger.debug("Canceling long polling for subscription id {} because it was aborted",
-                                    subscriptionId);
-                        } else {
-                            longPolling.handleFailure.accept(new LongPollingFailedException(
-                                    "Unexpected exception during long polling request", failure));
-                        }
-                    } else {
-                        longPolling.handleFailure.accept(new LongPollingFailedException(
-                                "Unexpected exception during long polling request", failure));
-                    }
-                } else {
-                    longPolling.onLongPollResponse(httpClient, subscriptionId, this.getContentAsString());
-                }
+                // NOTE: This handler runs inside the HTTP thread, so we schedule the response handling in a new thread
+                // because the HTTP thread is terminated after the timeout expires.
+                scheduler.execute(() -> longPolling.onLongPollComplete(httpClient, subscriptionId, result,
+                        this.getContentAsString()));
             }
         });
     }
@@ -188,47 +171,62 @@ public class LongPolling {
     /**
      * This is the handler for responses of long poll requests.
      * 
-     * @implNote Please be aware that this function runs inside the HTTP request thread, so be careful with calling
-     *           other functions that might have to run on a main thread
-     * 
      * @param httpClient HTTP client which received the response
      * @param subscriptionId Id of subscription the response is for
+     * @param result Complete result of the response
      * @param content Content of the response
      */
-    private void onLongPollResponse(BoschHttpClient httpClient, String subscriptionId, String content) {
+    private void onLongPollComplete(BoschHttpClient httpClient, String subscriptionId, @Nullable Result result,
+            String content) {
         // Check if thing is still online
         if (this.aborted) {
             logger.debug("Canceling long polling for subscription id {} because it was aborted", subscriptionId);
             return;
         }
 
-        logger.debug("Long poll response: {}", content);
-
-        String nextSubscriptionId = subscriptionId;
-
-        LongPollResult longPollResult = gson.fromJson(content, LongPollResult.class);
-        if (longPollResult != null && longPollResult.result != null) {
-            this.handleResult.accept(longPollResult);
+        Throwable failure = result != null ? result.getFailure() : null;
+        if (failure != null) {
+            if (failure instanceof ExecutionException) {
+                if (failure.getCause() instanceof AbortLongPolling) {
+                    logger.debug("Canceling long polling for subscription id {} because it was aborted",
+                            subscriptionId);
+                } else {
+                    this.handleFailure.accept(new LongPollingFailedException(
+                            "Unexpected exception during long polling request", failure));
+                }
+            } else {
+                this.handleFailure.accept(
+                        new LongPollingFailedException("Unexpected exception during long polling request", failure));
+            }
         } else {
-            logger.warn("Long poll response contained no results: {}", content);
+            logger.debug("Long poll response: {}", content);
 
-            // Check if we got a proper result from the SHC
-            LongPollError longPollError = gson.fromJson(content, LongPollError.class);
+            String nextSubscriptionId = subscriptionId;
 
-            if (longPollError != null && longPollError.error != null) {
-                logger.warn("Got long poll error: {} (code: {})", longPollError.error.message,
-                        longPollError.error.code);
+            LongPollResult longPollResult = gson.fromJson(content, LongPollResult.class);
+            if (longPollResult != null && longPollResult.result != null) {
+                this.handleResult.accept(longPollResult);
+            } else {
+                logger.warn("Long poll response contained no results: {}", content);
 
-                if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-                    logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
-                    this.executeResubscribe(httpClient);
-                    return;
+                // Check if we got a proper result from the SHC
+                LongPollError longPollError = gson.fromJson(content, LongPollError.class);
+
+                if (longPollError != null && longPollError.error != null) {
+                    logger.warn("Got long poll error: {} (code: {})", longPollError.error.message,
+                            longPollError.error.code);
+
+                    if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
+                        logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
+                        this.resubscribe(httpClient);
+                        return;
+                    }
                 }
             }
-        }
 
-        // Execute next run.
-        this.executeLongPoll(httpClient, nextSubscriptionId);
+            // Execute next run.
+            this.longPoll(httpClient, nextSubscriptionId);
+        }
     }
 
     @SuppressWarnings("serial")
