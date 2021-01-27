@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hccrubbishcollection"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="collection">
+		<label>HCC NZ Rubbish Collection</label>
+		<description>Rubbish collection days for Hamilton City Council (NZ).</description>
+
+		<channels>
+			<channel id="day" typeId="day"/>
+			<channel id="recycling" typeId="bin">
+				<label>Recycling Bin Collection Date</label>
+				<description>The next collection date of the recycling (yellow bin and green bin).</description>
+			</channel>
+			<channel id="general" typeId="bin">
+				<label>General Bin Collection Date</label>
+				<description>The next collection date of the general rubbish (red bin).</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The street address to get rubbish collection dates for.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="day">
+		<item-type>Number</item-type>
+		<label>Collection Day</label>
+		<description>The rubbish collection Day of the Week</description>
+	</channel-type>
+	<channel-type id="bin">
+		<item-type>DateTime</item-type>
+		<label>Collection Date</label>
+	</channel-type>
+
+</thing:thing-descriptions>
