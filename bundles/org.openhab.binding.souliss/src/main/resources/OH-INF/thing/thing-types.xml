@@ -311,7 +311,7 @@
 		<description>Motorized devices with limit switches</description>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
-			<channel id="rollershutter_state" typeId="rollershutter_state"/>
+			<channel id="rollershutterstate" typeId="rollershutterstate"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healty" typeId="healty"/>
 		</channels>
@@ -333,7 +333,7 @@
 		<description>Motorized devices with limit switches and middle position</description>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
-			<channel id="rollershutter_state" typeId="rollershutter_state"/>
+			<channel id="rollershutterstate" typeId="rollershutterstate"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healty" typeId="healty"/>
 		</channels>
@@ -761,7 +761,7 @@
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="rollershutter_state">
+	<channel-type id="rollershutterstate">
 		<item-type>String</item-type>
 		<label>State</label>
 		<description>State of rollershutter/windows</description>

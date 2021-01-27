@@ -42,10 +42,10 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof DecimalType) {
             int uu = HalfFloatUtils.fromFloat(((DecimalType) command).floatValue());
-            byte B2 = (byte) (uu >> 8);
-            byte B1 = (byte) uu;
+            byte b2 = (byte) (uu >> 8);
+            byte b1 = (byte) uu;
             // setpoint command
-            commandSEND(B1, B2);
+            commandSEND(b1, b2);
         }
     }
 
@@ -55,14 +55,14 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void setState(PrimitiveType _state) {
-        if (_state != null) {
-            this.updateState(SoulissBindingConstants.T6N_VALUE_CHANNEL, (DecimalType) _state);
+    public void setState(PrimitiveType state) {
+        if (state != null) {
+            this.updateState(SoulissBindingConstants.T6N_VALUE_CHANNEL, (DecimalType) state);
         }
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 

@@ -25,19 +25,19 @@ import org.slf4j.LoggerFactory;
 public class SoulissGatewayJobPing extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayJobPing.class);
-    private String _iPAddressOnLAN;
-    private byte _userIndex;
-    private byte _nodeIndex;
-    private int _pingRefreshInterval;
+    private String ipAddressOnLAN;
+    private byte userIndex;
+    private byte nodeIndex;
+    private int pingRefreshInterval;
 
     private SoulissGatewayHandler gw;
 
     public SoulissGatewayJobPing(Bridge bridge) {
         gw = (SoulissGatewayHandler) bridge.getHandler();
-        _iPAddressOnLAN = gw.IPAddressOnLAN;
-        _userIndex = gw.userIndex;
-        _nodeIndex = gw.nodeIndex;
-        set_pingRefreshInterval(gw.pingRefreshInterval);
+        ipAddressOnLAN = gw.ipAddressOnLAN;
+        userIndex = gw.userIndex;
+        nodeIndex = gw.nodeIndex;
+        setPingRefreshInterval(gw.pingRefreshInterval);
     }
 
     @Override
@@ -48,18 +48,18 @@ public class SoulissGatewayJobPing extends Thread {
 
     private void sendPing() {
         logger.debug("Sending ping packet");
-        if (_iPAddressOnLAN.length() > 0) {
-            SoulissCommonCommands.sendPing(SoulissBindingNetworkParameters.getDatagramSocket(), _iPAddressOnLAN,
-                    _nodeIndex, _userIndex, (byte) 0, (byte) 0);
+        if (ipAddressOnLAN.length() > 0) {
+            SoulissCommonCommands.sendPing(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
+                    nodeIndex, userIndex, (byte) 0, (byte) 0);
             logger.debug("Sent ping packet");
         }
     }
 
-    public int get_pingRefreshInterval() {
-        return _pingRefreshInterval;
+    public int getPingRefreshInterval() {
+        return pingRefreshInterval;
     }
 
-    public void set_pingRefreshInterval(int _pingRefreshInterval) {
-        this._pingRefreshInterval = _pingRefreshInterval;
+    public void setPingRefreshInterval(int pingRefreshInterval) {
+        this.pingRefreshInterval = pingRefreshInterval;
     }
 }

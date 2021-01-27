@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayHandler.class);
-    public @Nullable DatagramSocket datagramSocket_defaultPort;
-    private @Nullable SoulissBindingUDPServerJob UDP_Server_DefaultPort_RunnableClass;
+    public @Nullable DatagramSocket datagramSocketDefaultPort;
+    private @Nullable SoulissBindingUDPServerJob udpServerDefaultPortRunnableClass;
 
     boolean bGatewayDetected = false;
 
@@ -63,14 +63,14 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public int sendTimeoutToRequeue;
     public int sendTimeoutToRemovePacket;
     private Bridge bridge;
-    public int preferred_local_port;
-    public int souliss_gateway_port;
+    public int preferredLocalPort;
+    public int soulissGatewayPort;
     public byte userIndex;
     public byte nodeIndex;
-    public String IPAddressOnLAN = "";
+    public String ipAddressOnLAN = "";
     private int nodes;
     private int maxTypicalXnode;
-    private int countPING_KO = 0;
+    private int countPingKo = 0;
     // private int maxnodes = 0;
     // private int maxrequests = 0;
 
@@ -86,30 +86,30 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        logger.debug("initializing server handler for thing {}", getThing());
+        logger.debug("initializing server handler for thingGeneric {}", getThing());
 
         gwConfigurationMap = bridge.getConfiguration();
-        IPAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
+        ipAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
         if (gwConfigurationMap == null) {
             logger.debug("Gateway Handler - Error in Configuration Map - Thing= {}", getThing());
         } else {
             if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_LOCAL_PORT) != null) {
-                preferred_local_port = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_LOCAL_PORT))
+                preferredLocalPort = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_LOCAL_PORT))
                         .intValue();
-                logger.debug("Get Preferred Local Port: {}", preferred_local_port);
+                logger.debug("Get Preferred Local Port: {}", preferredLocalPort);
             }
 
-            if (preferred_local_port < 0 && preferred_local_port > 65000) {
+            if (preferredLocalPort < 0 && preferredLocalPort > 65000) {
                 bridge.getConfiguration().put(SoulissBindingConstants.CONFIG_LOCAL_PORT, 0);
                 logger.debug("Set Preferred Local Port to {}", 0);
             }
 
             if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_PORT) != null) {
-                souliss_gateway_port = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_PORT))
+                soulissGatewayPort = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_PORT))
                         .intValue();
-                logger.debug("Get Souliss Gateway Port: {}", souliss_gateway_port);
+                logger.debug("Get Souliss Gateway Port: {}", soulissGatewayPort);
             }
-            if (souliss_gateway_port < 0 && souliss_gateway_port > 65000)
+            if (soulissGatewayPort < 0 && soulissGatewayPort > 65000)
 
             {
                 bridge.getConfiguration().put(SoulissBindingConstants.CONFIG_PORT,
@@ -182,14 +182,14 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             }
 
             // START SERVER ON DEFAULT PORT - Used for topics
-            if (UDP_Server_DefaultPort_RunnableClass == null) {
+            if (udpServerDefaultPortRunnableClass == null) {
                 logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
-                datagramSocket_defaultPort = SoulissDatagramSocketFactory.getSocketDatagram(souliss_gateway_port);
-                if (datagramSocket_defaultPort != null) {
-                    UDP_Server_DefaultPort_RunnableClass = new SoulissBindingUDPServerJob(datagramSocket_defaultPort,
+                datagramSocketDefaultPort = SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort);
+                if (datagramSocketDefaultPort != null) {
+                    udpServerDefaultPortRunnableClass = new SoulissBindingUDPServerJob(datagramSocketDefaultPort,
                             SoulissBindingNetworkParameters.discoverResult);
                     // Changes from scheduleAtFixedRate - Luca Calcaterra
-                    scheduler.scheduleWithFixedDelay(UDP_Server_DefaultPort_RunnableClass, 100,
+                    scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
                             SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
                 }
             }
@@ -199,37 +199,37 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
             // Changes from scheduleAtFixedRate - Luca Calcaterra
             scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2,
-                    soulissGatewayJobPingRunnable.get_pingRefreshInterval(), TimeUnit.SECONDS);
+                    soulissGatewayJobPingRunnable.getPingRefreshInterval(), TimeUnit.SECONDS);
 
             SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(
                     bridge);
             // Changes from scheduleAtFixedRate - Luca Calcaterra
             scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
-                    soulissGatewayJobSubscriptionRunnable.get_subscriptionRefreshInterval(), TimeUnit.MINUTES);
+                    soulissGatewayJobSubscriptionRunnable.getSubscriptionRefreshInterval(), TimeUnit.MINUTES);
 
             SoulissGatewayJobHealty soulissGatewayJobHealtyRunnable = new SoulissGatewayJobHealty(bridge);
             // Changes from scheduleAtFixedRate - Luca Calcaterra
             scheduler.scheduleWithFixedDelay(soulissGatewayJobHealtyRunnable, 5,
-                    soulissGatewayJobHealtyRunnable.get_healthRefreshInterval(), TimeUnit.SECONDS);
+                    soulissGatewayJobHealtyRunnable.gethealthRefreshInterval(), TimeUnit.SECONDS);
 
             // il ciclo Send è schedulato con la costante
             // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
             // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
-            SoulissBindingSendDispatcherJob SoulissSendDispatcherRunnable = new SoulissBindingSendDispatcherJob(bridge);
-            scheduler.scheduleWithFixedDelay(SoulissSendDispatcherRunnable, 15,
+            SoulissBindingSendDispatcherJob soulissSendDispatcherRunnable = new SoulissBindingSendDispatcherJob(bridge);
+            scheduler.scheduleWithFixedDelay(soulissSendDispatcherRunnable, 15,
                     SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
         }
     }
 
     private int gwIpByte() {
-        return Integer.parseInt(IPAddressOnLAN.split("\\.")[3]);
+        return Integer.parseInt(ipAddressOnLAN.split("\\.")[3]);
     }
 
     @Override
     public void handleRemoval() {
-        // if (IPAddressOnLAN != null) {
+        // if (ipAddressOnLAN != null) {
         SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
-        // UDP_Server_DefaultPort_RunnableClass = null;
+        // udpServerDefaultPortRunnableClass = null;
         logger.debug("Gateway handler removing");
         // }
     }
@@ -237,23 +237,23 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     @Override
     public void thingUpdated(Thing thing) {
         logger.debug("Thing Updated: {}", thing.getThingTypeUID());
-        // if (IPAddressOnLAN != null) {
+        // if (ipAddressOnLAN != null) {
         SoulissBindingNetworkParameters.removeGateway((byte) gwIpByte());
-        // .removeGateway((byte) (Byte.parseByte((IPAddressOnLAN.split("\\.")[3]) & (byte) 0xFF));
+        // .removeGateway((byte) (Byte.parseByte((ipAddressOnLAN.split("\\.")[3]) & (byte) 0xFF));
         // }
         this.thing = thing;
     }
 
     public void dbStructAnswerReceived() {
-        SoulissCommonCommands.sendTYPICAL_REQUESTframe(SoulissBindingNetworkParameters.getDatagramSocket(),
-                IPAddressOnLAN, nodeIndex, userIndex, nodes);
+        SoulissCommonCommands.sendTypicalRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(),
+                ipAddressOnLAN, nodeIndex, userIndex, nodes);
     }
 
     /*
      * public String getGatewayIP() {
-     * bridge = (Bridge) thing.getBridgeUID();
-     * if (thing.getBridgeUID() != null) {
-     * return ((SoulissGatewayHandler) (Bridge) this.getThingByUID(bridge.getUID()).getHandler()).IPAddressOnLAN;
+     * bridge = (Bridge) thingGeneric.getBridgeUID();
+     * if (thingGeneric.getBridgeUID() != null) {
+     * return ((SoulissGatewayHandler) (Bridge) this.getThingByUID(bridge.getUID()).getHandler()).ipAddressOnLAN;
      * }
      * return null;
      * }
@@ -263,25 +263,24 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         this.nodes = nodes;
     }
 
-    int iPosNode_Slot = 2;
+    int iPosNodeSlot = 2;
 
     public int getNodes() {
-        Thing _thing;
+        Thing thing;
         int maxNode = 0;
-        Iterator<Thing> _iterator = bridge.getThings().iterator();
-        while (_iterator.hasNext()) {
-            _thing = _iterator.next();
-            String[] _uuidStrings = _thing.getUID().getAsString()
-                    .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR);
-            String[] _uuidNodeNumber = _uuidStrings[0].split(SoulissBindingConstants.UUID_ELEMENTS_SEPARATOR);
+        Iterator<Thing> iterator = bridge.getThings().iterator();
+        while (iterator.hasNext()) {
+            thing = iterator.next();
+            String[] uuidStrings = thing.getUID().getAsString().split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR);
+            String[] uuidNodeNumber = uuidStrings[0].split(SoulissBindingConstants.UUID_ELEMENTS_SEPARATOR);
 
-            iPosNode_Slot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
-                               // position 2
-            if (_uuidNodeNumber.length > 3) {
-                iPosNode_Slot = 3;
+            iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
+                              // position 2
+            if (uuidNodeNumber.length > 3) {
+                iPosNodeSlot = 3;
             }
-            if (Integer.parseInt(_uuidNodeNumber[iPosNode_Slot]) > maxNode) {
-                maxNode = Integer.parseInt(_uuidNodeNumber[iPosNode_Slot]);
+            if (Integer.parseInt(uuidNodeNumber[iPosNodeSlot]) > maxNode) {
+                maxNode = Integer.parseInt(uuidNodeNumber[iPosNodeSlot]);
             }
             // alla fine la lunghezza della lista sarà uguale al numero di nodi presenti
         }
@@ -318,26 +317,26 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.debug("Illegal status transition to ONLINE");
         }
-        countPING_KO = 0; // reset counter
+        countPingKo = 0; // reset counter
     }
 
     @SuppressWarnings("null")
     public void pingSent() {
-        if (++countPING_KO > 3) {
+        if (++countPingKo > 3) {
             // if GW do not respond to ping it is setted to OFFLINE
-            logger.debug("Gateway do not respond to {} ping packet - setting OFFLINE", countPING_KO);
+            logger.debug("Gateway do not respond to {} ping packet - setting OFFLINE", countPingKo);
             if (bridge.getHandler() != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Gateway "
-                        + bridge.getHandler().getThing().getUID() + " do not respond to " + countPING_KO + " ping");
+                        + bridge.getHandler().getThing().getUID() + " do not respond to " + countPingKo + " ping");
             }
         }
     }
 
     public void sendSubscription() {
         // logger.debug("Sending subscription packet");
-        if ( /* IPAddressOnLAN != null && */ IPAddressOnLAN.length() > 0) {
+        if ( /* ipAddressOnLAN != null && */ ipAddressOnLAN.length() > 0) {
             SoulissCommonCommands.sendSUBSCRIPTIONframe(SoulissBindingNetworkParameters.getDatagramSocket(),
-                    IPAddressOnLAN, nodeIndex, userIndex, getNodes());
+                    ipAddressOnLAN, nodeIndex, userIndex, getNodes());
         }
         logger.debug("Sent subscription packet");
     }

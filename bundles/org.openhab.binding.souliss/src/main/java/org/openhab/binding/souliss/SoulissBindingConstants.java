@@ -132,7 +132,7 @@ public class SoulissBindingConstants {
     public static final String STATEONOFF_CHANNEL = "stateOnOff";
     public static final String STATEOPENCLOSE_CHANNEL = "stateOpenClose";
     public static final String ROLLERSHUTTER_CHANNEL = "rollershutter";
-    public static final String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollershutter_state";
+    public static final String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollershutterstate";
     public static final String ROLLERSHUTTER_STATE_NUMBER_CHANNEL = "rollershutter_state_number";
     public static final String ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL = "opening";
     public static final String ROLLERSHUTTER_MESSAGE_CLOSING_CHANNEL = "closing";

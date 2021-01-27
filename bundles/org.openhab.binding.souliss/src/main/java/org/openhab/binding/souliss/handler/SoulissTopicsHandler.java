@@ -31,12 +31,12 @@ import org.openhab.core.types.PrimitiveType;
 public class SoulissTopicsHandler extends SoulissGenericActionMessage implements TypicalCommonMethods {
 
     // private Logger logger = LoggerFactory.getLogger(SoulissTopicsHandler.class);
-    // private DecimalType _setPointValue = DecimalType.ZERO;
+    // private DecimalType setPointValue = DecimalType.ZERO;
     private float fSetPointValue;
 
-    public SoulissTopicsHandler(Thing _thing) {
-        super(_thing);
-        thing = _thing;
+    public SoulissTopicsHandler(Thing pThing) {
+        super(pThing);
+        thingGenActMsg = pThing;
     }
 
     @Override
@@ -49,9 +49,9 @@ public class SoulissTopicsHandler extends SoulissGenericActionMessage implements
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void setState(PrimitiveType _state) {
-        if (_state != null) {
-            this.updateState(SoulissBindingConstants.T5N_VALUE_CHANNEL, (DecimalType) _state);
+    public void setState(PrimitiveType state) {
+        if (state != null) {
+            this.updateState(SoulissBindingConstants.T5N_VALUE_CHANNEL, (DecimalType) state);
         }
     }
 
@@ -68,7 +68,7 @@ public class SoulissTopicsHandler extends SoulissGenericActionMessage implements
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 

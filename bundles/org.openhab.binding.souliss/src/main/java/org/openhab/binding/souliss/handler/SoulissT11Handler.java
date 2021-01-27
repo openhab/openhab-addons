@@ -41,11 +41,11 @@ import org.openhab.core.types.RefreshType;
 public class SoulissT11Handler extends SoulissGenericHandler {
     Configuration gwConfigurationMap;
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
-    byte T1nRawState;
+    byte t1nRawState;
     byte xSleepTime = 0;
 
-    public SoulissT11Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT11Handler(Thing thing) {
+        super(thing);
     }
 
     // called on every status change or change request
@@ -54,7 +54,7 @@ public class SoulissT11Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    updateState(channelUID, getOHState_OnOff_FromSoulissVal(T1nRawState));
+                    updateState(channelUID, getOhStateOnOffFromSoulissVal(t1nRawState));
                     break;
             }
         } else {
@@ -88,14 +88,14 @@ public class SoulissT11Handler extends SoulissGenericHandler {
         // Long running initialization should be done asynchronously in background.
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
+        // Add a description to give user information to understand why thingGeneric does not work
         // as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
 
         updateStatus(ThingStatus.ONLINE);
 
-        gwConfigurationMap = thing.getConfiguration();
+        gwConfigurationMap = thingGeneric.getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {
             xSleepTime = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL)).byteValue();
         }
@@ -119,26 +119,26 @@ public class SoulissT11Handler extends SoulissGenericHandler {
         return -1;
     }
 
-    void setState(PrimitiveType _state) {
-        if (_state != null) {
+    void setState(PrimitiveType state) {
+        if (state != null) {
             updateState(SoulissBindingConstants.SLEEP_CHANNEL, OnOffType.OFF);
-            this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) _state);
+            this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) state);
         }
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T1nRawState != _rawState) {
-            this.setState(getOHState_OnOff_FromSoulissVal(_rawState));
+        if (t1nRawState != rawState) {
+            this.setState(getOhStateOnOffFromSoulissVal(rawState));
         }
-        T1nRawState = _rawState;
+        t1nRawState = rawState;
     }
 
     @Override
     public byte getRawState() {
-        return T1nRawState;
+        return t1nRawState;
     }
 }

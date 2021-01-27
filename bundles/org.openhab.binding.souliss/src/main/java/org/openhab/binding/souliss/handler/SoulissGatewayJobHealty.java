@@ -25,40 +25,40 @@ import org.slf4j.LoggerFactory;
 public class SoulissGatewayJobHealty extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayJobHealty.class);
-    private String _iPAddressOnLAN;
-    private byte _userIndex;
-    private byte _nodeIndex;
-    private int _healthRefreshInterval;
+    private String ipAddressOnLAN;
+    private byte userIndex;
+    private byte nodeIndex;
+    private int healthRefreshInterval;
 
     private SoulissGatewayHandler gw;
 
     public SoulissGatewayJobHealty(Bridge bridge) {
         gw = (SoulissGatewayHandler) bridge.getHandler();
-        _iPAddressOnLAN = gw.IPAddressOnLAN;
-        _userIndex = gw.userIndex;
-        _nodeIndex = gw.nodeIndex;
-        set_healthRefreshInterval(gw.healthRefreshInterval);
+        ipAddressOnLAN = gw.ipAddressOnLAN;
+        userIndex = gw.userIndex;
+        nodeIndex = gw.nodeIndex;
+        sethealthRefreshInterval(gw.healthRefreshInterval);
     }
 
     @Override
     public void run() {
-        sendHEALTHY_REQUEST();
+        sendHealthyRequest();
     }
 
-    private void sendHEALTHY_REQUEST() {
+    private void sendHealthyRequest() {
         logger.debug("Sending healthy packet");
-        if (_iPAddressOnLAN.length() > 0) {
-            SoulissCommonCommands.sendHEALTY_REQUESTframe(SoulissBindingNetworkParameters.getDatagramSocket(),
-                    _iPAddressOnLAN, _nodeIndex, _userIndex, gw.getNodes());
+        if (ipAddressOnLAN.length() > 0) {
+            SoulissCommonCommands.sendHealthyRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(),
+                    ipAddressOnLAN, nodeIndex, userIndex, gw.getNodes());
             logger.debug("Sent healthy packet");
         }
     }
 
-    public int get_healthRefreshInterval() {
-        return _healthRefreshInterval;
+    public int gethealthRefreshInterval() {
+        return healthRefreshInterval;
     }
 
-    public void set_healthRefreshInterval(int _healthRefreshInterval) {
-        this._healthRefreshInterval = _healthRefreshInterval;
+    public void sethealthRefreshInterval(int healthRefreshInterval) {
+        this.healthRefreshInterval = healthRefreshInterval;
     }
 }

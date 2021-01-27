@@ -69,8 +69,8 @@ public class SoulissBindingUDPDecoder {
     private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPDecoder.class);
     private static DiscoverResult discoverResult;
 
-    public SoulissBindingUDPDecoder(DiscoverResult _discoverResult) {
-        SoulissBindingUDPDecoder.discoverResult = _discoverResult;
+    public SoulissBindingUDPDecoder(DiscoverResult pDiscoverResult) {
+        SoulissBindingUDPDecoder.discoverResult = pDiscoverResult;
     }
 
     /**
@@ -81,7 +81,7 @@ public class SoulissBindingUDPDecoder {
      */
     public void decodeVNetDatagram(DatagramPacket packet) {
         int checklen = packet.getLength();
-        ArrayList<Byte> mac = new ArrayList<Byte>();
+        ArrayList<Byte> mac = new ArrayList<>();
         for (int ig = 7; ig < checklen; ig++) {
             mac.add((byte) (packet.getData()[ig] & 0xFF));
         }
@@ -165,9 +165,9 @@ public class SoulissBindingUDPDecoder {
      * @param mac
      */
     private void decodePing(byte lastByteGatewayIP, ArrayList<Byte> mac) {
-        int putIn_1 = mac.get(1); // not used
-        int putIn_2 = mac.get(2); // not used
-        logger.debug("decodePing: putIn code: {}, {}", putIn_1, putIn_2);
+        int putIn1 = mac.get(1); // not used
+        int putIn2 = mac.get(2); // not used
+        logger.debug("decodePing: putIn code: {}, {}", putIn1, putIn2);
 
         SoulissGatewayHandler gateway = null;
         if (SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP) != null) {
@@ -180,10 +180,10 @@ public class SoulissBindingUDPDecoder {
     }
 
     private void decodePingBroadcast(ArrayList<Byte> macaco) throws UnknownHostException {
-        String IP = macaco.get(5) + "." + macaco.get(6) + "." + macaco.get(7) + "." + macaco.get(8);
+        String ip = macaco.get(5) + "." + macaco.get(6) + "." + macaco.get(7) + "." + macaco.get(8);
         byte[] addr = { (macaco.get(5)).byteValue(), (macaco.get(6)).byteValue(), (macaco.get(7)).byteValue(),
                 (macaco.get(8)).byteValue() };
-        logger.debug("decodePingBroadcast. Gateway Discovery. IP: {}", IP);
+        logger.debug("decodePingBroadcast. Gateway Discovery. IP: {}", ip);
 
         if (discoverResult != null) {
             discoverResult.gatewayDetected(InetAddress.getByAddress(addr), macaco.get(8).toString());
@@ -224,7 +224,7 @@ public class SoulissBindingUDPDecoder {
                                     logger.debug(
                                             "Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
                                             lastByteGatewayIP, Integer.toHexString(typical), node, slot);
-                                    discoverResult.thingDetected_Typicals(lastByteGatewayIP, typical, node, slot);
+                                    discoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
                                 } else {
                                     logger.debug("decodeTypRequest aborted. 'discoverResult' is null");
                                 }
@@ -299,7 +299,7 @@ public class SoulissBindingUDPDecoder {
                     }
                 }
                 if (discoverResult != null && !bIsPresent) {
-                    discoverResult.thingDetected_ActionMessages(sTopicNumber, sTopicVariant);
+                    discoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
                 }
 
             } catch (Exception ex) {
@@ -369,7 +369,7 @@ public class SoulissBindingUDPDecoder {
                 List<@NonNull Thing> listaThings = gateway.getThing().getThings();
                 ThingHandler handler = null;
                 for (Thing thing : listaThings) {
-                    // if (thing != null) {
+                    // if (thingGeneric != null) {
                     handler = thing.getHandler();
                     if (handler != null) {
                         int tgtnode = i - 5;
@@ -398,18 +398,18 @@ public class SoulissBindingUDPDecoder {
 
         @NonNull
         Iterator<@NonNull Thing> thingsIterator;
-        if (gateway != null /* && gateway.IPAddressOnLAN != null */
-                && ((byte) Integer.parseInt(gateway.IPAddressOnLAN.split("\\.")[3])) == lastByteGatewayIP) {
+        if (gateway != null /* && gateway.ipAddressOnLAN != null */
+                && ((byte) Integer.parseInt(gateway.ipAddressOnLAN.split("\\.")[3])) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
             boolean bFound = false;
             Thing typ = null;
             while (thingsIterator.hasNext() && !bFound) {
                 typ = thingsIterator.next();
-                String sUID_Array[] = typ.getUID().getAsString().split(":");
+                String[] sUIDArray = typ.getUID().getAsString().split(":");
                 ThingHandler handler = typ.getHandler();
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
                                        // Gateway
-                    if (sUID_Array[0].equals(SoulissBindingConstants.BINDING_ID) && (byte) Integer.parseInt(
+                    if (sUIDArray[0].equals(SoulissBindingConstants.BINDING_ID) && (byte) Integer.parseInt(
                             ((SoulissGenericHandler) handler).getGatewayIP().split("\\.")[3]) == lastByteGatewayIP) {
                         if (((SoulissGenericHandler) handler).getNode() == tgtnode) { // execute it
                                                                                       // only
@@ -421,7 +421,7 @@ public class SoulissBindingUDPDecoder {
                             // get typical value
                             byte sVal = getByteAtSlot(mac, slot);
                             // update Txx
-                            switch (sUID_Array[1]) {
+                            switch (sUIDArray[1]) {
                                 case SoulissBindingConstants.T11:
                                     logger.debug("Decoding " + SoulissBindingConstants.T11 + " packet");
                                     ((SoulissT11Handler) handler).setRawState(sVal);
@@ -440,8 +440,8 @@ public class SoulissBindingUDPDecoder {
                                     break;
                                 case SoulissBindingConstants.T16:
                                     logger.debug("Decoding " + SoulissBindingConstants.T16 + " packet");
-                                    ((SoulissT16Handler) handler).setRawState_command(sVal);
-                                    ((SoulissT16Handler) handler).setRawState_RGB(getByteAtSlot(mac, slot + 1),
+                                    ((SoulissT16Handler) handler).setRawStateCommand(sVal);
+                                    ((SoulissT16Handler) handler).setRawStateRgb(getByteAtSlot(mac, slot + 1),
                                             getByteAtSlot(mac, slot + 2), getByteAtSlot(mac, slot + 3));
                                     break;
 
@@ -588,8 +588,7 @@ public class SoulissBindingUDPDecoder {
         int iOutput2 = mac.get(5 + slot + 1) & 0xFF;
         // ora ho i due bytes, li converto
         int shifted = iOutput2 << 8;
-        float ret = HalfFloatUtils.toFloat(shifted + iOutput);
-        return ret;
+        return HalfFloatUtils.toFloat(shifted + iOutput);
     }
 
     public byte getBitState(byte vRaw, int iBit) {

@@ -35,11 +35,11 @@ public class SoulissT14Handler extends SoulissGenericHandler {
     // private Logger logger = LoggerFactory.getLogger(SoulissT14Handler.class);
     Configuration gwConfigurationMap;
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
-    byte T1nRawState;
+    byte t1nRawState;
     byte xSleepTime = 0;
 
-    public SoulissT14Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT14Handler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SoulissT14Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.PULSE_CHANNEL:
-                    updateState(channelUID, getOHState_OnOff_FromSoulissVal(T1nRawState));
+                    updateState(channelUID, getOhStateOnOffFromSoulissVal(t1nRawState));
                     break;
             }
         } else {
@@ -70,27 +70,27 @@ public class SoulissT14Handler extends SoulissGenericHandler {
         }
     }
 
-    public void setState(PrimitiveType _state) {
+    public void setState(PrimitiveType state) {
         super.setLastStatusStored();
-        if (_state != null) {
-            this.updateState(SoulissBindingConstants.PULSE_CHANNEL, (OnOffType) _state);
+        if (state != null) {
+            this.updateState(SoulissBindingConstants.PULSE_CHANNEL, (OnOffType) state);
         }
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T1nRawState != _rawState) {
-            this.setState(getOHState_OnOff_FromSoulissVal(_rawState));
+        if (t1nRawState != rawState) {
+            this.setState(getOhStateOnOffFromSoulissVal(rawState));
         }
-        T1nRawState = _rawState;
+        t1nRawState = rawState;
     }
 
     @Override
     public byte getRawState() {
-        return T1nRawState;
+        return t1nRawState;
     }
 
     @Override

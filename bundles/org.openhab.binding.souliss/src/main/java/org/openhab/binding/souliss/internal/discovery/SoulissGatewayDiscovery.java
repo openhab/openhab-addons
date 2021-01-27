@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link soulissHandlerFactory} is responsible for creating things and thing
+ * The {@link soulissHandlerFactory} is responsible for creating things and thingGeneric
  * handlers.
  *
  * @author David Graeff - Initial contribution
@@ -54,7 +54,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     private ThingUID gatewayUID;
     // private ScheduledFuture<?> schedulerFuture;
     private DatagramSocket datagramSocket;
-    SoulissBindingUDPServerJob UDP_Server_RunnableClass = null;
+    SoulissBindingUDPServerJob udpServerRunnableClass = null;
 
     private ScheduledFuture<?> discoveryJob;
 
@@ -76,11 +76,11 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             SoulissBindingNetworkParameters.setDatagramSocket(datagramSocket);
 
             logger.debug("Starting UDP server on Preferred Local Port (random if it is zero)");
-            UDP_Server_RunnableClass = new SoulissBindingUDPServerJob(datagramSocket,
+            udpServerRunnableClass = new SoulissBindingUDPServerJob(datagramSocket,
                     SoulissBindingNetworkParameters.discoverResult);
 
             // Changes from scheduleAtFixedRate - Luca Calcaterra
-            scheduler.scheduleWithFixedDelay(UDP_Server_RunnableClass, 100,
+            scheduler.scheduleWithFixedDelay(udpServerRunnableClass, 100,
                     SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
 
         } else {
@@ -124,7 +124,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         Map<String, Object> properties = new TreeMap<>();
         // properties.put(SoulissBindingConstants.CONFIG_ID, id);
         properties.put(SoulissBindingConstants.CONFIG_IP_ADDRESS, addr.getHostAddress());
-        // SoulissBindingNetworkParameters.IPAddressOnLAN = addr.getHostAddress();
+        // SoulissBindingNetworkParameters.ipAddressOnLAN = addr.getHostAddress();
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(gatewayUID).withLabel(label)
                 .withProperties(properties).build();
         thingDiscovered(discoveryResult);
@@ -170,7 +170,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void thingDetected_ActionMessages(String TopicNumber, String sTopicVariant) {
+    public void thingDetectedActionMessages(String TopicNumber, String sTopicVariant) {
         ThingUID thingUID = null;
         String label = "";
         DiscoveryResult discoveryResult;
@@ -185,7 +185,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     // @SuppressWarnings("null")
     @Override
-    public void thingDetected_Typicals(byte lastByteGatewayIP, byte typical, byte node, byte slot) {
+    public void thingDetectedTypicals(byte lastByteGatewayIP, byte typical, byte node, byte slot) {
         ThingUID thingUID = null;
         String label = "";
         DiscoveryResult discoveryResult;
@@ -194,7 +194,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         if (gw != null) {
             gatewayUID = gw.getThing().getUID();
 
-            if (lastByteGatewayIP == (byte) Integer.parseInt(gw.IPAddressOnLAN.split("\\.")[3])) {
+            if (lastByteGatewayIP == (byte) Integer.parseInt(gw.ipAddressOnLAN.split("\\.")[3])) {
                 String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
                 switch (typical) {
                     case SoulissBindingProtocolConstants.SOULISS_T11:

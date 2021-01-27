@@ -38,14 +38,14 @@ public class SoulissBindingUDPServerJob implements Runnable {
     DatagramSocket soulissDatagramSocket;
     private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPServerJob.class);
 
-    public SoulissBindingUDPServerJob(DatagramSocket _datagramSocket, DiscoverResult _discoverResult) {
+    public SoulissBindingUDPServerJob(DatagramSocket datagramSocket, DiscoverResult pDiscoverResult) {
         super();
-        init(_datagramSocket, _discoverResult);
+        init(datagramSocket, pDiscoverResult);
     }
 
-    private void init(DatagramSocket _datagramSocket, DiscoverResult _discoverResult) {
-        this.discoverResult = _discoverResult;
-        this.soulissDatagramSocket = _datagramSocket;
+    private void init(DatagramSocket datagramSocket, DiscoverResult pDiscoverResult) {
+        this.discoverResult = pDiscoverResult;
+        this.soulissDatagramSocket = datagramSocket;
 
         // if (discoverResult != null) {
         decoder = new SoulissBindingUDPDecoder(discoverResult);
@@ -63,7 +63,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
                 buf = packet.getData();
 
                 // **************** DECODER ********************
-                logger.debug("Packet received (port {}) {}", soulissDatagramSocket.getLocalPort(), MaCacoToString(buf));
+                logger.debug("Packet received (port {}) {}", soulissDatagramSocket.getLocalPort(), macacoToString(buf));
                 decoder.decodeVNetDatagram(packet);
 
             } catch (IOException e) {
@@ -75,7 +75,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
         }
     }
 
-    private String MaCacoToString(byte[] frame) {
+    private String macacoToString(byte[] frame) {
         StringBuilder sb = new StringBuilder();
         sb.append("HEX: [");
         for (byte b : frame) {
