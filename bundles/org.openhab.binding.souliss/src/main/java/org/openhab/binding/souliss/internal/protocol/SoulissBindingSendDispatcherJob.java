@@ -59,7 +59,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         bPopSuspend = true;
         boolean bPacchettoGestito = false;
         // estraggo il nodo indirizzato dal pacchetto in ingresso
-        // restituisce -1 se il pacchetto non è del tipo Souliss_UDP_function_force
+        // restituisce -1 se il pacchetto non è del tipo SOULISS_UDP_FUNCTION_FORCE
         int node = getNode(packetToPUT);
         if (node >= 0) {
             logger.debug("Push packet in queue - Node {}", node);
@@ -172,7 +172,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     private static int getNode(DatagramPacket packet) {
         // 7 è il byte del frame VNet al quale trovo il codice comando
         // 10 è il byte del frame VNet al quale trovo l'ID del nodo
-        if (packet.getData()[7] == SoulissBindingUDPConstants.Souliss_UDP_function_force) {
+        if (packet.getData()[7] == SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
             return packet.getData()[10];
         }
         return -1;
@@ -418,7 +418,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     // GESTIONE PACCHETTO: eliminato dalla lista oppure
                     // contrassegnato come inviato se è un FORCE
                     if (packetsList.get(iPacket).packet
-                            .getData()[7] == SoulissBindingUDPConstants.Souliss_UDP_function_force) {
+                            .getData()[7] == SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
                         // flag inviato a true
                         packetsList.get(iPacket).setSent(true);
                         // imposto time
