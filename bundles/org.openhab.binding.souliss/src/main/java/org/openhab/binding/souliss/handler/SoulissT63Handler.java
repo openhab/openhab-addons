@@ -24,7 +24,7 @@ import org.openhab.core.thing.Thing;
 public class SoulissT63Handler extends SoulissT6nHandler {
 
     // constructor
-    public SoulissT63Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT63Handler(Thing thing) {
+        super(thing);
     }
 }

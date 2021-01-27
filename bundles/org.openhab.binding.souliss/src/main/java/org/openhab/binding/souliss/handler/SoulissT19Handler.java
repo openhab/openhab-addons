@@ -39,13 +39,13 @@ import org.slf4j.LoggerFactory;
 public class SoulissT19Handler extends SoulissGenericHandler {
     Configuration gwConfigurationMap;
     private final Logger logger = LoggerFactory.getLogger(SoulissT19Handler.class);
-    byte T1nRawState_byte0;
-    byte T1nRawStateBrigthness_byte1;
+    byte t1nRawStateByte0;
+    byte t1nRawStateBrigthnessByte1;
 
     byte xSleepTime = 0;
 
-    public SoulissT19Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT19Handler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -53,11 +53,11 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    updateState(channelUID, getOHState_OnOff_FromSoulissVal(T1nRawState_byte0));
+                    updateState(channelUID, getOhStateOnOffFromSoulissVal(t1nRawStateByte0));
                     break;
                 case SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL:
                     updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
-                            PercentType.valueOf(String.valueOf((T1nRawStateBrigthness_byte1 / 255) * 100)));
+                            PercentType.valueOf(String.valueOf((t1nRawStateBrigthnessByte1 / 255) * 100)));
                     break;
             }
         } else {
@@ -112,7 +112,7 @@ public class SoulissT19Handler extends SoulissGenericHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
-        gwConfigurationMap = thing.getConfiguration();
+        gwConfigurationMap = thingGeneric.getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {
             xSleepTime = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL)).byteValue();
         }
@@ -121,21 +121,21 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         }
     }
 
-    public void setState(PrimitiveType _state) {
+    public void setState(PrimitiveType state) {
         super.setLastStatusStored();
-        if (_state != null) {
+        if (state != null) {
             updateState(SoulissBindingConstants.SLEEP_CHANNEL, OnOffType.OFF);
-            logger.debug("T19, setting state to {}", _state.toFullString());
-            this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) _state);
+            logger.debug("T19, setting state to {}", state.toFullString());
+            this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) state);
         }
     }
 
-    public void setRawStateDimmerValue(byte _dimmerValue) {
+    public void setRawStateDimmerValue(byte dimmerValue) {
         try {
-            if (_dimmerValue != T1nRawState_byte0) {
-                logger.debug("T19, setting dimmer to {}", _dimmerValue);
+            if (dimmerValue != t1nRawStateByte0) {
+                logger.debug("T19, setting dimmer to {}", dimmerValue);
                 updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
-                        PercentType.valueOf(String.valueOf(Math.round((T1nRawState_byte0 / 255) * 100))));
+                        PercentType.valueOf(String.valueOf(Math.round((t1nRawStateByte0 / 255) * 100))));
             }
         } catch (IllegalStateException ex) {
             logger.debug("UUID: {}", this.getThing().getUID().getAsString());
@@ -144,23 +144,23 @@ public class SoulissT19Handler extends SoulissGenericHandler {
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T1nRawState_byte0 != _rawState) {
-            this.setState(getOHState_OnOff_FromSoulissVal(_rawState));
+        if (t1nRawStateByte0 != rawState) {
+            this.setState(getOhStateOnOffFromSoulissVal(rawState));
         }
-        T1nRawState_byte0 = _rawState;
+        t1nRawStateByte0 = rawState;
     }
 
     @Override
     public byte getRawState() {
-        return T1nRawState_byte0;
+        return t1nRawStateByte0;
     }
 
     public byte getRawStateDimmerValue() {
-        return T1nRawStateBrigthness_byte1;
+        return t1nRawStateBrigthnessByte1;
     }
 
     @Override

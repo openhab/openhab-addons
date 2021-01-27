@@ -37,27 +37,27 @@ public class SoulissDiscoverJob implements Runnable {
      * Result callback interface.
      */
     public interface DiscoverResult {
-        static boolean isGatewayDetected = false;
+        static boolean IS_GATEWAY_DETECTED = false;
         Bridge bridge = null;
 
         void gatewayDetected(InetAddress addr, String id);
 
-        void thingDetected_Typicals(byte lastByteGatewayIP, byte typical, byte node, byte slot);
+        void thingDetectedTypicals(byte lastByteGatewayIP, byte typical, byte node, byte slot);
 
-        void thingDetected_ActionMessages(String sTopicNumber, String sTopicVariant);
+        void thingDetectedActionMessages(String sTopicNumber, String sTopicVariant);
 
         ThingUID getGatewayUID();
-    };
+    }
 
     private DatagramSocket datagramSocket;
-    SoulissBindingUDPServerJob UDP_Server_OnDefaultPort = null;
+    SoulissBindingUDPServerJob udpServerOnDefaultPort = null;
     ///// Debug
     private Logger logger = LoggerFactory.getLogger(SoulissDiscoverJob.class);
 
     private int resendCounter = 0;
 
-    public SoulissDiscoverJob(DatagramSocket _datagramSocket, DiscoverResult discoverResult) throws SocketException {
-        datagramSocket = _datagramSocket;
+    public SoulissDiscoverJob(DatagramSocket pDatagramSocket, DiscoverResult pDiscoverResult) throws SocketException {
+        datagramSocket = pDatagramSocket;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class SoulissDiscoverJob implements Runnable {
             if (gw != null) {
                 logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
                 SoulissCommonCommands.sendDBStructFrame(SoulissBindingNetworkParameters.getDatagramSocket(),
-                        gw.IPAddressOnLAN, gw.nodeIndex, gw.userIndex);
+                        gw.ipAddressOnLAN, gw.nodeIndex, gw.userIndex);
             } else {
                 logger.debug("Gateway null - Skipped");
             }

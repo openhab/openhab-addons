@@ -32,8 +32,8 @@ public class SoulissT5nHandler extends SoulissGenericHandler {
     // private Logger logger = LoggerFactory.getLogger(SoulissT5nHandler.class);
     float fVal;
 
-    public SoulissT5nHandler(Thing _thing) {
-        super(_thing);
+    public SoulissT5nHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SoulissT5nHandler extends SoulissGenericHandler {
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 

@@ -85,7 +85,7 @@ The following matrix lists the capabilities (channels) for each type:
 |souliss:t19|x|x|x|x||||||x|x|
 |souliss:t1A|||x|x|||||||||x|x|x|x|x|x|x|x|
 
-|Thing type / Channel | DateTime / lastStatusStored | Number / healty |Rollershutter / rollershutter|(see down) / rollershutter_state|(see down) / mode|(see down) / fan|Switch / status|Number / setpoint|Switch / setAsMeasured|Switch / measured|Switch / statusAlarm|Switch / onOffAlarm|Switch / rearmAlarm|
+|Thing type / Channel | DateTime / lastStatusStored | Number / healty |Rollershutter / rollershutter|(see down) / rollershutterstate|(see down) / mode|(see down) / fan|Switch / status|Number / setpoint|Switch / setAsMeasured|Switch / measured|Switch / statusAlarm|Switch / onOffAlarm|Switch / rearmAlarm|
 |-- |-- | --|- | -- | -- |--|--|--|--|--|--|--|--|
 |souliss:t21|x|x||x|
 |souliss:t22|x|x|x|x|
@@ -93,7 +93,7 @@ The following matrix lists the capabilities (channels) for each type:
 |souliss:t41|x|x|||||||||x|x|x|
 |souliss:t42|x|x|||||||||x||x|
 
-rollershutter_state = opening, closing, limSwitch_open , limSwitch_close, state_open, state_close, NoLimSwitch
+rollershutterstate = opening, closing, limSwitch_open , limSwitch_close, state_open, state_close, NoLimSwitch
 
 mode = COOLING_MODE, HEATING_MODE, POWEREDOFF_MODE
 

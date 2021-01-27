@@ -30,10 +30,10 @@ import org.openhab.core.types.Command;
 public class SoulissT1AHandler extends SoulissGenericHandler {
     Configuration gwConfigurationMap;
     // private Logger logger = LoggerFactory.getLogger(SoulissT1AHandler.class);
-    byte T1nRawState;
+    byte t1nRawState;
 
-    public SoulissT1AHandler(Thing _thing) {
-        super(_thing);
+    public SoulissT1AHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -61,26 +61,26 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T1nRawState != _rawState) {
-            this.updateState(SoulissBindingConstants.T1A_1_CHANNEL, getTypeFromBool(getBitState(_rawState, 0)));
-            this.updateState(SoulissBindingConstants.T1A_2_CHANNEL, getTypeFromBool(getBitState(_rawState, 1)));
-            this.updateState(SoulissBindingConstants.T1A_3_CHANNEL, getTypeFromBool(getBitState(_rawState, 2)));
-            this.updateState(SoulissBindingConstants.T1A_4_CHANNEL, getTypeFromBool(getBitState(_rawState, 3)));
-            this.updateState(SoulissBindingConstants.T1A_5_CHANNEL, getTypeFromBool(getBitState(_rawState, 4)));
-            this.updateState(SoulissBindingConstants.T1A_6_CHANNEL, getTypeFromBool(getBitState(_rawState, 5)));
-            this.updateState(SoulissBindingConstants.T1A_7_CHANNEL, getTypeFromBool(getBitState(_rawState, 6)));
-            this.updateState(SoulissBindingConstants.T1A_8_CHANNEL, getTypeFromBool(getBitState(_rawState, 7)));
+        if (t1nRawState != rawState) {
+            this.updateState(SoulissBindingConstants.T1A_1_CHANNEL, getTypeFromBool(getBitState(rawState, 0)));
+            this.updateState(SoulissBindingConstants.T1A_2_CHANNEL, getTypeFromBool(getBitState(rawState, 1)));
+            this.updateState(SoulissBindingConstants.T1A_3_CHANNEL, getTypeFromBool(getBitState(rawState, 2)));
+            this.updateState(SoulissBindingConstants.T1A_4_CHANNEL, getTypeFromBool(getBitState(rawState, 3)));
+            this.updateState(SoulissBindingConstants.T1A_5_CHANNEL, getTypeFromBool(getBitState(rawState, 4)));
+            this.updateState(SoulissBindingConstants.T1A_6_CHANNEL, getTypeFromBool(getBitState(rawState, 5)));
+            this.updateState(SoulissBindingConstants.T1A_7_CHANNEL, getTypeFromBool(getBitState(rawState, 6)));
+            this.updateState(SoulissBindingConstants.T1A_8_CHANNEL, getTypeFromBool(getBitState(rawState, 7)));
         }
-        T1nRawState = _rawState;
+        t1nRawState = rawState;
     }
 
     @Override
     public byte getRawState() {
-        return T1nRawState;
+        return t1nRawState;
     }
 
     @Override

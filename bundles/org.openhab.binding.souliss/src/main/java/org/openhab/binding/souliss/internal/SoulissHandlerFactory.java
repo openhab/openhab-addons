@@ -59,8 +59,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SoulissHandlerFactory} is responsible for creating things and thing
- * handlers. It fire when a new thing is added.
+ * The {@link SoulissHandlerFactory} is responsible for creating things and thingGeneric
+ * handlers. It fire when a new thingGeneric is added.
  *
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
@@ -83,8 +83,8 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Create handler for Gateway '{}'", thingTypeUID);
             // get last byte of IP number
             Configuration gwConfigurationMap = thing.getConfiguration();
-            String IPAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
-            SoulissBindingNetworkParameters.addGateway((byte) Integer.parseInt(IPAddressOnLAN.split("\\.")[3]), thing);
+            String ipAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
+            SoulissBindingNetworkParameters.addGateway((byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]), thing);
             return new SoulissGatewayHandler((Bridge) thing);
         } else if (thingTypeUID.toString().equals(T11_THING_TYPE.getAsString().toLowerCase())) {
             logger.debug("Create handler for T11 '{}'", thingTypeUID);

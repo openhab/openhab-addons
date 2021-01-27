@@ -36,10 +36,10 @@ public class SoulissT41Handler extends SoulissGenericHandler {
 
     Configuration gwConfigurationMap;
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
-    byte T4nRawState;
+    byte t4nRawState;
 
-    public SoulissT41Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT41Handler(Thing thing) {
+        super(thing);
     }
 
     // called on every status change or change request
@@ -75,18 +75,18 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
 
-        gwConfigurationMap = thing.getConfiguration();
+        gwConfigurationMap = thingGeneric.getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
             bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
         }
     }
 
-    public void setState(PrimitiveType _state) {
-        if (_state != null) {
-            if (_state instanceof OnOffType) {
-                this.updateState(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL, (OnOffType) _state);
-            } else if (_state instanceof StringType) {
-                switch (String.valueOf(_state)) {
+    public void setState(PrimitiveType state) {
+        if (state != null) {
+            if (state instanceof OnOffType) {
+                this.updateState(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL, (OnOffType) state);
+            } else if (state instanceof StringType) {
+                switch (String.valueOf(state)) {
                     case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:
                         this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.ON);
                         break;
@@ -103,12 +103,12 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T4nRawState != _rawState) {
-            switch (_rawState) {
+        if (t4nRawState != rawState) {
+            switch (rawState) {
                 case SoulissBindingProtocolConstants.SOULISS_T4N_NO_ANTITHEFT:
                     this.setState(OnOffType.OFF);
                     this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
@@ -125,12 +125,12 @@ public class SoulissT41Handler extends SoulissGenericHandler {
                     break;
             }
         }
-        T4nRawState = _rawState;
+        t4nRawState = rawState;
     }
 
     @Override
     public byte getRawState() {
-        return T4nRawState;
+        return t4nRawState;
     }
 
     @Override

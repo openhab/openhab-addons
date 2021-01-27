@@ -33,10 +33,10 @@ import org.openhab.core.types.RefreshType;
 public class SoulissT13Handler extends SoulissGenericHandler {
 
     Configuration gwConfigurationMap;
-    byte T1nRawState;
+    byte t1nRawState;
 
-    public SoulissT13Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT13Handler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -44,15 +44,15 @@ public class SoulissT13Handler extends SoulissGenericHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void setState(PrimitiveType _state) {
+    public void setState(PrimitiveType state) {
         super.setLastStatusStored();
-        if (_state != null) {
-            if (_state instanceof OnOffType) {
-                this.updateState(SoulissBindingConstants.STATEONOFF_CHANNEL, (OnOffType) _state);
+        if (state != null) {
+            if (state instanceof OnOffType) {
+                this.updateState(SoulissBindingConstants.STATEONOFF_CHANNEL, (OnOffType) state);
             }
 
-            if (_state instanceof OpenClosedType) {
-                this.updateState(SoulissBindingConstants.STATEOPENCLOSE_CHANNEL, (OpenClosedType) _state);
+            if (state instanceof OpenClosedType) {
+                this.updateState(SoulissBindingConstants.STATEOPENCLOSE_CHANNEL, (OpenClosedType) state);
             }
         }
     }
@@ -62,25 +62,25 @@ public class SoulissT13Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.STATEONOFF_CHANNEL:
-                    updateState(channelUID, getOHState_OnOff_FromSoulissVal(T1nRawState));
+                    updateState(channelUID, getOhStateOnOffFromSoulissVal(t1nRawState));
                     break;
                 case SoulissBindingConstants.STATEOPENCLOSE_CHANNEL:
-                    updateState(channelUID, getOHState_OpenClose_FromSoulissVal(T1nRawState));
+                    updateState(channelUID, getOhStateOpenCloseFromSoulissVal(t1nRawState));
                     break;
             }
         }
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T1nRawState != _rawState) {
-            this.setState(getOHState_OpenClose_FromSoulissVal(_rawState));
-            this.setState(getOHState_OnOff_FromSoulissVal(_rawState));
+        if (t1nRawState != rawState) {
+            this.setState(getOhStateOpenCloseFromSoulissVal(rawState));
+            this.setState(getOhStateOnOffFromSoulissVal(rawState));
         }
-        T1nRawState = _rawState;
+        t1nRawState = rawState;
     }
 
     @Override

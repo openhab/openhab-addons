@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class SoulissGenericHandler extends BaseThingHandler implements TypicalCommonMethods {
 
-    Thing thing;
+    Thing thingGeneric;
 
     private int iSlot;
     private int iNode;
@@ -58,20 +58,20 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     boolean bSecureSend = false; // 0 means that Secure Send is disabled
     boolean bExpectedValueSameAsSet = false; // true means that expected value is setpoint (only for T31, T19 and T6x)
 
-    public SoulissGenericHandler(Thing _thing) {
-        super(_thing);
-        thing = _thing;
-        int iPosNode_Slot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
-                               // position 2
+    public SoulissGenericHandler(Thing thing) {
+        super(thing);
+        this.thingGeneric = thing;
+        int iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
+                              // position 2
 
         if (thing.getUID().getAsString().split(":").length > 3) {
-            iPosNode_Slot = 3; // else, if uuid is of type souliss:gateway:[bridgeID]:[typical]:[node]-[slot] then
-                               // node/slot is at position 3
+            iPosNodeSlot = 3; // else, if uuid is of type souliss:gateway:[bridgeID]:[typical]:[node]-[slot] then
+                              // node/slot is at position 3
         }
         try {
-            iNode = Integer.parseInt(_thing.getUID().toString().split(":")[iPosNode_Slot]
+            iNode = Integer.parseInt(thing.getUID().toString().split(":")[iPosNodeSlot]
                     .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR)[0]);
-            iSlot = Integer.parseInt(_thing.getUID().toString().split(":")[iPosNode_Slot]
+            iSlot = Integer.parseInt(thing.getUID().toString().split(":")[iPosNodeSlot]
                     .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR)[1]);
         } catch (Exception e) {
             logger.debug("Item Definition Error. Use ex:'souliss:t11:nodeNumber-slotNumber'");
@@ -104,19 +104,19 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
                 getGatewayUserIndex(), this.getNode(), this.getSlot(), command);
     }
 
-    public void commandSEND_RGB(byte command, byte R, byte G, byte B) {
+    public void commandSendRgb(byte command, byte r, byte g, byte b) {
         SoulissCommonCommands.sendFORCEFrame(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
-                getGatewayUserIndex(), this.getNode(), this.getSlot(), command, R, G, B);
+                getGatewayUserIndex(), this.getNode(), this.getSlot(), command, r, g, b);
     }
 
-    public void commandSEND(byte command, byte B1, byte B2) {
+    public void commandSEND(byte command, byte b1, byte b2) {
         SoulissCommonCommands.sendFORCEFrameT31SetPoint(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
-                getGatewayUserIndex(), this.getNode(), this.getSlot(), command, B1, B2);
+                getGatewayUserIndex(), this.getNode(), this.getSlot(), command, b1, b2);
     }
 
-    public void commandSEND(byte B1, byte B2) {
+    public void commandSEND(byte b1, byte b2) {
         SoulissCommonCommands.sendFORCEFrameT61SetPoint(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
-                getGatewayUserIndex(), this.getNode(), this.getSlot(), B1, B2);
+                getGatewayUserIndex(), this.getNode(), this.getSlot(), b1, b2);
     }
 
     /**
@@ -132,9 +132,9 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     @Override
-    public void thingUpdated(Thing _thing) {
-        updateThing(_thing);
-        this.thing = _thing;
+    public void thingUpdated(Thing thing) {
+        updateThing(thing);
+        this.thingGeneric = thing;
     }
 
     @Override
@@ -148,18 +148,18 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     @SuppressWarnings("null")
     public String getGatewayIP() {
-        // return ((SoulissGatewayHandler) thingRegistry.get(thing.getBridgeUID()).getHandler()).IPAddressOnLAN;
+        // return ((SoulissGatewayHandler) thingRegistry.get(thingGeneric.getBridgeUID()).getHandler()).ipAddressOnLAN;
         Bridge bridge = getBridge();
         if (bridge != null) {
             if (bridge.getHandler() != null) {
-                return ((SoulissGatewayHandler) bridge.getHandler()).IPAddressOnLAN;
+                return ((SoulissGatewayHandler) bridge.getHandler()).ipAddressOnLAN;
             }
         }
         return null;
     }
 
     public String getLabel() {
-        return thing.getLabel();
+        return thingGeneric.getLabel();
     }
 
     @SuppressWarnings("null")
@@ -182,15 +182,15 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return SoulissBindingNetworkParameters.getDatagramSocket();
     }
 
-    public void setHealty(byte _shHealty) {
-        this.updateState(SoulissBindingConstants.HEALTY_CHANNEL, new DecimalType(_shHealty & 0xFF));
+    public void setHealty(byte shHealty) {
+        this.updateState(SoulissBindingConstants.HEALTY_CHANNEL, new DecimalType(shHealty & 0xFF));
     }
 
     public void setLastStatusStored() {
         this.updateState(SoulissBindingConstants.LASTSTATUSSTORED_CHANNEL, DateTimeType.valueOf(getTimestamp()));
     }
 
-    protected OnOffType getOHState_OnOff_FromSoulissVal(byte sVal) {
+    protected OnOffType getOhStateOnOffFromSoulissVal(byte sVal) {
         if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OnOffType.ON;
         } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL) {
@@ -208,7 +208,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return null;
     }
 
-    protected OpenClosedType getOHState_OpenClose_FromSoulissVal(byte sVal) {
+    protected OpenClosedType getOhStateOpenCloseFromSoulissVal(byte sVal) {
         if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OpenClosedType.CLOSED;
         } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL) {
