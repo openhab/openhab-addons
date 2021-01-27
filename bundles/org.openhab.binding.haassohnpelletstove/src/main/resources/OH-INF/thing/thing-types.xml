@@ -48,9 +48,9 @@
 
 	</thing-type>
 	<channel-type id="isTemp">
-		<item-type>String</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Is Temperature Stove</label>
-		<description>Receives the is temperature of the stove as string</description>
+		<description>Receives the is temperature of the stove as number:temperature</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -61,7 +61,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="spTemp" advanced="true">
+	<channel-type id="spTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature Stove</label>
 		<description>Set the target temperature of the stove as number:temperature</description>
@@ -80,30 +80,30 @@
 	</channel-type>
 
 	<channel-type id="ignitions">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Ignitions Stove</label>
 		<description>Receives the total amount of ignitions of the stove as string</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="maintenanceIn">
-		<item-type>String</item-type>
+		<item-type>Number:Mass</item-type>
 		<label>Next Maintenance</label>
-		<description>Provides a pellet forecast when the stove need to be maintained next in kilogram as string</description>
+		<description>Provides a pellet forecast when the stove need to be maintained next in kilogram as number:mass</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cleaningIn">
 		<item-type>String</item-type>
 		<label>Next Cleaning Window</label>
-		<description>Provides a time forecast in hours:minutes when the stove need to be cleaned next as string</description>
+		<description>Provides a time forecast in hours:minutes when the stove need to be cleaned next as String</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="consumption">
-		<item-type>String</item-type>
+		<item-type>Number:Mass</item-type>
 		<label>Total Consumption Stove</label>
-		<description>Provides the information about the total consumption of pellets of the stove as string</description>
+		<description>Provides the information about the total consumption of pellets of the stove as number:mass</description>
 		<state readOnly="true"/>
 	</channel-type>
 
