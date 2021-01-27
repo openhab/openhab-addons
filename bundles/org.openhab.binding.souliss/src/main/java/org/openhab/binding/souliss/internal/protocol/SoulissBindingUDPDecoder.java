@@ -100,11 +100,11 @@ public class SoulissBindingUDPDecoder {
     private void decodeMacaco(byte lastByteGatewayIP, ArrayList<Byte> macacoPck) {
         int functionalCode = macacoPck.get(0);
         switch (functionalCode) {
-            case SoulissBindingUDPConstants.Souliss_UDP_function_ping_resp:
+            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_PING_RESP:
                 logger.debug("Received functional code: 0x{}- Ping answer", Integer.toHexString(functionalCode));
                 decodePing(lastByteGatewayIP, macacoPck);
                 break;
-            case SoulissBindingUDPConstants.Souliss_UDP_function_discover_GW_node_bcas_resp:
+            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_RESP:
                 logger.debug("Received functional code: 0x{} - Discover a gateway node answer (broadcast)",
                         Integer.toHexString(functionalCode));
                 try {
@@ -115,25 +115,25 @@ public class SoulissBindingUDPDecoder {
                 }
                 break;
 
-            case SoulissBindingUDPConstants.Souliss_UDP_function_subscribe_resp:
-            case SoulissBindingUDPConstants.Souliss_UDP_function_poll_resp:
+            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_RESP:
+            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_POLL_RESP:
                 logger.debug("Received functional code: 0x{} - Read state answer", Integer.toHexString(functionalCode));
                 decodeStateRequest(lastByteGatewayIP, macacoPck);
                 break;
 
-            case SoulissBindingUDPConstants.Souliss_UDP_function_typreq_resp:// Answer for assigned typical logic
+            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_TYP_RESP:// Answer for assigned typical logic
                 logger.debug("Received functional code: 0x{}- Read typical logic answer",
                         Integer.toHexString(functionalCode));
                 decodeTypRequest(lastByteGatewayIP, macacoPck);
                 break;
 
-            case SoulissBindingUDPConstants.Souliss_UDP_function_healthy_resp:// Answer
+            case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_RESP:// Answer
                 // nodes healty
                 logger.debug("Received functional code: 0x{} - Nodes Healthy", Integer.toHexString(functionalCode));
                 decodeHealthyRequest(lastByteGatewayIP, macacoPck);
                 break;
 
-            case (byte) SoulissBindingUDPConstants.Souliss_UDP_function_db_struct_resp:
+            case (byte) SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_RESP:
                 logger.debug("Received functional code: 0x{} - Database structure answer",
                         Integer.toHexString(functionalCode));
                 decodeDBStructRequest(lastByteGatewayIP, macacoPck);
@@ -150,7 +150,7 @@ public class SoulissBindingUDPDecoder {
             // default:
             // logger.debug("Unknown functional code");
             // break;
-            case (byte) SoulissBindingUDPConstants.Souliss_UDP_function_ActionMessage:
+            case (byte) SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_ACTION_MESSAGE:
                 logger.debug("Received functional code: 0x{} - Action Message (Topic)",
                         Integer.toHexString(functionalCode));
                 decodeActionMessages(lastByteGatewayIP, macacoPck);

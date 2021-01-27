@@ -34,31 +34,31 @@ public class SoulissBindingUDPConstants {
 
     public static final String BROADCASTADDR = "255.255.255.255";
 
-    public static final byte Souliss_UDP_function_force = 0x33;
-    public static final byte Souliss_UDP_function_force_massive = 0x34;
+    public static final byte SOULISS_UDP_FUNCTION_FORCE = 0x33;
+    public static final byte SOULISS_UDP_FUNCTION_FORCE_MASSIVE = 0x34;
 
-    public static final byte Souliss_UDP_function_subscribe = 0x21;
-    public static final byte Souliss_UDP_function_subscribe_resp = 0x31;
-    public static final byte Souliss_UDP_function_poll = 0x27;
-    public static final byte Souliss_UDP_function_poll_resp = 0x37;
-    public static final byte Souliss_UDP_function_typreq = 0x22;
-    public static final byte Souliss_UDP_function_typreq_resp = 0x32;
-    public static final byte Souliss_UDP_function_healthyReq = 0x25;
-    public static final byte Souliss_UDP_function_healthy_resp = 0x35;
+    public static final byte SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ = 0x21;
+    public static final byte SOULISS_UDP_FUNCTION_SUBSCRIBE_RESP = 0x31;
+    public static final byte SOULISS_UDP_FUNCTION_POLL_REQ = 0x27;
+    public static final byte SOULISS_UDP_FUNCTION_POLL_RESP = 0x37;
+    public static final byte SOULISS_UDP_FUNCTION_TYP_REQ = 0x22;
+    public static final byte SOULISS_UDP_FUNCTION_TYP_RESP = 0x32;
+    public static final byte SOULISS_UDP_FUNCTION_HEALTHY_REQ = 0x25;
+    public static final byte SOULISS_UDP_FUNCTION_HEALTHY_RESP = 0x35;
 
-    public static final byte Souliss_UDP_function_ping = 0x8;
-    public static final byte Souliss_UDP_function_ping_resp = 0x18;
+    public static final byte SOULISS_UDP_FUNCTION_PING_REQ = 0x8;
+    public static final byte SOULISS_UDP_FUNCTION_PING_RESP = 0x18;
 
-    public static final byte Souliss_UDP_function_discover_GW_node_bcast = 0x28;
-    public static final byte Souliss_UDP_function_discover_GW_node_bcas_resp = 0x38;
+    public static final byte SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ = 0x28;
+    public static final byte SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_RESP = 0x38;
 
-    public static final int Souliss_UDP_function_db_struct = 0x26;
-    public static final int Souliss_UDP_function_db_struct_resp = 0x36;
+    public static final int SOULISS_UDP_FUNCTION_DBSTRUCT_REQ = 0x26;
+    public static final int SOULISS_UDP_FUNCTION_DBSTRUCT_RESP = 0x36;
 
-    public static final int Souliss_UDP_function_ActionMessage = 0x72;
+    public static final int SOULISS_UDP_FUNCTION_ACTION_MESSAGE = 0x72;
 
-    public static final Byte[] PING_PAYLOAD = { Souliss_UDP_function_ping, 0, 0, 0, 0 };
-    public static final Byte[] PING_DISCOVER_BCAST_PAYLOAD = { Souliss_UDP_function_discover_GW_node_bcast, 0, 0, 0,
-            0 };
-    public static final Byte[] DBSTRUCT_PAYLOAD = { Souliss_UDP_function_db_struct, 0, 0, 0, 0 };
+    protected static final Byte[] PING_PAYLOAD = { SOULISS_UDP_FUNCTION_PING_REQ, 0, 0, 0, 0 };
+    protected static final Byte[] PING_DISCOVER_BCAST_PAYLOAD = { SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ, 0, 0,
+            0, 0 };
+    protected static final Byte[] DBSTRUCT_PAYLOAD = { SOULISS_UDP_FUNCTION_DBSTRUCT_REQ, 0, 0, 0, 0 };
 }
