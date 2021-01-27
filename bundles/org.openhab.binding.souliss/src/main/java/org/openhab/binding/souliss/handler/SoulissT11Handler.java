@@ -62,9 +62,9 @@ public class SoulissT11Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
                     if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OnCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
                         } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OffCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                         }
                     }
                     break;
@@ -72,7 +72,7 @@ public class SoulissT11Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.SLEEP_CHANNEL:
                     if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            commandSEND((byte) (SoulissBindingProtocolConstants.Souliss_T1n_Timed + xSleepTime));
+                            commandSEND((byte) (SoulissBindingProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
                             // set Off
                             updateState(channelUID, OnOffType.OFF);
                         }
@@ -107,13 +107,13 @@ public class SoulissT11Handler extends SoulissGenericHandler {
     @Override
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
-            if (bCmd == SoulissBindingProtocolConstants.Souliss_T1n_OnCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T1n_OnCoil;
-            } else if (bCmd == SoulissBindingProtocolConstants.Souliss_T1n_OffCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T1n_OffCoil;
-            } else if (bCmd >= SoulissBindingProtocolConstants.Souliss_T1n_Timed) {
+            if (bCmd == SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL;
+            } else if (bCmd == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL;
+            } else if (bCmd >= SoulissBindingProtocolConstants.SOULISS_T1N_TIMED) {
                 // SLEEP
-                return SoulissBindingProtocolConstants.Souliss_T1n_OnCoil;
+                return SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL;
             }
         }
         return -1;

@@ -76,17 +76,17 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
                     if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OnCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
 
                         } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OffCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                         }
                     }
                     break;
                 case SoulissBindingConstants.WHITE_MODE_CHANNEL:
                     if (command instanceof OnOffType) {
                         _hsbState = HSBType.fromRGB(255, 255, 255);
-                        commandSEND_RGB(SoulissBindingProtocolConstants.Souliss_T1n_Set, (byte) 255, (byte) 255,
+                        commandSEND_RGB(SoulissBindingProtocolConstants.SOULISS_T1N_SET, (byte) 255, (byte) 255,
                                 (byte) 255);
                         updateState(SoulissBindingConstants.LED_COLOR_CHANNEL, _hsbState);
 
@@ -94,7 +94,7 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                     break;
                 case SoulissBindingConstants.SLEEP_CHANNEL:
                     if (command instanceof OnOffType) {
-                        commandSEND((byte) (SoulissBindingProtocolConstants.Souliss_T1n_Timed + xSleepTime));
+                        commandSEND((byte) (SoulissBindingProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
                         // set Off
                         updateState(channelUID, OnOffType.OFF);
                     }
@@ -106,17 +106,17 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                                 gethsb(T1nRawStateRED_byte1, T1nRawStateGREEN_byte2, T1nRawStateBLU_byte3));
                         // updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
                         /// PercentType.valueOf(hsbState.getBrightness().toString()));
-                        commandSEND_RGB(SoulissBindingProtocolConstants.Souliss_T1n_Set,
+                        commandSEND_RGB(SoulissBindingProtocolConstants.SOULISS_T1N_SET,
                                 (byte) (_hsbState.getRed().shortValue() * (255.00 / 100)),
                                 (byte) (_hsbState.getGreen().shortValue() * (255.00 / 100)),
                                 (byte) (_hsbState.getBlue().shortValue() * (255.00 / 100)));
 
                     } else if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OnCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
 
                         } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OffCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                         }
                     }
                     break;
@@ -124,9 +124,9 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.ROLLER_BRIGHTNESS_CHANNEL:
                     if (command instanceof UpDownType) {
                         if (command.equals(UpDownType.UP)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_BrightUp);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_BRIGHT_UP);
                         } else if (command.equals(UpDownType.DOWN)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_BrightDown);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_BRIGHT_DOWN);
                         }
                     }
                     break;
@@ -137,7 +137,7 @@ public class SoulissT16Handler extends SoulissGenericHandler {
 
                         updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
                                 PercentType.valueOf(_hsbState.getBrightness().toString()));
-                        commandSEND_RGB(SoulissBindingProtocolConstants.Souliss_T1n_Set,
+                        commandSEND_RGB(SoulissBindingProtocolConstants.SOULISS_T1N_SET,
                                 (byte) (_hsbState.getRed().shortValue() * 255.00 / 100),
                                 (byte) (_hsbState.getGreen().shortValue() * 255.00 / 100),
                                 (byte) (_hsbState.getBlue().shortValue() * 255.00 / 100));
@@ -219,13 +219,13 @@ public class SoulissT16Handler extends SoulissGenericHandler {
     @Override
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
-            if (bCmd == SoulissBindingProtocolConstants.Souliss_T1n_OnCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T1n_OnCoil;
-            } else if (bCmd == SoulissBindingProtocolConstants.Souliss_T1n_OffCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T1n_OffCoil;
-            } else if (bCmd >= SoulissBindingProtocolConstants.Souliss_T1n_Timed) {
+            if (bCmd == SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL;
+            } else if (bCmd == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL;
+            } else if (bCmd >= SoulissBindingProtocolConstants.SOULISS_T1N_TIMED) {
                 // SLEEP
-                return SoulissBindingProtocolConstants.Souliss_T1n_OnCoil;
+                return SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL;
             }
         }
         return -1;

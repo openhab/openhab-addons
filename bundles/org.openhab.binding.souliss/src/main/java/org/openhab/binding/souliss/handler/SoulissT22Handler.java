@@ -65,22 +65,22 @@ public class SoulissT22Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.ROLLERSHUTTER_CHANNEL:
                     if (command instanceof UpDownType) {
                         if (command.equals(UpDownType.UP)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T2n_OpenCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD);
                         } else if (command.equals(UpDownType.DOWN)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T2n_CloseCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_CLOSE_CMD);
                         }
                     } else if (command instanceof StopMoveType) {
                         if (command.equals(StopMoveType.STOP)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T2n_StopCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_STOP_CMD);
                         }
                     }
                     break;
                 case SoulissBindingConstants.ONOFF_CHANNEL:
                     if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T2n_OpenCmd_Local);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD_LOCAL);
                         } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T2n_CloseCmd_Local);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T2N_CLOSE_CMD_LOCAL);
                         }
                     }
                     break;
@@ -109,34 +109,34 @@ public class SoulissT22Handler extends SoulissGenericHandler {
         if (T2nRawState != _rawState) {
             this.setState(getOHState_T22_FromSoulissVal(_rawState));
 
-            if (_rawState == SoulissBindingProtocolConstants.Souliss_T2n_OpenCmd) {
+            if (_rawState == SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD) {
                 this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL);
-            } else if (_rawState == SoulissBindingProtocolConstants.Souliss_T2n_CloseCmd) {
+            } else if (_rawState == SoulissBindingProtocolConstants.SOULISS_T2N_CLOSE_CMD) {
                 this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_CLOSING_CHANNEL);
             }
             switch (_rawState) {
-                case SoulissBindingProtocolConstants.Souliss_T2n_Coil_Stop:
+                case SoulissBindingProtocolConstants.SOULISS_T2N_COIL_STOP:
                     this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_STOP_CHANNEL);
                     break;
-                case SoulissBindingProtocolConstants.Souliss_T2n_Coil_Off:
+                case SoulissBindingProtocolConstants.SOULISS_T2N_COIL_OFF:
                     this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL);
                     break;
-                case SoulissBindingProtocolConstants.Souliss_T2n_LimSwitch_Close:
+                case SoulissBindingProtocolConstants.SOULISS_T2N_LIMSWITCH_CLOSE:
                     this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_LIMITSWITCH_CLOSE_CHANNEL);
                     break;
-                case SoulissBindingProtocolConstants.Souliss_T2n_LimSwitch_Open:
+                case SoulissBindingProtocolConstants.SOULISS_T2N_LIMSWITCH_OPEN:
                     this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_LIMITSWITCH_OPEN_CHANNEL);
                     break;
-                case SoulissBindingProtocolConstants.Souliss_T2n_NoLimSwitch:
+                case SoulissBindingProtocolConstants.SOULISS_T2N_NOLIMSWITCH:
                     this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_LIMITSWITCH_OPEN_CHANNEL);
                     break;
-                case SoulissBindingProtocolConstants.Souliss_T2n_Timer_Off:
+                case SoulissBindingProtocolConstants.SOULISS_T2N_TIMER_OFF:
                     this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_TIMER_OFF);
                     break;
-                case SoulissBindingProtocolConstants.Souliss_T2n_State_Open:
+                case SoulissBindingProtocolConstants.SOULISS_T2N_STATE_OPEN:
                     this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_STATE_OPEN_CHANNEL);
                     break;
-                case SoulissBindingProtocolConstants.Souliss_T2n_State_Close:
+                case SoulissBindingProtocolConstants.SOULISS_T2N_STATE_CLOSE:
                     this.setState_Message(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_STATE_CLOSE_CHANNEL);
                     break;
             }
@@ -147,31 +147,31 @@ public class SoulissT22Handler extends SoulissGenericHandler {
     private PercentType getOHState_T22_FromSoulissVal(short sVal) {
         int iState = 0;
         switch (sVal) {
-            case SoulissBindingProtocolConstants.Souliss_T2n_Coil_Open:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_COIL_OPEN:
                 iState = 0;
                 break;
-            case SoulissBindingProtocolConstants.Souliss_T2n_Coil_Close:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_COIL_CLOSE:
                 iState = 100;
                 break;
-            case SoulissBindingProtocolConstants.Souliss_T2n_Coil_Stop:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_COIL_STOP:
                 iState = 50;
                 break;
-            case SoulissBindingProtocolConstants.Souliss_T2n_LimSwitch_Close:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_LIMSWITCH_CLOSE:
                 iState = 100;
                 break;
-            case SoulissBindingProtocolConstants.Souliss_T2n_LimSwitch_Open:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_LIMSWITCH_OPEN:
                 iState = 0;
                 break;
-            case SoulissBindingProtocolConstants.Souliss_T2n_NoLimSwitch:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_NOLIMSWITCH:
                 iState = 50;
                 break;
-            case SoulissBindingProtocolConstants.Souliss_T2n_Timer_Off:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_TIMER_OFF:
                 iState = 50;
                 break;
-            case SoulissBindingProtocolConstants.Souliss_T2n_State_Open:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_STATE_OPEN:
                 iState = 0;
                 break;
-            case SoulissBindingProtocolConstants.Souliss_T2n_State_Close:
+            case SoulissBindingProtocolConstants.SOULISS_T2N_STATE_CLOSE:
                 iState = 100;
                 break;
         }
@@ -187,12 +187,12 @@ public class SoulissT22Handler extends SoulissGenericHandler {
     @Override
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
-            if (bCmd == SoulissBindingProtocolConstants.Souliss_T2n_OpenCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T2n_Coil_Open;
-            } else if (bCmd == SoulissBindingProtocolConstants.Souliss_T2n_CloseCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T2n_Coil_Close;
-            } else if (bCmd >= SoulissBindingProtocolConstants.Souliss_T2n_StopCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T2n_Coil_Stop;
+            if (bCmd == SoulissBindingProtocolConstants.SOULISS_T2N_OPEN_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T2N_COIL_OPEN;
+            } else if (bCmd == SoulissBindingProtocolConstants.SOULISS_T2N_CLOSE_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T2N_COIL_CLOSE;
+            } else if (bCmd >= SoulissBindingProtocolConstants.SOULISS_T2N_STOP_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T2N_COIL_STOP;
             }
         }
         return -1;

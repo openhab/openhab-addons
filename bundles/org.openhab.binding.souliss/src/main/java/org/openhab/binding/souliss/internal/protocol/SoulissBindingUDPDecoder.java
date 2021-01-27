@@ -489,11 +489,11 @@ public class SoulissBindingUDPDecoder {
                                 case SoulissBindingConstants.T42:
                                     ((SoulissT42Handler) handler).setRawState(sVal);
                                     switch (sVal) {
-                                        case SoulissBindingProtocolConstants.Souliss_T4n_NoAntitheft:
+                                        case SoulissBindingProtocolConstants.SOULISS_T4N_NO_ANTITHEFT:
                                             ((SoulissT42Handler) handler).setState(StringType
                                                     .valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
                                             break;
-                                        case SoulissBindingProtocolConstants.Souliss_T4n_Alarm:
+                                        case SoulissBindingProtocolConstants.SOULISS_T4N_ALARM:
                                             ((SoulissT42Handler) handler).setState(StringType
                                                     .valueOf(SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL));
                                             break;
