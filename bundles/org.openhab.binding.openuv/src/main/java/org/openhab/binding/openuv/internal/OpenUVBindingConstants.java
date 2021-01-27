@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.openuv.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,7 +47,6 @@ public class OpenUVBindingConstants {
     public static final String SAFE_EXPOSURE = "SafeExposure";
     public static final String ELEVATION = "elevation";
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(APIBRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(LOCATION_REPORT_THING_TYPE));
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(LOCATION_REPORT_THING_TYPE);
 }
