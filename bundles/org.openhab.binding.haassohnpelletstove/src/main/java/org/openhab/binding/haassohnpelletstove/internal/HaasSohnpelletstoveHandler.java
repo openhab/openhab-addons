@@ -256,7 +256,11 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             HaasSohnpelletstoveJsonDataDTO data = serviceCommunication.getOvenData();
             if (data != null) {
                 switch (channelId) {
+<<<<<<< HEAD
                     case CHANNELISTEMP:
+=======
+                    case CHANNEL_ISTEMP:
+>>>>>>> 2217548ad (Fixed latest code reviews and changed types. Fixed Typos and information in README.md)
                         state = new QuantityType<Temperature>(Double.valueOf(data.getisTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;

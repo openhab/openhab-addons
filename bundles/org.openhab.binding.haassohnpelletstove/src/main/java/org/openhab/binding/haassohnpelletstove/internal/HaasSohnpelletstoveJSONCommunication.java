@@ -71,9 +71,12 @@ public class HaasSohnpelletstoveJSONCommunication {
             response = HttpUtil.executeUrl("GET", urlStr, 10000);
             logger.debug("OvenData = {}", response);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 7502035b5 (Fixed bugs due to naming refactoring. Fixed code review comments.)
+=======
+>>>>>>> 2217548ad (Fixed latest code reviews and changed types. Fixed Typos and information in README.md)
             result = gson.fromJson(response, HaasSohnpelletstoveJsonDataDTO.class);
             resultOk = true;
         } catch (IOException e) {
