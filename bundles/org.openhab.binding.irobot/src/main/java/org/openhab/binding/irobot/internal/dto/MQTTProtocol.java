@@ -177,6 +177,14 @@ public class MQTTProtocol {
         }
     }
 
+    public static class MapUploadAllowed extends StateValue {
+        public boolean mapUploadAllowed;
+
+        public MapUploadAllowed(boolean mapUploadAllowed) {
+            this.mapUploadAllowed = mapUploadAllowed;
+        }
+    }
+
     public static class SubModSwVer {
         public String nav;
         public String mob;
@@ -212,6 +220,8 @@ public class MQTTProtocol {
         public Boolean noAutoPasses;
         // "twoPass":true
         public Boolean twoPass;
+        // "mapUploadAllowed":true
+        public Boolean mapUploadAllowed;
         // "softwareVer":"v2.4.6-3"
         public String softwareVer;
         // "navSwVer":"01.12.01#1"
