@@ -118,7 +118,8 @@ public class LongPolling {
             return subscriptionId;
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             throw new LongPollingFailedException(
-                    String.format("Error on subscribe request (Http client: %s)", httpClient.toString()), e);
+                    String.format("Error on subscribe (Http client: %s): %s", httpClient.toString(), e.getMessage()),
+                    e);
         }
     }
 
