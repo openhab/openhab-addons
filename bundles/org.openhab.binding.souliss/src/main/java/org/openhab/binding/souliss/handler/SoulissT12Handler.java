@@ -48,7 +48,7 @@ public class SoulissT12Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        // TODO : Initialize the thingGeneric. If done set status to ONLINE to indicate proper working.
+        // TODO: Initialize the thingGeneric. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.

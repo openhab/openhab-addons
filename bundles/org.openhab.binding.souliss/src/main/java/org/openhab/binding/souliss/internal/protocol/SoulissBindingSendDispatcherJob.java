@@ -18,7 +18,6 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissBindingSendDispatcherJob implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(SoulissBindingSendDispatcherJob.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissBindingSendDispatcherJob.class);
 
     @Nullable
     private SoulissGatewayHandler gw;
@@ -59,7 +58,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     /**
      * Put packet to send in ArrayList PacketList
      */
-    public static synchronized void put(@Nullable DatagramSocket socket, DatagramPacket packetToPUT) {
+    public static synchronized void put(@Nullable DatagramSocket socket, DatagramPacket packetToPUT, Logger logger) {
         bPopSuspend = true;
         boolean bPacchettoGestito = false;
         // estraggo il nodo indirizzato dal pacchetto in ingresso
@@ -221,7 +220,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     // controllo lo slot solo se il comando è diverso da ZERO
                     if (packetsList.get(i).packet.getData()[j] != 0) {
                         // recupero tipico dalla memoria
-                        typ = getHandler(ipAddressOnLAN, node, iSlot);
+                        typ = getHandler(ipAddressOnLAN, node, iSlot, this.logger);
 
                         if (typ == null) {
                             break;
@@ -316,7 +315,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     }
 
     @Nullable
-    private static SoulissGenericHandler getHandler(String ipAddressOnLAN, int node, int slot) {
+    private static SoulissGenericHandler getHandler(String ipAddressOnLAN, int node, int slot, Logger logger) {
         // recupero il riferimento al gateway
         SoulissGatewayHandler gateway = null;
         byte lastByteGatewayIP = (byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]);
@@ -327,8 +326,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
             logger.error("exception getting gw handler {}", ex.getMessage());
         }
 
-        @NonNull
-        Iterator<@NonNull Thing> thingsIterator;
+        Iterator<Thing> thingsIterator;
         if (gateway != null /* && gateway.ipAddressOnLAN != null */
                 && (byte) Integer.parseInt(gateway.ipAddressOnLAN.split("\\.")[3]) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();

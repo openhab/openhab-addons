@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SoulissDiscoverJob implements Runnable {
+    private SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+
     /**
      * Result callback interface.
      */
@@ -72,7 +74,7 @@ public class SoulissDiscoverJob implements Runnable {
         try {
             // ===============================================================================
             // ===============================================================================
-            SoulissCommonCommands.sendBroadcastGatewayDiscover(datagramSocket);
+            soulissCommands.sendBroadcastGatewayDiscover(datagramSocket);
             // ===============================================================================
             // ===============================================================================
             logger.debug("Sent discovery packet");
@@ -87,7 +89,7 @@ public class SoulissDiscoverJob implements Runnable {
             SoulissGatewayHandler gw = (SoulissGatewayHandler) t.getHandler();
             if (gw != null) {
                 logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
-                SoulissCommonCommands.sendDBStructFrame(SoulissBindingNetworkParameters.getDatagramSocket(),
+                soulissCommands.sendDBStructFrame(SoulissBindingNetworkParameters.getDatagramSocket(),
                         gw.ipAddressOnLAN, gw.nodeIndex, gw.userIndex);
             } else {
                 logger.debug("Gateway null - Skipped");

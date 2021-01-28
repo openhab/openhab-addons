@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
@@ -369,8 +368,7 @@ public class SoulissBindingUDPDecoder {
             for (int i = 5; i < 5 + numberOf; i++) {
 
                 // build an array containing healths
-                @NonNull
-                List<@NonNull Thing> listaThings = gateway.getThing().getThings();
+                List<Thing> listaThings = gateway.getThing().getThings();
                 ThingHandler handler = null;
                 for (Thing thing : listaThings) {
                     // if (thingGeneric != null) {
@@ -400,8 +398,7 @@ public class SoulissBindingUDPDecoder {
         } catch (Exception ex) {
         }
 
-        @NonNull
-        Iterator<@NonNull Thing> thingsIterator;
+        Iterator<Thing> thingsIterator;
         if (gateway != null /* && gateway.ipAddressOnLAN != null */
                 && ((byte) Integer.parseInt(gateway.ipAddressOnLAN.split("\\.")[3])) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
