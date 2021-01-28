@@ -35,6 +35,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class PlayerItemConverter extends AbstractTransformingItemConverter {
     private final HttpChannelConfig channelConfig;
+    private @Nullable String lastCommand; // store last command to prevent duplicate commands
 
     public PlayerItemConverter(Consumer<State> updateState, Consumer<Command> postCommand,
             @Nullable Consumer<String> sendHttpValue, ValueTransformation stateTransformations,
@@ -55,6 +56,12 @@ public class PlayerItemConverter extends AbstractTransformingItemConverter {
 
     @Override
     protected @Nullable Command toCommand(String string) {
+        if (string.equals(lastCommand)) {
+            // only send commands once
+            return null;
+        }
+        lastCommand = string;
+
         if (string.equals(channelConfig.playValue)) {
             return PlayPauseType.PLAY;
         } else if (string.equals(channelConfig.pauseValue)) {
