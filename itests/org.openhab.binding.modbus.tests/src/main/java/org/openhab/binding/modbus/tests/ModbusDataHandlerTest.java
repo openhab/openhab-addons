@@ -30,11 +30,16 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
@@ -116,6 +121,12 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     @AfterEach
     public void tearDown() {
         writeRequests.clear();
+    }
+
+    private static Arguments appendArg(Arguments args, Object obj) {
+        Object[] newArgs = Arrays.copyOf(args.get(), args.get().length + 1);
+        newArgs[args.get().length] = obj;
+        return Arguments.of(newArgs);
     }
 
     private void captureModbusWrites() {
@@ -812,14 +823,96 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         waitForAssert(() -> verify((ModbusPollerThingHandler) poller.getHandler()).refresh());
     }
 
+    private static Stream<Arguments> provideArgsForUpdateThenCommandFromItem()
+
+    {
+        return Stream.of(//
+                // ON/OFF commands
+                Arguments.of((short) 0b1011_0100_0000_1111, "1", (short) 0b1011_0100_0000_1101, OnOffType.OFF),
+                Arguments.of((short) 0b1011_0100_0000_1111, "4", (short) 0b1011_0100_0001_1111, OnOffType.ON),
+                // OPEN/CLOSED commands
+                Arguments.of((short) 0b1011_0100_0000_1111, "1", (short) 0b1011_0100_0000_1101, OpenClosedType.CLOSED),
+                Arguments.of((short) 0b1011_0100_0000_1111, "4", (short) 0b1011_0100_0001_1111, OpenClosedType.OPEN),
+                // DecimalType commands
+                Arguments.of((short) 0b1011_0100_0000_1111, "1", (short) 0b1011_0100_0000_1101, new DecimalType(0)),
+                Arguments.of((short) 0b1011_0100_0010_1111, "5", (short) 0b1011_0100_0000_1111, new DecimalType(0)),
+                Arguments.of((short) 0b1011_0100_0000_1111, "4", (short) 0b1011_0100_0001_1111, new DecimalType(5))
+
+        ).flatMap(a -> {
+            // parametrize by channel (yes, it does not matter what channel is used, commands are interpreted all the
+            // same)
+            Stream<String> channels = Stream.of("switch", "number", "contact");
+            return channels.map(channel -> appendArg(a, channel));
+        });
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideArgsForUpdateThenCommandFromItem")
+    public void testUpdateFromHandlerThenCommandFromItem(short stateUpdateFromHandler, String bitIndex,
+            short expectedWriteDataToSlave, Command commandFromItem, String channel) {
+
+        ModbusReadFunctionCode functionCode = ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS;
+        ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502, false);
+
+        int pollStart = 2;
+        int pollLength = 3;
+
+        // Minimally mocked request
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        doReturn(pollStart).when(request).getReference();
+        doReturn(pollLength).when(request).getDataLength();
+        doReturn(functionCode).when(request).getFunctionCode();
+
+        PollTask task = Mockito.mock(PollTask.class);
+        doReturn(endpoint).when(task).getEndpoint();
+        doReturn(request).when(task).getRequest();
+
+        Bridge poller = createPollerMock("poller1", task);
+
+        Configuration dataConfig = new Configuration();
+        dataConfig.put("writeStart", "3." + bitIndex);
+        dataConfig.put("writeValueType", "bit");
+        dataConfig.put("writeType", "holding");
+
+        String thingId = "read1";
+
+        ModbusDataThingHandler dataHandler = createDataHandler(thingId, poller,
+                builder -> builder.withConfiguration(dataConfig), bundleContext);
+        assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+        AsyncModbusReadResult result = new AsyncModbusReadResult(request, new ModbusRegisterArray(
+                /* register 2, dummy data */0, /* register 3 */ stateUpdateFromHandler, /* register 4, dummy data */9));
+
+        // data thing receives some data
+        dataHandler.onReadResult(result);
+        dataHandler.handleCommand(new ChannelUID(dataHandler.getThing().getUID(), channel), commandFromItem);
+
+        // Assert data written
+        {
+            assertEquals(1, writeRequests.size());
+            ModbusWriteRequestBlueprint writeRequest = writeRequests.get(1);
+            assertEquals(writeRequest.getFunctionCode(), ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER);
+            assertEquals(writeRequest.getReference(), 3);
+            assertEquals(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), 1);
+            assertEquals(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0),
+                    is(equalTo(expectedWriteDataToSlave)));
+        }
+    }
+
+    private void testInitGeneric(ModbusReadFunctionCode pollerFunctionCode, Configuration config,
+            Consumer<ThingStatusInfo> statusConsumer) {
+        testInitGeneric(pollerFunctionCode, 0, config, statusConsumer);
+    }
+
     /**
      *
      * @param pollerFunctionCode poller function code. Use null if you want to have data thing direct child of endpoint
      *            thing
+     * @param pollerStart start index of poller
      * @param config thing config
      * @param statusConsumer assertion method for data thingstatus
      */
-    private void testInitGeneric(ModbusReadFunctionCode pollerFunctionCode, Configuration config,
+    private void testInitGeneric(ModbusReadFunctionCode pollerFunctionCode, int pollerStart, Configuration config,
             Consumer<ThingStatusInfo> statusConsumer) {
         int pollLength = 3;
 
@@ -833,6 +926,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
             // Minimally mocked request
             ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+            doReturn(pollerStart).when(request).getReference();
             doReturn(pollLength).when(request).getDataLength();
             doReturn(pollerFunctionCode).when(request).getFunctionCode();
 
@@ -929,12 +1023,85 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
+    public void testWriteHoldingBitDataWrongWriteType() {
+        Configuration dataConfig = new Configuration();
+        dataConfig.put("writeStart", "0.15");
+        dataConfig.put("writeValueType", "bit");
+        dataConfig.put("writeType", "coil"); // X.Y writeStart only applicable with holding
+        testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        });
+    }
+
+    @Test
     public void testWriteHoldingBitData() {
         Configuration dataConfig = new Configuration();
-        dataConfig.put("writeStart", "0");
+        dataConfig.put("writeStart", "0.15");
         dataConfig.put("writeValueType", "bit");
         dataConfig.put("writeType", "holding");
-        testInitGeneric(null, dataConfig, status -> {
+        testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+        });
+    }
+
+    @Test
+    public void testWriteHoldingBitDataRegisterOutOfBounds() {
+        Configuration dataConfig = new Configuration();
+        // in this test poller reads from register 2. Register is out of bounds
+        dataConfig.put("writeStart", "1.15");
+        dataConfig.put("writeValueType", "bit");
+        dataConfig.put("writeType", "holding");
+        testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, /* poller start */2, dataConfig, status -> {
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        });
+    }
+
+    @Test
+    public void testWriteHoldingBitDataRegisterOutOfBounds2() {
+        Configuration dataConfig = new Configuration();
+        // register 3 is the last one polled, 4 is out of bounds
+        dataConfig.put("writeStart", "4.15");
+        dataConfig.put("writeValueType", "bit");
+        dataConfig.put("writeType", "holding");
+        testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+        });
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "READ_COILS", "READ_INPUT_DISCRETES", "READ_INPUT_REGISTERS" })
+    public void testWriteHoldingBitDataWrongPoller(ModbusReadFunctionCode poller) {
+        Configuration dataConfig = new Configuration();
+        dataConfig.put("writeStart", "0.15");
+        dataConfig.put("writeValueType", "bit");
+        dataConfig.put("writeType", "holding");
+        testInitGeneric(poller, dataConfig, status -> {
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        });
+    }
+
+    @Test
+    public void testWriteHoldingBitParentEndpointData() {
+        Configuration dataConfig = new Configuration();
+        dataConfig.put("writeStart", "0.15");
+        dataConfig.put("writeValueType", "bit");
+        dataConfig.put("writeType", "holding");
+        testInitGeneric(/* poller not as parent */null, dataConfig, status -> {
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        });
+    }
+
+    @Test
+    public void testWriteHoldingBitBadStartData() {
+        Configuration dataConfig = new Configuration();
+        dataConfig.put("writeStart", "0.16");
+        dataConfig.put("writeValueType", "int8");
+        dataConfig.put("writeType", "holding");
+        testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
             assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
