@@ -106,6 +106,13 @@ public interface OpenSprinklerApi {
     public abstract int currentDraw();
 
     /**
+     * Returns the state of the second sensor.
+     *
+     * @return 1: sensor is active; 0: sensor is inactive; -1: no sensor.
+     */
+    public abstract int getSensor2State();
+
+    /**
      *
      * @return The Wifi signal strength in -dB or 0 if not supported by firmware
      */
@@ -116,6 +123,21 @@ public interface OpenSprinklerApi {
      * @return The pulses that the flow sensor has given in the last time period, -1 if not supported.
      */
     public abstract int flowSensorCount();
+
+    /**
+     * CLOSES all stations turning them all off.
+     *
+     */
+    public abstract void resetStations() throws UnauthorizedApiException, CommunicationApiException;
+
+    /**
+     * Returns true if the internal programs are allowed to auto start.
+     *
+     * @return true if enabled
+     */
+    public abstract boolean getIsEnabled();
+
+    public abstract void enablePrograms(Command command) throws UnauthorizedApiException, CommunicationApiException;
 
     /**
      * Returns the water level in %.

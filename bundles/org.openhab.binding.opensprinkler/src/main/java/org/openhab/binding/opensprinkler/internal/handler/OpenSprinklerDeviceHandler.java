@@ -65,6 +65,13 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     updateState(channel, OnOffType.OFF);
                 }
                 break;
+            case SENSOR_2:
+                if (localAPI.getSensor2State() == 1) {
+                    updateState(channel, OnOffType.ON);
+                } else {
+                    updateState(channel, OnOffType.OFF);
+                }
+                break;
             case SENSOR_WATERLEVEL:
                 updateState(channel, QuantityType.valueOf(localAPI.waterLevel(), PERCENT));
                 break;
@@ -79,9 +86,18 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 break;
             case CHANNEL_PROGRAMS:
                 break;
+            case CHANNEL_ENABLE_PROGRAMS:
+                if (localAPI.getIsEnabled()) {
+                    updateState(channel, OnOffType.ON);
+                } else {
+                    updateState(channel, OnOffType.OFF);
+                }
+                break;
             case CHANNEL_STATIONS:
                 break;
             case NEXT_DURATION:
+                break;
+            case CHANNEL_RESET_STATIONS:
                 break;
             default:
                 logger.debug("Can not update the unknown channel {}", channel);
@@ -106,6 +122,10 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
             }
             channel = thing.getChannel(SENSOR_FLOW_COUNT);
             if (localAPI.flowSensorCount() == -1 && channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = thing.getChannel(SENSOR_2);
+            if (localAPI.getSensor2State() == -1 && channel != null) {
                 removeChannels.add(channel);
             }
             if (!removeChannels.isEmpty()) {
@@ -163,8 +183,16 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     case CHANNEL_PROGRAMS:
                         api.runProgram(command);
                         break;
+                    case CHANNEL_ENABLE_PROGRAMS:
+                        api.enablePrograms(command);
+                        break;
                     case NEXT_DURATION:
                         handleNextDurationCommand(channelUID, command);
+                        break;
+                    case CHANNEL_RESET_STATIONS:
+                        if (command == OnOffType.ON) {
+                            api.resetStations();
+                        }
                         break;
                     case CHANNEL_STATIONS:
                         if (command instanceof StringType) {

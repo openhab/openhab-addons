@@ -55,6 +55,7 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 | Channel Type ID | Item Type              |    | Description                                                                        |
 |-----------------|------------------------|----|------------------------------------------------------------------------------------|
 | rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.              |
+| sensor2         | Switch                 | RO | This channel is for the second sensor (if your hardware supports it).              |
 | currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device.                                              |
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
 |                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
@@ -66,6 +67,8 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 |                 |                        |    | in the `nextDuration` channel.                                                  |
 | nextDuration    | Number:Time            | RW | The time the station will open for when any stations are selected from the         |
 |                 |                        |    | `stations` channel.                                                              |
+| resetStations   | Switch                 | RW | The ON command will stop all stations immediately, including those waiting to run. |
+| enablePrograms  | Switch                 | RW | Allow programs to auto run. When OFF manually started stations will still work.    |
 
 ## Textual Example
 

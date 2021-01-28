@@ -36,6 +36,7 @@ import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiExcept
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -198,6 +199,15 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
+    public int getSensor2State() {
+        JcResponse localReply = jcReply;
+        if (localReply != null) {
+            return localReply.sn2;
+        }
+        return -1;
+    }
+
+    @Override
     public int currentDraw() {
         JcResponse localReply = jcReply;
         if (localReply != null) {
@@ -210,6 +220,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     public int flowSensorCount() {
         JcResponse localReply = jcReply;
         if (localReply != null) {
+            logger.debug("flow count was {}", localReply.flcrt);
             return localReply.flcrt;
         }
         return 0;
@@ -222,6 +233,15 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             return localReply.RSSI;
         }
         return 0;
+    }
+
+    @Override
+    public boolean getIsEnabled() {
+        JcResponse localReply = jcReply;
+        if (localReply != null && localReply.en == 0) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -303,6 +323,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public @Nullable List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
+        public int en = 1;
+        public int sn2 = -1;
         public int RSSI = 1; // json reply uses all uppercase
         public int flcrt = -1;
         public int curr = -1;
@@ -353,6 +375,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public void runProgram(Command command) throws CommunicationApiException, UnauthorizedApiException {
         logger.warn("OpenSprinkler requires at least firmware 217 for the runProgram feature to work");
+    }
+
+    @Override
+    public void resetStations() throws UnauthorizedApiException, CommunicationApiException {
+        http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&rsn=1");
     }
 
     protected static class JpResponse {
@@ -449,6 +476,15 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                         "Error sending HTTP POST request to " + url + ". Got response code: " + response.getStatus());
             }
             return response.getContentAsString();
+        }
+    }
+
+    @Override
+    public void enablePrograms(Command command) throws UnauthorizedApiException, CommunicationApiException {
+        if (command == OnOffType.ON) {
+            http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&en=1");
+        } else {
+            http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&en=0");
         }
     }
 }

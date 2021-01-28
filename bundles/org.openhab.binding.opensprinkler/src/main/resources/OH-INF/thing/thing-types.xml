@@ -77,6 +77,7 @@
 
 		<channels>
 			<channel id="rainsensor" typeId="rainsensor"></channel>
+			<channel id="sensor2" typeId="sensor2"></channel>
 			<channel id="waterlevel" typeId="waterlevel"></channel>
 			<channel id="currentDraw" typeId="currentDraw"></channel>
 			<channel id="signalStrength" typeId="signalStrength"></channel>
@@ -84,6 +85,8 @@
 			<channel id="programs" typeId="programs"></channel>
 			<channel id="stations" typeId="stations"></channel>
 			<channel id="nextDuration" typeId="nextDuration"></channel>
+			<channel id="resetStations" typeId="resetStations"></channel>
+			<channel id="enablePrograms" typeId="enablePrograms"></channel>
 		</channels>
 	</thing-type>
 
@@ -91,6 +94,14 @@
 		<item-type>Switch</item-type>
 		<label>Rain Sensor</label>
 		<description>Provides feedback on whether the OpenSprinkler device has detected rain or not.</description>
+		<category>Sensor</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensor2">
+		<item-type>Switch</item-type>
+		<label>Sensor 2</label>
+		<description>Sensor 2 can be setup as a rain, flow or soil moisture sensor.</description>
 		<category>Sensor</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -123,6 +134,20 @@
 		<category>Switch</category>
 	</channel-type>
 
+	<channel-type id="resetStations">
+		<item-type>Switch</item-type>
+		<label>Reset Stations</label>
+		<description>Resets all stations back to CLOSED.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="enablePrograms">
+		<item-type>Switch</item-type>
+		<label>Enable Programs</label>
+		<description>Allow programs to auto run, when OFF manually started stations will still work.</description>
+		<category>Switch</category>
+	</channel-type>
+
 	<channel-type id="queued">
 		<item-type>Switch</item-type>
 		<label>Queued</label>
@@ -134,7 +159,7 @@
 	<channel-type id="signalStrength">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Signal Strength</label>
-		<description>Wi-Fi received signal strength indicator.</description>
+		<description>Wi-Fi Received Signal Strength Indicator.</description>
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
@@ -155,16 +180,16 @@
 
 	<channel-type id="programs">
 		<item-type>String</item-type>
-		<label>Programs</label>
-		<description>Run or Stop a program</description>
+		<label>Run Program</label>
+		<description>Run a program that is saved inside the OpenSprinkler Device.</description>
 		<state readOnly="false">
 		</state>
 	</channel-type>
 
 	<channel-type id="stations">
 		<item-type>String</item-type>
-		<label>Stations</label>
-		<description>Open a Station</description>
+		<label>Open Station</label>
+		<description>Opens the solenoid of a single station.</description>
 		<state readOnly="false">
 		</state>
 	</channel-type>

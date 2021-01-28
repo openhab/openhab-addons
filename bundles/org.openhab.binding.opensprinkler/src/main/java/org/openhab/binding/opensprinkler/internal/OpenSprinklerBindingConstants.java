@@ -66,13 +66,16 @@ public class OpenSprinklerBindingConstants {
     public static final ThingTypeUID OPENSPRINKLER_DEVICE = new ThingTypeUID(BINDING_ID, DEVICE_THING);
 
     // List of all Channel ids
+    public static final String SENSOR_SIGNAL_STRENGTH = "signalStrength";
+    public static final String SENSOR_FLOW_COUNT = "flowSensorCount";
     public static final String SENSOR_RAIN = "rainsensor";
+    public static final String SENSOR_2 = "sensor2";
     public static final String SENSOR_WATERLEVEL = "waterlevel";
     public static final String SENSOR_CURRENT_DRAW = "currentDraw";
     public static final String CHANNEL_PROGRAMS = "programs";
+    public static final String CHANNEL_ENABLE_PROGRAMS = "enablePrograms";
     public static final String CHANNEL_STATIONS = "stations";
-    public static final String SENSOR_SIGNAL_STRENGTH = "signalStrength";
-    public static final String SENSOR_FLOW_COUNT = "flowSensorCount";
+    public static final String CHANNEL_RESET_STATIONS = "resetStations";
     public static final String STATION_STATE = "stationState";
     public static final String STATION_QUEUED = "queued";
     public static final String REMAINING_WATER_TIME = "remainingWaterTime";
