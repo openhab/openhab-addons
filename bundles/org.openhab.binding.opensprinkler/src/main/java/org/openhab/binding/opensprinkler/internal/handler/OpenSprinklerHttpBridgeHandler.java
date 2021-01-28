@@ -68,9 +68,14 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
 
     public void refreshStations() {
         OpenSprinklerApi localApi = openSprinklerDevice;
+        if (localApi == null) {
+            setupAPI();
+            localApi = openSprinklerDevice;
+        }
         if (localApi != null && localApi.isManualModeEnabled()) {
             try {
                 localApi.refresh();
+                updateStatus(ThingStatus.ONLINE);
                 this.getThing().getThings().forEach(thing -> {
                     OpenSprinklerBaseHandler handler = (OpenSprinklerBaseHandler) thing.getHandler();
                     if (handler != null) {
@@ -84,9 +89,6 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Unauthorized, check your password is correct");
             }
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            setupAPI();
         }
     }
 
@@ -102,9 +104,7 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
                     "Could not create an API connection to the OpenSprinkler. Error received: " + exp);
             return;
         }
-        if (openSprinklerDevice.isManualModeEnabled()) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
+        if (!openSprinklerDevice.isManualModeEnabled()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not initialize the connection to the OpenSprinkler.");
         }

@@ -220,7 +220,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     public int flowSensorCount() {
         JcResponse localReply = jcReply;
         if (localReply != null) {
-            logger.debug("flow count was {}", localReply.flcrt);
             return localReply.flcrt;
         }
         return 0;
