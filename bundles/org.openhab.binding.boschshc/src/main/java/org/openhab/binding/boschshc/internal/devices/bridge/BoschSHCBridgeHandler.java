@@ -287,7 +287,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     }
 
     private void handleLongPollFailure(Throwable e) {
-        logger.warn("Long polling failed, trying to restart", e);
+        logger.warn("Long polling failed, will try to reconnect", e);
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -295,12 +295,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        try {
-            this.longPolling.start(httpClient);
-        } catch (LongPollingFailedException restartException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    String.format("Long polling failed and could not be restarted: %s", restartException.getMessage()));
-        }
+        this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
+                String.format("Long polling failed, will try to reconnect: %s", e.getMessage()));
+        scheduleInitialAccess(httpClient);
     }
 
     /**
