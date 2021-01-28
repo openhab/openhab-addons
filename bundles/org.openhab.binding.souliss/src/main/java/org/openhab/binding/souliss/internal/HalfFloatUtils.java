@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Helper class to conver half precision float to int int are used on analogue
  * typicals (2 bytes) and should be reversed because of endianess
@@ -20,6 +22,7 @@ package org.openhab.binding.souliss.internal;
  *
  * @since 1.7.0
  */
+@NonNullByDefault
 public class HalfFloatUtils {
 
     public static boolean isNaN(float x) {

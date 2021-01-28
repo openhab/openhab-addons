@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingUDPConstants;
 import org.openhab.binding.souliss.handler.SoulissGatewayHandler;
@@ -35,15 +37,17 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio
  * @since 1.7.0
  */
+@NonNullByDefault
 public class SoulissBindingSendDispatcherJob implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(SoulissBindingSendDispatcherJob.class);
 
+    @Nullable
     private SoulissGatewayHandler gw;
     static boolean bPopSuspend = false;
     public static ArrayList<SoulissBindingSocketAndPacketStruct> packetsList = new ArrayList<SoulissBindingSocketAndPacketStruct>();
     private long startTime = System.currentTimeMillis();
-    static String ipAddressOnLAN;
+    static String ipAddressOnLAN = "";
     static int iDelay = 0; // equal to 0 if array is empty
     static int sendMinDelay = 0;
 
@@ -55,7 +59,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     /**
      * Put packet to send in ArrayList PacketList
      */
-    public static synchronized void put(DatagramSocket socket, DatagramPacket packetToPUT) {
+    public static synchronized void put(@Nullable DatagramSocket socket, DatagramPacket packetToPUT) {
         bPopSuspend = true;
         boolean bPacchettoGestito = false;
         // estraggo il nodo indirizzato dal pacchetto in ingresso
@@ -150,8 +154,9 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                             "SendDispatcherJob - Functional Code 0x{} - Packet: {} - Elementi rimanenti in lista: {}",
                             Integer.toHexString(sp.packet.getData()[7]), macacoToString(sp.packet.getData()),
                             packetsList.size());
-
-                    sp.socket.send(sp.packet);
+                    if (sp.socket != null) {
+                        sp.socket.send(sp.packet);
+                    }
                 }
                 // confronta gli stati in memoria con i frame inviati. Se
                 // corrispondono cancella il frame dalla lista inviati
@@ -197,11 +202,12 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
      */
     static int node;
     static int iSlot;
+    @Nullable
     static SoulissGenericHandler typ;
-    static String sCmd;
+    static String sCmd = "";
     static byte bExpected;
     static byte bActualItemState;
-    static String sExpected;
+    static String sExpected = "";
 
     public void safeSendCheck() {
         // short sVal = getByteAtSlot(macacoFrame, slot);
@@ -309,6 +315,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         }
     }
 
+    @Nullable
     private static SoulissGenericHandler getHandler(String ipAddressOnLAN, int node, int slot) {
         // recupero il riferimento al gateway
         SoulissGatewayHandler gateway = null;
@@ -372,6 +379,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     /**
      * Pop SocketAndPacket from ArrayList PacketList
      */
+    @Nullable
     private synchronized SoulissBindingSocketAndPacketStruct pop() {
         synchronized (this) {
             // non esegue il pop se bPopSuspend=true

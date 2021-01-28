@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OpenClosedType;
@@ -27,7 +29,9 @@ import org.openhab.core.types.Command;
  * @author Luca Remigio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@NonNullByDefault
 public class SoulissT1AHandler extends SoulissGenericHandler {
+    @Nullable
     Configuration gwConfigurationMap;
     // private Logger logger = LoggerFactory.getLogger(SoulissT1AHandler.class);
     byte t1nRawState;

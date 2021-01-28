@@ -18,12 +18,15 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Result callback interface.
  *
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@NonNullByDefault
 public interface TypicalCommonMethods {
     void setRawState(byte rawState);
 

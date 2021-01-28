@@ -16,6 +16,8 @@ import java.net.DatagramSocket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Thing;
@@ -33,6 +35,8 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio
  * @since 1.7.0
  */
+
+@NonNullByDefault
 public abstract class SoulissGenericActionMessage extends BaseThingHandler {
 
     /**
@@ -41,23 +45,23 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
 
     /*
      * public interface typicalCommonMethods {
-     * 
+     *
      * void setState(PrimitiveType state);
-     * 
+     *
      * // PrimitiveType getState();
-     * 
+     *
      * // DateTimeType getLastUpdateTime();
-     * 
+     *
      * // void setLastUpdateTime(String string);
      * }
      */
 
     Thing thingGenActMsg;
 
-    private String sTopicNumber;
-    private String sTopicVariant;
+    private String sTopicNumber = "";
+    private String sTopicVariant = "";
 
-    private String timestamp;
+    private String timestamp = "";
     private final Logger logger = LoggerFactory.getLogger(SoulissGenericActionMessage.class);
 
     public SoulissGenericActionMessage(Thing pThing) {
@@ -126,7 +130,7 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
+    @Nullable
     public DatagramSocket getDatagramSocket() {
         if (getBridge() != null) {
             if (getBridge().getHandler() != null) {

@@ -15,18 +15,23 @@ package org.openhab.binding.souliss.internal.protocol;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Data Structure for class SendDispatcherThread
  *
  * @author Tonino Fazio
  * @since 1.7.0
  */
+@NonNullByDefault
 public class SoulissBindingSocketAndPacketStruct {
-    public SoulissBindingSocketAndPacketStruct(DatagramSocket socketPar, DatagramPacket packetPar) {
+    public SoulissBindingSocketAndPacketStruct(@Nullable DatagramSocket socketPar, DatagramPacket packetPar) {
         socket = socketPar;
         packet = packetPar;
     }
 
+    @Nullable
     public DatagramSocket socket;
     public DatagramPacket packet;
     public boolean sent;

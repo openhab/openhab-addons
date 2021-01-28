@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.core.thing.Thing;
  * @author Luca Remigio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@NonNullByDefault
 public class SoulissT61Handler extends SoulissT6nHandler {
 
     // constructor

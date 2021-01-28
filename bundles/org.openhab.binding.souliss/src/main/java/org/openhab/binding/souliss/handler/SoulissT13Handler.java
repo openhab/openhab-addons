@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -30,8 +32,11 @@ import org.openhab.core.types.RefreshType;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissT13Handler extends SoulissGenericHandler {
 
+    @Nullable
     Configuration gwConfigurationMap;
     byte t1nRawState;
 
@@ -44,7 +49,7 @@ public class SoulissT13Handler extends SoulissGenericHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void setState(PrimitiveType state) {
+    public void setState(@Nullable PrimitiveType state) {
         super.setLastStatusStored();
         if (state != null) {
             if (state instanceof OnOffType) {
@@ -62,10 +67,18 @@ public class SoulissT13Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.STATEONOFF_CHANNEL:
-                    updateState(channelUID, getOhStateOnOffFromSoulissVal(t1nRawState));
+                    @Nullable
+                    OnOffType valonOff = getOhStateOnOffFromSoulissVal(t1nRawState);
+                    if (valonOff != null) {
+                        updateState(channelUID, valonOff);
+                    }
                     break;
                 case SoulissBindingConstants.STATEOPENCLOSE_CHANNEL:
-                    updateState(channelUID, getOhStateOpenCloseFromSoulissVal(t1nRawState));
+                    @Nullable
+                    OpenClosedType valOpenClose = getOhStateOpenCloseFromSoulissVal(t1nRawState);
+                    if (valOpenClose != null) {
+                        updateState(channelUID, valOpenClose);
+                    }
                     break;
             }
         }

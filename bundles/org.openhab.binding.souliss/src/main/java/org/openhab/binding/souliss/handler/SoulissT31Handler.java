@@ -13,6 +13,8 @@
 
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.binding.souliss.internal.HalfFloatUtils;
@@ -34,8 +36,10 @@ import org.openhab.core.types.RefreshType;
  * @author Luca Remigio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@NonNullByDefault
 public class SoulissT31Handler extends SoulissGenericHandler {
 
+    @Nullable
     Configuration gwConfigurationMap;
 
     DecimalType setPointValue = DecimalType.ZERO;

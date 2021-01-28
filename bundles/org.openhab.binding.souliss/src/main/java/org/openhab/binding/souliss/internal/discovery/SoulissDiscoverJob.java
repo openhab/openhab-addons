@@ -18,6 +18,8 @@ import java.net.SocketException;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingUDPServerJob;
@@ -32,12 +34,14 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@NonNullByDefault
 public class SoulissDiscoverJob implements Runnable {
     /**
      * Result callback interface.
      */
     public interface DiscoverResult {
         static boolean IS_GATEWAY_DETECTED = false;
+        @Nullable
         Bridge bridge = null;
 
         void gatewayDetected(InetAddress addr, String id);
@@ -50,6 +54,7 @@ public class SoulissDiscoverJob implements Runnable {
     }
 
     private DatagramSocket datagramSocket;
+    @Nullable
     SoulissBindingUDPServerJob udpServerOnDefaultPort = null;
     ///// Debug
     private Logger logger = LoggerFactory.getLogger(SoulissDiscoverJob.class);

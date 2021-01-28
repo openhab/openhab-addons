@@ -15,6 +15,8 @@ package org.openhab.binding.souliss.internal;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@NonNullByDefault
 public class SoulissDatagramSocketFactory {
     // static DatagramSocket soulissDatagramSocket;
     // static DatagramSocket soulissDatagramSocket_port230;
@@ -32,10 +35,12 @@ public class SoulissDatagramSocketFactory {
     // public static Integer serverPort;
     private static final Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
 
+    @Nullable
     public static DatagramSocket getSocketDatagram() {
         return getSocketDatagram(0);
     }
 
+    @Nullable
     public static DatagramSocket getSocketDatagram(int socketPortNumber) {
         // return DatagramSocket for packet trasmission
         DatagramSocket soulissDatagramSocket = null;

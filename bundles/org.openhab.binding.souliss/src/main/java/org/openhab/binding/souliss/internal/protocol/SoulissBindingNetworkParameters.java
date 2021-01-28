@@ -46,7 +46,7 @@ public class SoulissBindingNetworkParameters {
     @Nullable
     private static DatagramSocket datagramSocket = null;
     @Nullable
-    public static DiscoverResult discoverResult;
+    public static DiscoverResult discoverResult = null;
 
     @Nullable
     public static DatagramSocket getDatagramSocket() {
