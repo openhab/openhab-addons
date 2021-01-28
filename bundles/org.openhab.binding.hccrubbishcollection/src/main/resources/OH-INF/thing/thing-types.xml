@@ -19,6 +19,7 @@
 				<label>General Bin Collection Date</label>
 				<description>The next collection date of the general rubbish (red bin).</description>
 			</channel>
+			<channel id="collection-event" typeId="collection-event"/>
 		</channels>
 
 		<config-description>
@@ -38,6 +39,24 @@
 	<channel-type id="bin">
 		<item-type>DateTime</item-type>
 		<label>Collection Date</label>
+	</channel-type>
+	<channel-type id="collection-event">
+		<kind>trigger</kind>
+		<label>Collection Event</label>
+		<description>Event for the day when collection occurs.</description>
+		<event>
+			<options>
+				<option value="RECYCLING">RECYCLING</option>
+				<option value="GENERAL">GENERAL</option>
+			</options>
+		</event>
+		<config-description>
+			<parameter name="offset" type="integer" min="-2880" max="2880" unit="min">
+				<label>Offset</label>
+				<description>Moves the event forward or backward (in minutes).</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 </thing:thing-descriptions>

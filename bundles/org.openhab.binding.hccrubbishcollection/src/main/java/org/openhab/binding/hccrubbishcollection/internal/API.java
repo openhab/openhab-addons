@@ -15,6 +15,8 @@ package org.openhab.binding.hccrubbishcollection.internal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -86,20 +88,28 @@ public class API {
                     return false;
                 }
 
-                ZonedDateTime localGeneralDate = ZonedDateTime.parse(generalElement.getAsString() + "+12:00");
-                ZonedDateTime localRecyclingDate = ZonedDateTime.parse(recyclingElement.getAsString() + "+12:00");
+                LocalDateTime localGeneralDate = LocalDateTime.parse(generalElement.getAsString());
+                LocalDateTime localRecyclingDate = LocalDateTime.parse(recyclingElement.getAsString());
 
-                if (localGeneralDate.compareTo(localRecyclingDate) < 0) {
-                    day = localGeneralDate.getDayOfWeek().getValue();
+                ZoneId zone = ZonedDateTime.now().getZone();
+
+                ZonedDateTime zonedGeneralDate = ZonedDateTime.of(localGeneralDate, zone);
+                ZonedDateTime zonedRecyclingDate = ZonedDateTime.of(localRecyclingDate, zone);
+
+                zonedGeneralDate = zonedGeneralDate.withSecond(0).withNano(0);
+                zonedRecyclingDate = zonedRecyclingDate.withSecond(0).withNano(0);
+
+                if (zonedGeneralDate.compareTo(zonedRecyclingDate) < 0) {
+                    day = zonedGeneralDate.getDayOfWeek().getValue();
                     logger.trace("Next date is General Rubbish");
                 } else {
-                    day = localRecyclingDate.getDayOfWeek().getValue();
+                    day = zonedRecyclingDate.getDayOfWeek().getValue();
                     logger.trace("Next date is Recyling Rubbish");
                 }
                 errorDetail = ThingStatusDetail.NONE;
 
-                recycling = localRecyclingDate;
-                general = localGeneralDate;
+                recycling = zonedRecyclingDate;
+                general = zonedGeneralDate;
 
                 return true;
             } else {

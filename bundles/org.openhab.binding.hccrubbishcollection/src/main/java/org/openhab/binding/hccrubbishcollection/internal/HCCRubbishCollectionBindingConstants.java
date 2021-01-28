@@ -33,4 +33,8 @@ public class HCCRubbishCollectionBindingConstants {
     public static final String CHANNEL_DAY = "day";
     public static final String CHANNEL_BIN_GENERAL = "general";
     public static final String CHANNEL_BIN_RECYCLING = "recycling";
+
+    public static final String TRIGGER_COLLECTION = "collection-event";
+    public static final String EVENT_RECYCLING = "RECYCLING";
+    public static final String EVENT_GENERAL = "GENERAL";
 }
