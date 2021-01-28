@@ -34,6 +34,8 @@ public class SoulissGatewayJobPing extends Thread {
     private byte nodeIndex;
     private int pingRefreshInterval;
 
+    private final SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+
     @Nullable
     private SoulissGatewayHandler gw;
 
@@ -54,8 +56,8 @@ public class SoulissGatewayJobPing extends Thread {
     private void sendPing() {
         logger.debug("Sending ping packet");
         if (ipAddressOnLAN.length() > 0) {
-            SoulissCommonCommands.sendPing(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
-                    nodeIndex, userIndex, (byte) 0, (byte) 0);
+            soulissCommands.sendPing(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN, nodeIndex,
+                    userIndex, (byte) 0, (byte) 0);
             logger.debug("Sent ping packet");
         }
     }

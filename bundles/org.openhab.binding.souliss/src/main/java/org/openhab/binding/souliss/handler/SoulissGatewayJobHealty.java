@@ -34,6 +34,8 @@ public class SoulissGatewayJobHealty extends Thread {
     private byte nodeIndex;
     private int healthRefreshInterval;
 
+    private final SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+
     @Nullable
     private SoulissGatewayHandler gw;
 
@@ -53,8 +55,8 @@ public class SoulissGatewayJobHealty extends Thread {
     private void sendHealthyRequest() {
         logger.debug("Sending healthy packet");
         if (ipAddressOnLAN.length() > 0) {
-            SoulissCommonCommands.sendHealthyRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(),
-                    ipAddressOnLAN, nodeIndex, userIndex, gw.getNodes());
+            soulissCommands.sendHealthyRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
+                    nodeIndex, userIndex, gw.getNodes());
             logger.debug("Sent healthy packet");
         }
     }

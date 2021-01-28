@@ -71,7 +71,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         logger.info("Starting: {} - Version: {}", sSymbolicName, bindingVersion.toString());
         logger.info("Starting Servers");
 
-        datagramSocket = SoulissDatagramSocketFactory.getSocketDatagram();
+        datagramSocket = SoulissDatagramSocketFactory.getSocketDatagram(this.logger);
         if (datagramSocket != null) {
             SoulissBindingNetworkParameters.setDatagramSocket(datagramSocket);
 

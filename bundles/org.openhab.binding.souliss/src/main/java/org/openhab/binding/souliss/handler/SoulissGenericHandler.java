@@ -55,6 +55,8 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     Thing thingGeneric;
 
+    private final SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+
     private int iSlot;
     private int iNode;
     private final Logger logger = LoggerFactory.getLogger(SoulissGenericHandler.class);
@@ -62,7 +64,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     boolean bSecureSend = false; // 0 means that Secure Send is disabled
     boolean bExpectedValueSameAsSet = false; // true means that expected value is setpoint (only for T31, T19 and T6x)
 
-    public SoulissGenericHandler(Thing thing) {
+    protected SoulissGenericHandler(Thing thing) {
         super(thing);
         this.thingGeneric = thing;
         int iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
@@ -104,22 +106,22 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
      * @param command
      */
     public void commandSEND(byte command) {
-        SoulissCommonCommands.sendFORCEFrame(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
+        soulissCommands.sendFORCEFrame(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
                 getGatewayUserIndex(), this.getNode(), this.getSlot(), command);
     }
 
     public void commandSendRgb(byte command, byte r, byte g, byte b) {
-        SoulissCommonCommands.sendFORCEFrame(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
+        soulissCommands.sendFORCEFrame(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
                 getGatewayUserIndex(), this.getNode(), this.getSlot(), command, r, g, b);
     }
 
     public void commandSEND(byte command, byte b1, byte b2) {
-        SoulissCommonCommands.sendFORCEFrameT31SetPoint(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
+        soulissCommands.sendFORCEFrameT31SetPoint(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
                 getGatewayUserIndex(), this.getNode(), this.getSlot(), command, b1, b2);
     }
 
     public void commandSEND(byte b1, byte b2) {
-        SoulissCommonCommands.sendFORCEFrameT61SetPoint(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
+        soulissCommands.sendFORCEFrameT61SetPoint(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
                 getGatewayUserIndex(), this.getNode(), this.getSlot(), b1, b2);
     }
 

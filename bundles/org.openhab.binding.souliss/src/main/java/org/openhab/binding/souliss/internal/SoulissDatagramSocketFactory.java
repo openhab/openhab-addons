@@ -33,15 +33,15 @@ public class SoulissDatagramSocketFactory {
     // static DatagramSocket soulissDatagramSocket_port230;
 
     // public static Integer serverPort;
-    private static final Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
 
     @Nullable
-    public static DatagramSocket getSocketDatagram() {
-        return getSocketDatagram(0);
+    public static DatagramSocket getSocketDatagram(Logger logger) {
+        return getSocketDatagram(0, logger);
     }
 
     @Nullable
-    public static DatagramSocket getSocketDatagram(int socketPortNumber) {
+    public static DatagramSocket getSocketDatagram(int socketPortNumber, Logger logger) {
         // return DatagramSocket for packet trasmission
         DatagramSocket soulissDatagramSocket = null;
         logger.debug("Setup socket");

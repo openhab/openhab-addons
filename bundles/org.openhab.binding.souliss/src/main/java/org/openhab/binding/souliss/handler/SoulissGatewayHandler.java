@@ -50,6 +50,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayHandler.class);
     public @Nullable DatagramSocket datagramSocketDefaultPort;
     private @Nullable SoulissBindingUDPServerJob udpServerDefaultPortRunnableClass;
+    private SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
 
     boolean bGatewayDetected = false;
 
@@ -184,7 +185,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // START SERVER ON DEFAULT PORT - Used for topics
             if (udpServerDefaultPortRunnableClass == null) {
                 logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
-                datagramSocketDefaultPort = SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort);
+                datagramSocketDefaultPort = SoulissDatagramSocketFactory.getSocketDatagram(soulissGatewayPort,
+                        this.logger);
                 if (datagramSocketDefaultPort != null) {
                     udpServerDefaultPortRunnableClass = new SoulissBindingUDPServerJob(datagramSocketDefaultPort,
                             SoulissBindingNetworkParameters.discoverResult);
@@ -245,8 +247,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void dbStructAnswerReceived() {
-        SoulissCommonCommands.sendTypicalRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(),
-                ipAddressOnLAN, nodeIndex, userIndex, nodes);
+        soulissCommands.sendTypicalRequestFrame(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
+                nodeIndex, userIndex, nodes);
     }
 
     /*
@@ -335,8 +337,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public void sendSubscription() {
         // logger.debug("Sending subscription packet");
         if ( /* ipAddressOnLAN != null && */ ipAddressOnLAN.length() > 0) {
-            SoulissCommonCommands.sendSUBSCRIPTIONframe(SoulissBindingNetworkParameters.getDatagramSocket(),
-                    ipAddressOnLAN, nodeIndex, userIndex, getNodes());
+            soulissCommands.sendSUBSCRIPTIONframe(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN,
+                    nodeIndex, userIndex, getNodes());
         }
         logger.debug("Sent subscription packet");
     }

@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissCommonCommands {
 
-    private static final Logger logger = LoggerFactory.getLogger(SoulissCommonCommands.class);
+    private final Logger logger = LoggerFactory.getLogger(SoulissCommonCommands.class);
 
-    public static void sendFORCEFrame(@Nullable DatagramSocket datagramSocket,
+    public final void sendFORCEFrame(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int IDNode, int slot,
             byte shortCommand) {
         sendFORCEFrame(datagramSocket, soulissNodeIPAddressOnLAN, nodeIndex, userIndex, IDNode, slot, shortCommand,
@@ -52,7 +52,7 @@ public class SoulissCommonCommands {
      * used for set dimmer value. It set command at first byte and dimmerVal to
      * second byte
      */
-    public static void sendFORCEFrame(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN, byte nodeIndex,
+    public final void sendFORCEFrame(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN, byte nodeIndex,
             byte userIndex, int IDNode, int slot, byte shortCommand, byte lDimmer) {
         sendFORCEFrame(datagramSocket, soulissNodeIPAddressOnLAN, nodeIndex, userIndex, IDNode, slot, shortCommand,
                 lDimmer, null, null);
@@ -61,7 +61,7 @@ public class SoulissCommonCommands {
     /*
      * send force frame with command and RGB value
      */
-    public static void sendFORCEFrame(@Nullable DatagramSocket datagramSocket,
+    public final void sendFORCEFrame(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int IDNode, int slot,
             byte shortCommand, @Nullable Byte byte1, @Nullable Byte byte2, @Nullable Byte byte3) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
@@ -108,7 +108,7 @@ public class SoulissCommonCommands {
      * T61 send framte to push the setpoint value
      */
 
-    public static void sendFORCEFrameT61SetPoint(@Nullable DatagramSocket datagramSocket,
+    public final void sendFORCEFrameT61SetPoint(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int IDNode, int slot,
             Byte byte1, Byte byte2) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
@@ -138,7 +138,7 @@ public class SoulissCommonCommands {
     /*
      * T31 send force frame with command and setpoint float
      */
-    public static void sendFORCEFrameT31SetPoint(@Nullable DatagramSocket datagramSocket,
+    public final void sendFORCEFrameT31SetPoint(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int IDNode, int slot,
             byte shortCommand, Byte byte1, Byte byte2) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
@@ -167,7 +167,7 @@ public class SoulissCommonCommands {
         send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
     }
 
-    public static void sendDBStructFrame(@Nullable DatagramSocket socket, @Nullable String soulissNodeIPAddressOnLAN,
+    public final void sendDBStructFrame(@Nullable DatagramSocket socket, @Nullable String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
         macacoFrame.add((byte) SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_REQ);
@@ -194,7 +194,7 @@ public class SoulissCommonCommands {
     /*
      * send UDP frame
      */
-    private static void send(@Nullable DatagramSocket socket, ArrayList<Byte> macacoFrame,
+    private final void send(@Nullable DatagramSocket socket, ArrayList<Byte> macacoFrame,
             @Nullable String sSoulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex) {
         ArrayList<Byte> buf = buildVNetFrame(macacoFrame, sSoulissNodeIPAddressOnLAN, userIndex, nodeIndex);
         byte[] merd = toByteArray(buf);
@@ -204,7 +204,7 @@ public class SoulissCommonCommands {
             serverAddr = InetAddress.getByName(sSoulissNodeIPAddressOnLAN);
             DatagramPacket packet = new DatagramPacket(merd, merd.length, serverAddr,
                     SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
-            SoulissBindingSendDispatcherJob.put(socket, packet);
+            SoulissBindingSendDispatcherJob.put(socket, packet, this.logger);
             // socket.send(packet);
         } catch (IOException e) {
             logger.error("Error: {} ", e.getMessage());
@@ -215,7 +215,7 @@ public class SoulissCommonCommands {
     /*
      * send UDP frame
      */
-    private static void sendBroadcastNow(DatagramSocket socket, ArrayList<Byte> macacoFrame) {
+    private final void sendBroadcastNow(DatagramSocket socket, ArrayList<Byte> macacoFrame) {
         byte iUserIndex = SoulissBindingNetworkParameters.DEFAULT_USER_INDEX;
         byte iNodeIndex = SoulissBindingNetworkParameters.DEFAULT_NODE_INDEX;
 
@@ -266,7 +266,7 @@ public class SoulissCommonCommands {
     /*
      * Build VNet Frame
      */
-    private static ArrayList<Byte> buildVNetFrame(ArrayList<Byte> MACACOframe2, @Nullable String soulissNodeIPAddress,
+    private final ArrayList<Byte> buildVNetFrame(ArrayList<Byte> MACACOframe2, @Nullable String soulissNodeIPAddress,
             byte iUserIndex, byte iNodeIndex) {
         ArrayList<Byte> frame = new ArrayList<Byte>();
         InetAddress ip;
@@ -315,7 +315,7 @@ public class SoulissCommonCommands {
     /**
      * Build MULTICAST FORCE Frame
      */
-    public static void sendMULTICASTFORCEFrame(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
+    public final void sendMULTICASTFORCEFrame(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, byte typical, byte shortCommand) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
         macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE_MASSIVE);
@@ -336,7 +336,7 @@ public class SoulissCommonCommands {
     /**
      * Build PING Frame
      */
-    public static void sendPing(@Nullable DatagramSocket datagramSocket, @Nullable String soulissNodeIPAddressOnLAN,
+    public final void sendPing(@Nullable DatagramSocket datagramSocket, @Nullable String soulissNodeIPAddressOnLAN,
             byte nodeIndex, byte userIndex, byte putIn1, byte punIn_2) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
         macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_PING_REQ);
@@ -355,7 +355,7 @@ public class SoulissCommonCommands {
     /**
      * Build BROADCAST PING Frame
      */
-    public static void sendBroadcastGatewayDiscover(DatagramSocket datagramSocket) {
+    public final void sendBroadcastGatewayDiscover(DatagramSocket datagramSocket) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
         macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ);
 
@@ -372,7 +372,7 @@ public class SoulissCommonCommands {
     /**
      * Build SUBSCRIPTION Frame
      */
-    public static void sendSUBSCRIPTIONframe(@Nullable DatagramSocket datagramSocket,
+    public final void sendSUBSCRIPTIONframe(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int iNodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
         macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ);
@@ -391,7 +391,7 @@ public class SoulissCommonCommands {
     /**
      * Build HEALTY REQUEST Frame
      */
-    public static void sendHealthyRequestFrame(@Nullable DatagramSocket datagramSocket,
+    public final void sendHealthyRequestFrame(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int iNodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
         macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
@@ -409,7 +409,7 @@ public class SoulissCommonCommands {
     /**
      * Build TYPICAL REQUEST Frame
      */
-    public static void sendTypicalRequestFrame(@Nullable DatagramSocket datagramSocket,
+    public final void sendTypicalRequestFrame(@Nullable DatagramSocket datagramSocket,
             @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int nodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<Byte>();
         macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
