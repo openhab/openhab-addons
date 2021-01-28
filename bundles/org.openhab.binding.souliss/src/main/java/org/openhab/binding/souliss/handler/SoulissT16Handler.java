@@ -185,7 +185,6 @@ public class SoulissT16Handler extends SoulissGenericHandler {
     public void setRawStateCommand(byte rawStateByte0) {
         super.setLastStatusStored();
         if (rawStateByte0 != t1nRawStateByte0) {
-
             this.setState(getOhStateOnOffFromSoulissVal(rawStateByte0));
         }
     }

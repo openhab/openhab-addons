@@ -29,11 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class implements the base Souliss Action Message. All Action Messages derives from
- * this class
+ * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  *
- * @author Tonino Fazio
- * @since 1.7.0
+ *         This class implements the base Souliss Action Message. All Action Messages derives from
+ *         this class
+ *
+ * @author Tonino Fazio - @since 1.7.0
  */
 
 @NonNullByDefault
