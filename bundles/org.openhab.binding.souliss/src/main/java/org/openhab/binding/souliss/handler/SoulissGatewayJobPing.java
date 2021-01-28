@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Bridge;
@@ -22,6 +24,8 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissGatewayJobPing extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayJobPing.class);
@@ -30,6 +34,7 @@ public class SoulissGatewayJobPing extends Thread {
     private byte nodeIndex;
     private int pingRefreshInterval;
 
+    @Nullable
     private SoulissGatewayHandler gw;
 
     public SoulissGatewayJobPing(Bridge bridge) {

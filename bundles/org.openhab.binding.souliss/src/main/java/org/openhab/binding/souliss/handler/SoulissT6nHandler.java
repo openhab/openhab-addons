@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.HalfFloatUtils;
 import org.openhab.core.library.types.DecimalType;
@@ -28,7 +29,7 @@ import org.openhab.core.types.PrimitiveType;
  * @author Luca Remigio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
-
+@NonNullByDefault
 public class SoulissT6nHandler extends SoulissGenericHandler {
 
     // private Logger logger = LoggerFactory.getLogger(SoulissT6nHandler.class);

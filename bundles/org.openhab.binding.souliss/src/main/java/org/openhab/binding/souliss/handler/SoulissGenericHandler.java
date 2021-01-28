@@ -16,6 +16,8 @@ import java.net.DatagramSocket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
@@ -47,6 +49,8 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio
  * @since 1.7.0
  */
+
+@NonNullByDefault
 public abstract class SoulissGenericHandler extends BaseThingHandler implements TypicalCommonMethods {
 
     Thing thingGeneric;
@@ -146,7 +150,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         }
     }
 
-    @SuppressWarnings("null")
+    @Nullable
     public String getGatewayIP() {
         // return ((SoulissGatewayHandler) thingRegistry.get(thingGeneric.getBridgeUID()).getHandler()).ipAddressOnLAN;
         Bridge bridge = getBridge();
@@ -158,6 +162,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return null;
     }
 
+    @Nullable
     public String getLabel() {
         return thingGeneric.getLabel();
     }
@@ -178,6 +183,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return 0;
     }
 
+    @Nullable
     public DatagramSocket getDatagramSocket() {
         return SoulissBindingNetworkParameters.getDatagramSocket();
     }
@@ -190,7 +196,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         this.updateState(SoulissBindingConstants.LASTSTATUSSTORED_CHANNEL, DateTimeType.valueOf(getTimestamp()));
     }
 
-    protected OnOffType getOhStateOnOffFromSoulissVal(byte sVal) {
+    protected @Nullable OnOffType getOhStateOnOffFromSoulissVal(byte sVal) {
         if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OnOffType.ON;
         } else if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL) {
@@ -208,6 +214,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return null;
     }
 
+    @Nullable
     protected OpenClosedType getOhStateOpenCloseFromSoulissVal(byte sVal) {
         if (sVal == SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OpenClosedType.CLOSED;

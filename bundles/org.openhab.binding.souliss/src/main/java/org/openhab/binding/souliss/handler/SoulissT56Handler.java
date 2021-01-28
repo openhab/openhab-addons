@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -21,6 +22,8 @@ import org.openhab.core.thing.Thing;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissT56Handler extends SoulissT5nHandler {
 
     public SoulissT56Handler(Thing thing) {

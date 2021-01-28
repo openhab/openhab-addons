@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
@@ -27,7 +28,7 @@ import org.openhab.core.types.PrimitiveType;
  * @author Luca Remigio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
-
+@NonNullByDefault
 public class SoulissTopicsHandler extends SoulissGenericActionMessage implements TypicalCommonMethods {
 
     // private Logger logger = LoggerFactory.getLogger(SoulissTopicsHandler.class);

@@ -14,6 +14,8 @@ package org.openhab.binding.souliss.handler;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -36,7 +38,10 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissT19Handler extends SoulissGenericHandler {
+    @Nullable
     Configuration gwConfigurationMap;
     private final Logger logger = LoggerFactory.getLogger(SoulissT19Handler.class);
     byte t1nRawStateByte0;
@@ -53,7 +58,10 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    updateState(channelUID, getOhStateOnOffFromSoulissVal(t1nRawStateByte0));
+                    OnOffType valOnOff = getOhStateOnOffFromSoulissVal(t1nRawStateByte0);
+                    if (valOnOff != null) {
+                        updateState(channelUID, valOnOff);
+                    }
                     break;
                 case SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL:
                     updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
@@ -121,7 +129,7 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         }
     }
 
-    public void setState(PrimitiveType state) {
+    public void setState(@Nullable PrimitiveType state) {
         super.setLastStatusStored();
         if (state != null) {
             updateState(SoulissBindingConstants.SLEEP_CHANNEL, OnOffType.OFF);

@@ -14,6 +14,8 @@ package org.openhab.binding.souliss.handler;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -37,7 +39,9 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@NonNullByDefault
 public class SoulissT16Handler extends SoulissGenericHandler {
+    @Nullable
     Configuration gwConfigurationMap;
     private Logger logger = LoggerFactory.getLogger(SoulissT16Handler.class);
     byte t1nRawStateByte0;
@@ -45,21 +49,24 @@ public class SoulissT16Handler extends SoulissGenericHandler {
     byte t1nRawStateGreenByte2;
     byte t1nRawStateBluByte3;
 
-    // HSBType hsbState = HSBType.WHITE;
+    HSBType hsbState = HSBType.WHITE;
+
     byte xSleepTime = 0;
 
     public SoulissT16Handler(Thing thing) {
         super(thing);
     }
 
-    HSBType hsbState;
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    updateState(channelUID, getOhStateOnOffFromSoulissVal(t1nRawStateByte0));
+                    @Nullable
+                    OnOffType valOnOff = getOhStateOnOffFromSoulissVal(t1nRawStateByte0);
+                    if (valOnOff != null) {
+                        updateState(channelUID, valOnOff);
+                    }
                     break;
                 case SoulissBindingConstants.LED_COLOR_CHANNEL:
                     updateState(channelUID, gethsb(t1nRawStateRedByte1, t1nRawStateGreenByte2, t1nRawStateBluByte3));
@@ -161,7 +168,7 @@ public class SoulissT16Handler extends SoulissGenericHandler {
         }
     }
 
-    void setState(PrimitiveType state) {
+    void setState(@Nullable PrimitiveType state) {
         super.setLastStatusStored();
         updateState(SoulissBindingConstants.SLEEP_CHANNEL, OnOffType.OFF);
         if (state != null) {
@@ -178,6 +185,7 @@ public class SoulissT16Handler extends SoulissGenericHandler {
     public void setRawStateCommand(byte rawStateByte0) {
         super.setLastStatusStored();
         if (rawStateByte0 != t1nRawStateByte0) {
+
             this.setState(getOhStateOnOffFromSoulissVal(rawStateByte0));
         }
     }

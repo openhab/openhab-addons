@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -30,9 +32,12 @@ import org.openhab.core.types.RefreshType;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissT14Handler extends SoulissGenericHandler {
 
     // private Logger logger = LoggerFactory.getLogger(SoulissT14Handler.class);
+    @Nullable
     Configuration gwConfigurationMap;
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
     byte t1nRawState;
@@ -52,7 +57,11 @@ public class SoulissT14Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.PULSE_CHANNEL:
-                    updateState(channelUID, getOhStateOnOffFromSoulissVal(t1nRawState));
+                    @Nullable
+                    OnOffType valPulse = getOhStateOnOffFromSoulissVal(t1nRawState);
+                    if (valPulse != null) {
+                        updateState(channelUID, valPulse);
+                    }
                     break;
             }
         } else {
@@ -70,7 +79,7 @@ public class SoulissT14Handler extends SoulissGenericHandler {
         }
     }
 
-    public void setState(PrimitiveType state) {
+    public void setState(@Nullable PrimitiveType state) {
         super.setLastStatusStored();
         if (state != null) {
             this.updateState(SoulissBindingConstants.PULSE_CHANNEL, (OnOffType) state);

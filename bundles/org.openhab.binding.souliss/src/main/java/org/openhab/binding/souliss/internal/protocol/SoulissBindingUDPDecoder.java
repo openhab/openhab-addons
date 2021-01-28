@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.binding.souliss.SoulissBindingUDPConstants;
@@ -64,12 +66,14 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio
  * @since 1.7.0
  */
+@NonNullByDefault
 public class SoulissBindingUDPDecoder {
 
     private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPDecoder.class);
+    @Nullable
     private static DiscoverResult discoverResult;
 
-    public SoulissBindingUDPDecoder(DiscoverResult pDiscoverResult) {
+    public SoulissBindingUDPDecoder(@Nullable DiscoverResult pDiscoverResult) {
         SoulissBindingUDPDecoder.discoverResult = pDiscoverResult;
     }
 

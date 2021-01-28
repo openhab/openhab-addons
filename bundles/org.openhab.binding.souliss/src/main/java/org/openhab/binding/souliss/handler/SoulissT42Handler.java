@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -30,7 +32,10 @@ import org.openhab.core.types.PrimitiveType;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissT42Handler extends SoulissGenericHandler {
+    @Nullable
     Configuration gwConfigurationMap;
 
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
@@ -91,7 +96,11 @@ public class SoulissT42Handler extends SoulissGenericHandler {
         super.setLastStatusStored();
         // update item state only if it is different from previous
         if (t4nRawState != rawState) {
-            this.setState(getOhStateOnOffFromSoulissVal(rawState));
+            @Nullable
+            OnOffType onOffVal = getOhStateOnOffFromSoulissVal(rawState);
+            if (onOffVal != null) {
+                this.setState(onOffVal);
+            }
         }
         t4nRawState = rawState;
     }
