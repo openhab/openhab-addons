@@ -35,10 +35,22 @@
 		<item-type>Number</item-type>
 		<label>Collection Day</label>
 		<description>The rubbish collection Day of the Week</description>
+		<state>
+			<options>
+				<option value="1">Monday</option>
+				<option value="2">Tuesday</option>
+				<option value="3">Wednesday</option>
+				<option value="4">Thursday</option>
+				<option value="5">Friday</option>
+				<option value="6">Saturday</option>
+				<option value="7">Sunday</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="bin">
 		<item-type>DateTime</item-type>
 		<label>Collection Date</label>
+		<state pattern="%1$tY-%1$tm-%1$td"></state>
 	</channel-type>
 	<channel-type id="collection-event">
 		<kind>trigger</kind>

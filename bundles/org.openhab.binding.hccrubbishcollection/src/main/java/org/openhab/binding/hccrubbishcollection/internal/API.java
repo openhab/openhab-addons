@@ -53,6 +53,7 @@ public class API {
     private String errorDetailMessage = "";
     private ThingStatusDetail errorDetail = ThingStatusDetail.NONE;
 
+    private @Nullable Integer collectionWeek = null;
     private @Nullable Integer day = null;
     private @Nullable ZonedDateTime recycling = null;
     private @Nullable ZonedDateTime general = null;
@@ -77,6 +78,8 @@ public class API {
 
                 JsonObject jsonResponse = new JsonParser().parse(cleanedContent).getAsJsonObject();
 
+                JsonElement dayElement = jsonResponse.get("CollectionDay");
+                JsonElement collectionWeekElement = jsonResponse.get("CollectionWeek");
                 JsonElement generalElement = jsonResponse.get("RedBin");
                 JsonElement recyclingElement = jsonResponse.get("YellowBin");
 
@@ -88,6 +91,9 @@ public class API {
                     return false;
                 }
 
+                day = dayElement.getAsInt();
+                collectionWeek = collectionWeekElement.getAsInt();
+                
                 LocalDateTime localGeneralDate = LocalDateTime.parse(generalElement.getAsString());
                 LocalDateTime localRecyclingDate = LocalDateTime.parse(recyclingElement.getAsString());
 
@@ -99,13 +105,6 @@ public class API {
                 zonedGeneralDate = zonedGeneralDate.withSecond(0).withNano(0);
                 zonedRecyclingDate = zonedRecyclingDate.withSecond(0).withNano(0);
 
-                if (zonedGeneralDate.compareTo(zonedRecyclingDate) < 0) {
-                    day = zonedGeneralDate.getDayOfWeek().getValue();
-                    logger.trace("Next date is General Rubbish");
-                } else {
-                    day = zonedRecyclingDate.getDayOfWeek().getValue();
-                    logger.trace("Next date is Recyling Rubbish");
-                }
                 errorDetail = ThingStatusDetail.NONE;
 
                 recycling = zonedRecyclingDate;
@@ -137,6 +136,10 @@ public class API {
 
     public String getErrorDetailMessage() {
         return errorDetailMessage;
+    }
+
+    public @Nullable Integer getCollectionWeek() {
+        return collectionWeek;
     }
 
     public @Nullable Integer getDay() {
