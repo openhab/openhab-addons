@@ -15,14 +15,16 @@ package org.openhab.binding.souliss;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This class contains Souliss constants. Original version is taken from
- * SoulissApp. For scope of this binding not all constants are used.
+ * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  *
- * @author Alessandro Del Pex
- * @author Tonino Fazio
- * @since 1.7.0
- * @author Luca Remigio
- * @since 2.0.0
+ *         This class contains Souliss constants. Original version is taken from
+ *         SoulissApp. For scope of this binding not all constants are used.
+ *
+ * @author Alessandro Del Pex - soulissapp
+ * @author Tonino Fazio - @since 1.7.0
+ * @author Luca Remigio - @since 2.0.0
+ *
  */
 
 @NonNullByDefault
