@@ -91,9 +91,6 @@ public class API {
                     return false;
                 }
 
-                day = dayElement.getAsInt();
-                collectionWeek = collectionWeekElement.getAsInt();
-                
                 LocalDateTime localGeneralDate = LocalDateTime.parse(generalElement.getAsString());
                 LocalDateTime localRecyclingDate = LocalDateTime.parse(recyclingElement.getAsString());
 
@@ -102,13 +99,13 @@ public class API {
                 ZonedDateTime zonedGeneralDate = ZonedDateTime.of(localGeneralDate, zone);
                 ZonedDateTime zonedRecyclingDate = ZonedDateTime.of(localRecyclingDate, zone);
 
-                zonedGeneralDate = zonedGeneralDate.withSecond(0).withNano(0);
-                zonedRecyclingDate = zonedRecyclingDate.withSecond(0).withNano(0);
-
                 errorDetail = ThingStatusDetail.NONE;
 
                 recycling = zonedRecyclingDate;
                 general = zonedGeneralDate;
+
+                day = dayElement.getAsInt();
+                collectionWeek = collectionWeekElement.getAsInt();
 
                 return true;
             } else {
