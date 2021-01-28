@@ -49,6 +49,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -276,7 +277,9 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         logger.info("Trying to connect or reconnect...");
         closeConnection();
         currentState = commManager.createNewState();
-        if (openConnection()) {
+        try {
+            openConnection();
+            logger.debug("openConnection(): connected");
             updateStatus(ThingStatus.ONLINE);
             if (forceStandardMode) {
                 currentState.powerlinkMode.setValue(false);
@@ -285,8 +288,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             } else {
                 commManager.startDownload();
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection failed");
+        } catch (Exception e) {
+            logger.debug("openConnection(): {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setAllChannelsOffline();
         }
     }
 
@@ -295,14 +300,12 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      *
      * @return true if the connection has been opened
      */
-    private synchronized boolean openConnection() {
+    private synchronized void openConnection() throws Exception {
         if (commManager != null) {
             commManager.addEventListener(this);
             commManager.open();
         }
         remainingDownloadAttempts = MAX_DOWNLOAD_ATTEMPTS;
-        logger.debug("openConnection(): {}", isConnected() ? "connected" : "disconnected");
-        return isConnected();
     }
 
     /**
@@ -482,8 +485,9 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     }
 
     @Override
-    public void onCommunicationFailure() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Lost connection");
+    public void onCommunicationFailure(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        setAllChannelsOffline();
     }
 
     private void processPanelSettings() {
@@ -493,7 +497,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             }
             remainingDownloadAttempts = 0;
         } else {
-            logger.warn("Powermax alarm binding: setup download failed!");
+            logger.info("Powermax alarm binding: setup download failed!");
             for (PowermaxPanelSettingsListener listener : listeners) {
                 listener.onPanelSettingsUpdated(null);
             }
@@ -525,7 +529,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      * @param state: the alarm system state
      */
     private synchronized void updateChannelsFromAlarmState(String channel, PowermaxState state) {
-        if (state == null) {
+        if (state == null || !isConnected()) {
             return;
         }
 
@@ -570,6 +574,14 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 }
             }
         }
+    }
+
+    /**
+     * Update all channels to a NULL state to indicate that communication with the panel is offline
+     */
+    private synchronized void setAllChannelsOffline() {
+        getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.NULL));
+        getThing().getThings().forEach(t -> t.getChannels().forEach(c -> updateState(c.getUID(), UnDefType.NULL)));
     }
 
     /**

@@ -32,5 +32,5 @@ public interface PowermaxStateEventListener extends EventListener {
     /**
      * Event handler method to indicate that communication has been lost
      */
-    public void onCommunicationFailure();
+    public void onCommunicationFailure(String message);
 }

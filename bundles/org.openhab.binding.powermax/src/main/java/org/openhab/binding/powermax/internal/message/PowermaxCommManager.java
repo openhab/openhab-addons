@@ -176,13 +176,12 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      *
      * @return true if connected or false if not
      */
-    public boolean open() {
+    public void open() throws Exception {
         if (connector != null) {
             connector.open();
         }
         lastSendMsg = null;
         msgQueue = new ConcurrentLinkedQueue<>();
-        return isConnected();
     }
 
     /**
@@ -285,11 +284,11 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     }
 
     @Override
-    public void onCommunicationFailure() {
+    public void onCommunicationFailure(String message) {
         close();
 
         for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onCommunicationFailure();
+            listeners.get(i).onCommunicationFailure(message);
         }
     }
 

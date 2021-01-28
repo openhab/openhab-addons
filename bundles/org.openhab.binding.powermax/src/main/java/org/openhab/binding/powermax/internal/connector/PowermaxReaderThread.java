@@ -128,11 +128,11 @@ public class PowermaxReaderThread extends Thread {
             Thread.currentThread().interrupt();
             logger.debug("Interrupted via InterruptedIOException");
         } catch (IOException e) {
-            logger.warn("Reading failed: {}", e.getMessage(), e);
-            connector.handleCommunicationFailure();
+            logger.debug("Reading failed: {}", e.getMessage(), e);
+            connector.handleCommunicationFailure(e.getMessage());
         } catch (Exception e) {
-            logger.warn("Error reading or processing message: {}", e.getMessage(), e);
-            connector.handleCommunicationFailure();
+            logger.debug("Error reading or processing message: {}", e.toString(), e);
+            connector.handleCommunicationFailure(e.toString());
         }
 
         logger.info("Data listener stopped");
@@ -147,6 +147,11 @@ public class PowermaxReaderThread extends Thread {
      * @return true if the CRC is valid or false if not
      */
     private boolean checkCRC(byte[] data, int len) {
+        // Messages of type 0xF1 are always sent with a bad CRC (possible panel bug?)
+        if (len == 9 && (data[1] & 0xFF) == 0xF1) {
+            return true;
+        }
+
         byte checksum = PowermaxCommManager.computeCRC(data, len);
         byte expected = data[len - 2];
         if (checksum != expected) {
