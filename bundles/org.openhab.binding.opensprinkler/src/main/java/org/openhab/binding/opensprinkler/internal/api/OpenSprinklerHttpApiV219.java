@@ -31,4 +31,8 @@ public class OpenSprinklerHttpApiV219 extends OpenSprinklerHttpApiV217 {
             throws GeneralApiException, CommunicationApiException {
         super(httpClient, config);
     }
+
+    public void ignoreRain(int station) {
+        // todo
+    }
 }

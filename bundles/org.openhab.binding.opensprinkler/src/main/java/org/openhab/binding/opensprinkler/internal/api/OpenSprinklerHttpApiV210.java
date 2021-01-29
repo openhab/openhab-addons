@@ -16,6 +16,7 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -81,45 +82,29 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     }
 
     @Override
-    public void getStationNames() throws CommunicationApiException, UnauthorizedApiException {
-        String returnContent;
-        try {
-            returnContent = http.sendHttpGet(getBaseUrl() + "jn", getRequestRequiredOptions());
-        } catch (CommunicationApiException exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+    public List<StateOption> getStations() {
+        int counter = 0;
+        for (String x : jnReply.snames) {
+            stations.add(new StateOption(Integer.toString(counter++), x));
         }
-        JnResponse resp = gson.fromJson(returnContent, JnResponse.class);
-        if (resp != null) {
-            int counter = 0;
-            for (String x : resp.snames) {
-                stations.add(new StateOption(Integer.toString(counter++), x));
-            }
-        }
+        return stations;
     }
 
     @Override
     public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
-        JsResponse localReply = jsReply;
-        if (localReply == null) {
-            jsReply = getStationStatus();
-        } else {
-            if (station < 0 || station >= numberOfStations) {
-                throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
-                        + station + " was requested for a status update.");
-            }
-            if (localReply.sn.length > 0) {
-                int stationStatus = localReply.sn[station];
-                if (stationStatus == 1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                throw new GeneralApiException("There was a problem parsing the station status for the sn value.");
-            }
+        if (station < 0 || station >= numberOfStations) {
+            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
+                    + station + " was requested for a status update.");
         }
-        return false;
+        if (jsReply.sn.length > 0) {
+            if (jsReply.sn[station] == 1) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            throw new GeneralApiException("There was a problem parsing the station status for the sn value.");
+        }
     }
 
     @Override
@@ -169,7 +154,6 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      */
     @Override
     public void enterManualMode() throws CommunicationApiException, UnauthorizedApiException {
-        firmwareVersion = getFirmwareVersion();
         numberOfStations = getNumberOfStations();
         isInManualMode = true;
     }

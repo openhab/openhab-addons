@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -60,15 +61,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected String password;
     protected final String basicUsername;
     protected final String basicPassword;
-    @Nullable
-    protected JcResponse jcReply;
-    @Nullable
-    protected JoResponse joReply;
-    @Nullable
-    protected JsResponse jsReply;
-    @Nullable
-    protected JpResponse jpReply;
-    protected int firmwareVersion = -1;
+    protected JcResponse jcReply = new JcResponse();
+    protected JoResponse joReply = new JoResponse();
+    protected JsResponse jsReply = new JsResponse();
+    protected JpResponse jpReply = new JpResponse();
+    protected JnResponse jnReply = new JnResponse();
     protected int numberOfStations = DEFAULT_STATION_COUNT;
     protected boolean isInManualMode = false;
     protected final Gson gson = new Gson();
@@ -123,6 +120,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         joReply = getOptions();
         jsReply = getStationStatus();
         jcReply = statusInfo();
+        jnReply = getStationNames();
     }
 
     @Override
@@ -133,7 +131,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-        firmwareVersion = getFirmwareVersion();
         numberOfStations = getNumberOfStations();
         isInManualMode = true;
     }
@@ -191,91 +188,72 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public boolean isRainDetected() {
-        JcResponse localReply = jcReply;
-        if (localReply != null && localReply.rs == 1) {
-            return true;
-        }
-        return false;
+        return jcReply.rs == 1;
     }
 
     @Override
     public int getSensor2State() {
-        JcResponse localReply = jcReply;
-        if (localReply != null) {
-            return localReply.sn2;
-        }
-        return -1;
+        return jcReply.sn2;
     }
 
     @Override
     public int currentDraw() {
-        JcResponse localReply = jcReply;
-        if (localReply != null) {
-            return localReply.curr;
-        }
-        return 0;
+        return jcReply.curr;
     }
 
     @Override
     public int flowSensorCount() {
-        JcResponse localReply = jcReply;
-        if (localReply != null) {
-            return localReply.flcrt;
-        }
-        return 0;
+        return jcReply.flcrt;
     }
 
     @Override
     public int signalStrength() {
-        JcResponse localReply = jcReply;
-        if (localReply != null) {
-            return localReply.RSSI;
-        }
-        return 0;
+        return jcReply.RSSI;
     }
 
     @Override
     public boolean getIsEnabled() {
-        JcResponse localReply = jcReply;
-        if (localReply != null && localReply.en == 0) {
-            return false;
-        }
-        return true;
+        return jcReply.en == 1;
     }
 
     @Override
     public int waterLevel() {
-        JoResponse localReply = joReply;
-        if (localReply != null) {
-            return localReply.wl;
-        }
-        return 100;
+        return joReply.wl;
     }
 
     @Override
     public int getNumberOfStations() throws CommunicationApiException, UnauthorizedApiException {
-        if (jsReply == null) {
-            jsReply = getStationStatus();
-        }
-        JsResponse localReply = jsReply;
-        if (localReply != null) {
-            numberOfStations = localReply.nstations;
-        }
+        numberOfStations = jsReply.nstations;
         return numberOfStations;
     }
 
     @Override
     public int getFirmwareVersion() throws CommunicationApiException, UnauthorizedApiException {
-        if (joReply == null) {
-            joReply = getOptions();
+        joReply = getOptions();
+        return joReply.fwv;
+    }
+
+    @Override
+    public void getProgramData() throws CommunicationApiException, UnauthorizedApiException {
+    }
+
+    @Override
+    public void runProgram(Command command) throws CommunicationApiException, UnauthorizedApiException {
+        logger.warn("OpenSprinkler requires at least firmware 217 for the runProgram feature to work");
+    }
+
+    @Override
+    public void enablePrograms(Command command) throws UnauthorizedApiException, CommunicationApiException {
+        if (command == OnOffType.ON) {
+            http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&en=1");
+        } else {
+            http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&en=0");
         }
-        JoResponse localReply = joReply;
-        if (localReply != null) {
-            if (localReply.fwv > 0) {
-                firmwareVersion = localReply.fwv;
-            }
-        }
-        return firmwareVersion;
+    }
+
+    @Override
+    public void resetStations() throws UnauthorizedApiException, CommunicationApiException {
+        http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&rsn=1");
     }
 
     /**
@@ -298,24 +276,100 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public StationProgram retrieveProgram(int station) throws CommunicationApiException {
-        JcResponse localReply = jcReply;
-        if (localReply != null && localReply.ps != null) {
-            return localReply.ps.stream().map(values -> new StationProgram(values.get(1))).collect(Collectors.toList())
+        if (jcReply.ps != null) {
+            return jcReply.ps.stream().map(values -> new StationProgram(values.get(1))).collect(Collectors.toList())
                     .get(station);
         }
         return new StationProgram(0);
     }
 
-    private @Nullable JcResponse statusInfo() throws CommunicationApiException, UnauthorizedApiException {
+    private JcResponse statusInfo() throws CommunicationApiException, UnauthorizedApiException {
         String returnContent;
+        JcResponse resp;
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATUS_INFO, getRequestRequiredOptions());
-        } catch (CommunicationApiException exp) {
+            resp = gson.fromJson(returnContent, JcResponse.class);
+            if (resp == null) {
+                throw new CommunicationApiException(
+                        "There was a problem in the HTTP communication: jcReply was empty.");
+            }
+        } catch (CommunicationApiException | JsonSyntaxException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-        JcResponse resp = gson.fromJson(returnContent, JcResponse.class);
         return resp;
+    }
+
+    private JoResponse getOptions() throws CommunicationApiException, UnauthorizedApiException {
+        String returnContent;
+        JoResponse resp;
+        try {
+            returnContent = http.sendHttpGet(getBaseUrl() + CMD_OPTIONS_INFO, getRequestRequiredOptions());
+            resp = gson.fromJson(returnContent, JoResponse.class);
+            if (resp == null) {
+                throw new CommunicationApiException(
+                        "There was a problem in the HTTP communication: joReply was empty.");
+            }
+        } catch (CommunicationApiException | JsonSyntaxException exp) {
+            throw new CommunicationApiException(
+                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+        }
+        return resp;
+    }
+
+    protected JsResponse getStationStatus() throws CommunicationApiException, UnauthorizedApiException {
+        String returnContent;
+        JsResponse resp;
+        try {
+            returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_INFO, getRequestRequiredOptions());
+            resp = gson.fromJson(returnContent, JsResponse.class);
+            if (resp == null) {
+                throw new CommunicationApiException(
+                        "There was a problem in the HTTP communication: jsReply was empty.");
+            }
+        } catch (CommunicationApiException | JsonSyntaxException exp) {
+            throw new CommunicationApiException(
+                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+        }
+        return resp;
+    }
+
+    @Override
+    public JnResponse getStationNames() throws CommunicationApiException, UnauthorizedApiException {
+        String returnContent;
+        JnResponse resp;
+        try {
+            returnContent = http.sendHttpGet(getBaseUrl() + "jn", getRequestRequiredOptions());
+            resp = gson.fromJson(returnContent, JnResponse.class);
+            if (resp == null) {
+                throw new CommunicationApiException(
+                        "There was a problem in the HTTP communication: jnReply was empty.");
+            }
+        } catch (CommunicationApiException | JsonSyntaxException exp) {
+            throw new CommunicationApiException(
+                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+        }
+        return resp;
+    }
+
+    protected static class JsResponse {
+        public int sn[] = new int[8];
+        public int nstations = 8;
+    }
+
+    protected static class JpResponse {
+        public int nprogs = 0;
+        public Object[] pd = {};
+    }
+
+    private static class JoResponse {
+        public int wl;
+        public int fwv = -1;
+    }
+
+    protected static class JnResponse {
+        public List<String> snames = new ArrayList<>();
+        public byte[] ignore_rain = { 0 };
     }
 
     protected static class JcResponse {
@@ -327,67 +381,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public int RSSI = 1; // json reply uses all uppercase
         public int flcrt = -1;
         public int curr = -1;
-    }
-
-    protected static class JnResponse {
-        public List<String> snames = new ArrayList<>();
-    }
-
-    private @Nullable JoResponse getOptions() throws CommunicationApiException, UnauthorizedApiException {
-        String returnContent;
-        try {
-            returnContent = http.sendHttpGet(getBaseUrl() + CMD_OPTIONS_INFO, getRequestRequiredOptions());
-        } catch (CommunicationApiException exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
-        }
-        JoResponse resp = gson.fromJson(returnContent, JoResponse.class);
-        return resp;
-    }
-
-    private static class JoResponse {
-        public int wl;
-        public int fwv = -1;
-    }
-
-    protected @Nullable JsResponse getStationStatus() throws CommunicationApiException, UnauthorizedApiException {
-        String returnContent;
-        try {
-            returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_INFO, getRequestRequiredOptions());
-        } catch (CommunicationApiException exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
-        }
-        JsResponse resp = gson.fromJson(returnContent, JsResponse.class);
-        return resp;
-    }
-
-    protected static class JsResponse {
-        public int sn[] = new int[8];
-        public int nstations = 8;
-    }
-
-    @Override
-    public void getProgramData() throws CommunicationApiException, UnauthorizedApiException {
-    }
-
-    @Override
-    public void runProgram(Command command) throws CommunicationApiException, UnauthorizedApiException {
-        logger.warn("OpenSprinkler requires at least firmware 217 for the runProgram feature to work");
-    }
-
-    @Override
-    public void resetStations() throws UnauthorizedApiException, CommunicationApiException {
-        http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&rsn=1");
-    }
-
-    protected static class JpResponse {
-        public int nprogs = 0;
-        public Object[] pd = {};
-    }
-
-    @Override
-    public void getStationNames() throws CommunicationApiException, UnauthorizedApiException {
     }
 
     /**
@@ -475,15 +468,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                         "Error sending HTTP POST request to " + url + ". Got response code: " + response.getStatus());
             }
             return response.getContentAsString();
-        }
-    }
-
-    @Override
-    public void enablePrograms(Command command) throws UnauthorizedApiException, CommunicationApiException {
-        if (command == OnOffType.ON) {
-            http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&en=1");
-        } else {
-            http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&en=0");
         }
     }
 }

@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerHttpApiV100.JnResponse;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
@@ -211,5 +212,5 @@ public interface OpenSprinklerApi {
      * @throws CommunicationApiException
      * @throws UnauthorizedApiException
      */
-    public abstract void getStationNames() throws CommunicationApiException, UnauthorizedApiException;
+    public abstract JnResponse getStationNames() throws CommunicationApiException, UnauthorizedApiException;
 }
