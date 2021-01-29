@@ -15,7 +15,6 @@ package org.openhab.binding.modbus.internal.handler;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -337,7 +336,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     /**
      * Combine boolean-like command with registers. Updated registers are returned
      *
-     * @param command boolean-like command
      * @return
      */
     private ModbusRegisterArray combineCommandWithRegisters(ModbusRegisterArray registers, int registerIndex,
@@ -346,16 +344,19 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         if (commandBool.isPresent()) {
             boolean b = commandBool.get();
             byte[] allBytes = registers.getBytes();
-            byte[] registerBytes = new byte[] { allBytes[registerIndex * 2], allBytes[registerIndex * 2 + 1] };
-            BigInteger register = new BigInteger(registerBytes);
-            register = b ? register.setBit(bitIndex) : register.clearBit(bitIndex);
-            byte[] combinedBytes = register.toByteArray();
-            allBytes[registerIndex * 2] = combinedBytes[0];
-            allBytes[registerIndex * 2 + 1] = combinedBytes[1];
+            int bitIndexWithinRegister = bitIndex % 16;
+            boolean hiByte = bitIndexWithinRegister >= 8;
+            int indexWithinByte = bitIndexWithinRegister % 8;
+            int byteIndex = 2 * registerIndex + (hiByte ? 0 : 1);
+            if (b) {
+                allBytes[byteIndex] |= 1 << indexWithinByte;
+            } else {
+                allBytes[byteIndex] &= ~(1 << indexWithinByte);
+            }
             logger.trace(
                     "Update '{}' from item, combining command with internal register ({}) with registerIndex={}, bitIndex={}, resulting register {}",
-                    command, HexUtils.bytesToHex(registerBytes), registerIndex, bitIndex,
-                    HexUtils.bytesToHex(combinedBytes));
+                    command, HexUtils.bytesToHex(registers.getBytes()), registerIndex, bitIndex,
+                    HexUtils.bytesToHex(allBytes));
             return new ModbusRegisterArray(allBytes);
         } else {
             logger.warn("Profile received command that is not convertible to 0/1 bit. Ignoring.");
