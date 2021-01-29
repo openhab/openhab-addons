@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pushsafer.internal.dto.Sound;
+import org.openhab.binding.pushsafer.internal.dto.Icon;
 import org.openhab.binding.pushsafer.internal.handler.PushsaferAccountHandler;
 import org.openhab.core.config.core.ConfigOptionProvider;
 import org.openhab.core.config.core.ParameterOption;
@@ -34,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * The {@link PushsaferConfigOptionProvider} class contains fields mapping thing configuration parameters.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
 @Component(service = ConfigOptionProvider.class)
@@ -50,6 +51,15 @@ public class PushsaferConfigOptionProvider implements ConfigOptionProvider, Thin
             List<Sound> sounds = accountHandler.getSounds();
             if (!sounds.isEmpty()) {
                 return sounds.stream().map(Sound::getAsParameterOption)
+                        .sorted(Comparator.comparing(ParameterOption::getLabel))
+                        .collect(Collectors.toUnmodifiableList());
+            }
+        }
+		if (accountHandler != null && PUSHSAFER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart())
+                && CONFIG_ICON.equals(param)) {
+            List<Icon> icons = accountHandler.getIcons();
+            if (!icons.isEmpty()) {
+                return icons.stream().map(Icon::getAsParameterOption)
                         .sorted(Comparator.comparing(ParameterOption::getLabel))
                         .collect(Collectors.toUnmodifiableList());
             }
