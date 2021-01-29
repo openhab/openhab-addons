@@ -18,7 +18,7 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * The {@link PushsaferBindingConstants} class defines common constants, which are used across the whole binding.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
 public class PushsaferBindingConstants {
@@ -28,7 +28,14 @@ public class PushsaferBindingConstants {
     public static final ThingTypeUID PUSHSAFER_ACCOUNT = new ThingTypeUID(BINDING_ID, "pushsafer-account");
 
     public static final String CONFIG_SOUND = "sound";
+	public static final String CONFIG_ICON = "icon";
 
-    public static final String DEFAULT_SOUND = "default";
+    public static final String DEFAULT_SOUND = "";
+	public static final String DEFAULT_ICON = "1";
+	public static final String DEFAULT_COLOR = "1";
+	public static final String DEFAULT_VIBRATION = "1";
+	public static final String DEFAULT_CONFIRM = "0";
+	public static final String DEFAULT_ANSWER = "0";
+	public static final String DEFAULT_TIME2LIVE = "0";
     public static final String DEFAULT_TITLE = "openHAB";
 }
