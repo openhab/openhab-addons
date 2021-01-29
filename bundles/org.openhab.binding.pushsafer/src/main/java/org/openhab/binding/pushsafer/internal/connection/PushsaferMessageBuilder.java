@@ -18,6 +18,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.util.Base64;
+import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
+
+import java.net.URL;
+import java.net.URLConnection;
+import java.io.InputStream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentProvider;
@@ -30,39 +38,46 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link PushsaferMessageBuilder} builds the body for Pushsafer Messages API requests.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
 public class PushsaferMessageBuilder {
 
     private final Logger logger = LoggerFactory.getLogger(PushsaferMessageBuilder.class);
 
-    public static final String MESSAGE_KEY_TOKEN = "token";
-    private static final String MESSAGE_KEY_USER = "user";
-    private static final String MESSAGE_KEY_MESSAGE = "message";
-    private static final String MESSAGE_KEY_TITLE = "title";
-    private static final String MESSAGE_KEY_DEVICE = "device";
-    private static final String MESSAGE_KEY_PRIORITY = "priority";
-    private static final String MESSAGE_KEY_RETRY = "retry";
-    private static final String MESSAGE_KEY_EXPIRE = "expire";
-    private static final String MESSAGE_KEY_URL = "url";
-    private static final String MESSAGE_KEY_URL_TITLE = "url_title";
-    private static final String MESSAGE_KEY_SOUND = "sound";
-    private static final String MESSAGE_KEY_ATTACHMENT = "attachment";
+    public static final String MESSAGE_KEY_TOKEN = "k";
+    private static final String MESSAGE_KEY_USER = "d";
+    private static final String MESSAGE_KEY_MESSAGE = "m";
+    private static final String MESSAGE_KEY_TITLE = "t";
+    private static final String MESSAGE_KEY_DEVICE = "dd";
+	private static final String MESSAGE_KEY_ICON = "i";
+	private static final String MESSAGE_KEY_COLOR = "c";
+	private static final String MESSAGE_KEY_VIBRATION = "v";
+    private static final String MESSAGE_KEY_PRIORITY = "pr";
+    private static final String MESSAGE_KEY_RETRY = "re";
+    private static final String MESSAGE_KEY_EXPIRE = "ex";
+    private static final String MESSAGE_KEY_URL = "u";
+    private static final String MESSAGE_KEY_URL_TITLE = "ut";
+    private static final String MESSAGE_KEY_SOUND = "s";
+	private static final String MESSAGE_KEY_TIME2LIVE = "l";
+	private static final String MESSAGE_KEY_ANSWER = "a";
+	private static final String MESSAGE_KEY_CONFIRM = "cr";
+    private static final String MESSAGE_KEY_ATTACHMENT = "p";
     public static final String MESSAGE_KEY_HTML = "html";
     public static final String MESSAGE_KEY_MONOSPACE = "monospace";
 
-    private static final int MAX_MESSAGE_LENGTH = 1024;
+    private static final int MAX_MESSAGE_LENGTH = 4096;
     private static final int MAX_TITLE_LENGTH = 250;
     private static final int MAX_DEVICE_LENGTH = 25;
     private static final List<Integer> VALID_PRIORITY_LIST = Arrays.asList(-2, -1, 0, 1, 2);
     private static final int DEFAULT_PRIORITY = 0;
     public static final int EMERGENCY_PRIORITY = 2;
-    private static final int MIN_RETRY_SECONDS = 30;
+    private static final int MIN_RETRY_SECONDS = 0;
     private static final int MAX_EXPIRE_SECONDS = 10800;
     private static final int MAX_URL_LENGTH = 512;
     private static final int MAX_URL_TITLE_LENGTH = 100;
-    public static final String DEFAULT_CONTENT_TYPE = "image/jpeg";
+    public static final String DEFAULT_CONTENT_TYPE = "jpeg";
+	public static final String DEFAULT_AUTH = "";
 
     private final MultiPartContentProvider body = new MultiPartContentProvider();
 
@@ -75,8 +90,15 @@ public class PushsaferMessageBuilder {
     private @Nullable String url;
     private @Nullable String urlTitle;
     private @Nullable String sound;
+	private @Nullable String icon;
+	private @Nullable String confirm;
+	private @Nullable String time2live;
+	private @Nullable String answer;
+	private @Nullable String color;
+	private @Nullable String vibration;
     private @Nullable String attachment;
     private String contentType = DEFAULT_CONTENT_TYPE;
+	private String authentfication = DEFAULT_AUTH;
     private boolean html = false;
     private boolean monospace = false;
 
@@ -142,6 +164,36 @@ public class PushsaferMessageBuilder {
         this.sound = sound;
         return this;
     }
+	
+	public PushsaferMessageBuilder withIcon(String icon) {
+        this.icon = icon;
+        return this;
+    }
+	
+	public PushsaferMessageBuilder withColor(String color) {
+        this.color = color;
+        return this;
+    }
+	
+	public PushsaferMessageBuilder withVibration(String vibration) {
+        this.vibration = vibration;
+        return this;
+    }
+	
+	public PushsaferMessageBuilder withAnswer(String answer) {
+        this.answer = answer;
+        return this;
+    }
+	
+	public PushsaferMessageBuilder withTime2live(String time2live) {
+        this.time2live = time2live;
+        return this;
+    }
+	
+	public PushsaferMessageBuilder withConfirm(String confirm) {
+        this.confirm = confirm;
+        return this;
+    }
 
     public PushsaferMessageBuilder withAttachment(String attachment) {
         this.attachment = attachment;
@@ -150,6 +202,11 @@ public class PushsaferMessageBuilder {
 
     public PushsaferMessageBuilder withContentType(String contentType) {
         this.contentType = contentType;
+        return this;
+    }
+	
+	public PushsaferMessageBuilder withAuthentfication(String authentfication) {
+        this.authentfication = authentfication;
         return this;
     }
 
@@ -237,19 +294,61 @@ public class PushsaferMessageBuilder {
         if (sound != null) {
             body.addFieldPart(MESSAGE_KEY_SOUND, new StringContentProvider(sound), null);
         }
+				
+		if (icon != null) {
+            body.addFieldPart(MESSAGE_KEY_ICON, new StringContentProvider(icon), null);
+        }
+		
+		if (color != null) {
+            body.addFieldPart(MESSAGE_KEY_COLOR, new StringContentProvider(color), null);
+        }
+		
+		if (vibration != null) {
+            body.addFieldPart(MESSAGE_KEY_VIBRATION, new StringContentProvider(vibration), null);
+        }
+		
+		if (confirm != null) {
+            body.addFieldPart(MESSAGE_KEY_CONFIRM, new StringContentProvider(confirm), null);
+        }
+		
+		if (answer != null) {
+            body.addFieldPart(MESSAGE_KEY_ANSWER, new StringContentProvider(answer), null);
+        }
+		
+		if (time2live != null) {
+            body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(time2live), null);
+        }
 
         if (attachment != null) {
-            File file = new File(attachment);
-            if (!file.exists()) {
-                throw new IllegalArgumentException(
-                        String.format("Skip sending the message as file '%s' does not exist.", attachment));
-            }
-            try {
-                body.addFilePart(MESSAGE_KEY_ATTACHMENT, file.getName(),
-                        new PathContentProvider(contentType, file.toPath()), null);
-            } catch (IOException e) {
-                throw new IllegalArgumentException(String.format("Skip sending the message: %s", e.getMessage()));
-            }
+			if(attachment.substring(0, 4).equals("http")) {
+				try {
+					URL url = new URL(attachment);
+					URLConnection conn = url.openConnection();
+					if (authentfication != null) {
+						String auth = Base64.getEncoder().withoutPadding().encodeToString(authentfication.getBytes(StandardCharsets.UTF_8));
+						conn.setRequestProperty ("Authorization", "Basic " + auth );
+					}
+					conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+					InputStream instream = conn.getInputStream();
+					String encodedString = "data:image/png;base64,"+Base64.getEncoder().encodeToString(instream.readAllBytes());
+					body.addFieldPart(MESSAGE_KEY_ATTACHMENT, new StringContentProvider(encodedString), null);
+				} catch (IOException e) {
+					throw new IllegalArgumentException(String.format("Skip sending with URL Image message: %s", e.getMessage()));
+				}
+			} else {
+				File file = new File(attachment);
+				if (!file.exists()) {
+					throw new IllegalArgumentException(
+							String.format("Skip sending the message as file '%s' does not exist.", attachment));
+				}				
+				try {
+					byte[] fileContent = Files.readAllBytes(file.toPath());
+					String encodedString = "data:image/"+contentType+";base64,"+Base64.getEncoder().encodeToString(fileContent);
+					body.addFieldPart(MESSAGE_KEY_ATTACHMENT, new StringContentProvider(encodedString), null);
+				} catch (IOException e) {
+					throw new IllegalArgumentException(String.format("Skip sending with local Image message: %s", e.getMessage()));
+				}
+			}
         }
 
         if (html) {
@@ -258,6 +357,7 @@ public class PushsaferMessageBuilder {
             body.addFieldPart(MESSAGE_KEY_MONOSPACE, new StringContentProvider("1"), null);
         }
 
+		body.close();
         return body;
     }
 }
