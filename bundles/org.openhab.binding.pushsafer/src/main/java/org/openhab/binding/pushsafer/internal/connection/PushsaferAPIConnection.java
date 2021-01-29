@@ -33,6 +33,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.pushsafer.internal.config.PushsaferAccountConfiguration;
 import org.openhab.binding.pushsafer.internal.dto.Sound;
+import org.openhab.binding.pushsafer.internal.dto.Icon;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,17 +45,18 @@ import com.google.gson.JsonParser;
 /**
  * The {@link PushsaferAPIConnection} is responsible for handling the connections to Pushsafer Messages API.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
 public class PushsaferAPIConnection {
 
     private final Logger logger = LoggerFactory.getLogger(PushsaferAPIConnection.class);
 
-    private static final String VALIDATE_URL = "https://api.pushsafer.net/1/users/validate.json";
-    private static final String MESSAGE_URL = "https://api.pushsafer.net/1/messages.json";
-    private static final String CANCEL_MESSAGE_URL = "https://api.pushsafer.net/1/receipts/{receipt}/cancel.json";
-    private static final String SOUNDS_URL = "https://api.pushsafer.net/1/sounds.json";
+    private static final String VALIDATE_URL = "https://www.pushsafer.com/api-k";
+    private static final String MESSAGE_URL = "https://www.pushsafer.com/api";
+    private static final String CANCEL_MESSAGE_URL = "https://www.pushsafer.com/api-m";
+    private static final String SOUNDS_URL = "https://www.pushsafer.com/api-s";
+	private static final String ICONS_URL = "https://www.pushsafer.com/api-i";
 
     private final HttpClient httpClient;
     private final PushsaferAccountConfiguration config;
@@ -73,18 +75,18 @@ public class PushsaferAPIConnection {
                 post(VALIDATE_URL, PushsaferMessageBuilder.getInstance(config.apikey, config.user).build()));
     }
 
-    public boolean sendMessage(PushsaferMessageBuilder message)
+    public boolean sendPushsaferMessage(PushsaferMessageBuilder message)
             throws PushsaferCommunicationException, PushsaferConfigurationException {
         return getMessageStatus(post(MESSAGE_URL, message.build()));
     }
 
-    public String sendPriorityMessage(PushsaferMessageBuilder message)
+    public String sendPushsaferPriorityMessage(PushsaferMessageBuilder message)
             throws PushsaferCommunicationException, PushsaferConfigurationException {
         final JsonObject json = parser.parse(post(MESSAGE_URL, message.build())).getAsJsonObject();
         return getMessageStatus(json) && json.has("receipt") ? json.get("receipt").getAsString() : "";
     }
 
-    public boolean cancelPriorityMessage(String receipt)
+    public boolean cancelPushsaferPriorityMessage(String receipt)
             throws PushsaferCommunicationException, PushsaferConfigurationException {
         return getMessageStatus(post(CANCEL_MESSAGE_URL.replace("{receipt}", receipt),
                 PushsaferMessageBuilder.getInstance(config.apikey, config.user).build()));
@@ -111,6 +113,28 @@ public class PushsaferAPIConnection {
         }
         return Collections.emptyList();
     }
+	
+    public List<Icon> getIcons() throws PushsaferCommunicationException, PushsaferConfigurationException {
+        final String localApikey = config.apikey;
+        if (localApikey == null || localApikey.isEmpty()) {
+            throw new PushsaferConfigurationException("@text/offline.conf-error-missing-apikey");
+        }
+
+        final Map<String, String> params = new HashMap<>(1);
+        params.put(PushsaferMessageBuilder.MESSAGE_KEY_TOKEN, localApikey);
+
+        // TODO do not cache the response, cache the parsed list of icons
+        final JsonObject json = parser.parse(getFromCache(buildURL(ICONS_URL, params))).getAsJsonObject();
+        if (json.has("icons")) {
+            final JsonObject icons = json.get("icons").getAsJsonObject();
+            if (icons != null) {
+                return Collections.unmodifiableList(icons.entrySet().stream()
+                        .map(entry -> new Icon(entry.getKey(), entry.getValue().getAsString()))
+                        .collect(Collectors.toList()));
+            }
+        }
+        return Collections.emptyList();
+    }	
 
     private String buildURL(String url, Map<String, String> requestParams) {
         return requestParams.keySet().stream().map(key -> key + "=" + encodeParam(requestParams.get(key)))
