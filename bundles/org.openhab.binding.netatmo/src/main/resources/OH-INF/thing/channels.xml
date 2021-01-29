@@ -54,12 +54,20 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="rain">
+	<channel-type id="rain-qtty">
 		<item-type>Number:Length</item-type>
-		<label>Rain</label>
-		<description>Quantity of water</description>
+		<label>Rain Quantity</label>
+		<description>Quantity of water over the period</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-intensity">
+		<item-type>Number:Speed</item-type>
+		<label>Rain Intensity</label>
+		<description>Precipitation intensity</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="location">

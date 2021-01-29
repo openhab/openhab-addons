@@ -49,7 +49,7 @@ public class HomeEnergyHandler extends NetatmoDeviceHandler {
 
     @Override
     protected NAHome updateReadings() throws NetatmoException {
-        NAHome home = apiBridge.getHomeApi().getHomeData(config.id);
+        NAHome home = apiBridge.getHomeApi().getHomesData(config.id);
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), GROUP_HOME_ENERGY, CHANNEL_PLANNING);
         descriptionProvider.setStateOptions(channelUID, home.getThermSchedules().stream()
                 .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));

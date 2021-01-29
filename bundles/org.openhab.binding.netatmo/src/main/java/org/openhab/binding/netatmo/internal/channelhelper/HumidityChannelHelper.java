@@ -13,12 +13,12 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.utils.WeatherUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -41,11 +41,11 @@ public class HumidityChannelHelper extends AbstractChannelHelper {
 
     @Override
     protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
-        return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getHumidity(), HUMIDITY_UNIT)
+        return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getHumidity(), MeasureClass.HUMIDITY)
                 : getDerived(dashboard.getTemperature(), dashboard.getHumidity(), channelId);
     }
 
-    protected @Nullable State getDerived(float temperature, float humidity, String channelId) {
+    protected @Nullable State getDerived(double temperature, double humidity, String channelId) {
         double humidex = getHumidex(temperature, humidity);
         switch (channelId) {
             case CHANNEL_HUMIDEX:
@@ -53,12 +53,12 @@ public class HumidityChannelHelper extends AbstractChannelHelper {
             case CHANNEL_HUMIDEX_SCALE:
                 return new DecimalType(humidexScale(humidex));
             case CHANNEL_HEAT_INDEX:
-                return toQuantityType(getHeatIndex(temperature, humidity), TEMPERATURE_UNIT);
+                return toQuantityType(getHeatIndex(temperature, humidity), MeasureClass.EXTERIOR_TEMPERATURE);
             case CHANNEL_DEWPOINT:
-                return toQuantityType(getDewPoint(temperature, humidity), TEMPERATURE_UNIT);
+                return toQuantityType(getDewPoint(temperature, humidity), MeasureClass.EXTERIOR_TEMPERATURE);
             case CHANNEL_DEWPOINT_DEP:
                 double dewPoint = getDewPoint(temperature, humidity);
-                return toQuantityType(getDewPointDep(temperature, dewPoint), TEMPERATURE_UNIT);
+                return toQuantityType(getDewPointDep(temperature, dewPoint), MeasureClass.EXTERIOR_TEMPERATURE);
         }
         return null;
     }

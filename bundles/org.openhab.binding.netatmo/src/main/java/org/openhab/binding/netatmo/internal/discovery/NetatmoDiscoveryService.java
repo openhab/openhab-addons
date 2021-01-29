@@ -31,7 +31,6 @@ import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
-import org.openhab.binding.netatmo.internal.api.dto.NADevice;
 import org.openhab.binding.netatmo.internal.api.dto.NADeviceDataBody;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
@@ -113,6 +112,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         apiBridge.getEnergyApi().ifPresent(api -> searchThermostat(api));
         apiBridge.getAirCareApi().ifPresent(api -> searchHomeCoach(api));
         apiBridge.getSecurityApi().ifPresent(api -> searchCameras(api));
+        apiBridge.getAirCareApi().ifPresent(api -> searchHomeCoach(api));
     }
 
     private void searchCameras(SecurityApi api) {
@@ -122,15 +122,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         } catch (NetatmoException e) {
             logger.warn("Error retrieving camras(s)", e);
         }
-    }
-
-    private void searchHomeCoach(AircareApi api) {
-        // try {
-        // NAMain result = api.getHomeCoachDataBody(null);
-        // result.getDevices().forEach(device -> discoverHomeCoach(device));
-        // } catch (NetatmoException e) {
-        // logger.warn("Error retrieving thermostat(s)", e);
-        // }
     }
 
     private void searchThermostat(EnergyApi api) {
@@ -156,25 +147,21 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         try {
             NADeviceDataBody<NAMain> search = api.getStationsDataBody(null);
             for (NAMain station : search.getDevices().values()) {
-                // String stationId = station.getId();
-                // NAHome attachedHome = null;
-                // NAHomeData result = apiBridge.getHomeApi().getHomesData(station.getType());
-                // for (NAHome home : result.getHomes()) {
-                // for (NAThing child : home.getChilds()) {
-                // if (stationId.equals(child.getId())) {
-                // attachedHome = home;
-                // break;
-                // }
-                // }
-                // }
-                // if (attachedHome != null) {
                 discoverWeatherStation(station);
-                // } else {
-                // throw new NetatmoException("No home attached to the thermostat plug");
-                // }
             }
         } catch (NetatmoException e) {
             logger.warn("Error retrieving own weather stations", e);
+        }
+    }
+
+    private void searchHomeCoach(AircareApi api) {
+        try {
+            NADeviceDataBody<NAMain> result = api.getHomeCoachDataBody(null);
+            for (NAMain homeCoach : result.getDevices().values()) {
+                discoverHomeCoach(homeCoach);
+            }
+        } catch (NetatmoException e) {
+            logger.warn("Error retrieving thermostat(s)", e);
         }
     }
 
@@ -225,9 +212,9 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         });
     }
 
-    private void discoverHomeCoach(NADevice<?> homecoach) {
-        onDeviceAddedInternal(homecoach.getId(), null, homecoach.getType(), homecoach.getName(),
-                homecoach.getFirmware());
+    private void discoverHomeCoach(NAMain homeCoach) {
+        onDeviceAddedInternal(homeCoach.getId(), null, homeCoach.getType(), homeCoach.getName(),
+                homeCoach.getFirmware());
     }
 
     private void discoverHome(NAHome home) {
@@ -273,65 +260,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         thingDiscovered(resultBuilder.build());
     }
 
-    /*
-     * private @Nullable ThingUID findThingUID2(NAMain station, ThingUID brigdeUID) throws IllegalArgumentException {
-     *
-     * ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, station.getType().toString());
-     * String label = localizeLabel(station.getType());
-     * List<String> supportedBridgeTypeUids = new ArrayList<>();
-     * supportedBridgeTypeUids.add(NAHOME_THING_TYPE.toString());
-     * String description = localizeDescription(station.getType());
-     *
-     * List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
-     * for (MeasureType dataType : station.getDataType()) {
-     * String id = dataType.name().toLowerCase();
-     * ChannelGroupTypeUID groupType = new ChannelGroupTypeUID(BINDING_ID, id + "-group");
-     * groupDefinitions.add(new ChannelGroupDefinition(id, groupType));
-     * }
-     * if (station.canDeriveWeather()) {
-     * String id = "derived";
-     * ChannelGroupTypeUID groupType = new ChannelGroupTypeUID(BINDING_ID, id + "-group");
-     * groupDefinitions.add(new ChannelGroupDefinition(id, groupType));
-     * }
-     *
-     * String id = "device-common";
-     * ChannelGroupTypeUID groupType = new ChannelGroupTypeUID(BINDING_ID, id + "-group");
-     * groupDefinitions.add(new ChannelGroupDefinition(id, groupType));
-     *
-     * Map<String, String> properties = new HashMap<>();
-     * properties.put(Thing.PROPERTY_VENDOR, VENDOR);
-     * properties.put(Thing.PROPERTY_MODEL_ID, station.getType().toString());
-     * properties.putAll(MetadataUtils.getProperties(station.getType()));
-     *
-     * List<String> extensibleChannelTypeIds = MetadataUtils.getExtensions(station.getType());
-     *
-     * URI configDescriptionURI = getConfigDescriptionURI();
-     * if (configDescriptionURI != null) {
-     *
-     * ThingType thingType = ThingTypeBuilder.instance(thingTypeUID, label)
-     * .withExtensibleChannelTypeIds(extensibleChannelTypeIds)
-     * .withSupportedBridgeTypeUIDs(supportedBridgeTypeUids).withDescription(description)
-     * .withChannelGroupDefinitions(groupDefinitions).withProperties(properties)
-     * .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
-     * .withConfigDescriptionURI(configDescriptionURI).build();
-     *
-     * String thingId = station.getId().replaceAll("[^a-zA-Z0-9_]", "");
-     * return new ThingUID(thingType.getUID(), brigdeUID, thingId);
-     * }
-     * return null;
-     *
-     * }
-     */
-
-    // private @Nullable URI getConfigDescriptionURI() {
-    // try {
-    // return new URI("thing-type:netatmo:device");
-    // } catch (URISyntaxException ex) {
-    // logger.warn("Can't create configDescriptionURI for device type");
-    // return null;
-    // }
-    // }
-
     private ThingUID findThingUID(ModuleType thingType, String thingId, @Nullable ThingUID brigdeUID)
             throws IllegalArgumentException {
 
@@ -344,16 +272,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                 return new ThingUID(supported, brigdeUID, id);
             }
         }
-        // String thingTypeName = thingType.name();
-        // for (ThingTypeUID supportedThingTypeUID : getSupportedThingTypes()) {
-        // String uid = supportedThingTypeUID.getId();
-        // for (ThingTypeUID bridgeUid : SUPPORTED_BRIDGES_TYPES_UIDS) {
-        // String bridgeUidId = bridgeUid.getId();
-        // if (bridgeUidId.equals(thingTypeName)) {
-        // return new ThingUID(supportedThingTypeUID, thingId.replaceAll("[^a-zA-Z0-9_]", ""));
-        // }
-        // }
-        // }
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
     }
 

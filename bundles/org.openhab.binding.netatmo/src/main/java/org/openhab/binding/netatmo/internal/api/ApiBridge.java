@@ -100,20 +100,15 @@ public class ApiBridge {
         try {
             configuration.checkIfValid();
             connectApi.authenticate();
-            getPartnerApi().getPartnerDevices();
+            // Just a sample call to ensure connection is fine
+            getHomeApi().getHomeData();
             setConnectionStatus(ConnectionStatus.Success());
         } catch (NetatmoException e) {
-            switch (e.getStatusCode()) {
-                case 404: // If no partner station has been associated - likely to happen - we'll have this
-                    // error but it means connection to API is OK
-                    setConnectionStatus(ConnectionStatus.Success());
-                    break;
-                case 403: // Forbidden Access maybe too many requests ? Let's wait next cycle
-                    setConnectionStatus(ConnectionStatus.Failed("Connection failed, retrying"));
-                    scheduler.schedule(() -> testConnection(), configuration.reconnectInterval, TimeUnit.SECONDS);
-                    break;
-                default:
-                    setConnectionStatus(ConnectionStatus.Failed("Unable to connect Netatmo API : %s", e));
+            if (e.getStatusCode() != 403) { // Forbidden Access maybe too many requests ? Let's wait next cycle
+                setConnectionStatus(ConnectionStatus.Failed("Unable to connect Netatmo API : %s", e));
+            } else {
+                setConnectionStatus(ConnectionStatus.Failed("Connection failed, retrying"));
+                scheduler.schedule(() -> testConnection(), configuration.reconnectInterval, TimeUnit.SECONDS);
             }
         }
     }
@@ -160,15 +155,6 @@ public class ApiBridge {
 
     public Optional<SecurityApi> getSecurityApi() {
         return Optional.ofNullable(getRestManager(SecurityApi.class));
-    }
-
-    public PartnerApi getPartnerApi() {
-        PartnerApi partnerApi = (PartnerApi) managers.get(PartnerApi.class);
-        if (partnerApi == null) {
-            partnerApi = new PartnerApi(this);
-            managers.put(PartnerApi.class, partnerApi);
-        }
-        return partnerApi;
     }
 
     public HomeApi getHomeApi() {

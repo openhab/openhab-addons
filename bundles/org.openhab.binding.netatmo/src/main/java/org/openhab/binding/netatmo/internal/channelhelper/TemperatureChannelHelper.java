@@ -13,11 +13,11 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.TEMPERATURE_UNIT;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
@@ -41,11 +41,11 @@ public class TemperatureChannelHelper extends AbstractChannelHelper {
     protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
         switch (channelId) {
             case CHANNEL_VALUE:
-                return toQuantityType(dashboard.getTemperature(), TEMPERATURE_UNIT);
+                return toQuantityType(dashboard.getTemperature(), MeasureClass.EXTERIOR_TEMPERATURE);
             case CHANNEL_MIN_VALUE:
-                return toQuantityType(dashboard.getMinTemp(), TEMPERATURE_UNIT);
+                return toQuantityType(dashboard.getMinTemp(), MeasureClass.EXTERIOR_TEMPERATURE);
             case CHANNEL_MAX_VALUE:
-                return toQuantityType(dashboard.getMaxTemp(), TEMPERATURE_UNIT);
+                return toQuantityType(dashboard.getMaxTemp(), MeasureClass.EXTERIOR_TEMPERATURE);
             case CHANNEL_TREND:
                 return toStringType(dashboard.getTempTrend());
             case CHANNEL_MIN_TIME:

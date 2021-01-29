@@ -34,35 +34,35 @@ public class NADashboard {
     private int boilerOff;
 
     @SerializedName("Temperature")
-    private float temperature;
+    private double temperature;
 
     private @Nullable TrendDescription pressureTrend;
     private @Nullable TrendDescription tempTrend;
     private int dateMaxTemp;
     private int dateMinTemp;
-    private float minTemp;
-    private float maxTemp;
+    private double minTemp;
+    private double maxTemp;
     @SerializedName("AbsolutePressure")
-    private float absolutePressure;
+    private double absolutePressure;
 
     @SerializedName("CO2")
-    private float co2;
+    private double co2;
 
     @SerializedName("Humidity")
-    private float humidity;
+    private double humidity;
 
     @SerializedName("Noise")
-    private float noise;
+    private double noise;
 
     @SerializedName("Pressure")
-    private float pressure;
+    private double pressure;
 
     @SerializedName("Rain")
-    private float rain;
+    private double rain;
     @SerializedName("sum_rain_1")
-    private float sumRain1;
+    private double sumRain1;
     @SerializedName("sum_rain_24")
-    private float sumRain24;
+    private double sumRain24;
 
     @SerializedName("WindAngle")
     private int windAngle;
@@ -93,7 +93,7 @@ public class NADashboard {
         return boilerOff;
     }
 
-    public float getTemperature() {
+    public double getTemperature() {
         return temperature;
     }
 
@@ -110,31 +110,31 @@ public class NADashboard {
         return dateMinTemp;
     }
 
-    public float getMinTemp() {
+    public double getMinTemp() {
         return minTemp;
     }
 
-    public float getMaxTemp() {
+    public double getMaxTemp() {
         return maxTemp;
     }
 
-    public float getAbsolutePressure() {
+    public double getAbsolutePressure() {
         return absolutePressure;
     }
 
-    public float getCo2() {
+    public double getCo2() {
         return co2;
     }
 
-    public float getHumidity() {
+    public double getHumidity() {
         return humidity;
     }
 
-    public float getNoise() {
+    public double getNoise() {
         return noise;
     }
 
-    public float getPressure() {
+    public double getPressure() {
         return pressure;
     }
 
@@ -143,43 +143,43 @@ public class NADashboard {
         return trend != null ? trend : TrendDescription.UNKNOWN;
     }
 
-    public float getRain() {
+    public double getRain() {
         return rain;
     }
 
-    public float getSumRain1() {
+    public double getSumRain1() {
         return sumRain1;
     }
 
-    public float getSumRain24() {
+    public double getSumRain24() {
         return sumRain24;
     }
 
-    public int getWindAngle() {
+    public double getWindAngle() {
         return windAngle;
     }
 
-    public int getGustAngle() {
+    public double getGustAngle() {
         return gustAngle;
     }
 
-    public int getWindStrength() {
+    public double getWindStrength() {
         return windStrength;
     }
 
-    public int getMaxWindStr() {
+    public double getMaxWindStr() {
         return maxWindStr;
     }
 
-    public int getDateMaxWindStr() {
+    public double getDateMaxWindStr() {
         return dateMaxWindStr;
     }
 
-    public int getGustStrength() {
+    public double getGustStrength() {
         return gustStrength;
     }
 
-    public int getHealthIdx() {
+    public double getHealthIdx() {
         return healthIdx;
     }
 }

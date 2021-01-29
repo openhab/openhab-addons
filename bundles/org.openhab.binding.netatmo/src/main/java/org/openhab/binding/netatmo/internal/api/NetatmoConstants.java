@@ -22,12 +22,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.measure.Unit;
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Length;
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Speed;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,19 +38,60 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class NetatmoConstants {
+    public static class Measure {
+        public final double minValue;
+        public final int maxValue;
+        public final double precision;
+        public final int scale;
+        public final Unit<?> unit;
+
+        public Measure(double minValue, int maxValue, double precision, Unit<?> unit) {
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+            this.precision = precision;
+            this.unit = unit;
+            String[] splitter = Double.valueOf(precision).toString().split("\\.");
+            this.scale = splitter.length > 1 ? splitter[1].length() : 0;
+        }
+    }
+
+    public enum MeasureClass {
+        INTERIOR_TEMPERATURE,
+        EXTERIOR_TEMPERATURE,
+        PRESSURE,
+        CO2,
+        NOISE,
+        RAIN_QTTY,
+        RAIN_INTENSITY,
+        WIND_SPEED,
+        WIND_ANGLE,
+        HUMIDITY;
+    }
+
+    public static final Map<MeasureClass, Measure> NA_MEASURES = Map.of(MeasureClass.INTERIOR_TEMPERATURE,
+            new Measure(0, 50, 0.3, SIUnits.CELSIUS), MeasureClass.EXTERIOR_TEMPERATURE,
+            new Measure(-40, 65, 0.3, SIUnits.CELSIUS), MeasureClass.PRESSURE,
+            new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), MeasureClass.CO2,
+            new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), MeasureClass.NOISE,
+            new Measure(35, 120, 1, Units.DECIBEL), MeasureClass.RAIN_QTTY,
+            new Measure(0.2, 150, 0.1, MILLI(SIUnits.METRE)), MeasureClass.RAIN_INTENSITY,
+            new Measure(0.2, 150, 0.1, Units.MILLIMETRE_PER_HOUR), MeasureClass.WIND_SPEED,
+            new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR), MeasureClass.WIND_ANGLE,
+            new Measure(0, 360, 5, Units.DEGREE_ANGLE), MeasureClass.HUMIDITY, new Measure(0, 100, 3, Units.PERCENT));
+
     // Netatmo API urls
     public static final String NETATMO_BASE_URL = "https://api.netatmo.com/";
     public static final String NETATMO_APP_URL = "https://app.netatmo.net/";
 
     // Units of measurement of the data delivered by the API
-    public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
-    public static final Unit<Dimensionless> HUMIDITY_UNIT = Units.PERCENT;
-    public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
-    public static final Unit<Speed> WIND_SPEED_UNIT = SIUnits.KILOMETRE_PER_HOUR;
-    public static final Unit<Angle> WIND_DIRECTION_UNIT = Units.DEGREE_ANGLE;
-    public static final Unit<Length> RAIN_UNIT = MILLI(SIUnits.METRE);
-    public static final Unit<Dimensionless> CO2_UNIT = Units.PARTS_PER_MILLION;
-    public static final Unit<Dimensionless> NOISE_UNIT = Units.DECIBEL;
+    // public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    // public static final Unit<Dimensionless> HUMIDITY_UNIT = Units.PERCENT;
+    // public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
+    // public static final Unit<Speed> WIND_SPEED_UNIT = SIUnits.KILOMETRE_PER_HOUR;
+    // public static final Unit<Angle> WIND_DIRECTION_UNIT = Units.DEGREE_ANGLE;
+    // public static final Unit<Length> RAIN_UNIT = MILLI(SIUnits.METRE);
+    // public static final Unit<Dimensionless> CO2_UNIT = Units.PARTS_PER_MILLION;
+    // public static final Unit<Dimensionless> NOISE_UNIT = Units.DECIBEL;
 
     public enum MeasureType {
         SUM_RAIN,
@@ -109,9 +144,13 @@ public class NetatmoConstants {
     }
 
     // Default unit associated with each kind of measurement
-    public static final Map<MeasureType, Unit<?>> MEASUREUNITS = Map.of(MeasureType.SUM_RAIN, RAIN_UNIT,
-            MeasureType.TEMP, TEMPERATURE_UNIT, MeasureType.HUM, HUMIDITY_UNIT, MeasureType.CO2, CO2_UNIT,
-            MeasureType.NOISE, NOISE_UNIT, MeasureType.PRESSURE, PRESSURE_UNIT, MeasureType.WIND, WIND_SPEED_UNIT);
+    // public static final Map<MeasureType, Unit<?>> MEASUREUNITS = Map.of(MeasureType.SUM_RAIN, RAIN_UNIT,
+    // MeasureType.TEMP, TEMPERATURE_UNIT, MeasureType.HUM, HUMIDITY_UNIT, MeasureType.CO2, CO2_UNIT,
+    // MeasureType.NOISE, NOISE_UNIT, MeasureType.PRESSURE, PRESSURE_UNIT, MeasureType.WIND, WIND_SPEED_UNIT);
+    public static final Map<MeasureType, MeasureClass> MEASUREUNITS = Map.of(MeasureType.SUM_RAIN,
+            MeasureClass.RAIN_QTTY, MeasureType.TEMP, MeasureClass.EXTERIOR_TEMPERATURE, MeasureType.HUM,
+            MeasureClass.HUMIDITY, MeasureType.CO2, MeasureClass.CO2, MeasureType.NOISE, MeasureClass.NOISE,
+            MeasureType.PRESSURE, MeasureClass.PRESSURE, MeasureType.WIND, MeasureClass.WIND_SPEED);
 
     // Token scopes
     public static enum Scope {

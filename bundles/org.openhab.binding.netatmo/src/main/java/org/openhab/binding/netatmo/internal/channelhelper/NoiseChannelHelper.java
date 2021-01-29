@@ -13,11 +13,11 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.NOISE_UNIT;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
@@ -39,6 +39,6 @@ public class NoiseChannelHelper extends AbstractChannelHelper {
 
     @Override
     protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
-        return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getNoise(), NOISE_UNIT) : null;
+        return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getNoise(), MeasureClass.NOISE) : null;
     }
 }

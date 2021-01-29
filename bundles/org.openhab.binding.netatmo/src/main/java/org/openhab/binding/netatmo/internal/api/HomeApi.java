@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,13 +37,19 @@ public class HomeApi extends RestManager {
     public class NAHomesDataResponse extends ApiResponse<NAHomeData> {
     }
 
+    public List<NAHome> getHomeData() throws NetatmoException {
+        String req = "gethomedata";
+        NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
+        return response.getBody().getHomes();
+    }
+
     public NAHomeData getHomesData(ModuleType type) throws NetatmoException {
         String req = "homesdata?gateway_types=" + type.name();
         NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
         return response.getBody();
     }
 
-    public NAHome getHomeData(String homeId) throws NetatmoException {
+    public NAHome getHomesData(String homeId) throws NetatmoException {
         String req = "homesdata?home_id=" + homeId;
         NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
         return response.getBody().getHomes().get(0);

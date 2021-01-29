@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.handler;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.TEMPERATURE_UNIT;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.util.List;
@@ -22,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
@@ -75,7 +75,7 @@ public class Therm1Handler extends NetatmoDeviceHandler {
                         handler.callSetThermMode(config.id, targetMode);
                     }
                 } else if (GROUP_TH_SETPOINT.equals(groupName) && channelName.equals(CHANNEL_VALUE)) {
-                    QuantityType<?> quantity = commandToQuantity(command, TEMPERATURE_UNIT);
+                    QuantityType<?> quantity = commandToQuantity(command, MeasureClass.INTERIOR_TEMPERATURE);
                     if (quantity != null) {
                         handler.callSetThermTemp(config.id, quantity.doubleValue());
                     } else {

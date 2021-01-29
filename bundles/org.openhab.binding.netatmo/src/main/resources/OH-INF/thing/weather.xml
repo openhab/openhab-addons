@@ -84,12 +84,12 @@
 	<channel-group-type id="rain">
 		<label>Rain gauge</label>
 		<channels>
-			<channel id="value" typeId="rain"/>
-			<channel id="sum-1" typeId="rain">
+			<channel id="value" typeId="rain-intensity"/>
+			<channel id="sum-1" typeId="rain-qtty">
 				<label>Rain 1h</label>
 				<description>Current hourly total</description>
 			</channel>
-			<channel id="sum-24" typeId="rain">
+			<channel id="sum-24" typeId="rain-qtty">
 				<label>Rain 24h</label>
 				<description>Current daily total</description>
 			</channel>

@@ -17,7 +17,7 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuan
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
@@ -39,6 +39,6 @@ public class Co2ChannelHelper extends AbstractChannelHelper {
 
     @Override
     protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
-        return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getCo2(), NetatmoConstants.CO2_UNIT) : null;
+        return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getCo2(), MeasureClass.CO2) : null;
     }
 }

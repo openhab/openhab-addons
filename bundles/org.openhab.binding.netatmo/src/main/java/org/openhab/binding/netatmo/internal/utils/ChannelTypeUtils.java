@@ -22,6 +22,9 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Measure;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -42,16 +45,19 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class ChannelTypeUtils {
 
-    public static @Nullable QuantityType<?> commandToQuantity(Command command, Unit<?> defaultUnit) {
-        if (command instanceof QuantityType<?>) {
-            return ((QuantityType<?>) command).toUnit(defaultUnit);
+    public static @Nullable QuantityType<?> commandToQuantity(Command command, MeasureClass measureClass) {
+        Measure measureDef = NetatmoConstants.NA_MEASURES.get(measureClass);
+        if (measureDef != null) {
+            if (command instanceof QuantityType<?>) {
+                return ((QuantityType<?>) command).toUnit(measureDef.unit);
+            }
+            try {
+                double value = Double.parseDouble(command.toString());
+                return QuantityType.valueOf(value, measureDef.unit);
+            } catch (NumberFormatException ignore) {
+            }
         }
-        try {
-            double value = Double.parseDouble(command.toString());
-            return QuantityType.valueOf(value, defaultUnit);
-        } catch (@SuppressWarnings("unused") NumberFormatException ignore) {
-            return null;
-        }
+        return null;
     }
 
     public static State toStringType(@Nullable Enum<?> value) {
@@ -91,9 +97,21 @@ public class ChannelTypeUtils {
         return textualDecimal == null ? UnDefType.NULL : new DecimalType(textualDecimal);
     }
 
-    // public static State toOnOffType(@Nullable String yesno) {
-    // return "on".equalsIgnoreCase(yesno) ? OnOffType.ON : OnOffType.OFF;
-    // }
+    public static State toQuantityType(@Nullable Double value, @Nullable MeasureClass measureClass) {
+        if (value != null) {
+            if (measureClass != null) {
+                Measure measureDef = NetatmoConstants.NA_MEASURES.get(measureClass);
+                if (measureDef != null) {
+                    BigDecimal measure = new BigDecimal(Math.min(Math.max(measureDef.minValue, value), value))
+                            .setScale(measureDef.scale, RoundingMode.HALF_UP);
+                    return new QuantityType<>(measure, measureDef.unit);
+                }
+            } else {
+                return toDecimalType(value);
+            }
+        }
+        return UnDefType.NULL;
+    }
 
     public static State toQuantityType(@Nullable Double value, @Nullable Unit<?> unit) {
         return value == null || value.isNaN() ? UnDefType.NULL

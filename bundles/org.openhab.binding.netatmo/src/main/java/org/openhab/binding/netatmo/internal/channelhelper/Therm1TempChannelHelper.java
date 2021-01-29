@@ -13,11 +13,11 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.TEMPERATURE_UNIT;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermMeasure;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
@@ -44,7 +44,7 @@ public class Therm1TempChannelHelper extends AbstractChannelHelper {
         NAThermostat thermostat = (NAThermostat) naThing;
         NAThermMeasure measured = thermostat.getMeasured();
         if (measured != null && CHANNEL_VALUE.equals(channelId)) {
-            return toQuantityType(measured.getTemperature(), TEMPERATURE_UNIT);
+            return toQuantityType(measured.getTemperature(), MeasureClass.EXTERIOR_TEMPERATURE);
         } else if (measured != null && CHANNEL_TIMEUTC.equals(channelId)) {
             return toDateTimeType(measured.getTime(), zoneId);
         }

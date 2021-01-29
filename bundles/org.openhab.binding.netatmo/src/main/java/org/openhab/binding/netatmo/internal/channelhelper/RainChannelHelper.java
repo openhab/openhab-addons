@@ -13,11 +13,11 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.RAIN_UNIT;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
@@ -41,11 +41,11 @@ public class RainChannelHelper extends AbstractChannelHelper {
     protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
         switch (channelId) {
             case CHANNEL_VALUE:
-                return toQuantityType(dashboard.getRain(), RAIN_UNIT);
+                return toQuantityType(dashboard.getRain(), MeasureClass.RAIN_INTENSITY);
             case CHANNEL_SUM_RAIN1:
-                return toQuantityType(dashboard.getSumRain1(), RAIN_UNIT);
+                return toQuantityType(dashboard.getSumRain1(), MeasureClass.RAIN_QTTY);
             case CHANNEL_SUM_RAIN24:
-                return toQuantityType(dashboard.getSumRain24(), RAIN_UNIT);
+                return toQuantityType(dashboard.getSumRain24(), MeasureClass.RAIN_QTTY);
         }
         return null;
     }
