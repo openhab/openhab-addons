@@ -1,14 +1,13 @@
 # Pushsafer Binding
 
-The Pushsafer binding allows you to notify mobile devices of a message using the [Pushsafer REST API](https://pushsafer.net/api).
-To get started you first need to register (a free process) to get an API token.
-Initially you have to create an application, set its name and optionally upload an icon, and get the API token in return.
-Once you have the token, you need a user key (or group key) and optionally a device name for each user to which you want to push notifications.
+The Pushsafer binding allows you to notify mobile devices of a message using the [Pushsafer API](https://www.pushsafer.com/pushapi).
+To get started you first need to register (a free process) to get a Private Key.
+Initially you have to register a device with one of the client apps. After that you get a device id.
 
 ## Supported Things
 
 There is only one Thing available - the `pushsafer-account`.
-You are able to create multiple instances of this Thing to broadcast to different users, groups or devices.
+You are able to create multiple instances of this Thing to broadcast to different devices or groups with push-notification content and setting.
 
 ## Thing Configuration
 
@@ -33,51 +32,48 @@ Currently the binding does not support any Channels.
 All actions return a `Boolean` value to indicate if the message was sent successfully or not.
 The parameter `message` is **mandatory**, the `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
 
-- `sendMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
+- `sendPushsaferMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
 
-- `sendHtmlMessage(String message, @Nullable String title)` - This method is used to send a HTML message.
+- `sendPushsaferHtmlMessage(String message, @Nullable String title)` - This method is used to send a HTML message.
 
-- `sendMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
+- `sendPushsaferMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
 
-- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a (local) path to the attachment (parameter `attachment` **mandatory**) and an optional `contentType` to define the content-type of the attachment (default: `image/jpeg`).
+- `sendPushsaferAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable String authentfication)` - This method is used to send a message with an image attachment. It takes a local path or url to the image attachment (parameter `attachment` **mandatory**), an optional `contentType` to define the content-type of the attachment (default: `jpeg`) and an optional `authentfication` to define the authentfication if needed (default: ``, example: `user:password`).
 
-- `sendURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
+- `sendPushsaferURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
 
-- `sendMessageToDevice(String device, String message, @Nullable String title)` - This method is used to send a message to a specific device. Parameter `device` **mandatory** is the name of a specific device (multiple devices may be separated by a comma).
-
-The `sendPriorityMessage` action returns a `String` value (the `receipt`) if the message was sent successfully, otherwise `null`.
-
-- `sendPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message. Parameter `priority` is the priority (`-2`, `-1`, `0`, `1`, `2`) to be used (default: `2`).
-
-The `cancelPriorityMessage` returns a `Boolean` value to indicate if the message was cancelled successfully or not.
-
-- `cancelPriorityMessage(String receipt)` - This method is used to cancel a priority message.
+- `sendPushsaferPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message. Parameter `priority` is the priority (`-2`, `-1`, `0`, `1`, `2`) to be used (default: `2`).
 
 ## Full Example
 
 demo.things:
 
 ```java
-Thing pushsafer:pushsafer-account:account [ apikey="APP_TOKEN", user="USER_KEY" ]
+Thing pushsafer:pushsafer-account:account [ apikey="PRIVATE_KEY", user="DEVICE_ID" ]
 ```
 
 demo.rules:
 
 ```java
 val actions = getActions("pushsafer", "pushsafer:pushsafer-account:account")
-// send HTML message
-actions.sendHtmlMessage("Hello <font color='green'>World</font>!", "openHAB")
+// send HTML message (BBCode)
+actions.sendPushsaferHtmlMessage("Hello [b]World[/b]!", "openHAB3")
 ```
 
 ```java
 val actions = getActions("pushsafer", "pushsafer:pushsafer-account:account")
 // send priority message
-var receipt = actions.sendPriorityMessage("Emergency!!!", "openHAB", 2)
+var response = actions.sendPushsaferPriorityMessage("Emergency!!!", "openHAB3", 2)
+```
 
-// wait for your cancel condition
+```java
+val actions = getActions("pushsafer", "pushsafer:pushsafer-account:account")
+// send a message with an image url from ip camera (with authentfication)
+var response = actions.sendPushsaferAttachmentMessage("Motion Detection!!!", "openHAB3", "http://192.168.2.222:8088/tmpfs/snap.jpg", "jpeg", "admin:password")
+```
 
-if( receipt !== null ) {
-    actions.cancelPriorityMessage(receipt)
-    receipt = null
-}
+```java
+val actions = getActions("pushsafer", "pushsafer:pushsafer-account:account")
+// send a message with an local image
+var response = actions.sendPushsaferAttachmentMessage("Message with Image!", "openHAB3", "/openhab3/html/image.gif", "gif", "")
 ```
