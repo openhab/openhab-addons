@@ -93,10 +93,9 @@ public class SoulissT22Handler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType state) {
-        if (state != null) {
-            if (state instanceof PercentType) {
-                this.updateState(SoulissBindingConstants.ROLLERSHUTTER_CHANNEL, (PercentType) state);
-            }
+        if (state instanceof PercentType) {
+            this.updateState(SoulissBindingConstants.ROLLERSHUTTER_CHANNEL, (PercentType) state);
+
         }
     }
 

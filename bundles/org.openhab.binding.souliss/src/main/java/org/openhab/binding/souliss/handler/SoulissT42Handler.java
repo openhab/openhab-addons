@@ -72,22 +72,21 @@ public class SoulissT42Handler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType state) {
-        if (state != null) {
-            if (state instanceof StringType) {
-                switch (String.valueOf(state)) {
-                    case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:
-                        this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.ON);
-                        break;
-                    case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
-                        this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
-                        break;
-                }
+        if (state instanceof StringType) {
+            switch (String.valueOf(state)) {
+                case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:
+                    this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.ON);
+                    break;
+                case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
+                    this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
+                    break;
             }
-            // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off
-            updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
-
-            super.setLastStatusStored();
         }
+        // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off
+        updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
+
+        super.setLastStatusStored();
+
     }
 
     @Override
