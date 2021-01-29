@@ -30,6 +30,12 @@ public class ModelMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelMapper.class);
 
     public static ThingTypeUID getThingType(int model) {
+
+        String modelAsHexString = Integer.toHexString(model);
+        LOGGER.info(
+                "Attempting to map Broadlink device with model '{}' (0x{})",
+                model, modelAsHexString);
+
         if (model == 0)
             return BroadlinkBindingConstants.THING_TYPE_SP1;
         if (model == 0x2711)
