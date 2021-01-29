@@ -63,7 +63,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
      * The Amazon Dash button vendor prefixes
      */
     // @formatter:off
-    private static final Set<String> VENDOR_PREFIXES = Collections.unmodifiableSet(Stream.of(
+    private static final Set<String> VENDOR_PREFIXES = Set.of(
             "F0:D2:F1",
             "88:71:E5",
             "FC:A1:83",
@@ -89,7 +89,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
             "84:D6:D0",
             "34:D2:70",
             "B4:7C:9C"
-        ).collect(Collectors.toSet()));
+        );
     // @formatter:on
 
     /**
@@ -212,7 +212,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
                     // @formatter:off
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(dashButtonThing)
                             .withLabel("Dash Button")
-                            .withRepresentationProperty(macAdressString)
+                            .withRepresentationProperty(PROPERTY_MAC_ADDRESS)
                             .withProperty(PROPERTY_MAC_ADDRESS, macAdressString)
                             .withProperty(PROPERTY_NETWORK_INTERFACE_NAME, interfaceName)
                             .withProperty(PROPERTY_PACKET_INTERVAL, BigDecimal.valueOf(5000))
