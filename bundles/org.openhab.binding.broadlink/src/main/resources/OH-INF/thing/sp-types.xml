@@ -36,4 +36,17 @@
 
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
+	<thing-type id="sp3s">
+		<label>Broadlink SP3s</label>
+		<description>The Broadlink SP3s is a Wi-Fi smart socket with a power meter.</description>
+		<channels>
+			<channel id="powerOn" typeId="powerOn"/>
+			<channel id="nightLight" typeId="powerOn">
+				<label>Nightlight power</label>
+			</channel>
+			<channel id="powerConsumption" typeId="powerConsumption"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
 </thing:thing-descriptions>

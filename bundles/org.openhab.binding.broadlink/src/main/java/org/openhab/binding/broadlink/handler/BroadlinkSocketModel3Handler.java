@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
 
     public BroadlinkSocketModel3Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkSocketModel3Handler.class));
+        super(thing, LoggerFactory.getLogger(BroadlinkSocketModel3Handler.class), false // Non-S models do NOT have
+                                                                                        // power consumption monitoring
+        );
     }
 }

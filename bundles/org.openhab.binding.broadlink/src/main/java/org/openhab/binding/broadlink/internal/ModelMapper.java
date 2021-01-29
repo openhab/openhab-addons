@@ -47,8 +47,8 @@ public class ModelMapper {
         if (model == 0x7d00)
             return BroadlinkBindingConstants.THING_TYPE_SP3; // OEM-branded SP3
         if (model == 0x947a || model == 0x9479)
-            return BroadlinkBindingConstants.THING_TYPE_SP3; // NB: this is ACTUALLY an SP3S - see
-                                                             // https://github.com/mjg59/python-broadlink/blob/master/broadlink/__init__.py
+            return BroadlinkBindingConstants.THING_TYPE_SP3S; // see
+                                                              // https://github.com/mjg59/python-broadlink/blob/master/broadlink/__init__.py
         if (model == 0x2728)
             return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMini2
         if (model == 0x2733 || model == 0x273e)

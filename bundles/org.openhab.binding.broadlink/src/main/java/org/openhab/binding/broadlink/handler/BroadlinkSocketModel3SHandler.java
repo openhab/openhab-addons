@@ -17,16 +17,14 @@ import org.openhab.core.thing.Thing;
 import org.slf4j.LoggerFactory;
 
 /**
- * Multiple power socket strip device - has one control that
- * covers all ports and can measure power consumption, so
- * we extend the socket model 2 handler which covers this
+ * Smart power socket handler with power meter
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkStripModel2Handler extends BroadlinkSocketModel2Handler {
+public class BroadlinkSocketModel3SHandler extends BroadlinkSocketModel2Handler {
 
-    public BroadlinkStripModel2Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkStripModel2Handler.class), true);
+    public BroadlinkSocketModel3SHandler(Thing thing) {
+        super(thing, LoggerFactory.getLogger(BroadlinkSocketModel3SHandler.class), true);
     }
 }

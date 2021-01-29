@@ -45,6 +45,7 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID(BINDING_ID, "sp1");
     public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID(BINDING_ID, "sp2");
     public static final ThingTypeUID THING_TYPE_SP3 = new ThingTypeUID(BINDING_ID, "sp3");
+    public static final ThingTypeUID THING_TYPE_SP3S = new ThingTypeUID(BINDING_ID, "sp3s");
 
     public static final Map<ThingTypeUID, String> SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP = new HashMap<ThingTypeUID, String>();
 
@@ -61,6 +62,7 @@ public class BroadlinkBindingConstants {
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP1, "Broadlink SP1");
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP2, "Broadlink SP2");
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP3, "Broadlink SP3");
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP3S, "Broadlink SP3s");
     }
 
     // List of all Channel ids
