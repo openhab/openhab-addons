@@ -183,7 +183,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         thingDiscovered(discoveryResult);
     }
 
-    // @SuppressWarnings("null")
     @Override
     public void thingDetectedTypicals(byte lastByteGatewayIP, byte typical, byte node, byte slot) {
         ThingUID thingUID = null;

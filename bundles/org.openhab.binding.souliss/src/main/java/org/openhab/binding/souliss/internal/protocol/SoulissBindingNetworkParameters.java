@@ -80,10 +80,12 @@ public class SoulissBindingNetworkParameters {
         return hashTableTopics;
     }
 
+    @Nullable
     public static Thing getTopic(String sUID) {
         return hashTableTopics.get(sUID);
     }
 
+    @Nullable
     public static Bridge getGateway(byte lastByteGatewayIP) {
         return (Bridge) hashTableGateways.get(lastByteGatewayIP);
     }
