@@ -13,11 +13,14 @@ You are able to create multiple instances of this Thing to broadcast to differen
 
 | Configuration Parameter | Type    | Description                                                                                                                                          |
 |-------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `apikey`                | text    | Your privtekey to access the Pushsafer Message API. **mandatory**                                                                   |
+| `apikey`                | text    | Your private-key to access the Pushsafer Message API. **mandatory**                                                                   |
 | `user`                  | text    | Your device or group id to which device(s) you want to push notifications. **mandatory**                                                         |
 | `title`                 | text    | The default title of a message (default: `openHAB`).                                                                                                 |
 | `format`                | text    | The default format (`none`, `HTML` or `monospace`) of a message (default: `none`).                                                                   |
-| `sound`                 | text    | The default notification sound on target device (default: `default`) (see [supported notification sounds](https://www.pushsafer.com/pushapi#api-sound)).         |
+| `sound`                 | text    | The default notification sound on target device (default: `1`) (see [supported notification sounds](https://www.pushsafer.com/pushapi#api-sound)).         |
+| `icon`                 | text    | The default notification icon on target device (default: `1`) (see [supported notification icons](https://www.pushsafer.com/pushapi#api-icon)).         |
+| `color`                 | text    | The color (hexadecimal) of notification icon (e.g. #FF0000).         |
+| `vibration`                 | text    | How often the device should vibrate. empty=device default or a number 1-3.         |
 | `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushsafer servers will send the same notification to the user (default: `300`). **advanced** |
 | `expire`                | integer | The expire parameter specifies how long (in seconds) your notification will continue to be retried (default: `3600`). **advanced**                   |
 
