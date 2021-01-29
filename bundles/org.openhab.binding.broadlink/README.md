@@ -1,41 +1,48 @@
 # Broadlink Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding builds on the original work of Cato Sognen, and supports a range of home
+networking devices made by (and occasionally OEMs licensed from) [Broadlink](https://www.ibroadlink.com/).
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+#### Environmental Sensors
+- **A1** Temperature/Humidity/Noise/Light/Air quality sensor
+
+#### Smart Strips
+- **MP1** 4-port power strip
+- **MP1 1K3S2U** 3-port plus 2-USB power strip
+- **MP2** power strip with power consumption
+
+#### IR/RF Transmitter/Blasters
+- **RM** Home IR transmitter
+- **RM2** IR/RF transmitter
+- **RM3** IR transmitter
+- **RM4** IR transmitter with temp/humidity sensor
+
+#### Smart Sockets
+- **SP1** socket
+- **SP2** socket with night light and power consumption
+- **SP3** socket with night light
+
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Devices in the above list that are set up and 
+working in the Broadlink mobile app should be discoverable
+by initiating a discovery from the OpenHAB UI.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+Discovered Broadlink `Thing`s should work with no further configuration required,
+but if needed, some extra configuration can be set:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| name                  | type    | description |
+|-----------------------|---------|-------------|
+| Static IP             | Boolean | Will the device always be given this network address? (This affects the "rediscovery" process and hence time taken to declare a Thing `OFFLINE`)|
+| Polling Interval      | Integer | The interval in seconds for polling the status of the device |
+| Ignore Failed Updates | Boolean | Should failed status requests force the device offline? |
+
+
 
 ## Channels
 
@@ -43,14 +50,20 @@ _Here you should provide information about available channel types, what their m
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| channel     | type   | description                      |
+|-------------|--------|----------------------------------|
+| powerOn     | Switch | Power on/off for switches/strips |
+| nightLight  | Switch | Night light on/off               |
+| temperature | Number | Temperature in degrees Celsius   |
+| humidity    | Number | Air humidity percentage          |
+| noise       | String | Noise level: `QUIET`/`NORMAL`/`NOISY`/`EXTREME` |
+| light       | String | Light level: `DARK`/`DIM`/`NORMAL`/`BRIGHT` |
+| air         | String | Air quality: `PERFECT`/`GOOD`/`NORMAL`/`BAD` |
+| powerConsumption | Number | Power consumption in Watts |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Items file example; `sockets.items`:
+```
+Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:34-ea-34-22-44-66:powerOn" } 
+```
