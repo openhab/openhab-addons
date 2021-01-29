@@ -15,6 +15,7 @@ package org.openhab.binding.broadlink.handler;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -41,16 +42,16 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         }
 
         switch (channelUID.getId()) {
-            case "s1powerOn":
+            case BroadlinkBindingConstants.CHANNEL_S1_POWER:
                 interpretCommandForSocket(1, command);
                 break;
-            case "s2powerOn":
+            case BroadlinkBindingConstants.CHANNEL_S2_POWER:
                 interpretCommandForSocket(2, command);
                 break;
-            case "s3powerOn":
+            case BroadlinkBindingConstants.CHANNEL_S3_POWER:
                 interpretCommandForSocket(3, command);
                 break;
-            case "s4powerOn":
+            case BroadlinkBindingConstants.CHANNEL_S4_POWER:
                 interpretCommandForSocket(4, command);
                 break;
             default:
@@ -111,10 +112,14 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             byte decodedPayload[] = decodeDevicePacket(response);
             final int status = decodedPayload[14];
 
-            this.updateState("s1powerOn", (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s2powerOn", (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s3powerOn", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s4powerOn", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState(BroadlinkBindingConstants.CHANNEL_S1_POWER,
+                    (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState(BroadlinkBindingConstants.CHANNEL_S2_POWER,
+                    (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState(BroadlinkBindingConstants.CHANNEL_S3_POWER,
+                    (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState(BroadlinkBindingConstants.CHANNEL_S4_POWER,
+                    (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
             thingLogger.logError("Exception while getting status from device", ex);
             return false;

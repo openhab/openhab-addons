@@ -15,6 +15,7 @@ package org.openhab.binding.broadlink.handler;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -42,7 +43,7 @@ public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
 
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals("powerOn")) {
+            if (channelUID.getId().equals(BroadlinkBindingConstants.CHANNEL_POWER)) {
                 if (command == OnOffType.ON) {
                     setStatusOnDevice(1);
                 } else if (command == OnOffType.OFF) {

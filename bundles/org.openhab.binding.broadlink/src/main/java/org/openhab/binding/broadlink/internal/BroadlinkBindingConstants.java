@@ -69,6 +69,15 @@ public class BroadlinkBindingConstants {
     public static final String CHANNEL_LIGHT_LEVEL = "light";
     public static final String CHANNEL_AIR_QUALITY = "air";
     public static final String CHANNEL_NOISE_LEVEL = "noise";
+    public static final String CHANNEL_POWER_CONSUMPTION = "powerConsumption";
 
     public static final String CHANNEL_COMMAND = "command";
+
+    public static final String CHANNEL_POWER = "powerOn";
+    public static final String CHANNEL_NIGHTLIGHT_POWER = "nightLight";
+    public static final String CHANNEL_S1_POWER = "s1powerOn";
+    public static final String CHANNEL_S2_POWER = "s2powerOn";
+    public static final String CHANNEL_S3_POWER = "s3powerOn";
+    public static final String CHANNEL_S4_POWER = "s4powerOn";
+    public static final String CHANNEL_USB_POWER = "usbPowerOn";
 }

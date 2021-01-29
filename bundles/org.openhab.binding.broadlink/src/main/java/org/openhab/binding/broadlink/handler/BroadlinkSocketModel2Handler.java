@@ -15,6 +15,7 @@ package org.openhab.binding.broadlink.handler;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.*;
 import org.openhab.core.types.Command;
@@ -74,11 +75,11 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
             OnOffType powerStatus = derivePowerStateFromStatusByte(statusByte);
             OnOffType nightLightStatus = deriveNightLightStateFromStatusByte(statusByte);
 
-            if (channelUID.getId().equals("powerOn")) {
+            if (channelUID.getId().equals(BroadlinkBindingConstants.CHANNEL_POWER)) {
                 setStatusOnDevice(mergeOnOffBits(command, nightLightStatus));
             }
 
-            if (channelUID.getId().equals("nightLight")) {
+            if (channelUID.getId().equals(BroadlinkBindingConstants.CHANNEL_NIGHTLIGHT_POWER)) {
                 setStatusOnDevice(mergeOnOffBits(powerStatus, command));
             }
         } catch (IOException e) {
@@ -90,8 +91,9 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         try {
             thingLogger.logInfo("SP2/SP3 getting status...");
             byte[] statusByte = getStatusByteFromDevice();
-            updateState("powerOn", derivePowerStateFromStatusByte(statusByte));
-            updateState("nightLight", deriveNightLightStateFromStatusByte(statusByte));
+            updateState(BroadlinkBindingConstants.CHANNEL_POWER, derivePowerStateFromStatusByte(statusByte));
+            updateState(BroadlinkBindingConstants.CHANNEL_NIGHTLIGHT_POWER,
+                    deriveNightLightStateFromStatusByte(statusByte));
             return true;
         } catch (Exception ex) {
             thingLogger.logError("Exception while getting status from device", ex);
