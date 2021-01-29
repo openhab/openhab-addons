@@ -34,7 +34,8 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link PushsaferHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution
+, forked from Christoph Weitkamp
  */
 @Component(configurationPid = "binding.pushsafer", service = ThingHandlerFactory.class)
 @NonNullByDefault
