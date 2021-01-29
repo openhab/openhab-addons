@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -37,23 +38,24 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class D2_50 extends _VLDMessage {
 
-    protected final byte mtMask = (byte) 0xf0;
-    protected final byte MT_REMOTE_TRANSMISSION_REQUEST = 0x00;
-    protected final byte MT_CONTROL = 0x20;
-    protected final byte MT_BASIC_STATUS = 0x40;
-    protected final byte MT_EXTENDED_STATUS = 0x60; // not yet implemented
+    protected static final byte mtMask = (byte) 0xf0;
+    protected static final byte MT_REMOTE_TRANSMISSION_REQUEST = 0x00;
+    protected static final byte MT_CONTROL = 0x20;
+    protected static final byte MT_BASIC_STATUS = 0x40;
+    protected static final byte MT_EXTENDED_STATUS = 0x60; // not yet implemented
 
-    protected final byte rmtMask = (byte) 0x0f;
-    protected final byte RMT_BASIC_STATUS = 0x00;
-    protected final byte RMT_EXTENDED_STATUS = 0x01; // not yet implemented
+    protected static final byte rmtMask = (byte) 0x0f;
+    protected static final byte RMT_BASIC_STATUS = 0x00;
+    protected static final byte RMT_EXTENDED_STATUS = 0x01; // not yet implemented
 
-    protected final byte DOMC_NOACTION = 0x0f;
-    protected final byte CONTROL_NOACTION = 0;
-    protected final byte TMOC_NOACTION = 127;
-    protected final byte TMOC_ACTIVATE = (byte) 0xff;
-    protected final byte THRESHOLD_NOACTION = 127;
+    protected static final byte DOMC_NOACTION = 0x0f;
+    protected static final byte CONTROL_NOACTION = 0;
+    protected static final byte TMOC_NOACTION = 127;
+    protected static final byte TMOC_ACTIVATE = (byte) 0xff;
+    protected static final byte THRESHOLD_NOACTION = 127;
 
     public D2_50() {
         super();
