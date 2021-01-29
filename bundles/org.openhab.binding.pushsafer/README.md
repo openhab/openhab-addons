@@ -2,7 +2,7 @@
 
 The Pushsafer binding allows you to notify mobile devices of a message using the [Pushsafer API](https://www.pushsafer.com/pushapi).
 To get started you first need to register (a free process) to get a Private Key.
-Initially you have to register a device with one of the [client apps](https://www.pushsafer.com/apps). After that you get a device id.
+Initially you have to register a device with one of the [client apps](https://www.pushsafer.com/apps), to get a device id.
 
 ## Supported Things
 
@@ -13,11 +13,11 @@ You are able to create multiple instances of this Thing to broadcast to differen
 
 | Configuration Parameter | Type    | Description                                                                                                                                          |
 |-------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `apikey`                | text    | Your API token / key (APP_TOKEN) to access the Pushsafer Message API. **mandatory**                                                                   |
-| `user`                  | text    | Your user key or group key (USER_KEY) to which you want to push notifications. **mandatory**                                                         |
+| `apikey`                | text    | Your privtekey to access the Pushsafer Message API. **mandatory**                                                                   |
+| `user`                  | text    | Your device or group id to which device(s) you want to push notifications. **mandatory**                                                         |
 | `title`                 | text    | The default title of a message (default: `openHAB`).                                                                                                 |
 | `format`                | text    | The default format (`none`, `HTML` or `monospace`) of a message (default: `none`).                                                                   |
-| `sound`                 | text    | The default notification sound on target device (default: `default`) (see [supported notification sounds](https://pushsafer.net/api#sounds)).         |
+| `sound`                 | text    | The default notification sound on target device (default: `default`) (see [supported notification sounds](https://www.pushsafer.com/pushapi#api-sound)).         |
 | `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushsafer servers will send the same notification to the user (default: `300`). **advanced** |
 | `expire`                | integer | The expire parameter specifies how long (in seconds) your notification will continue to be retried (default: `3600`). **advanced**                   |
 
