@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The {@link PushsaferAccountConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
 public class PushsaferAccountConfiguration {
@@ -29,6 +29,12 @@ public class PushsaferAccountConfiguration {
     public String title = DEFAULT_TITLE;
     public String format = "none";
     public String sound = DEFAULT_SOUND;
+	public String icon = DEFAULT_ICON;
+	public String color = DEFAULT_COLOR;
+	public String answer = DEFAULT_ANSWER;
+	public String confirm = DEFAULT_CONFIRM;
+	public String time2live = DEFAULT_TIME2LIVE;
+	public String vibration = DEFAULT_VIBRATION;
     public int retry = 300;
     public int expire = 3600;
 }
