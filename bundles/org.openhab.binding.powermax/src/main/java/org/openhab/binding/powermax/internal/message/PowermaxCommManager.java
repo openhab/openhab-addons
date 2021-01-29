@@ -278,18 +278,13 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         PowermaxStateEvent newEvent = new PowermaxStateEvent(this, updateState);
 
         // send message to event listeners
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onNewStateEvent(newEvent);
-        }
+        listeners.forEach(listener -> listener.onNewStateEvent(newEvent));
     }
 
     @Override
     public void onCommunicationFailure(String message) {
         close();
-
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onCommunicationFailure(message);
-        }
+        listeners.forEach(listener -> listener.onCommunicationFailure(message));
     }
 
     /**

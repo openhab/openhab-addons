@@ -101,9 +101,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
                 PowermaxBaseMessage.getMessageHandler(incomingMessage));
 
         // send message to event listeners
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onNewMessageEvent(event);
-        }
+        listeners.forEach(listener -> listener.onNewMessageEvent(event));
     }
 
     /**
@@ -111,10 +109,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
      */
     public void handleCommunicationFailure(String message) {
         close();
-
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onCommunicationFailure(message);
-        }
+        listeners.forEach(listener -> listener.onCommunicationFailure(message));
     }
 
     @Override
