@@ -95,11 +95,7 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
     }
 
     public DateTimeType getLastUpdateTime() {
-        if (timestamp != null) {
-            return DateTimeType.valueOf(timestamp);
-        } else {
-            return null;
-        }
+        return DateTimeType.valueOf(timestamp);
     }
 
     public void setUpdateTimeNow() {

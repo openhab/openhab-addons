@@ -87,24 +87,23 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType state) {
-        if (state != null) {
-            if (state instanceof OnOffType) {
-                this.updateState(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL, (OnOffType) state);
-            } else if (state instanceof StringType) {
-                switch (String.valueOf(state)) {
-                    case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:
-                        this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.ON);
-                        break;
-                    case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
-                        this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
-                        break;
-                    // case SoulissBindingConstants.T41_REARMOFF_MESSAGE_CHANNEL:
-                    // this.updateState(SoulissBindingConstants.T4n_REARMALARM_CHANNEL, OnOffType.OFF);
-                }
+        if (state instanceof OnOffType) {
+            this.updateState(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL, (OnOffType) state);
+        } else if (state instanceof StringType) {
+            switch (String.valueOf(state)) {
+                case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:
+                    this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.ON);
+                    break;
+                case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
+                    this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
+                    break;
+                // case SoulissBindingConstants.T41_REARMOFF_MESSAGE_CHANNEL:
+                // this.updateState(SoulissBindingConstants.T4n_REARMALARM_CHANNEL, OnOffType.OFF);
             }
-            // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off
-            updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
         }
+        // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off
+        updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
+
     }
 
     @Override

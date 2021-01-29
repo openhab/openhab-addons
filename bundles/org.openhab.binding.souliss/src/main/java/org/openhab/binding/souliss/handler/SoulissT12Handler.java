@@ -30,7 +30,7 @@ import org.openhab.core.types.RefreshType;
 /**
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
- * 
+ *
  *         The {@link SoulissT12Handler} is responsible for handling commands, which are
  *         sent to one of the channels.
  *
@@ -137,15 +137,13 @@ public class SoulissT12Handler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType state) {
-        if (state != null) {
-            this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) state);
-        }
+        this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) state);
+
     }
 
     public void setStateAutomode(PrimitiveType state) {
-        if (state != null) {
-            this.updateState(SoulissBindingConstants.AUTOMODE_CHANNEL, (OnOffType) state);
-        }
+        this.updateState(SoulissBindingConstants.AUTOMODE_CHANNEL, (OnOffType) state);
+
     }
 
     @Override
