@@ -1,7 +1,7 @@
 # EspMilightHub Binding
 
 This binding allows an open source esp8266 based bridge to automatically find and add Milight globes.
-The hubs can be built from 2 ready made boards and  only need connecting with 7 wires. 
+The hubs can be built from 2 ready made boards and only need connecting with 7 wires. 
 They can be very easy to build with no soldering needed. 
 
 Advantages to using this DIY bridge over the OEM bridge:
