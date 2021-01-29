@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Some automation actions to be used with a {@link PushsaferAccountHandler}.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @ThingActionsScope(name = "pushsafer")
 @NonNullByDefault
@@ -43,26 +43,26 @@ public class PushsaferActions implements ThingActions {
 
     private @NonNullByDefault({}) PushsaferAccountHandler accountHandler;
 
-    @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
-            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
-            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
-        logger.trace("ThingAction 'sendMessage' called with value(s): message='{}', title='{}'", message, title);
+    @RuleAction(label = "@text/sendPushsaferMessageActionLabel", description = "@text/sendPushsaferMessageActionDescription")
+    public @ActionOutput(name = "sent", label = "@text/sendPushsaferMessageActionOutputLabel", description = "@text/sendPushsaferMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendPushsaferMessage(
+            @ActionInput(name = "message", label = "@text/sendPushsaferMessageActionInputMessageLabel", description = "@text/sendPushsaferMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendPushsaferMessageActionInputTitleLabel", description = "@text/sendPushsaferMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
+        logger.trace("ThingAction 'sendPushsaferMessage' called with value(s): message='{}', title='{}'", message, title);
         return send(getDefaultPushsaferMessageBuilder(message), title);
     }
 
-    public static Boolean sendMessage(ThingActions actions, String message, @Nullable String title) {
-        return ((PushsaferActions) actions).sendMessage(message, title);
+    public static Boolean sendPushsaferMessage(ThingActions actions, String message, @Nullable String title) {
+        return ((PushsaferActions) actions).sendPushsaferMessage(message, title);
     }
 
-    @RuleAction(label = "@text/sendURLMessageActionLabel", description = "@text/sendURLMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendURLMessage(
-            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
-            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
-            @ActionInput(name = "url", label = "@text/sendMessageActionInputURLLabel", description = "@text/sendMessageActionInputURLDescription", type = "java.lang.String", required = true) String url,
-            @ActionInput(name = "urlTitle", label = "@text/sendMessageActionInputURLTitleLabel", description = "@text/sendMessageActionInputURLTitleDescription", type = "java.lang.String") @Nullable String urlTitle) {
+    @RuleAction(label = "@text/sendPushsaferURLMessageActionLabel", description = "@text/sendPushsaferURLMessageActionDescription")
+    public @ActionOutput(name = "sent", label = "@text/sendPushsaferMessageActionOutputLabel", description = "@text/sendPushsaferMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendPushsaferURLMessage(
+            @ActionInput(name = "message", label = "@text/sendPushsaferMessageActionInputMessageLabel", description = "@text/sendPushsaferMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendPushsaferMessageActionInputTitleLabel", description = "@text/sendPushsaferMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
+            @ActionInput(name = "url", label = "@text/sendPushsaferMessageActionInputURLLabel", description = "@text/sendPushsaferMessageActionInputURLDescription", type = "java.lang.String", required = true) String url,
+            @ActionInput(name = "urlTitle", label = "@text/sendPushsaferMessageActionInputURLTitleLabel", description = "@text/sendPushsaferMessageActionInputURLTitleDescription", type = "java.lang.String") @Nullable String urlTitle) {
         logger.trace(
-                "ThingAction 'sendURLMessage' called with value(s): message='{}', url='{}', title='{}', urlTitle='{}'",
+                "ThingAction 'sendPushsaferURLMessage' called with value(s): message='{}', url='{}', title='{}', urlTitle='{}'",
                 message, url, title, urlTitle);
         if (url == null) {
             throw new IllegalArgumentException("Skip sending message as 'url' is null.");
@@ -75,45 +75,46 @@ public class PushsaferActions implements ThingActions {
         return send(builder, title);
     }
 
-    public static Boolean sendURLMessage(ThingActions actions, String message, @Nullable String title, String url,
+    public static Boolean sendPushsaferURLMessage(ThingActions actions, String message, @Nullable String title, String url,
             @Nullable String urlTitle) {
-        return ((PushsaferActions) actions).sendURLMessage(message, title, url, urlTitle);
+        return ((PushsaferActions) actions).sendPushsaferURLMessage(message, title, url, urlTitle);
     }
 
     @RuleAction(label = "@text/sendHTMLMessageActionLabel", description = "@text/sendHTMLMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendHtmlMessage(
-            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
-            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
-        logger.trace("ThingAction 'sendHtmlMessage' called with value(s): message='{}', title='{}'", message, title);
+    public @ActionOutput(name = "sent", label = "@text/sendPushsaferMessageActionOutputLabel", description = "@text/sendPushsaferMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendPushsaferHtmlMessage(
+            @ActionInput(name = "message", label = "@text/sendPushsaferMessageActionInputMessageLabel", description = "@text/sendPushsaferMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendPushsaferMessageActionInputTitleLabel", description = "@text/sendPushsaferMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
+        logger.trace("ThingAction 'sendPushsaferHtmlMessage' called with value(s): message='{}', title='{}'", message, title);
         return send(getDefaultPushsaferMessageBuilder(message).withHtmlFormatting(), title);
     }
 
-    public static Boolean sendHtmlMessage(ThingActions actions, String message, @Nullable String title) {
-        return ((PushsaferActions) actions).sendHtmlMessage(message, title);
+    public static Boolean sendPushsaferHtmlMessage(ThingActions actions, String message, @Nullable String title) {
+        return ((PushsaferActions) actions).sendPushsaferHtmlMessage(message, title);
     }
 
-    @RuleAction(label = "@text/sendMonospaceMessageActionLabel", description = "@text/sendMonospaceMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMonospaceMessage(
-            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
-            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
-        logger.trace("ThingAction 'sendMonospaceMessage' called with value(s): message='{}', title='{}'", message,
+    @RuleAction(label = "@text/sendPushsaferMonospaceMessageActionLabel", description = "@text/sendPushsaferMonospaceMessageActionDescription")
+    public @ActionOutput(name = "sent", label = "@text/sendPushsaferMessageActionOutputLabel", description = "@text/sendPushsaferMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendPushsaferMonospaceMessage(
+            @ActionInput(name = "message", label = "@text/sendPushsaferMessageActionInputMessageLabel", description = "@text/sendPushsaferMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendPushsaferMessageActionInputTitleLabel", description = "@text/sendPushsaferMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
+        logger.trace("ThingAction 'sendPushsaferMonospaceMessage' called with value(s): message='{}', title='{}'", message,
                 title);
         return send(getDefaultPushsaferMessageBuilder(message).withMonospaceFormatting(), title);
     }
 
-    public static Boolean sendMonospaceMessage(ThingActions actions, String message, @Nullable String title) {
-        return ((PushsaferActions) actions).sendMonospaceMessage(message, title);
+    public static Boolean sendPushsaferMonospaceMessage(ThingActions actions, String message, @Nullable String title) {
+        return ((PushsaferActions) actions).sendPushsaferMonospaceMessage(message, title);
     }
 
-    @RuleAction(label = "@text/sendAttachmentMessageActionLabel", description = "@text/sendAttachmentMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendAttachmentMessage(
-            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
-            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
-            @ActionInput(name = "attachment", label = "@text/sendMessageActionInputAttachmentLabel", description = "@text/sendMessageActionInputAttachmentDescription", type = "java.lang.String", required = true) String attachment,
-            @ActionInput(name = "contentType", label = "@text/sendMessageActionInputContentTypeLabel", description = "@text/sendMessageActionInputContentTypeDescription", type = "java.lang.String", defaultValue = DEFAULT_CONTENT_TYPE) @Nullable String contentType) {
+    @RuleAction(label = "@text/sendPushsaferAttachmentMessageActionLabel", description = "@text/sendPushsaferAttachmentMessageActionDescription")
+    public @ActionOutput(name = "sent", label = "@text/sendPushsaferMessageActionOutputLabel", description = "@text/sendPushsaferMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendPushsaferAttachmentMessage(
+            @ActionInput(name = "message", label = "@text/sendPushsaferMessageActionInputMessageLabel", description = "@text/sendPushsaferMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendPushsaferMessageActionInputTitleLabel", description = "@text/sendPushsaferMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
+            @ActionInput(name = "attachment", label = "@text/sendPushsaferMessageActionInputAttachmentLabel", description = "@text/sendPushsaferMessageActionInputAttachmentDescription", type = "java.lang.String", required = true) String attachment,
+            @ActionInput(name = "contentType", label = "@text/sendPushsaferMessageActionInputContentTypeLabel", description = "@text/sendPushsaferMessageActionInputContentTypeDescription", type = "java.lang.String", defaultValue = DEFAULT_CONTENT_TYPE) @Nullable String contentType,
+			@ActionInput(name = "authentfication", label = "@text/sendPushsaferMessageActionInputAuthentficationLabel", description = "@text/sendPushsaferMessageActionInputAuthentficationDescription", type = "java.lang.String", defaultValue = DEFAULT_AUTH) @Nullable String authentfication) {
         logger.trace(
-                "ThingAction 'sendAttachmentMessage' called with value(s): message='{}', title='{}', attachment='{}', contentType='{}'",
-                message, title, attachment, contentType);
+                "ThingAction 'sendPushsaferAttachmentMessage' called with value(s): message='{}', title='{}', attachment='{}', contentType='{}', authentfication='{}'",
+                message, title, attachment, contentType, authentfication);
         if (attachment == null) {
             throw new IllegalArgumentException("Skip sending message as 'attachment' is null.");
         }
@@ -122,20 +123,23 @@ public class PushsaferActions implements ThingActions {
         if (contentType != null) {
             builder.withContentType(contentType);
         }
+		if (authentfication != null) {
+            builder.withAuthentfication(authentfication);
+        }
         return send(builder, title);
     }
 
-    public static Boolean sendAttachmentMessage(ThingActions actions, String message, @Nullable String title,
-            String attachment, @Nullable String contentType) {
-        return ((PushsaferActions) actions).sendAttachmentMessage(message, title, attachment, contentType);
+    public static Boolean sendPushsaferAttachmentMessage(ThingActions actions, String message, @Nullable String title,
+            String attachment, @Nullable String contentType, @Nullable String authentfication) {
+        return ((PushsaferActions) actions).sendPushsaferAttachmentMessage(message, title, attachment, contentType, authentfication);
     }
 
-    @RuleAction(label = "@text/sendPriorityMessageActionLabel", description = "@text/sendPriorityMessageActionDescription")
-    public @ActionOutput(name = "receipt", label = "@text/sendPriorityMessageActionOutputLabel", description = "@text/sendPriorityMessageActionOutputDescription", type = "java.lang.String") String sendPriorityMessage(
-            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
-            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
-            @ActionInput(name = "priority", label = "@text/sendMessageActionInputPriorityLabel", description = "@text/sendMessageActionInputPriorityDescription", type = "java.lang.Integer", defaultValue = DEFAULT_EMERGENCY_PRIORITY) @Nullable Integer priority) {
-        logger.trace("ThingAction 'sendPriorityMessage' called with value(s): message='{}', title='{}', priority='{}'",
+    @RuleAction(label = "@text/sendPushsaferPriorityMessageActionLabel", description = "@text/sendPushsaferPriorityMessageActionDescription")
+    public @ActionOutput(name = "receipt", label = "@text/sendPushsaferPriorityMessageActionOutputLabel", description = "@text/sendPushsaferPriorityMessageActionOutputDescription", type = "java.lang.String") String sendPushsaferPriorityMessage(
+            @ActionInput(name = "message", label = "@text/sendPushsaferMessageActionInputMessageLabel", description = "@text/sendPushsaferMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendPushsaferMessageActionInputTitleLabel", description = "@text/sendPushsaferMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
+            @ActionInput(name = "priority", label = "@text/sendPushsaferMessageActionInputPriorityLabel", description = "@text/sendPushsaferMessageActionInputPriorityDescription", type = "java.lang.Integer", defaultValue = DEFAULT_EMERGENCY_PRIORITY) @Nullable Integer priority) {
+        logger.trace("ThingAction 'sendPushsaferPriorityMessage' called with value(s): message='{}', title='{}', priority='{}'",
                 message, title, priority);
         PushsaferMessageBuilder builder = getDefaultPushsaferMessageBuilder(message)
                 .withPriority(priority == null ? EMERGENCY_PRIORITY : priority.intValue());
@@ -143,18 +147,18 @@ public class PushsaferActions implements ThingActions {
         if (title != null) {
             builder.withTitle(title);
         }
-        return accountHandler.sendPriorityMessage(builder);
+        return accountHandler.sendPushsaferPriorityMessage(builder);
     }
 
-    public static String sendPriorityMessage(ThingActions actions, String message, @Nullable String title,
+    public static String sendPushsaferPriorityMessage(ThingActions actions, String message, @Nullable String title,
             @Nullable Integer priority) {
-        return ((PushsaferActions) actions).sendPriorityMessage(message, title, priority);
+        return ((PushsaferActions) actions).sendPushsaferPriorityMessage(message, title, priority);
     }
 
-    @RuleAction(label = "@text/cancelPriorityMessageActionLabel", description = "@text/cancelPriorityMessageActionDescription")
-    public @ActionOutput(name = "canceled", label = "@text/cancelPriorityMessageActionOutputLabel", description = "@text/cancelPriorityMessageActionOutputDescription", type = "java.lang.Boolean") Boolean cancelPriorityMessage(
-            @ActionInput(name = "receipt", label = "@text/cancelPriorityMessageActionInputReceiptLabel", description = "@text/cancelPriorityMessageActionInputReceiptDescription", type = "java.lang.String", required = true) String receipt) {
-        logger.trace("ThingAction 'cancelPriorityMessage' called with value(s): '{}'", receipt);
+    @RuleAction(label = "@text/cancelPushsaferPriorityMessageActionLabel", description = "@text/cancelPushsaferPriorityMessageActionDescription")
+    public @ActionOutput(name = "canceled", label = "@text/cancelPushsaferPriorityMessageActionOutputLabel", description = "@text/cancelPushsaferPriorityMessageActionOutputDescription", type = "java.lang.Boolean") Boolean cancelPushsaferPriorityMessage(
+            @ActionInput(name = "receipt", label = "@text/cancelPushsaferPriorityMessageActionInputReceiptLabel", description = "@text/cancelPushsaferPriorityMessageActionInputReceiptDescription", type = "java.lang.String", required = true) String receipt) {
+        logger.trace("ThingAction 'cancelPushsaferPriorityMessage' called with value(s): '{}'", receipt);
         if (accountHandler == null) {
             throw new RuntimeException("PushsaferAccountHandler is null!");
         }
@@ -163,19 +167,19 @@ public class PushsaferActions implements ThingActions {
             throw new IllegalArgumentException("Skip canceling message as 'receipt' is null.");
         }
 
-        return accountHandler.cancelPriorityMessage(receipt);
+        return accountHandler.cancelPushsaferPriorityMessage(receipt);
     }
 
-    public static Boolean cancelPriorityMessage(ThingActions actions, String receipt) {
-        return ((PushsaferActions) actions).cancelPriorityMessage(receipt);
+    public static Boolean cancelPushsaferPriorityMessage(ThingActions actions, String receipt) {
+        return ((PushsaferActions) actions).cancelPushsaferPriorityMessage(receipt);
     }
 
-    @RuleAction(label = "@text/sendMessageToDeviceActionLabel", description = "@text/sendMessageToDeviceActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessageToDevice(
-            @ActionInput(name = "device", label = "@text/sendMessageActionInputDeviceLabel", description = "@text/sendMessageActionInputDeviceDescription", type = "java.lang.String", required = true) String device,
-            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
-            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
-        logger.trace("ThingAction 'sendMessageToDevice' called with value(s): device='{}', message='{}', title='{}'",
+    @RuleAction(label = "@text/sendPushsaferMessageToDeviceActionLabel", description = "@text/sendPushsaferMessageToDeviceActionDescription")
+    public @ActionOutput(name = "sent", label = "@text/sendPushsaferMessageActionOutputLabel", description = "@text/sendPushsaferMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendPushsaferMessageToDevice(
+            @ActionInput(name = "device", label = "@text/sendPushsaferMessageActionInputDeviceLabel", description = "@text/sendPushsaferMessageActionInputDeviceDescription", type = "java.lang.String", required = true) String device,
+            @ActionInput(name = "message", label = "@text/sendPushsaferMessageActionInputMessageLabel", description = "@text/sendPushsaferMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendPushsaferMessageActionInputTitleLabel", description = "@text/sendPushsaferMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
+        logger.trace("ThingAction 'sendPushsaferMessageToDevice' called with value(s): device='{}', message='{}', title='{}'",
                 device, message, title);
         if (device == null) {
             throw new IllegalArgumentException("Skip sending message as 'device' is null.");
@@ -184,9 +188,9 @@ public class PushsaferActions implements ThingActions {
         return send(getDefaultPushsaferMessageBuilder(message).withDevice(device), title);
     }
 
-    public static Boolean sendMessageToDevice(ThingActions actions, String device, String message,
+    public static Boolean sendPushsaferMessageToDevice(ThingActions actions, String device, String message,
             @Nullable String title) {
-        return ((PushsaferActions) actions).sendMessageToDevice(device, message, title);
+        return ((PushsaferActions) actions).sendPushsaferMessageToDevice(device, message, title);
     }
 
     private PushsaferMessageBuilder getDefaultPushsaferMessageBuilder(String message) {
@@ -205,7 +209,7 @@ public class PushsaferActions implements ThingActions {
         if (title != null) {
             builder.withTitle(title);
         }
-        return accountHandler.sendMessage(builder);
+        return accountHandler.sendPushsaferMessage(builder);
     }
 
     @Override
