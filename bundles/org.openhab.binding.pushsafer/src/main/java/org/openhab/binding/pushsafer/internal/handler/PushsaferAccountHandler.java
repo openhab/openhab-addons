@@ -13,6 +13,12 @@
 package org.openhab.binding.pushsafer.internal.handler;
 
 import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_SOUND;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_ICON;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_COLOR;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_VIBRATION;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_TIME2LIVE;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_ANSWER;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_CONFIRM;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +35,7 @@ import org.openhab.binding.pushsafer.internal.connection.PushsaferCommunicationE
 import org.openhab.binding.pushsafer.internal.connection.PushsaferConfigurationException;
 import org.openhab.binding.pushsafer.internal.connection.PushsaferMessageBuilder;
 import org.openhab.binding.pushsafer.internal.dto.Sound;
+import org.openhab.binding.pushsafer.internal.dto.Icon;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -40,7 +47,7 @@ import org.openhab.core.types.Command;
 /**
  * The {@link PushsaferAccountHandler} is responsible for handling commands, which are sent to one of the channels.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
 public class PushsaferAccountHandler extends BaseThingHandler {
@@ -102,6 +109,15 @@ public class PushsaferAccountHandler extends BaseThingHandler {
     public List<Sound> getSounds() {
         return connection != null ? connection.getSounds() : List.of();
     }
+	
+    /**
+     * Retrieves the list of current icons from the Pushsafer API.
+     *
+     * @return a list of {@link Icon}s
+     */
+    public List<Icon> getIcons() {
+        return connection != null ? connection.getIcons() : List.of();
+    }	
 
     /**
      * Returns a preconfigured {@link PushsaferMessageBuilder}.
@@ -129,28 +145,52 @@ public class PushsaferAccountHandler extends BaseThingHandler {
         if (!DEFAULT_SOUND.equals(config.sound)) {
             builder.withSound(config.sound);
         }
+		// add icon if defined
+        if (!DEFAULT_ICON.equals(config.icon)) {
+            builder.withIcon(config.icon);
+        }
+		// add color if defined
+        if (!DEFAULT_COLOR.equals(config.color)) {
+            builder.withColor(config.color);
+        }
+		// add vibration if defined
+        if (!DEFAULT_VIBRATION.equals(config.vibration)) {
+            builder.withVibration(config.vibration);
+        }
+		// add confirm if defined
+        if (!DEFAULT_CONFIRM.equals(config.confirm)) {
+            builder.withConfirm(config.confirm);
+        }
+		// add answer if defined
+        if (!DEFAULT_ANSWER.equals(config.answer)) {
+            builder.withAnswer(config.answer);
+        }
+		// add time2live if defined
+        if (!DEFAULT_TIME2LIVE.equals(config.time2live)) {
+            builder.withTime2live(config.time2live);
+        }
         return builder;
     }
 
-    public boolean sendMessage(PushsaferMessageBuilder messageBuilder) {
+    public boolean sendPushsaferMessage(PushsaferMessageBuilder messageBuilder) {
         if (connection != null) {
-            return connection.sendMessage(messageBuilder);
+            return connection.sendPushsaferMessage(messageBuilder);
         } else {
             throw new IllegalArgumentException("PushsaferAPIConnection is null!");
         }
     }
 
-    public String sendPriorityMessage(PushsaferMessageBuilder messageBuilder) {
+    public String sendPushsaferPriorityMessage(PushsaferMessageBuilder messageBuilder) {
         if (connection != null) {
-            return connection.sendPriorityMessage(messageBuilder);
+            return connection.sendPushsaferPriorityMessage(messageBuilder);
         } else {
             throw new IllegalArgumentException("PushsaferAPIConnection is null!");
         }
     }
 
-    public boolean cancelPriorityMessage(String receipt) {
+    public boolean cancelPushsaferPriorityMessage(String receipt) {
         if (connection != null) {
-            return connection.cancelPriorityMessage(receipt);
+            return connection.cancelPushsaferPriorityMessage(receipt);
         } else {
             throw new IllegalArgumentException("PushsaferAPIConnection is null!");
         }
@@ -158,7 +198,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
 
     private void asyncValidateUser() {
         try {
-            connection.validateUser();
+            //connection.validateUser();
             updateStatus(ThingStatus.ONLINE);
         } catch (PushsaferCommunicationException | PushsaferConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
