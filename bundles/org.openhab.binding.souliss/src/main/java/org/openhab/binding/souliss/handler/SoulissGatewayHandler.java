@@ -84,7 +84,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("initializing server handler for thingGeneric {}", getThing());
