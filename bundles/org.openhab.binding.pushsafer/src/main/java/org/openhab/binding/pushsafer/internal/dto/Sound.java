@@ -16,9 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.core.ParameterOption;
 
 /**
- * The {@link Sound} is the Java class used to map the JSON response to an Pushsafer API request..
+ * The {@link Sound} is the Java class used to map the JSON response to an Pushsafer API request.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
 public class Sound {
