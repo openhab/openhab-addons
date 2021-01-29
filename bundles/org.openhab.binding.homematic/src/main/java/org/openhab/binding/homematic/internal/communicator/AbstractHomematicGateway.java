@@ -471,13 +471,13 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     @Override
     public void loadChannelValues(HmChannel channel) throws IOException {
         if (channel.getDevice().isGatewayExtras()) {
-            if (channel.getNumber() != HmChannel.CHANNEL_NUMBER_EXTRAS) {
+            if (!HmChannel.CHANNEL_NUMBER_EXTRAS.equals(channel.getNumber())) {
                 List<HmDatapoint> datapoints = channel.getDatapoints();
 
-                if (channel.getNumber() == HmChannel.CHANNEL_NUMBER_VARIABLE) {
+                if (HmChannel.CHANNEL_NUMBER_VARIABLE.equals(channel.getNumber())) {
                     loadVariables(channel);
                     logger.debug("Loaded {} gateway variable(s)", datapoints.size());
-                } else if (channel.getNumber() == HmChannel.CHANNEL_NUMBER_SCRIPT) {
+                } else if (HmChannel.CHANNEL_NUMBER_SCRIPT.equals(channel.getNumber())) {
                     loadScripts(channel);
                     logger.debug("Loaded {} gateway script(s)", datapoints.size());
                 }
@@ -750,9 +750,9 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     }
 
     @Override
-    public void newDevices(List<String> adresses) {
+    public void newDevices(List<String> addresses) {
         if (initialized && newDeviceEventsEnabled) {
-            for (String address : adresses) {
+            for (String address : addresses) {
                 try {
                     logger.debug("New device '{}' detected on gateway with id '{}'", address, id);
                     List<HmDevice> deviceDescriptions = getDeviceDescriptions();
