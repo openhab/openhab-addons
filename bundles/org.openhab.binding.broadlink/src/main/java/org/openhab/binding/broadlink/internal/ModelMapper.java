@@ -120,7 +120,6 @@ public class ModelMapper {
         // return BroadlinkBindingConstants.THING_TYPE_S1C;
         // if (model == 0x4e4d)
         // return null;
-        String modelAsHexString = Integer.toHexString(model);
         LOGGER.error(
                 "Device identifying itself as '{}' (0x{}) is not currently supported. Please report this to the developer!",
                 model, modelAsHexString);
