@@ -18,8 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The {@link PushsaferCommunicationException} is a configuration exception for the connections to Pushsafer Messages API.
  *
- * @author Pushsafer.com (Kevin Siml) - Initial contribution
-, forked from Christoph Weitkamp
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
 public class PushsaferCommunicationException extends RuntimeException {
