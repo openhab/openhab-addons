@@ -154,7 +154,7 @@ For example:
 
 ## Full Example
 
-To use these examples for textual configuration, you must have already have a configured a MQTT `broker` thing and know its unique ID.
+To use these examples for textual configuration, you must already have a configured a MQTT `broker` thing and know its unique ID.
 This UID will be used in the things file and will replace the text `myBroker`.
 The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
 
