@@ -13,6 +13,9 @@
 package org.openhab.binding.opensprinkler.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +56,9 @@ public class OpenSprinklerDiscoveryJob implements Runnable {
             OpenSprinklerHttpInterfaceConfig config = new OpenSprinklerHttpInterfaceConfig();
             config.hostname = ip;
             discoveryClass.getApiFactory().getHttpApi(config);
-        } catch (Exception exp) {
+        } catch (UnauthorizedApiException e) {
+            return true;
+        } catch (CommunicationApiException | GeneralApiException exp) {
             logger.debug("No OpenSprinkler device found at IP address ({}) because of error: {}", ip, exp.getMessage());
             return false;
         }
