@@ -44,7 +44,7 @@ The parameter `message` is **mandatory**, the `title` parameter defaults to what
 
 - `sendPushsaferMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
 
-- `sendPushsaferAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable String authentfication)` - This method is used to send a message with an image attachment. It takes a local path or url to the image attachment (parameter `attachment` **mandatory**), an optional `contentType` to define the content-type of the attachment (default: `jpeg`) and an optional `authentfication` to define the authentfication if needed (default: ``, example: `user:password`).
+- `sendPushsaferAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable String authentfication)` - This method is used to send a message with an image attachment. It takes a local path or url to the image attachment (parameter `attachment` **mandatory**), an optional `contentType` to define the content-type of the attachment (default: `jpeg`, possible values: `jpeg, png, gif`) and an optional `authentication` to define the authentication if needed (default: ``, example: `user:password`).
 
 - `sendPushsaferURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
 
