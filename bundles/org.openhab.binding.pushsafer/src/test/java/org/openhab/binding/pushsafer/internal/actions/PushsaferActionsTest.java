@@ -35,7 +35,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 /**
  * Unit tests for {@link PushsaferActions}.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Pushsafer.com (Kevin Siml) - Initial contribution, forked from Christoph Weitkamp
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
@@ -69,87 +69,86 @@ public class PushsaferActionsTest {
 
         when(mockPushsaferAccountHandler.getDefaultPushsaferMessageBuilder(any()))
                 .thenReturn(PushsaferMessageBuilder.getInstance("key", "user"));
-        when(mockPushsaferAccountHandler.sendMessage(any())).thenReturn(Boolean.TRUE);
-        when(mockPushsaferAccountHandler.sendPriorityMessage(any())).thenReturn(RECEIPT);
-        when(mockPushsaferAccountHandler.cancelPriorityMessage(RECEIPT)).thenReturn(Boolean.TRUE);
+        when(mockPushsaferAccountHandler.sendPushsaferMessage(any())).thenReturn(Boolean.TRUE);
+        when(mockPushsaferAccountHandler.sendPushsaferPriorityMessage(any())).thenReturn(RECEIPT);
     }
 
-    // sendMessage
+    // sendPushsaferMessage
     @Test
     public void testSendMessageThingActionsIsNotPushsaferThingActions() {
-        assertThrows(ClassCastException.class, () -> PushsaferActions.sendMessage(thingActionsStub, MESSAGE, TITLE));
+        assertThrows(ClassCastException.class, () -> PushsaferActions.sendPushsaferMessage(thingActionsStub, MESSAGE, TITLE));
     }
 
     @Test
     public void testSendMessageThingHandlerIsNull() {
-        assertThrows(RuntimeException.class, () -> PushsaferActions.sendMessage(pushsaferThingActions, MESSAGE, TITLE));
+        assertThrows(RuntimeException.class, () -> PushsaferActions.sendPushsaferMessage(pushsaferThingActions, MESSAGE, TITLE));
     }
 
     @Test
     public void testSendMessageWithoutTitle() {
         pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        boolean sent = PushsaferActions.sendMessage(pushsaferThingActions, MESSAGE, null);
+        boolean sent = PushsaferActions.sendPushsaferMessage(pushsaferThingActions, MESSAGE, null);
         assertThat(sent, is(true));
     }
 
     @Test
     public void testSendMessage() {
         pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        boolean sent = PushsaferActions.sendMessage(pushsaferThingActions, MESSAGE, TITLE);
+        boolean sent = PushsaferActions.sendPushsaferMessage(pushsaferThingActions, MESSAGE, TITLE);
         assertThat(sent, is(true));
     }
 
-    // sendURLMessage
+    // sendPushsaferURLMessage
     @Test
     public void testSendURLMessageThingActionsIsNotPushsaferThingActions() {
         assertThrows(ClassCastException.class,
-                () -> PushsaferActions.sendURLMessage(thingActionsStub, MESSAGE, TITLE, URL, URL_TITLE));
+                () -> PushsaferActions.sendPushsaferURLMessage(thingActionsStub, MESSAGE, TITLE, URL, URL_TITLE));
     }
 
     @Test
     public void testSendURLMessageThingHandlerIsNull() {
         assertThrows(RuntimeException.class,
-                () -> PushsaferActions.sendURLMessage(pushsaferThingActions, MESSAGE, TITLE, URL, URL_TITLE));
+                () -> PushsaferActions.sendPushsaferURLMessage(pushsaferThingActions, MESSAGE, TITLE, URL, URL_TITLE));
     }
 
     @Test
     public void testSendURLMessageWithoutTitle() {
         pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        boolean sent = PushsaferActions.sendURLMessage(pushsaferThingActions, MESSAGE, null, URL, URL_TITLE);
+        boolean sent = PushsaferActions.sendPushsaferURLMessage(pushsaferThingActions, MESSAGE, null, URL, URL_TITLE);
         assertThat(sent, is(true));
     }
 
     @Test
     public void testSendURLMessageWithoutURLTitle() {
         pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        boolean sent = PushsaferActions.sendURLMessage(pushsaferThingActions, MESSAGE, TITLE, URL, null);
+        boolean sent = PushsaferActions.sendPushsaferURLMessage(pushsaferThingActions, MESSAGE, TITLE, URL, null);
         assertThat(sent, is(true));
     }
 
     @Test
     public void testSendURLMessage() {
         pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        boolean sent = PushsaferActions.sendURLMessage(pushsaferThingActions, MESSAGE, TITLE, URL, URL_TITLE);
+        boolean sent = PushsaferActions.sendPushsaferURLMessage(pushsaferThingActions, MESSAGE, TITLE, URL, URL_TITLE);
         assertThat(sent, is(true));
     }
 
-    // sendPriorityMessage
+    // sendPushsaferPriorityMessage
     @Test
     public void testSendPriorityMessageThingActionsIsNotPushsaferThingActions() {
-        assertThrows(ClassCastException.class, () -> PushsaferActions.sendPriorityMessage(thingActionsStub, MESSAGE,
+        assertThrows(ClassCastException.class, () -> PushsaferActions.sendPushsaferPriorityMessage(thingActionsStub, MESSAGE,
                 TITLE, PushsaferMessageBuilder.EMERGENCY_PRIORITY));
     }
 
     @Test
     public void testSendPriorityMessageThingHandlerIsNull() {
-        assertThrows(RuntimeException.class, () -> PushsaferActions.sendPriorityMessage(pushsaferThingActions, MESSAGE,
+        assertThrows(RuntimeException.class, () -> PushsaferActions.sendPushsaferPriorityMessage(pushsaferThingActions, MESSAGE,
                 TITLE, PushsaferMessageBuilder.EMERGENCY_PRIORITY));
     }
 
     @Test
     public void testSendPriorityMessageWithoutTitle() {
         pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        String receipt = PushsaferActions.sendPriorityMessage(pushsaferThingActions, MESSAGE, null,
+        String receipt = PushsaferActions.sendPushsaferPriorityMessage(pushsaferThingActions, MESSAGE, null,
                 PushsaferMessageBuilder.EMERGENCY_PRIORITY);
         assertThat(receipt, is(RECEIPT));
     }
@@ -157,34 +156,8 @@ public class PushsaferActionsTest {
     @Test
     public void testSendPriorityMessage() {
         pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        String receipt = PushsaferActions.sendPriorityMessage(pushsaferThingActions, MESSAGE, TITLE,
+        String receipt = PushsaferActions.sendPushsaferPriorityMessage(pushsaferThingActions, MESSAGE, TITLE,
                 PushsaferMessageBuilder.EMERGENCY_PRIORITY);
         assertThat(receipt, is(RECEIPT));
-    }
-
-    // cancelPriorityMessage
-    @Test
-    public void testCancelPriorityMessageThingActionsIsNotPushsaferThingActions() {
-        assertThrows(ClassCastException.class, () -> PushsaferActions.cancelPriorityMessage(thingActionsStub, RECEIPT));
-    }
-
-    @Test
-    public void testCancelPriorityMessageThingHandlerIsNull() {
-        assertThrows(RuntimeException.class,
-                () -> PushsaferActions.cancelPriorityMessage(pushsaferThingActions, RECEIPT));
-    }
-
-    @Test
-    public void testCancelPriorityMessageWithValidReceipt() {
-        pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        boolean cancelled = PushsaferActions.cancelPriorityMessage(pushsaferThingActions, RECEIPT);
-        assertThat(cancelled, is(true));
-    }
-
-    @Test
-    public void testCancelPriorityMessageWithInvalidReceipt() {
-        pushsaferThingActions.setThingHandler(mockPushsaferAccountHandler);
-        boolean cancelled = PushsaferActions.cancelPriorityMessage(pushsaferThingActions, "invalid");
-        assertThat(cancelled, is(false));
     }
 }
