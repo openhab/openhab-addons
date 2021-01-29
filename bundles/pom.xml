@@ -382,6 +382,8 @@
 
     <module>org.openhab.binding.mqtt</module>
 
+    <module>org.openhab.binding.mqtt.espmilighthub</module>
+
     <module>org.openhab.binding.mqtt.generic</module>
 
     <module>org.openhab.binding.mqtt.homeassistant</module>
