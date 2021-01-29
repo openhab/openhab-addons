@@ -123,7 +123,8 @@ This is caused by the time it takes to transmit the desired setting to the globe
 Since it takes around 2.8ms for a setting to be transmitted, if the firmware is set to repeat the packets 50 times it would then take 2.8*50 = 140ms before the next globe starts to have its new state transmitted by the hub.
 You can reduce the packet repeats to speed up the response of this binding and the hub, but a few settings can be tweaked.
 
-Settings for the radio tab found in the esp control panel using your browser, mine are:
+Settings can be found on the radio tab in the esp control panel using your browser.
+Suggested settings are as follows:
 
 + Packet repeats = 12 (if you only turn 1 globe on or off it uses this value)
 + Packet repeat throttle threshold = 200
