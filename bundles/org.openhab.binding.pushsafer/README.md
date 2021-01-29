@@ -2,7 +2,7 @@
 
 The Pushsafer binding allows you to notify mobile devices of a message using the [Pushsafer API](https://www.pushsafer.com/pushapi).
 To get started you first need to register (a free process) to get a Private Key.
-Initially you have to register a device with one of the client apps. After that you get a device id.
+Initially you have to register a device with one of the [client apps](https://www.pushsafer.com/apps). After that you get a device id.
 
 ## Supported Things
 
