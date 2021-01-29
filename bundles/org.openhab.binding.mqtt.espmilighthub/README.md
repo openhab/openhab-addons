@@ -121,7 +121,7 @@ mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' 
 If you have lots of globes and openHAB turns them all on, you may notice a delay that causes the globes to turn on one by one and the delay can add up when a lot of globes are installed in your house.
 This is caused by the time it takes to transmit the desired setting to the globe multiplied by how many times the hub repeats transmitting the setting.
 Since it takes around 2.8ms for a setting to be transmitted, if the firmware is set to repeat the packets 50 times it would then take 2.8*50 = 140ms before the next globe starts to have its new state transmitted by the hub.
-You can reduce the packet repeats to speed up the response of this binding and the hub, but a few settings can be tweaked.
+You can reduce the packet repeats to speed up the response of this binding and the hub by tweaking a few settings.
 
 Settings can be found on the radio tab in the esp control panel using your browser.
 Suggested settings are as follows:
