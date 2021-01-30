@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.provider;
 
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -28,6 +29,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ShellyTranslationProvider.class)
 public class ShellyTranslationProvider {
     private final Bundle bundle;
