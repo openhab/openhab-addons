@@ -1,8 +1,8 @@
-# BoschSHC Binding
+# Bosch Smart Home Binding
 
 Binding for the Bosch Smart Home Controller.
 
-- [BoschSHC Binding](#boschshc-binding)
+- [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)
     - [Bosch In-Wall switches & Bosch Smart Plugs](#bosch-in-wall-switches--bosch-smart-plugs)
     - [Bosch TwinGuard smoke detector](#bosch-twinguard-smoke-detector)
@@ -13,7 +13,7 @@ Binding for the Bosch Smart Home Controller.
     - [Bosch Climate Control](#bosch-climate-control)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
-  - [Binding Configuration](#binding-configuration)
+  - [Bridge Configuration](#bridge-configuration)
   - [Getting the device IDs](#getting-the-device-ids)
   - [Thing Configuration](#thing-configuration)
   - [Item Configuration](#item-configuration)
@@ -102,8 +102,8 @@ You need to provide the IP address and the system password of your Bosch Smart H
 The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI.
 The system password is set by you during your initial registration steps in the _Bosch Smart Home App_.
 
-A keystore file with a self signed certificate is created automatically.
-This certificate is used for pairing between the Bridge and the Bosch SHC.
+A keystore file with a self-signed certificate is created automatically.
+This certificate is used for pairing between the Bridge and the Bosch Smart Home Controller.
 
 *Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing*.
 
