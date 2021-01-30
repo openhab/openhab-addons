@@ -108,8 +108,8 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         String returnContent;
 
         try {
-            returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL,
-                    getRequestRequiredOptions() + CMD_STATION + station + "&" + CMD_STATION_ENABLE + "&t=" + duration);
+            returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL, getRequestRequiredOptions() + "&"
+                    + CMD_STATION + station + "&" + CMD_STATION_ENABLE + "&t=" + duration);
         } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
@@ -123,7 +123,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
 
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL,
-                    getRequestRequiredOptions() + CMD_STATION + station + CMD_STATION_DISABLE);
+                    getRequestRequiredOptions() + "&" + CMD_STATION + station + "&" + CMD_STATION_DISABLE);
         } catch (Exception exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
