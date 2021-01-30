@@ -815,7 +815,7 @@ Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
 `items/modbus_ex_command_bit.items`:
 
 ```xtend
-Switch SecondLeastSignificantBit            "2nd least significant bit using profile [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5:switch" }
+Switch SecondLeastSignificantBit            "2nd least significant bit write switch [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5:switch" }
 Number SecondLeastSignificantBitAltRead            "2nd least significant bit is now [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5Bit1:number" }
 ```
 
