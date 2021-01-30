@@ -2,7 +2,7 @@
 
 ## Build
 
-To only build the Bosch SHC binding code execute
+To only build the Bosch Smart Home binding code execute
 
     mvn -pl :org.openhab.binding.boschshc install
 
@@ -15,28 +15,32 @@ For the first time the jar is loaded automatically as a bundle.
 
 It should also be reloaded automatically when the jar changed.
 
-To reload the bundle manually you need to execute:
+To reload the bundle manually you need to execute in the openhab console:
 
-    bundle:update "openHAB Add-ons :: Bundles :: BoschSHC Binding"
+    bundle:update "openHAB Add-ons :: Bundles :: Bosch Smart Home Binding"
    
 or get the ID and update the bundle using the ID:
 
     bundle:list
-    -> Get ID for "openHAB Add-ons :: Bundles :: BoschSHC Binding"
+    -> Get ID for "openHAB Add-ons :: Bundles :: Bosch Smart Home Binding"
     bundle:update <ID>
     
 
 ## Debugging
 
-To get debug output and traces of the Bosch SHC binding code
+To get debug output and traces of the Bosch Smart Home binding code
 add the following lines into ``userdata/etc/log4j2.xml`` Loggers XML section. 
 
     <!-- Bosch SHC for debugging -->
 	<Logger level="TRACE" name="org.openhab.binding.boschshc"/>
 
+or use the openhab console to change the log level
+
+    log:set TRACE org.openhab.binding.boschshc
+
 ## Pairing and  Certificates
 
-We need secured and paired connection from the openHAB binding instance to the Bosch SHC.  
+We need secured and paired connection from the openHAB binding instance to the Bosch Smart Home Controller (SHC).  
 
 Read more about the pairing process in [register a new client to the bosch smart home controller](https://github.com/BoschSmartHome/bosch-shc-api-docs/tree/master/postman#register-a-new-client-to-the-bosch-smart-home-controller)
 

@@ -130,8 +130,8 @@ public class BoschHttpClient extends HttpClient {
      * @throws InterruptedException in case of an interrupt
      */
     public boolean doPairing() throws InterruptedException {
-        logger.trace("Starting pairing openHAB Client with Bosch SmartHomeController!");
-        logger.trace("Please press the Bosch SHC button until LED starts blinking");
+        logger.trace("Starting pairing openHAB Client with Bosch Smart Home Controller!");
+        logger.trace("Please press the Bosch Smart Home Controller button until LED starts blinking");
 
         ContentResponse contentResponse;
         try {
@@ -169,7 +169,7 @@ public class BoschHttpClient extends HttpClient {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
             // => usually the pairing failed, because hardware button was not pressed.
             logger.trace("Pairing failed - Details: {}", e.getMessage());
-            logger.warn("Pairing failed. Was the Bosch SHC button pressed?");
+            logger.warn("Pairing failed. Was the Bosch Smart Home Controller button pressed?");
             return false;
         }
     }
