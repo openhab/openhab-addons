@@ -720,8 +720,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         mockTransformation("PLUS", new TransformationService() {
 
             @Override
-            public String transform(String function, String source) throws TransformationException {
-                return "5";
+            public String transform(String arg, String source) throws TransformationException {
+                return String.valueOf(Integer.parseInt(arg) + Integer.parseInt(source));
             }
         });
         mockTransformation("CONCAT", new TransformationService() {
