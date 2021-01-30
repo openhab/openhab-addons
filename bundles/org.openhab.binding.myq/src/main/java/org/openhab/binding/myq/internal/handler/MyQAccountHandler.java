@@ -36,7 +36,6 @@ import org.openhab.binding.myq.internal.MyQDiscoveryService;
 import org.openhab.binding.myq.internal.config.MyQAccountConfiguration;
 import org.openhab.binding.myq.internal.dto.AccountDTO;
 import org.openhab.binding.myq.internal.dto.ActionDTO;
-import org.openhab.binding.myq.internal.dto.DeviceDTO;
 import org.openhab.binding.myq.internal.dto.DevicesDTO;
 import org.openhab.binding.myq.internal.dto.LoginRequestDTO;
 import org.openhab.binding.myq.internal.dto.LoginResponseDTO;
@@ -118,12 +117,10 @@ public class MyQAccountHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         DevicesDTO localDeviceCaches = devicesCache;
         if (localDeviceCaches != null && childHandler instanceof MyQDeviceHandler) {
-            DeviceDTO device = localDeviceCaches.items.stream()
+            MyQDeviceHandler handler = (MyQDeviceHandler) childHandler;
+            localDeviceCaches.items.stream()
                     .filter(d -> ((MyQDeviceHandler) childHandler).getSerialNumber().equalsIgnoreCase(d.serialNumber))
-                    .findFirst().orElse(null);
-            if (device != null) {
-                ((MyQDeviceHandler) childHandler).handleDeviceUpdate(device);
-            }
+                    .findFirst().ifPresent(handler::handleDeviceUpdate);
         }
     }
 
