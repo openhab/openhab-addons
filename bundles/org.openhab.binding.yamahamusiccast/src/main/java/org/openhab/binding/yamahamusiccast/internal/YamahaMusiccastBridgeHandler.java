@@ -117,7 +117,7 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
         startUDPListenerJob();
         /////////
         if (eventListenerJob == null || eventListenerJob.isCancelled()) {
-            executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("binding-miele"));
+            executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("binding-yamahamusiccast"));
             eventListenerJob = executor.submit(eventListenerRunnable);
         }
         //////////////////
