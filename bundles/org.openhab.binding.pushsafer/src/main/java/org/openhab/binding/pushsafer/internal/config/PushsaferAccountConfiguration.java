@@ -32,7 +32,7 @@ public class PushsaferAccountConfiguration {
 	public String icon = DEFAULT_ICON;
 	public String color = DEFAULT_COLOR;
 	public String url = DEFAULT_URL;
-	public String urlcolor = DEFAULT_URLTITLE;
+	public String urltitle = DEFAULT_URLTITLE;
 	public String answer = DEFAULT_ANSWER;
 	public String confirm = DEFAULT_CONFIRM;
 	public String time2live = DEFAULT_TIME2LIVE;
