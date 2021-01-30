@@ -170,7 +170,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     }
 
     private void updateLinkedChannels() {
-        verifyLinkedChannel(CHANNEL_ISTEMP);
+        verifyLinkedChannel(CHANNELISTEMP);
         verifyLinkedChannel(CHANNELMODE);
         verifyLinkedChannel(CHANNELPOWER);
         verifyLinkedChannel(CHANNELSPTEMP);
@@ -217,18 +217,20 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         ScheduledFuture<?> job = refreshJob;
         if (job == null || job.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    updateOvenData(null);
-
-                    for (Channel channel : getThing().getChannels()) {
-                        updateChannel(channel.getUID().getId());
-                    }
-                }
-            };
             int period = config.refreshRate;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, period, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::run, 0, period, TimeUnit.SECONDS);
+        }
+    }
+
+    private void run() {
+        try {
+            updateOvenData(null);
+
+            for (Channel channel : getThing().getChannels()) {
+                updateChannel(channel.getUID().getId());
+            }
+        } catch (Exception e) {
+            logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
         }
     }
 
@@ -259,7 +261,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             HaasSohnpelletstoveJsonDataDTO data = serviceCommunication.getOvenData();
             if (data != null) {
                 switch (channelId) {
-                    case CHANNEL_ISTEMP:
+                    case CHANNELISTEMP:
                         state = new QuantityType<Temperature>(Double.valueOf(data.getisTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;

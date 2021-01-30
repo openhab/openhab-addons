@@ -28,7 +28,7 @@ public class HaasSohnpelletstoveBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_OVEN = new ThingTypeUID(BINDING_ID, "oven");
 
-    public static final String CHANNEL_ISTEMP = "channelIsTemp";
+    public static final String CHANNELISTEMP = "channelIsTemp";
     public static final String CHANNELMODE = "channelMode";
     public static final String CHANNELSPTEMP = "channelSpTemp";
     public static final String CHANNELPOWER = "power";
