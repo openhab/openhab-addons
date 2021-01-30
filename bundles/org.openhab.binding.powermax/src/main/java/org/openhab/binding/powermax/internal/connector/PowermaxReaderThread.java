@@ -131,8 +131,9 @@ public class PowermaxReaderThread extends Thread {
             logger.debug("Reading failed: {}", e.getMessage(), e);
             connector.handleCommunicationFailure(e.getMessage());
         } catch (Exception e) {
-            logger.debug("Error reading or processing message: {}", e.toString(), e);
-            connector.handleCommunicationFailure(e.toString());
+            String msg = e.getMessage() != null ? e.getMessage() : e.toString();
+            logger.debug("Error reading or processing message: {}", msg, e);
+            connector.handleCommunicationFailure(msg);
         }
 
         logger.info("Data listener stopped");
