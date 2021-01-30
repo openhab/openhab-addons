@@ -28,14 +28,17 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.resol.vbus.Connection;
+import de.resol.vbus.Connection.ConnectionState;
 import de.resol.vbus.Packet;
+import de.resol.vbus.Specification;
+import de.resol.vbus.SpecificationFile.Language;
 import de.resol.vbus.deviceemulators.EmDeviceEmulator;
 
 /**
@@ -44,7 +47,7 @@ import de.resol.vbus.deviceemulators.EmDeviceEmulator;
  * @author Raphael Mack - Initial contribution
  */
 @NonNullByDefault
-public class ResolEmuEMThingHandler extends BaseThingHandler implements PropertyChangeListener {
+public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements PropertyChangeListener {
     public static final String CHANNEL_RELAY = "relay_";
     public static final String CHANNEL_TEMP = "temperature_";
     public static final String CHANNEL_RESIST = "resistor_";
@@ -94,7 +97,6 @@ public class ResolEmuEMThingHandler extends BaseThingHandler implements Property
             dev.stop();
             dev.removePropertyChangeListener(this);
         }
-        unregisterResolThingListener(bridgeHandler);
     }
 
     private void updateRunnable() {
@@ -143,24 +145,6 @@ public class ResolEmuEMThingHandler extends BaseThingHandler implements Property
         } else {
             logger.debug("Can't register {} at bridge as bridgeHandler is null.", this.getThing().getUID());
         }
-    }
-
-    private void unregisterResolThingListener(@Nullable ResolBridgeHandler bridgeHandler) {
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterThingListener(this);
-        } else {
-            logger.debug("Can't unregister {} at bridge as bridgeHandler is null.", this.getThing().getUID());
-        }
-    }
-
-    @Override
-    public void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
-    }
-
-    @Nullable
-    EmDeviceEmulator getDevice() {
-        return device;
     }
 
     public int getVbusAddress() {
@@ -287,16 +271,24 @@ public class ResolEmuEMThingHandler extends BaseThingHandler implements Property
                 int v = (Integer) evt.getNewValue();
                 int i = Integer.parseInt(s.substring(5, 6));
                 setRelayChannelValue(i, v);
+            } else if (s.contentEquals("connectionState")) {
+                ConnectionState ste = (ConnectionState) evt.getNewValue();
+                if (ste.equals(ConnectionState.CONNECTED)) {
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             }
         }
-    }
-
-    public void handle(Packet packet) {
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void setRelayChannelValue(int relay, double value) {
         String channelId = CHANNEL_RELAY + relay;
         updateState(channelId, new DecimalType(value));
+    }
+
+    @Override
+    public void packetReceived(Specification spec, Language lang, Packet packet) {
+        /* nothing to do here */
     }
 }

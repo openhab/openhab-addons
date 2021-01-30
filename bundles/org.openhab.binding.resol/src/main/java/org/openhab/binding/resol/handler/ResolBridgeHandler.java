@@ -14,16 +14,10 @@ package org.openhab.binding.resol.handler;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -31,23 +25,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.internal.ResolBindingConstants;
 import org.openhab.binding.resol.internal.ResolBridgeConfiguration;
-import org.openhab.binding.resol.internal.ResolStateDescriptionOptionProvider;
 import org.openhab.binding.resol.internal.discovery.ResolDeviceDiscoveryService;
-import org.openhab.binding.resol.internal.providers.ResolChannelTypeProvider;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,11 +44,7 @@ import de.resol.vbus.Connection.ConnectionState;
 import de.resol.vbus.ConnectionAdapter;
 import de.resol.vbus.Packet;
 import de.resol.vbus.Specification;
-import de.resol.vbus.Specification.PacketFieldSpec;
-import de.resol.vbus.Specification.PacketFieldValue;
 import de.resol.vbus.SpecificationFile;
-import de.resol.vbus.SpecificationFile.Enum;
-import de.resol.vbus.SpecificationFile.EnumVariant;
 import de.resol.vbus.SpecificationFile.Language;
 import de.resol.vbus.TcpDataSource;
 import de.resol.vbus.TcpDataSourceProvider;
@@ -89,25 +73,19 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable Connection tcpConnection;
     private Specification spec;
-    private Set<String> availableDevices = new HashSet<>();
-
-    private Map<String, @Nullable ResolThingHandler> thingHandlerMap = new HashMap<>();
-    private Map<Integer, ResolEmuEMThingHandler> emThingHandlerMap = new HashMap<>();
 
     // Managing Thing Discovery Service
     private @Nullable ResolDeviceDiscoveryService discoveryService = null;
 
-    private ResolStateDescriptionOptionProvider stateDescriptionProvider;
+    private boolean scanning;
 
-    public ResolBridgeHandler(Bridge bridge, @Nullable LocaleProvider localeProvider,
-            ResolStateDescriptionOptionProvider stateDescriptionProvider) {
+    public ResolBridgeHandler(Bridge bridge, @Nullable LocaleProvider localeProvider) {
         super(bridge);
         spec = Specification.getDefaultSpecification();
-        this.stateDescriptionProvider = stateDescriptionProvider;
 
         if (localeProvider != null) {
             locale = localeProvider.getLocale();
-            lang = SpecificationFile.getLanguageForLocale(locale);
+            lang = SpecificationFile.getLanguageForLocale(getLocale());
 
         } else {
             locale = Locale.getDefault();
@@ -136,58 +114,13 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         return Collections.singleton(ResolDeviceDiscoveryService.class);
     }
 
-    private void createThing(String thingType, String thingID, String name) {
-        ResolDeviceDiscoveryService service = discoveryService;
-        logger.trace("Create thing Type='{}' id='{}'", thingType, thingID);
-
-        if (service != null) {
-            service.addResolThing(thingType, thingID, name);
-        }
-    }
-
-    public void registerResolThingListener(ResolThingHandler thingHandler) {
-        Thing t = thingHandler.getThing();
-
-        String thingType = t.getUID().getId();
-
-        if (!thingHandlerMap.containsKey(thingType)) {
-            thingHandlerMap.put(thingType, thingHandler);
-            logger.trace("register thingHandler for thing: {}", thingType);
-            updateThingHandlerStatus(thingHandler, this.getStatus());
-        } else {
-            logger.trace("thingHandler for thing: '{}' allready registerd", thingType);
-        }
-    }
-
-    public void unregisterThingListener(ResolThingHandler thingHandler) {
-        String thingID = thingHandler.getThing().getUID().getId();
-        if (!thingHandlerMap.containsKey(thingID)) {
-            logger.warn("thingHandler for thing: {} not registered", thingID);
-        } else {
-            thingHandler.updateStatus(ThingStatus.OFFLINE);
-        }
-    }
-
     public void registerResolThingListener(ResolEmuEMThingHandler resolEmuEMThingHandler) {
-        emThingHandlerMap.put(resolEmuEMThingHandler.getVbusAddress(), resolEmuEMThingHandler);
         synchronized (this) {
             Connection con = tcpConnection;
             if (con != null) {
                 resolEmuEMThingHandler.useConnection(con);
             }
         }
-    }
-
-    public void unregisterThingListener(ResolEmuEMThingHandler resolEmuEMThingHandler) {
-        if (!emThingHandlerMap.containsKey(resolEmuEMThingHandler.getVbusAddress())) {
-            logger.warn("thingHandler for vbus address {} not registered", resolEmuEMThingHandler.getVbusAddress());
-        } else {
-            emThingHandlerMap.remove(resolEmuEMThingHandler.getVbusAddress());
-        }
-    }
-
-    private void updateThingHandlerStatus(ResolThingHandler thingHandler, ThingStatus status) {
-        thingHandler.updateStatus(status);
     }
 
     private void pollingRunnable() {
@@ -198,12 +131,13 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                 try {
                     if (connection != null) {
                         connection.disconnect();
-                        for (int x : emThingHandlerMap.keySet()) {
-                            ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
-                            if (emu != null) {
-                                emu.stop();
+
+                        getThing().getThings().stream().forEach(thing -> {
+                            ThingHandler th = thing.getHandler();
+                            if (th instanceof ResolEmuEMThingHandler) {
+                                ((ResolEmuEMThingHandler) th).stop();
                             }
-                        }
+                        });
 
                         connection = null;
                         tcpConnection = null;
@@ -245,13 +179,15 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                 if (connection != null) {
                     try {
                         connection.connect();
+                        final Connection c = connection;
                         // now set the connection the thing handlers for the emulated EMs
-                        for (int x : emThingHandlerMap.keySet()) {
-                            ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
-                            if (emu != null) {
-                                emu.useConnection(connection);
+
+                        getThing().getThings().stream().forEach(thing -> {
+                            ThingHandler th = thing.getHandler();
+                            if (th instanceof ResolEmuEMThingHandler) {
+                                ((ResolEmuEMThingHandler) th).useConnection(c);
                             }
-                        }
+                        });
                     } catch (IOException e) {
                         unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
                         isConnected = false;
@@ -267,19 +203,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                 updateStatus();
             }
         }
-    }
-
-    /* check if the given value is a special one like 888.8 or 999.9 for shortcut or open load on a sensor wire */
-    private boolean isSpecialValue(Double dd) {
-        if ((Math.abs(dd - 888.8) < 0.1) || (Math.abs(dd - (-888.8)) < 0.1)) {
-            /* value out of range */
-            return true;
-        }
-        if (Math.abs(dd - 999.9) < 0.1) {
-            /* sensor not reachable */
-            return true;
-        }
-        return false;
     }
 
     private synchronized void startAutomaticRefresh() {
@@ -319,16 +242,21 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
             Connection connection = tcpConnection;
             if (connection != null) {
                 connection.disconnect();
-                for (int x : emThingHandlerMap.keySet()) {
-                    ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
-                    if (emu != null) {
-                        emu.stop();
+                getThing().getThings().stream().forEach(thing -> {
+                    ThingHandler th = thing.getHandler();
+                    if (th instanceof ResolEmuEMThingHandler) {
+                        ((ResolEmuEMThingHandler) th).stop();
                     }
-                }
+                });
+
             }
         } catch (IOException ioe) {
             // we don't care about exceptions on disconnect in dispose
         }
+    }
+
+    Locale getLocale() {
+        return locale;
     }
 
     /* adapter to react on connection state changes and handle received packets */
@@ -363,6 +291,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
             if (connection == null || packet == null) {
                 return;
             }
+            boolean packetHandled = false;
             String thingType = spec.getSourceDeviceSpec(packet).getName(); // use En here
 
             thingType = thingType.replace(" [", "-");
@@ -382,137 +311,33 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                     Integer.toHexString(spec.getSourceDeviceSpec(packet).getSelfAddress()),
                     Integer.toHexString(spec.getSourceDeviceSpec(packet).getPeerAddress()), thingType);
 
-            if (emThingHandlerMap.containsKey(spec.getSourceDeviceSpec(packet).getPeerAddress())) {
-                ResolEmuEMThingHandler emThingHandler = emThingHandlerMap
-                        .get(spec.getSourceDeviceSpec(packet).getPeerAddress());
-                if (emThingHandler != null) {
-                    emThingHandler.handle(packet);
-                }
-            } else {
-                // a generic packet was received, so let's handle it here
-                if (!availableDevices.contains(thingType)) {
-                    // register the seen device
-                    createThing(ResolBindingConstants.THING_ID_DEVICE, thingType,
-                            spec.getSourceDeviceSpec(packet).getName(lang));
-                    availableDevices.add(thingType);
-                }
+            for (Thing t : getThing().getThings()) {
+                ResolBaseThingHandler th = (ResolBaseThingHandler) t.getHandler();
+                boolean isEM = t instanceof ResolEmuEMThingHandler;
 
-                PacketFieldValue[] pfvs = spec.getPacketFieldValuesForHeaders(new Packet[] { packet });
-                for (PacketFieldValue pfv : pfvs) {
-                    logger.trace("Id: {}, Name: {}, Raw: {}, Text: {}", pfv.getPacketFieldId(), pfv.getName(lang),
-                            pfv.getRawValueDouble(), pfv.formatTextValue(null, Locale.getDefault()));
-
-                    ResolThingHandler thingHandler = thingHandlerMap.get(thingType);
-                    if (thingHandler != null) {
-                        String channelId = pfv.getName(); // use English name as channel
-                        channelId = channelId.replace(" [", "-");
-                        channelId = channelId.replace("]", "");
-                        channelId = channelId.replace("(", "-");
-                        channelId = channelId.replace(")", "");
-                        channelId = channelId.replace(" #", "-");
-                        channelId = channelId.replaceAll("[^A-Za-z0-9_-]+", "_");
-
-                        channelId = channelId.toLowerCase(Locale.ENGLISH);
-
-                        ChannelTypeUID channelTypeUID;
-
-                        if (pfv.getPacketFieldSpec().getUnit().getUnitId() >= 0) {
-                            channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                    pfv.getPacketFieldSpec().getUnit().getUnitCodeText());
-                        } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.DateTime) {
-                            channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "DateTime");
-                        } else {
-                            /* used for enums and the numeric types without unit */
-                            channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
-                        }
-
-                        String acceptedItemType;
-
-                        Thing thing = thingHandler.getThing();
-                        switch (pfv.getPacketFieldSpec().getType()) {
-                            case DateTime:
-                                acceptedItemType = "DateTime";
-                                break;
-                            case WeekTime:
-                            case Number:
-                                acceptedItemType = ResolChannelTypeProvider
-                                        .itemTypeForUnit(pfv.getPacketFieldSpec().getUnit());
-                                break;
-                            case Time:
-                            default:
-                                acceptedItemType = "String";
-                                break;
-                        }
-                        Channel a = thing.getChannel(channelId);
-
-                        if (a == null) {
-                            /* channel doesn't exit, let's create it */
-                            ThingBuilder thingBuilder = thingHandler.editThing();
-                            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-
-                            if (pfv.getEnumVariant() != null) {
-                                /* create a state option channel */
-                                List<StateOption> options = new ArrayList<>();
-                                PacketFieldSpec ff = pfv.getPacketFieldSpec();
-                                Enum e = ff.getEnum();
-                                for (long l : e.getValues()) {
-                                    EnumVariant v = e.getEnumVariantForValue(l);
-                                    options.add(new StateOption(Long.toString(l), v.getText(lang)));
-                                }
-
-                                stateDescriptionProvider.setStateOptions(channelUID, options);
-
-                                Channel channel = ChannelBuilder.create(channelUID, "Number").withType(channelTypeUID)
-                                        .withLabel(pfv.getName(lang)).build();
-
-                                thingBuilder.withChannel(channel).withLabel(thing.getLabel());
-                                thingHandler.updateThing(thingBuilder.build());
-                            } else if (pfv.getRawValueDouble() != null) {
-                                /* a number channel */
-                                Channel channel = ChannelBuilder.create(channelUID, acceptedItemType)
-                                        .withType(channelTypeUID).withLabel(pfv.getName(lang)).build();
-
-                                thingBuilder.withChannel(channel).withLabel(thing.getLabel());
-                                thingHandler.updateThing(thingBuilder.build());
-                            }
-                            logger.debug("Creating channel: {}", channelUID);
-                        }
-
-                        if (pfv.getEnumVariant() != null) {
-                            /* update the enum / State channel */
-                            thingHandler.setChannelValue(channelId, pfv.getRawValueLong()); // pfv.getEnumVariant().getText(lang));
-
-                        } else {
-                            switch (pfv.getPacketFieldSpec().getType()) {
-                                case Number:
-                                    Double dd = pfv.getRawValueDouble();
-                                    if (dd != null) {
-                                        if (!isSpecialValue(dd)) {
-                                            /* only set the value if no error occurred */
-                                            thingHandler.setChannelValue(channelId, dd.doubleValue());
-                                        }
-                                    } else {
-                                        /*
-                                         * field not available in this packet, e. g. old firmware version
-                                         * not (yet) transmitting it
-                                         */
-                                    }
-                                    break;
-                                case DateTime:
-                                    thingHandler.setChannelValue(channelId, pfv.getRawValueDate());
-                                    break;
-                                case WeekTime:
-                                case Time:
-                                default:
-                                    thingHandler.setChannelValue(channelId,
-                                            pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), locale));
-                            }
-                        }
-                    } else {
-                        /* No thing registered for this VBUS frame */
+                if (t.getUID().getId().contentEquals(thingType)
+                        || (isEM && th != null && spec.getSourceDeviceSpec(packet)
+                                .getPeerAddress() == ((ResolEmuEMThingHandler) th).getVbusAddress())) {
+                    if (th != null) {
+                        th.packetReceived(spec, lang, packet);
+                        packetHandled = true;
                     }
                 }
             }
+            ResolDeviceDiscoveryService discovery = discoveryService;
+            if (!packetHandled && scanning && discovery != null) {
+                // register the seen device
+                discovery.addThing(getThing().getUID(), ResolBindingConstants.THING_ID_DEVICE, thingType,
+                        spec.getSourceDeviceSpec(packet).getName(lang));
+            }
         }
+    }
+
+    public void startScan() {
+        scanning = true;
+    }
+
+    public void stopScan() {
+        scanning = false;
     }
 }

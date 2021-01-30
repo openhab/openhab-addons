@@ -14,6 +14,7 @@ package org.openhab.binding.resol.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +27,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,19 +37,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author Raphael Mack - Initial contribution
  */
+@Component(service = DiscoveryService.class)
 @NonNullByDefault
 public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
-    public ResolDeviceDiscoveryService() {
-        super(15);
+    public ResolDeviceDiscoveryService() throws IllegalArgumentException {
+        super(Set.of(ResolBindingConstants.THING_TYPE_UID_DEVICE), 15, false);
     }
 
     private final Logger logger = LoggerFactory.getLogger(ResolDeviceDiscoveryService.class);
 
     private @Nullable ResolBridgeHandler resolBridgeHandler;
 
-    private void addThing(ThingUID bridgeUID, String thingType, String type, String name) {
+    public void addThing(ThingUID bridgeUID, String thingType, String type, String name) {
         logger.trace("Adding new Resol thing: {}", type);
         ThingUID thingUID = null;
         switch (thingType) {
@@ -72,23 +75,33 @@ public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    public void addResolThing(String thingType, String thingID, String name) {
-        addThing(resolBridgeHandler.getThing().getUID(), thingType, thingID, name);
-    }
-
     @Override
     public void activate() {
-        resolBridgeHandler.registerDiscoveryService(this);
+        if (resolBridgeHandler != null) {
+            resolBridgeHandler.registerDiscoveryService(this);
+        }
     }
 
     @Override
     public void deactivate() {
-        resolBridgeHandler.unregisterDiscoveryService();
+        if (resolBridgeHandler != null) {
+            resolBridgeHandler.unregisterDiscoveryService();
+        }
     }
 
     @Override
     protected void startScan() {
-        // Scan will be done by bridge
+        if (resolBridgeHandler != null) {
+            resolBridgeHandler.startScan();
+        }
+    }
+
+    @Override
+    protected void stopScan() {
+        if (resolBridgeHandler != null) {
+            resolBridgeHandler.stopScan();
+        }
+        super.stopScan();
     }
 
     @Override

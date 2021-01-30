@@ -29,8 +29,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ResolHandlerFactory} is responsible for creating things and thing
@@ -41,8 +39,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.resol", service = ThingHandlerFactory.class)
 public class ResolHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(ResolHandlerFactory.class);
 
     private LocaleProvider localeProvider;
 
@@ -65,7 +61,7 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(ResolBindingConstants.THING_TYPE_UID_DEVICE)) {
-            return new ResolThingHandler(thing);
+            return new ResolThingHandler(thing, stateDescriptionProvider);
         }
 
         if (thingTypeUID.equals(ResolBindingConstants.THING_TYPE_UID_EMU_EM)) {
@@ -73,8 +69,7 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(ResolBindingConstants.THING_TYPE_UID_BRIDGE)) {
-            ResolBridgeHandler handler = new ResolBridgeHandler((Bridge) thing, localeProvider,
-                    stateDescriptionProvider);
+            ResolBridgeHandler handler = new ResolBridgeHandler((Bridge) thing, localeProvider);
             return handler;
         }
 
