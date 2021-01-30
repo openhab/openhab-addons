@@ -194,7 +194,7 @@ public class BoschHttpClient extends HttpClient {
      * @return created HTTP request instance
      */
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
-        logger.trace(String.format("Create request for http client %s", this.toString()));
+        logger.trace("Create request for http client {}", this.toString());
 
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
         if (content != null) {
