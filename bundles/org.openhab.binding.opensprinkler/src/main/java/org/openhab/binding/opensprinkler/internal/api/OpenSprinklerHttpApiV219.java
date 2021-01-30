@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 
 /**
@@ -32,7 +33,25 @@ public class OpenSprinklerHttpApiV219 extends OpenSprinklerHttpApiV217 {
         super(httpClient, config);
     }
 
-    public void ignoreRain(int station) {
-        // todo
+    @Override
+    public void ignoreRain(int station, boolean command) throws CommunicationApiException, UnauthorizedApiException {
+        int arrayIndex = station / 8;
+        int bit = station % 8;
+        logger.debug("Ignore Rain for Station:{} is being looked in index: {} and bit:{}", station, arrayIndex, bit);
+        byte status = jnReply.ignore_rain[arrayIndex];
+        if (command) {
+            status |= 1 << bit;
+        } else {
+            status &= ~(1 << bit);
+        }
+        http.sendHttpGet(getBaseUrl() + "cs", getRequestRequiredOptions() + "&i" + arrayIndex + "=" + status);
+    }
+
+    @Override
+    public boolean isIgnoringRain(int station) {
+        int arrayIndex = station / 8;
+        int bit = station % 8;
+        byte status = jnReply.ignore_rain[arrayIndex];
+        return (status & (1 << bit)) != 0;
     }
 }

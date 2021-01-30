@@ -68,11 +68,11 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
 
     public void refreshStations() {
         OpenSprinklerApi localApi = openSprinklerDevice;
-        if (localApi == null) {
+        if (localApi == null || !localApi.isManualModeEnabled()) {
             setupAPI();
             localApi = openSprinklerDevice;
         }
-        if (localApi != null && localApi.isManualModeEnabled()) {
+        if (localApi != null) {
             try {
                 localApi.refresh();
                 updateStatus(ThingStatus.ONLINE);

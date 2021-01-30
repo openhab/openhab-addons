@@ -148,11 +148,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public void openStation(int station, BigDecimal duration) throws CommunicationApiException, GeneralApiException {
-        if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
-                    + station + " was requested to be opened.");
-        }
-
         try {
             http.sendHttpGet(getBaseUrl() + "sn" + station + "=1&t=" + duration, null);
         } catch (Exception exp) {
@@ -163,20 +158,12 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     @Override
     public void closeStation(int station) throws CommunicationApiException, GeneralApiException {
-        if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
-                    + station + " was requested to be closed.");
-        }
         http.sendHttpGet(getBaseUrl() + "sn" + station + "=0", null);
     }
 
     @Override
-    public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
+    public boolean isStationOpen(int station) throws CommunicationApiException, GeneralApiException {
         String returnContent;
-        if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
-                    + station + " was requested for a status update.");
-        }
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + "sn" + station, null);
         } catch (Exception exp) {
@@ -184,6 +171,15 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
         return returnContent.equals("1");
+    }
+
+    @Override
+    public void ignoreRain(int station, boolean command) throws CommunicationApiException, UnauthorizedApiException {
+    }
+
+    @Override
+    public boolean isIgnoringRain(int station) {
+        return false;
     }
 
     @Override
@@ -222,7 +218,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public int getNumberOfStations() throws CommunicationApiException, UnauthorizedApiException {
+    public int getNumberOfStations() {
         numberOfStations = jsReply.nstations;
         return numberOfStations;
     }
@@ -231,10 +227,6 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     public int getFirmwareVersion() throws CommunicationApiException, UnauthorizedApiException {
         joReply = getOptions();
         return joReply.fwv;
-    }
-
-    @Override
-    public void getProgramData() throws CommunicationApiException, UnauthorizedApiException {
     }
 
     @Override
@@ -335,6 +327,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
+    public void getProgramData() throws CommunicationApiException, UnauthorizedApiException {
+    }
+
+    @Override
     public JnResponse getStationNames() throws CommunicationApiException, UnauthorizedApiException {
         String returnContent;
         JnResponse resp;
@@ -349,6 +345,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
+        jnReply = resp;
         return resp;
     }
 

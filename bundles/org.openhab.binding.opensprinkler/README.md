@@ -46,6 +46,7 @@ The following channels are supported by the `station` thing.
 | queued             | Switch      | RW | Indicates that the station is queued to be turned on.    |
 |                    |             |    | The channel cannot be turned on, only turning it off is  |
 |                    |             |    | supported (which removes the station from the queue).    |
+| ignoreRain         | Switch      | RW | This channel makes the station ignore the rain delay.    |
 
 When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.
 
@@ -59,7 +60,7 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 | currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device.                                              |
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
 |                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
-| signalStrength  | Number:Dimensionless   | RO | Shows the reported RSSI value in dB to indicate how strong the WiFi Signal is.     |
+| signalStrength  | Number:Power           | RO | Shows the reported RSSI value in dB to indicate how strong the WiFi Signal is.     |
 | flowSensorCount | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
 | programs        | String                 | RW | Displays a list of the programs that are setup in your OpenSprinkler and when      |
 |                 |                        |    | selected will start that program for you.                                          |

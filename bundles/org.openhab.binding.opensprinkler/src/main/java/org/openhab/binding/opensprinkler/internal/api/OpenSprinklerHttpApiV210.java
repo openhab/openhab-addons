@@ -92,10 +92,6 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
 
     @Override
     public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
-        if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
-                    + station + " was requested for a status update.");
-        }
         if (jsReply.sn.length > 0) {
             if (jsReply.sn[station] == 1) {
                 return true;
@@ -111,11 +107,6 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     public void openStation(int station, BigDecimal duration) throws CommunicationApiException, GeneralApiException {
         String returnContent;
 
-        if (station < 0 || station >= numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
-                    + station + " was requested to be opened.");
-        }
-
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL,
                     getRequestRequiredOptions() + CMD_STATION + station + "&" + CMD_STATION_ENABLE + "&t=" + duration);
@@ -123,18 +114,12 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-
         resultParser(returnContent);
     }
 
     @Override
     public void closeStation(int station) throws CommunicationApiException, GeneralApiException {
         String returnContent;
-
-        if (station < 0 || station > numberOfStations) {
-            throw new GeneralApiException("This OpenSprinkler device only has " + numberOfStations + " but station "
-                    + station + " was requested to be closed.");
-        }
 
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL,
@@ -143,7 +128,6 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
-
         resultParser(returnContent);
     }
 

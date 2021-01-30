@@ -57,6 +57,7 @@
 			<channel id="queued" typeId="queued"></channel>
 			<channel id="remainingWaterTime" typeId="remainingWaterTime"></channel>
 			<channel id="nextDuration" typeId="nextDuration"></channel>
+			<channel id="ignoreRain" typeId="ignoreRain"></channel>
 		</channels>
 
 		<config-description>
@@ -134,6 +135,13 @@
 		<category>Switch</category>
 	</channel-type>
 
+	<channel-type id="ignoreRain">
+		<item-type>Switch</item-type>
+		<label>Station Ignores Rain</label>
+		<description>The station will ignore forecasted rain.</description>
+		<category>Switch</category>
+	</channel-type>
+
 	<channel-type id="resetStations">
 		<item-type>Switch</item-type>
 		<label>Reset Stations</label>
@@ -157,7 +165,7 @@
 	</channel-type>
 
 	<channel-type id="signalStrength">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Signal Strength</label>
 		<description>Wi-Fi Received Signal Strength Indicator.</description>
 		<category>QualityOfService</category>

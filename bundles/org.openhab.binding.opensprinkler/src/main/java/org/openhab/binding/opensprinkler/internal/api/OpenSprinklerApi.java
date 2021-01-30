@@ -80,7 +80,7 @@ public interface OpenSprinklerApi {
      * @return True if the station is open, false if it is closed or cannot determine.
      * @throws Exception
      */
-    public abstract boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException;
+    public abstract boolean isStationOpen(int station) throws CommunicationApiException, GeneralApiException;
 
     /**
      * Returns the current program data of the requested station.
@@ -152,9 +152,8 @@ public interface OpenSprinklerApi {
      * device.
      *
      * @return Number of stations as an int.
-     * @throws Exception
      */
-    public abstract int getNumberOfStations() throws Exception;
+    public abstract int getNumberOfStations();
 
     /**
      * Returns the firmware version number.
@@ -213,4 +212,8 @@ public interface OpenSprinklerApi {
      * @throws UnauthorizedApiException
      */
     public abstract JnResponse getStationNames() throws CommunicationApiException, UnauthorizedApiException;
+
+    public void ignoreRain(int station, boolean command) throws CommunicationApiException, UnauthorizedApiException;
+
+    public abstract boolean isIgnoringRain(int station);
 }
