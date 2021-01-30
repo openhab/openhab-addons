@@ -203,11 +203,11 @@ You must give each of your data Things a reference (thing ID) that is unique for
 | `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"int64"`, `"int64_swap"`, `"uint64"`, `"uint64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                               |
 | `readStart`                                 | text    |          | (empty)            | Start address to start reading the value. Use empty for write-only things. <br /><br />Input as zero-based index number, e.g. in place of `400001` (first holding register), use the address `"0"`.  Must be between (poller start) and (poller start + poller length - 1) (inclusive).<br /><br />With registers and value type less than 16 bits, you must use `"X.Y"` format where `Y` specifies the sub-element to read from the 16 bit register:<ul> <li>For example, `"3.1"` would mean pick second bit from register index `3` with bit value type. </li><li>With int8 valuetype, it would pick the high byte of register index `3`.</li></ul> |
 | `readTransform`                             | text    |          | `"default"`        | Transformation to apply to polled data, after it has been converted to number using `readValueType`. <br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.<br />Use `"SERVICENAME(ARG)"` to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled value is ignored.                                                                                                                                                                                         |
-| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                                                                                                                              |
-| `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is.                                                                                                                                                                                                                                                                                                                                                                                                |
+| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. Value of `"bit"` can be used with registers as well when `writeStart` is of format `"X.Y"` (see below). See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                      |
+| `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is. One can use `"X.Y"` to write individual bit `Y` of an holding `X` (analogous to `readStart`).                                                                                                                                                                                                                                                                                                  |
 | `writeType`                                 | text    |          | (empty)            | Type of data to write. Use empty for read-only things. Valid values: `"coil"` or `"holding"`.<br /><br /> Coil uses function code (FC) FC05 or FC15. Holding register uses FC06 or FC16. See `writeMultipleEvenWithSingleRegisterOrCoil` parameter.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `writeTransform`                            | text    |          | `"default"`        | Transformation to apply to received commands.<br /><br />Use `"default"` to communicate that no transformation is done and value should be passed as is.    <br />Use `"SERVICENAME(ARG)"` to use transformation service `SERVICENAME` with argument `ARG`.    <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command value is ignored.                                                                                                                                                                                                                                       |
-| `writeMultipleEvenWithSingleRegisterOrCoil` | boolean |          | `false`            | Controls how single register / coil of data is written.<br /> By default, or when 'false, FC06 ("Write single holding register") / FC05 ("Write single coil"). Or when 'true', using FC16 ("Write Multiple Holding Registers") / FC15 ("Write Multiple Coils").                                                                                                                                                                                                                                                                                                                                               |
+| `writeMultipleEvenWithSingleRegisterOrCoil` | boolean |          | `false`            | Controls how single register / coil of data is written.<br /> By default, or when 'false, FC06 ("Write single holding register") / FC05 ("Write single coil"). Or when 'true', using FC16 ("Write Multiple Holding Registers") / FC15 ("Write Multiple Coils").                                                                                                                                                                                                                                                                                                                                                                                       |
 | `writeMaxTries`                             | integer |          | `3`                | Maximum tries when writing <br /><br />Number of tries when writing data, if some of the writes fail. For single try, enter `1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `updateUnchangedValuesEveryMillis`          | integer |          | `1000`             | Interval to update unchanged values. <br /><br />Modbus binding by default is not updating the item and channel state every time new data is polled from a slave, for performance reasons. Instead, the state is updated whenever it differs from previously updated state, or when enough time has passed since the last update. The time interval can be adjusted using this parameter. Use value of `0` if you like to update state with every poll, even though the value has not changed. In milliseconds.                                                                                                                                       |
 
@@ -312,8 +312,6 @@ Main documentation on `autoupdate` in [Items section of openHAB docs](https://ww
 
 ### Profiles
 
-The binding defines to types of profiles for extra convenience.
-
 #### `modbus:gainOffset`
 
 This profile is meant for simple scaling and offsetting of values received from the Modbus slave.
@@ -327,28 +325,6 @@ When reading from Modbus, the result will be `updateTowardsItem = (raw_value_fro
 When applying command, the calculation goes in reverse.
 
 See examples for concrete use case with value scaling.
-
-#### `modbus:bit`
-
-This profile is meant for reading _AND_ writing individual bit of a Modbus register.
-
-On read, the profile updates its internal cache of the register value.
-Commands then modify this internal cache and full 16-bit register data is written.
-
-Profile has two parameters:
-
-1. `bit-index`, index of the bit to be manipulated. `bit-index=0` refers to least-significant bit while `bit-index=15` refers to most-significant bit of the register.
-2. `inverted` whether to invert the value logically on read/write. Whether to invert the bit value. When inverted=true, set bit value (1) corresponds to 0/OFF/CLOSED and unset bit value (0) corresponds to 1/ON/OPEN.
-
-Note: use the profile only with `readValueType=int16` / `writeValueType=int16`.
-Channel can be linked with `number` channel.
-You can use the profile with `Number`, `Contact` or `Switch` items.
-
-Having multiple items linked to same register but different `bit-index` using this profile can cause race conditions if items receive commands in close succession, effectively dropping some of the commands.
-It is good to have a pause between the commands so that all the internal caches are updated with the next poll of data.
-
-See examples section for a concrete use case.
-
 ### Discovery
 
 Device specific modbus bindings can take part in the discovery of things, and detect devices automatically. The discovery is initiated by the `tcp` and `serial` bridges when they have `enableDiscovery` setting enabled.
@@ -819,35 +795,38 @@ sitemap modbus_ex_scaling label="modbus_ex_scaling"
 
 ### Commanding Individual Bits
 
-This example shows how `modbus:bit` profile is used to read and command individual bit of a register.
+In Modbus, holding registers represent 16 bits of data. The protocol allow to write the whole register at once.
 
+The binding provides convenience functionality to command individual bits of a holding register by keeping a cache of the register internally.
 
-`things/modbus_ex_bitProfile.things`:
+In order to use this feature, one specifies `writeStart="X.Y"` (register `X`, bit `Y`) with `writeValueType="bit"` and `writeType="holding"`.
+
+`things/modbus_ex_command_bit.things`:
 
 ```xtend
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
-        Thing data register5 [ readStart="5", readValueType="int16", writeStart="5", writeValueType="int16", writeType="holding" ]
+        Thing data register5 [ readStart="5.1", readValueType="bit", writeStart="5.1", writeValueType="bit", writeType="holding" ]
         Thing data register5Bit1 [ readStart="5.1", readValueType="bit" ]
     }
 }
 ```
 
-`items/modbus_ex_bitProfile.items`:
+`items/modbus_ex_command_bit.items`:
 
 ```xtend
-Number SecondLeastSignificantBit            "2nd least significant bit using profile [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5:number"[ profile="modbus:bit", bit-index="1" ] }
-Number SecondLeastSignificantBitAltRead            "2nd least significant bit read-only using readValueType=bit [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5Bit1:number" }
+Switch SecondLeastSignificantBit            "2nd least significant bit using profile [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5:switch" }
+Number SecondLeastSignificantBitAltRead            "2nd least significant bit is now [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5Bit1:number" }
 ```
 
-`sitemaps/modbus_ex_bitProfile.sitemap`:
+`sitemaps/modbus_ex_command_bit.sitemap`:
 
 ```xtend
-sitemap modbus_ex_bitProfile label="modbus_ex_bitProfile"
+sitemap modbus_ex_command_bit label="modbus_ex_command_bit"
 {
     Frame {
-        Text item=Holding5Scaled
-        Setpoint item=SecondLeastSignificantBit minValue=0 maxValue=100 step=20
+        Text item=SecondLeastSignificantBitAltRead
+        Switch item=SecondLeastSignificantBit
     }
 }
 ```
