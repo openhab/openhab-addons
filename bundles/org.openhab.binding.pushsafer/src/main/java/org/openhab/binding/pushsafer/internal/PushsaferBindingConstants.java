@@ -32,7 +32,9 @@ public class PushsaferBindingConstants {
 
     public static final String DEFAULT_SOUND = "";
 	public static final String DEFAULT_ICON = "1";
-	public static final String DEFAULT_COLOR = "1";
+	public static final String DEFAULT_COLOR = "";
+	public static final String DEFAULT_URL = "";
+	public static final String DEFAULT_URLTITLE = "";
 	public static final String DEFAULT_VIBRATION = "1";
 	public static final String DEFAULT_CONFIRM = "0";
 	public static final String DEFAULT_ANSWER = "0";
