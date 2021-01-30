@@ -64,68 +64,44 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "OpenSprinkler bridge has no initialized API.");
             return;
         }
-
-        if (command != RefreshType.REFRESH) {
-            switch (channelUID.getIdWithoutGroup()) {
-                case NEXT_DURATION:
-                    handleNextDurationCommand(channelUID, command);
-                    break;
-                case STATION_STATE:
-                    handleStationStateCommand(api, command);
-                    break;
-                case STATION_QUEUED:
-                    handleQueuedCommand(api, command);
-                    break;
-                case CHANNEL_IGNORE_RAIN:
-                    handleIgnoreRainCommand(api, command);
-                    break;
-            }
-            OpenSprinklerHttpBridgeHandler localBridge = bridgeHandler;
-            if (localBridge == null) {
-                return;
-            }
-            // update all controls after a command is sent in case a long poll time is set.
-            localBridge.refreshStations();
-        }
-    }
-
-    private void handleIgnoreRainCommand(OpenSprinklerApi api, Command command) {
-        if (!(command instanceof OnOffType)) {
-            logger.warn("Received invalid command type for OpenSprinkler station ({}).", command);
-            return;
-        }
         try {
-            api.ignoreRain(config.stationIndex, command == OnOffType.ON);
-        } catch (CommunicationApiException | GeneralApiException exp) {
+            if (command != RefreshType.REFRESH) {
+                switch (channelUID.getIdWithoutGroup()) {
+                    case NEXT_DURATION:
+                        handleNextDurationCommand(channelUID, command);
+                        break;
+                    case STATION_STATE:
+                        if (!(command instanceof OnOffType)) {
+                            logger.warn("Received invalid command type for OpenSprinkler station ({}).", command);
+                            return;
+                        }
+                        if (command == OnOffType.ON) {
+                            api.openStation(config.stationIndex, nextDurationValue());
+                        } else {
+                            api.closeStation(config.stationIndex);
+                        }
+                        break;
+                    case STATION_QUEUED:
+                        if (command == OnOffType.OFF) {
+                            api.closeStation(config.stationIndex);
+                        }
+                        break;
+                    case CHANNEL_IGNORE_RAIN:
+                        api.ignoreRain(config.stationIndex, command == OnOffType.ON);
+                        break;
+                }
+                OpenSprinklerHttpBridgeHandler localBridge = bridgeHandler;
+                if (localBridge == null) {
+                    return;
+                }
+                // update all controls after a command is sent in case a long poll time is set.
+                localBridge.refreshStations();
+            }
+        } catch (GeneralApiException | CommunicationApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not control the station channel " + (config.stationIndex + 1)
-                            + " for the OpenSprinkler. Error: " + exp.getMessage());
+                            + " for the OpenSprinkler. Error: " + e.getMessage());
         }
-    }
-
-    private void handleStationStateCommand(OpenSprinklerApi api, Command command) {
-        if (!(command instanceof OnOffType)) {
-            logger.warn("Received invalid command type for OpenSprinkler station ({}).", command);
-            return;
-        }
-        try {
-            if (command == OnOffType.ON) {
-                api.openStation(config.stationIndex, nextDurationValue());
-            } else {
-                api.closeStation(config.stationIndex);
-            }
-        } catch (CommunicationApiException | GeneralApiException exp) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not control the station channel " + (config.stationIndex + 1)
-                            + " for the OpenSprinkler. Error: " + exp.getMessage());
-        }
-    }
-
-    private void handleQueuedCommand(OpenSprinklerApi api, Command command) {
-        if (command == OnOffType.ON) {
-            return;
-        }
-        handleStationStateCommand(api, command);
     }
 
     /**
