@@ -49,6 +49,16 @@
 			<description>The color (hexadecimal) of notification icon (e.g. #FF0000).</description>
 			<default></default>
 		</parameter>
+		<parameter name="url" type="text">
+			<label>URL</label>
+			<description>URL or URL Scheme send with notification.</description>
+			<default></default>
+		</parameter>
+		<parameter name="urlTitle" type="text">
+			<label>URL Title</label>
+			<description>Title of URL.</description>
+			<default></default>
+		</parameter>
 		<parameter name="retry" type="integer" min="0" unit="s">
 			<advanced>true</advanced>
 			<label>Retry</label>
