@@ -13,7 +13,7 @@ You are able to create multiple instances of this Thing to broadcast to differen
 
 | Configuration Parameter | Type    | Description                                                                                                                                          |
 |-------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `apikey`                | text    | Your private-key to access the Pushsafer Message API. **mandatory**                                                                   |
+| `apikey`                | text    | Your private-key to access the Pushsafer [Message API](https://www.pushsafer.com/pushapi). **mandatory**                                                                   |
 | `user`                  | text    | Your device or group id to which device(s) you want to push notifications. **mandatory**                                                         |
 | `title`                 | text    | The default title of a message (default: `openHAB`).                                                                                                 |
 | `format`                | text    | The default format (`none`, `HTML` or `monospace`) of a message (default: `none`).                                                                   |
