@@ -16,6 +16,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,13 +26,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
+import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 
 /**
  * The {@link HueBridgeDiscoveryParticipant} is responsible for discovering new and
@@ -41,8 +46,32 @@ import org.osgi.service.component.annotations.Component;
  * @author Thomas Höfer - Added representation
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class)
+@Component(service = UpnpDiscoveryParticipant.class, configurationPid = "binding.hue")
 public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
+
+    // Hue bridges have maxAge 100 seconds, so set the default grace period to half of that
+    private long removalGracePeriodSeconds = 50;
+
+    @Activate
+    protected void activate(ComponentContext componentContext) {
+        activateOrModifyService(componentContext);
+    }
+
+    @Modified
+    protected void modified(ComponentContext componentContext) {
+        activateOrModifyService(componentContext);
+    }
+
+    private void activateOrModifyService(ComponentContext componentContext) {
+        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
+        Object property = properties.get(HueBindingConstants.REMOVAL_GRACE_PERIOD);
+        if (property != null) {
+            try {
+                removalGracePeriodSeconds = Integer.valueOf(property.toString()).longValue();
+            } catch (NumberFormatException e) {
+            }
+        }
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -94,8 +123,7 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public int getRemovalGracePeriodSeconds(RemoteDevice device) {
-        // Hue bridges have maxAge 100 seconds, so apply a grace period of half that
-        return 50;
+    public long getRemovalGracePeriodSeconds(RemoteDevice device) {
+        return removalGracePeriodSeconds;
     }
 }
