@@ -31,6 +31,8 @@ import org.openhab.binding.yamahamusiccast.internal.dto.DeviceInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.DistributionInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.Features;
 import org.openhab.binding.yamahamusiccast.internal.dto.PlayInfo;
+import org.openhab.binding.yamahamusiccast.internal.dto.PresetInfo;
+import org.openhab.binding.yamahamusiccast.internal.dto.RecentInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.Response;
 import org.openhab.binding.yamahamusiccast.internal.dto.Status;
 import org.openhab.binding.yamahamusiccast.internal.dto.UdpMessage;
@@ -55,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -524,99 +525,99 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 statusUpdated = targetObject.getMain().getstatusUpdated();
                 break;
             case "zone2":
-                try {
-                    powerState = targetObject.getZone2().getPower();
-                } catch (Exception e) {
-                    powerState = "";
-                }
+                // try {
+                // powerState = targetObject.getZone2().getPower();
+                // } catch (Exception e) {
+                // powerState = "";
+                // }
                 powerState = targetObject.getZone2().getPower();
-                try {
-                    muteState = targetObject.getZone2().getMute();
-                } catch (Exception e) {
-                    muteState = "";
-                }
+                // try {
+                // muteState = targetObject.getZone2().getMute();
+                // } catch (Exception e) {
+                // muteState = "";
+                // }
                 muteState = targetObject.getZone2().getMute();
-                try {
-                    inputState = targetObject.getZone2().getInput();
-                } catch (Exception e) {
-                    inputState = "";
-                }
+                // try {
+                // inputState = targetObject.getZone2().getInput();
+                // } catch (Exception e) {
+                // inputState = "";
+                // }
                 inputState = targetObject.getZone2().getInput();
-                try {
-                    volumeState = targetObject.getZone2().getVolume();
-                } catch (Exception e) {
-                    volumeState = 0;
-                }
+                // try {
+                // volumeState = targetObject.getZone2().getVolume();
+                // } catch (Exception e) {
+                // volumeState = 0;
+                // }
                 volumeState = targetObject.getZone2().getVolume();
-                try {
-                    statusUpdated = targetObject.getZone2().getstatusUpdated();
-                } catch (Exception e) {
-                    statusUpdated = "";
-                }
+                // try {
+                // statusUpdated = targetObject.getZone2().getstatusUpdated();
+                // } catch (Exception e) {
+                // statusUpdated = "";
+                // }
                 statusUpdated = targetObject.getZone2().getstatusUpdated();
                 break;
             case "zone3":
-                try {
-                    powerState = targetObject.getZone3().getPower();
-                } catch (Exception e) {
-                    powerState = "";
-                }
+                // try {
+                // powerState = targetObject.getZone3().getPower();
+                // } catch (Exception e) {
+                // powerState = "";
+                // }
                 powerState = targetObject.getZone3().getPower();
-                try {
-                    muteState = targetObject.getZone3().getMute();
-                } catch (Exception e) {
-                    muteState = "";
-                }
+                // try {
+                // muteState = targetObject.getZone3().getMute();
+                // } catch (Exception e) {
+                // muteState = "";
+                // }
                 muteState = targetObject.getZone3().getMute();
-                try {
-                    inputState = targetObject.getZone3().getInput();
-                } catch (Exception e) {
-                    inputState = "";
-                }
+                // try {
+                // inputState = targetObject.getZone3().getInput();
+                // } catch (Exception e) {
+                // inputState = "";
+                // }
                 inputState = targetObject.getZone3().getInput();
-                try {
-                    volumeState = targetObject.getZone3().getVolume();
-                } catch (Exception e) {
-                    volumeState = 0;
-                }
+                // try {
+                // volumeState = targetObject.getZone3().getVolume();
+                // } catch (Exception e) {
+                // volumeState = 0;
+                // }
                 volumeState = targetObject.getZone3().getVolume();
-                try {
-                    statusUpdated = targetObject.getZone3().getstatusUpdated();
-                } catch (Exception e) {
-                    statusUpdated = "";
-                }
+                // try {
+                // statusUpdated = targetObject.getZone3().getstatusUpdated();
+                // } catch (Exception e) {
+                // statusUpdated = "";
+                // }
                 statusUpdated = targetObject.getZone3().getstatusUpdated();
                 break;
             case "zone4":
-                try {
-                    powerState = targetObject.getZone4().getPower();
-                } catch (Exception e) {
-                    powerState = "";
-                }
+                // try {
+                // powerState = targetObject.getZone4().getPower();
+                // } catch (Exception e) {
+                // powerState = "";
+                // }
                 powerState = targetObject.getZone4().getPower();
-                try {
-                    muteState = targetObject.getZone4().getMute();
-                } catch (Exception e) {
-                    muteState = "";
-                }
+                // try {
+                // muteState = targetObject.getZone4().getMute();
+                // } catch (Exception e) {
+                // muteState = "";
+                // }
                 muteState = targetObject.getZone4().getMute();
-                try {
-                    inputState = targetObject.getZone4().getInput();
-                } catch (Exception e) {
-                    inputState = "";
-                }
+                // try {
+                // inputState = targetObject.getZone4().getInput();
+                // } catch (Exception e) {
+                // inputState = "";
+                // }
                 inputState = targetObject.getZone4().getInput();
-                try {
-                    volumeState = targetObject.getZone4().getVolume();
-                } catch (Exception e) {
-                    volumeState = 0;
-                }
+                // try {
+                // volumeState = targetObject.getZone4().getVolume();
+                // } catch (Exception e) {
+                // volumeState = 0;
+                // }
                 volumeState = targetObject.getZone4().getVolume();
-                try {
-                    statusUpdated = targetObject.getZone4().getstatusUpdated();
-                } catch (Exception e) {
-                    statusUpdated = "";
-                }
+                // try {
+                // statusUpdated = targetObject.getZone4().getstatusUpdated();
+                // } catch (Exception e) {
+                // statusUpdated = "";
+                // }
                 statusUpdated = targetObject.getZone4().getstatusUpdated();
                 break;
             case "netusb":
@@ -802,16 +803,22 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
 
     private void updatePresets(int value) {
         String inputText = "";
-        tmpString = getPresetInfo(); // Without zone
         int presetCounter = 0;
         int currentPreset = 0;
-        try {
-            JsonElement jsonTree = parser.parse(tmpString);
-            JsonObject jsonObject = jsonTree.getAsJsonObject();
-            JsonArray presetsArray = jsonObject.getAsJsonArray("preset_info");
+        tmpString = getPresetInfo(); // Without zone
+
+        PresetInfo presetinfo = gson.fromJson(tmpString, PresetInfo.class);
+        responseCode = presetinfo.getResponseCode();
+        if (responseCode.equals("0")) {
+
+            // try {
+            // JsonElement jsonTree = parser.parse(tmpString);
+            // JsonObject jsonObject = jsonTree.getAsJsonObject();
+            // JsonArray presetsArray = jsonObject.getAsJsonArray("preset_info");
+
             List<StateOption> optionsPresets = new ArrayList<>();
             inputText = getLastInput(); // Without zone
-            for (JsonElement pr : presetsArray) {
+            for (JsonElement pr : presetinfo.getPresetInfo()) {
                 presetCounter = presetCounter + 1;
                 JsonObject presetObject = pr.getAsJsonObject();
                 String text = presetObject.get("text").getAsString();
@@ -838,9 +845,10 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                     }
                 }
             }
-        } catch (Exception e) {
-            logger.info("YXC - Something went wrong with fetching Presets");
         }
+        // } catch (Exception e) {
+        // logger.info("YXC - Something went wrong with fetching Presets");
+        // }
     }
 
     private void updateNetUSBPlayer() {
@@ -922,14 +930,19 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     private @Nullable String getLastInput() {
         String text = "";
         tmpString = getRecentInfo();
-        Response targetObject = gson.fromJson(tmpString, Response.class);
-        responseCode = targetObject.getResponseCode();
+        RecentInfo recentinfo = gson.fromJson(tmpString, RecentInfo.class);
+        responseCode = recentinfo.getResponseCode();
         if (responseCode.equals("0")) {
-            JsonElement jsonTree = parser.parse(tmpString);
-            JsonObject jsonObject = jsonTree.getAsJsonObject();
-            JsonArray recentsArray = jsonObject.getAsJsonArray("recent_info");
-            for (JsonElement re : recentsArray) {
-                JsonObject recentObject = re.getAsJsonObject();
+            // JsonElement jsonTree = parser.parse(tmpString);
+            // JsonObject jsonObject = jsonTree.getAsJsonObject();
+            // JsonArray recentsArray = jsonObject.getAsJsonArray("recent_info");
+            // for (JsonElement re : recentsArray) {
+            // JsonObject recentObject = re.getAsJsonObject();
+            // text = recentObject.get("text").getAsString();
+            // break;
+            // }
+            for (JsonElement ri : recentinfo.getRecentInfo()) {
+                JsonObject recentObject = ri.getAsJsonObject();
                 text = recentObject.get("text").getAsString();
                 break;
             }
