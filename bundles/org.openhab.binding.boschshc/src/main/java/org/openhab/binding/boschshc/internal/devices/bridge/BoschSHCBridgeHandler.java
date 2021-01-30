@@ -291,12 +291,12 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Long polling failed and could not be restarted because http client is null");
+                    "@text/offline.long-polling-failed.http-client-null");
             return;
         }
 
         this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
-                String.format("Long polling failed, will try to reconnect: %s", e.getMessage()));
+                String.format("@text/offline.long-polling-failed.trying-to-reconnect", e.getMessage()));
         scheduleInitialAccess(httpClient);
     }
 
