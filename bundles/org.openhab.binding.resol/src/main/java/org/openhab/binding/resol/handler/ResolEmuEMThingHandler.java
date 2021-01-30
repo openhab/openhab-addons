@@ -168,9 +168,11 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
     }
 
     public void stop() {
+        EmDeviceEmulator device = this.device;
         if (device != null) {
             device.stop();
         }
+        ScheduledFuture<?> updateJob = this.updateJob;
         if (updateJob != null) {
             updateJob.cancel(false);
         }
@@ -258,6 +260,7 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
                 resistor = 0;
                 break;
         }
+        EmDeviceEmulator device = this.device;
         if (device != null) {
             device.setResistorValueByNr(channel, resistor);
         }

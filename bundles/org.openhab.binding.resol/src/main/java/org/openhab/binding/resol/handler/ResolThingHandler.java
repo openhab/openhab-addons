@@ -71,7 +71,6 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         super(thing);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         this.stateDescriptionProvider = stateDescriptionProvider;
-
     }
 
     @Override
@@ -81,7 +80,8 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
     @Override
     public void initialize() {
-        bridgeHandler = getBridgeHandler();
+        ResolBridgeHandler bridgeHandler = getBridgeHandler();
+        this.bridgeHandler = bridgeHandler;
         if (bridgeHandler != null) {
             updateStatus(bridgeHandler.getStatus());
         }
@@ -289,5 +289,4 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         }
         return false;
     }
-
 }

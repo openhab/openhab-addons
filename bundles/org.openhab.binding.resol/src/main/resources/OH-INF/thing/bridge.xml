@@ -5,9 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="vbuslan">
 		<label>Bridge VBusLAN Adapter</label>
-		<description>This bridge represents the Resol VBus-LAN adapter which can be any device with a TCP/IP live port, either the standalone device VBus-LAN Adapter, KM2, DL2/3 or similar.
+		<description>This bridge represents the Resol VBus-LAN adapter which can be any device with a TCP/IP live port, either
+			the standalone device VBus-LAN Adapter, KM2, DL2/3 or similar.
 		</description>
-        <representation-property>ipAddress</representation-property>
+		<representation-property>ipAddress</representation-property>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -32,7 +33,8 @@
 			<parameter name="refreshInterval" type="integer" required="false" min="5" max="1800" unit="s">
 				<context>refresh</context>
 				<label>Refresh Interval</label>
-				<description>Refresh time in seconds to check the connection to the VBus gateway. Data updates are propagated to openHAB independent from this setting as soon as the are received on the VBus.</description>
+				<description>Refresh time in seconds to check the connection to the VBus gateway. Data updates are propagated to
+					openHAB independent from this setting as soon as the are received on the VBus.</description>
 				<default>300</default>
 			</parameter>
 		</config-description>

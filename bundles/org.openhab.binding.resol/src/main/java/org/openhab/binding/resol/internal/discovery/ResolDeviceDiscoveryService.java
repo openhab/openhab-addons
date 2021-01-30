@@ -77,6 +77,7 @@ public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void activate() {
+        ResolBridgeHandler resolBridgeHandler = this.resolBridgeHandler;
         if (resolBridgeHandler != null) {
             resolBridgeHandler.registerDiscoveryService(this);
         }
@@ -84,6 +85,7 @@ public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
+        ResolBridgeHandler resolBridgeHandler = this.resolBridgeHandler;
         if (resolBridgeHandler != null) {
             resolBridgeHandler.unregisterDiscoveryService();
         }
@@ -91,6 +93,7 @@ public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
+        ResolBridgeHandler resolBridgeHandler = this.resolBridgeHandler;
         if (resolBridgeHandler != null) {
             resolBridgeHandler.startScan();
         }
@@ -98,6 +101,7 @@ public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void stopScan() {
+        ResolBridgeHandler resolBridgeHandler = this.resolBridgeHandler;
         if (resolBridgeHandler != null) {
             resolBridgeHandler.stopScan();
         }
