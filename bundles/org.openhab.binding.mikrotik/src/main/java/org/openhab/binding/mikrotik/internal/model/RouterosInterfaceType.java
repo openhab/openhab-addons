@@ -20,9 +20,11 @@ package org.openhab.binding.mikrotik.internal.model;
 public enum RouterosInterfaceType {
     ETHERNET("ether"),
     BRIDGE("bridge"),
+    WLAN("wlan"),
     CAP("cap"),
     PPPOE_CLIENT("pppoe-out"),
-    L2TP_SERVER("l2tp-in");
+    L2TP_SERVER("l2tp-in"),
+    L2TP_CLIENT("l2tp-out");
 
     private final String typeName;
 

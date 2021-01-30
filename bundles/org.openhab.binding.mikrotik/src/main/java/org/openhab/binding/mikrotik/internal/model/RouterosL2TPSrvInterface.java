@@ -15,7 +15,10 @@ package org.openhab.binding.mikrotik.internal.model;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.openhab.binding.mikrotik.internal.util.Converter;
 
 /**
  * The {@link RouterosL2TPSrvInterface} is a model class for `l2tp-in` interface models having casting accessors for
@@ -30,15 +33,46 @@ public class RouterosL2TPSrvInterface extends RouterosInterfaceBase {
     }
 
     @Override
-    protected RouterosInterfaceType[] getDesignedTypes() {
-        return new RouterosInterfaceType[] { RouterosInterfaceType.L2TP_SERVER };
+    public RouterosInterfaceType getDesignedType() {
+        return RouterosInterfaceType.L2TP_SERVER;
+    }
+
+    @Override
+    public String getApiType() {
+        return "l2tp-server";
+    }
+
+    @Override
+    public boolean hasDetailedReport() {
+        return true;
+    }
+
+    @Override
+    public boolean hasMonitor() {
+        return false;
+    }
+
+    public String getStatus() {
+        return propMap.get("status");
+    }
+
+    public String getEncoding() {
+        return String.format("Encoding: %s", propMap.getOrDefault("encoding", "None"));
+    }
+
+    public String getClientAddress() {
+        return propMap.get("client-address");
     }
 
     public String getUptime() {
         return propMap.get("uptime");
-    } // TODO monitor once
+    }
 
-    public DateTime calculateUptimeStart() {
-        return DateTime.now().minusHours(2); // TODO
+    public @Nullable DateTime getUptimeStart() {
+        if (propMap.containsKey("uptime")) {
+            Period uptime = Converter.fromRouterosPeriod(getUptime());
+            return DateTime.now().minus(uptime);
+        }
+        return null;
     }
 }

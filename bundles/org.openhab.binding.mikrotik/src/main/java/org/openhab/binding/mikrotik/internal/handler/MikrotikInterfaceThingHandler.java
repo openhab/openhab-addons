@@ -20,9 +20,7 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -58,6 +56,19 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
     public MikrotikInterfaceThingHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        if (getRouteros() != null) {
+            if (status == ONLINE || (status == OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
+                getRouteros().registerForMonitoring(config.name);
+            } else if (status == OFFLINE && (statusDetail == ThingStatusDetail.CONFIGURATION_ERROR
+                    || statusDetail == ThingStatusDetail.GONE)) {
+                getRouteros().unregisterForMonitoring(config.name);
+            }
+        }
+        super.updateStatus(status, statusDetail, description);
     }
 
     @Override
@@ -119,10 +130,10 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                     newState = StateUtil.floatOrNull(rxByteRate.getMegabitRate());
                     break;
                 case CHANNEL_TX_PACKET_RATE:
-                    newState = StateUtil.floatOrNull(txPacketRate.getMegabitRate());
+                    newState = StateUtil.floatOrNull(txPacketRate.getRate());
                     break;
                 case CHANNEL_RX_PACKET_RATE:
-                    newState = StateUtil.floatOrNull(rxPacketRate.getMegabitRate());
+                    newState = StateUtil.floatOrNull(rxPacketRate.getRate());
                     break;
                 case CHANNEL_TX_BYTES:
                     newState = StateUtil.bigIntOrNull(iface.getTxBytes());
@@ -150,13 +161,17 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                     break;
                 default:
                     if (iface instanceof RouterosEthernetInterface) {
-                        newState = getEtherIterfacefaceChannelState(channelID);
+                        newState = getEtherIterfaceChannelState(channelID);
                     } else if (iface instanceof RouterosCapInterface) {
                         newState = getCapIterfaceChannelState(channelID);
+                    } else if (iface instanceof RouterosWlanInterface) {
+                        newState = getWlanIterfaceChannelState(channelID);
                     } else if (iface instanceof RouterosPPPoECliInterface) {
                         newState = getPPPoECliChannelState(channelID);
                     } else if (iface instanceof RouterosL2TPSrvInterface) {
                         newState = getL2TPSrvChannelState(channelID);
+                    } else if (iface instanceof RouterosL2TPCliInterface) {
+                        newState = getL2TPCliChannelState(channelID);
                     }
             }
         }
@@ -169,11 +184,15 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         }
     }
 
-    protected State getEtherIterfacefaceChannelState(String channelID) {
+    protected State getEtherIterfaceChannelState(String channelID) {
         RouterosEthernetInterface etherIface = (RouterosEthernetInterface) iface;
         switch (channelID) {
             case CHANNEL_DEFAULT_NAME:
                 return StateUtil.stringOrNull(etherIface.getDefaultName());
+            case CHANNEL_STATE:
+                return StateUtil.stringOrNull(etherIface.getState());
+            case CHANNEL_RATE:
+                return StateUtil.stringOrNull(etherIface.getRate());
             default:
                 return UnDefType.UNDEF;
         }
@@ -184,6 +203,8 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         switch (channelID) {
             case CHANNEL_STATE:
                 return StateUtil.stringOrNull(capIface.getCurrentState());
+            case CHANNEL_RATE:
+                return StateUtil.stringOrNull(capIface.getRateSet());
             case CHANNEL_REGISTERED_CLIENTS:
                 return StateUtil.intOrNull(capIface.getRegisteredClients());
             case CHANNEL_AUTHORIZED_CLIENTS:
@@ -193,13 +214,31 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         }
     }
 
+    protected State getWlanIterfaceChannelState(String channelID) {
+        RouterosWlanInterface wlIface = (RouterosWlanInterface) iface;
+        switch (channelID) {
+            case CHANNEL_STATE:
+                return StateUtil.stringOrNull(wlIface.getCurrentState());
+            case CHANNEL_RATE:
+                return StateUtil.stringOrNull(wlIface.getRate());
+            case CHANNEL_REGISTERED_CLIENTS:
+                return StateUtil.intOrNull(wlIface.getRegisteredClients());
+            case CHANNEL_AUTHORIZED_CLIENTS:
+                return StateUtil.intOrNull(wlIface.getAuthorizedClients());
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
     protected State getPPPoECliChannelState(String channelID) {
         RouterosPPPoECliInterface pppCli = (RouterosPPPoECliInterface) iface;
         switch (channelID) {
+            case CHANNEL_STATE:
+                return StateUtil.stringOrNull(pppCli.getStatus());
             case CHANNEL_UP_TIME:
                 return StateUtil.stringOrNull(pppCli.getUptime());
             case CHANNEL_UP_SINCE:
-                return StateUtil.timeOrNull(pppCli.calculateUptimeStart());
+                return StateUtil.timeOrNull(pppCli.getUptimeStart());
             default:
                 return UnDefType.UNDEF;
         }
@@ -208,10 +247,28 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     protected State getL2TPSrvChannelState(String channelID) {
         RouterosL2TPSrvInterface vpnSrv = (RouterosL2TPSrvInterface) iface;
         switch (channelID) {
+            case CHANNEL_STATE:
+                return StateUtil.stringOrNull(vpnSrv.getEncoding());
+            // case CHANNEL_REGISTERED_CLIENTS:
+            // return StateUtil.stringOrNull(vpnSrv.getClientAddress());
             case CHANNEL_UP_TIME:
                 return StateUtil.stringOrNull(vpnSrv.getUptime());
             case CHANNEL_UP_SINCE:
-                return StateUtil.timeOrNull(vpnSrv.calculateUptimeStart());
+                return StateUtil.timeOrNull(vpnSrv.getUptimeStart());
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
+    protected State getL2TPCliChannelState(String channelID) {
+        RouterosL2TPCliInterface vpnCli = (RouterosL2TPCliInterface) iface;
+        switch (channelID) {
+            case CHANNEL_STATE:
+                return StateUtil.stringOrNull(vpnCli.getEncoding());
+            case CHANNEL_UP_TIME:
+                return StateUtil.stringOrNull(vpnCli.getUptime());
+            case CHANNEL_UP_SINCE:
+                return StateUtil.timeOrNull(vpnCli.getUptimeStart());
             default:
                 return UnDefType.UNDEF;
         }

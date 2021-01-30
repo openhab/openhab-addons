@@ -71,7 +71,6 @@ public class MikrotikBindingConstants {
     // Ethernet interface channel list
     public static final String CHANNEL_DEFAULT_NAME = "defaultName";
     public static final String CHANNEL_RATE = "rate";
-    public static final String CHANNEL_AUTO_NEGOTIATION = "autoNegotiation";
 
     // CAPsMAN interface channel list
     public static final String CHANNEL_INTERFACE = "interface";

@@ -16,6 +16,7 @@
 			<channel id="usedMemory" typeId="usedMemory"/>
 			<channel id="cpuLoad" typeId="cpuLoad"/>
 			<channel id="uptime" typeId="uptime"/>
+			<channel id="upSince" typeId="upSince"/>
 		</channels>
 		<properties>
 			<property name="vendor">Mikrotik</property>
@@ -86,7 +87,6 @@
 			<!-- ethernet interface channels -->
 			<channel id="defaultName" typeId="defaultName"/>
 			<channel id="rate" typeId="ethernetRate"/>
-			<channel id="autoNegotiation" typeId="autoNegotiation"/>
 			<!-- cap interface channels -->
 			<channel id="state" typeId="state"/>
 			<channel id="registeredClients" typeId="registeredClients"/>
@@ -213,7 +213,7 @@
 
 	<channel-type id="interfaceName">
 		<item-type>String</item-type>
-		<label>Name</label>
+		<label>Interface Name</label>
 		<description>Network interface name</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -372,13 +372,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="autoNegotiation">
-		<item-type>String</item-type>
-		<label>Auto-negotiation</label>
-		<description>Ethernet auto-negotiation status</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="state">
 		<item-type>String</item-type>
 		<label>State</label>
@@ -430,7 +423,7 @@
 
 	<channel-type id="signal">
 		<item-type>Number</item-type>
-		<label>Received Signal Strength Indicator</label>
+		<label>Signal Strength</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
 		<state readOnly="true"/>
 	</channel-type>

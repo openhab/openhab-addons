@@ -15,6 +15,10 @@ package org.openhab.binding.mikrotik.internal.model;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.openhab.binding.mikrotik.internal.util.Converter;
 
 /**
  * The {@link RouterosSystemResources} is a model class for RouterOS system info having casting accessors for
@@ -28,10 +32,6 @@ public class RouterosSystemResources {
 
     public RouterosSystemResources(Map<String, String> props) {
         this.propMap = props;
-    }
-
-    public String getUptime() {
-        return propMap.get("uptime");
     }
 
     public int getFreeSpace() {
@@ -58,7 +58,23 @@ public class RouterosSystemResources {
         return 18;
     }
 
-    public String getCpuLoad() {
-        return propMap.get("cpu-load");
+    public @Nullable Integer getCpuLoad() {
+        if (propMap.containsKey("cpu-load")) {
+            String loadPercent = propMap.get("cpu-load").replace("%", "");
+            return Integer.parseInt(loadPercent);
+        }
+        return null;
+    }
+
+    public String getUptime() {
+        return propMap.get("uptime");
+    }
+
+    public @Nullable DateTime getUptimeStart() {
+        if (propMap.containsKey("uptime")) {
+            Period uptime = Converter.fromRouterosPeriod(getUptime());
+            return DateTime.now().minus(uptime);
+        }
+        return null;
     }
 }

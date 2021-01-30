@@ -29,8 +29,18 @@ public class RouterosCapInterface extends RouterosInterfaceBase {
     }
 
     @Override
-    protected RouterosInterfaceType[] getDesignedTypes() {
-        return new RouterosInterfaceType[] { RouterosInterfaceType.CAP };
+    public RouterosInterfaceType getDesignedType() {
+        return RouterosInterfaceType.CAP;
+    }
+
+    @Override
+    public boolean hasDetailedReport() {
+        return true;
+    }
+
+    @Override
+    public boolean hasMonitor() {
+        return false;
     }
 
     public boolean isMaster() {
@@ -51,6 +61,10 @@ public class RouterosCapInterface extends RouterosInterfaceBase {
 
     public String getCurrentState() {
         return propMap.get("current-state");
+    }
+
+    public String getRateSet() {
+        return propMap.get("current-basic-rate-set");
     }
 
     public int getRegisteredClients() {

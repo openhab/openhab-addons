@@ -21,31 +21,30 @@ import org.joda.time.Period;
 import org.openhab.binding.mikrotik.internal.util.Converter;
 
 /**
- * The {@link RouterosPPPoECliInterface} is a model class for `pppoe-out` interface models having casting accessors for
+ * The {@link RouterosL2TPCliInterface} is a model class for `l2tp-out` interface models having casting accessors for
  * data that is specific to this network interface kind. Is a subclass of {@link RouterosInterfaceBase}.
  *
  * @author Oleg Vivtash - Initial contribution
  */
 @NonNullByDefault
-public class RouterosPPPoECliInterface extends RouterosInterfaceBase {
-    public RouterosPPPoECliInterface(Map<String, String> props) {
+public class RouterosL2TPCliInterface extends RouterosInterfaceBase {
+    public RouterosL2TPCliInterface(Map<String, String> props) {
         super(props);
     }
 
     @Override
     public RouterosInterfaceType getDesignedType() {
-        return RouterosInterfaceType.PPPOE_CLIENT;
+        return RouterosInterfaceType.L2TP_SERVER;
     }
 
     @Override
     public String getApiType() {
-        return "pppoe-client";
+        return "l2tp-client";
     }
 
     @Override
     public boolean hasDetailedReport() {
-
-        return false; // Detailed report exposes PPPoE password which probably is not a good idea
+        return false;
     }
 
     @Override
@@ -53,12 +52,24 @@ public class RouterosPPPoECliInterface extends RouterosInterfaceBase {
         return true;
     }
 
-    public String getMacAddress() {
-        return propMap.get("ac-mac");
-    }
-
     public String getStatus() {
         return propMap.get("status");
+    }
+
+    public String getEncoding() {
+        return String.format("Encoding: %s", propMap.getOrDefault("encoding", "None"));
+    }
+
+    public String getServerAddress() {
+        return propMap.get("connect-to");
+    }
+
+    public String getLocalAddress() {
+        return propMap.get("local-address");
+    }
+
+    public String getRemoteAddress() {
+        return propMap.get("remote-address");
     }
 
     public String getUptime() {

@@ -15,6 +15,10 @@ package org.openhab.binding.mikrotik.internal.model;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.openhab.binding.mikrotik.internal.util.Converter;
 
 /**
  * The {@link RouterosWirelessRegistration} is a model class for WiFi client data retrieced from RouterOS
@@ -28,7 +32,16 @@ public class RouterosWirelessRegistration extends RouterosRegistrationBase {
         super(props);
     }
 
-    public String getUptime() {
-        return propMap.get("uptime");
+    public int getRxSignal() {
+        String signalValue = propMap.getOrDefault("signal-strength", "0@hz").split("@")[0];
+        return Integer.parseInt(signalValue);
+    }
+
+    public @Nullable DateTime getLastActivity() {
+        if (propMap.containsKey("last-activity")) {
+            Period lastActiveBack = Converter.fromRouterosPeriod(propMap.get("last-activity"));
+            return DateTime.now().minus(lastActiveBack);
+        }
+        return null;
     }
 }

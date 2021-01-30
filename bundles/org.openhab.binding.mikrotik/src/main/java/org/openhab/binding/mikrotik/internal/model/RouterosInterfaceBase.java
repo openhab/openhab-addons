@@ -15,7 +15,6 @@ package org.openhab.binding.mikrotik.internal.model;
 import static org.openhab.binding.mikrotik.internal.model.RouterosDevice.PROP_ID_KEY;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Map;
 
 import org.joda.time.DateTime;
@@ -36,14 +35,26 @@ public abstract class RouterosInterfaceBase {
         this.type = RouterosInterfaceType.resolve(getType());
     }
 
-    protected abstract RouterosInterfaceType[] getDesignedTypes();
+    public String getProperty(String propName) {
+        return propMap.get(propName);
+    }
+
+    public abstract RouterosInterfaceType getDesignedType();
+
+    public abstract boolean hasDetailedReport();
+
+    public abstract boolean hasMonitor();
+
+    public String getApiType() {
+        return getDesignedType().toString();
+    };
 
     public void mergeProps(Map<String, String> otherProps) {
         this.propMap.putAll(otherProps);
     }
 
     public boolean validate() {
-        return Arrays.stream(getDesignedTypes()).anyMatch(ifaceType -> ifaceType == this.type);
+        return getDesignedType() == this.type;
     }
 
     public String getId() {

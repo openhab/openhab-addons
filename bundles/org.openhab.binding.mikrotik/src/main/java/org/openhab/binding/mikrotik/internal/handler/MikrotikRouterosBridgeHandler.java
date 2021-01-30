@@ -234,6 +234,9 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 case CHANNEL_UP_TIME:
                     newState = StateUtil.stringOrNull(rbRes.getUptime());
                     break;
+                case CHANNEL_UP_SINCE:
+                    newState = StateUtil.timeOrNull(rbRes.getUptimeStart());
+                    break;
                 case CHANNEL_FREE_SPACE:
                     newState = StateUtil.intOrNull(rbRes.getFreeSpace());
                     break;
@@ -253,7 +256,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                     newState = StateUtil.intOrNull(rbRes.getMemUse());
                     break;
                 case CHANNEL_CPU_LOAD:
-                    newState = StateUtil.stringOrNull(rbRes.getCpuLoad());
+                    newState = StateUtil.intOrNull(rbRes.getCpuLoad());
                     break;
             }
         }

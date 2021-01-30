@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.mikrotik.internal.model;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.net.SocketFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ import me.legrange.mikrotik.*;
  *
  * @author Oleg Vivtash - Initial contribution
  */
-// @NonNullByDefault
+// @NonNullByDefault //TODO
 public class RouterosDevice {
     private final Logger logger = LoggerFactory.getLogger(RouterosDevice.class);
 
@@ -43,8 +42,13 @@ public class RouterosDevice {
     private ApiConnection connection;
 
     public static final String PROP_ID_KEY = ".id";
+    public static final String PROP_TYPE_KEY = "type";
+    public static final String PROP_NAME_KEY = "name";
+    public static final String PROP_SSID_KEY = "ssid";
 
     private static final String CMD_PRINT_IFACES = "/interface/print";
+    private static final String CMD_PRINT_IFACE_TYPE_TPL = "/interface/%s/print";
+    private static final String CMD_MONTOR_IFACE_MONITOR_TPL = "/interface/%s/monitor numbers=%s once";
     private static final String CMD_PRINT_CAPS_IFACES = "/caps-man/interface/print";
     private static final String CMD_PRINT_CAPSMAN_REGS = "/caps-man/registration-table/print";
     private static final String CMD_PRINT_WIRELESS_REGS = "/interface/wireless/registration-table/print";
@@ -52,23 +56,33 @@ public class RouterosDevice {
     private static final String CMD_PRINT_RB_INFO = "/system/routerboard/print";
 
     private List<RouterosInterfaceBase> interfaceCache;
+    private Set<String> monitoredInterfaces = new HashSet<>();
     private List<RouterosCapsmanRegistration> capsmanRegistrationCache;
+    private Map<String, String> wlanSsid = new HashMap<>();
     private List<RouterosWirelessRegistration> wirelessRegistrationCache;
 
     private RouterosSystemResources resourcesCache;
     private RouterosRouterboardInfo rbInfo;
 
     private static Optional<RouterosInterfaceBase> createTypedInterface(Map<String, String> interfaceProps) {
-        RouterosInterfaceType ifaceType = RouterosInterfaceType.resolve(interfaceProps.get("type"));
+        RouterosInterfaceType ifaceType = RouterosInterfaceType.resolve(interfaceProps.get(PROP_TYPE_KEY));
+        if (ifaceType == null)
+            return Optional.empty();
         switch (ifaceType) {
             case ETHERNET:
-            case BRIDGE:
-            case CAP:
                 return Optional.of(new RouterosEthernetInterface(interfaceProps));
+            case BRIDGE:
+                return Optional.of(new RouterosBridgeInterface(interfaceProps));
+            case CAP:
+                return Optional.of(new RouterosCapInterface(interfaceProps));
+            case WLAN:
+                return Optional.of(new RouterosWlanInterface(interfaceProps));
             case PPPOE_CLIENT:
                 return Optional.of(new RouterosPPPoECliInterface(interfaceProps));
             case L2TP_SERVER:
                 return Optional.of(new RouterosL2TPSrvInterface(interfaceProps));
+            case L2TP_CLIENT:
+                return Optional.of(new RouterosL2TPCliInterface(interfaceProps));
             default:
                 return Optional.empty();
         }
@@ -118,10 +132,18 @@ public class RouterosDevice {
         }
     }
 
+    public boolean registerForMonitoring(String interfaceName) {
+        return monitoredInterfaces.add(interfaceName);
+    }
+
+    public boolean unregisterForMonitoring(String interfaceName) {
+        return monitoredInterfaces.remove(interfaceName);
+    }
+
     public void refresh() throws MikrotikApiException {
         synchronized (this) {
             updateResources();
-            updateInterfaces();
+            updateInterfaceData();
             updateCapsmanRegistrations();
             updateWirelessRegistrations();
         }
@@ -156,44 +178,80 @@ public class RouterosDevice {
         return searchResult.orElse(null);
     }
 
-    private void updateInterfaces() throws MikrotikApiException {
+    private void updateInterfaceData() throws MikrotikApiException {
         logger.trace("Executing '{}' on {}...", CMD_PRINT_IFACES, host);
         List<Map<String, String>> ifaceResponse = connection.execute(CMD_PRINT_IFACES);
-        logger.trace("Executing '{}' on {}...", CMD_PRINT_CAPS_IFACES, host);
-        List<Map<String, String>> capsResponse = connection.execute(CMD_PRINT_CAPS_IFACES);
 
+        Set<String> interfaceTypesToPoll = new HashSet<>();
+        this.wlanSsid.clear();
         interfaceCache = ifaceResponse.stream().map(props -> {
             logger.trace("Got interface props from {}: {}", host, props);
             Optional<RouterosInterfaceBase> ifaceOpt = createTypedInterface(props);
-            if (ifaceOpt.isPresent()) {
-                RouterosInterfaceBase iface = ifaceOpt.get();
-                // Enrich with CAPsMAN data
-                Optional<Map<String, String>> capsProps = capsResponse.stream()
-                        .filter(sp -> sp.get(PROP_ID_KEY).equals(iface.getId())).findFirst();
-                if (capsProps.isPresent()) {
-                    iface.mergeProps(capsProps.get());
-                } else {
-                    logger.trace("No CAPsMAN props found for interface #{} {}", props.get(PROP_ID_KEY),
-                            props.get("name"));
-                }
+            if (ifaceOpt.isPresent() && ifaceOpt.get().hasDetailedReport()) {
+                interfaceTypesToPoll.add(ifaceOpt.get().getApiType());
             } else {
-                logger.trace("Skipping unsupported interface type: {}", props.get("type"));
+                logger.trace("Skipping unsupported interface type: {}", props.get(PROP_TYPE_KEY));
             }
             return ifaceOpt;
         }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+
+        Map<String, Map<String, String>> typedIfaceResponse = new HashMap<>();
+        for (String ifaceApiType : interfaceTypesToPoll) {
+            String cmd = String.format(CMD_PRINT_IFACE_TYPE_TPL, ifaceApiType);
+            if (ifaceApiType.equals("cap")) {
+                cmd = CMD_PRINT_CAPS_IFACES;
+            }
+            logger.trace("Executing '{}' on {}...", cmd, host);
+            connection.execute(cmd).forEach(propMap -> {
+                String ifaceName = propMap.get(PROP_NAME_KEY);
+                if (typedIfaceResponse.containsKey(ifaceName)) {
+                    typedIfaceResponse.get(ifaceName).putAll(propMap);
+                } else {
+                    typedIfaceResponse.put(ifaceName, propMap);
+                }
+            });
+        }
+
+        for (RouterosInterfaceBase ifaceModel : interfaceCache) {
+            // Enrich with detailed data
+            if (typedIfaceResponse.containsKey(ifaceModel.getName())) {
+                ifaceModel.mergeProps(typedIfaceResponse.get(ifaceModel.getName()));
+            }
+            // Get monitor data
+            if (ifaceModel.hasMonitor() && monitoredInterfaces.contains(ifaceModel.getName())) {
+                String cmd = String.format(CMD_MONTOR_IFACE_MONITOR_TPL, ifaceModel.getApiType(), ifaceModel.getName());
+                logger.trace("Executing '{}' on {}...", cmd, host);
+                List<Map<String, String>> monitorProps = connection.execute(cmd);
+                ifaceModel.mergeProps(monitorProps.get(0));
+            }
+            if (StringUtils.isNotBlank(ifaceModel.getProperty(PROP_SSID_KEY))) {
+                // Note SSIDs for non-CAPsMAN wireless clients
+                this.wlanSsid.put(ifaceModel.getName(), ifaceModel.getProperty(PROP_SSID_KEY));
+            }
+        }
     }
 
     private void updateCapsmanRegistrations() throws MikrotikApiException {
         logger.trace("Executing '{}' on {}...", CMD_PRINT_CAPSMAN_REGS, host);
         List<Map<String, String>> response = connection.execute(CMD_PRINT_CAPSMAN_REGS);
-        capsmanRegistrationCache = response.stream().map(RouterosCapsmanRegistration::new).collect(Collectors.toList());
+        capsmanRegistrationCache = response.stream().map(props -> {
+            logger.trace("Got capsman registration props from {}: {}", host, props);
+            return new RouterosCapsmanRegistration(props);
+        }).collect(Collectors.toList());
     }
 
     private void updateWirelessRegistrations() throws MikrotikApiException {
         logger.trace("Executing '{}' on {}...", CMD_PRINT_WIRELESS_REGS, host);
         List<Map<String, String>> response = connection.execute(CMD_PRINT_WIRELESS_REGS);
-        wirelessRegistrationCache = response.stream().map(RouterosWirelessRegistration::new)
-                .collect(Collectors.toList());
+        logger.trace("wlanSsid = {}", wlanSsid);
+        wirelessRegistrationCache = response.stream().map(props -> {
+            logger.trace("Got wireless registration props from {}: {}", host, props);
+            String wlanIfaceName = props.get("interface");
+            if (StringUtils.isNotBlank(wlanIfaceName) && wlanSsid.containsKey(wlanIfaceName)) {
+                props.put(PROP_SSID_KEY, wlanSsid.get(wlanIfaceName));
+            }
+            return new RouterosWirelessRegistration(props);
+        }).collect(Collectors.toList());
     }
 
     private void updateResources() throws MikrotikApiException {

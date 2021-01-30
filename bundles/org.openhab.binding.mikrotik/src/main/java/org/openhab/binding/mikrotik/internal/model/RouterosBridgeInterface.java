@@ -17,47 +17,29 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link RouterosEthernetInterface} is a model class for `ether` interface models having casting accessors for
+ * The {@link RouterosBridgeInterface} is a model class for `bridge` interface models having casting accessors for
  * data that is specific to this network interface kind. Is a subclass of {@link RouterosInterfaceBase}.
  *
  * @author Oleg Vivtash - Initial contribution
  */
 @NonNullByDefault
-public class RouterosEthernetInterface extends RouterosInterfaceBase {
-    public RouterosEthernetInterface(Map<String, String> props) {
+public class RouterosBridgeInterface extends RouterosInterfaceBase {
+    public RouterosBridgeInterface(Map<String, String> props) {
         super(props);
     }
 
     @Override
     public RouterosInterfaceType getDesignedType() {
-        return RouterosInterfaceType.ETHERNET;
-    }
-
-    @Override
-    public String getApiType() {
-        return "ethernet";
+        return RouterosInterfaceType.BRIDGE;
     }
 
     @Override
     public boolean hasDetailedReport() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean hasMonitor() {
-        // PowerLine interfaces are of ehter type too
-        return !getDefaultName().startsWith("pwr");
-    }
-
-    public String getDefaultName() {
-        return propMap.get("default-name");
-    }
-
-    public String getRate() {
-        return propMap.get("rate");
-    }
-
-    public String getState() {
-        return propMap.get("status");
+        return false;
     }
 }

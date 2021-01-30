@@ -28,8 +28,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.joda.time.DateTime;
 import org.openhab.binding.mikrotik.internal.MikrotikBindingConstants;
 import org.openhab.binding.mikrotik.internal.config.WirelessClientThingConfig;
-import org.openhab.binding.mikrotik.internal.model.RouterosCapsmanRegistration;
-import org.openhab.binding.mikrotik.internal.model.RouterosWirelessRegistration;
+import org.openhab.binding.mikrotik.internal.model.*;
 import org.openhab.binding.mikrotik.internal.util.RateCalculator;
 import org.openhab.binding.mikrotik.internal.util.StateUtil;
 import org.slf4j.Logger;
@@ -47,8 +46,7 @@ import org.slf4j.LoggerFactory;
 public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler<WirelessClientThingConfig> {
     private final Logger logger = LoggerFactory.getLogger(MikrotikWirelessClientThingHandler.class);
 
-    private @Nullable RouterosWirelessRegistration wirelessRegistration;
-    private @Nullable RouterosCapsmanRegistration capsmanRegistration;
+    private @Nullable RouterosRegistrationBase wifiReg;
 
     private boolean online = false;
     private boolean continuousConnection = false;
@@ -69,39 +67,37 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
 
     private boolean fetchModels() {
         logger.trace("Searching for {} registration", config.mac);
-        wirelessRegistration = getRouteros().findWirelessRegistration(config.mac);
-        if (StringUtils.isNotBlank(config.ssid) && !config.ssid.equalsIgnoreCase(wirelessRegistration.getSSID())) {
-            wirelessRegistration = null;
+        this.wifiReg = getRouteros().findWirelessRegistration(config.mac);
+        if (StringUtils.isNotBlank(config.ssid) && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
+            this.wifiReg = null;
         }
 
-        if (wirelessRegistration == null) { // try looking in capsman when there is no wirelessRegistration
-            capsmanRegistration = getRouteros().findCapsmanRegistration(config.mac);
-            if (StringUtils.isNotBlank(config.ssid) && !config.ssid.equalsIgnoreCase(capsmanRegistration.getSSID())) {
-                capsmanRegistration = null;
+        if (this.wifiReg == null) { // try looking in capsman when there is no wirelessRegistration
+            this.wifiReg = getRouteros().findCapsmanRegistration(config.mac);
+            if (wifiReg != null && StringUtils.isNotBlank(config.ssid)
+                    && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
+                this.wifiReg = null;
             }
-        } else {
-            capsmanRegistration = null;
         }
 
-        return wirelessRegistration != null || capsmanRegistration != null;
+        return this.wifiReg != null;
     }
 
     @Override
     protected void refreshModels() {
-        online = fetchModels();
+        this.online = fetchModels();
         if (online) {
             lastSeen = DateTime.now();
         } else {
             continuousConnection = false;
         }
-        if (capsmanRegistration != null) {
-            // TODO Should be applied to wirelessRegistration as well
-            txByteRate.update(capsmanRegistration.getTxBytes());
-            rxByteRate.update(capsmanRegistration.getRxBytes());
-            txPacketRate.update(capsmanRegistration.getTxPackets());
-            rxPacketRate.update(capsmanRegistration.getRxPackets());
+        if (this.wifiReg != null) {
+            txByteRate.update(wifiReg.getTxBytes());
+            rxByteRate.update(wifiReg.getRxBytes());
+            txPacketRate.update(wifiReg.getTxPackets());
+            rxPacketRate.update(wifiReg.getRxPackets());
             continuousConnection = DateTime.now()
-                    .isAfter(capsmanRegistration.getUptimeStart().plusSeconds(config.considerContinuous));
+                    .isAfter(wifiReg.getUptimeStart().plusSeconds(config.considerContinuous));
         }
     }
 
@@ -115,14 +111,65 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
             newState = StateUtil.boolOrNull(online);
         } else if (channelID.equals(CHANNEL_LAST_SEEN)) {
             newState = StateUtil.timeOrNull(lastSeen);
-        } else if (online) {
-            if (wirelessRegistration != null) {
-                newState = getWirelessRegistrationChannelState(channelID);
-            } else if (capsmanRegistration != null) {
-                newState = getCapsmanRegistrationChannelState(channelID);
-            }
-        } else {
+        } else if (channelID.equals(CHANNEL_CONTINUOUS)) {
+            newState = StateUtil.boolOrNull(continuousConnection);
+        } else if (!online) {
             newState = UnDefType.NULL;
+        } else {
+            switch (channelID) {
+                case CHANNEL_NAME:
+                    newState = StateUtil.stringOrNull(wifiReg.getName());
+                    break;
+                case CHANNEL_COMMENT:
+                    newState = StateUtil.stringOrNull(wifiReg.getComment());
+                    break;
+                case CHANNEL_MAC:
+                    newState = StateUtil.stringOrNull(wifiReg.getMacAddress());
+                    break;
+                case CHANNEL_INTERFACE:
+                    newState = StateUtil.stringOrNull(wifiReg.getInterfaceName());
+                    break;
+                case CHANNEL_SSID:
+                    newState = StateUtil.stringOrNull(wifiReg.getSSID());
+                    break;
+                case CHANNEL_UP_TIME:
+                    newState = StateUtil.stringOrNull(wifiReg.getUptime());
+                    break;
+                case CHANNEL_UP_SINCE:
+                    newState = StateUtil.timeOrNull(wifiReg.getUptimeStart());
+                    break;
+                case CHANNEL_TX_DATA_RATE:
+                    newState = StateUtil.floatOrNull(txByteRate.getMegabitRate());
+                    break;
+                case CHANNEL_RX_DATA_RATE:
+                    newState = StateUtil.floatOrNull(rxByteRate.getMegabitRate());
+                    break;
+                case CHANNEL_TX_PACKET_RATE:
+                    newState = StateUtil.floatOrNull(txPacketRate.getRate());
+                    break;
+                case CHANNEL_RX_PACKET_RATE:
+                    newState = StateUtil.floatOrNull(rxPacketRate.getRate());
+                    break;
+                case CHANNEL_TX_BYTES:
+                    newState = StateUtil.bigIntOrNull(wifiReg.getTxBytes());
+                    break;
+                case CHANNEL_RX_BYTES:
+                    newState = StateUtil.bigIntOrNull(wifiReg.getRxBytes());
+                    break;
+                case CHANNEL_TX_PACKETS:
+                    newState = StateUtil.bigIntOrNull(wifiReg.getTxPackets());
+                    break;
+                case CHANNEL_RX_PACKETS:
+                    newState = StateUtil.bigIntOrNull(wifiReg.getRxPackets());
+                    break;
+                default:
+                    newState = UnDefType.NULL;
+                    if (wifiReg instanceof RouterosWirelessRegistration) {
+                        newState = getWirelessRegistrationChannelState(channelID);
+                    } else if (wifiReg instanceof RouterosCapsmanRegistration) {
+                        newState = getCapsmanRegistrationChannelState(channelID);
+                    }
+            }
         }
 
         logger.trace("About to update state on channel {} for thing {} - newState({}) = {}, oldState = {}", channelUID,
@@ -134,52 +181,20 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
     }
 
     protected State getCapsmanRegistrationChannelState(String channelID) {
+        RouterosCapsmanRegistration capsmanReg = (RouterosCapsmanRegistration) this.wifiReg;
         switch (channelID) {
-            case CHANNEL_CONTINUOUS:
-                return StateUtil.boolOrNull(continuousConnection);
-            case CHANNEL_INTERFACE:
-                return StateUtil.stringOrNull(capsmanRegistration.getInterfaceName());
-            case CHANNEL_COMMENT:
-                return StateUtil.stringOrNull(capsmanRegistration.getComment());
-            case CHANNEL_MAC:
-                return StateUtil.stringOrNull(capsmanRegistration.getMacAddress());
-            case CHANNEL_SSID:
-                return StateUtil.stringOrNull(capsmanRegistration.getSSID());
             case CHANNEL_SIGNAL:
-                return StateUtil.intOrNull(capsmanRegistration.getRxSignal());
-            case CHANNEL_UP_TIME:
-                return StateUtil.stringOrNull(capsmanRegistration.getUptime());
-            case CHANNEL_UP_SINCE:
-                return StateUtil.timeOrNull(capsmanRegistration.getUptimeStart());
-            case CHANNEL_TX_DATA_RATE:
-                return StateUtil.floatOrNull(txByteRate.getMegabitRate());
-            case CHANNEL_RX_DATA_RATE:
-                return StateUtil.floatOrNull(rxByteRate.getMegabitRate());
-            case CHANNEL_TX_PACKET_RATE:
-                return StateUtil.floatOrNull(txPacketRate.getMegabitRate());
-            case CHANNEL_RX_PACKET_RATE:
-                return StateUtil.floatOrNull(rxPacketRate.getMegabitRate());
-            case CHANNEL_TX_BYTES:
-                return StateUtil.bigIntOrNull(capsmanRegistration.getTxBytes());
-            case CHANNEL_RX_BYTES:
-                return StateUtil.bigIntOrNull(capsmanRegistration.getRxBytes());
-            case CHANNEL_TX_PACKETS:
-                return StateUtil.bigIntOrNull(capsmanRegistration.getTxPackets());
-            case CHANNEL_RX_PACKETS:
-                return StateUtil.bigIntOrNull(capsmanRegistration.getRxPackets());
+                return StateUtil.intOrNull(capsmanReg.getRxSignal());
             default:
                 return UnDefType.UNDEF;
         }
     }
 
     protected State getWirelessRegistrationChannelState(String channelID) {
+        RouterosWirelessRegistration wirelessReg = (RouterosWirelessRegistration) this.wifiReg;
         switch (channelID) {
-            case CHANNEL_COMMENT:
-                return StateUtil.stringOrNull(wirelessRegistration.getComment());
-            case CHANNEL_MAC:
-                return StateUtil.stringOrNull(wirelessRegistration.getMacAddress());
-            case CHANNEL_SSID:
-                return StateUtil.stringOrNull(wirelessRegistration.getSSID());
+            case CHANNEL_SIGNAL:
+                return StateUtil.intOrNull(wirelessReg.getRxSignal());
             default:
                 return UnDefType.UNDEF;
         }
