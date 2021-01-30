@@ -77,4 +77,5 @@ Fragment-Host: org.openhab.binding.modbus
 	org.objenesis;version='[3.1.0,3.1.1)',\
 	org.mockito.junit-jupiter;version='[3.7.0,3.7.1)',\
 	biz.aQute.tester.junit-platform;version='[5.2.0,5.2.1)',\
-	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)'
+	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
+	junit-jupiter-params;version='[5.7.0,5.7.1)'
