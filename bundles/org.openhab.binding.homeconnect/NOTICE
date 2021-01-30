@@ -14,16 +14,6 @@ https://github.com/openhab/openhab2-addons
 
 == Third-party Content
 
-okhttp / okhttp-sse
-* License: Apache License 2.0
-* Project: https://square.github.io/okhttp/
-* Source:  https://github.com/square/okhttp
-
-okio
-* License: Apache License 2.0
-* Project: https://square.github.io/okio/
-* Source:  https://github.com/square/okio
-
 Thymeleaf
 * License: Apache License 2.0
 * Project: https://www.thymeleaf.org/

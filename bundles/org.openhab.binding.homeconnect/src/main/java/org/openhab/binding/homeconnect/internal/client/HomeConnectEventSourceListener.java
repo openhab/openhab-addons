@@ -13,13 +13,8 @@
 package org.openhab.binding.homeconnect.internal.client;
 
 import static java.time.LocalDateTime.now;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.EVENT;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.NOTIFY;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.STATUS;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.valueOfType;
+import static org.openhab.binding.homeconnect.internal.client.model.EventType.*;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -31,8 +26,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.sse.InboundSseEvent;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homeconnect.internal.client.listener.HomeConnectEventListener;
 import org.openhab.binding.homeconnect.internal.client.model.Event;
 import org.openhab.binding.homeconnect.internal.client.model.EventHandling;
@@ -45,11 +43,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okhttp3.sse.EventSource;
-import okhttp3.sse.EventSourceListener;
-
 /**
  * Event source listener (Server-Sent-Events).
  *
@@ -57,7 +50,7 @@ import okhttp3.sse.EventSourceListener;
  *
  */
 @NonNullByDefault
-public class HomeConnectEventSourceListener extends EventSourceListener {
+public class HomeConnectEventSourceListener {
     private static final String EMPTY_DATA = "\"\"";
     private static final int SSE_MONITOR_INITIAL_DELAY = 1;
     private static final int SSE_MONITOR_INTERVAL = 5; // in min
@@ -85,14 +78,14 @@ public class HomeConnectEventSourceListener extends EventSourceListener {
         eventSourceMonitorFuture = createMonitor(scheduler);
     }
 
-    @Override
-    public void onOpen(@Nullable EventSource eventSource, @Nullable Response response) {
-        logger.debug("Event source listener channel opened ({}).", haId);
-    }
+    public void onEvent(InboundSseEvent inboundEvent) {
+        @Nullable
+        String id = inboundEvent.getId();
+        @Nullable
+        String type = inboundEvent.getName();
+        @Nullable
+        String data = inboundEvent.readData();
 
-    @Override
-    public void onEvent(@Nullable EventSource eventSource, @Nullable String id, @Nullable String type,
-            @Nullable String data) {
         lastEventReceived = now();
 
         @Nullable
@@ -112,8 +105,7 @@ public class HomeConnectEventSourceListener extends EventSourceListener {
         }
     }
 
-    @Override
-    public void onClosed(@Nullable EventSource eventSource) {
+    public void onComplete() {
         logger.debug("Event source listener channel closed ({}).", haId);
 
         client.unregisterEventListener(eventListener);
@@ -126,41 +118,19 @@ public class HomeConnectEventSourceListener extends EventSourceListener {
         stopMonitor();
     }
 
-    @Override
-    public void onFailure(@Nullable EventSource eventSource, @Nullable Throwable throwable,
-            @Nullable Response response) {
+    public void onError(Throwable error) {
         @Nullable
-        String throwableMessage = throwable != null ? throwable.getMessage() : null;
-        @Nullable
-        String throwableClass = throwable != null ? throwable.getClass().getName() : null;
-        @Nullable
-        String responseCode = response != null ? String.valueOf(response.code()) : null;
+        String throwableMessage = error.getMessage();
+        String throwableClass = error.getClass().getName();
 
-        String responseBody = "";
-        try {
-            if (response != null) {
-                @Nullable
-                ResponseBody responseBodyObject = response.body();
-                if (responseBodyObject != null) {
-                    responseBody = responseBodyObject.string();
-                }
-            }
-        } catch (IOException e) {
-            logger.error("Could not get HTTP response body as string.", e);
-        }
-
-        logger.debug(
-                "Event source listener connection failure occurred. haId={}, responseCode={}, responseBody={}, throwable={}, throwableMessage={}",
-                haId, responseCode, responseBody, throwableClass, throwableMessage);
-
-        if (response != null) {
-            response.close();
-        }
+        logger.debug("Event source listener connection failure occurred. haId={}, throwable={}, throwableMessage={}",
+                haId, throwableClass, throwableMessage);
 
         client.unregisterEventListener(eventListener);
 
         try {
-            if ("429".equals(responseCode)) {
+            if (throwableMessage != null
+                    && throwableMessage.contains(String.valueOf(HttpStatus.TOO_MANY_REQUESTS_429))) {
                 logger.warn(
                         "More than 10 active event monitoring channels was reached. Further event monitoring requests are blocked. haId={}",
                         haId);
@@ -194,15 +164,17 @@ public class HomeConnectEventSourceListener extends EventSourceListener {
         }, SSE_MONITOR_INITIAL_DELAY, SSE_MONITOR_INTERVAL, TimeUnit.MINUTES);
     }
 
-    private void stopMonitor() {
-        logger.debug("Dispose event source connection monitor of appliance ({}).", haId);
-        eventSourceMonitorFuture.cancel(true);
+    public void stopMonitor() {
+        if (!eventSourceMonitorFuture.isDone()) {
+            logger.debug("Dispose event source connection monitor of appliance ({}).", haId);
+            eventSourceMonitorFuture.cancel(true);
+        }
     }
 
     private List<Event> mapEventSourceEventToEvent(String haId, EventType type, @Nullable String data) {
         List<Event> events = new ArrayList<>();
 
-        if ((STATUS.equals(type) || EVENT.equals(type) || NOTIFY.equals(type)) && data != null && !isEmpty(data)
+        if ((STATUS.equals(type) || EVENT.equals(type) || NOTIFY.equals(type)) && data != null && !data.trim().isEmpty()
                 && !EMPTY_DATA.equals(data)) {
             try {
                 JsonObject responseObject = jsonParser.parse(data).getAsJsonObject();

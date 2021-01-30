@@ -13,72 +13,12 @@
 package org.openhab.binding.homeconnect.internal.handler;
 
 import static java.util.Collections.emptyList;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_ACTIVE_PROGRAM_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_BASIC_ACTIONS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_DOOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_DRYER_DRYING_TARGET;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_DURATION;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_ELAPSED_PROGRAM_TIME;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_HOOD_INTENSIVE_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_HOOD_VENTING_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_LOCAL_CONTROL_ACTIVE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_POWER_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_PROGRAM_PROGRESS_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMAINING_PROGRAM_TIME_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMOTE_CONTROL_ACTIVE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REMOTE_START_ALLOWANCE_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_SELECTED_PROGRAM_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_WASHER_IDOS1;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_WASHER_IDOS2;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_WASHER_SPIN_SPEED;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_WASHER_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_SELECTED;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_START;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.COMMAND_STOP;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.HA_ID;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_DRYER_DRYING_TARGET;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_DURATION;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_ELAPSED_PROGRAM_TIME;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_HOOD_INTENSIVE_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_HOOD_VENTING_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_PROGRAM_PROGRESS;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_REMAINING_PROGRAM_TIME;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_WASHER_IDOS_1_DOSING_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_WASHER_IDOS_2_DOSING_LEVEL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_WASHER_SPIN_SPEED;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OPTION_WASHER_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_01;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_02;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_03;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_04;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_FAN_STAGE_05;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_INTENSIVE_STAGE_1;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_INTENSIVE_STAGE_2;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STAGE_INTENSIVE_STAGE_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_DOOR_OPEN;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_EVENT_PRESENT_STATE_OFF;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_OPERATION_FINISHED;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_OPERATION_READY;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_OPERATION_RUN;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.STATE_POWER_ON;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.CONNECTED;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.DISCONNECTED;
-import static org.openhab.binding.homeconnect.internal.client.model.EventType.KEEP_ALIVE;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
+import static org.openhab.binding.homeconnect.internal.client.model.EventType.*;
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.Units.PERCENT;
-import static org.openhab.core.library.unit.Units.SECOND;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatus.UNKNOWN;
+import static org.openhab.core.library.unit.Units.*;
+import static org.openhab.core.thing.ThingStatus.*;
 
 import java.time.Duration;
 import java.util.List;
@@ -147,6 +87,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private @Nullable String operationState;
     private @Nullable ScheduledFuture<?> reinitializationFuture1;
     private @Nullable ScheduledFuture<?> reinitializationFuture2;
+    private @Nullable ScheduledFuture<?> reinitializationFuture3;
     private boolean ignoreEventSourceClosedEvent;
 
     private final ConcurrentHashMap<String, EventHandler> eventHandlers;
@@ -199,15 +140,24 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     @Override
     public void dispose() {
         logger.debug("Dispose thing handler ({}). haId={}", getThingLabel(), getThingHaId());
-        unregisterEventListener();
+        stopRetryRegistering();
         stopOfflineMonitor1();
         stopOfflineMonitor2();
+        unregisterEventListener(true);
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge status changed to {} ({}). haId={}", bridgeStatusInfo, getThingLabel(), getThingHaId());
-        dispose();
+        reinitialize();
+    }
+
+    private void reinitialize() {
+        logger.debug("Reinitialize thing handler ({}). haId={}", getThingLabel(), getThingHaId());
+        stopRetryRegistering();
+        stopOfflineMonitor1();
+        stopOfflineMonitor2();
+        unregisterEventListener();
         initialize();
     }
 
@@ -320,11 +270,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         unregisterEventListener();
 
         // retry registering
-        scheduler.schedule(() -> {
-            logger.debug("Try to register event listener again. haId={}", getThingHaId());
-            unregisterEventListener();
-            registerEventListener();
-        }, AbstractHomeConnectThingHandler.EVENT_LISTENER_CONNECT_RETRY_DELAY, TimeUnit.MINUTES);
+        scheduleRetryRegistering();
     }
 
     /**
@@ -348,9 +294,13 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * Unregister event listener.
      */
     protected void unregisterEventListener() {
+        unregisterEventListener(false);
+    }
+
+    private void unregisterEventListener(boolean immediate) {
         getEventSourceClient().ifPresent(client -> {
             ignoreEventSourceClosedEvent = true;
-            client.unregisterEventListener(this);
+            client.unregisterEventListener(this, immediate);
         });
     }
 
@@ -804,8 +754,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             getBridgeHandler().ifPresent(homeConnectBridgeHandler -> {
                 try {
                     homeConnectBridgeHandler.getOAuthClientService().remove();
-                    homeConnectBridgeHandler.dispose();
-                    homeConnectBridgeHandler.initialize();
+                    homeConnectBridgeHandler.reinitialize();
                 } catch (OAuthException e) {
                     // client is already closed --> we can ignore it
                 }
@@ -1285,8 +1234,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 if (isThingOnline()) {
                     logger.debug("Offline monitor 1: Thing status changed to ONLINE. thing={}, haId={}",
                             getThingLabel(), getThingHaId());
-                    dispose();
-                    initialize();
+                    reinitialize();
                 } else {
                     scheduleOfflineMonitor1();
                 }
@@ -1314,8 +1262,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 if (isThingOnline()) {
                     logger.debug("Offline monitor 2: Thing status changed to ONLINE. thing={}, haId={}",
                             getThingLabel(), getThingHaId());
-                    dispose();
-                    initialize();
+                    reinitialize();
                 } else {
                     scheduleOfflineMonitor2();
                 }
@@ -1331,6 +1278,23 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         if (reinitializationFuture != null) {
             reinitializationFuture.cancel(false);
             this.reinitializationFuture2 = null;
+        }
+    }
+
+    private synchronized void scheduleRetryRegistering() {
+        this.reinitializationFuture3 = scheduler.schedule(() -> {
+            logger.debug("Try to register event listener again. haId={}", getThingHaId());
+            unregisterEventListener();
+            registerEventListener();
+        }, AbstractHomeConnectThingHandler.EVENT_LISTENER_CONNECT_RETRY_DELAY, TimeUnit.MINUTES);
+    }
+
+    private synchronized void stopRetryRegistering() {
+        @Nullable
+        ScheduledFuture<?> reinitializationFuture = this.reinitializationFuture3;
+        if (reinitializationFuture != null) {
+            reinitializationFuture.cancel(true);
+            this.reinitializationFuture3 = null;
         }
     }
 }

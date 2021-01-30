@@ -30,7 +30,6 @@ public class HomeConnectResponse {
     private final @Nullable String body;
 
     public HomeConnectResponse(int code, Map<String, String> header, @Nullable String body) {
-        super();
         this.code = code;
         this.header = header;
         this.body = body;

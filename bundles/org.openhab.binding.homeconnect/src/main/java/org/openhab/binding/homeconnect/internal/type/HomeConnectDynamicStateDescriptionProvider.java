@@ -14,8 +14,10 @@ package org.openhab.binding.homeconnect.internal.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HomeConnectDynamicStateDescriptionProvider} is responsible for handling dynamic values.
@@ -26,4 +28,14 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class HomeConnectDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
+    @Reference
+    protected void setChannelTypeI18nLocalizationService(
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
+
+    protected void unsetChannelTypeI18nLocalizationService(
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.channelTypeI18nLocalizationService = null;
+    }
 }

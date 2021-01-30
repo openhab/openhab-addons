@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.homeconnect.internal.handler;
 
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.API_BASE_URL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.API_SIMULATOR_BASE_URL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OAUTH_AUTHORIZE_PATH;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OAUTH_SCOPE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.OAUTH_TOKEN_PATH;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -31,8 +27,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.HomeConnectEventSourceClient;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
@@ -59,6 +58,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +75,9 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     private static final String CLIENT_SECRET = "clientSecret";
     private static final String CLIENT_ID = "clientId";
 
+    private final HttpClient httpClient;
+    private final ClientBuilder clientBuilder;
+    private final SseEventSourceFactory eventSourceFactory;
     private final OAuthFactory oAuthFactory;
     private final HomeConnectServlet homeConnectServlet;
     private final Logger logger = LoggerFactory.getLogger(HomeConnectBridgeHandler.class);
@@ -88,9 +91,14 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) HomeConnectApiClient apiClient;
     private @NonNullByDefault({}) HomeConnectEventSourceClient eventSourceClient;
 
-    public HomeConnectBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HomeConnectServlet homeConnectServlet) {
+    public HomeConnectBridgeHandler(Bridge bridge, HttpClient httpClient, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory, OAuthFactory oAuthFactory,
+            HomeConnectServlet homeConnectServlet) {
         super(bridge);
 
+        this.httpClient = httpClient;
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
         this.oAuthFactory = oAuthFactory;
         this.homeConnectServlet = homeConnectServlet;
     }
@@ -123,9 +131,9 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 tokenUrl, authorizeUrl, oAuthServiceHandleId, OAUTH_SCOPE, oAuthClientService);
 
         // create api client
-        apiClient = new HomeConnectApiClient(oAuthClientService, config.isSimulator(), apiRequestHistory);
-        eventSourceClient = new HomeConnectEventSourceClient(oAuthClientService, config.isSimulator(), scheduler,
-                eventHistory);
+        apiClient = new HomeConnectApiClient(httpClient, oAuthClientService, config.isSimulator(), apiRequestHistory);
+        eventSourceClient = new HomeConnectEventSourceClient(clientBuilder, eventSourceFactory, oAuthClientService,
+                config.isSimulator(), scheduler, eventHistory);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -164,7 +172,14 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Dispose bridge {}", getThing().getLabel());
         stopReinitializer();
-        cleanup();
+        cleanup(true);
+    }
+
+    public void reinitialize() {
+        logger.debug("Reinitialize bridge {}", getThing().getLabel());
+        stopReinitializer();
+        cleanup(false);
+        initialize();
     }
 
     @Override
@@ -266,7 +281,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
         return oAuthClientService;
     }
 
-    private void cleanup() {
+    private void cleanup(boolean immediate) {
         ArrayList<ApiRequest> apiRequestHistory = new ArrayList<>();
         apiRequestHistory.addAll(apiClient.getLatestApiRequests());
         this.apiRequestHistory = apiRequestHistory;
@@ -276,7 +291,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
         eventHistory.addAll(eventSourceClient.getLatestEvents());
         this.eventHistory = eventHistory;
         eventSourceClient.getLatestEvents().clear();
-        eventSourceClient.dispose();
+        eventSourceClient.dispose(immediate);
 
         oAuthFactory.ungetOAuthService(oAuthServiceHandleId);
         homeConnectServlet.removeBridgeHandler(this);
@@ -290,7 +305,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                     reinitializationFuture.getDelay(TimeUnit.SECONDS), getThing().getLabel());
         } else {
             this.reinitializationFuture = scheduler.schedule(() -> {
-                cleanup();
+                cleanup(false);
                 initialize();
             }, HomeConnectBridgeHandler.REINITIALIZATION_DELAY, TimeUnit.SECONDS);
         }

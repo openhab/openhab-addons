@@ -16,12 +16,20 @@ import static io.github.bucket4j.Bandwidth.classic;
 import static io.github.bucket4j.Refill.intervally;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpContentResponse;
+import org.eclipse.jetty.client.HttpResponse;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -37,9 +45,6 @@ import com.google.gson.JsonParser;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
-import okhttp3.OkHttpClient;
-import okhttp3.OkHttpClient.Builder;
-import okhttp3.Request;
 
 /**
  * okHttp helper.
@@ -48,8 +53,7 @@ import okhttp3.Request;
  *
  */
 @NonNullByDefault
-public class OkHttpHelper {
-    private static final String HEADER_AUTHORIZATION = "Authorization";
+public class HttpHelper {
     private static final String BEARER = "Bearer ";
     private static final int OAUTH_EXPIRE_BUFFER = 10;
     private static final JsonParser JSON_PARSER = new JsonParser();
@@ -58,25 +62,23 @@ public class OkHttpHelper {
             // allows 50 tokens per minute (added 10 second buffer)
             .addLimit(classic(50, intervally(50, Duration.ofSeconds(70))).withInitialTokens(40))
             // but not often then 50 tokens per second
-            .addLimit(classic(10, intervally(10, Duration.ofSeconds(1))).withInitialTokens(0)).build();
+            .addLimit(classic(10, intervally(10, Duration.ofSeconds(1)))).build();
 
-    public static Builder builder(boolean enableRateLimiting) {
-        Builder builder = new OkHttpClient().newBuilder();
-
-        if (enableRateLimiting) {
-            builder.addInterceptor(chain -> {
-                if (HttpMethod.GET.name().equals(chain.request().method())) {
-                    try {
-                        BUCKET.asScheduler().consume(1);
-                    } catch (InterruptedException e) {
-                        LoggerFactory.getLogger(OkHttpHelper.class).error("Rate limiting error! error={}",
-                                e.getMessage());
-                    }
-                }
-                return chain.proceed(chain.request());
-            });
+    public static ContentResponse sendRequest(Request request)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        ContentResponse response;
+        if (!HttpMethod.GET.name().equals(request.getMethod())) {
+            response = request.send();
+        } else if (BUCKET.tryConsume(1)) {
+            response = request.send();
+        } else {
+            LoggerFactory.getLogger(HttpHelper.class).debug("Request blocked by bucket4j.");
+            HttpResponse httpResponse = new HttpResponse(request, null).status(HttpStatus.TOO_MANY_REQUESTS_429)
+                    .reason("Too Many Requests").version(request.getVersion());
+            response = new HttpContentResponse(httpResponse, "Too Many Requests".getBytes(StandardCharsets.UTF_8),
+                    "text/plain", StandardCharsets.UTF_8.toString());
         }
-        return builder;
+        return response;
     }
 
     public static String formatJsonBody(@Nullable String jsonString) {
@@ -91,7 +93,7 @@ public class OkHttpHelper {
         }
     }
 
-    public static Request.Builder requestBuilder(OAuthClientService oAuthClientService)
+    public static String getAuthorizationHeader(OAuthClientService oAuthClientService)
             throws AuthorizationException, CommunicationException {
         try {
             @Nullable
@@ -104,10 +106,9 @@ public class OkHttpHelper {
             }
 
             if (accessTokenResponse != null) {
-                return new Request.Builder().addHeader(HEADER_AUTHORIZATION,
-                        BEARER + accessTokenResponse.getAccessToken());
+                return BEARER + accessTokenResponse.getAccessToken();
             } else {
-                LoggerFactory.getLogger(OkHttpHelper.class).error("No access token available! Fatal error.");
+                LoggerFactory.getLogger(HttpHelper.class).error("No access token available! Fatal error.");
                 throw new AuthorizationException("No access token available!");
             }
         } catch (IOException e) {

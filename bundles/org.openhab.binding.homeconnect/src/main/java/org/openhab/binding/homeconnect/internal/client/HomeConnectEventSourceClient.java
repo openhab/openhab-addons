@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.API_BASE_URL;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.API_SIMULATOR_BASE_URL;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,6 +22,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.sse.SseEventSource;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
@@ -30,12 +33,9 @@ import org.openhab.binding.homeconnect.internal.client.exception.CommunicationEx
 import org.openhab.binding.homeconnect.internal.client.listener.HomeConnectEventListener;
 import org.openhab.binding.homeconnect.internal.client.model.Event;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import okhttp3.Request;
-import okhttp3.sse.EventSource;
-import okhttp3.sse.EventSources;
 
 /**
  * Server-Sent-Events client for Home Connect API.
@@ -46,29 +46,31 @@ import okhttp3.sse.EventSources;
 @NonNullByDefault
 public class HomeConnectEventSourceClient {
 
-    private static final String TEXT_EVENT_STREAM = "text/event-stream";
     private static final int SSE_REQUEST_READ_TIMEOUT = 90;
-    private static final String ACCEPT = "Accept";
     private static final int EVENT_QUEUE_SIZE = 300;
 
     private final String apiUrl;
-    private final EventSource.Factory eventSourceFactory;
+    private final ClientBuilder clientBuilder;
+    private final SseEventSourceFactory eventSourceFactory;
     private final OAuthClientService oAuthClientService;
-    private final Map<HomeConnectEventListener, EventSource> eventSourceConnections;
+    private final Map<HomeConnectEventListener, SseEventSource> eventSourceConnections;
+    private final Map<SseEventSource, HomeConnectEventSourceListener> eventSourceListeners;
     private final ScheduledExecutorService scheduler;
     private final CircularQueue<Event> eventQueue;
 
     private final Logger logger = LoggerFactory.getLogger(HomeConnectEventSourceClient.class);
 
-    public HomeConnectEventSourceClient(OAuthClientService oAuthClientService, boolean simulated,
-            ScheduledExecutorService scheduler, @Nullable List<Event> eventHistory) {
+    public HomeConnectEventSourceClient(ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
+            OAuthClientService oAuthClientService, boolean simulated, ScheduledExecutorService scheduler,
+            @Nullable List<Event> eventHistory) {
         this.scheduler = scheduler;
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
         this.oAuthClientService = oAuthClientService;
 
         apiUrl = simulated ? API_SIMULATOR_BASE_URL : API_BASE_URL;
-        eventSourceFactory = EventSources.createFactory(OkHttpHelper.builder(false)
-                .readTimeout(SSE_REQUEST_READ_TIMEOUT, TimeUnit.SECONDS).retryOnConnectionFailure(true).build());
         eventSourceConnections = new HashMap<>();
+        eventSourceListeners = new HashMap<>();
         eventQueue = new CircularQueue<>(EVENT_QUEUE_SIZE);
         if (eventHistory != null) {
             eventQueue.addAll(eventHistory);
@@ -81,6 +83,7 @@ public class HomeConnectEventSourceClient {
      *
      * Checkout rate limits of the API at. https://developer.home-connect.com/docs/general/ratelimiting
      *
+     * @param haId appliance id
      * @param eventListener appliance event listener
      * @throws CommunicationException API communication exception
      * @throws AuthorizationException oAuth authorization exception
@@ -90,14 +93,19 @@ public class HomeConnectEventSourceClient {
         logger.debug("Register event listener for '{}': {}", haId, eventListener);
 
         if (!eventSourceConnections.containsKey(eventListener)) {
-            Request request = OkHttpHelper.requestBuilder(oAuthClientService)
-                    .url(apiUrl + "/api/homeappliances/" + haId + "/events").header(ACCEPT, TEXT_EVENT_STREAM).build();
-
             logger.debug("Create new event source listener for '{}'.", haId);
-            EventSource eventSource = eventSourceFactory.newEventSource(request,
-                    new HomeConnectEventSourceListener(haId, eventListener, this, scheduler, eventQueue));
-
+            Client client = clientBuilder.readTimeout(SSE_REQUEST_READ_TIMEOUT, TimeUnit.SECONDS).register(
+                    new HomeConnectStreamingRequestFilter(HttpHelper.getAuthorizationHeader(oAuthClientService)))
+                    .build();
+            SseEventSource eventSource = eventSourceFactory
+                    .newSource(client.target(apiUrl + "/api/homeappliances/" + haId + "/events"));
+            HomeConnectEventSourceListener eventSourceListener = new HomeConnectEventSourceListener(haId, eventListener,
+                    this, scheduler, eventQueue);
+            eventSource.register(eventSourceListener::onEvent, eventSourceListener::onError,
+                    eventSourceListener::onComplete);
+            eventSourceListeners.put(eventSource, eventSourceListener);
             eventSourceConnections.put(eventListener, eventSource);
+            eventSource.open();
         }
     }
 
@@ -107,13 +115,35 @@ public class HomeConnectEventSourceClient {
      * @param eventListener appliance event listener
      */
     public synchronized void unregisterEventListener(HomeConnectEventListener eventListener) {
+        unregisterEventListener(eventListener, false);
+    }
+
+    /**
+     * Unregister {@link HomeConnectEventListener}.
+     *
+     * @param eventListener appliance event listener
+     * @param completed true when the event source is known as already closed
+     */
+    public synchronized void unregisterEventListener(HomeConnectEventListener eventListener, boolean immediate) {
         if (eventSourceConnections.containsKey(eventListener)) {
             @Nullable
-            EventSource eventSource = eventSourceConnections.get(eventListener);
+            SseEventSource eventSource = eventSourceConnections.get(eventListener);
             if (eventSource != null) {
-                eventSource.cancel();
+                closeEventSource(eventSource, immediate);
+                eventSourceListeners.remove(eventSource);
             }
             eventSourceConnections.remove(eventListener);
+        }
+    }
+
+    private void closeEventSource(SseEventSource eventSource, boolean immediate) {
+        if (eventSource.isOpen()) {
+            logger.debug("Close event source (immediate = {})", immediate);
+            eventSource.close(immediate ? 0 : 10, TimeUnit.SECONDS);
+        }
+        HomeConnectEventSourceListener eventSourceListener = eventSourceListeners.get(eventSource);
+        if (eventSourceListener != null) {
+            eventSourceListener.stopMonitor();
         }
     }
 
@@ -128,9 +158,12 @@ public class HomeConnectEventSourceClient {
 
     /**
      * Dispose event source client
+     *
+     * @param immediate true to request a fast execution
      */
-    public synchronized void dispose() {
-        eventSourceConnections.forEach((key, value) -> value.cancel());
+    public synchronized void dispose(boolean immediate) {
+        eventSourceConnections.forEach((key, eventSource) -> closeEventSource(eventSource, immediate));
+        eventSourceListeners.clear();
         eventSourceConnections.clear();
     }
 

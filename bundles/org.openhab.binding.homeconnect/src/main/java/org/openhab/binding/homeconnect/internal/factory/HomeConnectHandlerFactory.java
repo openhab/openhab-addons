@@ -12,20 +12,13 @@
  */
 package org.openhab.binding.homeconnect.internal.factory;
 
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_API_BRIDGE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_COFFEE_MAKER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_COOKTOP;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_DISHWASHER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_DRYER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_FRIDGE_FREEZER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_HOOD;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_OVEN;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_WASHER;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.THING_TYPE_WASHER_DRYER;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
+
+import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectBridgeHandler;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectCoffeeMakerHandler;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectCooktopHandler;
@@ -39,6 +32,7 @@ import org.openhab.binding.homeconnect.internal.handler.HomeConnectWasherHandler
 import org.openhab.binding.homeconnect.internal.servlet.HomeConnectServlet;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -48,6 +42,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 /**
  * The {@link HomeConnectHandlerFactory} is responsible for creating things and thing
@@ -59,14 +54,22 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.homeconnect", service = ThingHandlerFactory.class)
 public class HomeConnectHandlerFactory extends BaseThingHandlerFactory {
 
+    private final HttpClient httpClient;
+    private final ClientBuilder clientBuilder;
+    private final SseEventSourceFactory eventSourceFactory;
     private final OAuthFactory oAuthFactory;
     private final HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final HomeConnectServlet homeConnectServlet;
 
     @Activate
-    public HomeConnectHandlerFactory(@Reference OAuthFactory oAuthFactory,
+    public HomeConnectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference ClientBuilder clientBuilder, @Reference SseEventSourceFactory eventSourceFactory,
+            @Reference OAuthFactory oAuthFactory,
             @Reference HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider,
             @Reference HomeConnectServlet homeConnectServlet) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
         this.oAuthFactory = oAuthFactory;
         this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
         this.homeConnectServlet = homeConnectServlet;
@@ -82,7 +85,8 @@ public class HomeConnectHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_API_BRIDGE.equals(thingTypeUID)) {
-            return new HomeConnectBridgeHandler((Bridge) thing, oAuthFactory, homeConnectServlet);
+            return new HomeConnectBridgeHandler((Bridge) thing, httpClient, clientBuilder, eventSourceFactory,
+                    oAuthFactory, homeConnectServlet);
         } else if (THING_TYPE_DISHWASHER.equals(thingTypeUID)) {
             return new HomeConnectDishwasherHandler(thing, dynamicStateDescriptionProvider);
         } else if (THING_TYPE_OVEN.equals(thingTypeUID)) {

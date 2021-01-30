@@ -14,12 +14,7 @@ package org.openhab.binding.homeconnect.internal.servlet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZonedDateTime.now;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_DOOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_OPERATION_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_POWER_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMOTE_CONTROL_ACTIVE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_REMOTE_CONTROL_START_ALLOWED;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -186,7 +181,7 @@ public class HomeConnectServlet extends HttpServlet {
             String code = request.getParameter(PARAM_CODE);
             @Nullable
             String state = request.getParameter(PARAM_STATE);
-            if (code != null && state != null && !isEmpty(code) && !isEmpty(state)) {
+            if (code != null && state != null && !code.trim().isEmpty() && !state.trim().isEmpty()) {
                 getBridgeAuthenticationPage(request, response, code, state);
             } else {
                 getBridgesPage(request, response);
@@ -196,7 +191,7 @@ public class HomeConnectServlet extends HttpServlet {
             String action = request.getParameter(PARAM_ACTION);
             @Nullable
             String bridgeId = request.getParameter(PARAM_BRIDGE_ID);
-            if (action != null && bridgeId != null && !isEmpty(action) && !isEmpty(bridgeId)) {
+            if (action != null && bridgeId != null && !action.trim().isEmpty() && !bridgeId.trim().isEmpty()) {
                 getApiRequestsPerSecondCsv(response, bridgeId);
             } else {
                 getRequestCountPage(request, response);
@@ -206,7 +201,7 @@ public class HomeConnectServlet extends HttpServlet {
             String action = request.getParameter(PARAM_ACTION);
             @Nullable
             String thingId = request.getParameter(PARAM_THING_ID);
-            if (action != null && thingId != null && !isEmpty(action) && !isEmpty(thingId)) {
+            if (action != null && thingId != null && !action.trim().isEmpty() && !thingId.trim().isEmpty()) {
                 processApplianceActions(response, action, thingId);
             } else {
                 getAppliancesPage(request, response);
@@ -216,7 +211,7 @@ public class HomeConnectServlet extends HttpServlet {
             String export = request.getParameter(PARAM_EXPORT);
             @Nullable
             String bridgeId = request.getParameter(PARAM_BRIDGE_ID);
-            if (export != null && bridgeId != null && !isEmpty(export) && !isEmpty(bridgeId)) {
+            if (export != null && bridgeId != null && !export.trim().isEmpty() && !bridgeId.trim().isEmpty()) {
                 getRequestLogExport(response, bridgeId);
             } else {
                 getRequestLogPage(request, response);
@@ -226,7 +221,7 @@ public class HomeConnectServlet extends HttpServlet {
             String export = request.getParameter(PARAM_EXPORT);
             @Nullable
             String bridgeId = request.getParameter(PARAM_BRIDGE_ID);
-            if (export != null && bridgeId != null && !isEmpty(export) && !isEmpty(bridgeId)) {
+            if (export != null && bridgeId != null && !export.trim().isEmpty() && !bridgeId.trim().isEmpty()) {
                 getEventLogExport(response, bridgeId);
             } else {
                 getEventLogPage(request, response);
@@ -485,8 +480,7 @@ public class HomeConnectServlet extends HttpServlet {
                 } catch (OAuthException e) {
                     logger.debug("Could not clear oAuth credentials. error={}", e.getMessage());
                 }
-                bridgeHandler.dispose();
-                bridgeHandler.initialize();
+                bridgeHandler.reinitialize();
 
                 WebContext context = new WebContext(request, response, request.getServletContext());
                 context.setVariable("action",
@@ -575,8 +569,7 @@ public class HomeConnectServlet extends HttpServlet {
                 logger.debug("access token response: {}", accessTokenResponse);
 
                 // inform bridge
-                bridgeHandler.get().dispose();
-                bridgeHandler.get().initialize();
+                bridgeHandler.get().reinitialize();
 
                 WebContext context = new WebContext(request, response, request.getServletContext());
                 context.setVariable("action", bridgeHandler.get().getThing().getUID().getAsString() + ACTION_AUTHORIZE);

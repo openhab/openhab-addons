@@ -20,26 +20,6 @@
 
   <dependencies>
 
-    <!-- okhttp -->
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>3.14.9</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp-sse</artifactId>
-      <version>3.14.9</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okio</groupId>
-      <artifactId>okio</artifactId>
-      <version>1.17.2</version>
-      <scope>compile</scope>
-    </dependency>
-
     <!--Thymeleaf -->
     <dependency>
       <groupId>org.thymeleaf</groupId>
