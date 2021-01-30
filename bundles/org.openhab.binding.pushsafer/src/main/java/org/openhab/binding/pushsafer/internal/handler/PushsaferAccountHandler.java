@@ -15,6 +15,8 @@ package org.openhab.binding.pushsafer.internal.handler;
 import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_SOUND;
 import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_ICON;
 import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_COLOR;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_URL;
+import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_URLTITLE;
 import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_VIBRATION;
 import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_TIME2LIVE;
 import static org.openhab.binding.pushsafer.internal.PushsaferBindingConstants.DEFAULT_ANSWER;
@@ -156,6 +158,14 @@ public class PushsaferAccountHandler extends BaseThingHandler {
 		// add vibration if defined
         if (!DEFAULT_VIBRATION.equals(config.vibration)) {
             builder.withVibration(config.vibration);
+        }
+		// add url if defined
+        if (!DEFAULT_URL.equals(config.url)) {
+            builder.withUrl(config.url);
+        }
+		// add urlTitle if defined
+        if (!DEFAULT_URLTITLE.equals(config.urlTitle)) {
+            builder.withUrlTitle(config.urlTitle);
         }
 		// add confirm if defined
         if (!DEFAULT_CONFIRM.equals(config.confirm)) {
