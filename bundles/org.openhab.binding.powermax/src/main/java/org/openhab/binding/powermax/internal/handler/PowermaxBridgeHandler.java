@@ -577,11 +577,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     }
 
     /**
-     * Update all channels to a NULL state to indicate that communication with the panel is offline
+     * Update all channels to an UNDEF state to indicate that communication with the panel is offline
      */
     private synchronized void setAllChannelsOffline() {
-        getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.NULL));
-        getThing().getThings().forEach(t -> t.getChannels().forEach(c -> updateState(c.getUID(), UnDefType.NULL)));
+        getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }
 
     /**
