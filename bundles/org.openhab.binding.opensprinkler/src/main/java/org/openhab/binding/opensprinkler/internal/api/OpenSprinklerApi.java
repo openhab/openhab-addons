@@ -15,12 +15,15 @@ package org.openhab.binding.opensprinkler.internal.api;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerHttpApiV100.JnResponse;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 
@@ -213,7 +216,37 @@ public interface OpenSprinklerApi {
      */
     public abstract JnResponse getStationNames() throws CommunicationApiException, UnauthorizedApiException;
 
+    /**
+     * Tells a single station to ignore the rain delay.
+     *
+     * @param station
+     * @param command
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
+     */
     public void ignoreRain(int station, boolean command) throws CommunicationApiException, UnauthorizedApiException;
 
+    /**
+     * Asks if a single station is set to ignore rain delays.
+     *
+     * @param station
+     * @return
+     */
     public abstract boolean isIgnoringRain(int station);
+
+    /**
+     * Sets how long the OpenSprinkler device will stop running programs for.
+     *
+     * @param hours
+     * @throws UnauthorizedApiException
+     * @throws CommunicationApiException
+     */
+    public abstract void setRainDelay(int hours) throws UnauthorizedApiException, CommunicationApiException;
+
+    /**
+     * Gets the rain delay in hours from the OpenSprinkler device.
+     *
+     * @return QuantityType<Time>
+     */
+    public abstract QuantityType<Time> getRainDelay();
 }

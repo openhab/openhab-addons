@@ -67,9 +67,10 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 | stations        | String                 | RW | Display a list of stations that can be run when selected to the length of time set |
 |                 |                        |    | in the `nextDuration` channel.                                                  |
 | nextDuration    | Number:Time            | RW | The time the station will open for when any stations are selected from the         |
-|                 |                        |    | `stations` channel.                                                              |
+|                 |                        |    | `stations` channel. Defaults to 30 minutes if not set.                           |
 | resetStations   | Switch                 | RW | The ON command will stop all stations immediately, including those waiting to run. |
-| enablePrograms  | Switch                 | RW | Allow programs to auto run. When OFF manually started stations will still work.    |
+| enablePrograms  | Switch                 | RW | Allow programs to auto run. When OFF, manually started stations will still work.   |
+| rainDelay       | Number:Time            | RW | Sets/Shows the amount of time (hours) that rain has caused programs to be delayed. |
 
 ## Textual Example
 

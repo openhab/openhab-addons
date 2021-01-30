@@ -81,4 +81,5 @@ public class OpenSprinklerBindingConstants {
     public static final String REMAINING_WATER_TIME = "remainingWaterTime";
     public static final String NEXT_DURATION = "nextDuration";
     public static final String CHANNEL_IGNORE_RAIN = "ignoreRain";
+    public static final String CHANNEL_RAIN_DELAY = "rainDelay";
 }

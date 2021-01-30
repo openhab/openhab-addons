@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -37,6 +39,8 @@ import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiE
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -248,6 +252,20 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&rsn=1");
     }
 
+    @Override
+    public void setRainDelay(int hours) throws UnauthorizedApiException, CommunicationApiException {
+        http.sendHttpGet(getBaseUrl() + "cv", getRequestRequiredOptions() + "&rd=" + hours);
+    }
+
+    @Override
+    public QuantityType<Time> getRainDelay() {
+        if (jcReply.rdst == 0) {
+            return new QuantityType<Time>(0, Units.SECOND);
+        }
+        long remainingTime = jcReply.rdst - jcReply.devt;
+        return new QuantityType<Time>(remainingTime, Units.SECOND);
+    }
+
     /**
      * Returns the hostname and port formatted URL as a String.
      *
@@ -373,6 +391,8 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public @Nullable List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
+        public long devt = 0;
+        public long rdst = 0;
         public int en = 1;
         public int sn2 = -1;
         public int RSSI = 1; // json reply uses all uppercase

@@ -88,6 +88,7 @@
 			<channel id="nextDuration" typeId="nextDuration"></channel>
 			<channel id="resetStations" typeId="resetStations"></channel>
 			<channel id="enablePrograms" typeId="enablePrograms"></channel>
+			<channel id="rainDelay" typeId="rainDelay"></channel>
 		</channels>
 	</thing-type>
 
@@ -184,6 +185,13 @@
 		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
 		<state readOnly="false" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="rainDelay">
+		<item-type>Number:Time</item-type>
+		<label>Rain Delay</label>
+		<description>The amount of time in hours to delay the running of any programs.</description>
+		<state readOnly="false" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="programs">

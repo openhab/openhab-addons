@@ -25,6 +25,8 @@ import javax.measure.quantity.ElectricCurrent;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.OpenSprinklerStateDescriptionProvider;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -64,6 +66,9 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 } else {
                     updateState(channel, OnOffType.OFF);
                 }
+                break;
+            case CHANNEL_RAIN_DELAY:
+                updateState(channel, localAPI.getRainDelay());
                 break;
             case SENSOR_2:
                 if (localAPI.getSensor2State() == 1) {
@@ -155,6 +160,18 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 api.getStations());
     }
 
+    protected void handleRainDelayCommand(ChannelUID channelUID, Command command, OpenSprinklerApi api)
+            throws UnauthorizedApiException, CommunicationApiException {
+        if (!(command instanceof QuantityType<?>)) {
+            logger.info("Ignoring implausible non-QuantityType command for rainDelay.");
+            return;
+        }
+        QuantityType<?> quantity = (QuantityType<?>) command;
+        @SuppressWarnings("null")
+        BigDecimal hours = quantity.toUnit(Units.HOUR).toBigDecimal();
+        api.setRainDelay(hours.intValue());
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         OpenSprinklerApi api = getApi();
@@ -199,6 +216,9 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                             BigDecimal temp = new BigDecimal(command.toString());
                             api.openStation(temp.intValue(), nextDurationValue());
                         }
+                        break;
+                    case CHANNEL_RAIN_DELAY:
+                        handleRainDelayCommand(channelUID, command, api);
                         break;
                 }
                 localBridge.refreshStations();// update sensors and controls after command is sent
