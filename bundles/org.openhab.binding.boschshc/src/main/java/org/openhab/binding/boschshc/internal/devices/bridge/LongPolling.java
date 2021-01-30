@@ -185,6 +185,7 @@ public class LongPolling {
             return;
         }
 
+        // Check if response was failure or success
         Throwable failure = result != null ? result.getFailure() : null;
         if (failure != null) {
             if (failure instanceof ExecutionException) {
@@ -208,24 +209,24 @@ public class LongPolling {
             if (longPollResult != null && longPollResult.result != null) {
                 this.handleResult.accept(longPollResult);
             } else {
-                logger.warn("Long poll response contained no results: {}", content);
+                logger.debug("Long poll response contained no result: {}", content);
 
                 // Check if we got a proper result from the SHC
                 LongPollError longPollError = gson.fromJson(content, LongPollError.class);
 
                 if (longPollError != null && longPollError.error != null) {
-                    logger.warn("Got long poll error: {} (code: {})", longPollError.error.message,
+                    logger.debug("Got long poll error: {} (code: {})", longPollError.error.message,
                             longPollError.error.code);
 
                     if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-                        logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
+                        logger.debug("Subscription {} became invalid, subscribing again", subscriptionId);
                         this.resubscribe(httpClient);
                         return;
                     }
                 }
             }
 
-            // Execute next run.
+            // Execute next run
             this.longPoll(httpClient, nextSubscriptionId);
         }
     }
