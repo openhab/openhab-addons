@@ -116,6 +116,8 @@ public class Communicator {
     public void sendActionToDevice(Action action) throws IOException {
         CommandMessage message = new CommandMessage(action, header);
 
+        logger.debug("Have built message={}", message);
+
         String messageJson = gson.toJson(message);
         logger.debug("command message={}", messageJson);
 

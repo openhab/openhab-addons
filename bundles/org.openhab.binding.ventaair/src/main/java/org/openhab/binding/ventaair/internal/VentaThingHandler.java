@@ -76,6 +76,7 @@ public class VentaThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Handle command={} for channel={} with channelID={}", command, channelUID, channelUID.getId());
         if (command instanceof RefreshType) {
             refreshChannelFromCache(channelUID);
             return;
@@ -174,6 +175,7 @@ public class VentaThingHandler extends BaseThingHandler {
     private void dispatchActionToDevice(Action action) {
         Communicator localCommunicator = communicator;
         if (localCommunicator != null) {
+            logger.debug("Dispatching Action={} to the device", action.getClass());
             try {
                 localCommunicator.sendActionToDevice(action);
             } catch (IOException e) {
