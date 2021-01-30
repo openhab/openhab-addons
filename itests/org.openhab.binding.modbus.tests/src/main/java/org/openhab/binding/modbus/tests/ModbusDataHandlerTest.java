@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -43,6 +45,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.core.config.core.Configuration;
@@ -52,6 +55,7 @@ import org.openhab.core.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.core.io.transport.modbus.BitArray;
 import org.openhab.core.io.transport.modbus.ModbusConstants;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
+import org.openhab.core.io.transport.modbus.ModbusReadCallback;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
@@ -102,6 +106,9 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         }
     }
 
+    private static final String HOST = "thisishost";
+    private static final int PORT = 44;
+
     private static final Map<String, String> CHANNEL_TO_ACCEPTED_TYPE = new HashMap<>();
     static {
         CHANNEL_TO_ACCEPTED_TYPE.put(CHANNEL_SWITCH, "Switch");
@@ -117,10 +124,43 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         CHANNEL_TO_ACCEPTED_TYPE.put(CHANNEL_LAST_READ_ERROR, "DateTime");
     }
     private List<ModbusWriteRequestBlueprint> writeRequests = new ArrayList<>();
+    private Bridge realEndpointWithMockedComms;
+
+    public ModbusReadCallback getPollerCallback(ModbusPollerThingHandler handler) {
+        Field callbackField;
+        try {
+            callbackField = ModbusPollerThingHandler.class.getDeclaredField("callbackDelegator");
+            callbackField.setAccessible(true);
+            return (ModbusReadCallback) callbackField.get(handler);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            fail(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        mockCommsToModbusManager();
+        Configuration tcpConfig = new Configuration();
+        tcpConfig.put("host", HOST);
+        tcpConfig.put("port", PORT);
+        tcpConfig.put("id", 9);
+
+        realEndpointWithMockedComms = BridgeBuilder
+                .create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP,
+                        new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP, "mytcp"))
+                .withLabel("label for mytcp").withConfiguration(tcpConfig).build();
+        addThing(realEndpointWithMockedComms);
+        assertEquals(ThingStatus.ONLINE, realEndpointWithMockedComms.getStatus(),
+                realEndpointWithMockedComms.getStatusInfo().getDescription());
+    }
 
     @AfterEach
     public void tearDown() {
         writeRequests.clear();
+        if (realEndpointWithMockedComms != null) {
+            thingProvider.remove(realEndpointWithMockedComms.getUID());
+        }
     }
 
     private static Arguments appendArg(Arguments args, Object obj) {
@@ -836,7 +876,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 // DecimalType commands
                 Arguments.of((short) 0b1011_0100_0000_1111, "1", (short) 0b1011_0100_0000_1101, new DecimalType(0)),
                 Arguments.of((short) 0b1011_0100_0010_1111, "5", (short) 0b1011_0100_0000_1111, new DecimalType(0)),
-                Arguments.of((short) 0b1011_0100_0000_1111, "4", (short) 0b1011_0100_0001_1111, new DecimalType(5))
+                Arguments.of((short) 0b1011_0100_0000_1111, "4", (short) 0b1011_0100_0001_1111, new DecimalType(5)),
+                Arguments.of((short) 0b1011_0100_0000_1111, "15", (short) 0b0011_0100_0000_1111, new DecimalType(0))
 
         ).flatMap(a -> {
             // parametrize by channel (yes, it does not matter what channel is used, commands are interpreted all the
@@ -850,24 +891,19 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     @MethodSource("provideArgsForUpdateThenCommandFromItem")
     public void testUpdateFromHandlerThenCommandFromItem(short stateUpdateFromHandler, String bitIndex,
             short expectedWriteDataToSlave, Command commandFromItem, String channel) {
-
-        ModbusReadFunctionCode functionCode = ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS;
-        ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502, false);
-
-        int pollStart = 2;
-        int pollLength = 3;
-
-        // Minimally mocked request
-        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
-        doReturn(pollStart).when(request).getReference();
-        doReturn(pollLength).when(request).getDataLength();
-        doReturn(functionCode).when(request).getFunctionCode();
-
-        PollTask task = Mockito.mock(PollTask.class);
-        doReturn(endpoint).when(task).getEndpoint();
-        doReturn(request).when(task).getRequest();
-
-        Bridge poller = createPollerMock("poller1", task);
+        int expectedWriteDataToSlaveUnsigned = expectedWriteDataToSlave & 0xFFFF;
+        captureModbusWrites();
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L); // 0 -> non polling
+        pollerConfig.put("start", "2");
+        pollerConfig.put("length", "3");
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+        ThingUID pollerUID = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, "realPoller");
+        Bridge poller = BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, pollerUID)
+                .withLabel("label for realPoller").withConfiguration(pollerConfig)
+                .withBridge(realEndpointWithMockedComms.getUID()).build();
+        addThing(poller);
+        assertEquals(ThingStatus.ONLINE, poller.getStatus(), poller.getStatusInfo().getDescription());
 
         Configuration dataConfig = new Configuration();
         dataConfig.put("writeStart", "3." + bitIndex);
@@ -878,24 +914,26 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         ModbusDataThingHandler dataHandler = createDataHandler(thingId, poller,
                 builder -> builder.withConfiguration(dataConfig), bundleContext);
-        assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
+        assertEquals(ThingStatus.ONLINE, dataHandler.getThing().getStatus());
+        assertEquals(pollerUID, dataHandler.getThing().getBridgeUID());
 
-        AsyncModbusReadResult result = new AsyncModbusReadResult(request, new ModbusRegisterArray(
-                /* register 2, dummy data */0, /* register 3 */ stateUpdateFromHandler, /* register 4, dummy data */9));
+        AsyncModbusReadResult result = new AsyncModbusReadResult(Mockito.mock(ModbusReadRequestBlueprint.class),
+                new ModbusRegisterArray(/* register 2, dummy data */0, /* register 3 */ stateUpdateFromHandler,
+                        /* register 4, dummy data */9));
 
-        // data thing receives some data
-        dataHandler.onReadResult(result);
+        // poller receives some data (and therefore data as well)
+        getPollerCallback(((ModbusPollerThingHandler) poller.getHandler())).handle(result);
         dataHandler.handleCommand(new ChannelUID(dataHandler.getThing().getUID(), channel), commandFromItem);
 
         // Assert data written
         {
             assertEquals(1, writeRequests.size());
-            ModbusWriteRequestBlueprint writeRequest = writeRequests.get(1);
+            ModbusWriteRequestBlueprint writeRequest = writeRequests.get(0);
             assertEquals(writeRequest.getFunctionCode(), ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER);
             assertEquals(writeRequest.getReference(), 3);
             assertEquals(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), 1);
-            assertEquals(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0),
-                    is(equalTo(expectedWriteDataToSlave)));
+            assertEquals(expectedWriteDataToSlaveUnsigned,
+                    ((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0));
         }
     }
 
@@ -1017,7 +1055,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "int8");
         dataConfig.put("writeType", "holding");
         testInitGeneric(null, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
     }
@@ -1029,7 +1067,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "bit");
         dataConfig.put("writeType", "coil"); // X.Y writeStart only applicable with holding
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
     }
@@ -1041,19 +1079,31 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "bit");
         dataConfig.put("writeType", "holding");
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+            assertEquals(status.getStatus(), ThingStatus.ONLINE, status.getDescription());
+        });
+    }
+
+    @Test
+    public void testWriteHoldingInt8WithSubIndexData() {
+        Configuration dataConfig = new Configuration();
+        dataConfig.put("writeStart", "1.0");
+        dataConfig.put("writeValueType", "int8");
+        dataConfig.put("writeType", "holding");
+        // OFFLINE since sub-register writes are not supported for other than bit
+        testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
+            assertEquals(status.getStatus(), ThingStatus.OFFLINE, status.getDescription());
         });
     }
 
     @Test
     public void testWriteHoldingBitDataRegisterOutOfBounds() {
         Configuration dataConfig = new Configuration();
-        // in this test poller reads from register 2. Register is out of bounds
+        // in this test poller reads from register 2. Register 1 is out of bounds
         dataConfig.put("writeStart", "1.15");
         dataConfig.put("writeValueType", "bit");
         dataConfig.put("writeType", "holding");
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, /* poller start */2, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
     }
@@ -1066,7 +1116,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "bit");
         dataConfig.put("writeType", "holding");
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
         });
     }
 
@@ -1078,7 +1128,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "bit");
         dataConfig.put("writeType", "holding");
         testInitGeneric(poller, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
     }
@@ -1089,8 +1139,9 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeStart", "0.15");
         dataConfig.put("writeValueType", "bit");
         dataConfig.put("writeType", "holding");
+        // OFFLINE since we require poller as parent when sub-register writes are used
         testInitGeneric(/* poller not as parent */null, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
     }
@@ -1102,7 +1153,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "int8");
         dataConfig.put("writeType", "holding");
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
     }
@@ -1123,7 +1174,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "bit");
         // missing writeType --> error
         testInitGeneric(ModbusReadFunctionCode.READ_COILS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
             assertThat(status.getDescription(), is(not(equalTo(null))));
         });
@@ -1138,7 +1189,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeType", "coil");
         testInitGeneric(ModbusReadFunctionCode.READ_COILS, dataConfig,
-                status -> assertThat(status.getStatus(), is(equalTo(ThingStatus.ONLINE))));
+                status -> assertEquals(ThingStatus.ONLINE, status.getStatus(), status.getDescription()));
     }
 
     @Test

@@ -99,7 +99,10 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
         @Override
         public synchronized void handle(AsyncModbusReadResult result) {
-            lastPolledDataCache.set(result.getRegisters().orElse(null));
+            // Casting to allow registers.orElse(null) below..
+            Optional<@Nullable ModbusRegisterArray> registers = (Optional<@Nullable ModbusRegisterArray>) result
+                    .getRegisters();
+            lastPolledDataCache.set(registers.orElse(null));
             handleResult(new PollResult(result));
         }
 
