@@ -429,6 +429,20 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         if (localRequest == null) {
             return;
         }
+        ModbusRegisterArray possiblyMutatedCache = lastPolledDataCache.get();
+        AtomicStampedValue<PollResult> lastPollResult = callbackDelegator.lastResult;
+        if (lastPollResult != null && possiblyMutatedCache != null) {
+            AsyncModbusReadResult lastSuccessfulPollResult = lastPollResult.getValue().result;
+            if (lastSuccessfulPollResult != null) {
+                ModbusRegisterArray lastRegisters = ((Optional<@Nullable ModbusRegisterArray>) lastSuccessfulPollResult
+                        .getRegisters()).orElse(null);
+                if (lastRegisters != null && !possiblyMutatedCache.equals(lastRegisters)) {
+                    // Register has been mutated in between by a data thing that writes "individual bits"
+                    // Invalidate cache for a fresh poll
+                    callbackDelegator.resetCache();
+                }
+            }
+        }
 
         long oldDataThreshold = System.currentTimeMillis() - cacheMillis;
         boolean cacheWasRecentEnoughForUpdate = cacheMillis > 0
