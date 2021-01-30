@@ -295,29 +295,36 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             }
             final ModbusRegisterArray data;
             if (writeValueType.equals(ValueType.BIT)) {
-                if (writeSubIndex.isPresent()) {
-                    // writing bit of an individual register. Using cache from poller
-                    AtomicReference<@Nullable ModbusRegisterArray> cachedRegistersRef = pollerHandler
-                            .getLastPolledDataCache();
-                    ModbusRegisterArray mutatedRegisters = cachedRegistersRef
-                            .updateAndGet(cachedRegisters -> cachedRegisters == null ? null
-                                    : combineCommandWithRegisters(cachedRegisters, writeStart, writeSubIndex.get(),
-                                            transformedCommand));
-                    if (mutatedRegisters == null) {
-                        logger.warn(
-                                "Received command to thing with writeValueType=bit (pointing to individual bit of a holding register) but internal cache not yet populated. Ignoring command");
-                        return null;
-                    }
-                    // extract register (first byte index = register index * 2)
-                    byte[] allMutatedBytes = mutatedRegisters.getBytes();
-                    int writeStartRelative = writeStart - pollStart;
-                    data = new ModbusRegisterArray(allMutatedBytes[writeStartRelative * 2],
-                            allMutatedBytes[writeStartRelative * 2 + 1]);
-                } else {
+                if (writeSubIndex.isEmpty()) {
                     // Should not happen! should be in configuration error
                     logger.error("Bug: sub index not present but writeValueType=BIT. Should be in configuration error");
                     return null;
                 }
+                Optional<Boolean> commandBool = ModbusBitUtilities.translateCommand2Boolean(transformedCommand);
+                if (commandBool.isEmpty()) {
+                    logger.warn(
+                            "Data thing is configured to write individual bit but we received command that is not convertible to 0/1 bit. Ignoring.");
+                    return null;
+                }
+
+                // writing bit of an individual register. Using cache from poller
+                AtomicReference<@Nullable ModbusRegisterArray> cachedRegistersRef = pollerHandler
+                        .getLastPolledDataCache();
+                ModbusRegisterArray mutatedRegisters = cachedRegistersRef
+                        .updateAndGet(cachedRegisters -> cachedRegisters == null ? null
+                                : combineCommandWithRegisters(cachedRegisters, writeStart, writeSubIndex.get(),
+                                        commandBool.get()));
+                if (mutatedRegisters == null) {
+                    logger.warn(
+                            "Received command to thing with writeValueType=bit (pointing to individual bit of a holding register) but internal cache not yet populated. Ignoring command");
+                    return null;
+                }
+                // extract register (first byte index = register index * 2)
+                byte[] allMutatedBytes = mutatedRegisters.getBytes();
+                int writeStartRelative = writeStart - pollStart;
+                data = new ModbusRegisterArray(allMutatedBytes[writeStartRelative * 2],
+                        allMutatedBytes[writeStartRelative * 2 + 1]);
+
             } else {
                 data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
             }
@@ -341,30 +348,23 @@ public class ModbusDataThingHandler extends BaseThingHandler {
      * @return
      */
     private ModbusRegisterArray combineCommandWithRegisters(ModbusRegisterArray registers, int registerIndex,
-            int bitIndex, Command command) {
-        Optional<Boolean> commandBool = ModbusBitUtilities.translateCommand2Boolean(command);
-        if (commandBool.isPresent()) {
-            boolean b = commandBool.get();
-            byte[] allBytes = registers.getBytes();
-            int bitIndexWithinRegister = bitIndex % 16;
-            boolean hiByte = bitIndexWithinRegister >= 8;
-            int indexWithinByte = bitIndexWithinRegister % 8;
-            int registerIndexRelative = registerIndex - pollStart;
-            int byteIndex = 2 * registerIndexRelative + (hiByte ? 0 : 1);
-            if (b) {
-                allBytes[byteIndex] |= 1 << indexWithinByte;
-            } else {
-                allBytes[byteIndex] &= ~(1 << indexWithinByte);
-            }
-            logger.trace(
-                    "Update '{}' from item, combining command with internal register ({}) with registerIndex={} (relative {}), bitIndex={}, resulting register {}",
-                    command, HexUtils.bytesToHex(registers.getBytes()), registerIndex, registerIndexRelative, bitIndex,
-                    HexUtils.bytesToHex(allBytes));
-            return new ModbusRegisterArray(allBytes);
+            int bitIndex, boolean b) {
+        byte[] allBytes = registers.getBytes();
+        int bitIndexWithinRegister = bitIndex % 16;
+        boolean hiByte = bitIndexWithinRegister >= 8;
+        int indexWithinByte = bitIndexWithinRegister % 8;
+        int registerIndexRelative = registerIndex - pollStart;
+        int byteIndex = 2 * registerIndexRelative + (hiByte ? 0 : 1);
+        if (b) {
+            allBytes[byteIndex] |= 1 << indexWithinByte;
         } else {
-            logger.warn("Profile received command that is not convertible to 0/1 bit. Ignoring.");
-            return registers;
+            allBytes[byteIndex] &= ~(1 << indexWithinByte);
         }
+        logger.trace(
+                "Boolean-like command {} from item, combining command with internal register ({}) with registerIndex={} (relative {}), bitIndex={}, resulting register {}",
+                b, HexUtils.bytesToHex(registers.getBytes()), registerIndex, registerIndexRelative, bitIndex,
+                HexUtils.bytesToHex(allBytes));
+        return new ModbusRegisterArray(allBytes);
     }
 
     private void processJsonTransform(Command command, String transformOutput) {
