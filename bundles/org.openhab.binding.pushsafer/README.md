@@ -21,6 +21,8 @@ You are able to create multiple instances of this Thing to broadcast to differen
 | `vibration`                 | text    | How often the device should vibrate. empty=device default or a number 1-3.         |
 | `icon`                 | text    | The default notification icon on target device (default: `1`) (see [supported notification icons](https://www.pushsafer.com/pushapi#api-icon)).         |
 | `color`                 | text    | The color (hexadecimal) of notification icon (e.g. #FF0000).         |
+| `url`                 | text    | URL or [URL Scheme](https://www.pushsafer.com/url_schemes) send with notification.         |
+| `urlTitle`                 | text    | Title of URL.         |
 | `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushsafer servers will send the same notification to the user (default: `300`). **advanced** |
 | `expire`                | integer | The expire parameter specifies how long (in seconds) your notification will continue to be retried (default: `3600`). **advanced**                   |
 | `confirm`                 | integer | Integer 10-10800 (10s steps) Time in seconds after which a message should be sent again before it is confirmed. (default: `0`). **advanced** |
