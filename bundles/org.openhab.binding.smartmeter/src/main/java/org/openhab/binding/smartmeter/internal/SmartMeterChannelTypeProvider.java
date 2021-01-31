@@ -107,6 +107,7 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
      * @return The {@link ChannelTypeUID} or null.
      */
     public ChannelTypeUID getChannelTypeIdForObis(String obis) {
-        return obisChannelMap.get(obis).getUID();
+        ChannelType channeltype = obisChannelMap.get(obis);
+        return channeltype != null ? channeltype.getUID() : null;
     }
 }
