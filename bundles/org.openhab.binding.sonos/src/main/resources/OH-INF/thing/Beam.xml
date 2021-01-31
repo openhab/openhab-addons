@@ -58,6 +58,7 @@
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
 			<!-- Extended SONOS channels -->
 			<channel id="linein" typeId="linein"/>
+			<channel id="microphone" typeId="microphone"/>
 			<channel id="nightmode" typeId="nightmode"/>
 			<channel id="speechenhancement" typeId="speechenhancement"/>
 			<channel id="subwoofer" typeId="subwoofer"/>

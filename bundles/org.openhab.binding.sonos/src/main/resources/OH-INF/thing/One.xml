@@ -57,6 +57,8 @@
 			<channel id="sleeptimer" typeId="sleeptimer"/>
 			<channel id="currenttransporturi" typeId="currenttransporturi"/>
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
+			<!-- Extended SONOS channels -->
+			<channel id="microphone" typeId="microphone"/>
 			<channel id="speechenhancement" typeId="speechenhancement"/>
 		</channels>
 
