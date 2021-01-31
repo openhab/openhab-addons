@@ -59,7 +59,6 @@ import org.openhab.core.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.core.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
-import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -190,6 +189,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         Map<String, ChannelUID> toBeLinked = new HashMap<>();
         for (Entry<String, String> entry : CHANNEL_TO_ACCEPTED_TYPE.entrySet()) {
             String channelId = entry.getKey();
+            // accepted item type
             String channelAcceptedType = entry.getValue();
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
             builder = builder.withChannel(ChannelBuilder.create(channelUID, channelAcceptedType).build());
@@ -198,11 +198,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 // Create item of correct type and link it to channel
                 String itemName = getItemName(channelUID);
                 final GenericItem item;
-                if (channelId.startsWith("last") || channelId.equals("datetime")) {
-                    item = new DateTimeItem(itemName);
-                } else {
-                    item = coreItemFactory.createItem(channelId, itemName);
-                }
+                item = coreItemFactory.createItem(channelAcceptedType, itemName);
                 assertThat(String.format("Could not determine correct item type for %s", channelId), item,
                         is(notNullValue()));
                 assertNotNull(item);
