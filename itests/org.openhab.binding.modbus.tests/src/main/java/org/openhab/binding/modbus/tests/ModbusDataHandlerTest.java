@@ -31,7 +31,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -202,7 +201,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 if (channelId.startsWith("last") || channelId.equals("datetime")) {
                     item = new DateTimeItem(itemName);
                 } else {
-                    item = coreItemFactory.createItem(StringUtils.capitalize(channelId), itemName);
+                    item = coreItemFactory.createItem(channelId, itemName);
                 }
                 assertThat(String.format("Could not determine correct item type for %s", channelId), item,
                         is(notNullValue()));

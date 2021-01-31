@@ -15,9 +15,7 @@ package org.openhab.binding.modbus.handler;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.internal.AtomicStampedValue;
@@ -178,8 +176,8 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandler.class);
 
-    private final static List<String> SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES
-            .keySet().stream().sorted().collect(Collectors.toList());
+    private final static String[] SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES
+            .keySet().stream().sorted().toArray(String[]::new);
 
     private @NonNullByDefault({}) ModbusPollerConfiguration config;
     private long cacheMillis;
@@ -246,7 +244,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             if (!ModbusBindingConstantsInternal.READ_FUNCTION_CODES.containsKey(type)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format("No function code found for type='%s'. Was expecting one of: %s", type,
-                                StringUtils.join(SORTED_READ_FUNCTION_CODES, ", ")));
+                                String.join(", ", SORTED_READ_FUNCTION_CODES)));
                 return;
             }
             functionCode = ModbusBindingConstantsInternal.READ_FUNCTION_CODES.get(type);
