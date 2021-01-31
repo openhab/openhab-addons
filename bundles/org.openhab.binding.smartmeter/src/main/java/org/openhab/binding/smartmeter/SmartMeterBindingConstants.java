@@ -44,6 +44,6 @@ public class SmartMeterBindingConstants {
     public static final String CHANNEL_TYPE_METERREADER_OBIS = "channel-type:" + BINDING_ID + ":obis";
 
     public static String getObisChannelId(String obis) {
-        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "_");
+        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "_").replaceAll("[^\\w-]", "");
     }
 }
