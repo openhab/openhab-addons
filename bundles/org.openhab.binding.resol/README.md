@@ -188,7 +188,7 @@ Number SolarPump "Solar pump [%.0f %%]" {channel="resol:device:VBUS:DeltaSol_MX-
 /*************************************************/
 Number:Temperature FlowSetTemperature "Flow Set Temperature [%.1f %unit%]" <temperature>  {channel="resol:device:VBUS:DeltaSol_MX-Heating_circuit-1:flow_set_temperature"}
 
-String HeatCircuit_OperatingState "HeatCircuit OperatingState [%s]" {channel="resol:device:VBUS:DeltaSol_MX-Heating_circuit-1:operating_state-str"}
+String HeatCircuit_OperatingState "HeatCircuit OperatingState [%s]" {channel="resol:device:VBUS:DeltaSol_MX-Heating_circuit-1:operating_state"}
 
 
 /*************************************************/
@@ -219,7 +219,7 @@ Number EM_BAS_Mode "Mode of virtual room control unit on EM2 sensor 3 [%.1f %uni
 /*************************************************/
 Number Errormask "Error mask [%.0f]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:error_mask"}
 Number Warningmask "Warning mask [%.0f]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:warning_mask"}
-String BrokenSensor "Broken Sensor [%s]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:error_Sensor_line_broken-str"}
+String BrokenSensor "Broken Sensor [%s]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:error_Sensor_line_broken"}
 
 
 ```
