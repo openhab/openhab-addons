@@ -18,7 +18,6 @@ import java.net.SocketException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SoulissDatagramSocketFactory} is responsible for creating datagramSocket object for trasmission e
@@ -33,7 +32,7 @@ public class SoulissDatagramSocketFactory {
     // static DatagramSocket soulissDatagramSocket_port230;
 
     // public static Integer serverPort;
-    private final Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
+    // private final Logger logger = LoggerFactory.getLogger(SoulissDatagramSocketFactory.class);
 
     @Nullable
     public static DatagramSocket getSocketDatagram(Logger logger) {
