@@ -32,7 +32,7 @@ import org.joda.time.format.DateTimeFormatter;
  */
 @NonNullByDefault
 public class Converter {
-    private static final DateTimeFormatter routerosFormat = DateTimeFormat.forPattern("MMM/dd/YYYY kk:mm:ss");
+    private static final DateTimeFormatter ROUTEROS_FORMAT = DateTimeFormat.forPattern("MMM/dd/yyyy kk:mm:ss");
 
     private static final Pattern PERIOD_PATTERN = Pattern.compile("(\\d+)([a-z]+){1,3}");
 
@@ -41,7 +41,7 @@ public class Converter {
         if (dateTimeString == null)
             return null;
         String fixedTs = dateTimeString.substring(0, 1).toUpperCase() + dateTimeString.substring(1);
-        return routerosFormat.parseDateTime(fixedTs);
+        return ROUTEROS_FORMAT.parseDateTime(fixedTs);
     }
 
     @Nullable

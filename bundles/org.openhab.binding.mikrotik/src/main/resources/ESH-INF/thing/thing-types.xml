@@ -35,7 +35,7 @@
 			<parameter name="port" type="integer" max="65535" min="1" required="false">
 				<label>API Port</label>
 				<description>API Port number of the RouterOS device</description>
-				<default>8729</default>
+				<default>8728</default>
 			</parameter>
 			<parameter name="login" type="text" required="true">
 				<label>Login</label>
