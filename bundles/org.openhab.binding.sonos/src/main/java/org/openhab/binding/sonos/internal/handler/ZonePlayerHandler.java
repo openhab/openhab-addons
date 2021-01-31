@@ -693,6 +693,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     updateChannel(BATTERYCHARGING);
                     updateChannel(BATTERYLEVEL);
                     break;
+                case "MicEnabled":
+                    updateChannel(MICROPHONE);
+                    break;
                 default:
                     break;
             }
@@ -971,6 +974,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 value = extractInfoFromMoreInfo("RawBattPct");
                 if (value != null) {
                     newState = new DecimalType(value);
+                }
+                break;
+            case MICROPHONE:
+                value = getMicEnabled();
+                if (value != null) {
+                    newState = OnOffType.from(value);
                 }
                 break;
             default:
@@ -2141,6 +2150,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             }
         }
         return mode;
+    }
+
+    public @Nullable String getMicEnabled() {
+        return stateMap.get("MicEnabled");
     }
 
     protected void updatePlayMode(String playMode) {
