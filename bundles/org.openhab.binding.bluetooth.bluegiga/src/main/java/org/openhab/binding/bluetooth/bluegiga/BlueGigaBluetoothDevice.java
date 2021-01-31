@@ -202,34 +202,32 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     @Override
     public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic) {
         if (connection == -1) {
-            logger.debug("Cannot enable notifications, device not connected {}", this);
-            return false;
+            return CompletableFuture.failedFuture(new BluetoothException("Not connected"));
         }
 
         BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
         if (ch.isNotificationEnabled()) {
-            return true;
+            return CompletableFuture.completedFuture(null);
         }
 
         BluetoothDescriptor descriptor = ch
                 .getDescriptor(BluetoothDescriptor.GattDescriptor.CLIENT_CHARACTERISTIC_CONFIGURATION.getUUID());
 
         if (descriptor == null || descriptor.getHandle() == 0) {
-            logger.debug("unable to find CCC for characteristic {}", characteristic.getUuid());
-            return false;
+            return CompletableFuture.failedFuture(
+                    new BluetoothException("Unable to find CCC for characteristic [" + characteristic.getUuid() + "]"));
         }
 
         if (currentProcedure != PROCEDURE_NONE) {
-            logger.debug("Procedure already in progress {}", currentProcedure);
-            return false;
+            return CompletableFuture.failedFuture(new BluetoothException("Another procedure is already in progress"));
         }
 
         int[] value = { 1, 0 };
 
         cancelTimer(procedureTimer);
         if (!bgHandler.bgWriteCharacteristic(connection, descriptor.getHandle(), value)) {
-            logger.debug("bgWriteCharacteristic returned false");
-            return false;
+            return CompletableFuture.failedFuture(new BluetoothException(
+                    "Failed to write to CCC for characteristic [" + characteristic.getUuid() + "]"));
         }
 
         procedureTimer = startTimer(procedureTimeoutTask, TIMEOUT_SEC);
@@ -244,40 +242,38 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        return true;
+        return notifyProcedure.writeFuture;
     }
 
     @Override
     public CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic) {
         if (connection == -1) {
-            logger.debug("Cannot enable notifications, device not connected {}", this);
-            return false;
+            return CompletableFuture.failedFuture(new BluetoothException("Not connected"));
         }
 
         BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
         if (ch.isNotificationEnabled()) {
-            return true;
+            return CompletableFuture.completedFuture(null);
         }
 
         BluetoothDescriptor descriptor = ch
                 .getDescriptor(BluetoothDescriptor.GattDescriptor.CLIENT_CHARACTERISTIC_CONFIGURATION.getUUID());
 
         if (descriptor == null || descriptor.getHandle() == 0) {
-            logger.debug("unable to find CCC for characteristic {}", characteristic.getUuid());
-            return false;
+            return CompletableFuture.failedFuture(
+                    new BluetoothException("Unable to find CCC for characteristic [" + characteristic.getUuid() + "]"));
         }
 
         if (currentProcedure != PROCEDURE_NONE) {
-            logger.debug("Procedure already in progress {}", currentProcedure);
-            return false;
+            return CompletableFuture.failedFuture(new BluetoothException("Another procedure is already in progress"));
         }
 
         int[] value = { 0, 0 };
 
         cancelTimer(procedureTimer);
         if (!bgHandler.bgWriteCharacteristic(connection, descriptor.getHandle(), value)) {
-            logger.debug("bgWriteCharacteristic returned false");
-            return false;
+            return CompletableFuture.failedFuture(new BluetoothException(
+                    "Failed to write to CCC for characteristic [" + characteristic.getUuid() + "]"));
         }
 
         procedureTimer = startTimer(procedureTimeoutTask, TIMEOUT_SEC);

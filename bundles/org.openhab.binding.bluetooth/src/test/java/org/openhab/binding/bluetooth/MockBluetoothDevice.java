@@ -101,13 +101,13 @@ public class MockBluetoothDevice extends BaseBluetoothDevice {
     }
 
     @Override
-    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
-        return false;
+    public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic) {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException());
     }
 
     @Override
-    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
-        return false;
+    public CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic) {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException());
     }
 
     @Override
