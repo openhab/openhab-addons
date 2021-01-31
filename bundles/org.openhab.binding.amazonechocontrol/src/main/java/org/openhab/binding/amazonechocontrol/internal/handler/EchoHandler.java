@@ -1279,8 +1279,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (StringUtils.equals(notification.status, "ON")) {
                     if ("Reminder".equals(notification.type)) {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
-                        ZonedDateTime alarmTime = ZonedDateTime
-                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        String time = Objects.requireNonNullElse(notification.originalTime, "00:00:00");
+                        ZonedDateTime alarmTime = ZonedDateTime.parse(notification.originalDate + "T" + time + offset);
                         if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
                             continue; // Ignore recurring entry if alarm time is before now
                         }
