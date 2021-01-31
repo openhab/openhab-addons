@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="clearone"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge Thing Type -->
+	<bridge-type id="stack">
+		<label>ClearOne Stack</label>
+		<description>A Stack contains up to 8 XAP800/XAP400 devices, connected to a single serial port</description>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<context>serial-port</context>
+				<label>Serial Port</label>
+				<description>The serial port name for the Stack. Valid values
+					are e.g. COM1 for Windows and /dev/ttyS0 or
+					/dev/ttyUSB0 for Linux.</description>
+			</parameter>
+
+			<parameter name="baud" type="integer" required="false">
+				<label>Baud Rate</label>
+				<description>The baud rate of the amp. Valid values are 9600,
+					19200, 38400 (default), and 57600.</description>
+				<default>38400</default>
+			</parameter>
+
+			<parameter name="pollPeriod" type="integer" required="false" min="1" max="1800">
+				<label>Poll Period</label>
+				<description>Poll Period (in seconds). This value is used for detection of newly added Units to the Stack, if a
+					Unit/Stack goes OFFLINE, retrying connection if OFFLINE, and refreshing data for newly added Things. Consider a
+					short value when initially setting up the binding, and a longer value once all items are defined.</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Unit Thing Type -->
+	<bridge-type id="unit">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="stack"/>
+		</supported-bridge-type-refs>
+		<label>ClearOne Unit</label>
+		<description>An individual Unit (XAP800/XAP400) within a Stack</description>
+
+		<channels>
+			<channel id="macro" typeId="macro"/>
+			<channel id="preset" typeId="preset"/>
+		</channels>
+
+		<config-description>
+			<parameter name="typeId" type="text" required="true">
+				<label>Type ID</label>
+				<options>
+					<option value="5">XAP800</option>
+					<option value="7">XAP400</option>
+				</options>
+			</parameter>
+
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID (0-7)</description>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Output Zone Thing Type -->
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="unit"/>
+		</supported-bridge-type-refs>
+
+		<label>Output Zone</label>
+		<description>An Output zone on a Unit. May consist of 1 or more channels</description>
+
+		<channels>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="source" typeId="source"/>
+		</channels>
+
+		<config-description>
+			<parameter name="zone" type="text" required="true">
+				<label>Zone</label>
+			</parameter>
+
+			<parameter name="channels" type="integer">
+				<label>Channels</label>
+				<description>Number of input/output channels this Thing will control (default 1, mono). ie For Stereo, Input and
+					Output X+1 will be kept in sync</description>
+				<default>1</default>
+			</parameter>
+
+			<parameter name="selectableInputs" type="text" multiple="true">
+				<label>Selectable inputs</label>
+				<description>List of inputs to use for Source selection. Do not include any inputs such as those used as system-wide
+					announcements</description>
+				<options>
+					<option value="NONE">None</option>
+					<option value="1 I">Input 1</option>
+					<option value="2 I">Input 2</option>
+					<option value="3 I">Input 3</option>
+					<option value="4 I">Input 4</option>
+					<option value="5 I">Input 5</option>
+					<option value="6 I">Input 6</option>
+					<option value="7 I">Input 7</option>
+					<option value="8 I">Input 8</option>
+					<option value="9 I">Input 9</option>
+					<option value="10 I">Input 10</option>
+					<option value="11 I">Input 11</option>
+					<option value="12 I">Input 12</option>
+					<option value="O E">Expansion O</option>
+					<option value="P E">Expansion P</option>
+					<option value="Q E">Expansion Q</option>
+					<option value="R E">Expansion R</option>
+					<option value="S E">Expansion S</option>
+					<option value="T E">Expansion T</option>
+					<option value="U E">Expansion U</option>
+					<option value="V E">Expansion V</option>
+					<option value="W E">Expansion W</option>
+					<option value="X E">Expansion X</option>
+					<option value="Y E">Expansion Y</option>
+					<option value="Z E">Expansion Z</option>
+					<option value="A P">Processing A</option>
+					<option value="B P">Processing B</option>
+					<option value="C P">Processing C</option>
+					<option value="D P">Processing D</option>
+					<option value="E P">Processing E</option>
+					<option value="F P">Processing F</option>
+					<option value="G P">Processing G</option>
+					<option value="H P">Processing H</option>
+				</options>
+				<multipleLimit>33</multipleLimit>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<!-- Channel Types -->
+	<channel-type id="macro">
+		<item-type>Number</item-type>
+		<label>Macro</label>
+		<description>Run a macro (1-255)</description>
+		<state min="1" max="255"/>
+	</channel-type>
+
+	<channel-type id="preset">
+		<item-type>Number</item-type>
+		<label>Preset</label>
+		<description>Run a preset (1-32)</description>
+		<state min="1" max="32"/>
+	</channel-type>
+
+	<channel-type id="source">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Current source (Input 1-12, Expansion O-Z, Processing A-H)</description>
+		<state>
+			<options>
+				<option value="NONE">None</option>
+				<option value="1 I">Input 1</option>
+				<option value="2 I">Input 2</option>
+				<option value="3 I">Input 3</option>
+				<option value="4 I">Input 4</option>
+				<option value="5 I">Input 5</option>
+				<option value="6 I">Input 6</option>
+				<option value="7 I">Input 7</option>
+				<option value="8 I">Input 8</option>
+				<option value="9 I">Input 9</option>
+				<option value="10 I">Input 10</option>
+				<option value="11 I">Input 11</option>
+				<option value="12 I">Input 12</option>
+				<option value="O E">Expansion O</option>
+				<option value="P E">Expansion P</option>
+				<option value="Q E">Expansion Q</option>
+				<option value="R E">Expansion R</option>
+				<option value="S E">Expansion S</option>
+				<option value="T E">Expansion T</option>
+				<option value="U E">Expansion U</option>
+				<option value="V E">Expansion V</option>
+				<option value="W E">Expansion W</option>
+				<option value="X E">Expansion X</option>
+				<option value="Y E">Expansion Y</option>
+				<option value="Z E">Expansion Z</option>
+				<option value="A P">Processing A</option>
+				<option value="B P">Processing B</option>
+				<option value="C P">Processing C</option>
+				<option value="D P">Processing D</option>
+				<option value="E P">Processing E</option>
+				<option value="F P">Processing F</option>
+				<option value="G P">Processing G</option>
+				<option value="H P">Processing H</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
