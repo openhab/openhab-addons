@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.modbus.internal;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.StandardToStringStyle;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
@@ -68,12 +63,6 @@ public class SingleValueTransformation implements ValueTransformation {
 
     private final Logger logger = LoggerFactory.getLogger(SingleValueTransformation.class);
 
-    private static StandardToStringStyle toStringStyle = new StandardToStringStyle();
-
-    static {
-        toStringStyle.setUseShortClassName(true);
-    }
-
     private final @Nullable String transformation;
     final @Nullable String transformationServiceName;
     final @Nullable String transformationServiceParam;
@@ -89,7 +78,7 @@ public class SingleValueTransformation implements ValueTransformation {
         //
         // Parse transformation configuration here on construction, but delay the
         // construction of TransformationService to call-time
-        if (isEmpty(transformation) || transformation.equalsIgnoreCase(TRANSFORM_DEFAULT)) {
+        if (transformation == null || transformation.isEmpty() || transformation.equalsIgnoreCase(TRANSFORM_DEFAULT)) {
             // no-op (identity) transformation
             transformationServiceName = null;
             transformationServiceParam = null;
@@ -184,31 +173,9 @@ public class SingleValueTransformation implements ValueTransformation {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
-        if (null == obj) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof SingleValueTransformation)) {
-            return false;
-        }
-        SingleValueTransformation that = (SingleValueTransformation) obj;
-        EqualsBuilder eb = new EqualsBuilder();
-        if (transformationServiceName != null) {
-            eb.append(this.transformationServiceName, that.transformationServiceName);
-            eb.append(this.transformationServiceParam, that.transformationServiceParam);
-        } else {
-            eb.append(this.transformation, that.transformation);
-        }
-        return eb.isEquals();
+    public String toString() {
+        return "SingleValueTransformation [transformation=" + transformation + ", transformationServiceName="
+                + transformationServiceName + ", transformationServiceParam=" + transformationServiceParam + "]";
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, toStringStyle).append("tranformation", transformation)
-                .append("transformationServiceName", transformationServiceName)
-                .append("transformationServiceParam", transformationServiceParam).toString();
-    }
 }
