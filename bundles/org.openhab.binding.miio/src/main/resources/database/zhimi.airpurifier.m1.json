@@ -27,6 +27,10 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -35,24 +39,64 @@
 				"channel": "mode",
 				"channelType": "mode",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "favorite",
+							"label": "Favorite"
+						},
+						{
+							"value": "silent",
+							"label": "Silent"
+						},
+						{
+							"value": "high",
+							"label": "High"
+						},
+						{
+							"value": "medium",
+							"label": "Medium"
+						},
+						{
+							"value": "idle",
+							"label": "Idle"
+						},
+						{
+							"value": "strong",
+							"label": "Strong"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping [\"auto\"\u003d\"Auto\",\"favorite\"\u003d\"Favorite\",\"silent\"\u003d\"Silent\",\"high\"\u003d\"High\",\"medium\"\u003d\"Medium\",\"idle\"\u003d\"Idle\",\"strong\"\u003d\"Strong\"]"
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "aqi",
@@ -62,7 +106,10 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "average_aqi",
@@ -72,7 +119,10 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "led",
@@ -163,24 +213,94 @@
 				"property": "favorite_level",
 				"friendlyName": "Favorite Level",
 				"channel": "favoritelevel",
-				"channelType": "favoritelevel",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Favorite 0"
+						},
+						{
+							"value": "1",
+							"label": "Favorite 1"
+						},
+						{
+							"value": "2",
+							"label": "Favorite 2"
+						},
+						{
+							"value": "3",
+							"label": "Favorite 3"
+						},
+						{
+							"value": "4",
+							"label": "Favorite 4"
+						},
+						{
+							"value": "5",
+							"label": "Favorite 5"
+						},
+						{
+							"value": "6",
+							"label": "Favorite 6"
+						},
+						{
+							"value": "7",
+							"label": "Favorite 7"
+						},
+						{
+							"value": "8",
+							"label": "Favorite 8"
+						},
+						{
+							"value": "9",
+							"label": "Favorite 9"
+						},
+						{
+							"value": "10",
+							"label": "Favorite 10"
+						},
+						{
+							"value": "11",
+							"label": "Favorite 11"
+						},
+						{
+							"value": "12",
+							"label": "Favorite 13"
+						},
+						{
+							"value": "13",
+							"label": "Favorite 13"
+						},
+						{
+							"value": "14",
+							"label": "Favorite 14"
+						},
+						{
+							"value": "15",
+							"label": "Favorite 15"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_level_favorite",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Favorite 0\",\"1\"\u003d\"Favorite 1\",\"2\"\u003d\"Favorite 2\",\"3\"\u003d\"Favorite 3\",\"4\"\u003d\"Favorite 4\",\"5\"\u003d\"Favorite 5\",\"6\"\u003d\"Favorite 6\",\"7\"\u003d\"Favorite 7\",\"8\"\u003d\"Favorite 8\",\"9\"\u003d\"Favorite 9\",\"10\"\u003d\"Favorite 10\",\"11\"\u003d\"Favorite 11\",\"12\"\u003d\"Favorite 13\",\"13\"\u003d\"Favorite 13\",\"14\"\u003d\"Favorite 14\",\"15\"\u003d\"Favorite 15\"]"
 			},
 			{
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
 				"unit": "CELCIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "/10",
 				"ChannelGroup": "Status",
@@ -193,19 +313,23 @@
 			},
 			{
 				"property": "purify_volume",
-				"friendlyName": "Purivied Volume",
+				"friendlyName": "Purified Volume",
 				"channel": "purifyvolume",
 				"channelType": "purifyvolume",
-				"type": "Number",
+				"type": "Number:Volume",
+				"unit": "liter",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Volume"
+				]
 			},
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
 				"channel": "childlock",
-				"channelType": "childlock",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",

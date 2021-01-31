@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
@@ -26,26 +26,23 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class Constants {
-    public static final Map<String, Supplier<HandlerBase>> HANDLER_FACTORY = new HashMap<>();
-
-    static {
-        HANDLER_FACTORY.put(HandlerPowerController.INTERFACE, HandlerPowerController::new);
-        HANDLER_FACTORY.put(HandlerBrightnessController.INTERFACE, HandlerBrightnessController::new);
-        HANDLER_FACTORY.put(HandlerColorController.INTERFACE, HandlerColorController::new);
-        HANDLER_FACTORY.put(HandlerColorTemperatureController.INTERFACE, HandlerColorTemperatureController::new);
-        HANDLER_FACTORY.put(HandlerSecurityPanelController.INTERFACE, HandlerSecurityPanelController::new);
-        HANDLER_FACTORY.put(HandlerAcousticEventSensor.INTERFACE, HandlerAcousticEventSensor::new);
-        HANDLER_FACTORY.put(HandlerTemperatureSensor.INTERFACE, HandlerTemperatureSensor::new);
-        HANDLER_FACTORY.put(HandlerThermostatController.INTERFACE, HandlerThermostatController::new);
-        HANDLER_FACTORY.put(HandlerPercentageController.INTERFACE, HandlerPercentageController::new);
-        HANDLER_FACTORY.put(HandlerPowerLevelController.INTERFACE, HandlerPowerLevelController::new);
-    }
+    public static final Map<String, Function<SmartHomeDeviceHandler, HandlerBase>> HANDLER_FACTORY = Map.of(
+            HandlerPowerController.INTERFACE, HandlerPowerController::new, HandlerBrightnessController.INTERFACE,
+            HandlerBrightnessController::new, HandlerColorController.INTERFACE, HandlerColorController::new,
+            HandlerColorTemperatureController.INTERFACE, HandlerColorTemperatureController::new,
+            HandlerSecurityPanelController.INTERFACE, HandlerSecurityPanelController::new,
+            HandlerAcousticEventSensor.INTERFACE, HandlerAcousticEventSensor::new, HandlerTemperatureSensor.INTERFACE,
+            HandlerTemperatureSensor::new, HandlerThermostatController.INTERFACE, HandlerThermostatController::new,
+            HandlerPercentageController.INTERFACE, HandlerPercentageController::new,
+            HandlerPowerLevelController.INTERFACE, HandlerPowerLevelController::new);
 
     public static final Set<String> SUPPORTED_INTERFACES = HANDLER_FACTORY.keySet();
 
     // channel types
     public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "temperature");
+    public static final ChannelTypeUID CHANNEL_TYPE_TARGETSETPOINT = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "targetSetpoint");
 
     // List of Item types
     public static final String ITEM_TYPE_SWITCH = "Switch";

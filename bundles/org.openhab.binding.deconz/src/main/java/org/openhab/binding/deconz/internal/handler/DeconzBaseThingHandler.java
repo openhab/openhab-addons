@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
-import static org.openhab.binding.deconz.internal.Util.buildUrl;
-
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
 import org.openhab.binding.deconz.internal.types.ResourceType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -47,11 +51,9 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
     private final Logger logger = LoggerFactory.getLogger(DeconzBaseThingHandler.class);
     protected final ResourceType resourceType;
     protected ThingConfig config = new ThingConfig();
-    protected DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
     protected final Gson gson;
     private @Nullable ScheduledFuture<?> initializationJob;
     protected @Nullable WebSocketConnection connection;
-    protected @Nullable AsyncHttpClient http;
 
     public DeconzBaseThingHandler(Thing thing, Gson gson, ResourceType resourceType) {
         super(thing);
@@ -111,8 +113,6 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
 
             final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
             this.connection = webSocketConnection;
-            this.http = bridgeHandler.getHttp();
-            this.bridgeConfig = bridgeHandler.getBridgeConfig();
 
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
 
@@ -182,17 +182,14 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
      */
     protected void sendCommand(@Nullable Object object, Command originalCommand, ChannelUID channelUID,
             String commandUrl, @Nullable Runnable acceptProcessing) {
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
+        DeconzBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
             return;
         }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey,
-                resourceType.getIdentifier(), config.id, commandUrl);
+        String endpoint = Stream.of(resourceType.getIdentifier(), config.id, commandUrl)
+                .collect(Collectors.joining("/"));
 
-        String json = object == null ? null : gson.toJson(object);
-        logger.trace("Sending {} to {} {} via {}", json, resourceType, config.id, url);
-
-        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
+        bridgeHandler.sendObject(endpoint, object).thenAccept(v -> {
             if (acceptProcessing != null) {
                 acceptProcessing.run();
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.miio.internal;
+
+import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,16 +45,19 @@ public enum MiIoQuantiyTypes {
     HOUR(Units.HOUR, "hours"),
     DAY(Units.DAY, "days"),
     AMPERE(Units.AMPERE),
+    MILLI_AMPERE(MILLI(Units.AMPERE), "mA"),
     VOLT(Units.VOLT),
     WATT(Units.WATT),
     LITRE(Units.LITRE, "liter"),
     LUX(Units.LUX),
     RADIANS(Units.RADIAN, "radians"),
-    KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh"),
+    KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh", "kWH"),
     SQUARE_METRE(SIUnits.SQUARE_METRE, "square_meter", "squaremeter"),
-    PERCENT(Units.PERCENT),
+    PERCENT(Units.PERCENT, "percentage"),
     KGM3(Units.KILOGRAM_PER_CUBICMETRE, "kilogram_per_cubicmeter"),
     UGM3(Units.MICROGRAM_PER_CUBICMETRE, "microgram_per_cubicmeter"),
+    M3(SIUnits.CUBIC_METRE, "cubic_meter", "cubic_metre"),
+    LITER(Units.LITRE, "L", "litre"),
     PPM(Units.PARTS_PER_MILLION, "parts_per_million");
 
     private final Unit<?> unit;

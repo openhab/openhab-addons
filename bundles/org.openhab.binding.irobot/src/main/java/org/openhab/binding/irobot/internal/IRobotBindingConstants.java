@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,8 +48,10 @@ public class IRobotBindingConstants {
     public static final String CHANNEL_ALWAYS_FINISH = "always_finish";
     public static final String CHANNEL_POWER_BOOST = "power_boost";
     public static final String CHANNEL_CLEAN_PASSES = "clean_passes";
+    public static final String CHANNEL_LAST_COMMAND = "last_command";
 
     public static final String CMD_CLEAN = "clean";
+    public static final String CMD_CLEAN_REGIONS = "cleanRegions";
     public static final String CMD_SPOT = "spot";
     public static final String CMD_DOCK = "dock";
     public static final String CMD_PAUSE = "pause";

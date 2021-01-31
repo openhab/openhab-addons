@@ -1,14 +1,14 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.humidifier.cb1"
+			"zhimi.humidifier.cb1",
+			"zhimi.humidifier.cb2"
 		],
 		"channels": [
 			{
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -16,13 +16,16 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "mode",
 				"friendlyName": "Humidifier Mode",
 				"channel": "humidifierMode",
-				"channelType": "humidifierMode",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -31,24 +34,40 @@
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
+				],
+				"tags": [
+					"Measurement",
+					"Humidity"
 				]
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "limit_hum",
 				"friendlyName": "Humidity Set",
 				"channel": "setHumidity",
-				"channelType": "setHumidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"stateDescription": {
+					"minimum": 10,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.1f %unit%",
+					"readOnly": false
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [
@@ -62,7 +81,7 @@
 				"property": "led_b",
 				"friendlyName": "LED Brightness",
 				"channel": "bright",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -76,7 +95,6 @@
 				"property": "buzzer",
 				"friendlyName": "Buzzer Status",
 				"channel": "buzzer",
-				"channelType": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -91,8 +109,11 @@
 				"property": "depth",
 				"friendlyName": "Depth",
 				"channel": "depth",
-				"channelType": "depth",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
@@ -101,7 +122,6 @@
 				"property": "dry",
 				"friendlyName": "Dry",
 				"channel": "dry",
-				"channelType": "dry",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -116,9 +136,12 @@
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
-				"channelType": "usedhours",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
@@ -129,8 +152,11 @@
 				"property": "speed",
 				"friendlyName": "Motor Speed",
 				"channel": "motorspeed",
-				"channelType": "motorspeed",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f rpm",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
@@ -139,9 +165,12 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
 				"unit": "CELCIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
@@ -155,7 +184,6 @@
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
 				"channel": "childlock",
-				"channelType": "childlock",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -164,6 +192,10 @@
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			}
 		]

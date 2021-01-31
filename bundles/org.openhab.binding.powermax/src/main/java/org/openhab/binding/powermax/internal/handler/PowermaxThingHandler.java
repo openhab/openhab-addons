@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,21 +14,16 @@ package org.openhab.binding.powermax.internal.handler;
 
 import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.config.PowermaxX10Configuration;
 import org.openhab.binding.powermax.internal.config.PowermaxZoneConfiguration;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettingsListener;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
+import org.openhab.binding.powermax.internal.state.PowermaxStateContainer.Value;
 import org.openhab.binding.powermax.internal.state.PowermaxX10Settings;
 import org.openhab.binding.powermax.internal.state.PowermaxZoneSettings;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -57,13 +52,10 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
     private static final int X10_NR_MIN = 1;
     private static final int X10_NR_MAX = 16;
 
-    private final TimeZoneProvider timeZoneProvider;
-
     private PowermaxBridgeHandler bridgeHandler;
 
-    public PowermaxThingHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public PowermaxThingHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -181,20 +173,13 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
 
         if (getThing().getThingTypeUID().equals(THING_TYPE_ZONE)) {
             int num = getConfigAs(PowermaxZoneConfiguration.class).zoneNumber.intValue();
-            if (channel.equals(TRIPPED) && (state.isSensorTripped(num) != null)) {
-                updateState(TRIPPED, state.isSensorTripped(num) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-            } else if (channel.equals(LAST_TRIP) && (state.getSensorLastTripped(num) != null)) {
-                ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(state.getSensorLastTripped(num)),
-                        timeZoneProvider.getTimeZone());
-                updateState(LAST_TRIP, new DateTimeType(zoned));
-            } else if (channel.equals(BYPASSED) && (state.isSensorBypassed(num) != null)) {
-                updateState(BYPASSED, state.isSensorBypassed(num) ? OnOffType.ON : OnOffType.OFF);
-            } else if (channel.equals(ARMED) && (state.isSensorArmed(num) != null)) {
-                updateState(ARMED, state.isSensorArmed(num) ? OnOffType.ON : OnOffType.OFF);
-            } else if (channel.equals(LOCKED) && (state.isSensorArmed(num) != null)) {
-                updateState(LOCKED, state.isSensorArmed(num) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-            } else if (channel.equals(LOW_BATTERY) && (state.isSensorLowBattery(num) != null)) {
-                updateState(LOW_BATTERY, state.isSensorLowBattery(num) ? OnOffType.ON : OnOffType.OFF);
+
+            for (Value<?> value : state.getZone(num).getValues()) {
+                String v_channel = value.getChannel();
+
+                if (channel.equals(v_channel) && (value.getValue() != null)) {
+                    updateState(v_channel, value.getState());
+                }
             }
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_X10)) {
             int num = getConfigAs(PowermaxX10Configuration.class).deviceNumber.intValue();

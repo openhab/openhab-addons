@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,6 +66,7 @@ import com.google.gson.stream.JsonReader;
  *
  * @author hkuhn42 - Initial contribution
  * @author Pavel Fedin - Rewrite for 900 series
+ * @author Florian Binder - added cleanRegions command and lastCommand channel
  */
 @NonNullByDefault
 public class RoombaHandler extends BaseThingHandler implements MqttConnectionObserver, MqttMessageSubscriber {
@@ -128,7 +130,24 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
                     cmd = isPaused ? "resume" : "start";
                 }
 
-                sendRequest(new MQTTProtocol.CommandRequest(cmd));
+                if (cmd.startsWith(CMD_CLEAN_REGIONS)) {
+                    // format: cleanRegions:<pmid>;<region_id1>,<region_id2>,...
+                    if (Pattern.matches("cleanRegions:[^:;,]+;.+(,[^:;,]+)*", cmd)) {
+                        String[] cmds = cmd.split(":");
+                        String[] params = cmds[1].split(";");
+
+                        String mapId = params[0];
+                        String[] regionIds = params[1].split(",");
+
+                        sendRequest(new MQTTProtocol.CleanRoomsRequest("start", mapId, regionIds));
+                    } else {
+                        logger.warn("Invalid request: {}", cmd);
+                        logger.warn("Correct format: cleanRegions:<pmid>;<region_id1>,<region_id2>,...>");
+                    }
+                } else {
+                    sendRequest(new MQTTProtocol.CommandRequest(cmd));
+                }
+
             }
         } else if (ch.startsWith(CHANNEL_SCHED_SWITCH_PREFIX)) {
             MQTTProtocol.Schedule schedule = lastSchedule;
@@ -487,6 +506,10 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
                 // Can be overridden by "noAutoPasses":false
                 reportTwoPasses();
             }
+        }
+
+        if (reported.lastCommand != null) {
+            reportString(CHANNEL_LAST_COMMAND, reported.lastCommand.toString());
         }
 
         reportProperty(Thing.PROPERTY_FIRMWARE_VERSION, reported.softwareVer);

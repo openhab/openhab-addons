@@ -64,7 +64,8 @@
 		<service deviceType="urn:dslforum-org:device:InternetGatewayDevice:1"
 			serviceId="urn:X_AVM-DE_HostFilter-com:serviceId:X_AVM-DE_HostFilter1"/>
 		<getAction name="GetWANAccessByIP" argument="NewDisallow">
-			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"/>
+			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"
+				pattern="([1-9]\d{0,2}\.){3}[1-9]\d{0,2}(\s*#.*)*"/>
 		</getAction>
 		<setAction name="DisallowWANAccessByIP" argument="NewDisallow">
 			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"/>
@@ -141,7 +142,8 @@
 		<item type="Switch"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1" serviceId="urn:LanDeviceHosts-com:serviceId:Hosts1"/>
 		<getAction name="GetSpecificHostEntry" argument="NewActive">
-			<parameter name="NewMACAddress" thingParameter="macOnline" pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}"/>
+			<parameter name="NewMACAddress" thingParameter="macOnline"
+				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
 	</channel>
 
@@ -171,13 +173,13 @@
 		<getAction name="GetCommonLinkProperties" argument="NewLayer1UpstreamMaxBitRate"/>
 	</channel>
 	<channel name="wanTotalBytesReceived" label="Total Bytes Received">
-		<item type="Number:DataAmount" unit="B" statePattern="%.3f Gio"/>
+		<item type="Number:DataAmount" unit="B" statePattern="%.3f GB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANCIfConfig-com:serviceId:WANCommonInterfaceConfig1"/>
 		<getAction name="GetTotalBytesReceived" argument="NewTotalBytesReceived"/>
 	</channel>
 	<channel name="wanTotalBytesSent" label="Total Bytes Sent">
-		<item type="Number:DataAmount" unit="B" statePattern="%.3f Gio"/>
+		<item type="Number:DataAmount" unit="B" statePattern="%.3f GB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANCIfConfig-com:serviceId:WANCommonInterfaceConfig1"/>
 		<getAction name="GetTotalBytesSent" argument="NewTotalBytesSent"/>
@@ -193,6 +195,30 @@
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewStatus"/>
+	</channel>
+	<channel name="dslDownstreamMaxRate" label="DSL Max Downstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
+		<getAction name="GetInfo" argument="NewDownstreamMaxRate"/>
+	</channel>
+	<channel name="dslUpstreamMaxRate" label="DSL Max Upstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
+		<getAction name="GetInfo" argument="NewUpstreamMaxRate"/>
+	</channel>
+	<channel name="dslDownstreamCurrRate" label="DSL Curr. Downstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
+		<getAction name="GetInfo" argument="NewDownstreamCurrRate"/>
+	</channel>
+	<channel name="dslUpstreamCurrRate" label="DSL Curr. Upstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
+		<getAction name="GetInfo" argument="NewUpstreamCurrRate"/>
 	</channel>
 	<channel name="dslDownstreamNoiseMargin" label="DSL Downstream Noise Margin">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
@@ -212,7 +238,7 @@
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewDownstreamAttenuation"/>
 	</channel>
-	<channel name="dslUpstreamAttentuation" label="DSL Upstream Attenuation">
+	<channel name="dslUpstreamAttenuation" label="DSL Upstream Attenuation">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
@@ -234,7 +260,7 @@
 		<item type="Number:Dimensionless"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
-		<getAction name="GetStatisticsTotal" argument="NeCRCErrors"/>
+		<getAction name="GetStatisticsTotal" argument="NewCRCErrors"/>
 	</channel>
 
 	<!-- WAN Connection device -->

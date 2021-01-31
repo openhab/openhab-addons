@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,9 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -61,6 +64,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
+ * @author Michael Wodniok - Added last_update-channel and additional needed handling of it
  */
 @NonNullByDefault
 public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdateListener {
@@ -81,8 +85,14 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             TimeZoneProvider tzProvider) {
         super(bridge);
         this.httpClient = httpClient;
-        calendarFile = new File(OpenHAB.getUserDataFolder() + File.separator
-                + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
+        final File cacheFolder = new File(new File(OpenHAB.getUserDataFolder(), "cache"),
+                "org.openhab.binding.icalendar");
+        if (!cacheFolder.exists()) {
+            logger.debug("Creating cache folder '{}'", cacheFolder.getAbsolutePath());
+            cacheFolder.mkdirs();
+        }
+        calendarFile = new File(cacheFolder,
+                getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
         updateStatesLastCalledTime = Instant.now();
         this.tzProvider = tzProvider;
@@ -110,6 +120,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             case CHANNEL_NEXT_EVENT_TITLE:
             case CHANNEL_NEXT_EVENT_START:
             case CHANNEL_NEXT_EVENT_END:
+            case CHANNEL_LAST_UPDATE:
                 if (command instanceof RefreshType) {
                     updateStates();
                 }
@@ -121,6 +132,8 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
 
     @Override
     public void initialize() {
+        migrateLastUpdateChannel();
+
         final ICalendarConfiguration currentConfiguration = getConfigAs(ICalendarConfiguration.class);
         configuration = currentConfiguration;
 
@@ -260,12 +273,33 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     }
 
     /**
+     * Migration for last_update-channel as this change is compatible to previous instances.
+     */
+    private void migrateLastUpdateChannel() {
+        final Thing thing = getThing();
+        if (thing.getChannel(CHANNEL_LAST_UPDATE) == null) {
+            logger.trace("last_update channel is missing in this Thing. Adding it.");
+            final ThingHandlerCallback callback = getCallback();
+            if (callback == null) {
+                logger.debug("ThingHandlerCallback is null. Skipping migration of last_update channel.");
+                return;
+            }
+            final ChannelBuilder channelBuilder = callback
+                    .createChannelBuilder(new ChannelUID(thing.getUID(), CHANNEL_LAST_UPDATE), LAST_UPDATE_TYPE_UID);
+            final ThingBuilder thingBuilder = editThing();
+            thingBuilder.withChannel(channelBuilder.build());
+            updateThing(thingBuilder.build());
+        }
+    }
+
+    /**
      * Reloads the calendar from local ical-file. Replaces the class internal calendar - if loading succeeds. Else
      * logging details at warn-level logger.
      *
      * @return Whether the calendar was loaded successfully.
      */
     private boolean reloadCalendar() {
+        logger.trace("reloading calendar of {}", getThing().getUID());
         if (!calendarFile.isFile()) {
             logger.info("Local file for reloading calendar is missing.");
             return false;
@@ -314,6 +348,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 ICalendarHandler.this.updateStates();
                 ICalendarHandler.this.rescheduleCalendarStateUpdate();
             }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+            logger.debug("Scheduled update in {} seconds", currentEvent.end.getEpochSecond() - now.getEpochSecond());
         } else {
             final Event nextEvent = currentCalendar.getNextEvent(now);
             final ICalendarConfiguration currentConfig = this.configuration;
@@ -326,11 +361,14 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
                 }, 1L, TimeUnit.DAYS);
+                logger.debug("Scheduled reschedule in 1 day");
             } else {
                 updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.updateStates();
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
                 }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+                logger.debug("Scheduled update in {} seconds", nextEvent.start.getEpochSecond() - now.getEpochSecond());
+
             }
         }
     }
@@ -339,6 +377,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * Updates the states of the Thing and its channels.
      */
     private void updateStates() {
+        logger.trace("updating states of {}", getThing().getUID());
         final AbstractPresentableCalendar calendar = runtimeCalendar;
         if (calendar == null) {
             updateStatus(ThingStatus.OFFLINE);

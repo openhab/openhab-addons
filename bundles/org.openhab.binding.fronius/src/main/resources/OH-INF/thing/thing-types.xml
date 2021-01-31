@@ -38,6 +38,75 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Meter Thing Type -->
+	<thing-type id="meter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Fronius Smart Meter</label>
+		<description>Fronius Smart Meter</description>
+
+		<channels>
+			<channel id="enable" typeId="meter_enable"/>
+			<channel id="location" typeId="meter_location"/>
+			<channel id="currentacphase1" typeId="meter_ac_current">
+				<label>AC Current Phase 1</label>
+			</channel>
+			<channel id="currentacphase2" typeId="meter_ac_current">
+				<label>AC Current Phase 2</label>
+			</channel>
+			<channel id="currentacphase3" typeId="meter_ac_current">
+				<label>AC Current Phase 3</label>
+			</channel>
+			<channel id="voltageacphase1" typeId="meter_ac_voltage">
+				<label>AC Voltage Phase 1</label>
+			</channel>
+			<channel id="voltageacphase2" typeId="meter_ac_voltage">
+				<label>AC Voltage Phase 2</label>
+			</channel>
+			<channel id="voltageacphase3" typeId="meter_ac_voltage">
+				<label>AC Voltage Phase 3</label>
+			</channel>
+			<channel id="powerrealphase1" typeId="meter_powerreal">
+				<label>Real Power Phase 1</label>
+			</channel>
+			<channel id="powerrealphase2" typeId="meter_powerreal">
+				<label>Real Power Phase 2</label>
+			</channel>
+			<channel id="powerrealphase3" typeId="meter_powerreal">
+				<label>Real Power Phase 3</label>
+			</channel>
+			<channel id="powerfactorphase1" typeId="meter_powerfactor">
+				<label>Power Factor Phase 1</label>
+			</channel>
+			<channel id="powerfactorphase2" typeId="meter_powerfactor">
+				<label>Power Factor Phase 2</label>
+			</channel>
+			<channel id="powerfactorphase3" typeId="meter_powerfactor">
+				<label>Power Factor Phase 3</label>
+			</channel>
+			<channel id="energyrealsumconsumed" typeId="meter_energy">
+				<label>Real Energy Consumed</label>
+			</channel>
+			<channel id="energyrealsumproduced" typeId="meter_energy">
+				<label>Real Energy Produced</label>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="model"/>
+			<property name="serial"/>
+		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="integer">
+				<label>Device ID</label>
+				<description>Specific device identifier</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<channel-type id="day_energy">
 		<item-type>Number</item-type>
 		<label>Day Energy</label>
@@ -127,4 +196,49 @@
 		<description>Battery Power ( + charge, - discharge )</description>
 		<state pattern="%.2f W" readOnly="true"></state>
 	</channel-type>
+
+
+	<channel-type id="meter_enable" advanced="true">
+		<item-type>Number</item-type>
+		<label>Enabled</label>
+		<description>Enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_location" advanced="true">
+		<item-type>Number</item-type>
+		<label>Location</label>
+		<description>Meter location code</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_ac_current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Current</label>
+		<description></description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_ac_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage</label>
+		<description></description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_powerreal">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description></description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_powerfactor">
+		<item-type>Number</item-type>
+		<label>Power Factor</label>
+		<description></description>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<description></description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>

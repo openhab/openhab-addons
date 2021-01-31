@@ -140,6 +140,9 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"tags": [
+					"Control"
+				],
 				"readmeComment": "Value mapping [\"0\"\u003d\"Basic\",\"1\"\u003d\"Natural Wind\"]"
 			},
 			{
@@ -192,8 +195,7 @@
 				"piid": 3,
 				"friendlyName": "Presets - Pre Brightness",
 				"channel": "pre-brightness",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
+				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 1.0,
 					"maximum": 100.0,

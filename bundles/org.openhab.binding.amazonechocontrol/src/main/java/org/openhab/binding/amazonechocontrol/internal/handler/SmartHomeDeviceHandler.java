@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.SUPPORTED_INTERFACES;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -93,15 +93,15 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             if (handler != null) {
                 unusedHandlers.remove(interfaceName);
             } else {
-                Supplier<HandlerBase> creator = Constants.HANDLER_FACTORY.get(interfaceName);
+                Function<SmartHomeDeviceHandler, HandlerBase> creator = Constants.HANDLER_FACTORY.get(interfaceName);
                 if (creator != null) {
-                    handler = creator.get();
+                    handler = creator.apply(this);
                     handlers.put(interfaceName, handler);
                 }
             }
             if (handler != null) {
-                Collection<ChannelInfo> required = handler.initialize(this,
-                        capabilities.getOrDefault(interfaceName, Collections.emptyList()));
+                Collection<ChannelInfo> required = handler
+                        .initialize(capabilities.getOrDefault(interfaceName, List.of()));
                 for (ChannelInfo channelInfo : required) {
                     unusedChannels.remove(channelInfo.channelId);
                     if (addChannelToDevice(thingBuilder, channelInfo.channelId, channelInfo.itemType,
@@ -289,13 +289,8 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     if (entityId == null) {
                         continue;
                     }
-                    SmartHomeCapability[] capabilities = shd.capabilities;
-                    if (capabilities == null) {
-                        logger.debug("capabilities is null in {}", thing.getUID());
-                        return;
-                    }
                     accountHandler.forceDelayedSmartHomeStateUpdate(getId()); // block updates
-                    if (handlerBase.handleCommand(connection, shd, entityId, capabilities, channelUID.getId(),
+                    if (handlerBase.handleCommand(connection, shd, entityId, shd.getCapabilities(), channelUID.getId(),
                             command)) {
                         accountHandler.forceDelayedSmartHomeStateUpdate(getId()); // force update again to restart
                         // update timer
@@ -312,11 +307,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             SmartHomeBaseDevice device) {
         if (device instanceof SmartHomeDevice) {
             SmartHomeDevice shd = (SmartHomeDevice) device;
-            SmartHomeCapability[] capabilities = shd.capabilities;
-            if (capabilities == null) {
-                return;
-            }
-            for (SmartHomeCapability capability : capabilities) {
+            for (SmartHomeCapability capability : shd.getCapabilities()) {
                 String interfaceName = capability.interfaceName;
                 if (interfaceName != null) {
                     Objects.requireNonNull(result.computeIfAbsent(interfaceName, name -> new ArrayList<>()))
@@ -340,12 +331,10 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         Set<SmartHomeDevice> result = new HashSet<>();
         if (baseDevice instanceof SmartHomeDevice) {
             SmartHomeDevice shd = (SmartHomeDevice) baseDevice;
-            SmartHomeCapability[] capabilities = shd.capabilities;
-            if (capabilities != null) {
-                if (Arrays.stream(capabilities).map(capability -> capability.interfaceName)
-                        .anyMatch(SUPPORTED_INTERFACES::contains)) {
-                    result.add(shd);
-                }
+            if (shd.getCapabilities().stream().map(capability -> capability.interfaceName)
+                    .anyMatch(SUPPORTED_INTERFACES::contains)) {
+                result.add(shd);
+
             }
         } else {
             SmartHomeGroup shg = (SmartHomeGroup) baseDevice;
@@ -356,13 +345,12 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     if (tags != null) {
                         JsonSmartHomeGroupIdentity.SmartHomeGroupIdentity tagNameToValueSetMap = tags.tagNameToValueSetMap;
                         JsonSmartHomeGroupIdentifiers.SmartHomeGroupIdentifier applianceGroupIdentifier = shg.applianceGroupIdentifier;
-                        if (tagNameToValueSetMap != null && tagNameToValueSetMap.groupIdentity != null
-                                && applianceGroupIdentifier != null && applianceGroupIdentifier.value != null
-                                && Arrays.asList(tagNameToValueSetMap.groupIdentity)
-                                        .contains(applianceGroupIdentifier.value)) {
-                            SmartHomeCapability[] capabilities = shd.capabilities;
-                            if (capabilities != null) {
-                                if (Arrays.stream(capabilities).map(capability -> capability.interfaceName)
+                        if (tagNameToValueSetMap != null) {
+                            List<String> groupIdentity = Objects.requireNonNullElse(tagNameToValueSetMap.groupIdentity,
+                                    List.of());
+                            if (applianceGroupIdentifier != null && applianceGroupIdentifier.value != null
+                                    && groupIdentity.contains(applianceGroupIdentifier.value)) {
+                                if (shd.getCapabilities().stream().map(capability -> capability.interfaceName)
                                         .anyMatch(SUPPORTED_INTERFACES::contains)) {
                                     result.add(shd);
                                 }

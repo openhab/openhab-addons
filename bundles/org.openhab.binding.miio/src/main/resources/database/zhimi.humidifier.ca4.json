@@ -20,6 +20,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -37,6 +41,9 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
@@ -56,11 +63,16 @@
 				"piid": 9,
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "target_humidity",
@@ -90,7 +102,8 @@
 				"refresh": true,
 				"transformation": "tankLevel",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "water"
 			},
 			{
 				"property": "led_brightness",
@@ -98,8 +111,7 @@
 				"piid": 2,
 				"friendlyName": "LED Brightness",
 				"channel": "bright",
-				"channelType": "humidifierLedBrightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -107,6 +119,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -203,9 +220,12 @@
 				"piid": 7,
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
 				"unit": "CELCIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -596,9 +596,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         basicChannel.getChannel(), basicChannel.getUnit(), unit);
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), unit));
             } else {
-                logger.debug("Unit '{}' used by '{}' channel '{}' is not found.. using default unit.",
-                        getThing().getUID(), basicChannel.getUnit(), basicChannel.getChannel());
+                logger.debug(
+                        "Unit '{}' used by '{}' channel '{}' is not found in conversion table... Trying anyway to submit as the update.",
+                        basicChannel.getUnit(), getThing().getUID(), basicChannel.getChannel());
+                updateState(basicChannel.getChannel(),
+                        new QuantityType<>(val.getAsBigDecimal().toPlainString() + " " + basicChannel.getUnit()));
             }
+            return;
         }
         // if no unit is provided or unit not found use default units, these units have so far been seen for miio
         // devices

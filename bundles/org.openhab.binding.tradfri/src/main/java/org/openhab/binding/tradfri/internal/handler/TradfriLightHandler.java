@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -198,7 +198,6 @@ public class TradfriLightHandler extends TradfriThingHandler {
         } else if (command instanceof OnOffType) {
             setState(((OnOffType) command));
         } else if (command instanceof PercentType) {
-            // PaperUI sends PercentType on color channel when changing Brightness
             setBrightness((PercentType) command);
         } else if (command instanceof IncreaseDecreaseType) {
             final TradfriLightData state = this.state;

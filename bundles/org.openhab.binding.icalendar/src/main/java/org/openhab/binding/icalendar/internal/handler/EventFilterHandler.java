@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * The {@link EventFilterHandler} filters events from a calendar and presents them in a dynamic way.
  *
  * @author Michael Wodniok - Initial Contribution
+ * @author Michael Wodniok - Fixed subsecond search if rounding to unit
  */
 @NonNullByDefault
 public class EventFilterHandler extends BaseThingHandler implements CalendarUpdateListener {
@@ -331,7 +332,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                         case HOUR:
                             refDT = refDT.with(ChronoField.MINUTE_OF_HOUR, 0);
                         case MINUTE:
-                            refDT = refDT.with(ChronoField.SECOND_OF_MINUTE, 0);
+                            refDT = refDT.with(ChronoField.SECOND_OF_MINUTE, 0).with(ChronoField.NANO_OF_SECOND, 0);
                     }
                     reference = refDT.toInstant();
                 }

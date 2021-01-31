@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
         ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
         assertNotNull(thingHandler);
         ModbusSlaveEndpoint slaveEndpoint = thingHandler.getEndpoint();
-        assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44))));
+        assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44, false))));
         assertThat(thingHandler.getSlaveId(), is(9));
 
         InOrder orderedVerify = Mockito.inOrder(mockedModbusManager);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jablotron.internal.handler;
 
+import static org.openhab.binding.jablotron.JablotronBindingConstants.BINDING_ID;
 import static org.openhab.binding.jablotron.JablotronBindingConstants.CACHE_TIMEOUT_MS;
 import static org.openhab.binding.jablotron.JablotronBindingConstants.CHANNEL_LAST_CHECK_TIME;
 
@@ -125,15 +126,16 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
     }
 
     private void createPGChannel(String name, String label) {
+        ChannelTypeUID pgmStatus = new ChannelTypeUID(BINDING_ID, "pgm_state");
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label)
-                .build();
+                .withType(pgmStatus).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
 
     private void createStateChannel(String name, String label) {
-        ChannelTypeUID alarmStatus = new ChannelTypeUID("jablotron", "ja100f_alarm_state");
+        ChannelTypeUID alarmStatus = new ChannelTypeUID(BINDING_ID, "ja100f_alarm_state");
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "String").withLabel(label)
                 .withType(alarmStatus).build();

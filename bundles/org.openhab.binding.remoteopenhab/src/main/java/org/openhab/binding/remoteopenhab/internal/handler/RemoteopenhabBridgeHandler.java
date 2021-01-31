@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.remoteopenhab.internal.handler;
 
-import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.BINDING_ID;
-
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -213,77 +211,99 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void createChannels(List<RemoteopenhabItem> items, boolean replace) {
+    private boolean createChannels(List<RemoteopenhabItem> items, boolean replace) {
         synchronized (updateThingLock) {
-            int nbGroups = 0;
-            List<Channel> channels = new ArrayList<>();
-            for (RemoteopenhabItem item : items) {
-                String itemType = item.type;
-                boolean readOnly = false;
-                if ("Group".equals(itemType)) {
-                    if (item.groupType.isEmpty()) {
-                        // Standard groups are ignored
-                        nbGroups++;
-                        continue;
+            try {
+                int nbGroups = 0;
+                int nbChannelTypesCreated = 0;
+                List<Channel> channels = new ArrayList<>();
+                for (RemoteopenhabItem item : items) {
+                    String itemType = item.type;
+                    boolean readOnly = false;
+                    if ("Group".equals(itemType)) {
+                        if (item.groupType.isEmpty()) {
+                            // Standard groups are ignored
+                            nbGroups++;
+                            continue;
+                        } else {
+                            itemType = item.groupType;
+                        }
                     } else {
-                        itemType = item.groupType;
+                        if (item.stateDescription != null && item.stateDescription.readOnly) {
+                            readOnly = true;
+                        }
                     }
-                } else {
-                    if (item.stateDescription != null && item.stateDescription.readOnly) {
-                        readOnly = true;
+                    // Ignore pattern containing a transformation (detected by a parenthesis in the pattern)
+                    RemoteopenhabStateDescription stateDescription = item.stateDescription;
+                    String pattern = (stateDescription == null || stateDescription.pattern.contains("(")) ? ""
+                            : stateDescription.pattern;
+                    ChannelTypeUID channelTypeUID;
+                    ChannelType channelType = channelTypeProvider.getChannelType(itemType, readOnly, pattern);
+                    String label;
+                    String description;
+                    if (channelType == null) {
+                        channelTypeUID = channelTypeProvider.buildNewChannelTypeUID(itemType);
+                        logger.trace("Create the channel type {} for item type {} ({} and with pattern {})",
+                                channelTypeUID, itemType, readOnly ? "read only" : "read write", pattern);
+                        label = String.format("Remote %s Item", itemType);
+                        description = String.format("An item of type %s from the remote server.", itemType);
+                        StateDescriptionFragmentBuilder stateDescriptionBuilder = StateDescriptionFragmentBuilder
+                                .create().withReadOnly(readOnly);
+                        if (!pattern.isEmpty()) {
+                            stateDescriptionBuilder = stateDescriptionBuilder.withPattern(pattern);
+                        }
+                        channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
+                                .withDescription(description)
+                                .withStateDescriptionFragment(stateDescriptionBuilder.build())
+                                .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+                        channelTypeProvider.addChannelType(itemType, channelType);
+                        nbChannelTypesCreated++;
+                    } else {
+                        channelTypeUID = channelType.getUID();
+                    }
+                    ChannelUID channelUID = new ChannelUID(getThing().getUID(), item.name);
+                    logger.trace("Create the channel {} of type {}", channelUID, channelTypeUID);
+                    label = "Item " + item.name;
+                    description = String.format("Item %s from the remote server.", item.name);
+                    channels.add(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID)
+                            .withKind(ChannelKind.STATE).withLabel(label).withDescription(description).build());
+                }
+                ThingBuilder thingBuilder = editThing();
+                if (replace) {
+                    thingBuilder.withChannels(channels);
+                    updateThing(thingBuilder.build());
+                    logger.debug(
+                            "{} channels defined (with {} different channel types) for the thing {} (from {} items including {} groups)",
+                            channels.size(), nbChannelTypesCreated, getThing().getUID(), items.size(), nbGroups);
+                } else if (channels.size() > 0) {
+                    int nbRemoved = 0;
+                    for (Channel channel : channels) {
+                        if (getThing().getChannel(channel.getUID()) != null) {
+                            thingBuilder.withoutChannel(channel.getUID());
+                            nbRemoved++;
+                        }
+                    }
+                    if (nbRemoved > 0) {
+                        logger.debug("{} channels removed for the thing {} (from {} items)", nbRemoved,
+                                getThing().getUID(), items.size());
+                    }
+                    for (Channel channel : channels) {
+                        thingBuilder.withChannel(channel);
+                    }
+                    updateThing(thingBuilder.build());
+                    if (nbGroups > 0) {
+                        logger.debug("{} channels added for the thing {} (from {} items including {} groups)",
+                                channels.size(), getThing().getUID(), items.size(), nbGroups);
+                    } else {
+                        logger.debug("{} channels added for the thing {} (from {} items)", channels.size(),
+                                getThing().getUID(), items.size());
                     }
                 }
-                String channelTypeId = String.format("item%s%s", itemType.replace(":", ""), readOnly ? "RO" : "");
-                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelTypeId);
-                ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID, null);
-                String label;
-                String description;
-                if (channelType == null) {
-                    logger.trace("Create the channel type {} for item type {}", channelTypeUID, itemType);
-                    label = String.format("Remote %s Item", itemType);
-                    description = String.format("An item of type %s from the remote server.", itemType);
-                    channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType).withDescription(description)
-                            .withStateDescriptionFragment(
-                                    StateDescriptionFragmentBuilder.create().withReadOnly(readOnly).build())
-                            .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-                    channelTypeProvider.addChannelType(channelType);
-                }
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), item.name);
-                logger.trace("Create the channel {} of type {}", channelUID, channelTypeUID);
-                label = "Item " + item.name;
-                description = String.format("Item %s from the remote server.", item.name);
-                channels.add(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID)
-                        .withKind(ChannelKind.STATE).withLabel(label).withDescription(description).build());
-            }
-            ThingBuilder thingBuilder = editThing();
-            if (replace) {
-                thingBuilder.withChannels(channels);
-                updateThing(thingBuilder.build());
-                logger.debug("{} channels defined for the thing {} (from {} items including {} groups)",
-                        channels.size(), getThing().getUID(), items.size(), nbGroups);
-            } else if (channels.size() > 0) {
-                int nbRemoved = 0;
-                for (Channel channel : channels) {
-                    if (getThing().getChannel(channel.getUID()) != null) {
-                        thingBuilder.withoutChannel(channel.getUID());
-                        nbRemoved++;
-                    }
-                }
-                if (nbRemoved > 0) {
-                    logger.debug("{} channels removed for the thing {} (from {} items)", nbRemoved, getThing().getUID(),
-                            items.size());
-                }
-                for (Channel channel : channels) {
-                    thingBuilder.withChannel(channel);
-                }
-                updateThing(thingBuilder.build());
-                if (nbGroups > 0) {
-                    logger.debug("{} channels added for the thing {} (from {} items including {} groups)",
-                            channels.size(), getThing().getUID(), items.size(), nbGroups);
-                } else {
-                    logger.debug("{} channels added for the thing {} (from {} items)", channels.size(),
-                            getThing().getUID(), items.size());
-                }
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.warn("An error occurred while creating the channels for the server {}: {}", getThing().getUID(),
+                        e.getMessage());
+                return false;
             }
         }
     }
@@ -333,15 +353,20 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 List<RemoteopenhabItem> items = restClient.getRemoteItems("name,type,groupType,state,stateDescription");
 
-                createChannels(items, true);
-                setStateOptions(items);
-                for (RemoteopenhabItem item : items) {
-                    updateChannelState(item.name, null, item.state, false);
+                if (createChannels(items, true)) {
+                    setStateOptions(items);
+                    for (RemoteopenhabItem item : items) {
+                        updateChannelState(item.name, null, item.state, false);
+                    }
+
+                    updateStatus(ThingStatus.ONLINE);
+
+                    restartStreamingUpdates();
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                            "Dynamic creation of the channels for the remote server items failed");
+                    stopStreamingUpdates();
                 }
-
-                updateStatus(ThingStatus.ONLINE);
-
-                restartStreamingUpdates();
             }
         } catch (RemoteopenhabException e) {
             logger.debug("{}", e.getMessage());
@@ -459,108 +484,108 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             return;
         }
         State channelState = null;
-        if (stateType == null && "NULL".equals(state)) {
-            channelState = UnDefType.NULL;
-        } else if (stateType == null && "UNDEF".equals(state)) {
-            channelState = UnDefType.UNDEF;
-        } else if ("UnDef".equals(stateType)) {
-            switch (state) {
-                case "NULL":
-                    channelState = UnDefType.NULL;
-                    break;
-                case "UNDEF":
-                    channelState = UnDefType.UNDEF;
-                    break;
-                default:
-                    logger.debug("Invalid UnDef value {} for item {}", state, itemName);
-                    break;
-            }
-        } else if (acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
-            // Item type Number with dimension
-            if (stateType == null || "Quantity".equals(stateType)) {
-                List<Class<? extends State>> stateTypes = Collections.singletonList(QuantityType.class);
-                channelState = TypeParser.parseState(stateTypes, state);
-            } else if ("Decimal".equals(stateType)) {
-                channelState = new DecimalType(state);
+        try {
+            if (stateType == null && "NULL".equals(state)) {
+                channelState = UnDefType.NULL;
+            } else if (stateType == null && "UNDEF".equals(state)) {
+                channelState = UnDefType.UNDEF;
+            } else if ("UnDef".equals(stateType)) {
+                switch (state) {
+                    case "NULL":
+                        channelState = UnDefType.NULL;
+                        break;
+                    case "UNDEF":
+                        channelState = UnDefType.UNDEF;
+                        break;
+                    default:
+                        logger.debug("Invalid UnDef value {} for item {}", state, itemName);
+                        break;
+                }
+            } else if (acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
+                // Item type Number with dimension
+                if (stateType == null || "Quantity".equals(stateType)) {
+                    List<Class<? extends State>> stateTypes = Collections.singletonList(QuantityType.class);
+                    channelState = TypeParser.parseState(stateTypes, state);
+                } else if ("Decimal".equals(stateType)) {
+                    channelState = new DecimalType(state);
+                } else {
+                    logger.debug("Unexpected value type {} for item {}", stateType, itemName);
+                }
             } else {
-                logger.debug("Unexpected value type {} for item {}", stateType, itemName);
-            }
-        } else {
-            switch (acceptedItemType) {
-                case CoreItemFactory.STRING:
-                    if (checkStateType(itemName, stateType, "String")) {
-                        channelState = new StringType(state);
-                    }
-                    break;
-                case CoreItemFactory.NUMBER:
-                    if (checkStateType(itemName, stateType, "Decimal")) {
-                        channelState = new DecimalType(state);
-                    }
-                    break;
-                case CoreItemFactory.SWITCH:
-                    if (checkStateType(itemName, stateType, "OnOff")) {
-                        channelState = "ON".equals(state) ? OnOffType.ON : OnOffType.OFF;
-                    }
-                    break;
-                case CoreItemFactory.CONTACT:
-                    if (checkStateType(itemName, stateType, "OpenClosed")) {
-                        channelState = "OPEN".equals(state) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-                    }
-                    break;
-                case CoreItemFactory.DIMMER:
-                    if (checkStateType(itemName, stateType, "Percent")) {
-                        channelState = new PercentType(state);
-                    }
-                    break;
-                case CoreItemFactory.COLOR:
-                    if (checkStateType(itemName, stateType, "HSB")) {
-                        channelState = HSBType.valueOf(state);
-                    }
-                    break;
-                case CoreItemFactory.DATETIME:
-                    if (checkStateType(itemName, stateType, "DateTime")) {
-                        try {
+                switch (acceptedItemType) {
+                    case CoreItemFactory.STRING:
+                        if (checkStateType(itemName, stateType, "String")) {
+                            channelState = new StringType(state);
+                        }
+                        break;
+                    case CoreItemFactory.NUMBER:
+                        if (checkStateType(itemName, stateType, "Decimal")) {
+                            channelState = new DecimalType(state);
+                        }
+                        break;
+                    case CoreItemFactory.SWITCH:
+                        if (checkStateType(itemName, stateType, "OnOff")) {
+                            channelState = "ON".equals(state) ? OnOffType.ON : OnOffType.OFF;
+                        }
+                        break;
+                    case CoreItemFactory.CONTACT:
+                        if (checkStateType(itemName, stateType, "OpenClosed")) {
+                            channelState = "OPEN".equals(state) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                        }
+                        break;
+                    case CoreItemFactory.DIMMER:
+                        if (checkStateType(itemName, stateType, "Percent")) {
+                            channelState = new PercentType(state);
+                        }
+                        break;
+                    case CoreItemFactory.COLOR:
+                        if (checkStateType(itemName, stateType, "HSB")) {
+                            channelState = HSBType.valueOf(state);
+                        }
+                        break;
+                    case CoreItemFactory.DATETIME:
+                        if (checkStateType(itemName, stateType, "DateTime")) {
                             channelState = new DateTimeType(ZonedDateTime.parse(state, FORMATTER_DATE));
-                        } catch (DateTimeParseException e) {
-                            logger.debug("Failed to parse date {} for item {}", state, itemName);
-                            channelState = null;
                         }
-                    }
-                    break;
-                case CoreItemFactory.LOCATION:
-                    if (checkStateType(itemName, stateType, "Point")) {
-                        channelState = new PointType(state);
-                    }
-                    break;
-                case CoreItemFactory.IMAGE:
-                    if (checkStateType(itemName, stateType, "Raw")) {
-                        channelState = RawType.valueOf(state);
-                    }
-                    break;
-                case CoreItemFactory.PLAYER:
-                    if (checkStateType(itemName, stateType, "PlayPause")) {
-                        switch (state) {
-                            case "PLAY":
-                                channelState = PlayPauseType.PLAY;
-                                break;
-                            case "PAUSE":
-                                channelState = PlayPauseType.PAUSE;
-                                break;
-                            default:
-                                logger.debug("Unexpected value {} for item {}", state, itemName);
-                                break;
+                        break;
+                    case CoreItemFactory.LOCATION:
+                        if (checkStateType(itemName, stateType, "Point")) {
+                            channelState = new PointType(state);
                         }
-                    }
-                    break;
-                case CoreItemFactory.ROLLERSHUTTER:
-                    if (checkStateType(itemName, stateType, "Percent")) {
-                        channelState = new PercentType(state);
-                    }
-                    break;
-                default:
-                    logger.debug("Item type {} is not yet supported", acceptedItemType);
-                    break;
+                        break;
+                    case CoreItemFactory.IMAGE:
+                        if (checkStateType(itemName, stateType, "Raw")) {
+                            channelState = RawType.valueOf(state);
+                        }
+                        break;
+                    case CoreItemFactory.PLAYER:
+                        if (checkStateType(itemName, stateType, "PlayPause")) {
+                            switch (state) {
+                                case "PLAY":
+                                    channelState = PlayPauseType.PLAY;
+                                    break;
+                                case "PAUSE":
+                                    channelState = PlayPauseType.PAUSE;
+                                    break;
+                                default:
+                                    logger.debug("Unexpected value {} for item {}", state, itemName);
+                                    break;
+                            }
+                        }
+                        break;
+                    case CoreItemFactory.ROLLERSHUTTER:
+                        if (checkStateType(itemName, stateType, "Percent")) {
+                            channelState = new PercentType(state);
+                        }
+                        break;
+                    default:
+                        logger.debug("Item type {} is not yet supported", acceptedItemType);
+                        break;
+                }
             }
+        } catch (IllegalArgumentException | DateTimeException e) {
+            logger.warn("Failed to parse state \"{}\" for item {}: {}", state, itemName, e.getMessage());
+            channelState = UnDefType.UNDEF;
         }
         if (channelState != null) {
             if (onlyIfStateChanged && channelState.equals(channelsLastStates.get(channel.getUID()))) {

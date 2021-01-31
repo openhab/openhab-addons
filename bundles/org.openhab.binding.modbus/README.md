@@ -37,8 +37,8 @@ The binding can also *write* data to Modbus slaves using FC05 (Write single coil
 
 Please note the following caveats or limitations
 
-* the binding does *not* act as Modbus slave (e.g. as Modbus TCP server).
-* the binding does *not* support Modbus RTU over Modbus TCP, also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP", although normal "Modbus TCP" is supported. However, there is a workaround: you can use a Virtual Serial Port Server, to emulate a COM Port and Bind it with openHAB using Modbus Serial.
+* The binding does *not* act as Modbus slave (e.g. as Modbus TCP server).
+* The binding *does* support Modbus RTU over Modbus TCP, (also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP"), as well as normal "Modbus TCP".
 
 
 ## Background Material
@@ -108,11 +108,12 @@ When optional parameters are not specified, they default to the values shown in 
 
 Basic parameters
 
-| Parameter | Type    | Required | Default if omitted | Description                                                 |
-| --------- | ------- | -------- | ------------------ | ----------------------------------------------------------- |
-| `host`    | text    |          | `"localhost"`      | IP Address or hostname                                      |
-| `port`    | integer |          | `502`              | Port number                                                 |
-| `id`      | integer |          | `1`                | Slave id. Also known as station address or unit identifier. |
+| Parameter    | Type    | Required | Default if omitted | Description                                                 |
+| ------------ | ------- | -------- | ------------------ | ----------------------------------------------------------- |
+| `host`       | text    |          | `"localhost"`      | IP Address or hostname                                      |
+| `port`       | integer |          | `502`              | Port number                                                 |
+| `id`         | integer |          | `1`                | Slave id. Also known as station address or unit identifier. |
+| `rtuEncoded` | boolean |          | `false`            | Use RTU encoding instead of regular TCP encoding.           |
 
 Advanced parameters
 
@@ -1264,7 +1265,7 @@ Check thing status for errors in configuration or communication.
 Enable `DEBUG` or `TRACE` (even more verbose) logging for the loggers named:
 
 * `org.openhab.binding.modbus`
-* `org.openhab.io.transport.modbus`
+* `org.openhab.core.io.transport.modbus`
 * `net.wimpi.modbus`
 
 Consult [openHAB logging documentation](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for more information.

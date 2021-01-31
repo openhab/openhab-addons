@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,10 +115,10 @@ public class HeatHubHandler extends BaseBridgeHandler {
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
                     }
-                    final DraytonWiserDTO draytonWiseDTO = new DraytonWiserDTO(domain);
+                    final DraytonWiserDTO draytonWiserDTO = new DraytonWiserDTO(domain);
 
-                    updateProperties(draytonWiseDTO);
-                    notifyListeners(draytonWiseDTO);
+                    updateProperties(draytonWiserDTO);
+                    notifyListeners(draytonWiserDTO);
                 }
                 logger.debug("Finished refreshing devices");
             }

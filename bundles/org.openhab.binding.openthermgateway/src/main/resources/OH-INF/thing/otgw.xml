@@ -41,7 +41,7 @@
 			<channel id="sendcommand" typeId="sendcommand"/>
 		</channels>
 		<properties>
-			<property name="version">1.0.2</property>
+			<property name="version">1.1.1</property>
 		</properties>
 		<config-description-ref uri="thing-type:openthermgateway:otgw"/>
 	</thing-type>

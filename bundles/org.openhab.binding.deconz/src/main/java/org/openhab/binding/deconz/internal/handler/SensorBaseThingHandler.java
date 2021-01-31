@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,16 +121,14 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
             return;
         }
 
-        if (!sensorConfig.on) {
-            updateStatus(ThingStatus.OFFLINE);
-            return;
-        }
-
         Map<String, String> editProperties = editProperties();
-        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensorMessage.swversion);
-        editProperties.put(Thing.PROPERTY_MODEL_ID, sensorMessage.modelid);
         editProperties.put(UNIQUE_ID, sensorMessage.uniqueid);
+        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensorMessage.swversion);
+        editProperties.put(Thing.PROPERTY_VENDOR, sensorMessage.manufacturername);
+        editProperties.put(Thing.PROPERTY_MODEL_ID, sensorMessage.modelid);
+
         ignoreConfigurationUpdate = true;
+
         updateProperties(editProperties);
 
         // Some sensors support optional channels
@@ -227,16 +225,16 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
     /**
      * Update channel value from {@link SensorState} object - override to include further channels
      *
-     * @param channelID
+     * @param channelUID
      * @param newState
      * @param initializing
      */
-    protected void valueUpdated(String channelID, SensorState newState, boolean initializing) {
-        switch (channelID) {
+    protected void valueUpdated(ChannelUID channelUID, SensorState newState, boolean initializing) {
+        switch (channelUID.getId()) {
             case CHANNEL_LAST_UPDATED:
                 String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
-                    updateState(channelID, Util.convertTimestampToDateTime(lastUpdated));
+                    updateState(channelUID, Util.convertTimestampToDateTime(lastUpdated));
                 }
                 break;
             default:
@@ -270,31 +268,32 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
 
     protected void updateChannels(SensorState newState, boolean initializing) {
         sensorState = newState;
-        thing.getChannels().forEach(channel -> valueUpdated(channel.getUID().getId(), newState, initializing));
+        thing.getChannels().forEach(channel -> valueUpdated(channel.getUID(), newState, initializing));
     }
 
-    protected void updateSwitchChannel(String channelID, @Nullable Boolean value) {
+    protected void updateSwitchChannel(ChannelUID channelUID, @Nullable Boolean value) {
         if (value == null) {
             return;
         }
-        updateState(channelID, OnOffType.from(value));
+        updateState(channelUID, OnOffType.from(value));
     }
 
-    protected void updateDecimalTypeChannel(String channelID, @Nullable Number value) {
+    protected void updateDecimalTypeChannel(ChannelUID channelUID, @Nullable Number value) {
         if (value == null) {
             return;
         }
-        updateState(channelID, new DecimalType(value.longValue()));
+        updateState(channelUID, new DecimalType(value.longValue()));
     }
 
-    protected void updateQuantityTypeChannel(String channelID, @Nullable Number value, Unit<?> unit) {
-        updateQuantityTypeChannel(channelID, value, unit, 1.0);
+    protected void updateQuantityTypeChannel(ChannelUID channelUID, @Nullable Number value, Unit<?> unit) {
+        updateQuantityTypeChannel(channelUID, value, unit, 1.0);
     }
 
-    protected void updateQuantityTypeChannel(String channelID, @Nullable Number value, Unit<?> unit, double scaling) {
+    protected void updateQuantityTypeChannel(ChannelUID channelUID, @Nullable Number value, Unit<?> unit,
+            double scaling) {
         if (value == null) {
             return;
         }
-        updateState(channelID, new QuantityType<>(value.doubleValue() * scaling, unit));
+        updateState(channelUID, new QuantityType<>(value.doubleValue() * scaling, unit));
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,7 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
 import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.location.Location;
@@ -37,8 +35,6 @@ public class Device {
     protected static final String PROTOCOL_ID_COSIP = "Cosip";
     protected static final String PROTOCOL_ID_VIRTUAL = "Virtual";
     protected static final String PROTOCOL_ID_WMBUS = "wMBus";
-
-    public static final List<String> EMPTY_CAPABILITY_LINK_LIST = new ArrayList<>();
 
     /**
      * Unique id for the device, always available in model.
@@ -82,15 +78,9 @@ public class Device {
 
     private DeviceConfig config;
 
-    /**
-     * Contains a list of the device capabilities.
-     *
-     * Optional.
-     */
-    @SerializedName("capabilities")
-    private List<String> capabilityLinkList;
+    private List<String> capabilities;
 
-    private HashMap<String, Capability> capabilityMap;
+    private Map<String, Capability> capabilityMap;
 
     private DeviceState deviceState;
 
@@ -115,12 +105,6 @@ public class Device {
     private List<Message> messageList;
 
     private boolean lowBattery;
-    /**
-     * Stores the message id, that contains the low battery state. This is needed to identify the device, when the
-     * message
-     * with that id is deleted (thus low battery state is false again).
-     */
-    private String lowBatteryMessageId;
 
     /**
      * Stores, if the {@link Device} is battery powered.
@@ -263,32 +247,28 @@ public class Device {
     /**
      * @return the capabilityList
      */
-    public List<String> getCapabilityLinkList() {
-        if (capabilityLinkList != null) {
-            return capabilityLinkList;
-        } else {
-            return EMPTY_CAPABILITY_LINK_LIST;
-        }
+    public List<String> getCapabilities() {
+        return Objects.requireNonNullElse(capabilities, Collections.emptyList());
     }
 
     /**
      * @param capabilityList the capabilityList to set
      */
-    public void setCapabilityList(List<String> capabilityList) {
-        this.capabilityLinkList = capabilityList;
+    public void setCapabilities(List<String> capabilityList) {
+        this.capabilities = capabilityList;
     }
 
     /**
      * @param capabilityMap the capabilityMap to set
      */
-    public void setCapabilityMap(HashMap<String, Capability> capabilityMap) {
+    public void setCapabilityMap(Map<String, Capability> capabilityMap) {
         this.capabilityMap = capabilityMap;
     }
 
     /**
      * @return the capabilityMap
      */
-    public HashMap<String, Capability> getCapabilityMap() {
+    public Map<String, Capability> getCapabilityMap() {
         return this.capabilityMap;
     }
 
@@ -310,7 +290,7 @@ public class Device {
     }
 
     /**
-     * @param locationList the locationList to set
+     * @param locationLink the locationList to set
      */
     public void setLocation(String locationLink) {
         this.locationLink = locationLink;
@@ -366,10 +346,31 @@ public class Device {
      */
     public void setMessageList(List<Message> messageList) {
         this.messageList = messageList;
+        applyMessageList(messageList);
+    }
 
-        for (final Message m : messageList) {
-            setLowBattery(Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType()));
-            setReachable(!Message.TYPE_DEVICE_UNREACHABLE.equals(m.getType()));
+    private void applyMessageList(List<Message> messageList) {
+        if (messageList != null && !messageList.isEmpty()) {
+            boolean isUnreachableMessageFound = false;
+            boolean isLowBatteryMessageFound = false;
+            for (final Message message : messageList) {
+                switch (message.getType()) {
+                    case Message.TYPE_DEVICE_UNREACHABLE:
+                        isUnreachableMessageFound = true;
+                        break;
+                    case Message.TYPE_DEVICE_LOW_BATTERY:
+                        isLowBatteryMessageFound = true;
+                        break;
+                }
+            }
+            if (isUnreachableMessageFound) {
+                setReachable(false); // overwrite only when there is a corresponding message (to keep the state of the
+                                     // API in other cases)
+            }
+            if (isLowBatteryMessageFound) {
+                setLowBattery(true); // overwrite only when there is a corresponding message (to keep the state of the
+                                     // API in other cases)
+            }
         }
     }
 
@@ -378,7 +379,7 @@ public class Device {
      *
      * @param isReachable
      */
-    public void setReachable(boolean isReachable) {
+    private void setReachable(boolean isReachable) {
         if (getDeviceState().hasIsReachableState()) {
             getDeviceState().setReachable(isReachable);
         }
@@ -398,7 +399,7 @@ public class Device {
      *
      * @param hasLowBattery
      */
-    public void setLowBattery(boolean hasLowBattery) {
+    private void setLowBattery(boolean hasLowBattery) {
         this.lowBattery = hasLowBattery;
     }
 
@@ -409,14 +410,6 @@ public class Device {
      */
     public boolean hasLowBattery() {
         return lowBattery;
-    }
-
-    public String getLowBatteryMessageId() {
-        return this.lowBatteryMessageId;
-    }
-
-    public void setLowBatteryMessageId(String messageId) {
-        this.lowBatteryMessageId = messageId;
     }
 
     /**

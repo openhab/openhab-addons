@@ -8,7 +8,8 @@ HomeKit organizes your home into "accessories" that are made up of a number of "
 Some accessory types require a specific set of characteristics.
 
 HomeKit integration supports following accessory types:
-- Switchable 
+
+- Switchable
 - Outlet
 - Lighting (simple, dimmable, color)
 - Fan
@@ -32,6 +33,40 @@ HomeKit integration supports following accessory types:
 - Light Sensor
 - Carbon Dioxide Sensor
 - Carbon Monoxide Sensor
+
+## Quick start
+
+- install homekit binding via UI
+  
+- add metadata to an existing item (see [UI based configuration](#UI-based-Configuration))
+  
+- go to scan QR code from UI->Setting-HomeKit Integration
+  
+  ![settings_qrcode.png](doc/settings_qrcode.png)
+  
+- open home app on your iPhone or iPad
+- create new home
+  
+  ![ios_add_new_home.png](doc/ios_add_new_home.png)
+  
+- add accessory
+  
+  ![ios_add_accessory.png](doc/ios_add_accessory.png)
+  
+- scan QR code from UI->Setting-HomeKit Integration
+  
+  ![ios_scan_qrcode.png](doc/ios_scan_qrcode.png)  
+
+- click "Add Anyway"
+  
+  ![ios_add_anyway.png](doc/ios_add_anyway.png)
+  
+- follow the instruction of the home app wizard
+  
+  ![ios_add_accessory_wizard.png](doc/ios_add_accessory_wizard.png)
+  
+Add metadata to more item or fine-tune your configuration using further settings
+
 
 ## Global Configuration
 
@@ -92,8 +127,30 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
-e.g.
 
+### UI based Configuration
+In order to add metadata to an item:
+- select desired item in mainUI
+- click on "Add Metadata"
+  
+  ![item_add_metadata_button.png](doc/item_add_metadata_button.png)
+  
+- select "Apple HomeKit" namespace
+  
+  ![select_homekit_namespace.png](doc/select_homekit_namespace.png)
+  
+- click on "HomeKit Accessory/Characteristic"
+  
+  ![add_homekit_tag.png](doc/add_homekit_tag.png)
+
+- select required HomeKit accessory type or characteristic
+  
+  ![select_homekit_accessory_type.png](doc/select_homekit_accessory_type.png)
+  
+- click on "Save"
+
+
+### Textual configuration
 ```xtend
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```
@@ -110,7 +167,7 @@ The tag can be:
 - shorthand version: with only either accessory type or characteristic, e.g. "LeakSensor", "LeakDetectedState".
 
 if shorthand version has only accessory type, then HomeKit will automatically link *all* mandatory characteristics of this accessory type to the openHAB item.
-e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState. 
+e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState.
 Following are equal configuration:
 
 ```xtend
@@ -119,8 +176,8 @@ Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCoverin
 ```
 
 If the shorthand version has only a characteristic then it must be a part of a group which has a HomeKit accessory type.
-You can use openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type, 
-e.g. LeakSensor definition 
+You can use openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type,
+e.g. LeakSensor definition
 
 ```xtend
 Group  gLeakSensor                      "Leak Sensor Group"                                              {homekit="LeakSensor"}
@@ -128,10 +185,9 @@ Switch leaksensor                       "Leak Sensor"                           
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
 ```
 
-
 You can use openHAB group to manage state of multiple items. (see [Group items](https://www.openhab.org/docs/configuration/items.html#derive-group-state-from-member-items))
 In this case, you can assign HomeKit accessory type to the group and to the group items
-Following example defines 3 HomeKit accessories of type Lighting: 
+Following example defines 3 HomeKit accessories of type Lighting:
 
 - "Light 1" and "Light 2" as independent lights
 - "Light Group" that controls "Light 1" and "Light 2" as group
@@ -324,7 +380,6 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | LockCurrentState             | Switch                   | current states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                              |
 |                      |                             | LockTargetState              | Switch                   | target states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                               |
 
-
 ### Examples
 
 See the sample below for example items:
@@ -351,9 +406,9 @@ Number          valve_remaining_duration   "Valve remaining duration"           
 
 Group           gThermostat                "Thermostat"                                              {homekit="Thermostat"}
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f C]"   (gThermostat)        {homekit="Thermostat.CurrentTemperature" [minValue=0, maxValue=40]}
-Number          thermostat_target_temp     "Thermostat Target Temp[%.1f C]"     (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}  
-String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}          
-String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}           
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f C]"     (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}
+String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}
+String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}
 
 Group           gLeakSensor                "Leak Sensor Group"                                       {homekit="LeakSensor"}
 Switch          leaksensor                 "Leak Sensor"                        (gLeakSensor)        {homekit="LeakDetectedState"}
@@ -400,8 +455,8 @@ String          security_target_state      "Security Target State"              
 Group  			gCooler    			        "Cooler Group"       				 	                {homekit="HeaterCooler"}
 Switch          cooler_active 				"Cooler Active" 				    (gCooler) 		    {homekit="ActiveStatus"}
 Number 			cooler_current_temp     	"Cooler Current Temp [%.1f C]"  	(gCooler)  	        {homekit="CurrentTemperature"}
-String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}          
-String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           {homekit="TargetHeaterCoolerState"}  
+String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}
+String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           {homekit="TargetHeaterCoolerState"}
 Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
@@ -413,12 +468,12 @@ Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCo
 The way HomeKit handles dimmer devices can be different to the actual dimmers' way of working.
 HomeKit home app sends following commands/update:
 
-- On brightness change home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON". 
+- On brightness change home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON".
 - On "ON" event home app sends "ON" along with brightness 100%, i.e. "Brightness = 100%" + "State = ON"
-- On "OFF" event home app sends "OFF" without brightness information. 
+- On "OFF" event home app sends "OFF" without brightness information.
 
-However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change. 
-In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration. 
+However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change.
+In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration.
 
 ```xtend
 Dimmer dimmer_light	"Dimmer Light" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
@@ -430,17 +485,18 @@ Following modes are supported:
 - "filterOn" - ON events are filtered out. only OFF events and brightness information are sent
 - "filterBrightness100" - only Brightness=100% is filtered out. everything else sent unchanged. This allows custom logic for soft launch in devices.
 - "filterOnExceptBrightness100"  - ON events are filtered out in all cases except of brightness = 100%.
- 
+
  Examples:
- 
+
  ```xtend
  Dimmer dimmer_light_1	"Dimmer Light 1" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
  Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
  Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
  ```
+
 ### Windows Covering (Blinds) / Window / Door
 
-HomeKit Windows Covering, Window and Door accessory types have following mandatory characteristics: 
+HomeKit Windows Covering, Window and Door accessory types have following mandatory characteristics:
 
 - CurrentPosition (0-100% of current window covering position)
 - TargetPosition (0-100% of target position)
@@ -462,11 +518,12 @@ openHAB Rollershutter is defined by default as:
 - CLOSED if position is 100%.
 
 In contrast, HomeKit window covering/door/window have inverted mapping
+
 - OPEN if position 100%
 - CLOSED if position is 0%
 
 Therefore, HomeKit integration inverts by default the values between openHAB and HomeKit, e.g. if openHAB current position is 30% then it will send 70% to HomeKit app.
-In case you need to disable this logic you can do it with configuration parameter inverted="false", e.g. 
+In case you need to disable this logic you can do it with configuration parameter inverted="false", e.g.
 
 ```xtend
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted="false"]}
@@ -475,9 +532,9 @@ Rollershutter door		       "Door"  	         {homekit = "Door" [inverted="false"
 
  ```
 
-Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger. 
-If your blind supports tilt, and you want to control tilt via HomeKit you need to define blind as a group. 
-e.g. 
+Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger.
+If your blind supports tilt, and you want to control tilt via HomeKit you need to define blind as a group.
+e.g.
 
 ```xtend
 Group           gBlind    			    "Blind with tilt"       						{homekit = "WindowCovering"}
@@ -490,14 +547,14 @@ Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)
 
 The HomeKit valve accessory supports following 2 optional characteristics:
 
-- duration: this describes how long the valve should set "InUse" once it is activated. The duration changes will apply to the next operation. If valve is already active then duration changes have no effect. 
+- duration: this describes how long the valve should set "InUse" once it is activated. The duration changes will apply to the next operation. If valve is already active then duration changes have no effect.
 
 - remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
 
-Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0. 
-It is up to valve to have an own timer and stop valve once the timer is over. 
-Some valves have such timer, e.g. pretty common for sprinklers. 
-In case the valve has no timer capability, openHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over. 
+Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0.
+It is up to valve to have an own timer and stop valve once the timer is over.
+Some valves have such timer, e.g. pretty common for sprinklers.
+In case the valve has no timer capability, openHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over.
 
 configuration for these two cases looks as follow:
 
@@ -519,6 +576,7 @@ Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Dur
 ```
 
 ### Sensors
+
 Sensors have typically one mandatory characteristic, e.g. temperature or lead trigger, and several optional characteristics which are typically used for battery powered sensors and/or wireless sensors.
 Following table summarizes the optional characteristics supported by sensors.
 
@@ -597,7 +655,6 @@ openhab> log:tail io.github.hapjava
 
 ## Console commands
 
-`openhab:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.  
+`openhab:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.
 
 `openhab:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
- 

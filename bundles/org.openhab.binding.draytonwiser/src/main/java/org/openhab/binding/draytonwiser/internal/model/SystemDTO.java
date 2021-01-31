@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ public class SystemDTO {
     private Boolean fotaEnabled;
     private Boolean valveProtectionEnabled;
     private Boolean ecoModeEnabled;
+    private Boolean comfortModeEnabled;
     private BoilerSettingsDTO boilerSettings;
     private Long unixTime;
     private String cloudConnectionStatus;
@@ -161,5 +162,13 @@ public class SystemDTO {
 
     public void setHotWaterButtonOverrideState(final String hotWaterButtonOverrideState) {
         this.hotWaterButtonOverrideState = hotWaterButtonOverrideState;
+    }
+
+    public Boolean getComfortModeEnabled() {
+        return comfortModeEnabled;
+    }
+
+    public void setComfortModeEnabled(final Boolean comfortModeEnabled) {
+        this.comfortModeEnabled = comfortModeEnabled;
     }
 }

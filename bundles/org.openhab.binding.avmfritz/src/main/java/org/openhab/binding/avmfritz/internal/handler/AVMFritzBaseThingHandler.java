@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,7 +156,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         }
     }
 
-    private void updateTemperatureSensor(@Nullable TemperatureModel temperatureModel) {
+    protected void updateTemperatureSensor(@Nullable TemperatureModel temperatureModel) {
         if (temperatureModel != null) {
             updateThingChannelState(CHANNEL_TEMPERATURE,
                     new QuantityType<>(temperatureModel.getCelsius(), SIUnits.CELSIUS));
@@ -301,7 +301,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
      * @param configId ID of the configuration to be updated.
      * @param value Value to be set.
      */
-    private void updateThingChannelConfiguration(String channelId, String configId, Object value) {
+    protected void updateThingChannelConfiguration(String channelId, String configId, Object value) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             Configuration editConfig = channel.getConfiguration();
@@ -367,8 +367,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (command instanceof DecimalType) {
                     temperature = normalizeCelsius(((DecimalType) command).toBigDecimal());
                 } else if (command instanceof QuantityType) {
-                    temperature = normalizeCelsius(
-                            ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS).toBigDecimal());
+                    @SuppressWarnings("unchecked")
+                    QuantityType<Temperature> convertedCommand = ((QuantityType<Temperature>) command)
+                            .toUnit(SIUnits.CELSIUS);
+                    if (convertedCommand != null) {
+                        temperature = normalizeCelsius(convertedCommand.toBigDecimal());
+                    } else {
+                        logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
+                                ((QuantityType<?>) command).getUnit(), SIUnits.CELSIUS);
+                    }
                 } else if (command instanceof IncreaseDecreaseType) {
                     temperature = state.getHkr().getTsoll();
                     if (IncreaseDecreaseType.INCREASE.equals(command)) {

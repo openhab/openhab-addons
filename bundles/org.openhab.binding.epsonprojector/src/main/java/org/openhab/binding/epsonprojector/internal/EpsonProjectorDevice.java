@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,12 +137,13 @@ public class EpsonProjectorDevice {
         return response;
     }
 
-    private String splitResponse(@Nullable String response) throws EpsonProjectorException {
+    private String splitResponse(@Nullable String response)
+            throws EpsonProjectorCommandException, EpsonProjectorException {
         if (response != null && !"".equals(response)) {
             String[] pieces = response.split("=");
 
             if (pieces.length < 2) {
-                throw new EpsonProjectorException("Invalid response from projector: " + response);
+                throw new EpsonProjectorCommandException("Invalid response from projector: " + response);
             }
 
             return pieces[1].trim();
@@ -209,6 +210,7 @@ public class EpsonProjectorDevice {
         if (timeoutJob != null) {
             timeoutJob.cancel(true);
             this.timeoutJob = null;
+            ready = true;
         }
     }
 
@@ -231,8 +233,8 @@ public class EpsonProjectorDevice {
     /*
      * Key code
      */
-    public void sendKeyCode(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
-        sendCommand(String.format("KEY %02X", value));
+    public void sendKeyCode(String value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        sendCommand(String.format("KEY %s", value));
     }
 
     /*

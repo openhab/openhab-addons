@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,45 @@
  */
 package org.openhab.binding.irobot.internal.dto;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.gson.JsonElement;
+
 /**
  * iRobot MQTT protocol messages
  *
  * @author Pavel Fedin - Initial contribution
+ * @author Florian Binder - Added CleanRoomsRequest
  *
  */
 public class MQTTProtocol {
     public interface Request {
         public String getTopic();
+    }
+
+    public static class CleanRoomsRequest extends CommandRequest {
+        public int ordered;
+        public String pmap_id;
+        public List<Region> regions;
+
+        public CleanRoomsRequest(String cmd, String mapId, String[] regions) {
+            super(cmd);
+            ordered = 1;
+            pmap_id = mapId;
+            this.regions = Arrays.stream(regions).map(i -> new Region(i)).collect(Collectors.toList());
+        }
+
+        public static class Region {
+            public String region_id;
+            public String type;
+
+            public Region(String id) {
+                this.region_id = id;
+                this.type = "rid";
+            }
+        }
     }
 
     public static class CommandRequest implements Request {
@@ -31,7 +61,7 @@ public class MQTTProtocol {
         public CommandRequest(String cmd) {
             command = cmd;
             time = System.currentTimeMillis() / 1000;
-            initiator = "localApp";
+            initiator = "openhab";
         }
 
         @Override
@@ -56,6 +86,7 @@ public class MQTTProtocol {
     public static class CleanMissionStatus {
         public String cycle;
         public String phase;
+        public String initiator;
         public int error;
     }
 
@@ -183,6 +214,9 @@ public class MQTTProtocol {
         public String bootloaderVer;
         // "umiVer":"6",
         public String umiVer;
+        // "lastCommand":
+        // {"command":"start","initiator":"localApp","time":1610283995,"ordered":1,"pmap_id":"AAABBBCCCSDDDEEEFFF","regions":[{"region_id":"6","type":"rid"}]}
+        public JsonElement lastCommand;
     }
 
     // Data comes as JSON string: {"state":{"reported":<Actual content here>}}

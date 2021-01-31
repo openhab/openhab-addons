@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.transform.map.internal.profiles;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,14 +27,14 @@ import org.openhab.core.thing.profiles.ProfileTypeBuilder;
 import org.openhab.core.thing.profiles.ProfileTypeProvider;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.transform.TransformationService;
+import org.openhab.transform.map.internal.MapTransformationService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Profilefactory that creates the transformation profile for the map transformation service
+ * {@link ProfileFactory} that creates the transformation profile for the {@link MapTransformationService}.
  *
- * @author Stefan Triller - initial contribution
- *
+ * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { ProfileFactory.class, ProfileTypeProvider.class })
@@ -45,7 +45,7 @@ public class MapTransformationProfileFactory implements ProfileFactory, ProfileT
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return Arrays.asList(ProfileTypeBuilder
+        return List.of(ProfileTypeBuilder
                 .newState(MapTransformationProfile.PROFILE_TYPE_UID, MapTransformationProfile.PROFILE_TYPE_UID.getId())
                 .build());
     }
@@ -58,7 +58,7 @@ public class MapTransformationProfileFactory implements ProfileFactory, ProfileT
 
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
-        return Arrays.asList(MapTransformationProfile.PROFILE_TYPE_UID);
+        return List.of(MapTransformationProfile.PROFILE_TYPE_UID);
     }
 
     @Reference(target = "(openhab.transform=MAP)")

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.*;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -78,6 +79,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
      */
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
+    private int onTime = 0; // in 0.1s
     private String colorMode = "";
 
     // set defaults, we can override them later if we receive better values
@@ -116,11 +118,27 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 needsPropertyUpdate = true;
             }
         }
+        ThingConfig thingConfig = getConfigAs(ThingConfig.class);
+        colorMode = thingConfig.colormode;
+
         super.initialize();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (channelUID.getId().equals(CHANNEL_ONTIME)) {
+            if (command instanceof QuantityType<?>) {
+                QuantityType<?> onTimeSeconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                if (onTimeSeconds != null) {
+                    onTime = 10 * onTimeSeconds.intValue();
+                } else {
+                    logger.warn("Channel '{}' received command '{}', could not be converted to seconds.", channelUID,
+                            command);
+                }
+            }
+            return;
+        }
+
         if (command instanceof RefreshType) {
             valueUpdated(channelUID.getId(), lightStateCache);
             return;
@@ -252,6 +270,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
             // if light shall be off, no other commands are allowed, so reset the new light state
             newLightState.clear();
             newLightState.on = false;
+        } else if (newOn != null && newOn) {
+            newLightState.ontime = onTime;
         }
 
         sendCommand(newLightState, command, channelUID, () -> {
@@ -307,7 +327,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         } else if (lightMessage.manufacturername.equals("MLI")) {
             model = EffectLightModel.TINT_MUELLER;
         } else {
-            logger.info("Could not determine effect light type for thing {}, please request adding support on GitHub.",
+            logger.debug(
+                    "Could not determine effect light type for thing {}, if you feel this is wrong request adding support on GitHub.",
                     thing.getUID());
         }
 
