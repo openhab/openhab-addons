@@ -83,6 +83,8 @@ public class SonosBindingConstants {
     public static final String ALARMPROPERTIES = "alarmproperties";
     public static final String ALARMRUNNING = "alarmrunning";
     public static final String BASS = "bass";
+    public static final String BATTERYCHARGING = "batterycharging";
+    public static final String BATTERYLEVEL = "batterylevel";
     public static final String CLEARQUEUE = "clearqueue";
     public static final String CONTROL = "control";
     public static final String COORDINATOR = "coordinator";

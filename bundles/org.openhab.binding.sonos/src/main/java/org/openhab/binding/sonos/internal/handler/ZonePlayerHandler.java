@@ -689,6 +689,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), RADIO), options);
                     }
                     break;
+                case "MoreInfo":
+                    updateChannel(BATTERYCHARGING);
+                    updateChannel(BATTERYLEVEL);
+                    break;
                 default:
                     break;
             }
@@ -955,6 +959,18 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 value = stateMap.get("CurrentTuneInStationId");
                 if (value != null) {
                     newState = new StringType(value);
+                }
+                break;
+            case BATTERYCHARGING:
+                value = extractInfoFromMoreInfo("BattChg");
+                if (value != null) {
+                    newState = OnOffType.from("CHARGING".equalsIgnoreCase(value));
+                }
+                break;
+            case BATTERYLEVEL:
+                value = extractInfoFromMoreInfo("RawBattPct");
+                if (value != null) {
+                    newState = new DecimalType(value);
                 }
                 break;
             default:
@@ -3224,5 +3240,19 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         int minutes = Integer.parseInt(units[1]);
         int seconds = Integer.parseInt(units[2]);
         return 3600 * hours + 60 * minutes + seconds;
+    }
+
+    private @Nullable String extractInfoFromMoreInfo(String searchedInfo) {
+        String value = stateMap.get("MoreInfo");
+        if (value != null) {
+            String[] fields = value.split(",");
+            for (int i = 0; i < fields.length; i++) {
+                String[] pair = fields[i].trim().split(":");
+                if (pair.length == 2 && searchedInfo.equalsIgnoreCase(pair[0].trim())) {
+                    return pair[1].trim();
+                }
+            }
+        }
+        return null;
     }
 }
