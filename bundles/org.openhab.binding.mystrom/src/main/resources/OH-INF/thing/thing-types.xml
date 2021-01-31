@@ -97,7 +97,7 @@
 		<item-type>Number:Power</item-type>
 		<label>Power Consumption</label>
 		<description>The current power delivered by the plug</description>
-		<state readOnly="true"/>
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature-channel">

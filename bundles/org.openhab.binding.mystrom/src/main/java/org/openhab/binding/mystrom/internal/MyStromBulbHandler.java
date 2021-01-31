@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -73,6 +74,8 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
 
     private PercentType lastBrightness = PercentType.HUNDRED;
     private PercentType lastColorTemperature = new PercentType(50);
+    private String lastMode = MONO;
+    private HSBType lastColor = HSBType.WHITE;
 
     public MyStromBulbHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -93,21 +96,36 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
                         break;
                     case CHANNEL_COLOR:
                         if (command instanceof HSBType) {
-                            String hsv = command.toString().replaceAll(",", ";");
-                            sResp = sendToBulb(null, hsv, null, HSV);
+                            if (Objects.equals(((HSBType) command).as(OnOffType.class), OnOffType.OFF)) {
+                                sResp = sendToBulb("off", null, null, null);
+                            } else {
+                                String hsv = command.toString().replaceAll(",", ";");
+                                sResp = sendToBulb("on", hsv, null, HSV);
+                            }
                         }
                         break;
                     case CHANNEL_BRIGHTNESS:
                         if (command instanceof PercentType) {
-                            String mono = convertPercentageToMyStromCT(lastColorTemperature) + ";" + command.toString();
-                            sResp = sendToBulb(null, mono, null, MONO);
+                            if (Objects.equals(((PercentType) command).as(OnOffType.class), OnOffType.OFF)) {
+                                sResp = sendToBulb("off", null, null, null);
+                            } else {
+                                if (lastMode.equals(MONO)) {
+                                    String mono = convertPercentageToMyStromCT(lastColorTemperature) + ";"
+                                            + command.toString();
+                                    sResp = sendToBulb("on", mono, null, MONO);
+                                } else {
+                                    String hsv = lastColor.getHue().intValue() + ";" + lastColor.getSaturation() + ";"
+                                            + command.toString();
+                                    sResp = sendToBulb("on", hsv, null, HSV);
+                                }
+                            }
                         }
                         break;
                     case CHANNEL_COLOR_TEMPERATURE:
                         if (command instanceof PercentType) {
                             String mono = convertPercentageToMyStromCT((PercentType) command) + ";"
                                     + lastBrightness.toString();
-                            sResp = sendToBulb(null, mono, null, MONO);
+                            sResp = sendToBulb("on", mono, null, MONO);
                         }
                         break;
                     case CHANNEL_RAMP:
@@ -160,35 +178,36 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
     private void updateDevice(@Nullable MyStromBulbResponse deviceInfo) {
         if (deviceInfo != null) {
             updateState(CHANNEL_SWITCH, deviceInfo.on ? OnOffType.ON : OnOffType.OFF);
-            try {
-                HSBType color = null;
-                long numSemicolon = deviceInfo.color.chars().filter(c -> c == ';').count();
-                if (numSemicolon == 1 && deviceInfo.mode.equals(MONO)) {
-                    String[] xy = deviceInfo.color.split(";");
-                    lastColorTemperature = new PercentType(convertMyStromCTToPercentage(xy[0]));
-                    lastBrightness = PercentType.valueOf(xy[1]);
-                    updateState(CHANNEL_COLOR_TEMPERATURE, lastColorTemperature);
+            updateState(CHANNEL_RAMP, QuantityType.valueOf(deviceInfo.ramp, MetricPrefix.MILLI(SECOND)));
+            if (deviceInfo instanceof MyStromDeviceSpecificInfo) {
+                updateState(CHANNEL_POWER, QuantityType.valueOf(((MyStromDeviceSpecificInfo) deviceInfo).power, WATT));
+            }
+            if (deviceInfo.on) {
+                try {
+                    lastMode = deviceInfo.mode;
+                    long numSemicolon = deviceInfo.color.chars().filter(c -> c == ';').count();
+                    if (numSemicolon == 1 && deviceInfo.mode.equals(MONO)) {
+                        String[] xy = deviceInfo.color.split(";");
+                        lastColorTemperature = new PercentType(convertMyStromCTToPercentage(xy[0]));
+                        lastBrightness = PercentType.valueOf(xy[1]);
+                        lastColor = new HSBType(lastColor.getHue() + ",0," + lastBrightness);
+                        updateState(CHANNEL_COLOR_TEMPERATURE, lastColorTemperature);
+                    } else if (numSemicolon == 2 && deviceInfo.mode.equals(HSV)) {
+                        lastColor = HSBType.valueOf(deviceInfo.color.replaceAll(";", ","));
+                        lastBrightness = lastColor.getBrightness();
+                    } else if (!deviceInfo.color.equals("") && deviceInfo.mode.equals(RGB)) {
+                        int r = Integer.parseInt(deviceInfo.color.substring(2, 4), 16);
+                        int g = Integer.parseInt(deviceInfo.color.substring(4, 6), 16);
+                        int b = Integer.parseInt(deviceInfo.color.substring(6, 8), 16);
+                        lastColor = HSBType.fromRGB(r, g, b);
+                        lastBrightness = lastColor.getBrightness();
+                    }
+                    updateState(CHANNEL_COLOR, lastColor);
                     updateState(CHANNEL_BRIGHTNESS, lastBrightness);
-                    updateState(CHANNEL_MODE, StringType.valueOf(deviceInfo.mode));
-                } else if (numSemicolon == 2 && deviceInfo.mode.equals(HSV)) {
-                    color = HSBType.valueOf(deviceInfo.color.replaceAll(";", ","));
-                } else if (!deviceInfo.color.equals("") && deviceInfo.mode.equals(RGB)) {
-                    int r = Integer.parseInt(deviceInfo.color.substring(2, 4), 16);
-                    int g = Integer.parseInt(deviceInfo.color.substring(4, 6), 16);
-                    int b = Integer.parseInt(deviceInfo.color.substring(6, 8), 16);
-                    color = HSBType.fromRGB(r, g, b);
+                    updateState(CHANNEL_MODE, StringType.valueOf(lastMode));
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Error while updating {}", e.getMessage());
                 }
-                if (color != null) {
-                    updateState(CHANNEL_COLOR, color);
-                    updateState(CHANNEL_MODE, StringType.valueOf(deviceInfo.mode));
-                }
-                updateState(CHANNEL_RAMP, QuantityType.valueOf(deviceInfo.ramp, MetricPrefix.MILLI(SECOND)));
-                if (deviceInfo instanceof MyStromDeviceSpecificInfo) {
-                    updateState(CHANNEL_POWER,
-                            QuantityType.valueOf(((MyStromDeviceSpecificInfo) deviceInfo).power, WATT));
-                }
-            } catch (IllegalArgumentException e) {
-                logger.warn("Error while updating {}", e.getMessage());
             }
         }
     }
@@ -241,7 +260,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
      */
     private int convertMyStromCTToPercentage(String ctValue) throws NumberFormatException {
         int ct = Integer.parseInt(ctValue);
-        return (int) ((18 - limitColorTemperature(ct)) / 17.0 * 100);
+        return Math.round((18 - limitColorTemperature(ct)) / 17F * 100F);
     }
 
     /**
@@ -251,7 +270,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
      * @return Color temperature from myStrom. 1 = warmest, 18 = coldest
      */
     private String convertPercentageToMyStromCT(PercentType colorTemperature) {
-        int ct = 18 - (int) (colorTemperature.doubleValue() * 17.0 / 100);
+        int ct = 18 - Math.round(colorTemperature.floatValue() * 17F / 100F);
         return Integer.toString(limitColorTemperature(ct));
     }
 
