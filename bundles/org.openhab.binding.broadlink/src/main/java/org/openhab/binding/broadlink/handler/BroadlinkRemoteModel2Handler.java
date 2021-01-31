@@ -13,8 +13,6 @@
 package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.*;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +39,7 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
             byte message[] = buildMessage((byte) 0x6a, payload);
             byte response[] = sendAndReceiveDatagram(message, "RM2 device status");
             byte decodedPayload[] = decodeDevicePacket(response);
-            float temperature = (float) ((double) (decodedPayload[4] * 10 + decodedPayload[5]) / 10D);
-            updateState(BroadlinkBindingConstants.CHANNEL_TEMPERATURE, new DecimalType(temperature));
+            updateTemperature(decodedPayload, false);
             return true;
         } catch (Exception e) {
             thingLogger.logError("Could not get status: ", e);

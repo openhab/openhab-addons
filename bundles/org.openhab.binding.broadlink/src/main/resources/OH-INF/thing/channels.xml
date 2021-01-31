@@ -11,17 +11,17 @@
 		<category>Text</category>
 	</channel-type>
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
 			<tag>weather</tag>
 		</tags>
-		<state min="-50" max="60" step="0.1" pattern="%.1f °C" readOnly="true">
+		<state min="-50" max="60" step="0.1" pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
@@ -36,9 +36,9 @@
 		<category>PowerOutlet</category>
 	</channel-type>
 	<channel-type id="powerConsumption" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power consumption</label>
-		<state pattern="%.2f" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="light">
 		<item-type>String</item-type>

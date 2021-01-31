@@ -16,9 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.Utils;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
 import org.slf4j.LoggerFactory;
 
@@ -50,13 +48,8 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
             byte message[] = buildMessage((byte) 0x6a, payload);
             byte response[] = sendAndReceiveDatagram(message, "RM4 device status");
             byte decodedPayload[] = decodeDevicePacket(response);
-            // Temps and humidity get divided by 100 now, not 10
-            // Temperature and Humidity response fields are 2 bytes further into the response,
-            // mirroring the request
-            float temperature = (float) ((double) (decodedPayload[6] * 100 + decodedPayload[7]) / 100D);
-            updateState(BroadlinkBindingConstants.CHANNEL_TEMPERATURE, new DecimalType(temperature));
-            float humidity = (float) ((double) (decodedPayload[8] * 100 + decodedPayload[9]) / 100D);
-            updateState(BroadlinkBindingConstants.CHANNEL_HUMIDITY, new DecimalType(humidity));
+            updateTemperature(decodedPayload, true);
+            updateHumidity(decodedPayload, true);
             return true;
         } catch (Exception e) {
             thingLogger.logError("Could not get status: ", e);

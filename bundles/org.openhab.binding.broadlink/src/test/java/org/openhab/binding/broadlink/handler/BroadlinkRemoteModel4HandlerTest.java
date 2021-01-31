@@ -19,13 +19,18 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.util.List;
 
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
@@ -168,16 +173,17 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         List<ChannelUID> channelCaptures = channelCaptor.getAllValues();
         List<State> stateCaptures = stateCaptor.getAllValues();
 
-        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), "temperature");
+        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(),
+                BroadlinkBindingConstants.CHANNEL_TEMPERATURE);
         assertEquals(expectedTemperatureChannel, channelCaptures.get(0));
 
-        DecimalType expectedTemperature = new DecimalType(84.16999816894531D);
+        QuantityType<Temperature> expectedTemperature = new QuantityType<>(84.17D, SIUnits.CELSIUS);
         assertEquals(expectedTemperature, stateCaptures.get(0));
 
-        ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), "humidity");
+        ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), BroadlinkBindingConstants.CHANNEL_HUMIDITY);
         assertEquals(expectedHumidityChannel, channelCaptures.get(1));
 
-        DecimalType expectedHumidity = new DecimalType(-85.81999969482422D);
+        QuantityType<Dimensionless> expectedHumidity = new QuantityType(-85.82D, Units.PERCENT);
         assertEquals(expectedHumidity, stateCaptures.get(1));
     }
 }

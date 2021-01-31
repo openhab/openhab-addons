@@ -26,6 +26,9 @@ import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListener;
 import org.openhab.binding.broadlink.internal.socket.NetworkTrafficObserver;
 import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -300,5 +303,27 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         if (localSocket != null) {
             localSocket.close();
         }
+    }
+
+    protected void updateTemperature(byte[] decodedResponsePacket, boolean generationFour) {
+        // In Generation 4 devices (e.g. RM4), temps and humidity get divided by 100 now, not 10
+        // Also, Temperature and Humidity response fields are 2 bytes further into the response,
+        // mirroring the request
+        float temperature = generationFour
+                ? (float) ((double) (decodedResponsePacket[6] * 100 + decodedResponsePacket[7]) / 100D)
+                : (float) ((double) (decodedResponsePacket[4] * 10 + decodedResponsePacket[5]) / 10D);
+
+        updateState(BroadlinkBindingConstants.CHANNEL_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
+    }
+
+    protected void updateHumidity(byte[] decodedResponsePacket, boolean generationFour) {
+        // In Generation 4 devices (e.g. RM4), temps and humidity get divided by 100 now, not 10
+        // Also, Temperature and Humidity response fields are 2 bytes further into the response,
+        // mirroring the request
+        float humidity = generationFour
+                ? (float) ((double) (decodedResponsePacket[8] * 100 + decodedResponsePacket[9]) / 100D)
+                : (float) ((double) (decodedResponsePacket[6] * 10 + decodedResponsePacket[7]) / 10D);
+
+        updateState(BroadlinkBindingConstants.CHANNEL_HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
     }
 }

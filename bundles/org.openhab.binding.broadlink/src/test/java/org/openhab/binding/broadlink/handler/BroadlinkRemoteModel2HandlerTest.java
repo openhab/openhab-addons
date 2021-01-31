@@ -18,14 +18,17 @@ import static org.openhab.binding.broadlink.handler.BroadlinkSocketModel2Handler
 
 import java.io.IOException;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
@@ -169,10 +172,11 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(mockCallback).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
 
-        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), "temperature");
+        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(),
+                BroadlinkBindingConstants.CHANNEL_TEMPERATURE);
         assertEquals(expectedTemperatureChannel, channelCaptor.getValue());
 
-        DecimalType expectedTemperature = new DecimalType(106.0);
+        QuantityType<Temperature> expectedTemperature = new QuantityType<>(106.0, SIUnits.CELSIUS);
         assertEquals(expectedTemperature, stateCaptor.getValue());
     }
 

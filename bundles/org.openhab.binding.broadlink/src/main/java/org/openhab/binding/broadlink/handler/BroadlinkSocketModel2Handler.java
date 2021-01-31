@@ -17,8 +17,9 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.Utils;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.*;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -112,21 +113,26 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
     private static byte[] POWER_CONSUMPTION_REQUEST_BYTES = { 8, 0, (byte) 254, 1, 5, 1, 0, 0, 0, 45, 0, 0, 0, 0, 0,
             0 };
 
-    // Not all SP2/3 devices will support this operation, so we silently
-    // swallow any errors
     // Translated from: https://github.com/mjg59/python-broadlink/blob/master/broadlink/switch.py#L215
+    // The returned values need to be treated as BCD - thanks to https://github.com/almazik
     protected void getPowerConsumptionFromDevice() {
         try {
             thingLogger.logInfo("SP2/SP3 getting power consumption status...");
             byte message[] = buildMessage((byte) 0x6a, POWER_CONSUMPTION_REQUEST_BYTES);
             byte response[] = sendAndReceiveDatagram(message, "SP2/3 power consumption status bytes");
             byte[] statusBytes = decodeDevicePacket(response);
-            byte[] powerBytes = Utils.slice(statusBytes, 4, 7);
-            float powerValue = (powerBytes[3] << 24) + (powerBytes[2] << 16) + (powerBytes[1] << 8) + powerBytes[0]; // LSB-first?
-            updateState(BroadlinkBindingConstants.CHANNEL_POWER_CONSUMPTION, new DecimalType(powerValue / 100));
+            byte[] powerBytes = Utils.slice(statusBytes, 5, 8);
+            float powerValue = (bcdValue(powerBytes[2]) * 100) + bcdValue(powerBytes[1])
+                    + (bcdValue(powerBytes[0]) / 100);
+            updateState(BroadlinkBindingConstants.CHANNEL_POWER_CONSUMPTION,
+                    new QuantityType<>(powerValue, Units.WATT));
         } catch (Exception ex) {
             thingLogger.logError("Exception while getting power consumption status from device", ex);
         }
+    }
+
+    private static int bcdValue(byte b) {
+        return (b >> 4) * 10 + (b & 0x0F);
     }
 
     private byte[] getStatusByteFromDevice() throws IOException {

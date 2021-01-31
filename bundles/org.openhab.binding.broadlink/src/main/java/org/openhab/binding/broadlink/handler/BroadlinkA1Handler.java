@@ -14,7 +14,6 @@ package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.*;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.*;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +40,8 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
 
             byte[] response = sendAndReceiveDatagram(message, "A1 device status");
             byte decryptResponse[] = decodeDevicePacket(response);
-            float temperature = (float) ((double) (decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
-            thingLogger.logTrace("A1 getStatusFromDevice got temperature " + temperature);
-
-            updateState(BroadlinkBindingConstants.CHANNEL_TEMPERATURE, new DecimalType(temperature));
-            updateState(BroadlinkBindingConstants.CHANNEL_HUMIDITY,
-                    new DecimalType((double) (decryptResponse[6] * 10 + decryptResponse[7]) / 10D));
+            updateTemperature(decryptResponse, false);
+            updateHumidity(decryptResponse, false);
             updateState(BroadlinkBindingConstants.CHANNEL_LIGHT_LEVEL, ModelMapper.getLightValue(decryptResponse[8]));
             updateState(BroadlinkBindingConstants.CHANNEL_AIR_QUALITY, ModelMapper.getAirValue(decryptResponse[10]));
             updateState(BroadlinkBindingConstants.CHANNEL_NOISE_LEVEL, ModelMapper.getNoiseValue(decryptResponse[12]));
