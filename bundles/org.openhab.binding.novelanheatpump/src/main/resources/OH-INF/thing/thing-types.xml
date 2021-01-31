@@ -24,31 +24,31 @@
 		<channels>
 			<!-- channel id="channel1" typeId="sample-channel"/ -->
 			<channel id="temperatureOutside" typeId="temperatureOutside"/>
-            <channel id="temperatureOutsideAvg" typeId="temperatureOutsideAvg"/>
-            <channel id="temperatureReturn" typeId="temperatureReturn"/>
-            <channel id="temperatureReferenceReturn" typeId="temperatureReferenceReturn"/>
-            <channel id="temperatureSupplay" typeId="temperatureSupplay"/>
-            <channel id="temperatureServicewaterReference" typeId="temperatureServicewaterReference"/>
-            <channel id="temperatureServicewater" typeId="temperatureServicewater"/>
-            <channel id="state" typeId="state"/>
-            <channel id="simpleState" typeId="simpleState"/>
-            <channel id="simpleStateNum" typeId="simpleStateNum"/>
-            <channel id="extendedState" typeId="extendedState"/>
-            <channel id="temperatureSolarCollector" typeId="temperatureSolarCollector"/>
-            <channel id="temperatureProbeIn" typeId="temperatureProbeIn"/>
-            <channel id="temperatureProbeOut" typeId="temperatureProbeOut"/>
-            <channel id="hoursCompressor1" typeId="hoursCompressor1"/>
-            <channel id="startsCompressor1" typeId="startsCompressor1"/>
-            <channel id="hoursCompressor2" typeId="hoursCompressor2"/>
-            <channel id="startsCompressor2" typeId="startsCompressor2"/>
-            <channel id="hoursHeatpump" typeId="hoursHeatpump"/>
-            <channel id="hoursHeating" typeId="hoursHeating"/>
-            <channel id="hoursWarmwater" typeId="hoursWarmwater"/>
-            <channel id="hoursCooling" typeId="hoursCooling"/>
-            <channel id="thermalenergyHeating" typeId="thermalenergyHeating"/>
-            <channel id="thermalenergyWarmwater" typeId="thermalenergyWarmwater"/>
-            <channel id="thermalenergyPool" typeId="thermalenergyPool"/>
-            <channel id="thermalenergyTotal" typeId="thermalenergyTotal"/>
+			<channel id="temperatureOutsideAvg" typeId="temperatureOutsideAvg"/>
+			<channel id="temperatureReturn" typeId="temperatureReturn"/>
+			<channel id="temperatureReferenceReturn" typeId="temperatureReferenceReturn"/>
+			<channel id="temperatureSupplay" typeId="temperatureSupplay"/>
+			<channel id="temperatureServicewaterReference" typeId="temperatureServicewaterReference"/>
+			<channel id="temperatureServicewater" typeId="temperatureServicewater"/>
+			<channel id="state" typeId="state"/>
+			<channel id="simpleState" typeId="simpleState"/>
+			<channel id="simpleStateNum" typeId="simpleStateNum"/>
+			<channel id="extendedState" typeId="extendedState"/>
+			<channel id="temperatureSolarCollector" typeId="temperatureSolarCollector"/>
+			<channel id="temperatureProbeIn" typeId="temperatureProbeIn"/>
+			<channel id="temperatureProbeOut" typeId="temperatureProbeOut"/>
+			<channel id="hoursCompressor1" typeId="hoursCompressor1"/>
+			<channel id="startsCompressor1" typeId="startsCompressor1"/>
+			<channel id="hoursCompressor2" typeId="hoursCompressor2"/>
+			<channel id="startsCompressor2" typeId="startsCompressor2"/>
+			<channel id="hoursHeatpump" typeId="hoursHeatpump"/>
+			<channel id="hoursHeating" typeId="hoursHeating"/>
+			<channel id="hoursWarmwater" typeId="hoursWarmwater"/>
+			<channel id="hoursCooling" typeId="hoursCooling"/>
+			<channel id="thermalenergyHeating" typeId="thermalenergyHeating"/>
+			<channel id="thermalenergyWarmwater" typeId="thermalenergyWarmwater"/>
+			<channel id="thermalenergyPool" typeId="thermalenergyPool"/>
+			<channel id="thermalenergyTotal" typeId="thermalenergyTotal"/>
 		</channels>
 
 		<config-description>
@@ -80,216 +80,232 @@
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-    <channel-type id="temperatureOutsideAvg">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureOutsideAvg</label>
-        <description>the average measured temperature by the outside sensor</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="temperatureReturn">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureReturn</label>
-        <description>the temperature returned by floor heating</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="temperatureReferenceReturn">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureReferenceReturn</label>
-        <description>the reference temperature of the heating water</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="temperatureSupplay">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureSupplay</label>
-        <description>the temperature sent to the floor heating</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="temperatureServicewaterReference">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureServicewaterReference</label>
-        <description>the reference temperature of the servicewater</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="temperatureServicewater">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureServicewater</label>
-        <description>the temperature of the servicewater</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="state">
-        <item-type>String</item-type>
-        <label>State</label>
-        <description>contains the time of the state and the state; Possible states are error, running, stopped, defrosting</description>
-        <state readOnly="true">
-<!-- 
-            <options>
-                <option value="OK">OK</option>
-                <option value="WARNING">Warning</option>
-                <option value="ERROR">Error</option>
-                <option value="UNAVAILABLE">Unavailable</option>
-            </options>
- -->
-        </state>
-    </channel-type>
-    <channel-type id="simpleState">
-        <item-type>String</item-type>
-        <label>SimpleState</label>
-        <description>contains only the short statename; Possible states are error, running, stopped, defrosting</description>
-        <state readOnly="true">
-<!-- 
-            <options>
-                <option value="OK">OK</option>
-                <option value="WARNING">Warning</option>
-                <option value="ERROR">Error</option>
-                <option value="UNAVAILABLE">Unavailable</option>
-            </options>
- -->
-        </state>
-    </channel-type>
-    <channel-type id="simpleStateNum">
-        <item-type>Number</item-type>
-        <label>SimpleStateNum</label>
-        <description>same information as simpleState, but as a numeric value</description>
-        <state readOnly="true">
-<!--             <options>
-                <option value="1">Fireplace</option>
-                <option value="2">Away</option>
-                <option value="3">At home</option>
-                <option value="4">Boost</option>
-            </options>
- -->
-        </state>
-    </channel-type>
-    <channel-type id="extendedState">
-        <item-type>String</item-type>
-        <label>extendedState</label>
-        <description>contains the time of the state and the state; Possible states are error, heating, standby, switch-on delay, switching cycle</description>
-        <state readOnly="true">
-<!-- 
-            <options>
-                <option value="OK">OK</option>
-                <option value="WARNING">Warning</option>
-                <option value="ERROR">Error</option>
-                <option value="UNAVAILABLE">Unavailable</option>
-            </options>
- -->
-        </state>
-    </channel-type>
-    <channel-type id="temperatureSolarCollector">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureSolarCollector </label>
-        <description>the temperature of the sensor in the solar collector</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="temperatureProbeIn">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureProbeIn</label>
-        <description>temperature flowing to probe head</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="temperatureProbeOut">
-        <item-type>Number:Temperature</item-type>
-        <label>TemperatureProbeOut</label>
-        <description>temperature coming from probe head</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="hoursCompressor1">
-        <item-type>String</item-type>
-        <label>HoursCompressor1</label>
-        <description>operating hours of compressor 1 one</description>
-        <category>Time</category>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="startsCompressor1">
-        <item-type>Number</item-type>
-        <label>StartsCompressor1</label>
-        <description>total starts of compressor 1 one</description>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="hoursCompressor2">
-        <item-type>String</item-type>
-        <label>HoursCompressor2</label>
-        <description>operating hours of compressor 2 one</description>
-        <category>Time</category>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="startsCompressor2">
-        <item-type>Number</item-type>
-        <label>StartsCompressor2</label>
-        <description>total starts of compressor 2 one</description>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="hoursHeatpump">
-        <item-type>String</item-type>
-        <label>HoursHeatpump</label>
-        <description>operating hours of heatpump</description>
-        <category>Time</category>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="hoursHeating">
-        <item-type>String</item-type>
-        <label>HoursHeating</label>
-        <description>operating hours of heating</description>
-        <category>Time</category>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="hoursWarmwater">
-        <item-type>String</item-type>
-        <label>HoursWarmwater</label>
-        <description>operating hours creating warm water</description>
-        <category>Time</category>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="hoursCooling">
-        <item-type>String</item-type>
-        <label>HoursCooling</label>
-        <description>operating hours of cooling</description>
-        <category>Time</category>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="thermalenergyHeating">
-        <item-type>Number:Energy</item-type>
-        <label>ThermalenergyHeating</label>
-        <description>total energy for heating in KWh</description>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="thermalenergyWarmwater">
-        <item-type>Number:Energy</item-type>
-        <label>ThermalenergyWarmwater</label>
-        <description>total energy for heating in KWh</description>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="thermalenergyPool">
-        <item-type>Number:Energy</item-type>
-        <label>ThermalenergyPool</label>
-        <description>total energy for heating pool in KWh</description>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="thermalenergyTotal">
-        <item-type>Number:Energy</item-type>
-        <label>ThermalenergyTotal</label>
-        <description>sum of all total energy in KWh</description>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>    
+	<channel-type id="temperatureOutsideAvg">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureOutsideAvg</label>
+		<description>the average measured temperature by the outside sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperatureReturn">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureReturn</label>
+		<description>the temperature returned by floor heating</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperatureReferenceReturn">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureReferenceReturn</label>
+		<description>the reference temperature of the heating water</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperatureSupplay">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureSupplay</label>
+		<description>the temperature sent to the floor heating</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperatureServicewaterReference">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureServicewaterReference</label>
+		<description>the reference temperature of the servicewater</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperatureServicewater">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureServicewater</label>
+		<description>the temperature of the servicewater</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>contains the time of the state and the state; Possible states are error, running, stopped, defrosting</description>
+		<state readOnly="true">
+			<!--
+				<options>
+				<option value="OK">OK</option>
+				<option value="WARNING">Warning</option>
+				<option value="ERROR">Error</option>
+				<option value="UNAVAILABLE">Unavailable</option>
+				</options>
+			-->
+		</state>
+	</channel-type>
+	<channel-type id="simpleState">
+		<item-type>String</item-type>
+		<label>SimpleState</label>
+		<description>contains only the short statename; Possible states are error, running, stopped, defrosting</description>
+		<state readOnly="true">
+			<options>
+				<option value="-1">ERROR</option>
+				<option value="0">RUNNING</option>
+				<option value="1">STOPPED</option>
+				<option value="2">APPEAR</option>
+				<option value="3">ERROR</option>
+				<option value="4">DEFROSTING</option>
+				<option value="5">COMPRESSOR_HEATING</option>
+				<option value="6">PUMP_FLOW</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="simpleStateNum">
+		<item-type>Number</item-type>
+		<label>SimpleStateNum</label>
+		<description>same information as simpleState, but as a numeric value</description>
+		<state readOnly="true">
+			<!-- <options>
+				<option value="1">Fireplace</option>
+				<option value="2">Away</option>
+				<option value="3">At home</option>
+				<option value="4">Boost</option>
+				</options>
+			-->
+		</state>
+	</channel-type>
+	<channel-type id="extendedState">
+		<item-type>String</item-type>
+		<label>extendedState</label>
+		<description>contains the time of the state and the state; Possible states are error, heating, standby, switch-on
+			delay, switching cycle</description>
+		<state readOnly="true">
+			<options>
+				<option value="-1">ERROR</option>
+				<option value="0">HEATING</option>
+				<option value="1">STANDBY</option>
+				<option value="2">SWITCH_ON_DELAY</option>
+				<option value="3">SWITCHING_CYCLE_BLOCKING</option>
+				<option value="4">PROVIDER_LOCK_TIME</option>
+				<option value="5">SERVICE_WATER</option>
+				<option value="6">SCREED_HEAT_UP</option>
+				<option value="7">DEFROSTING</option>
+				<option value="8">PUMP_FLOW</option>
+				<option value="9">DISINFECTION</option>
+				<option value="10">COOLING</option>
+				<option value="12">POOL_WATER</option>
+				<option value="13">HEATING_EXT</option>
+				<option value="14">SERVICE_WATER_EXT</option>
+				<option value="16">FLOW_MONITORING</option>
+				<option value="17">ZWE_OPERATION</option>
+				<option value="18">COMPRESSOR_HEATING</option>
+				<option value="19">SERVICE_WATER_ADDITIONAL_HEATING</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="temperatureSolarCollector">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureSolarCollector </label>
+		<description>the temperature of the sensor in the solar collector</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperatureProbeIn">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureProbeIn</label>
+		<description>temperature flowing to probe head</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperatureProbeOut">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureProbeOut</label>
+		<description>temperature coming from probe head</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="hoursCompressor1">
+		<item-type>String</item-type>
+		<label>HoursCompressor1</label>
+		<description>operating hours of compressor 1 one</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="startsCompressor1">
+		<item-type>Number</item-type>
+		<label>StartsCompressor1</label>
+		<description>total starts of compressor 1 one</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="hoursCompressor2">
+		<item-type>String</item-type>
+		<label>HoursCompressor2</label>
+		<description>operating hours of compressor 2 one</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="startsCompressor2">
+		<item-type>Number</item-type>
+		<label>StartsCompressor2</label>
+		<description>total starts of compressor 2 one</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="hoursHeatpump">
+		<item-type>String</item-type>
+		<label>HoursHeatpump</label>
+		<description>operating hours of heatpump</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="hoursHeating">
+		<item-type>String</item-type>
+		<label>HoursHeating</label>
+		<description>operating hours of heating</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="hoursWarmwater">
+		<item-type>String</item-type>
+		<label>HoursWarmwater</label>
+		<description>operating hours creating warm water</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="hoursCooling">
+		<item-type>String</item-type>
+		<label>HoursCooling</label>
+		<description>operating hours of cooling</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="thermalenergyHeating">
+		<item-type>Number:Energy</item-type>
+		<label>ThermalenergyHeating</label>
+		<description>total energy for heating in KWh</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="thermalenergyWarmwater">
+		<item-type>Number:Energy</item-type>
+		<label>ThermalenergyWarmwater</label>
+		<description>total energy for heating in KWh</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="thermalenergyPool">
+		<item-type>Number:Energy</item-type>
+		<label>ThermalenergyPool</label>
+		<description>total energy for heating pool in KWh</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="thermalenergyTotal">
+		<item-type>Number:Energy</item-type>
+		<label>ThermalenergyTotal</label>
+		<description>sum of all total energy in KWh</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>

@@ -64,7 +64,7 @@ public class HeatpumpConnector {
      * @return
      * @throws IOException
      */
-    public int[] getParams() throws IOException {
+    private int[] getParams() throws IOException {
         int[] heatpump_values = null;
         while (datain.available() > 0) {
             datain.readByte();
@@ -116,10 +116,25 @@ public class HeatpumpConnector {
     /**
      * read the internal state of the heatpump
      *
+     * @return The valueobject contains the heatpump parameters and values
+     * @throws IOException indicate that no data can be read from the heatpump
+     */
+    public NovelanHeatpumpResponse getResponse() throws IOException {
+        // read all parameters
+        int[] heatpumpValues = this.getValues();
+        // read all parameters
+        int[] heatpumpParams = this.getParams();
+
+        return new NovelanHeatpumpResponse(heatpumpValues, heatpumpParams);
+    }
+
+    /**
+     * read the internal state of the heatpump
+     *
      * @return a array with all internal data of the heatpump
      * @throws IOException indicate that no data can be read from the heatpump
      */
-    public int[] getValues() throws IOException {
+    private int[] getValues() throws IOException {
         int[] heatpump_values = null;
         while (datain.available() > 0) {
             datain.readByte();

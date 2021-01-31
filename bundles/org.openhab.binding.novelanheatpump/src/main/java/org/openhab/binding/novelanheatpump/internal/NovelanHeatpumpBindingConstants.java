@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.novelanheatpump.internal;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -56,4 +62,8 @@ public class NovelanHeatpumpBindingConstants {
     public static final String THERMALENERGY_WARMWATER = "thermalenergyWarmwater";
     public static final String THERMALENERGY_POOL = "thermalenergyPool";
     public static final String THERMALENERGY_TOTAL = "thermalenergyTotal";
+
+    // Units of measurement of the data delivered by the API
+    public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    public static final Unit<Energy> API_POWER_UNIT = Units.KILOWATT_HOUR;
 }
