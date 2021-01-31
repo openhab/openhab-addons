@@ -47,6 +47,7 @@ import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -73,10 +74,12 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private Item setpointItem;
     private Optional<String> commandTopic;
     private EventFilter eventFilter;
+    private EventPublisher eventPublisher;
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
             BundleContext bundleContext) {
         super(module);
+        this.eventPublisher = eventPublisher;
 
         Configuration config = module.getConfiguration();
 
@@ -210,7 +213,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
                 if ("RESET".equals(changedEvent.getItemState().toString())) {
                     controller.setIntegralResult(0);
                     controller.setDerivativeResult(0);
-                } else {
+                    eventPublisher.post(ItemEventFactory.createStateEvent(changedEvent.getItemName(), UnDefType.NULL));
+                } else if (changedEvent.getItemState() != UnDefType.NULL) {
                     logger.warn("Unknown command: {}", changedEvent.getItemState());
                 }
             } else {
