@@ -177,5 +177,4 @@ public class SingleValueTransformation implements ValueTransformation {
         return "SingleValueTransformation [transformation=" + transformation + ", transformationServiceName="
                 + transformationServiceName + ", transformationServiceParam=" + transformationServiceParam + "]";
     }
-
 }
