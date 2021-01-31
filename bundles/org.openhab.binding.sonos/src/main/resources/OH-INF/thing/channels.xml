@@ -358,4 +358,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- Extended channels (for One, Beam, Arc and Move only) -->
+	<channel-type id="microphone" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Microphone</label>
+		<description>Indicator set to ON when the microphone is enabled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
