@@ -69,6 +69,6 @@ Fragment-Host: org.openhab.binding.modbus
 	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
 	org.apache.commons.commons-pool2;version='[2.8.1,2.8.2)',\
-	org.openhab.binding.modbus;version='[2.5.12,2.5.13)',\
-	org.openhab.binding.modbus.tests;version='[2.5.12,2.5.13)',\
-	org.openhab.io.transport.modbus;version='[2.5.12,2.5.13)'
+	org.openhab.binding.modbus;version='[2.5.13,2.5.14)',\
+	org.openhab.binding.modbus.tests;version='[2.5.13,2.5.14)',\
+	org.openhab.io.transport.modbus;version='[2.5.13,2.5.14)'
