@@ -56,6 +56,7 @@
 			<!-- Extended SONOS channels -->
 			<channel id="batterycharging" typeId="batterycharging"/>
 			<channel id="batterylevel" typeId="system.battery-level"/>
+			<channel id="microphone" typeId="microphone"/>
 		</channels>
 
 		<properties>
