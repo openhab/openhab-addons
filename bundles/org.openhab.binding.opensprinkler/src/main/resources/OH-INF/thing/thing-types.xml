@@ -119,6 +119,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Flow Sensor Count</label>
 		<description>A count of how many pulses the water flow sensor has given.</description>
+		<category>Flow</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -126,6 +127,7 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current Draw</label>
 		<description>The current draw in mA</description>
+		<category>Energy</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -177,6 +179,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Remaining Water Time</label>
 		<description>Read-only property of the remaining water time of the station.</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 
@@ -184,6 +187,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
+		<category>Time</category>
 		<state readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 
@@ -191,6 +195,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Rain Delay</label>
 		<description>The amount of time in hours to delay the running of any programs.</description>
+		<category>Time</category>
 		<state readOnly="false" pattern="%.0f h"/>
 	</channel-type>
 
