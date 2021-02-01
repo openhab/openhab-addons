@@ -135,7 +135,7 @@ public class SDS011Handler extends BaseThingHandler {
         int retryCount = 0;
         // sometimes the device is a little difficult and needs multiple configuration attempts
         while (!initSuccessful && retryCount < retryInit) {
-            logger.debug("Trying to initialize device attempt={}", retryCount);
+            logger.trace("Trying to initialize device attempt={}", retryCount);
             initSuccessful = doInit(localCommunicator, mode, interval);
             retryCount++;
         }
@@ -159,7 +159,7 @@ public class SDS011Handler extends BaseThingHandler {
                 int startReadBeforeDataArrives = 5;
                 long readReportedDataInterval = (config.reportingInterval * 60) - reportingReadStartDelay
                         - startReadBeforeDataArrives;
-                logger.debug("Scheduling job to receive reported values");
+                logger.trace("Scheduling job to receive reported values");
                 dataReadJob = scheduler.scheduleWithFixedDelay(() -> {
                     try {
                         localCommunicator.readSensorData();

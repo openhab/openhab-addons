@@ -86,12 +86,12 @@ public class SDS011Communicator {
             throws PortInUseException, TooManyListenersException, IOException, UnsupportedCommOperationException {
         boolean initSuccessful = true;
 
-        logger.debug("Initializing with mode={}, interval={}", mode, interval);
+        logger.trace("Initializing with mode={}, interval={}", mode, interval);
 
         SerialPort localSerialPort = portId.open(thingHandler.getThing().getUID().toString(), 2000);
-        logger.debug("Port opened, object is={}", localSerialPort);
+        logger.trace("Port opened, object is={}", localSerialPort);
         localSerialPort.setSerialPortParams(9600, 8, 1, 0);
-        logger.debug("Serial parameters set on port");
+        logger.trace("Serial parameters set on port");
 
         outputStream = localSerialPort.getOutputStream();
         inputStream = localSerialPort.getInputStream();
@@ -99,25 +99,25 @@ public class SDS011Communicator {
         if (inputStream == null || outputStream == null) {
             throw new IOException("Could not create input or outputstream for the port");
         }
-        logger.debug("Input and Outputstream opened for the port");
+        logger.trace("Input and Outputstream opened for the port");
 
         // wake up the device
         initSuccessful &= sendSleep(false);
-        logger.debug("Wake up call done, initSuccessful={}", initSuccessful);
+        logger.trace("Wake up call done, initSuccessful={}", initSuccessful);
         initSuccessful &= getFirmware();
-        logger.debug("Firmware requested, initSuccessful={}", initSuccessful);
+        logger.trace("Firmware requested, initSuccessful={}", initSuccessful);
 
         if (mode == WorkMode.POLLING) {
             initSuccessful &= setMode(WorkMode.POLLING);
-            logger.debug("Polling mode set, initSuccessful={}", initSuccessful);
+            logger.trace("Polling mode set, initSuccessful={}", initSuccessful);
             initSuccessful &= setWorkingPeriod((byte) 0);
-            logger.debug("Working period for polling set, initSuccessful={}", initSuccessful);
+            logger.trace("Working period for polling set, initSuccessful={}", initSuccessful);
         } else {
             // reporting
             initSuccessful &= setWorkingPeriod((byte) interval.toMinutes());
-            logger.debug("Working period for reporting set, initSuccessful={}", initSuccessful);
+            logger.trace("Working period for reporting set, initSuccessful={}", initSuccessful);
             initSuccessful &= setMode(WorkMode.REPORTING);
-            logger.debug("Reporting mode set, initSuccessful={}", initSuccessful);
+            logger.trace("Reporting mode set, initSuccessful={}", initSuccessful);
         }
 
         this.serialPort = localSerialPort;
@@ -269,7 +269,7 @@ public class SDS011Communicator {
 
         int b = -1;
         if (localInpuStream != null) {
-            logger.debug("Reading for reply until first byte is found");
+            logger.trace("Reading for reply until first byte is found");
             while ((b = localInpuStream.read()) != Constants.MESSAGE_START_AS_INT) {
                 logger.debug("Trying to find first reply byte now...");
             }
@@ -285,14 +285,14 @@ public class SDS011Communicator {
     }
 
     public void readSensorData() throws IOException {
-        logger.debug("readSensorData() called");
+        logger.trace("readSensorData() called");
         SensorReply reply = readReply();
-        logger.debug("readSensorData(): Read reply={}", reply);
+        logger.trace("readSensorData(): Read reply={}", reply);
         if (reply instanceof SensorMeasuredDataReply) {
             SensorMeasuredDataReply sensorData = (SensorMeasuredDataReply) reply;
-            logger.debug("We received sensor data");
+            logger.trace("We received sensor data");
             if (sensorData.isValidData()) {
-                logger.debug("Sensor data is valid => updating channels");
+                logger.trace("Sensor data is valid => updating channels");
                 thingHandler.updateChannels(sensorData);
             }
         }
@@ -322,15 +322,11 @@ public class SDS011Communicator {
         if (localScheduler != null) {
             Future<?> sleepJob = null;
             try {
-                sleepJob = localScheduler.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            sendSleep(true);
-                        } catch (IOException e) {
-                            logger.debug("Exception while sending sleep on disposing the communicator (will ignore it)",
-                                    e);
-                        }
+                sleepJob = localScheduler.submit(() -> {
+                    try {
+                        sendSleep(true);
+                    } catch (IOException e) {
+                        logger.debug("Exception while sending sleep on disposing the communicator (will ignore it)", e);
                     }
                 });
                 sleepJob.get(5, TimeUnit.SECONDS);
