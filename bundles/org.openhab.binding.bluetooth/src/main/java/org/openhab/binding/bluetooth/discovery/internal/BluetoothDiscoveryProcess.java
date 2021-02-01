@@ -192,25 +192,22 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult> {
 
     private void readDeviceInformationIfMissing() throws InterruptedException {
         if (device.getName() == null) {
-            fecthGattCharacteristic(GattCharacteristic.DEVICE_NAME, result -> device.setName(result));
+            fecthGattCharacteristic(GattCharacteristic.DEVICE_NAME, device::setName);
         }
         if (device.getModel() == null) {
-            fecthGattCharacteristic(GattCharacteristic.MODEL_NUMBER_STRING, result -> device.setModel(result));
+            fecthGattCharacteristic(GattCharacteristic.MODEL_NUMBER_STRING, device::setModel);
         }
         if (device.getSerialNumber() == null) {
-            fecthGattCharacteristic(GattCharacteristic.SERIAL_NUMBER_STRING, result -> device.setSerialNumberl(result));
+            fecthGattCharacteristic(GattCharacteristic.SERIAL_NUMBER_STRING, device::setSerialNumberl);
         }
         if (device.getHardwareRevision() == null) {
-            fecthGattCharacteristic(GattCharacteristic.HARDWARE_REVISION_STRING,
-                    result -> device.setHardwareRevision(result));
+            fecthGattCharacteristic(GattCharacteristic.HARDWARE_REVISION_STRING, device::setHardwareRevision);
         }
         if (device.getFirmwareRevision() == null) {
-            fecthGattCharacteristic(GattCharacteristic.FIRMWARE_REVISION_STRING,
-                    result -> device.setFirmwareRevision(result));
+            fecthGattCharacteristic(GattCharacteristic.FIRMWARE_REVISION_STRING, device::setFirmwareRevision);
         }
         if (device.getSoftwareRevision() == null) {
-            fecthGattCharacteristic(GattCharacteristic.SOFTWARE_REVISION_STRING,
-                    result -> device.setSoftwareRevision(result));
+            fecthGattCharacteristic(GattCharacteristic.SOFTWARE_REVISION_STRING, device::setSoftwareRevision);
         }
     }
 
