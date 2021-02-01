@@ -60,21 +60,27 @@ public class TooManyRequestsException extends RuntimeException {
     public long getSecondsUntilRetry() {
         String retryAfter = this.retryAfter;
         if (retryAfter == null) {
+            logger.debug("Received no Retry-After header.");
             return -1;
         }
 
+        logger.debug("Received Retry-After header: {}", retryAfter);
         try {
-            return Long.parseLong(retryAfter);
+            long seconds = Long.parseLong(retryAfter);
+            logger.debug("Interpreted Retry-After header value: {} seconds", seconds);
+            return seconds;
         } catch (NumberFormatException e) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ccc, d MMM yyyy HH:mm:ss z", Locale.US);
 
             try {
                 LocalDateTime dateTime = LocalDateTime.parse(retryAfter, formatter);
+                logger.debug("Interpreted Retry-After header value: {}", dateTime);
 
                 Duration duration = Duration.between(LocalDateTime.now(), dateTime);
 
-                long seconds = duration.toMillis() / 1000;
-                return Math.max(0, seconds);
+                long seconds = Math.max(0, duration.toMillis() / 1000);
+                logger.debug("Interpreted Retry-After header value: {} seconds.", seconds);
+                return seconds;
             } catch (DateTimeParseException dateTimeParseException) {
                 logger.warn("Unable to parse Retry-After header: {}", retryAfter);
                 return -1;
