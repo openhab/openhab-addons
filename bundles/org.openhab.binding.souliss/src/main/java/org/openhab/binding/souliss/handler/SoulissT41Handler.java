@@ -103,7 +103,6 @@ public class SoulissT41Handler extends SoulissGenericHandler {
         }
         // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off
         updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
-
     }
 
     @Override

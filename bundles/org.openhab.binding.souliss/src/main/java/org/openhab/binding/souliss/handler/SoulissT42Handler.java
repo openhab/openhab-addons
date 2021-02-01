@@ -86,7 +86,6 @@ public class SoulissT42Handler extends SoulissGenericHandler {
         updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
 
         super.setLastStatusStored();
-
     }
 
     @Override

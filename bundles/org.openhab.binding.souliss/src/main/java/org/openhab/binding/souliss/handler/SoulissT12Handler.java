@@ -138,12 +138,10 @@ public class SoulissT12Handler extends SoulissGenericHandler {
 
     public void setState(PrimitiveType state) {
         this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) state);
-
     }
 
     public void setStateAutomode(PrimitiveType state) {
         this.updateState(SoulissBindingConstants.AUTOMODE_CHANNEL, (OnOffType) state);
-
     }
 
     @Override
