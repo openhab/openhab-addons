@@ -96,7 +96,7 @@ public class SseConnectionTest {
         BackoffStrategy backoffStrategy = mock(BackoffStrategy.class);
         when(backoffStrategy.getSecondsUntilRetry(anyInt())).thenReturn(10L);
         when(backoffStrategy.getMinimumSecondsUntilRetry()).thenReturn(5L);
-        when(backoffStrategy.getMaximumSecondsUntilRetry()).thenReturn(Long.MAX_VALUE);
+        when(backoffStrategy.getMaximumSecondsUntilRetry()).thenReturn(3600L);
         return backoffStrategy;
     }
 
@@ -398,6 +398,29 @@ public class SseConnectionTest {
 
         // then:
         verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), eq(5L), eq(TimeUnit.SECONDS));
+        verify(getMockedSseListener()).onConnectionError(ConnectionError.TOO_MANY_RERQUESTS, 0);
+    }
+
+    @Test
+    public void whenTheSseRequestCompletesWithATooManyRequestsResponseWithRetryAfterHeaderWithTooHighValueThenAReconnectIsScheduledWithTheMaximumWaitTime()
+            throws Exception {
+        // given:
+        setUpRunningConnection();
+
+        Response response = mock(Response.class);
+        when(response.getStatus()).thenReturn(429);
+        HttpFields httpFields = new HttpFields();
+        httpFields.add("Retry-After", "3601");
+        when(response.getHeaders()).thenReturn(httpFields);
+
+        Result result = mock(Result.class);
+        when(result.getResponse()).thenReturn(response);
+
+        // when:
+        getRegisteredCompleteListener().onComplete(result);
+
+        // then:
+        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), eq(3600L), eq(TimeUnit.SECONDS));
         verify(getMockedSseListener()).onConnectionError(ConnectionError.TOO_MANY_RERQUESTS, 0);
     }
 
