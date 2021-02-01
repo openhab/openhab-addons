@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -1279,7 +1280,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (StringUtils.equals(notification.status, "ON")) {
                     if ("Reminder".equals(notification.type)) {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
-                        String time = Objects.requireNonNullElse(notification.originalTime, "00:00:00");
+                        String time = Optional.ofNullable(notification.originalTime).orElse("00:00:00");
                         ZonedDateTime alarmTime = ZonedDateTime.parse(notification.originalDate + "T" + time + offset);
                         if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
                             continue; // Ignore recurring entry if alarm time is before now
