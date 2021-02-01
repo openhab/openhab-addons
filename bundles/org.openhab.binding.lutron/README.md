@@ -808,17 +808,20 @@ This binding currently supports the following thing types:
 | ra-phantomButton | Thing   | Phantom Button to control multiple controls (Scenes) |
 
 
-## Thing Configurations
+## Thing Configuration Parameters
 
-| Thing            | Config       | Description                                                           |
-|------------------|--------------|-----------------------------------------------------------------------|
-| ra-rs232         | portName     | The serial port to use to communicate with Chronos or RS232 module    |
-|                  | baud         | (Optional) Baud Rate (defaults to 9600)                               |
-| ra-dimmer        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                 |
-|                  | fadeOutSec   | (Optional) Time in seconds dimmer should take when lowering the level |
-|                  | fadeInSec    | (Optional) Time in seconds dimmer should take when lowering the level |
-| ra-switch        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                 |
-| ra-phantomButton | buttonNumber | Phantom Button Number within the Lutron RadioRA system                |
+| Thing            | Parameter    | Description                                                            |
+|------------------|--------------|------------------------------------------------------------------------|
+| ra-rs232         | portName     | The serial port to use to communicate with Chronos or RS232 module     |
+|                  | baud         | (Optional) Baud Rate (defaults to 9600)                                |
+| ra-dimmer        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                  |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
+|                  | fadeOutSec   | (Optional) Time in seconds dimmer should take when lowering the level  |
+|                  | fadeInSec    | (Optional) Time in seconds dimmer should take when lowering the level  |
+| ra-switch        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                  |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
+| ra-phantomButton | buttonNumber | Phantom Button Number within the Lutron RadioRA system                 |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
 
 ## Channels
 

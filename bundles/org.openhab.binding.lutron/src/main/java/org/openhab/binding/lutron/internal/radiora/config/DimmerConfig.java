@@ -22,6 +22,7 @@ import java.math.BigDecimal;
  */
 public class DimmerConfig {
     private int zoneNumber;
+    public int system = 0;
     private BigDecimal fadeOutSec;
     private BigDecimal fadeInSec;
 

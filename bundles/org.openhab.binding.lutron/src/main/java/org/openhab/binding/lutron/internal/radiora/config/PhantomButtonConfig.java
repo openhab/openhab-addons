@@ -16,13 +16,14 @@ import java.math.BigDecimal;
 
 /**
  * Configuration class for PhantomButton thing type.
- * 
+ *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class PhantomButtonConfig {
 
     private int buttonNumber;
+    public int system = 0;
     private BigDecimal fadeSec;
 
     public int getButtonNumber() {

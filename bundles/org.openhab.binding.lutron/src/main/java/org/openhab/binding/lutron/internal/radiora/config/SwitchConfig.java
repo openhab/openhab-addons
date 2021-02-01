@@ -14,13 +14,14 @@ package org.openhab.binding.lutron.internal.radiora.config;
 
 /**
  * Configuration class for Switch thing type.
- * 
+ *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
 public class SwitchConfig {
 
     private int zoneNumber;
+    public int system = 0;
 
     public int getZoneNumber() {
         return zoneNumber;

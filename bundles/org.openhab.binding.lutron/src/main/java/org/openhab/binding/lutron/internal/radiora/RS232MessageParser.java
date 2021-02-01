@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RS232MessageParser {
 
-    private Logger logger = LoggerFactory.getLogger(RS232MessageParser.class);
+    private final Logger logger = LoggerFactory.getLogger(RS232MessageParser.class);
 
     public RadioRAFeedback parse(String msg) {
         String prefix = parsePrefix(msg);
