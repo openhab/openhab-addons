@@ -22,7 +22,26 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 interface BackoffStrategy {
     /**
-     * Gets the number of seconds until a retryable operation is performed.
+     * Gets the minimal number of seconds to wait until retrying an operation. This is the lower bound of the value
+     * returned by {@link #getSecondsUntilRetry(int)}.
+     *
+     * @return The minimal number of seconds to wait until retrying an operation. Always larger or equal to zero, always
+     *         smaller than {@link #getMaximumSecondsUntilRetry()}.
+     */
+    long getMinimumSecondsUntilRetry();
+
+    /**
+     * Gets the maximal number of seconds to wait until retrying an operation. This is the upper bound of the value
+     * returned by {@link #getSecondsUntilRetry(int)}.
+     *
+     * @return The maximal number of seconds to wait until retrying an operation. Always larger or equal to zero, always
+     *         larger than {@link #getMinimumSecondsUntilRetry()}.
+     */
+    long getMaximumSecondsUntilRetry();
+
+    /**
+     * Gets the number of seconds until a retryable operation is performed. The value returned by this method is within
+     * the interval defined by {@link #getMinimumSecondsUntilRetry()} and {@link #getMaximumSecondsUntilRetry()}.
      *
      * @param failedConnectionAttempts The number of failed attempts.
      * @return The number of seconds to wait before making the next attempt.

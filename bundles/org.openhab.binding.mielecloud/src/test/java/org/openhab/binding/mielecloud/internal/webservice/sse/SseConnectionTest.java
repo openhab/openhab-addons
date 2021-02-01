@@ -95,6 +95,8 @@ public class SseConnectionTest {
     private BackoffStrategy mockBackoffStrategy() {
         BackoffStrategy backoffStrategy = mock(BackoffStrategy.class);
         when(backoffStrategy.getSecondsUntilRetry(anyInt())).thenReturn(10L);
+        when(backoffStrategy.getMinimumSecondsUntilRetry()).thenReturn(5L);
+        when(backoffStrategy.getMaximumSecondsUntilRetry()).thenReturn(Long.MAX_VALUE);
         return backoffStrategy;
     }
 

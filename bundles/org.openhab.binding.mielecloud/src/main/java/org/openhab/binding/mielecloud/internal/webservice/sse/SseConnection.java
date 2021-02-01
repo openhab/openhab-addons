@@ -45,8 +45,6 @@ public final class SseConnection {
     private static final long CONNECTION_TIMEOUT = 30;
     private static final TimeUnit CONNECTION_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    private static final long MINIMUM_RECONNECT_ATTEMPT_WAIT_TIME_IN_SECONDS = 5;
-
     private final Logger logger = LoggerFactory.getLogger(SseConnection.class);
 
     private final String endpoint;
@@ -206,7 +204,8 @@ public final class SseConnection {
     }
 
     private void scheduleReconnect(long secondsUntilRetry) {
-        long retryInSeconds = Math.max(MINIMUM_RECONNECT_ATTEMPT_WAIT_TIME_IN_SECONDS, secondsUntilRetry);
+        long retryInSeconds = Math.max(backoffStrategy.getMinimumSecondsUntilRetry(),
+                Math.min(secondsUntilRetry, backoffStrategy.getMaximumSecondsUntilRetry()));
         scheduler.schedule(this::connectInternal, retryInSeconds, TimeUnit.SECONDS);
         logger.debug("Scheduled reconnect attempt for Miele webservice to take place in {} seconds", retryInSeconds);
     }

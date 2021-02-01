@@ -75,6 +75,16 @@ class ExponentialBackoffWithJitter implements BackoffStrategy {
     }
 
     @Override
+    public long getMinimumSecondsUntilRetry() {
+        return minimumWaitTimeInSeconds;
+    }
+
+    @Override
+    public long getMaximumSecondsUntilRetry() {
+        return maximumWaitTimeInSeconds;
+    }
+
+    @Override
     public long getSecondsUntilRetry(int failedAttempts) {
         if (failedAttempts < 0) {
             logger.warn("The number of failed attempts must not be smaller than zero, was {}.", failedAttempts);
