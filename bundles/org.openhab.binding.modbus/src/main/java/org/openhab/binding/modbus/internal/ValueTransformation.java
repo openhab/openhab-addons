@@ -23,7 +23,7 @@ import org.osgi.framework.BundleContext;
 /**
  * Interface for Transformation
  *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  */
 @NonNullByDefault
