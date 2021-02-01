@@ -17,11 +17,15 @@ import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
@@ -291,7 +295,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             // Should not happen! This method is not called in case configuration errors and writeType is validated
             // already in initialization (validateAndParseWriteParameters).
             // We keep this here for future-proofing the code (new writeType values)
-            throw new NotImplementedException(String.format(
+            throw new IllegalStateException(String.format(
                     "writeType does not equal %s or %s and thus configuration is invalid. Should not end up this far with configuration error.",
                     WRITE_TYPE_COIL, WRITE_TYPE_HOLDING));
         }
@@ -433,8 +437,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         ModbusReadFunctionCode functionCode = this.functionCode;
         boolean readingDiscreteOrCoil = functionCode == ModbusReadFunctionCode.READ_COILS
                 || functionCode == ModbusReadFunctionCode.READ_INPUT_DISCRETES;
-        boolean readStartMissing = StringUtils.isBlank(config.getReadStart());
-        boolean readValueTypeMissing = StringUtils.isBlank(config.getReadValueType());
+        boolean readStartMissing = config.getReadStart() == null || config.getReadStart().isBlank();
+        boolean readValueTypeMissing = config.getReadValueType() == null || config.getReadValueType().isBlank();
 
         if (childOfEndpoint && readRequest == null) {
             if (!readStartMissing || !readValueTypeMissing) {
@@ -503,10 +507,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     }
 
     private void validateAndParseWriteParameters(ModbusDataConfiguration config) throws ModbusConfigurationException {
-        boolean writeTypeMissing = StringUtils.isBlank(config.getWriteType());
-        boolean writeStartMissing = StringUtils.isBlank(config.getWriteStart());
-        boolean writeValueTypeMissing = StringUtils.isBlank(config.getWriteValueType());
-        boolean writeTransformationMissing = StringUtils.isBlank(config.getWriteTransform());
+        boolean writeTypeMissing = config.getWriteType() == null || config.getWriteType().isBlank();
+        boolean writeStartMissing = config.getWriteStart() == null || config.getWriteStart().isBlank();
+        boolean writeValueTypeMissing = config.getWriteValueType() == null || config.getWriteValueType().isBlank();
+        boolean writeTransformationMissing = config.getWriteTransform() == null || config.getWriteTransform().isBlank();
         writeTransformation = new Transformation(config.getWriteTransform());
         boolean writingCoil = WRITE_TYPE_COIL.equals(config.getWriteType());
         writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing && writeValueTypeMissing
@@ -865,8 +869,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                         localReadTransformation.isIdentityTransform() ? "<identity>" : localReadTransformation);
                 states.put(channelUID, transformedState);
             } else {
-                String types = StringUtils.join(acceptedDataTypes.stream().map(cls -> cls.getSimpleName()).toArray(),
-                        ", ");
+                String types = String.join(", ",
+                        acceptedDataTypes.stream().map(cls -> cls.getSimpleName()).toArray(String[]::new));
                 logger.warn(
                         "Channel {} will not be updated since transformation was unsuccessful. Channel is expecting the following data types [{}]. Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
                         channelId, types, numericState, readValueType, boolValue,
