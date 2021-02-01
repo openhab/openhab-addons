@@ -71,9 +71,12 @@ public class NanoleafBindingConstants {
     public static final String API_MIN_FW_VER_LIGHTPANELS = "1.5.0";
     public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
     public static final String MODEL_ID_LIGHTPANELS = "NL22";
-    public static final String MODEL_ID_CANVAS = "NL29";
+
+    public static final String[] MODELS_WITH_TOUCHSUPPORT = { "NL29", "NL42" };
     public static final String DEVICE_TYPE_LIGHTPANELS = "lightPanels";
-    public static final String DEVICE_TYPE_CANVAS = "canvas";
+    public static final String DEVICE_TYPE_TOUCHSUPPORT = "canvas"; // we need to keep this enum for backward
+                                                                    // compatibility even though not only canvas type
+                                                                    // support touch
 
     // mDNS discovery service type
     // see http://forum.nanoleaf.me/docs/openapi#_gf9l5guxt8r0
