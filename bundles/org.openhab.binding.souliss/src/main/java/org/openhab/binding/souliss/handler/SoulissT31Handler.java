@@ -186,7 +186,6 @@ public class SoulissT31Handler extends SoulissGenericHandler {
             }
 
         }
-
     }
 
     public void setMeasuredValue(DecimalType valueOf) {

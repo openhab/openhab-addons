@@ -52,7 +52,6 @@ public class SoulissTopicsHandler extends SoulissGenericActionMessage implements
 
     public void setState(PrimitiveType state) {
         this.updateState(SoulissBindingConstants.T5N_VALUE_CHANNEL, (DecimalType) state);
-
     }
 
     public void setFloatValue(float valueOf) {

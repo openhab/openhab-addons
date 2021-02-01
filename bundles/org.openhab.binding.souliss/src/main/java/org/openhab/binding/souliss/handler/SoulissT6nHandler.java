@@ -58,7 +58,6 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
 
     public void setState(PrimitiveType state) {
         this.updateState(SoulissBindingConstants.T6N_VALUE_CHANNEL, (DecimalType) state);
-
     }
 
     @Override
