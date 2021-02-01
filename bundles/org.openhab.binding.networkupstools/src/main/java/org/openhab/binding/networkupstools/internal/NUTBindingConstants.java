@@ -14,16 +14,9 @@ package org.openhab.binding.networkupstools.internal;
 
 import java.net.URI;
 
-import javax.measure.Unit;
-import javax.measure.quantity.Power;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
-
-import tec.uom.se.format.SimpleUnitFormat;
-import tec.uom.se.unit.ProductUnit;
 
 /**
  * The {@link NUTBindingConstants} class defines common constants, which are
@@ -46,14 +39,6 @@ public class NUTBindingConstants {
     public static final URI DYNAMIC_CHANNEL_CONFIG_QUANTITY_TYPE = URI
             .create("channel-type:ups:dynamic-channel-config-quantity-type");
 
-    public static final Unit<Power> AMPERE_PER_HOUR = new ProductUnit<>(Units.AMPERE.divide(Units.HOUR));
-    public static final Unit<Power> VOLT_AMPERE = new ProductUnit<>(Units.VOLT.multiply(Units.AMPERE));
-
-    static {
-        SimpleUnitFormat.getInstance().label(AMPERE_PER_HOUR, "Ah");
-        SimpleUnitFormat.getInstance().label(VOLT_AMPERE, "VA");
-    }
-
     private static final String PARAMETER_PREFIX_UPS = "ups.";
 
     /**
@@ -71,7 +56,7 @@ public class NUTBindingConstants {
 
         private final String nutName;
 
-        private Parameters(final String nutName) {
+        Parameters(final String nutName) {
             this.nutName = nutName;
         }
 
