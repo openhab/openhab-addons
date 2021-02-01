@@ -99,4 +99,12 @@
 			<default>1000</default>
 		</parameter>
 	</config-description>
+
+	<config-description uri="profile:lcn:output">
+		<parameter name="ramp" type="decimal" required="false" min="0.25" max="486.0" unit="s">
+			<label>Ramp</label>
+			<description>Time in seconds until the output's value is reached.</description>
+		</parameter>
+
+	</config-description>
 </config-description:config-descriptions>
