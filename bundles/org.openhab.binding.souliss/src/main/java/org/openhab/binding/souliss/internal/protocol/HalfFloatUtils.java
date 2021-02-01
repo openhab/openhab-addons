@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @since 1.7.0
  */
 @NonNullByDefault
-public class HalfFloatUtils {
+public final class HalfFloatUtils {
 
     public static boolean isNaN(float x) {
         return x != x;

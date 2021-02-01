@@ -14,6 +14,7 @@ package org.openhab.binding.souliss.internal.protocol;
 
 import java.net.DatagramSocket;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,8 +41,8 @@ public class SoulissBindingNetworkParameters {
     public static final long SECURE_SEND_TIMEOUT_TO_REQUEUE = PRESET_TIME;
     public static final long SECURE_SEND_TIMEOUT_TO_REMOVE_PACKET = PRESET_TIME;
 
-    private static ConcurrentHashMap<Byte, Thing> hashTableGateways = new ConcurrentHashMap<Byte, Thing>();
-    private static ConcurrentHashMap<String, Thing> hashTableTopics = new ConcurrentHashMap<String, Thing>();
+    private static ConcurrentMap<Byte, Thing> hashTableGateways = new ConcurrentHashMap<>();
+    private static ConcurrentMap<String, Thing> hashTableTopics = new ConcurrentHashMap<>();
 
     @Nullable
     private static DatagramSocket datagramSocket = null;
@@ -72,11 +73,11 @@ public class SoulissBindingNetworkParameters {
         hashTableTopics.put(sUID, thing);
     }
 
-    public static ConcurrentHashMap<Byte, Thing> getHashTableGateways() {
+    public static ConcurrentMap<Byte, Thing> getHashTableGateways() {
         return hashTableGateways;
     }
 
-    public static ConcurrentHashMap<String, Thing> getHashTableTopics() {
+    public static ConcurrentMap<String, Thing> getHashTableTopics() {
         return hashTableTopics;
     }
 

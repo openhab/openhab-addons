@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -286,7 +286,7 @@ public class SoulissBindingUDPDecoder {
             }
 
             try {
-                ConcurrentHashMap<String, Thing> gwMaps = SoulissBindingNetworkParameters.getHashTableTopics();
+                ConcurrentMap<String, Thing> gwMaps = SoulissBindingNetworkParameters.getHashTableTopics();
                 Collection<Thing> gwMapsCollection = gwMaps.values();
                 SoulissTopicsHandler topicHandler;
                 boolean bIsPresent = false;
@@ -376,7 +376,7 @@ public class SoulissBindingUDPDecoder {
                     if (handler != null) {
                         int tgtnode = i - 5;
                         if (((SoulissGenericHandler) handler).getNode() == tgtnode) {
-                            ((SoulissGenericHandler) handler).setHealty(Byte.valueOf(mac.get(i)));
+                            ((SoulissGenericHandler) handler).setHealty((mac.get(i)));
                         }
                     } else {
                         logger.debug("decode Healthy Request Warning. Thing handler is null");

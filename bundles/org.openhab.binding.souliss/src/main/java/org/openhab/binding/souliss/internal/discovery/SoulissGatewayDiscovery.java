@@ -21,6 +21,8 @@ import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.binding.souliss.handler.SoulissGatewayHandler;
@@ -46,17 +48,22 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
-
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.souliss")
 public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult {
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
+    @Nullable
     private SoulissDiscoverJob soulissDiscoverRunnableClass = null;
-    private ThingUID gatewayUID;
+    // @Nullable
+    // private ThingUID gatewayUID;
     // private ScheduledFuture<?> schedulerFuture;
+    @Nullable
     private DatagramSocket datagramSocket;
+    @Nullable
     SoulissBindingUDPServerJob udpServerRunnableClass = null;
 
-    private ScheduledFuture<?> discoveryJob;
+    @Nullable
+    private ScheduledFuture<?> discoveryJob = null;
 
     public SoulissGatewayDiscovery() throws IllegalArgumentException, UnknownHostException {
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
@@ -117,14 +124,14 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     @Override
     public void gatewayDetected(InetAddress addr, String id) {
         logger.debug("Souliss gateway found: {} ", addr.getHostName());
-        gatewayUID = new ThingUID(SoulissBindingConstants.GATEWAY_THING_TYPE,
-                Integer.toString((Byte.parseByte(id) & 0xFF)));
 
         String label = "Souliss Gateway " + (Byte.parseByte(id) & 0xFF);
         Map<String, Object> properties = new TreeMap<>();
         // properties.put(SoulissBindingConstants.CONFIG_ID, id);
         properties.put(SoulissBindingConstants.CONFIG_IP_ADDRESS, addr.getHostAddress());
         // SoulissBindingNetworkParameters.ipAddressOnLAN = addr.getHostAddress();
+        ThingUID gatewayUID = new ThingUID(SoulissBindingConstants.GATEWAY_THING_TYPE,
+                Integer.toString((Byte.parseByte(id) & 0xFF)));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(gatewayUID).withLabel(label)
                 .withProperties(properties).build();
         thingDiscovered(discoveryResult);
@@ -137,7 +144,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         // create discovery class
         if (soulissDiscoverRunnableClass == null) {
             try {
-                soulissDiscoverRunnableClass = new SoulissDiscoverJob(datagramSocket, this);
+                if (datagramSocket != null) {
+                    soulissDiscoverRunnableClass = new SoulissDiscoverJob(datagramSocket, this);
+                }
             } catch (SocketException e) {
                 logger.error("Opening the souliss discovery service failed: {} ", e.getLocalizedMessage());
                 return;
@@ -164,10 +173,10 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         super.stopScan();
     }
 
-    @Override
-    public ThingUID getGatewayUID() {
-        return gatewayUID;
-    }
+    // @Override
+    // public ThingUID getGatewayUID() {
+    // return gatewayUID;
+    // }
 
     @Override
     public void thingDetectedActionMessages(String TopicNumber, String sTopicVariant) {
@@ -185,16 +194,19 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     @Override
     public void thingDetectedTypicals(byte lastByteGatewayIP, byte typical, byte node, byte slot) {
+        @Nullable
         ThingUID thingUID = null;
         String label = "";
         DiscoveryResult discoveryResult;
         SoulissGatewayHandler gw = (SoulissGatewayHandler) (SoulissBindingNetworkParameters
                 .getGateway(lastByteGatewayIP).getHandler());
         if (gw != null) {
-            gatewayUID = gw.getThing().getUID();
 
             if (lastByteGatewayIP == (byte) Integer.parseInt(gw.ipAddressOnLAN.split("\\.")[3])) {
                 String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
+
+                ThingUID gatewayUID = gw.getThing().getUID();
+
                 switch (typical) {
                     case SoulissBindingProtocolConstants.SOULISS_T11:
                         thingUID = new ThingUID(SoulissBindingConstants.T11_THING_TYPE, gatewayUID, sNodeId);
