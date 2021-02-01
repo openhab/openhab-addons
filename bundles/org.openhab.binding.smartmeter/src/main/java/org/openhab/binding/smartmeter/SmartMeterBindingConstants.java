@@ -48,6 +48,6 @@ public class SmartMeterBindingConstants {
     }
 
     public static String getObisChannelId(String obis) {
-        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "_").replaceAll("[^\\w-]", "");
+        return getObisChannelIdPattern(obis).replaceAll("[^\\w-]", "");
     }
 }
