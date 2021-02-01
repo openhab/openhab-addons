@@ -48,6 +48,7 @@ public class RefreshingUrlCache {
     private final Set<Consumer<Content>> consumers = ConcurrentHashMap.newKeySet();
     private final List<String> headers;
     private final HttpMethod httpMethod;
+    private final String httpContent;
 
     private final ScheduledFuture<?> future;
     private @Nullable Content lastContent;
@@ -60,6 +61,7 @@ public class RefreshingUrlCache {
         this.bufferSize = thingConfig.bufferSize;
         this.headers = thingConfig.headers;
         this.httpMethod = thingConfig.stateMethod;
+        this.httpContent = thingConfig.stateContent;
         fallbackEncoding = thingConfig.encoding;
 
         future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);
@@ -81,7 +83,7 @@ public class RefreshingUrlCache {
             URI uri = Util.uriFromString(String.format(this.url, new Date()));
             logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
-            httpClient.newRequest(uri, httpMethod).thenAccept(request -> {
+            httpClient.newRequest(uri, httpMethod, httpContent).thenAccept(request -> {
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
 
                 headers.forEach(header -> {

@@ -20,6 +20,7 @@ It can be extended with different channels.
 | `password`        | yes      |    -    | Password for authentication (advanced parameter). |
 | `authMode`        | no       |  BASIC  | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE` or `DIGEST` (advanced parameter). |
 | `stateMethod`     | no       |   GET   | Method used for requesting the state: `GET`, `PUT`, `POST`. |
+| `stateContent`    | no       |    -    | Content for state requests (if method os `PUT` or `POST` |
 | `commandMethod`   | no       |   GET   | Method used for sending commands: `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
 | `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  

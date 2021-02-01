@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 
 /**
@@ -80,16 +81,20 @@ public class RateLimitedHttpClient {
      * Create a new request to the given URL respecting rate-limits
      *
      * @param finalUrl the request URL
+     * @param method http request method GET/PUT/POST
+     * @param content the content (if method PUT/POST)
      * @return a CompletableFuture that completes with the request
      */
-    public CompletableFuture<Request> newRequest(URI finalUrl, HttpMethod method) {
+    public CompletableFuture<Request> newRequest(URI finalUrl, HttpMethod method, String content) {
         // if no delay is set, return a completed CompletableFuture
-        if (delay == 0) {
-            return CompletableFuture.completedFuture(httpClient.newRequest(finalUrl).method(method));
-        }
         CompletableFuture<Request> future = new CompletableFuture<>();
-        if (!requestQueue.offer(new RequestQueueEntry(finalUrl, method, future))) {
-            future.completeExceptionally(new RejectedExecutionException("Maximum queue size exceeded."));
+        RequestQueueEntry queueEntry = new RequestQueueEntry(finalUrl, method, content, future);
+        if (delay == 0) {
+            queueEntry.completeFuture(httpClient);
+        } else {
+            if (!requestQueue.offer(queueEntry)) {
+                future.completeExceptionally(new RejectedExecutionException("Maximum queue size exceeded."));
+            }
         }
         return future;
     }
@@ -114,19 +119,34 @@ public class RateLimitedHttpClient {
     private void processQueue() {
         RequestQueueEntry queueEntry = requestQueue.poll();
         if (queueEntry != null) {
-            queueEntry.future.complete(httpClient.newRequest(queueEntry.finalUrl).method(queueEntry.method));
+            queueEntry.completeFuture(httpClient);
         }
     }
 
     private static class RequestQueueEntry {
-        public URI finalUrl;
-        public HttpMethod method;
-        public CompletableFuture<Request> future;
+        private URI finalUrl;
+        private HttpMethod method;
+        private String content;
+        private CompletableFuture<Request> future;
 
-        public RequestQueueEntry(URI finalUrl, HttpMethod method, CompletableFuture<Request> future) {
+        public RequestQueueEntry(URI finalUrl, HttpMethod method, String content, CompletableFuture<Request> future) {
             this.finalUrl = finalUrl;
             this.method = method;
+            this.content = content;
             this.future = future;
+        }
+
+        /**
+         * complete the future with a request
+         *
+         * @param httpClient the client to create the request
+         */
+        public void completeFuture(HttpClient httpClient) {
+            Request request = httpClient.newRequest(finalUrl).method(method);
+            if (method != HttpMethod.GET && !content.isEmpty()) {
+                request.content(new StringContentProvider(content));
+            }
+            future.complete(request);
         }
     }
 }
