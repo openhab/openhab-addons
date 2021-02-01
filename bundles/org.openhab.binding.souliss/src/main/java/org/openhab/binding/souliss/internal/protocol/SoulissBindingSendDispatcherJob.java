@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.internal.protocol;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     @Nullable
     private SoulissGatewayHandler gw;
     static boolean bPopSuspend = false;
-    public static ArrayList<SoulissBindingSocketAndPacketStruct> packetsList = new ArrayList<SoulissBindingSocketAndPacketStruct>();
+    protected static ArrayList<SoulissBindingSocketAndPacketStruct> packetsList = new ArrayList<>();
     private long startTime = System.currentTimeMillis();
     static String ipAddressOnLAN = "";
     static int iDelay = 0; // equal to 0 if array is empty
@@ -113,14 +112,13 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                                 // se il j-esimo byte è diverso da zero allora
                                 // lo sovrascrivo al byte del pacchetto già
                                 // presente
-                                if (packetsList.get(i).packet.getData()[j] != 0) {
-                                    if (packetToPUT.getData()[j] == 0) {
-                                        // sovrascrive i byte dell'ultimo frame
-                                        // soltanto se il byte è uguale a zero.
-                                        // Se è diverso da zero l'ultimo frame
-                                        // ha la precedenza e deve sovrascrivere
-                                        packetToPUT.getData()[j] = packetsList.get(i).packet.getData()[j];
-                                    }
+                                if ((packetsList.get(i).packet.getData()[j] != 0) && (packetToPUT.getData()[j] == 0)) {
+                                    // sovrascrive i byte dell'ultimo frame
+                                    // soltanto se il byte è uguale a zero.
+                                    // Se è diverso da zero l'ultimo frame
+                                    // ha la precedenza e deve sovrascrivere
+                                    packetToPUT.getData()[j] = packetsList.get(i).packet.getData()[j];
+
                                 }
                             }
                             // rimuove il pacchetto
@@ -163,8 +161,6 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
 
                 resetTime();
             }
-        } catch (IOException e) {
-            logger.warn("{}", e.getMessage());
         } catch (Exception e) {
             logger.warn("{}", e.getMessage());
         }
@@ -297,10 +293,10 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                 } else {
                     // se il frame non è uguale a zero controllo il TIMEOUT e se
                     // è scaduto allora pongo il flag SENT a false
-                    long t = System.currentTimeMillis();
+                    long time = System.currentTimeMillis();
 
-                    if (this.gw.sendTimeoutToRequeue < t - packetsList.get(i).getTime()) {
-                        if (this.gw.sendTimeoutToRemovePacket < t - packetsList.get(i).getTime()) {
+                    if (this.gw.sendTimeoutToRequeue < time - packetsList.get(i).getTime()) {
+                        if (this.gw.sendTimeoutToRemovePacket < time - packetsList.get(i).getTime()) {
                             logger.info("Packet Execution timeout - Removed");
                             packetsList.remove(i);
                         } else {
@@ -320,8 +316,10 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         SoulissGatewayHandler gateway = null;
         byte lastByteGatewayIP = (byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]);
         try {
-            gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP)
-                    .getHandler();
+            Bridge bridge = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
+            if (bridge != null) {
+                gateway = (SoulissGatewayHandler) bridge.getHandler();
+            }
         } catch (Exception ex) {
             logger.error("exception getting gw handler {}", ex.getMessage());
         }
@@ -330,19 +328,20 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         if (gateway != null /* && gateway.ipAddressOnLAN != null */
                 && (byte) Integer.parseInt(gateway.ipAddressOnLAN.split("\\.")[3]) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
-            boolean bFound = false;
+            // boolean bFound = false;
             Thing typ = null;
-            while (thingsIterator.hasNext() && !bFound) {
+            while (thingsIterator.hasNext()) {
                 typ = thingsIterator.next();
                 String[] sUIDArray = typ.getUID().getAsString().split(":");
                 SoulissGenericHandler handler = (SoulissGenericHandler) typ.getHandler();
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
                                        // Gateway
-                    if (sUIDArray[0].equals(SoulissBindingConstants.BINDING_ID) && (byte) Integer
-                            .parseInt(handler.getGatewayIP().toString().split("\\.")[3]) == lastByteGatewayIP) {
-                        if (handler.getNode() == node && handler.getSlot() == slot) {
-                            return handler;
-                        }
+                    String gatewayIP = handler.getGatewayIP();
+                    if ((gatewayIP != null) && sUIDArray[0].equals(SoulissBindingConstants.BINDING_ID)
+                            && (byte) Integer.parseInt(gatewayIP.split("\\.")[3]) == lastByteGatewayIP
+                            && (handler.getNode() == node && handler.getSlot() == slot)) {
+                        return handler;
+
                     }
                 }
             }
@@ -365,14 +364,15 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     private static boolean checkAllsSlotZero(DatagramPacket packet) {
         boolean bflag = true;
         for (int j = 12; j < packet.getData().length; j++) {
-            if (!(packet.getData()[j] == 0)) {
+            if ((packet.getData()[j] != 0)) {
                 bflag = false;
             }
         }
         return bflag;
     }
 
-    long t, tPrec = 0;
+    long t = 0;
+    long tPrec = 0;
 
     /**
      * Pop SocketAndPacket from ArrayList PacketList
@@ -397,7 +397,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                 int iPacket = 0;
                 boolean bFlagWhile = true;
                 // scarta i pacchetti già  inviati
-                while (!(iPacket >= packetsList.size()) && bFlagWhile) {
+                while ((iPacket < packetsList.size()) && bFlagWhile) {
                     if (packetsList.get(iPacket).sent) {
                         iPacket++;
                     } else {
@@ -437,7 +437,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     if (logger.isDebugEnabled()) {
                         int iPacketSentCounter = 0;
                         int i = 0;
-                        while (!(i >= packetsList.size())) {
+                        while ((i < packetsList.size())) {
                             if (packetsList.get(i).sent) {
                                 iPacketSentCounter++;
                             }

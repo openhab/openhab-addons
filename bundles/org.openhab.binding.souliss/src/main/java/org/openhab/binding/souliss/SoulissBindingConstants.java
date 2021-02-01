@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-public class SoulissBindingConstants {
+public final class SoulissBindingConstants {
 
     public static final String BINDING_ID = "souliss";
 

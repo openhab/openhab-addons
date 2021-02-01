@@ -43,8 +43,8 @@ import org.openhab.core.types.RefreshType;
 
 @NonNullByDefault
 public class SoulissT11Handler extends SoulissGenericHandler {
-    @Nullable
-    Configuration gwConfigurationMap;
+
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
     byte t1nRawState;
     byte xSleepTime = 0;

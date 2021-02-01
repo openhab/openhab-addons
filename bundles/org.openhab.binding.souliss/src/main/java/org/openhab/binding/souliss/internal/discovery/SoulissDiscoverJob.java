@@ -16,7 +16,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +26,6 @@ import org.openhab.binding.souliss.internal.protocol.SoulissBindingUDPServerJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +51,7 @@ public class SoulissDiscoverJob implements Runnable {
 
         void thingDetectedActionMessages(String sTopicNumber, String sTopicVariant);
 
-        ThingUID getGatewayUID();
+        // ThingUID getGatewayUID();
     }
 
     private DatagramSocket datagramSocket;
@@ -83,7 +82,7 @@ public class SoulissDiscoverJob implements Runnable {
             logger.error("Sending a discovery packet failed: {} ", e.getLocalizedMessage());
         }
 
-        ConcurrentHashMap<Byte, Thing> gwMaps = SoulissBindingNetworkParameters.getHashTableGateways();
+        ConcurrentMap<Byte, Thing> gwMaps = SoulissBindingNetworkParameters.getHashTableGateways();
         Collection<Thing> gwMapsCollection = gwMaps.values();
         for (Thing t : gwMapsCollection) {
             SoulissGatewayHandler gw = (SoulissGatewayHandler) t.getHandler();
