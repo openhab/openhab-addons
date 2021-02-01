@@ -76,7 +76,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
         }
 
         Object alwaysConnectRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_ALWAYS_CONNECTED);
-        alwaysConnected = Boolean.TRUE.equals(alwaysConnectRaw);
+        alwaysConnected = !Boolean.FALSE.equals(alwaysConnectRaw);
 
         Object idleDisconnectDelayRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_IDLE_DISCONNECT_DELAY);
         idleDisconnectDelay = 1000;
