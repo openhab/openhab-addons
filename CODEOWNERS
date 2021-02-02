@@ -32,7 +32,7 @@
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
-/bundles/org.openhab.binding.bmwconnecteddrive/ @weymann
+/bundles/org.openhab.binding.bmwconnecteddrive/ @weymann @ntruchsess
 /bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
 /bundles/org.openhab.binding.bsblan/ @hypetsch
