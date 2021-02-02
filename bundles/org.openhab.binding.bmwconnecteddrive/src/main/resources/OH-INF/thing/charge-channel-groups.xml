@@ -9,6 +9,7 @@
 		<channels>
 			<channel id="profile-climate" typeId="profile-climate-channel"/>
 			<channel id="profile-mode" typeId="profile-mode-channel"/>
+			<channel id="profile-prefs" typeId="profile-prefs-channel"/>
 			<channel id="window-start" typeId="window-start-channel"/>
 			<channel id="window-start-hour" typeId="window-start-hour-channel"/>
 			<channel id="window-start-minute" typeId="window-start-minute-channel"/>
@@ -19,40 +20,42 @@
 			<channel id="timer1-departure-hour" typeId="timer1-departure-hour-channel"/>
 			<channel id="timer1-departure-minute" typeId="timer1-departure-minute-channel"/>
 			<channel id="timer1-days" typeId="timer1-days-channel"/>
-			<channel id="timer1-days-monday" typeId="timer1-days-monday-channel"/>
-			<channel id="timer1-days-tuesday" typeId="timer1-days-tuesday-channel"/>
-			<channel id="timer1-days-wednesday" typeId="timer1-days-wednesday-channel"/>
-			<channel id="timer1-days-thursday" typeId="timer1-days-thursday-channel"/>
-			<channel id="timer1-days-friday" typeId="timer1-days-friday-channel"/>
-			<channel id="timer1-days-saturday" typeId="timer1-days-saturday-channel"/>
-			<channel id="timer1-days-sunday" typeId="timer1-days-sunday-channel"/>
+			<channel id="timer1-day-mon" typeId="timer1-day-mon-channel"/>
+			<channel id="timer1-day-tue" typeId="timer1-day-tue-channel"/>
+			<channel id="timer1-day-wed" typeId="timer1-day-wed-channel"/>
+			<channel id="timer1-day-thu" typeId="timer1-day-thu-channel"/>
+			<channel id="timer1-day-fri" typeId="timer1-day-fri-channel"/>
+			<channel id="timer1-day-sat" typeId="timer1-day-sat-channel"/>
+			<channel id="timer1-day-sun" typeId="timer1-day-sun-channel"/>
 			<channel id="timer1-enabled" typeId="timer1-enabled-channel"/>
 			<channel id="timer2-departure" typeId="timer2-departure-channel"/>
 			<channel id="timer2-departure-hour" typeId="timer2-departure-hour-channel"/>
 			<channel id="timer2-departure-minute" typeId="timer2-departure-minute-channel"/>
 			<channel id="timer2-days" typeId="timer2-days-channel"/>
-			<channel id="timer2-days-monday" typeId="timer2-days-monday-channel"/>
-			<channel id="timer2-days-tuesday" typeId="timer2-days-tuesday-channel"/>
-			<channel id="timer2-days-wednesday" typeId="timer2-days-wednesday-channel"/>
-			<channel id="timer2-days-thursday" typeId="timer2-days-thursday-channel"/>
-			<channel id="timer2-days-friday" typeId="timer2-days-friday-channel"/>
-			<channel id="timer2-days-saturday" typeId="timer2-days-saturday-channel"/>
-			<channel id="timer2-days-sunday" typeId="timer2-days-sunday-channel"/>
+			<channel id="timer2-day-mon" typeId="timer2-day-mon-channel"/>
+			<channel id="timer2-day-tue" typeId="timer2-day-tue-channel"/>
+			<channel id="timer2-day-wed" typeId="timer2-day-wed-channel"/>
+			<channel id="timer2-day-thu" typeId="timer2-day-thu-channel"/>
+			<channel id="timer2-day-fri" typeId="timer2-day-fri-channel"/>
+			<channel id="timer2-day-sat" typeId="timer2-day-sat-channel"/>
+			<channel id="timer2-day-sun" typeId="timer2-day-sun-channel"/>
 			<channel id="timer2-enabled" typeId="timer2-enabled-channel"/>
 			<channel id="timer3-departure" typeId="timer3-departure-channel"/>
 			<channel id="timer3-departure-hour" typeId="timer3-departure-hour-channel"/>
 			<channel id="timer3-departure-minute" typeId="timer3-departure-minute-channel"/>
 			<channel id="timer3-days" typeId="timer3-days-channel"/>
-			<channel id="timer3-days-monday" typeId="timer3-days-monday-channel"/>
-			<channel id="timer3-days-tuesday" typeId="timer3-days-tuesday-channel"/>
-			<channel id="timer3-days-wednesday" typeId="timer3-days-wednesday-channel"/>
-			<channel id="timer3-days-thursday" typeId="timer3-days-thursday-channel"/>
-			<channel id="timer3-days-friday" typeId="timer3-days-friday-channel"/>
-			<channel id="timer3-days-saturday" typeId="timer3-days-saturday-channel"/>
-			<channel id="timer3-days-sunday" typeId="timer3-days-sunday-channel"/>
+			<channel id="timer3-day-mon" typeId="timer3-day-mon-channel"/>
+			<channel id="timer3-day-tue" typeId="timer3-day-tue-channel"/>
+			<channel id="timer3-day-wed" typeId="timer3-day-wed-channel"/>
+			<channel id="timer3-day-thu" typeId="timer3-day-thu-channel"/>
+			<channel id="timer3-day-fri" typeId="timer3-day-fri-channel"/>
+			<channel id="timer3-day-sat" typeId="timer3-day-sat-channel"/>
+			<channel id="timer3-day-sun" typeId="timer3-day-sun-channel"/>
 			<channel id="timer3-enabled" typeId="timer3-enabled-channel"/>
-			<channel id="command" typeId="charge-command-channel"/>
-			<channel id="version" typeId="charge-version-channel"/>
+			<channel id="override-departure" typeId="override-departure-channel"/>
+			<channel id="override-departure-hour" typeId="override-departure-hour-channel"/>
+			<channel id="override-departure-minute" typeId="override-departure-minute-channel"/>
+			<channel id="override-enabled" typeId="override-enabled-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

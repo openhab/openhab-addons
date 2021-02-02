@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * https://customer.bmwgroup.com/one/app/oauth.js
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - contributor
+ * @author Norbert Truchsess - edit & send of charge profile
  */
 @NonNullByDefault
 public class ConnectedDriveProxy {

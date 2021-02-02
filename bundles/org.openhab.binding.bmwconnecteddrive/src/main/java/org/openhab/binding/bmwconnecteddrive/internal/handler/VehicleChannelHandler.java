@@ -15,20 +15,18 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.ChargeProfileVersion;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargingWindow;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.Timer;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
@@ -38,6 +36,8 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileUtils;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper.ProfileKey;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.VehicleStatusUtils;
@@ -56,6 +56,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - contributor
+ * @author Norbert Truchsess - edit & send of charge profile
  */
 @NonNullByDefault
 public class VehicleChannelHandler extends BaseThingHandler {
@@ -157,50 +158,55 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID chargingStatus;
     protected ChannelUID chargeProfileClimate;
     protected ChannelUID chargeProfileChargeMode;
-    protected ChannelUID chargeWindowStart;
-    protected ChannelUID chargeWindowStartHour;
-    protected ChannelUID chargeWindowStartMinute;
-    protected ChannelUID chargeWindowEnd;
-    protected ChannelUID chargeWindowEndHour;
-    protected ChannelUID chargeWindowEndMinute;
-    protected ChannelUID timer1Departure;
-    protected ChannelUID timer1DepartureHour;
-    protected ChannelUID timer1DepartureMinute;
-    protected ChannelUID timer1Enabled;
-    protected ChannelUID timer1Days;
-    protected ChannelUID timer1DaysMon;
-    protected ChannelUID timer1DaysTue;
-    protected ChannelUID timer1DaysWed;
-    protected ChannelUID timer1DaysThu;
-    protected ChannelUID timer1DaysFri;
-    protected ChannelUID timer1DaysSat;
-    protected ChannelUID timer1DaysSun;
-    protected ChannelUID timer2Departure;
-    protected ChannelUID timer2DepartureHour;
-    protected ChannelUID timer2DepartureMinute;
-    protected ChannelUID timer2Enabled;
-    protected ChannelUID timer2Days;
-    protected ChannelUID timer2DaysMon;
-    protected ChannelUID timer2DaysTue;
-    protected ChannelUID timer2DaysWed;
-    protected ChannelUID timer2DaysThu;
-    protected ChannelUID timer2DaysFri;
-    protected ChannelUID timer2DaysSat;
-    protected ChannelUID timer2DaysSun;
-    protected ChannelUID timer3Departure;
-    protected ChannelUID timer3DepartureHour;
-    protected ChannelUID timer3DepartureMinute;
-    protected ChannelUID timer3Enabled;
-    protected ChannelUID timer3Days;
-    protected ChannelUID timer3DaysMon;
-    protected ChannelUID timer3DaysTue;
-    protected ChannelUID timer3DaysWed;
-    protected ChannelUID timer3DaysThu;
-    protected ChannelUID timer3DaysFri;
-    protected ChannelUID timer3DaysSat;
-    protected ChannelUID timer3DaysSun;
-    protected ChannelUID chargeControl;
-    protected ChannelUID chargeProfileVersion;
+    protected ChannelUID chargeProfilePreference;
+    protected Map<ProfileKey, TimedChannels> timedChannels = new HashMap<>();
+
+    private class TimedChannels {
+        TimedChannels(final ChannelUID time, final ChannelUID hour, final ChannelUID minute) {
+            this.time = time;
+            this.hour = hour;
+            this.minute = minute;
+        }
+
+        final ChannelUID time;
+        final ChannelUID hour;
+        final ChannelUID minute;
+    }
+
+    private class TimerChannels extends TimedChannels {
+        TimerChannels(final ChannelUID time, final ChannelUID hour, final ChannelUID minute, final ChannelUID enabled) {
+            super(time, hour, minute);
+            this.enabled = enabled;
+        }
+
+        final ChannelUID enabled;
+    }
+
+    private class TimerDaysChannels extends TimerChannels {
+        TimerDaysChannels(final ChannelUID time, final ChannelUID hour, final ChannelUID minute,
+                final ChannelUID enabled, final ChannelUID days, final ChannelUID mon, final ChannelUID tue,
+                final ChannelUID wed, final ChannelUID thu, final ChannelUID fri, final ChannelUID sat,
+                final ChannelUID sun) {
+            super(time, hour, minute, enabled);
+            this.days = days;
+            this.mon = mon;
+            this.tue = tue;
+            this.wed = wed;
+            this.thu = thu;
+            this.fri = fri;
+            this.sat = sat;
+            this.sun = sun;
+        }
+
+        final ChannelUID days;
+        final ChannelUID mon;
+        final ChannelUID tue;
+        final ChannelUID wed;
+        final ChannelUID thu;
+        final ChannelUID fri;
+        final ChannelUID sat;
+        final ChannelUID sun;
+    }
 
     // Image
     protected ChannelUID imageChannel;
@@ -293,50 +299,59 @@ public class VehicleChannelHandler extends BaseThingHandler {
         // Charge Channels
         chargeProfileClimate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_CLIMATE);
         chargeProfileChargeMode = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_MODE);
-        chargeWindowStart = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_START);
-        chargeWindowStartHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_START_HOUR);
-        chargeWindowStartMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_START_MINUTE);
-        chargeWindowEnd = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_END);
-        chargeWindowEndHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_END_HOUR);
-        chargeWindowEndMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_END_MINUTE);
-        timer1Departure = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DEPARTURE);
-        timer1DepartureHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DEPARTURE_HOUR);
-        timer1DepartureMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DEPARTURE_MINUTE);
-        timer1Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_ENABLED);
-        timer1Days = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS);
-        timer1DaysMon = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS_MON);
-        timer1DaysTue = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS_TUE);
-        timer1DaysWed = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS_WED);
-        timer1DaysThu = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS_THU);
-        timer1DaysFri = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS_FRI);
-        timer1DaysSat = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS_SAT);
-        timer1DaysSun = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS_SUN);
-        timer2Departure = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DEPARTURE);
-        timer2DepartureHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DEPARTURE_HOUR);
-        timer2DepartureMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DEPARTURE_MINUTE);
-        timer2Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_ENABLED);
-        timer2Days = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS);
-        timer2DaysMon = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS_MON);
-        timer2DaysTue = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS_TUE);
-        timer2DaysWed = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS_WED);
-        timer2DaysThu = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS_THU);
-        timer2DaysFri = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS_FRI);
-        timer2DaysSat = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS_SAT);
-        timer2DaysSun = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS_SUN);
-        timer3Departure = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DEPARTURE);
-        timer3DepartureHour = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DEPARTURE_HOUR);
-        timer3DepartureMinute = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DEPARTURE_MINUTE);
-        timer3Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_ENABLED);
-        timer3Days = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS);
-        timer3DaysMon = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_MON);
-        timer3DaysTue = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_TUE);
-        timer3DaysWed = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_WED);
-        timer3DaysThu = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_THU);
-        timer3DaysFri = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_FRI);
-        timer3DaysSat = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_SAT);
-        timer3DaysSun = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS_SUN);
-        chargeControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_CONTROL_COMMAND);
-        chargeProfileVersion = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_VERSION);
+        chargeProfilePreference = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_PREFERENCE);
+        timedChannels.put(ProfileKey.WINDOWSTART,
+                new TimedChannels(new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_START),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_START_HOUR),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_START_MINUTE)));
+        timedChannels.put(ProfileKey.WINDOWEND,
+                new TimedChannels(new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_END),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_END_HOUR),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_END_MINUTE)));
+        timedChannels.put(ProfileKey.TIMER1,
+                new TimerDaysChannels(new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DEPARTURE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DEPARTURE_HOUR),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DEPARTURE_MINUTE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_ENABLED),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAY_MON),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAY_TUE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAY_WED),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAY_THU),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAY_FRI),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAY_SAT),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAY_SUN)));
+        timedChannels.put(ProfileKey.TIMER2,
+                new TimerDaysChannels(new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DEPARTURE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DEPARTURE_HOUR),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DEPARTURE_MINUTE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_ENABLED),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAY_MON),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAY_TUE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAY_WED),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAY_THU),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAY_FRI),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAY_SAT),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAY_SUN)));
+        timedChannels.put(ProfileKey.TIMER3,
+                new TimerDaysChannels(new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DEPARTURE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DEPARTURE_HOUR),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DEPARTURE_MINUTE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_ENABLED),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAY_MON),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAY_TUE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAY_WED),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAY_THU),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAY_FRI),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAY_SAT),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAY_SUN)));
+        timedChannels.put(ProfileKey.OVERRIDE,
+                new TimerChannels(new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_OVERRIDE_DEPARTURE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_OVERRIDE_DEPARTURE_HOUR),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_OVERRIDE_DEPARTURE_MINUTE),
+                        new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_OVERRIDE_ENABLED)));
 
         remoteCommandChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_COMMAND);
         remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
@@ -564,74 +579,61 @@ public class VehicleChannelHandler extends BaseThingHandler {
         updateState(tripAvgRecuperation, QuantityType.valueOf(Converter.round(avgRecuperation), Units.KILOWATT_HOUR));
     }
 
-    protected void updateChargeProfile(ChargeProfile cp) {
-        WeeklyPlanner planner = cp.weeklyPlanner;
-        updateState(chargeProfileClimate, OnOffType.from(planner.climatizationEnabled));
-        updateState(chargeProfileChargeMode, StringType.valueOf(Converter.toTitleCase(planner.chargingMode)));
-
-        ChargingWindow cw = planner.preferredChargingWindow;
-        LocalTime startTime = ChargeProfileUtils.parseTime(cw.startTime);
-        updateState(chargeWindowStart, StringType.valueOf(cw.startTime));
-        updateState(chargeWindowStartHour, new DecimalType(startTime.getHour()));
-        updateState(chargeWindowStartMinute, new DecimalType(startTime.getMinute()));
-        LocalTime endTime = ChargeProfileUtils.parseTime(cw.endTime);
-        updateState(chargeWindowEnd, StringType.valueOf(cw.endTime));
-        updateState(chargeWindowEndHour, new DecimalType(endTime.getHour()));
-        updateState(chargeWindowEndMinute, new DecimalType(endTime.getMinute()));
-
-        Timer t1 = planner.timer1;
-        LocalTime departureTime1 = ChargeProfileUtils.parseTime(t1.departureTime);
-        updateState(timer1Departure, StringType.valueOf(t1.departureTime));
-        updateState(timer1DepartureHour, new DecimalType(departureTime1.getHour()));
-        updateState(timer1DepartureMinute, new DecimalType(departureTime1.getMinute()));
-        updateState(timer1Enabled, OnOffType.from(t1.timerEnabled));
-        updateState(timer1Days, StringType.valueOf(t1.getDays()));
-        updateState(timer1DaysMon, OnOffType.from(t1.isDayOn(Day.MONDAY)));
-        updateState(timer1DaysTue, OnOffType.from(t1.isDayOn(Day.TUESDAY)));
-        updateState(timer1DaysWed, OnOffType.from(t1.isDayOn(Day.WEDNESDAY)));
-        updateState(timer1DaysThu, OnOffType.from(t1.isDayOn(Day.THURSDAY)));
-        updateState(timer1DaysFri, OnOffType.from(t1.isDayOn(Day.FRIDAY)));
-        updateState(timer1DaysSat, OnOffType.from(t1.isDayOn(Day.SATURDAY)));
-        updateState(timer1DaysSun, OnOffType.from(t1.isDayOn(Day.SUNDAY)));
-
-        Timer t2 = planner.timer2;
-        LocalTime departureTime2 = ChargeProfileUtils.parseTime(t2.departureTime);
-        updateState(timer2Departure, StringType.valueOf(t2.departureTime));
-        updateState(timer2DepartureHour, new DecimalType(departureTime2.getHour()));
-        updateState(timer2DepartureMinute, new DecimalType(departureTime2.getMinute()));
-        updateState(timer2Enabled, OnOffType.from(t2.timerEnabled));
-        updateState(timer2Days, StringType.valueOf(t2.getDays()));
-        updateState(timer2DaysMon, OnOffType.from(t2.isDayOn(Day.MONDAY)));
-        updateState(timer2DaysTue, OnOffType.from(t2.isDayOn(Day.TUESDAY)));
-        updateState(timer2DaysWed, OnOffType.from(t2.isDayOn(Day.WEDNESDAY)));
-        updateState(timer2DaysThu, OnOffType.from(t2.isDayOn(Day.THURSDAY)));
-        updateState(timer2DaysFri, OnOffType.from(t2.isDayOn(Day.FRIDAY)));
-        updateState(timer2DaysSat, OnOffType.from(t2.isDayOn(Day.SATURDAY)));
-        updateState(timer2DaysSun, OnOffType.from(t2.isDayOn(Day.SUNDAY)));
-
-        Timer t3 = planner.timer3;
-        LocalTime departureTime3 = ChargeProfileUtils.parseTime(t2.departureTime);
-        updateState(timer3Departure, StringType.valueOf(t3.departureTime));
-        updateState(timer3DepartureHour, new DecimalType(departureTime3.getHour()));
-        updateState(timer3DepartureMinute, new DecimalType(departureTime3.getMinute()));
-        updateState(timer3Enabled, OnOffType.from(t3.timerEnabled));
-        updateState(timer3Days, StringType.valueOf(t3.getDays()));
-        updateState(timer3DaysMon, OnOffType.from(t3.isDayOn(Day.MONDAY)));
-        updateState(timer3DaysTue, OnOffType.from(t3.isDayOn(Day.TUESDAY)));
-        updateState(timer3DaysWed, OnOffType.from(t3.isDayOn(Day.WEDNESDAY)));
-        updateState(timer3DaysThu, OnOffType.from(t3.isDayOn(Day.THURSDAY)));
-        updateState(timer3DaysFri, OnOffType.from(t3.isDayOn(Day.FRIDAY)));
-        updateState(timer3DaysSat, OnOffType.from(t3.isDayOn(Day.SATURDAY)));
-        updateState(timer3DaysSun, OnOffType.from(t3.isDayOn(Day.SUNDAY)));
+    protected void updateChargeProfile(ChargeProfileWrapper wrapper) {
+        updateState(chargeProfilePreference, StringType.valueOf(Converter.toTitleCase(wrapper.getPreference())));
+        updateState(chargeProfileChargeMode, StringType.valueOf(Converter.toTitleCase(wrapper.getMode())));
+        final Boolean climate = wrapper.isEnabled(ProfileKey.CLIMATE);
+        updateState(chargeProfileClimate, climate == null ? UnDefType.UNDEF : OnOffType.from(climate));
+        updateTimedState(wrapper, ProfileKey.WINDOWSTART);
+        updateTimedState(wrapper, ProfileKey.WINDOWEND);
+        updateTimedState(wrapper, ProfileKey.TIMER1);
+        updateTimedState(wrapper, ProfileKey.TIMER2);
+        updateTimedState(wrapper, ProfileKey.TIMER3);
+        updateTimedState(wrapper, ProfileKey.OVERRIDE);
     }
 
-    protected void updateChargeProfileVersion(ChargeProfileVersion version) {
-        if (ChargeProfileVersion.LOCAL.equals(version)) {
-            updateState(chargeControl, StringType.valueOf(CHARGE_CONTROL_SEND));
-        } else {
-            updateState(chargeControl, StringType.valueOf(CHARGE_CONTROL_CANCEL));
+    protected void updateTimedState(ChargeProfileWrapper profile, ProfileKey key) {
+        final TimedChannels channels = timedChannels.get(key);
+        if (channels != null) {
+            final LocalTime time = profile.getTime(key);
+            // updateState(channels.time, time == null ? UnDefType.UNDEF :
+            // StringType.valueOf(time.format(TIMEFORMATER)));
+            updateState(channels.time, time == null ? UnDefType.UNDEF
+                    : new DateTimeType(ZonedDateTime.of(Constants.EPOCHDAY, time, ZoneId.systemDefault())));
+            updateState(channels.hour, time == null ? UnDefType.UNDEF : new DecimalType(time.getHour()));
+            updateState(channels.minute, time == null ? UnDefType.UNDEF : new DecimalType(time.getMinute()));
+            if (channels instanceof TimerChannels) {
+                final Boolean enabled = profile.isEnabled(key);
+                updateState(((TimerChannels) channels).enabled,
+                        enabled == null ? UnDefType.UNDEF : OnOffType.from(enabled));
+                if (channels instanceof TimerDaysChannels) {
+                    final List<String> days = profile.getDays(key);
+                    final Boolean mon = profile.isDayEnabled(key, Day.MONDAY);
+                    final Boolean tue = profile.isDayEnabled(key, Day.TUESDAY);
+                    final Boolean wed = profile.isDayEnabled(key, Day.WEDNESDAY);
+                    final Boolean thu = profile.isDayEnabled(key, Day.THURSDAY);
+                    final Boolean fri = profile.isDayEnabled(key, Day.FRIDAY);
+                    final Boolean sat = profile.isDayEnabled(key, Day.SATURDAY);
+                    final Boolean sun = profile.isDayEnabled(key, Day.SUNDAY);
+                    updateState(((TimerDaysChannels) channels).days,
+                            days == null ? UnDefType.UNDEF : StringType.valueOf(ChargeProfileUtils.formatDays(days)));
+                    updateState(((TimerDaysChannels) channels).mon,
+                            mon == null ? UnDefType.UNDEF : OnOffType.from(mon));
+                    updateState(((TimerDaysChannels) channels).tue,
+                            tue == null ? UnDefType.UNDEF : OnOffType.from(tue));
+                    updateState(((TimerDaysChannels) channels).wed,
+                            wed == null ? UnDefType.UNDEF : OnOffType.from(wed));
+                    updateState(((TimerDaysChannels) channels).thu,
+                            thu == null ? UnDefType.UNDEF : OnOffType.from(thu));
+                    updateState(((TimerDaysChannels) channels).fri,
+                            fri == null ? UnDefType.UNDEF : OnOffType.from(fri));
+                    updateState(((TimerDaysChannels) channels).sat,
+                            sat == null ? UnDefType.UNDEF : OnOffType.from(sat));
+                    updateState(((TimerDaysChannels) channels).sun,
+                            sun == null ? UnDefType.UNDEF : OnOffType.from(sun));
+                }
+            }
         }
-        updateState(chargeProfileVersion, StringType.valueOf(version.name()));
     }
 
     protected void updateDoors(Doors doorState) {

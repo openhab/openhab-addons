@@ -16,21 +16,9 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.charge;
  * The {@link ChargeProfile} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - contributor
+ * @author Norbert Truchsess - edit & send of charge profile
  */
 public class ChargeProfile {
     public WeeklyPlanner weeklyPlanner;
-
-    public static ChargeProfile defaultChargeProfile() {
-        final ChargeProfile cp = new ChargeProfile();
-        return cp.completeChargeProfile();
-    }
-
-    public ChargeProfile completeChargeProfile() {
-        if (weeklyPlanner == null) {
-            weeklyPlanner = new WeeklyPlanner();
-        }
-        weeklyPlanner.completeWeeklyPlanner();
-        return this;
-    }
+    public WeeklyPlanner twoTimesTimer;
 }

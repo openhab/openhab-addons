@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @see https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/remote_services.py
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - contributor
+ * @author Norbert Truchsess - edit & send of charge profile
  */
 @NonNullByDefault
 public class RemoteServiceHandler implements StringResponseCallback {
@@ -72,6 +72,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
         DOOR_UNLOCK("DOOR_UNLOCK"),
         HORN("HORN_BLOW"),
         AIR_CONDITIONING("CLIMATE_NOW"),
+        CHARGE_NOW("CHARGE_NOW"),
         CHARGING_CONTROL("CHARGING_CONTROL");
 
         private final String service;
