@@ -60,7 +60,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
      * bridge. This makes sense, as the callback delegates
      * to all child things of this bridge.
      *
-     * @author Sami Salonen
+     * @author Sami Salonen - Initial contribution
      *
      */
     private class ReadCallbackDelegator
