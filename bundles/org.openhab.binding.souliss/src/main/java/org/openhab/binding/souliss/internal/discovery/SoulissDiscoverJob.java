@@ -52,7 +52,9 @@ public class SoulissDiscoverJob implements Runnable {
         // ThingUID getGatewayUID();
     }
 
+    @Nullable
     private DatagramSocket datagramSocket;
+
     @Nullable
     SoulissBindingUDPServerJob udpServerOnDefaultPort = null;
     ///// Debug
@@ -60,8 +62,10 @@ public class SoulissDiscoverJob implements Runnable {
 
     private int resendCounter = 0;
 
-    public SoulissDiscoverJob(DatagramSocket pDatagramSocket, DiscoverResult pDiscoverResult) {
-        datagramSocket = pDatagramSocket;
+    public SoulissDiscoverJob(@Nullable DatagramSocket pDatagramSocket, DiscoverResult pDiscoverResult) {
+        if (pDatagramSocket != null) {
+            datagramSocket = pDatagramSocket;
+        }
     }
 
     @Override

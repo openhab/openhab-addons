@@ -321,7 +321,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         countPingKo = 0; // reset counter
     }
 
-    @SuppressWarnings("null")
     public void pingSent() {
         if (++countPingKo > 3) {
             // if GW do not respond to ping it is setted to OFFLINE
