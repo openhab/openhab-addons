@@ -131,7 +131,9 @@ public class GatewayCommand {
         c.put(GatewayCommandCode.SetpointWater, null);
         c.put(GatewayCommandCode.MaximumModulation, null);
         c.put(GatewayCommandCode.ControlSetpoint, null);
+        c.put(GatewayCommandCode.ControlSetpoint2, null);
         c.put(GatewayCommandCode.CentralHeating, "0,1");
+        c.put(GatewayCommandCode.CentralHeating2, "0,1");
         c.put(GatewayCommandCode.VentilationSetpoint, null);
         c.put(GatewayCommandCode.Reset, null);
         c.put(GatewayCommandCode.IgnoreTransition, "0,1");

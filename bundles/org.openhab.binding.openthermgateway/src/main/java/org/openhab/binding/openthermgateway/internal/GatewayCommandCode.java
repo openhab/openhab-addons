@@ -49,7 +49,9 @@ public class GatewayCommandCode {
     public static final String SetpointWater = "SW";
     public static final String MaximumModulation = "MM";
     public static final String ControlSetpoint = "CS";
+    public static final String ControlSetpoint2 = "C2";
     public static final String CentralHeating = "CH";
+    public static final String CentralHeating2 = "H2";
     public static final String VentilationSetpoint = "VS";
     public static final String Reset = "RS";
     public static final String IgnoreTransition = "IT";
