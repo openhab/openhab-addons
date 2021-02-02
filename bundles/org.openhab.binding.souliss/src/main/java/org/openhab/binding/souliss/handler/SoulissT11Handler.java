@@ -93,7 +93,6 @@ public class SoulissT11Handler extends SoulissGenericHandler {
                     break;
                 default:
                     logger.debug("Unknown channel for T11 thing: {}", channelUID);
-
             }
         }
     }
