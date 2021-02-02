@@ -53,6 +53,7 @@ import org.openhab.binding.souliss.handler.SoulissTopicsHandler;
 import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.slf4j.Logger;
@@ -172,13 +173,14 @@ public class SoulissBindingUDPDecoder {
         int putIn2 = mac.get(2); // not used
         logger.debug("decodePing: putIn code: {}, {}", putIn1, putIn2);
 
-        SoulissGatewayHandler gateway = null;
-        if (SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP) != null) {
-            gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP)
-                    .getHandler();
-        }
-        if (gateway != null) {
-            gateway.gatewayDetected();
+        Bridge gw = SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP);
+
+        if (gw != null) {
+            // SoulissGatewayHandler gateway = null;
+            SoulissGatewayHandler gwHandler = (SoulissGatewayHandler) gw.getHandler();
+            if (gwHandler != null) {
+                gwHandler.gatewayDetected();
+            }
         }
     }
 
@@ -219,7 +221,7 @@ public class SoulissBindingUDPDecoder {
                     // creates Souliss nodes
                     for (int j = 0; j < numberOf; j++) {
                         if (mac.get(5 + j) != 0) {// create only not-empty typicals
-                            if (!(mac.get(5 + j) == SoulissBindingProtocolConstants.SOULISS_T_RELATED)) {
+                            if ((mac.get(5 + j) != SoulissBindingProtocolConstants.SOULISS_T_RELATED)) {
                                 byte typical = mac.get(5 + j);
                                 byte slot = (byte) (j % typXnodo);
                                 byte node = (byte) (j / typXnodo + tgtnode);
