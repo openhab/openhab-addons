@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,12 +56,8 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Support creation of the miot db files
+ * based on the the online miot spec files
  *
- * Run to make a miot database file
- *
- * Run in IDE with 'run as java application'
- * or run in command line as:
- * mvn exec:java -Dexec.mainClass="org.openhab.binding.miio.internal.ReadmeHelper" -Dexec.classpathScope="test"
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -378,7 +374,7 @@ public class MiotParser {
         }
         logger.info(channelConfigText.toString());
         if (actionText.length() > 30) {
-            logger.info(actionText.toString());
+            logger.info("{}", actionText);
         } else {
             logger.info("No actions defined for device");
         }

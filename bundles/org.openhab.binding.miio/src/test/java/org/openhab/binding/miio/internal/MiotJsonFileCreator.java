@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,13 +32,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Support creation of the miio readme doc
+ * Support creation of the json database files for miot devices
  *
  * Run after adding devices or changing database entries of basic devices
  *
  * Run in IDE with 'run as java application'
  * or run in command line as:
- * mvn exec:java -Dexec.mainClass="org.openhab.binding.miio.internal.ReadmeHelper" -Dexec.classpathScope="test"
+ * mvn exec:java -Dexec.mainClass="org.openhab.binding.miio.internal.MiotJsonFileCreator" -Dexec.classpathScope="test"
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -58,17 +58,18 @@ public class MiotJsonFileCreator {
 
         LinkedHashSet<String> models = new LinkedHashSet<>();
 
-        models.add("zhimi.airpurifier.mb");
-        boolean scan = true;
+        if (args.length > 0) {
+            models.add(args[0]);
+        }
+
+        String m = models.isEmpty() ? "" : (String) models.toArray()[0];
+        boolean scan = m.isEmpty() ? false : Character.isDigit(m.charAt(m.length() - 1));
         if (scan) {
             for (int i = 1; i <= 12; i++) {
                 models.add(models.toArray()[0] + String.valueOf(i));
             }
         }
 
-        if (args.length > 0) {
-            models.add(args[0]);
-        }
         MiotParser miotParser;
         for (String model : models) {
             LOGGER.info("Processing: {}", model);
@@ -118,5 +119,4 @@ public class MiotJsonFileCreator {
             return "No MD5";
         }
     }
-
 }
