@@ -714,6 +714,39 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         }
     }
 
+    @Test
+    public void testWriteRealTransformation5() throws InvalidSyntaxException {
+        captureModbusWrites();
+        mockTransformation("PLUS", new TransformationService() {
+
+            @Override
+            public String transform(String arg, String source) throws TransformationException {
+                return String.valueOf(Integer.parseInt(arg) + Integer.parseInt(source));
+            }
+        });
+        mockTransformation("CONCAT", new TransformationService() {
+
+            @Override
+            public String transform(String function, String source) throws TransformationException {
+                return source + function;
+            }
+        });
+        mockTransformation("MULTIPLY", new MultiplyTransformation());
+        ModbusDataThingHandler dataHandler = testWriteHandlingGeneric("50", "MULTIPLY:3∩PLUS(2)∩CONCAT(0)",
+                ModbusConstants.ValueType.INT16, "holding", ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER, "number",
+                new DecimalType("2"), null, bundleContext);
+
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_SUCCESS, is(notNullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_ERROR, is(nullValue(State.class)));
+        assertThat(writeRequests.size(), is(equalTo(1)));
+        ModbusWriteRequestBlueprint writeRequest = writeRequests.get(0);
+        assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER)));
+        assertThat(writeRequest.getReference(), is(equalTo(50)));
+        assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), is(equalTo(1)));
+        assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0),
+                is(equalTo(/* (2*3 + 2) + '0' */ 80)));
+    }
+
     private void testValueTypeGeneric(ModbusReadFunctionCode functionCode, ValueType valueType,
             ThingStatus expectedStatus) {
         ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502, false);
