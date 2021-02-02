@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -437,7 +437,12 @@ public class MiotParser {
     }
 
     private static String captializedName(String name) {
-        return WordUtils.capitalizeFully(name.replace("-", " ").replace(".", " "));
+        if (name.isEmpty()) {
+            return name;
+        }
+        String str = name.replace("-", " ").replace(".", " ");
+        return Arrays.stream(str.split("\\s+")).map(t -> t.substring(0, 1).toUpperCase() + t.substring(1))
+                .collect(Collectors.joining(" "));
     }
 
     public static boolean isPureAscii(String v) {

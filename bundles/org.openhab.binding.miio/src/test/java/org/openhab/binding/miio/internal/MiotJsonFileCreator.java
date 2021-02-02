@@ -36,9 +36,11 @@ import com.google.gson.GsonBuilder;
  *
  * Run after adding devices or changing database entries of basic devices
  *
- * Run in IDE with 'run as java application'
- * or run in command line as:
+ * Run in IDE with 'run as java application' or run in command line as:
  * mvn exec:java -Dexec.mainClass="org.openhab.binding.miio.internal.MiotJsonFileCreator" -Dexec.classpathScope="test"
+ * -Dexec.args="zhimi.humidifier.ca4"
+ *
+ * The argument is the model string to create the database file for.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -63,7 +65,7 @@ public class MiotJsonFileCreator {
         }
 
         String m = models.isEmpty() ? "" : (String) models.toArray()[0];
-        boolean scan = m.isEmpty() ? false : Character.isDigit(m.charAt(m.length() - 1));
+        boolean scan = m.isEmpty() ? false : !Character.isDigit(m.charAt(m.length() - 1));
         if (scan) {
             for (int i = 1; i <= 12; i++) {
                 models.add(models.toArray()[0] + String.valueOf(i));
@@ -107,7 +109,7 @@ public class MiotJsonFileCreator {
             sb.append(ch.getKey());
             sb.append("\r\n");
         }
-        LOGGER.info("Checksums\r\n{}", sb.toString());
+        LOGGER.info("Checksums for device comparisons\r\n{}", sb);
     }
 
     public static String checksumMD5(String input) {
