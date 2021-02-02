@@ -777,11 +777,11 @@ public class VehicleHandler extends VehicleChannelHandler {
         if (chargeProfileEdit.isEmpty()) {
             if (chargeProfileCache.isPresent()) {
                 chargeProfileEdit = Optional.ofNullable(getChargeProfileWrapper());
-                if (chargeProfileEdit.isPresent()) {
-                } else {
+                if (chargeProfileEdit.isEmpty()) {
                     return;
                 }
             } else {
+                return;
             }
         }
 
