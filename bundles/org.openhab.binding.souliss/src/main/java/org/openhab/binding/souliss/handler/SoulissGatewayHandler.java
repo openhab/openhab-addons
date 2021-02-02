@@ -54,7 +54,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     boolean bGatewayDetected = false;
 
-    private @Nullable Configuration gwConfigurationMap;
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
 
     public int pingRefreshInterval;
     public int subscriptionRefreshInterval;
@@ -176,7 +176,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             }
 
             if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_TIMEOUT_TO_REMOVE_PACKET) != null) {
-                sendTimeoutToRequeue = ((BigDecimal) gwConfigurationMap
+                sendTimeoutToRemovePacket = ((BigDecimal) gwConfigurationMap
                         .get(SoulissBindingConstants.CONFIG_TIMEOUT_TO_REMOVE_PACKET)).intValue();
                 logger.debug("Get send timeout to requeue: {}", sendTimeoutToRequeue);
             }
