@@ -15,18 +15,22 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
+import org.openhab.binding.bmwconnecteddrive.internal.action.ChargeProfileActions;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleAttributesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
@@ -36,6 +40,8 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.ExecutionState;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.RemoteService;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper.ProfileKey;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
@@ -50,6 +56,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -58,7 +65,7 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - contributor
+ * @author Norbert Truchsess - edit & send charge profile
  */
 @NonNullByDefault
 public class VehicleHandler extends VehicleChannelHandler {
@@ -69,6 +76,7 @@ public class VehicleHandler extends VehicleChannelHandler {
     private Optional<VehicleConfiguration> configuration = Optional.empty();
     private Optional<ConnectedDriveBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<ScheduledFuture<?>> editTimeout = Optional.empty();
     private Optional<List<ResponseCallback>> callbackCounter = Optional.empty();
 
     private ImageProperties imageProperties = new ImageProperties();
@@ -81,7 +89,83 @@ public class VehicleHandler extends VehicleChannelHandler {
     DestinationsCallback destinationCallback = new DestinationsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
-    private Optional<ChargeProfile> chargeProfileEdit = Optional.empty();
+    private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
+    private Optional<String> chargeProfileSent = Optional.empty();
+
+    private static class ChargeKeyHour {
+        ChargeKeyHour(final ProfileKey key, final boolean isHour) {
+            this.key = key;
+            this.isHour = isHour;
+        }
+
+        final ProfileKey key;
+        final boolean isHour;
+    }
+
+    private static class ChargeKeyDay {
+        ChargeKeyDay(final ProfileKey key, final Day day) {
+            this.key = key;
+            this.day = day;
+        }
+
+        final ProfileKey key;
+        final Day day;
+    }
+
+    @SuppressWarnings("serial")
+    private static final Map<String, ProfileKey> chargeEnableChannelKeys = new HashMap<>() {
+        {
+            put(CHARGE_PROFILE_CLIMATE, ProfileKey.CLIMATE);
+            put(CHARGE_TIMER1_ENABLED, ProfileKey.TIMER1);
+            put(CHARGE_TIMER2_ENABLED, ProfileKey.TIMER2);
+            put(CHARGE_TIMER3_ENABLED, ProfileKey.TIMER3);
+            put(CHARGE_OVERRIDE_ENABLED, ProfileKey.OVERRIDE);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    private static final Map<String, ChargeKeyHour> chargeTimeChannelKeys = new HashMap<>() {
+        {
+            put(CHARGE_WINDOW_START_HOUR, new ChargeKeyHour(ProfileKey.WINDOWSTART, true));
+            put(CHARGE_WINDOW_START_MINUTE, new ChargeKeyHour(ProfileKey.WINDOWSTART, false));
+            put(CHARGE_WINDOW_END_HOUR, new ChargeKeyHour(ProfileKey.WINDOWEND, true));
+            put(CHARGE_WINDOW_END_MINUTE, new ChargeKeyHour(ProfileKey.WINDOWEND, false));
+            put(CHARGE_TIMER1_DEPARTURE_HOUR, new ChargeKeyHour(ProfileKey.TIMER1, true));
+            put(CHARGE_TIMER1_DEPARTURE_MINUTE, new ChargeKeyHour(ProfileKey.TIMER1, false));
+            put(CHARGE_TIMER2_DEPARTURE_HOUR, new ChargeKeyHour(ProfileKey.TIMER2, true));
+            put(CHARGE_TIMER2_DEPARTURE_MINUTE, new ChargeKeyHour(ProfileKey.TIMER2, false));
+            put(CHARGE_TIMER3_DEPARTURE_HOUR, new ChargeKeyHour(ProfileKey.TIMER3, true));
+            put(CHARGE_TIMER3_DEPARTURE_MINUTE, new ChargeKeyHour(ProfileKey.TIMER3, false));
+            put(CHARGE_OVERRIDE_DEPARTURE_HOUR, new ChargeKeyHour(ProfileKey.OVERRIDE, true));
+            put(CHARGE_OVERRIDE_DEPARTURE_MINUTE, new ChargeKeyHour(ProfileKey.OVERRIDE, false));
+        }
+    };
+    @SuppressWarnings("serial")
+    private static final Map<String, ChargeKeyDay> chargeDayChannelKeys = new HashMap<>() {
+        {
+            put(CHARGE_TIMER1_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER1, Day.MONDAY));
+            put(CHARGE_TIMER1_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER1, Day.TUESDAY));
+            put(CHARGE_TIMER1_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER1, Day.WEDNESDAY));
+            put(CHARGE_TIMER1_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER1, Day.THURSDAY));
+            put(CHARGE_TIMER1_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER1, Day.FRIDAY));
+            put(CHARGE_TIMER1_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER1, Day.SATURDAY));
+            put(CHARGE_TIMER1_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER1, Day.SUNDAY));
+            put(CHARGE_TIMER2_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER2, Day.MONDAY));
+            put(CHARGE_TIMER2_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER2, Day.TUESDAY));
+            put(CHARGE_TIMER2_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER2, Day.WEDNESDAY));
+            put(CHARGE_TIMER2_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER2, Day.THURSDAY));
+            put(CHARGE_TIMER2_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER2, Day.FRIDAY));
+            put(CHARGE_TIMER2_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER2, Day.SATURDAY));
+            put(CHARGE_TIMER2_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER2, Day.SUNDAY));
+            put(CHARGE_TIMER3_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER3, Day.MONDAY));
+            put(CHARGE_TIMER3_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER3, Day.TUESDAY));
+            put(CHARGE_TIMER3_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER3, Day.WEDNESDAY));
+            put(CHARGE_TIMER3_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER3, Day.THURSDAY));
+            put(CHARGE_TIMER3_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER3, Day.FRIDAY));
+            put(CHARGE_TIMER3_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER3, Day.SATURDAY));
+            put(CHARGE_TIMER3_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER3, Day.SUNDAY));
+        }
+    };
 
     public VehicleHandler(Thing thing, BMWConnectedDriveOptionProvider op, String type, boolean imperial) {
         super(thing, op, type, imperial);
@@ -106,18 +190,14 @@ public class VehicleHandler extends VehicleChannelHandler {
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
                 if (chargeProfileEdit.isEmpty()) {
                     chargeProfileCallback.onResponse(chargeProfileCache);
-                    updateChargeProfileVersion(ChargeProfileVersion.REMOTE);
                 } else {
                     updateChargeProfile(chargeProfileEdit.get());
-                    updateChargeProfileVersion(ChargeProfileVersion.LOCAL);
                 }
             } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
                 imageCallback.onResponse(imageCache);
             }
-        }
-
-        // Check for Channel Group and corresponding Actions
-        if (CHANNEL_GROUP_REMOTE.equals(group)) {
+            // Check for Channel Group and corresponding Actions
+        } else if (CHANNEL_GROUP_REMOTE.equals(group)) {
             // Executing Remote Services
             if (command instanceof StringType) {
                 String serviceCommand = ((StringType) command).toFullString();
@@ -140,6 +220,12 @@ public class VehicleHandler extends VehicleChannelHandler {
                             break;
                         case REMOTE_SERVICE_VEHICLE_FINDER:
                             remote.get().execute(RemoteService.VEHICLE_FINDER);
+                            break;
+                        case REMOTE_SERVICE_CHARGE_NOW:
+                            remote.get().execute(RemoteService.CHARGE_NOW);
+                            break;
+                        case REMOTE_SERVICE_CHARGING_CONTROL:
+                            sendChargeProfile(chargeProfileEdit.get());
                             break;
                         default:
                             logger.info("Remote service execution {} unknown", serviceCommand);
@@ -423,7 +509,7 @@ public class VehicleHandler extends VehicleChannelHandler {
     public void updateRemoteExecutionStatus(String service, String status) {
         if (service.equals(RemoteService.CHARGING_CONTROL.toString())
                 && status.equals(ExecutionState.EXECUTED.toString())) {
-            saveChargeProfileEdit();
+            saveChargeProfileSent();
         }
         updateState(remoteStateChannel, StringType
                 .valueOf(Converter.toTitleCase(new StringBuilder(service).append(" ").append(status).toString())));
@@ -449,9 +535,9 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onResponse(Optional<String> content) {
             chargeProfileCache = content;
             if (content.isPresent() && chargeProfileEdit.isEmpty()) {
-                ChargeProfile cp = Converter.getGson().fromJson(content.get(), ChargeProfile.class);
-                if (cp != null) {
-                    updateChargeProfile(cp);
+                final ChargeProfileWrapper profile = ChargeProfileWrapper.fromJson(content.get());
+                if (profile != null) {
+                    updateChargeProfile(profile);
                 }
             }
             removeCallback(this);
@@ -688,299 +774,123 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     private void handleChargeProfileCommand(ChannelUID channelUID, Command command) {
 
-        final String id = channelUID.getIdWithoutGroup();
-
-        if (CHARGE_CONTROL_COMMAND.equals(id) && command instanceof StringType) {
-            if (chargeProfileEdit.isPresent()) {
-                switch (((StringType) command).toFullString()) {
-                    case CHARGE_CONTROL_CANCEL:
-                        cancelChargeProfileEdit();
-                        break;
-                    case CHARGE_CONTROL_SEND:
-                        if (remote.isPresent()) {
-                            remote.get().execute(RemoteService.CHARGING_CONTROL,
-                                    Converter.getGson().toJson(chargeProfileEdit.get()));
-                        }
-                        break;
-                }
-            }
-        } else {
-            startChargeProfileEdit();
-
-            final WeeklyPlanner wp = chargeProfileEdit.get().weeklyPlanner;
-
-            if (command instanceof StringType) {
-                switch (id) {
-                    case CHARGE_PROFILE_MODE:
-                        wp.chargingMode = ((StringType) command).toFullString();
-                        break;
-                    default:
-                        cancelChargeProfileEdit();
-                        break;
-                }
-            } else if (command instanceof OnOffType) {
-                switch (id) {
-                    case CHARGE_PROFILE_CLIMATE:
-                        wp.climatizationEnabled = OnOffType.ON.equals(command) ? true : false;
-                        break;
-                    case CHARGE_TIMER1_ENABLED:
-                        wp.timer1.timerEnabled = OnOffType.ON.equals(command) ? true : false;
-                        break;
-                    case CHARGE_TIMER1_DAYS_MON:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer1.dayOn(Day.MONDAY);
-                        } else {
-                            wp.timer1.dayOff(Day.MONDAY);
-                        }
-                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                        break;
-                    case CHARGE_TIMER1_DAYS_TUE:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer1.dayOn(Day.TUESDAY);
-                        } else {
-                            wp.timer1.dayOff(Day.TUESDAY);
-                        }
-                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                        break;
-                    case CHARGE_TIMER1_DAYS_WED:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer1.dayOn(Day.WEDNESDAY);
-                        } else {
-                            wp.timer1.dayOff(Day.WEDNESDAY);
-                        }
-                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                        break;
-                    case CHARGE_TIMER1_DAYS_THU:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer1.dayOn(Day.THURSDAY);
-                        } else {
-                            wp.timer1.dayOff(Day.THURSDAY);
-                        }
-                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                        break;
-                    case CHARGE_TIMER1_DAYS_FRI:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer1.dayOn(Day.FRIDAY);
-                        } else {
-                            wp.timer1.dayOff(Day.FRIDAY);
-                        }
-                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                        break;
-                    case CHARGE_TIMER1_DAYS_SAT:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer1.dayOn(Day.SATURDAY);
-                        } else {
-                            wp.timer1.dayOff(Day.SATURDAY);
-                        }
-                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                        break;
-                    case CHARGE_TIMER1_DAYS_SUN:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer1.dayOn(Day.SUNDAY);
-                        } else {
-                            wp.timer1.dayOff(Day.SUNDAY);
-                        }
-                        updateState(timer1Days, StringType.valueOf(wp.timer1.getDays()));
-                        break;
-                    case CHARGE_TIMER2_ENABLED:
-                        wp.timer2.timerEnabled = OnOffType.ON.equals(command) ? true : false;
-                        break;
-                    case CHARGE_TIMER2_DAYS_MON:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer2.dayOn(Day.MONDAY);
-                        } else {
-                            wp.timer2.dayOff(Day.MONDAY);
-                        }
-                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                        break;
-                    case CHARGE_TIMER2_DAYS_TUE:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer2.dayOn(Day.TUESDAY);
-                        } else {
-                            wp.timer2.dayOff(Day.TUESDAY);
-                        }
-                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                        break;
-                    case CHARGE_TIMER2_DAYS_WED:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer2.dayOn(Day.WEDNESDAY);
-                        } else {
-                            wp.timer2.dayOff(Day.WEDNESDAY);
-                        }
-                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                        break;
-                    case CHARGE_TIMER2_DAYS_THU:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer2.dayOn(Day.THURSDAY);
-                        } else {
-                            wp.timer2.dayOff(Day.THURSDAY);
-                        }
-                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                        break;
-                    case CHARGE_TIMER2_DAYS_FRI:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer2.dayOn(Day.FRIDAY);
-                        } else {
-                            wp.timer2.dayOff(Day.FRIDAY);
-                        }
-                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                        break;
-                    case CHARGE_TIMER2_DAYS_SAT:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer2.dayOn(Day.SATURDAY);
-                        } else {
-                            wp.timer2.dayOff(Day.SATURDAY);
-                        }
-                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                        break;
-                    case CHARGE_TIMER2_DAYS_SUN:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer2.dayOn(Day.SUNDAY);
-                        } else {
-                            wp.timer2.dayOff(Day.SUNDAY);
-                        }
-                        updateState(timer2Days, StringType.valueOf(wp.timer2.getDays()));
-                        break;
-                    case CHARGE_TIMER3_ENABLED:
-                        wp.timer3.timerEnabled = OnOffType.ON.equals(command) ? true : false;
-                        break;
-                    case CHARGE_TIMER3_DAYS_MON:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer3.dayOn(Day.MONDAY);
-                        } else {
-                            wp.timer3.dayOff(Day.MONDAY);
-                        }
-                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                        break;
-                    case CHARGE_TIMER3_DAYS_TUE:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer3.dayOn(Day.TUESDAY);
-                        } else {
-                            wp.timer3.dayOff(Day.TUESDAY);
-                        }
-                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                        break;
-                    case CHARGE_TIMER3_DAYS_WED:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer3.dayOn(Day.WEDNESDAY);
-                        } else {
-                            wp.timer3.dayOff(Day.WEDNESDAY);
-                        }
-                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                        break;
-                    case CHARGE_TIMER3_DAYS_THU:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer3.dayOn(Day.THURSDAY);
-                        } else {
-                            wp.timer3.dayOff(Day.THURSDAY);
-                        }
-                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                        break;
-                    case CHARGE_TIMER3_DAYS_FRI:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer3.dayOn(Day.FRIDAY);
-                        } else {
-                            wp.timer3.dayOff(Day.FRIDAY);
-                        }
-                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                        break;
-                    case CHARGE_TIMER3_DAYS_SAT:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer3.dayOn(Day.SATURDAY);
-                        } else {
-                            wp.timer3.dayOff(Day.SATURDAY);
-                        }
-                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                        break;
-                    case CHARGE_TIMER3_DAYS_SUN:
-                        if (OnOffType.ON.equals(command)) {
-                            wp.timer3.dayOn(Day.SUNDAY);
-                        } else {
-                            wp.timer3.dayOff(Day.SUNDAY);
-                        }
-                        updateState(timer3Days, StringType.valueOf(wp.timer3.getDays()));
-                        break;
-                    default:
-                        this.cancelChargeProfileEdit();
-                        break;
-                }
-            } else if (command instanceof DecimalType) {
-                final int numberCommand = ((DecimalType) command).intValue();
-                switch (id) {
-                    case CHARGE_WINDOW_START_HOUR:
-                        wp.preferredChargingWindow.setStartHour(numberCommand);
-                        updateState(chargeWindowStart, StringType.valueOf(wp.preferredChargingWindow.startTime));
-                        break;
-                    case CHARGE_WINDOW_START_MINUTE:
-                        wp.preferredChargingWindow.setStartMinute(numberCommand);
-                        updateState(chargeWindowStart, StringType.valueOf(wp.preferredChargingWindow.startTime));
-                        break;
-                    case CHARGE_WINDOW_END_HOUR:
-                        wp.preferredChargingWindow.setEndHour(numberCommand);
-                        updateState(chargeWindowEnd, StringType.valueOf(wp.preferredChargingWindow.endTime));
-                        break;
-                    case CHARGE_WINDOW_END_MINUTE:
-                        wp.preferredChargingWindow.setEndMinute(numberCommand);
-                        updateState(chargeWindowEnd, StringType.valueOf(wp.preferredChargingWindow.endTime));
-                        break;
-                    case CHARGE_TIMER1_DEPARTURE_HOUR:
-                        wp.timer1.setDepartureHour(numberCommand);
-                        updateState(timer1Departure, StringType.valueOf(wp.timer1.departureTime));
-                        break;
-                    case CHARGE_TIMER1_DEPARTURE_MINUTE:
-                        wp.timer1.setDepartureMinute(numberCommand);
-                        updateState(timer1Departure, StringType.valueOf(wp.timer1.departureTime));
-                        break;
-                    case CHARGE_TIMER2_DEPARTURE_HOUR:
-                        wp.timer2.setDepartureHour(numberCommand);
-                        updateState(timer2Departure, StringType.valueOf(wp.timer2.departureTime));
-                        break;
-                    case CHARGE_TIMER2_DEPARTURE_MINUTE:
-                        wp.timer2.setDepartureMinute(numberCommand);
-                        updateState(timer2Departure, StringType.valueOf(wp.timer2.departureTime));
-                        break;
-                    case CHARGE_TIMER3_DEPARTURE_HOUR:
-                        wp.timer3.setDepartureHour(numberCommand);
-                        updateState(timer3Departure, StringType.valueOf(wp.timer3.departureTime));
-                        break;
-                    case CHARGE_TIMER3_DEPARTURE_MINUTE:
-                        wp.timer3.setDepartureMinute(numberCommand);
-                        updateState(timer3Departure, StringType.valueOf(wp.timer3.departureTime));
-                        break;
-                    default:
-                        this.cancelChargeProfileEdit();
-                        break;
+        if (chargeProfileEdit.isEmpty()) {
+            if (chargeProfileCache.isPresent()) {
+                chargeProfileEdit = Optional.ofNullable(getChargeProfileWrapper());
+                if (chargeProfileEdit.isPresent()) {
+                } else {
+                    return;
                 }
             } else {
-                this.cancelChargeProfileEdit();
             }
+        }
+
+        boolean processed = false;
+
+        final String id = channelUID.getIdWithoutGroup();
+        final ChargeProfileWrapper profile = chargeProfileEdit.get();
+
+        if (command instanceof StringType) {
+            final String stringCommand = ((StringType) command).toFullString();
+            switch (id) {
+                case CHARGE_PROFILE_PREFERENCE:
+                    profile.setPreference(stringCommand);
+                    updateState(chargeProfilePreference,
+                            StringType.valueOf(Converter.toTitleCase(profile.getPreference())));
+                    processed = true;
+                    break;
+                case CHARGE_PROFILE_MODE:
+                    profile.setMode(stringCommand);
+                    updateState(chargeProfileChargeMode, StringType.valueOf(Converter.toTitleCase(profile.getMode())));
+                    processed = true;
+                    break;
+                default:
+                    break;
+            }
+        } else if (command instanceof OnOffType) {
+            final ProfileKey enableKey = chargeEnableChannelKeys.get(id);
+            if (enableKey != null) {
+                profile.setEnabled(enableKey, OnOffType.ON.equals(command));
+                updateTimedState(profile, enableKey);
+                processed = true;
+            } else {
+                final ChargeKeyDay chargeKeyDay = chargeDayChannelKeys.get(id);
+                if (chargeKeyDay != null) {
+                    profile.setDayEnabled(chargeKeyDay.key, chargeKeyDay.day, OnOffType.ON.equals(command));
+                    updateTimedState(profile, chargeKeyDay.key);
+                    processed = true;
+                }
+            }
+        } else if (command instanceof DecimalType) {
+            final ChargeKeyHour keyHour = chargeTimeChannelKeys.get(id);
+            if (keyHour != null) {
+                if (keyHour.isHour) {
+                    profile.setHour(keyHour.key, ((DecimalType) command).intValue());
+                } else {
+                    profile.setMinute(keyHour.key, ((DecimalType) command).intValue());
+                }
+                updateTimedState(profile, keyHour.key);
+                processed = true;
+            }
+        }
+
+        if (processed) {
+            // start edit timer with 5 min timeout
+            if (editTimeout.isPresent()) {
+                // cancel current timer and add another 5 mins - valid for each edit
+                editTimeout.get().cancel(true);
+            }
+            editTimeout = Optional.of(scheduler.schedule(this::cancelChargeProfileEdit, 5, TimeUnit.MINUTES));
+        } else {
+            logger.info("unexpected command {} not processed", command.toFullString());
         }
     }
 
     private void cancelChargeProfileEdit() {
         chargeProfileEdit = Optional.empty();
-        final ChargeProfile cp = Converter.getGson().fromJson(chargeProfileCache.get(), ChargeProfile.class);
-        if (cp != null) {
-            updateChargeProfile(cp);
-        }
-        updateChargeProfileVersion(ChargeProfileVersion.REMOTE);
-    }
-
-    private void startChargeProfileEdit() {
-        if (chargeProfileEdit.isEmpty()) {
-            final ChargeProfile cp = Converter.getGson().fromJson(chargeProfileCache.get(), ChargeProfile.class);
-            if (cp == null) {
-                chargeProfileEdit = Optional.of(ChargeProfile.defaultChargeProfile());
-            } else {
-                chargeProfileEdit = Optional.of(cp.completeChargeProfile());
-            }
-            updateChargeProfileVersion(ChargeProfileVersion.LOCAL);
+        final ChargeProfileWrapper profile = ChargeProfileWrapper.fromJson(chargeProfileCache.get());
+        if (profile != null) {
+            updateChargeProfile(profile);
         }
     }
 
-    private void saveChargeProfileEdit() {
-        chargeProfileCache = Optional.of(Converter.getGson().toJson(chargeProfileEdit.get()));
+    private void saveChargeProfileSent() {
+        if (chargeProfileSent.isPresent()) {
+            chargeProfileCache = Optional.of(chargeProfileSent.get());
+        }
         chargeProfileEdit = Optional.empty();
-        updateChargeProfileVersion(ChargeProfileVersion.REMOTE);
+        chargeProfileSent = Optional.empty();
+        chargeProfileCallback.onResponse(chargeProfileCache);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(ChargeProfileActions.class);
+    }
+
+    @Nullable
+    public ChargeProfileWrapper getChargeProfileWrapper() {
+        if (chargeProfileCache.isEmpty()) {
+            logger.info("No ChargeProfile recieved so far - cannot start editing");
+            return null;
+        } else {
+            final ChargeProfileWrapper wrapper = ChargeProfileWrapper.fromJson(chargeProfileCache.get());
+            if (wrapper == null) {
+                logger.info("cannot parse charging profile: {}", chargeProfileCache.get());
+            } else {
+                logger.info("Charge Profile editing - start");
+                logger.info("{}", wrapper.getJson());
+            }
+            return wrapper;
+        }
+    }
+
+    public void sendChargeProfile(final @Nullable ChargeProfileWrapper profile) {
+        if (remote.isPresent() && profile != null) {
+            final String json = profile.getJson();
+            logger.info("sending charging profile: {}", json);
+            chargeProfileSent = Optional.of(json);
+            remote.get().execute(RemoteService.CHARGING_CONTROL, json);
+        }
     }
 }

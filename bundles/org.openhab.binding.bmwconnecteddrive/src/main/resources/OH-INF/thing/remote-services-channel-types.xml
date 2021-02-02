@@ -14,6 +14,8 @@
 				<option value="unlock">Door Unlock</option>
 				<option value="horn">Horn Blow</option>
 				<option value="climate">Climate Control</option>
+				<option value="charge-now">Start Charging</option>
+				<option value="charge-control">Send Charging Profile</option>
 			</options>
 		</command>
 	</channel-type>

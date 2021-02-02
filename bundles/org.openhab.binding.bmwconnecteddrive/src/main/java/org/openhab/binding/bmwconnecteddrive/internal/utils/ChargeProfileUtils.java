@@ -12,32 +12,27 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ChargeProfileUtils} class holds static utility methods dealing with
- * conversion of String-, LocalTime- and integer hours + minutes format of charge-profile
- * timers and time-windows.
+ * The {@link ChargeProfileUtils} utility functions for charging profiles
  *
- * @author Norbert Truchsess - Initial contribution
+ * @author Norbert Truchsess - initial contribution
  */
 @NonNullByDefault
 public class ChargeProfileUtils {
 
-    public static final DateTimeFormatter TIMEFORMATER = DateTimeFormatter.ofPattern("HH:mm");
-
-    public static String withMinute(String time, int minute) {
-        return LocalTime.parse(time, TIMEFORMATER).withMinute(minute).format(TIMEFORMATER);
-    }
-
-    public static String withHour(String time, int hour) {
-        return LocalTime.parse(time, TIMEFORMATER).withHour(hour).format(TIMEFORMATER);
-    }
-
-    public static LocalTime parseTime(String time) {
-        return LocalTime.parse(time, TIMEFORMATER);
+    public static String formatDays(final List<String> weekdays) {
+        StringBuilder days = new StringBuilder();
+        weekdays.forEach(entry -> {
+            if (days.length() == 0) {
+                days.append(Constants.DAYS.get(entry));
+            } else {
+                days.append(Constants.COMMA).append(Constants.DAYS.get(entry));
+            }
+        });
+        return days.toString();
     }
 }
