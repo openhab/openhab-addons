@@ -149,13 +149,13 @@ public class VentaThingHandler extends BaseThingHandler {
             return;
         }
 
-        // we all now that 42 is the answer to everything, so let's pick this one ;)
+        // we all know that 42 is the answer to everything, so let's pick this one ;)
         BigDecimal hash = config.hash != null ? config.hash : new BigDecimal("-42");
 
         Header header = new Header(config.macAddress, config.deviceType.intValue(), hash.toString(), "openHAB");
 
         communicator = new Communicator(config.ipAddress, header, new StateUpdatedCallback());
-        communicator.startPollDataFromDevice(scheduler);
+        communicator.startPollDataFromDevice(scheduler, config.pollingTime);
     }
 
     private @Nullable String validateConfig() {
@@ -167,6 +167,9 @@ public class VentaThingHandler extends BaseThingHandler {
         }
         if (config.deviceType == null) {
             return "Device Type not set, use discovery to find the correct one";
+        }
+        if (config.pollingTime == null || config.pollingTime.compareTo(BigDecimal.ZERO) < 0) {
+            return "Polling time has to be larger than 0 seconds";
         }
 
         return null;

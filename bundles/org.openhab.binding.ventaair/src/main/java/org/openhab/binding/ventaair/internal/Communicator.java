@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
@@ -139,9 +140,10 @@ public class Communicator {
      *
      * @param scheduler - The scheduler of the {@link ThingHandler}
      */
-    public void startPollDataFromDevice(ScheduledExecutorService scheduler) {
+    public void startPollDataFromDevice(ScheduledExecutorService scheduler, BigDecimal pollingTime) {
         stopPollDataFromDevice();
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDataFromDevice, 2, 10, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDataFromDevice, 2, pollingTime.intValue(),
+                TimeUnit.SECONDS);
     }
 
     /**
