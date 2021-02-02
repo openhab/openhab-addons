@@ -61,7 +61,7 @@ public class SoulissBindingNetworkParameters {
         datagramSocket = null;
     }
 
-    public static void setDatagramSocket(DatagramSocket datagramSocket) {
+    public static void setDatagramSocket(@Nullable DatagramSocket datagramSocket) {
         SoulissBindingNetworkParameters.datagramSocket = datagramSocket;
     }
 
