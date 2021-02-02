@@ -23,7 +23,6 @@ import org.openhab.binding.souliss.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingUDPServerJob;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +40,8 @@ public class SoulissDiscoverJob implements Runnable {
      */
     public interface DiscoverResult {
         static boolean IS_GATEWAY_DETECTED = false;
-        @Nullable
-        Bridge bridge = null;
+        // @Nullable
+        // Bridge bridge = null;
 
         void gatewayDetected(InetAddress addr, String id);
 
