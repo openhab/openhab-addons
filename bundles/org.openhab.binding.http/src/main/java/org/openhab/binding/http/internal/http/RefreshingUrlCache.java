@@ -54,14 +54,14 @@ public class RefreshingUrlCache {
     private @Nullable Content lastContent;
 
     public RefreshingUrlCache(ScheduledExecutorService executor, RateLimitedHttpClient httpClient, String url,
-            HttpThingConfig thingConfig) {
+            HttpThingConfig thingConfig, String httpContent) {
         this.httpClient = httpClient;
         this.url = url;
         this.timeout = thingConfig.timeout;
         this.bufferSize = thingConfig.bufferSize;
         this.headers = thingConfig.headers;
         this.httpMethod = thingConfig.stateMethod;
-        this.httpContent = thingConfig.stateContent;
+        this.httpContent = httpContent;
         fallbackEncoding = thingConfig.encoding;
 
         future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);

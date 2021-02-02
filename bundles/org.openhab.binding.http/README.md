@@ -20,7 +20,6 @@ It can be extended with different channels.
 | `password`        | yes      |    -    | Password for authentication (advanced parameter). |
 | `authMode`        | no       |  BASIC  | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE` or `DIGEST` (advanced parameter). |
 | `stateMethod`     | no       |   GET   | Method used for requesting the state: `GET`, `PUT`, `POST`. |
-| `stateContent`    | no       |    -    | Content for state requests (if method os `PUT` or `POST` |
 | `commandMethod`   | no       |   GET   | Method used for sending commands: `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
 | `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  
@@ -53,6 +52,7 @@ The `image` channel-type supports `stateExtension` only.
 | `commandExtension`      | yes      |      -      | Appended to the `baseURL` for sending commands. If empty, same as `stateExtension`. |
 | `stateTransformation  ` | yes      |      -      | One or more transformation applied to received values before updating channel. |
 | `commandTransformation` | yes      |      -      | One or more transformation applied to channel value before sending to a remote. |
+| `stateContent`          | yes      |      -      | Content for state requests (if method os `PUT` or `POST` |
 | `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
 
 Transformations need to be specified in the same format as 

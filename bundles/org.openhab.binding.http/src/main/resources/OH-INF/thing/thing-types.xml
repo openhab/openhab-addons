@@ -71,11 +71,6 @@
 				<default>GET</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="stateContent" type="text">
-				<label>State Content</label>
-				<description>Content for state request (only used if method is POST/PUT)</description>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="commandMethod" type="text">
 				<label>Command Method</label>
 				<description>HTTP method (GET,POST, PUT) for sending commands.</description>

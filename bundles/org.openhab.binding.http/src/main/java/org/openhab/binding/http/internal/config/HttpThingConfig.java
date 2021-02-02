@@ -35,7 +35,6 @@ public class HttpThingConfig {
 
     public HttpAuthMode authMode = HttpAuthMode.BASIC;
     public HttpMethod stateMethod = HttpMethod.GET;
-    public String stateContent = "";
 
     public HttpMethod commandMethod = HttpMethod.GET;
     public int bufferSize = 2048;
