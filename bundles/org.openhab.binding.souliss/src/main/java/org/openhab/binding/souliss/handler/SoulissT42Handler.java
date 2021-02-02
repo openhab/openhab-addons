@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -30,14 +32,17 @@ import org.openhab.core.types.PrimitiveType;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissT42Handler extends SoulissGenericHandler {
+    @Nullable
     Configuration gwConfigurationMap;
 
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
-    byte T4nRawState;
+    byte t4nRawState;
 
-    public SoulissT42Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT42Handler(Thing thing) {
+        super(thing);
     }
 
     // called on every status change or change request
@@ -47,7 +52,7 @@ public class SoulissT42Handler extends SoulissGenericHandler {
             if (command instanceof OnOffType) {
                 switch (command.toFullString()) {
                     case "ON":
-                        commandSEND(SoulissBindingProtocolConstants.Souliss_T4n_ReArm);
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T4N_REARM);
                         this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
                         break;
                 }
@@ -60,52 +65,54 @@ public class SoulissT42Handler extends SoulissGenericHandler {
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
 
-        gwConfigurationMap = thing.getConfiguration();
+        gwConfigurationMap = thingGeneric.getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
             bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
         }
     }
 
-    public void setState(PrimitiveType _state) {
-        if (_state != null) {
-            if (_state instanceof StringType) {
-                switch (String.valueOf(_state)) {
-                    case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:
-                        this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.ON);
-                        break;
-                    case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
-                        this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
-                        break;
-                }
+    public void setState(PrimitiveType state) {
+        if (state instanceof StringType) {
+            switch (String.valueOf(state)) {
+                case SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL:
+                    this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.ON);
+                    break;
+                case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
+                    this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
+                    break;
             }
-            // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off
-            updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
-
-            super.setLastStatusStored();
         }
+        // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off
+        updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
+
+        super.setLastStatusStored();
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T4nRawState != _rawState) {
-            this.setState(getOHState_OnOff_FromSoulissVal(_rawState));
+        if (t4nRawState != rawState) {
+            @Nullable
+            OnOffType onOffVal = getOhStateOnOffFromSoulissVal(rawState);
+            if (onOffVal != null) {
+                this.setState(onOffVal);
+            }
         }
-        T4nRawState = _rawState;
+        t4nRawState = rawState;
     }
 
     @Override
     public byte getRawState() {
-        return T4nRawState;
+        return t4nRawState;
     }
 
     @Override
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
-            if (bCmd == SoulissBindingProtocolConstants.Souliss_T4n_ReArm) {
-                return SoulissBindingProtocolConstants.Souliss_T4n_Antitheft;
+            if (bCmd == SoulissBindingProtocolConstants.SOULISS_T4N_REARM) {
+                return SoulissBindingProtocolConstants.SOULISS_T4N_ANTITHEFT;
             }
         }
         return -1;

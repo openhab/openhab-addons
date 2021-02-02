@@ -12,21 +12,26 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Bridge;
 
 /**
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissGatewayJobSubscription extends Thread {
 
-    private int _subscriptionRefreshInterval;
+    private int subscriptionRefreshInterval;
 
+    @Nullable
     private SoulissGatewayHandler gw;
 
     public SoulissGatewayJobSubscription(Bridge bridge) {
         gw = (SoulissGatewayHandler) bridge.getHandler();
-        set_subscriptionRefreshInterval(gw.subscriptionRefreshInterval);
+        setSubscriptionRefreshInterval(gw.subscriptionRefreshInterval);
     }
 
     @Override
@@ -34,12 +39,12 @@ public class SoulissGatewayJobSubscription extends Thread {
         sendSubscription();
     }
 
-    public int get_subscriptionRefreshInterval() {
-        return _subscriptionRefreshInterval;
+    public int getSubscriptionRefreshInterval() {
+        return subscriptionRefreshInterval;
     }
 
-    public void set_subscriptionRefreshInterval(int _subscriptionRefreshInterval) {
-        this._subscriptionRefreshInterval = _subscriptionRefreshInterval;
+    public void setSubscriptionRefreshInterval(int subscriptionRefreshInterval) {
+        this.subscriptionRefreshInterval = subscriptionRefreshInterval;
     }
 
     private void sendSubscription() {

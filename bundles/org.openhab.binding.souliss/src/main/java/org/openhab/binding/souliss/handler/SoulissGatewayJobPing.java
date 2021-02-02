@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,44 +25,52 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
-public class SoulissGatewayJobPing extends Thread {
+
+@NonNullByDefault
+public class SoulissGatewayJobPing implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayJobPing.class);
-    private String _iPAddressOnLAN;
-    private byte _userIndex;
-    private byte _nodeIndex;
-    private int _pingRefreshInterval;
+    private String ipAddressOnLAN = "";
+    private byte userIndex;
+    private byte nodeIndex;
+    private int pingRefreshInterval;
 
-    private SoulissGatewayHandler gw;
+    private final SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
+
+    @Nullable
+    private SoulissGatewayHandler gwHandler;
 
     public SoulissGatewayJobPing(Bridge bridge) {
-        gw = (SoulissGatewayHandler) bridge.getHandler();
-        _iPAddressOnLAN = gw.IPAddressOnLAN;
-        _userIndex = gw.userIndex;
-        _nodeIndex = gw.nodeIndex;
-        set_pingRefreshInterval(gw.pingRefreshInterval);
+        BridgeHandler bridgeHandler = bridge.getHandler();
+        if (bridgeHandler != null) {
+            gwHandler = (SoulissGatewayHandler) bridgeHandler;
+            this.ipAddressOnLAN = gwHandler.ipAddressOnLAN;
+            userIndex = gwHandler.userIndex;
+            nodeIndex = gwHandler.nodeIndex;
+            setPingRefreshInterval(gwHandler.pingRefreshInterval);
+        }
     }
 
     @Override
     public void run() {
         sendPing();
-        gw.pingSent();
+        gwHandler.pingSent();
     }
 
     private void sendPing() {
         logger.debug("Sending ping packet");
-        if (_iPAddressOnLAN.length() > 0) {
-            SoulissCommonCommands.sendPing(SoulissBindingNetworkParameters.getDatagramSocket(), _iPAddressOnLAN,
-                    _nodeIndex, _userIndex, (byte) 0, (byte) 0);
+        if (ipAddressOnLAN.length() > 0) {
+            soulissCommands.sendPing(SoulissBindingNetworkParameters.getDatagramSocket(), ipAddressOnLAN, nodeIndex,
+                    userIndex, (byte) 0, (byte) 0);
             logger.debug("Sent ping packet");
         }
     }
 
-    public int get_pingRefreshInterval() {
-        return _pingRefreshInterval;
+    public int getPingRefreshInterval() {
+        return pingRefreshInterval;
     }
 
-    public void set_pingRefreshInterval(int _pingRefreshInterval) {
-        this._pingRefreshInterval = _pingRefreshInterval;
+    public void setPingRefreshInterval(int pingRefreshInterval) {
+        this.pingRefreshInterval = pingRefreshInterval;
     }
 }

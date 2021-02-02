@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
@@ -27,13 +28,14 @@ import org.openhab.core.types.PrimitiveType;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@NonNullByDefault
 public class SoulissT5nHandler extends SoulissGenericHandler {
 
     // private Logger logger = LoggerFactory.getLogger(SoulissT5nHandler.class);
     float fVal;
 
-    public SoulissT5nHandler(Thing _thing) {
-        super(_thing);
+    public SoulissT5nHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -46,13 +48,11 @@ public class SoulissT5nHandler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType state) {
-        if (state != null) {
-            this.updateState(SoulissBindingConstants.T5N_VALUE_CHANNEL, (DecimalType) state);
-        }
+        this.updateState(SoulissBindingConstants.T5N_VALUE_CHANNEL, (DecimalType) state);
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         throw new UnsupportedOperationException("Not Implemented, yet.");
     }
 

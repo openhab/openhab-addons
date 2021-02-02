@@ -14,7 +14,10 @@ package org.openhab.binding.souliss.internal.protocol;
 
 import java.net.DatagramSocket;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -27,28 +30,34 @@ import org.openhab.core.thing.Thing;
  * @author Tonino Fazio
  * @since 1.7.0
  */
+@NonNullByDefault
 public class SoulissBindingNetworkParameters {
 
-    public static Byte defaultNodeIndex = (byte) 130;
-    public static Byte defaultUserIndex = (byte) 70;
-    public static int presetTime = 1000;
-    public static int SEND_DELAY = presetTime;
-    public static int SEND_MIN_DELAY = presetTime;
-    public static long SECURE_SEND_TIMEOUT_TO_REQUEUE = presetTime;
-    public static long SECURE_SEND_TIMEOUT_TO_REMOVE_PACKET = presetTime;
+    public static final Byte DEFAULT_NODE_INDEX = (byte) 130;
+    public static final Byte DEFAULT_USER_INDEX = (byte) 70;
+    public static final int PRESET_TIME = 1000;
+    public static final int SEND_DELAY = PRESET_TIME;
+    public static final int SEND_MIN_DELAY = PRESET_TIME;
+    public static final long SECURE_SEND_TIMEOUT_TO_REQUEUE = PRESET_TIME;
+    public static final long SECURE_SEND_TIMEOUT_TO_REMOVE_PACKET = PRESET_TIME;
 
-    private static ConcurrentHashMap<Byte, Thing> hashTableGateways = new ConcurrentHashMap<Byte, Thing>();
-    private static ConcurrentHashMap<String, Thing> hashTableTopics = new ConcurrentHashMap<String, Thing>();
+    private static ConcurrentMap<Byte, Thing> hashTableGateways = new ConcurrentHashMap<>();
+    private static ConcurrentMap<String, Thing> hashTableTopics = new ConcurrentHashMap<>();
 
-    private static DatagramSocket datagramSocket;
-    public static DiscoverResult discoverResult;
+    @Nullable
+    private static DatagramSocket datagramSocket = null;
+    @Nullable
+    public static DiscoverResult discoverResult = null;
 
+    @Nullable
     public static DatagramSocket getDatagramSocket() {
         return datagramSocket;
     }
 
     public static void closeDatagramSocket() {
-        datagramSocket.close();
+        if (datagramSocket != null) {
+            datagramSocket.close();
+        }
         datagramSocket = null;
     }
 
@@ -64,18 +73,20 @@ public class SoulissBindingNetworkParameters {
         hashTableTopics.put(sUID, thing);
     }
 
-    public static ConcurrentHashMap<Byte, Thing> getHashTableGateways() {
+    public static ConcurrentMap<Byte, Thing> getHashTableGateways() {
         return hashTableGateways;
     }
 
-    public static ConcurrentHashMap<String, Thing> getHashTableTopics() {
+    public static ConcurrentMap<String, Thing> getHashTableTopics() {
         return hashTableTopics;
     }
 
+    @Nullable
     public static Thing getTopic(String sUID) {
         return hashTableTopics.get(sUID);
     }
 
+    @Nullable
     public static Bridge getGateway(byte lastByteGatewayIP) {
         return (Bridge) hashTableGateways.get(lastByteGatewayIP);
     }

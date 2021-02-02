@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -30,16 +32,19 @@ import org.openhab.core.types.RefreshType;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissT14Handler extends SoulissGenericHandler {
 
     // private Logger logger = LoggerFactory.getLogger(SoulissT14Handler.class);
+    @Nullable
     Configuration gwConfigurationMap;
     // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
-    byte T1nRawState;
+    byte t1nRawState;
     byte xSleepTime = 0;
 
-    public SoulissT14Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT14Handler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -52,7 +57,11 @@ public class SoulissT14Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.PULSE_CHANNEL:
-                    updateState(channelUID, getOHState_OnOff_FromSoulissVal(T1nRawState));
+                    @Nullable
+                    OnOffType valPulse = getOhStateOnOffFromSoulissVal(t1nRawState);
+                    if (valPulse != null) {
+                        updateState(channelUID, valPulse);
+                    }
                     break;
             }
         } else {
@@ -60,9 +69,9 @@ public class SoulissT14Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.PULSE_CHANNEL:
                     if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OnCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
                         } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OffCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                         }
                     }
                     break;
@@ -70,27 +79,27 @@ public class SoulissT14Handler extends SoulissGenericHandler {
         }
     }
 
-    public void setState(PrimitiveType _state) {
+    public void setState(@Nullable PrimitiveType state) {
         super.setLastStatusStored();
-        if (_state != null) {
-            this.updateState(SoulissBindingConstants.PULSE_CHANNEL, (OnOffType) _state);
+        if (state != null) {
+            this.updateState(SoulissBindingConstants.PULSE_CHANNEL, (OnOffType) state);
         }
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T1nRawState != _rawState) {
-            this.setState(getOHState_OnOff_FromSoulissVal(_rawState));
+        if (t1nRawState != rawState) {
+            this.setState(getOhStateOnOffFromSoulissVal(rawState));
         }
-        T1nRawState = _rawState;
+        t1nRawState = rawState;
     }
 
     @Override
     public byte getRawState() {
-        return T1nRawState;
+        return t1nRawState;
     }
 
     @Override

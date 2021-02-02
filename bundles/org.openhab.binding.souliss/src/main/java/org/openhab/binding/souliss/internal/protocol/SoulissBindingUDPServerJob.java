@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,24 +30,30 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio
  * @since 1.7.0
  */
+@NonNullByDefault
 public class SoulissBindingUDPServerJob implements Runnable {
 
     // protected DatagramSocket socket = null;
+    @Nullable
     protected BufferedReader in = null;
     protected boolean bExit = false;
+    @Nullable
     SoulissBindingUDPDecoder decoder = null;
+    @Nullable
     DiscoverResult discoverResult = null;
+    @Nullable
     DatagramSocket soulissDatagramSocket;
     private final Logger logger = LoggerFactory.getLogger(SoulissBindingUDPServerJob.class);
 
-    public SoulissBindingUDPServerJob(DatagramSocket _datagramSocket, DiscoverResult _discoverResult) {
+    public SoulissBindingUDPServerJob(@Nullable DatagramSocket datagramSocket,
+            @Nullable DiscoverResult pDiscoverResult) {
         super();
-        init(_datagramSocket, _discoverResult);
+        init(datagramSocket, pDiscoverResult);
     }
 
-    private void init(DatagramSocket _datagramSocket, DiscoverResult _discoverResult) {
-        this.discoverResult = _discoverResult;
-        this.soulissDatagramSocket = _datagramSocket;
+    private void init(@Nullable DatagramSocket datagramSocket, @Nullable DiscoverResult pDiscoverResult) {
+        this.discoverResult = pDiscoverResult;
+        this.soulissDatagramSocket = datagramSocket;
 
         // if (discoverResult != null) {
         decoder = new SoulissBindingUDPDecoder(discoverResult);
@@ -63,7 +71,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
                 buf = packet.getData();
 
                 // **************** DECODER ********************
-                logger.debug("Packet received (port {}) {}", soulissDatagramSocket.getLocalPort(), MaCacoToString(buf));
+                logger.debug("Packet received (port {}) {}", soulissDatagramSocket.getLocalPort(), macacoToString(buf));
                 decoder.decodeVNetDatagram(packet);
 
             } catch (IOException e) {
@@ -75,7 +83,7 @@ public class SoulissBindingUDPServerJob implements Runnable {
         }
     }
 
-    private String MaCacoToString(byte[] frame) {
+    private String macacoToString(byte[] frame) {
         StringBuilder sb = new StringBuilder();
         sb.append("HEX: [");
         for (byte b : frame) {

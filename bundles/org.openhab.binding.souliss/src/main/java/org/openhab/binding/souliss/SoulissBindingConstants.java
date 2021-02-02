@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-public class SoulissBindingConstants {
+public final class SoulissBindingConstants {
 
     public static final String BINDING_ID = "souliss";
 
@@ -132,7 +132,7 @@ public class SoulissBindingConstants {
     public static final String STATEONOFF_CHANNEL = "stateOnOff";
     public static final String STATEOPENCLOSE_CHANNEL = "stateOpenClose";
     public static final String ROLLERSHUTTER_CHANNEL = "rollershutter";
-    public static final String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollershutter_state";
+    public static final String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollershutterstate";
     public static final String ROLLERSHUTTER_STATE_NUMBER_CHANNEL = "rollershutter_state_number";
     public static final String ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL = "opening";
     public static final String ROLLERSHUTTER_MESSAGE_CLOSING_CHANNEL = "closing";
@@ -221,7 +221,7 @@ public class SoulissBindingConstants {
 
     public static final String CONFIG_SECURE_SEND = "secureSend";
 
-    public static final String CONFIG_TIMEOUT_TO_REQUEUE = "timeoutRequeue";
+    public static final String CONFIG_TIMEOUT_TO_REQUEUE = "TIMEOUT_TO_REQUEUE";
 
-    public static final String CONFIG_TIMEOUT_TO_REMOVE_PACKET = "timeoutRemovePacket";
+    public static final String CONFIG_TIMEOUT_TO_REMOVE_PACKET = "TIMEOUT_TO_REMOVE_PACKET";
 }

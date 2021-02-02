@@ -14,6 +14,8 @@ package org.openhab.binding.souliss.handler;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -36,16 +38,19 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+
+@NonNullByDefault
 public class SoulissT19Handler extends SoulissGenericHandler {
+    @Nullable
     Configuration gwConfigurationMap;
     private final Logger logger = LoggerFactory.getLogger(SoulissT19Handler.class);
-    byte T1nRawState_byte0;
-    byte T1nRawStateBrigthness_byte1;
+    byte t1nRawStateByte0;
+    byte t1nRawStateBrigthnessByte1;
 
     byte xSleepTime = 0;
 
-    public SoulissT19Handler(Thing _thing) {
-        super(_thing);
+    public SoulissT19Handler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -53,11 +58,14 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
-                    updateState(channelUID, getOHState_OnOff_FromSoulissVal(T1nRawState_byte0));
+                    OnOffType valOnOff = getOhStateOnOffFromSoulissVal(t1nRawStateByte0);
+                    if (valOnOff != null) {
+                        updateState(channelUID, valOnOff);
+                    }
                     break;
                 case SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL:
                     updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
-                            PercentType.valueOf(String.valueOf((T1nRawStateBrigthness_byte1 / 255) * 100)));
+                            PercentType.valueOf(String.valueOf((t1nRawStateBrigthnessByte1 / 255) * 100)));
                     break;
             }
         } else {
@@ -65,10 +73,10 @@ public class SoulissT19Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
                     if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OnCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
 
                         } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OffCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                         }
                     }
                     break;
@@ -78,15 +86,15 @@ public class SoulissT19Handler extends SoulissGenericHandler {
                         updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL, (PercentType) command);
                         // updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
                         /// PercentType.valueOf(hsbState.getBrightness().toString()));
-                        commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_Set,
+                        commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_SET,
                                 (byte) (((PercentType) command).shortValue() * 255.00 / 100.00));
                         // Short.parseShort(String.valueOf(Math.round((dimmerValue / 255.00) * 100)))
                     } else if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OnCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD);
 
                         } else if (command.equals(OnOffType.OFF)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OffCmd);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD);
                         }
                     }
                     break;
@@ -94,15 +102,15 @@ public class SoulissT19Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.ROLLER_BRIGHTNESS_CHANNEL:
                     if (command instanceof UpDownType) {
                         if (command.equals(UpDownType.UP)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_BrightUp);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_BRIGHT_UP);
                         } else if (command.equals(UpDownType.DOWN)) {
-                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_BrightDown);
+                            commandSEND(SoulissBindingProtocolConstants.SOULISS_T1N_BRIGHT_DOWN);
                         }
                     }
                     break;
                 case SoulissBindingConstants.SLEEP_CHANNEL:
                     if (command instanceof OnOffType) {
-                        commandSEND((byte) (SoulissBindingProtocolConstants.Souliss_T1n_Timed + xSleepTime));
+                        commandSEND((byte) (SoulissBindingProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
                     }
                     break;
             }
@@ -112,7 +120,7 @@ public class SoulissT19Handler extends SoulissGenericHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
-        gwConfigurationMap = thing.getConfiguration();
+        gwConfigurationMap = thingGeneric.getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {
             xSleepTime = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL)).byteValue();
         }
@@ -121,21 +129,21 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         }
     }
 
-    public void setState(PrimitiveType _state) {
+    public void setState(@Nullable PrimitiveType state) {
         super.setLastStatusStored();
-        if (_state != null) {
+        if (state != null) {
             updateState(SoulissBindingConstants.SLEEP_CHANNEL, OnOffType.OFF);
-            logger.debug("T19, setting state to {}", _state.toFullString());
-            this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) _state);
+            logger.debug("T19, setting state to {}", state.toFullString());
+            this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) state);
         }
     }
 
-    public void setRawStateDimmerValue(byte _dimmerValue) {
+    public void setRawStateDimmerValue(byte dimmerValue) {
         try {
-            if (_dimmerValue != T1nRawState_byte0) {
-                logger.debug("T19, setting dimmer to {}", _dimmerValue);
+            if (dimmerValue != t1nRawStateByte0) {
+                logger.debug("T19, setting dimmer to {}", dimmerValue);
                 updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
-                        PercentType.valueOf(String.valueOf(Math.round((T1nRawState_byte0 / 255) * 100))));
+                        PercentType.valueOf(String.valueOf(Math.round((t1nRawStateByte0 / 255) * 100))));
             }
         } catch (IllegalStateException ex) {
             logger.debug("UUID: {}", this.getThing().getUID().getAsString());
@@ -144,35 +152,35 @@ public class SoulissT19Handler extends SoulissGenericHandler {
     }
 
     @Override
-    public void setRawState(byte _rawState) {
+    public void setRawState(byte rawState) {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        if (T1nRawState_byte0 != _rawState) {
-            this.setState(getOHState_OnOff_FromSoulissVal(_rawState));
+        if (t1nRawStateByte0 != rawState) {
+            this.setState(getOhStateOnOffFromSoulissVal(rawState));
         }
-        T1nRawState_byte0 = _rawState;
+        t1nRawStateByte0 = rawState;
     }
 
     @Override
     public byte getRawState() {
-        return T1nRawState_byte0;
+        return t1nRawStateByte0;
     }
 
     public byte getRawStateDimmerValue() {
-        return T1nRawStateBrigthness_byte1;
+        return t1nRawStateBrigthnessByte1;
     }
 
     @Override
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
-            if (bCmd == SoulissBindingProtocolConstants.Souliss_T1n_OnCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T1n_OnCoil;
-            } else if (bCmd == SoulissBindingProtocolConstants.Souliss_T1n_OffCmd) {
-                return SoulissBindingProtocolConstants.Souliss_T1n_OffCoil;
-            } else if (bCmd >= SoulissBindingProtocolConstants.Souliss_T1n_Timed) {
+            if (bCmd == SoulissBindingProtocolConstants.SOULISS_T1N_ON_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL;
+            } else if (bCmd == SoulissBindingProtocolConstants.SOULISS_T1N_OFF_CMD) {
+                return SoulissBindingProtocolConstants.SOULISS_T1N_OFF_COIL;
+            } else if (bCmd >= SoulissBindingProtocolConstants.SOULISS_T1N_TIMED) {
                 // SLEEP
-                return SoulissBindingProtocolConstants.Souliss_T1n_OnCoil;
+                return SoulissBindingProtocolConstants.SOULISS_T1N_ON_COIL;
             }
         }
         return -1;
