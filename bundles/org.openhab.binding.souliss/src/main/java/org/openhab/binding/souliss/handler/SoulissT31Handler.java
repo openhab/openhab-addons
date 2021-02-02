@@ -37,7 +37,6 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class SoulissT31Handler extends SoulissGenericHandler {
-
     private @NonNullByDefault({}) Configuration gwConfigurationMap;
 
     DecimalType setPointValue = DecimalType.ZERO;
