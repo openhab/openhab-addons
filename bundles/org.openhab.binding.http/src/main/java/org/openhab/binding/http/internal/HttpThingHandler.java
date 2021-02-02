@@ -272,6 +272,7 @@ public class HttpThingHandler extends BaseThingHandler {
 
         channels.put(channelUID, itemValueConverter);
         if (channelConfig.mode != HttpChannelMode.WRITEONLY) {
+            // we need a key consisting of stateContent and URL, only if both are equal, we can use the same cache
             String key = channelConfig.stateContent + "$" + stateUrl;
             channelUrls.put(channelUID, key);
             urlHandlers.computeIfAbsent(key, k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl,
