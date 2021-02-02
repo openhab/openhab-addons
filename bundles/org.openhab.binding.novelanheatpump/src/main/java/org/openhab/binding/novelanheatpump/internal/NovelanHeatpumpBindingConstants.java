@@ -43,7 +43,7 @@ public class NovelanHeatpumpBindingConstants {
     public static final String TEMPERATURE_SUPPLAY = "temperatureSupplay";
     public static final String TEMPERATURE_SERVICEWATER_REFERENCE = "temperatureServicewaterReference";
     public static final String TEMPERATURE_SERVICEWATER = "temperatureServicewater";
-    public static final String STATE = "state";
+    public static final String STATE_DURATION = "stateDuration";
     public static final String SIMPLE_STATE = "simpleState";
     public static final String SIMPLE_STATE_NUM = "simpleStateNum";
     public static final String EXTENDED_STATE = "extendedState";

@@ -16,13 +16,16 @@ import static org.openhab.binding.novelanheatpump.internal.NovelanHeatpumpBindin
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -45,10 +48,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NovelanHeatpumpHandler extends BaseThingHandler {
-    private @Nullable ScheduledFuture<?> refreshJob;
 
     private final Logger logger = LoggerFactory.getLogger(NovelanHeatpumpHandler.class);
+    private static final SimpleDateFormat sdateformat = new SimpleDateFormat("dd.MM.yy HH:mm"); //$NON-NLS-1$
 
+    private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable NovelanHeatpumpConfiguration config;
     private @Nullable HeatpumpConnector connector;
 
@@ -119,6 +123,43 @@ public class NovelanHeatpumpHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
     }
 
+    private String formatHours(int value) {
+        String returnValue = "";
+        returnValue += String.format("%02d:", new Object[] { Integer.valueOf(value / 3600) }); //$NON-NLS-1$
+        value %= 3600;
+        returnValue += String.format("%02d:", new Object[] { Integer.valueOf(value / 60) }); //$NON-NLS-1$
+        value %= 60;
+        returnValue += String.format("%02d", new Object[] { Integer.valueOf(value) }); //$NON-NLS-1$
+        return returnValue;
+    }
+
+    /**
+     * generate a readable string containing the time since the heatpump is in
+     * the state.
+     *
+     * @param heatpumpValues
+     *            the internal state array of the heatpump
+     * @return a human readable time string
+     */
+    private String getStateTime(int[] heatpumpValues) {
+        String returnValue = ""; //$NON-NLS-1$
+        // for a long time create a date
+        if (heatpumpValues[118] == 2) {
+            long value = heatpumpValues[95];
+            if (value < 0) {
+                value = 0;
+            }
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(value * 1000L);
+            returnValue += sdateformat.format(cal.getTime());
+        } else {
+            // for a shorter time use the counted time (HH:mm:ss)
+            int value = heatpumpValues[120];
+            returnValue = formatHours(value);
+        }
+        return returnValue;
+    }
+
     private State getValue(String channelId, NovelanHeatpumpResponse heatpumpResponse) {
         // all temperatures are 0.2 degree Celsius exact
         // but use int to save values
@@ -145,17 +186,16 @@ public class NovelanHeatpumpHandler extends BaseThingHandler {
             case TEMPERATURE_SERVICEWATER:
                 double temperatureServicewater = (double) heatpumpResponse.getHeatpumpValues()[17] / 10;
                 return new QuantityType<>(temperatureServicewater, API_TEMPERATURE_UNIT);
-            case STATE:
-                // @TODO
-                return UnDefType.UNDEF;
+            case STATE_DURATION:
+                return new StringType(getStateTime(heatpumpResponse.getHeatpumpValues()));
             case SIMPLE_STATE:
                 int simpleState = heatpumpResponse.getHeatpumpValues()[117];
                 return new StringType(String.valueOf(simpleState));
             case SIMPLE_STATE_NUM:
-                // @TODO
-                return UnDefType.UNDEF;
+                int simpleStateNum = heatpumpResponse.getHeatpumpValues()[117];
+                return new DecimalType(simpleStateNum);
             case EXTENDED_STATE:
-                int extendedState = heatpumpResponse.getHeatpumpValues()[117];
+                int extendedState = heatpumpResponse.getHeatpumpValues()[120];
                 return new StringType(String.valueOf(extendedState));
             case TEMPERATURE_SOLAR_COLLECTOR:
                 double temperatureSolarCollector = (double) heatpumpResponse.getHeatpumpValues()[26] / 10;
@@ -167,29 +207,29 @@ public class NovelanHeatpumpHandler extends BaseThingHandler {
                 double temperatureProbeOut = (double) heatpumpResponse.getHeatpumpValues()[20] / 10;
                 return new QuantityType<>(temperatureProbeOut, API_TEMPERATURE_UNIT);
             case HOURS_COMPRESSOR1:
-                // @TODO
-                return UnDefType.UNDEF;
+                int hoursCompressor1 = heatpumpResponse.getHeatpumpValues()[56];
+                return new StringType(formatHours(hoursCompressor1));
             case STARTS_COMPRESSOR1:
-                // @TODO
-                return UnDefType.UNDEF;
+                int startsCompressor1 = heatpumpResponse.getHeatpumpValues()[57];
+                return new DecimalType(startsCompressor1);
             case HOURS_COMPRESSOR2:
-                // @TODO
-                return UnDefType.UNDEF;
+                int hoursCompressor2 = heatpumpResponse.getHeatpumpValues()[58];
+                return new StringType(formatHours(hoursCompressor2));
             case STARTS_COMPRESSOR2:
-                // @TODO
-                return UnDefType.UNDEF;
+                int startsCompressor2 = heatpumpResponse.getHeatpumpValues()[59];
+                return new DecimalType(startsCompressor2);
             case HOURS_HEATPUMP:
-                // @TODO
-                return UnDefType.UNDEF;
+                int hoursHeatpump = heatpumpResponse.getHeatpumpValues()[63];
+                return new StringType(formatHours(hoursHeatpump));
             case HOURS_HEATING:
-                // @TODO
-                return UnDefType.UNDEF;
+                int hoursHeating = heatpumpResponse.getHeatpumpValues()[64];
+                return new StringType(formatHours(hoursHeating));
             case HOURS_WARMWATER:
-                // @TODO
-                return UnDefType.UNDEF;
+                int hoursWarmwater = heatpumpResponse.getHeatpumpValues()[65];
+                return new StringType(formatHours(hoursWarmwater));
             case HOURS_COOLING:
-                // @TODO
-                return UnDefType.UNDEF;
+                int hoursCooling = heatpumpResponse.getHeatpumpValues()[66];
+                return new StringType(formatHours(hoursCooling));
             case THERMALENERGY_HEATING:
                 double thermalenergyHeating = (double) heatpumpResponse.getHeatpumpValues()[151] / 10;
                 return new QuantityType<>(thermalenergyHeating, API_POWER_UNIT);

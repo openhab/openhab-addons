@@ -30,7 +30,7 @@
 			<channel id="temperatureSupplay" typeId="temperatureSupplay"/>
 			<channel id="temperatureServicewaterReference" typeId="temperatureServicewaterReference"/>
 			<channel id="temperatureServicewater" typeId="temperatureServicewater"/>
-			<channel id="state" typeId="state"/>
+			<channel id="stateDuration" typeId="stateDuration"/>
 			<channel id="simpleState" typeId="simpleState"/>
 			<channel id="simpleStateNum" typeId="simpleStateNum"/>
 			<channel id="extendedState" typeId="extendedState"/>
@@ -122,19 +122,11 @@
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="state">
+	<channel-type id="stateDuration">
 		<item-type>String</item-type>
-		<label>State</label>
-		<description>contains the time of the state and the state; Possible states are error, running, stopped, defrosting</description>
+		<label>StateDuration</label>
+		<description>the duration of the state</description>
 		<state readOnly="true">
-			<!--
-				<options>
-				<option value="OK">OK</option>
-				<option value="WARNING">Warning</option>
-				<option value="ERROR">Error</option>
-				<option value="UNAVAILABLE">Unavailable</option>
-				</options>
-			-->
 		</state>
 	</channel-type>
 	<channel-type id="simpleState">
@@ -159,13 +151,6 @@
 		<label>SimpleStateNum</label>
 		<description>same information as simpleState, but as a numeric value</description>
 		<state readOnly="true">
-			<!-- <options>
-				<option value="1">Fireplace</option>
-				<option value="2">Away</option>
-				<option value="3">At home</option>
-				<option value="4">Boost</option>
-				</options>
-			-->
 		</state>
 	</channel-type>
 	<channel-type id="extendedState">
