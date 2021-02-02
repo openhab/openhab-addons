@@ -36,18 +36,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class implements the base Souliss Typical All other Typicals derive from
- * this class
+ * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
  *
- * ...from wiki of Dario De Maio
- * In Souliss the logics that drive your lights, curtains, LED, and
- * others are pre-configured into so called Typicals. A Typical is a
- * logic with a predefined set of inputs and outputs and a know
- * behavior, are used to standardize the user interface and have a
- * configuration-less behavior.
+ *         This class implements the base Souliss Typical All other Typicals derive from
+ *         this class
  *
- * @author Tonino Fazio
- * @since 1.7.0
+ *         ...from wiki of Dario De Maio
+ *         In Souliss the logics that drive your lights, curtains, LED, and
+ *         others are pre-configured into so called Typicals. A Typical is a
+ *         logic with a predefined set of inputs and outputs and a know
+ *         behavior, are used to standardize the user interface and have a
+ *         configuration-less behavior.
+ *
  */
 
 @NonNullByDefault

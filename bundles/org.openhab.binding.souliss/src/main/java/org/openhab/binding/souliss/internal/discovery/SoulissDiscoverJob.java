@@ -14,7 +14,6 @@ package org.openhab.binding.souliss.internal.discovery;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;
 
@@ -62,7 +61,7 @@ public class SoulissDiscoverJob implements Runnable {
 
     private int resendCounter = 0;
 
-    public SoulissDiscoverJob(DatagramSocket pDatagramSocket, DiscoverResult pDiscoverResult) throws SocketException {
+    public SoulissDiscoverJob(DatagramSocket pDatagramSocket, DiscoverResult pDiscoverResult) {
         datagramSocket = pDatagramSocket;
     }
 

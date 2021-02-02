@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissCommonCommands;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +27,10 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
-public class SoulissGatewayJobPing extends Thread {
+public class SoulissGatewayJobPing implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayJobPing.class);
-    private String ipAddressOnLAN;
+    private String ipAddressOnLAN = "";
     private byte userIndex;
     private byte nodeIndex;
     private int pingRefreshInterval;
@@ -37,20 +38,23 @@ public class SoulissGatewayJobPing extends Thread {
     private final SoulissCommonCommands soulissCommands = new SoulissCommonCommands();
 
     @Nullable
-    private SoulissGatewayHandler gw;
+    private SoulissGatewayHandler gwHandler;
 
     public SoulissGatewayJobPing(Bridge bridge) {
-        gw = (SoulissGatewayHandler) bridge.getHandler();
-        ipAddressOnLAN = gw.ipAddressOnLAN;
-        userIndex = gw.userIndex;
-        nodeIndex = gw.nodeIndex;
-        setPingRefreshInterval(gw.pingRefreshInterval);
+        BridgeHandler bridgeHandler = bridge.getHandler();
+        if (bridgeHandler != null) {
+            gwHandler = (SoulissGatewayHandler) bridgeHandler;
+            this.ipAddressOnLAN = gwHandler.ipAddressOnLAN;
+            userIndex = gwHandler.userIndex;
+            nodeIndex = gwHandler.nodeIndex;
+            setPingRefreshInterval(gwHandler.pingRefreshInterval);
+        }
     }
 
     @Override
     public void run() {
         sendPing();
-        gw.pingSent();
+        gwHandler.pingSent();
     }
 
     private void sendPing() {

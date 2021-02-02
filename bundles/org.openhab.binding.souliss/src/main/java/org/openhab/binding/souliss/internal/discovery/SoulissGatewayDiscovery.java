@@ -14,7 +14,6 @@ package org.openhab.binding.souliss.internal.discovery;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.TreeMap;
@@ -143,13 +142,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
         // create discovery class
         if (soulissDiscoverRunnableClass == null) {
-            try {
-                if (datagramSocket != null) {
-                    soulissDiscoverRunnableClass = new SoulissDiscoverJob(datagramSocket, this);
-                }
-            } catch (SocketException e) {
-                logger.error("Opening the souliss discovery service failed: {} ", e.getLocalizedMessage());
-                return;
+            if (datagramSocket != null) {
+                soulissDiscoverRunnableClass = new SoulissDiscoverJob(datagramSocket, this);
             }
 
         }
@@ -201,7 +195,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         SoulissGatewayHandler gw = (SoulissGatewayHandler) (SoulissBindingNetworkParameters
                 .getGateway(lastByteGatewayIP).getHandler());
         if (gw != null) {
-
             if (lastByteGatewayIP == (byte) Integer.parseInt(gw.ipAddressOnLAN.split("\\.")[3])) {
                 String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
 
