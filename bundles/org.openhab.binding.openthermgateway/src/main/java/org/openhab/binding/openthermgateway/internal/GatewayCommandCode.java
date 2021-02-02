@@ -38,6 +38,7 @@ public class GatewayCommandCode {
     public static final String GpioA = "GA";
     public static final String GpioB = "GB";
     public static final String SetBack = "SB";
+    public static final String TemperatureSensor = "TS";
     public static final String AddAlternative = "AA";
     public static final String DeleteAlternative = "DA";
     public static final String UnknownID = "UI";
