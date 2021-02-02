@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -123,7 +121,7 @@ public class CcuGateway extends AbstractHomematicGateway {
                 HmDevice device = channel.getDevice();
                 String channelName = String.format("%s.%s:%s.", device.getHmInterface().getName(), device.getAddress(),
                         channel.getNumber());
-                String datapointNames = StringUtils.join(dpNames.toArray(), "\\t");
+                String datapointNames = String.join("\\t", dpNames);
                 TclScriptDataList resultList = sendScriptByName("getAllChannelValues", TclScriptDataList.class,
                         new String[] { "channel_name", "datapoint_names" },
                         new String[] { channelName, datapointNames });
@@ -151,7 +149,10 @@ public class CcuGateway extends AbstractHomematicGateway {
 
     @Override
     protected void setVariable(HmDatapoint dp, Object value) throws IOException {
-        String strValue = StringUtils.replace(ObjectUtils.toString(value), "\"", "\\\"");
+        String strValue = "";
+        if (value != null) {
+            strValue = value.toString().replace("\"", "\\\"");
+        }
         if (dp.isStringType()) {
             strValue = "\"" + strValue + "\"";
         }
@@ -185,7 +186,9 @@ public class CcuGateway extends AbstractHomematicGateway {
             throws IOException {
         String script = tclregaScripts.get(scriptName);
         for (int i = 0; i < variableNames.length; i++) {
-            script = StringUtils.replace(script, "{" + variableNames[i] + "}", values[i]);
+            if (script != null) {
+                script = script.replace("{" + variableNames[i] + "}", values[i]);
+            }
         }
         return sendScript(script, clazz);
     }
@@ -196,8 +199,8 @@ public class CcuGateway extends AbstractHomematicGateway {
     @SuppressWarnings("unchecked")
     private synchronized <T> T sendScript(String script, Class<T> clazz) throws IOException {
         try {
-            script = StringUtils.trim(script);
-            if (StringUtils.isEmpty(script)) {
+            script = script == null ? null : script.trim();
+            if (script == null || script.length() == 0) {
                 throw new RuntimeException("Homematic TclRegaScript is empty!");
             }
             if (logger.isTraceEnabled()) {
@@ -210,7 +213,14 @@ public class CcuGateway extends AbstractHomematicGateway {
                     .header(HttpHeader.CONTENT_TYPE, "text/plain;charset=" + config.getEncoding()).send();
 
             String result = new String(response.getContent(), config.getEncoding());
-            result = StringUtils.substringBeforeLast(result, "<xml><exec>");
+            if (result.length() != 0) {
+                String separator = "<xml><exec>";
+                // Gets the substring before the last occurrence of the separator.
+                int pos = result.lastIndexOf(separator);
+                if (pos != -1) {
+                    result = result.substring(0, pos);
+                }
+            }
             if (logger.isTraceEnabled()) {
                 logger.trace("Result TclRegaScript: {}", result);
             }
@@ -231,7 +241,10 @@ public class CcuGateway extends AbstractHomematicGateway {
             Map<String, String> result = new HashMap<>();
             if (scriptList.getScripts() != null) {
                 for (TclScript script : scriptList.getScripts()) {
-                    result.put(script.name, StringUtils.trimToNull(script.data));
+                    // trim data to null (if it's empty)
+                    String data = script.data == null ? null : script.data.trim();
+                    data = (data == null || data.length() == 0) ? null : data;
+                    result.put(script.name, data);
                 }
             }
             return result;
