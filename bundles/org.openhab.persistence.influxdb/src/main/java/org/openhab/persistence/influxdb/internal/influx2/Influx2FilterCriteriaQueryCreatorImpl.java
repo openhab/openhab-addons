@@ -20,7 +20,6 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtil
 import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
@@ -92,7 +91,7 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         return flux.toString();
     }
 
-    private String calculateMeasurementName(@Nullable String itemName) {
+    private String calculateMeasurementName(String itemName) {
         String name = itemName;
 
         name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadata(configuration, metadataRegistry, name,
