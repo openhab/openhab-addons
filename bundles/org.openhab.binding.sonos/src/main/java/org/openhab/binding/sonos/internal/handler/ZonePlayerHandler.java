@@ -971,7 +971,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
                 break;
             case BATTERYLEVEL:
-                value = extractInfoFromMoreInfo("RawBattPct");
+                value = extractInfoFromMoreInfo("BattPct");
                 if (value != null) {
                     newState = new DecimalType(value);
                 }
