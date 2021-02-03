@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.NULL_TIME;
+
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,7 +73,9 @@ public class Constants {
     public static final String EMPTY_VEHICLES = "{}";
 
     // Time Constants for DateTime channels
-    public static final LocalDate EPOCHDAY = LocalDate.ofEpochDay(0);
+    public static final LocalDate EPOCH_DAY = LocalDate.ofEpochDay(0);
+    public static final DateTimeFormatter TIME_FORMATER = DateTimeFormatter.ofPattern("HH:mm");
+    public static final LocalTime NULL_LOCAL_TIME = LocalTime.parse(NULL_TIME, TIME_FORMATER);
 
     @SuppressWarnings("serial")
     public static final Map<String, String> DAYS = new HashMap<String, String>() {

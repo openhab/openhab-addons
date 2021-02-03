@@ -579,6 +579,15 @@ public class VehicleChannelHandler extends BaseThingHandler {
         updateState(tripAvgRecuperation, QuantityType.valueOf(Converter.round(avgRecuperation), Units.KILOWATT_HOUR));
     }
 
+    protected void updateChargeProfile(Optional<String> content) {
+        if (content.isPresent()) {
+            final ChargeProfileWrapper profile = ChargeProfileWrapper.fromJson(content.get());
+            if (profile != null) {
+                updateChargeProfile(profile);
+            }
+        }
+    }
+
     protected void updateChargeProfile(ChargeProfileWrapper wrapper) {
         updateState(chargeProfilePreference, StringType.valueOf(Converter.toTitleCase(wrapper.getPreference())));
         updateState(chargeProfileChargeMode, StringType.valueOf(Converter.toTitleCase(wrapper.getMode())));
@@ -599,7 +608,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
             // updateState(channels.time, time == null ? UnDefType.UNDEF :
             // StringType.valueOf(time.format(TIMEFORMATER)));
             updateState(channels.time, time == null ? UnDefType.UNDEF
-                    : new DateTimeType(ZonedDateTime.of(Constants.EPOCHDAY, time, ZoneId.systemDefault())));
+                    : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())));
             updateState(channels.hour, time == null ? UnDefType.UNDEF : new DecimalType(time.getHour()));
             updateState(channels.minute, time == null ? UnDefType.UNDEF : new DecimalType(time.getMinute()));
             if (channels instanceof TimerChannels) {

@@ -47,7 +47,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 @NonNullByDefault
 public class ChargeProfileActions implements ThingActions {
 
-    private @Nullable VehicleHandler handler;
+    private Optional<VehicleHandler> handler = Optional.empty();
 
     private Optional<ChargeProfileWrapper> profile = Optional.empty();
 
@@ -215,8 +215,8 @@ public class ChargeProfileActions implements ThingActions {
 
     @RuleAction(label = "send", description = "sends the charging profile to the vehicle")
     public void send() {
-        if (hasProfile() && handler != null) {
-            handler.sendChargeProfile(profile.get());
+        if (hasProfile() && handler.isPresent()) {
+            handler.get().sendChargeProfile(profile);
         }
     }
 
@@ -364,21 +364,18 @@ public class ChargeProfileActions implements ThingActions {
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof VehicleHandler) {
-            this.handler = (VehicleHandler) handler;
+            this.handler = Optional.of((VehicleHandler) handler);
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return handler;
+        return handler.get();
     }
 
     private boolean hasProfile() {
-        if (profile.isEmpty() && handler != null) {
-            final ChargeProfileWrapper wrapper = handler.getChargeProfileWrapper();
-            if (wrapper != null) {
-                profile = Optional.of(wrapper);
-            }
+        if (profile.isEmpty() && handler.isPresent()) {
+            profile = Optional.ofNullable(handler.get().getChargeProfileWrapper());
         }
         return profile.isPresent();
     }
@@ -387,7 +384,7 @@ public class ChargeProfileActions implements ThingActions {
         if (hasProfile()) {
             final LocalTime time = profile.get().getTime(key);
             if (time != null) {
-                return new DateTimeType(ZonedDateTime.of(Constants.EPOCHDAY, time, ZoneId.systemDefault()));
+                return new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault()));
             }
         }
         return null;
@@ -401,7 +398,7 @@ public class ChargeProfileActions implements ThingActions {
 
     private @Nullable OnOffType getEnabled(ProfileKey key) {
         if (hasProfile()) {
-            Boolean enabled = profile.get().isEnabled(key);
+            final Boolean enabled = profile.get().isEnabled(key);
             if (enabled != null) {
                 return OnOffType.from(enabled);
             }
