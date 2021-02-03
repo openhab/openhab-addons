@@ -32,6 +32,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,16 @@ public class BoschHttpClient extends HttpClient {
         super(sslContextFactory);
         this.ipAddress = ipAddress;
         this.systemPassword = systemPassword;
+    }
+
+    /**
+     * Returns the public information URL for the Bosch SHC clients, using port 8446.
+     * See https://github.com/BoschSmartHome/bosch-shc-api-docs/blob/master/postman/README.md
+     *
+     * @return URL for public information
+     */
+    public String getPublicInformationUrl() {
+        return String.format("https://%s:8446/smarthome/public/information", this.ipAddress);
     }
 
     /**
@@ -103,9 +114,41 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
+     * Checks if the Bosch SHC is online.
+     *
+     * The HTTP server could be offline (Timeout of request).
+     * Or during boot-up the server can response e.g. with SERVICE_UNAVAILABLE_503
+     *
+     * Will return true, if the server responds with the "public information".
+     *
+     *
+     * @return true if HTTP server is online
+     * @throws InterruptedException in case of an interrupt
+     */
+    public boolean isOnline() throws InterruptedException {
+        try {
+            String url = this.getPublicInformationUrl();
+            Request request = this.createRequest(url, GET);
+            ContentResponse contentResponse = request.send();
+            if (HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
+                String content = contentResponse.getContentAsString();
+                logger.debug("Online check completed with success: {} - status code: {}", content,
+                        contentResponse.getStatus());
+                return true;
+            } else {
+                logger.debug("Online check failed with status code: {}", contentResponse.getStatus());
+                return false;
+            }
+        } catch (TimeoutException | ExecutionException | NullPointerException e) {
+            logger.debug("Online check failed because of {}!", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Checks if the Bosch SHC can be accessed.
-     * 
-     * @return true if HTTP access was successful
+     *
+     * @return true if HTTP access to SHC devices was successful
      * @throws InterruptedException in case of an interrupt
      */
     public boolean isAccessPossible() throws InterruptedException {
@@ -113,11 +156,17 @@ public class BoschHttpClient extends HttpClient {
             String url = this.getBoschSmartHomeUrl("devices");
             Request request = this.createRequest(url, GET);
             ContentResponse contentResponse = request.send();
-            String content = contentResponse.getContentAsString();
-            logger.debug("Access check response complete: {} - return code: {}", content, contentResponse.getStatus());
-            return true;
+            if (HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
+                String content = contentResponse.getContentAsString();
+                logger.debug("Access check completed with success: {} - status code: {}", content,
+                        contentResponse.getStatus());
+                return true;
+            } else {
+                logger.debug("Access check failed with status code: {}", contentResponse.getStatus());
+                return false;
+            }
         } catch (TimeoutException | ExecutionException | NullPointerException e) {
-            logger.debug("Access check response failed because of {}!", e.getMessage());
+            logger.debug("Access check failed because of {}!", e.getMessage());
             return false;
         }
     }
