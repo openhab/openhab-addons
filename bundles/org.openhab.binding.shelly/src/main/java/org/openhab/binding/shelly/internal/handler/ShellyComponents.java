@@ -16,15 +16,15 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor.ShellyADC;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -48,13 +48,13 @@ public class ShellyComponents {
      */
     public static boolean updateDeviceStatus(ShellyBaseHandler thingHandler, ShellySettingsStatus status) {
         if (!thingHandler.areChannelsCreated()) {
-            thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
-                    .createDeviceChannels(thingHandler.getThing(), thingHandler.getProfile(), status));
+            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createDeviceChannels(thingHandler.getThing(),
+                    thingHandler.getProfile(), status));
         }
 
         Integer rssi = getInteger(status.wifiSta.rssi);
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
-                toQuantityType(new Double(getLong(status.uptime)), DIGITS_NONE, Units.SECOND));
+                toQuantityType((double) getLong(status.uptime), DIGITS_NONE, Units.SECOND));
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
         if (status.tmp != null) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
@@ -109,7 +109,7 @@ public class ShellyComponents {
                             if (!thingHandler.areChannelsCreated()) {
                                 // skip for Shelly Bulb: JSON has a meter, but values don't get updated
                                 if (!profile.isBulb) {
-                                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
+                                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
                                             .createMeterChannels(thingHandler.getThing(), meter, groupName));
                                 }
                             }
@@ -141,7 +141,7 @@ public class ShellyComponents {
                             String groupName = profile.numMeters > 1 ? CHANNEL_GROUP_METER + meterIndex.toString()
                                     : CHANNEL_GROUP_METER;
                             if (!thingHandler.areChannelsCreated()) {
-                                thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
+                                thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
                                         .createEMeterChannels(thingHandler.getThing(), emeter, groupName));
                             }
 
@@ -197,7 +197,7 @@ public class ShellyComponents {
                 }
                 // Create channels for 1 Meter
                 if (!thingHandler.areChannelsCreated()) {
-                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
+                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
                             .createMeterChannels(thingHandler.getThing(), status.meters.get(0), groupName));
                 }
 
@@ -237,7 +237,7 @@ public class ShellyComponents {
      * @param profile ShellyDeviceProfile
      * @param status Last ShellySettingsStatus
      *
-     * @throws IOException
+     * @throws ShellyApiException
      */
     public static boolean updateSensors(ShellyBaseHandler thingHandler, ShellySettingsStatus status)
             throws ShellyApiException {
@@ -250,20 +250,20 @@ public class ShellyComponents {
             if (!thingHandler.areChannelsCreated()) {
                 thingHandler.logger.trace("{}: Create missing sensor channel(s)", thingHandler.thingName);
                 thingHandler.updateChannelDefinitions(
-                        ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), profile, sdata));
+                        ShellyChannelDefinitions.createSensorChannels(thingHandler.getThing(), profile, sdata));
             }
 
             updated |= thingHandler.updateWakeupReason(sdata.actReasons);
 
-            if ((sdata.contact != null) && sdata.contact.isValid) {
+            if ((sdata.sensor != null) && sdata.sensor.isValid) {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
-                        getString(sdata.contact.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
+                        getString(sdata.sensor.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
                         getStringType(sdata.sensorError));
                 if (changed) {
-                    thingHandler.postEvent(sdata.sensorError, true);
+                    thingHandler.postEvent(getString(sdata.sensorError), true);
                 }
                 updated |= changed;
             }
@@ -320,7 +320,11 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM,
                         getDecimal(sdata.concentration.ppm));
             }
-
+            if ((sdata.adcs != null) && (sdata.adcs.size() > 0)) {
+                ShellyADC adc = sdata.adcs.get(0);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
+                        getDecimal(adc.voltage));
+            }
             if (sdata.bat != null) { // no update for Sense
                 thingHandler.logger.trace("{}: Updating battery", thingHandler.thingName);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
@@ -332,9 +336,17 @@ public class ShellyComponents {
                     thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
                 }
             }
-            if (sdata.motion != null) {
+            if (sdata.motion != null) { // Shelly Sense
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
                         getOnOff(sdata.motion));
+            }
+            if (sdata.sensor != null) { // Shelly Motion
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
+                        getOnOff(sdata.sensor.motion));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
+                        getTimestamp(getString(profile.settings.timezone), sdata.sensor.motionTimestamp));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
+                        getOnOff(sdata.sensor.vibration));
             }
             if (sdata.charger != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,

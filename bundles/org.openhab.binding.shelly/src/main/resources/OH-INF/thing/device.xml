@@ -69,14 +69,14 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Battery voltage in V</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
 		<description>Number of seconds since the device was powered up</description>
-		<state readOnly="true" pattern="%d %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="heartBeat" advanced="true">
@@ -102,7 +102,7 @@
 		<tags>
 			<tag>CurrentTemperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="selfTest">

@@ -67,7 +67,7 @@ public class ShellyCoapJSonDTO {
         @SerializedName("I")
         String id; // ID
         @SerializedName("D")
-        String desc; // Description
+        String desc = ""; // Description
         @SerializedName("T")
         public String type; // Type
         @SerializedName("R")
