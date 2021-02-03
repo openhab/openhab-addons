@@ -27,7 +27,7 @@ import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -40,12 +40,12 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.io.transport.modbus.AsyncModbusFailure;
-import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.PollTask;
+import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.PollTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,7 +253,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            //@SuppressWarnings("null")
+            // @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' is offline", label));
@@ -269,7 +269,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
         }
 
         if (comms == null) {
-            //@SuppressWarnings("null")
+            // @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' not completely initialized", label));
@@ -323,10 +323,11 @@ public class SolaxX3MicHandler extends BaseThingHandler {
      */
     protected void handlePolledData(ModbusRegisterArray registers) {
         Thing mything = this.getThing();
-        //logger.debug("Invoked loopback for handling polled data");
+        // logger.debug("Invoked loopback for handling polled data");
         for (Channel localchannel : mything.getChannels()) {
-            //logger.debug("Handling Channel with UID = {}", localchannel.getUID());
-            SolaxX3MicChannelConfiguration solaxChannelConfig = localchannel.getConfiguration().as(SolaxX3MicChannelConfiguration.class);
+            // logger.debug("Handling Channel with UID = {}", localchannel.getUID());
+            SolaxX3MicChannelConfiguration solaxChannelConfig = localchannel.getConfiguration()
+                    .as(SolaxX3MicChannelConfiguration.class);
             Long value = 0L;
             switch (solaxChannelConfig.registerType) {
                 case "INT":
@@ -347,13 +348,15 @@ public class SolaxX3MicHandler extends BaseThingHandler {
                 updateState(localchannel.getUID(), status == null ? UnDefType.UNDEF : new StringType(status.name()));
             } else {
                 try {
-                    Field field = SmartHomeUnits.class.getDeclaredField(solaxChannelConfig.registerUnit);
+                    Field field = Units.class.getDeclaredField(solaxChannelConfig.registerUnit);
                     Unit<?> unit = (Unit<?>) field.get(field.getClass());
                     State s = getScaled(value, solaxChannelConfig.registerScaleFactor, unit);
-                    //logger.debug("value of channel is {} (real value = {}, scaleFactor = {}, unit = {}", s.toString(), value, solaxChannelConfig.registerScaleFactor, unit.toString());
+                    // logger.debug("value of channel is {} (real value = {}, scaleFactor = {}, unit = {}",
+                    // s.toString(), value, solaxChannelConfig.registerScaleFactor, unit.toString());
                     updateState(localchannel.getUID(), s);
                 } catch (NoSuchFieldException ex) {
-                    logger.warn("Incorrectly set up of Channel UUID = {}, ex = {}", localchannel.getUID(), ex.getMessage());
+                    logger.warn("Incorrectly set up of Channel UUID = {}, ex = {}", localchannel.getUID(),
+                            ex.getMessage());
                 } catch (IllegalAccessException ex) {
                     logger.error("Illegal access exception during reflection to Units!");
                 }

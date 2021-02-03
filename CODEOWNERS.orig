@@ -158,8 +158,11 @@
 /bundles/org.openhab.binding.modbus/ @ssalonen
 /bundles/org.openhab.binding.modbus.e3dc/ @weymann
 /bundles/org.openhab.binding.modbus.helioseasycontrols/ @bern77
-/bundles/org.openhab.binding.modbus.sbc/ @fwolter
+<<<<<<< HEAD
 /bundles/org.openhab.binding.modbus.solaxx3mic/ @Wawszczak
+=======
+/bundles/org.openhab.binding.modbus.sbc/ @fwolter
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
 /bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
 /bundles/org.openhab.binding.modbus.studer/ @giovannimirulla
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig

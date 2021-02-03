@@ -9,9 +9,13 @@
     <groupId>org.openhab.addons</groupId>
 
     <artifactId>org.openhab.addons.reactor</artifactId>
+<<<<<<< HEAD
 
+    <version>3.0.0-SNAPSHOT</version>
+
+=======
     <version>3.1.0-SNAPSHOT</version>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -23,12 +27,14 @@
   <name>openHAB Add-ons :: Bundles</name>
 
   <modules>
+<<<<<<< HEAD
 
+=======
     <!-- automation -->
     <module>org.openhab.automation.groovyscripting</module>
     <module>org.openhab.automation.jythonscripting</module>
     <module>org.openhab.automation.pidcontroller</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <!-- io -->
 
     <module>org.openhab.io.homekit</module>
@@ -40,7 +46,12 @@
     <module>org.openhab.io.neeo</module>
 
     <module>org.openhab.io.openhabcloud</module>
+<<<<<<< HEAD
 
+    <module>org.openhab.io.transport.modbus</module>
+
+=======
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <!-- transformations -->
 
     <module>org.openhab.transform.bin2json</module>
@@ -80,9 +91,11 @@
     <module>org.openhab.binding.amazonechocontrol</module>
 
     <module>org.openhab.binding.ambientweather</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.androiddebugbridge</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.astro</module>
 
     <module>org.openhab.binding.atlona</module>
@@ -108,19 +121,23 @@
     <module>org.openhab.binding.bluetooth.blukii</module>
 
     <module>org.openhab.binding.bluetooth.daikinmadoka</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.bluetooth.enoceanble</module>
     <module>org.openhab.binding.bluetooth.generic</module>
     <module>org.openhab.binding.bluetooth.govee</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.bluetooth.roaming</module>
 
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
 
     <module>org.openhab.binding.boschindego</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.boschshc</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.bosesoundtouch</module>
 
     <module>org.openhab.binding.bsblan</module>
@@ -184,9 +201,11 @@
     <module>org.openhab.binding.enocean</module>
 
     <module>org.openhab.binding.enturno</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.epsonprojector</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.etherrain</module>
 
     <module>org.openhab.binding.evohome</module>
@@ -214,11 +233,15 @@
     <module>org.openhab.binding.gardena</module>
 
     <module>org.openhab.binding.gce</module>
+<<<<<<< HEAD
 
+    <module>org.openhab.binding.goecharger</module>
+
+=======
     <module>org.openhab.binding.generacmobilelink</module>
     <module>org.openhab.binding.goecharger</module>
     <module>org.openhab.binding.gpio</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.globalcache</module>
 
     <module>org.openhab.binding.gpstracker</module>
@@ -228,9 +251,11 @@
     <module>org.openhab.binding.groheondus</module>
 
     <module>org.openhab.binding.harmonyhub</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.haywardomnilogic</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.hdanywhere</module>
 
     <module>org.openhab.binding.hdpowerview</module>
@@ -244,9 +269,11 @@
     <module>org.openhab.binding.homematic</module>
 
     <module>org.openhab.binding.hpprinter</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.http</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.hue</module>
 
     <module>org.openhab.binding.hydrawise</module>
@@ -272,9 +299,11 @@
     <module>org.openhab.binding.intesis</module>
 
     <module>org.openhab.binding.ipp</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.irobot</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.irtrans</module>
 
     <module>org.openhab.binding.ism8</module>
@@ -358,9 +387,11 @@
     <module>org.openhab.binding.modbus</module>
 
     <module>org.openhab.binding.modbus.e3dc</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.modbus.sbc</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.modbus.studer</module>
 
     <module>org.openhab.binding.modbus.sunspec</module>
@@ -368,7 +399,7 @@
     <module>org.openhab.binding.modbus.stiebeleltron</module>
 
     <module>org.openhab.binding.modbus.helioseasycontrols</module>
-
+	
     <module>org.openhab.binding.modbus.solaxx3mic</module>
 
     <module>org.openhab.binding.monopriceaudio</module>
@@ -376,9 +407,11 @@
     <module>org.openhab.binding.mpd</module>
 
     <module>org.openhab.binding.mqtt</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.mqtt.espmilighthub</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.mqtt.generic</module>
 
     <module>org.openhab.binding.mqtt.homeassistant</module>
@@ -426,9 +459,11 @@
     <module>org.openhab.binding.ojelectronics</module>
 
     <module>org.openhab.binding.omnikinverter</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.omnilink</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.onebusaway</module>
 
     <module>org.openhab.binding.onewiregpio</module>
@@ -464,9 +499,11 @@
     <module>org.openhab.binding.pixometer</module>
 
     <module>org.openhab.binding.pjlinkdevice</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.playstation</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.plclogo</module>
 
     <module>org.openhab.binding.plugwise</module>
@@ -476,24 +513,30 @@
     <module>org.openhab.binding.pulseaudio</module>
 
     <module>org.openhab.binding.pushbullet</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.pushover</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.radiothermostat</module>
 
     <module>org.openhab.binding.regoheatpump</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.revogi</module>
     <module>org.openhab.binding.remoteopenhab</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.rfxcom</module>
 
     <module>org.openhab.binding.rme</module>
 
     <module>org.openhab.binding.robonect</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.roku</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.rotel</module>
 
     <module>org.openhab.binding.russound</module>
@@ -511,9 +554,11 @@
     <module>org.openhab.binding.sensebox</module>
 
     <module>org.openhab.binding.sensibo</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.serial</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.serialbutton</module>
 
     <module>org.openhab.binding.shelly</module>
@@ -573,18 +618,24 @@
     <module>org.openhab.binding.tesla</module>
 
     <module>org.openhab.binding.tibber</module>
+<<<<<<< HEAD
 
+    <module>org.openhab.binding.tplinksmarthome</module>
+
+=======
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.tradfri</module>
 
     <module>org.openhab.binding.unifi</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.unifiedremote</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.upnpcontrol</module>
 
     <module>org.openhab.binding.upb</module>
@@ -620,9 +671,11 @@
     <module>org.openhab.binding.windcentrale</module>
 
     <module>org.openhab.binding.wlanthermo</module>
+<<<<<<< HEAD
 
+=======
     <module>org.openhab.binding.wled</module>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <module>org.openhab.binding.xmltv</module>
 
     <module>org.openhab.binding.xmppclient</module>
@@ -676,13 +729,15 @@
   </properties>
 
   <dependencies>
+<<<<<<< HEAD
 
+=======
     <dependency>
       <groupId>org.lastnpe.eea</groupId>
       <artifactId>eea-all</artifactId>
       <version>${eea.version}</version>
     </dependency>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     <!-- openHAB core -->
 
     <dependency>
@@ -706,14 +761,16 @@
       <type>pom</type>
 
       <scope>provided</scope>
+<<<<<<< HEAD
 
+=======
       <exclusions>
         <exclusion>
           <groupId>commons-net</groupId>
           <artifactId>commons-net</artifactId>
         </exclusion>
       </exclusions>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
     </dependency>
 
     <dependency>
@@ -776,6 +833,15 @@
 
   </dependencies>
 
+<<<<<<< HEAD
+  <properties>
+
+    <dep.noembedding/>
+
+  </properties>
+
+=======
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
   <build>
 
     <pluginManagement>
@@ -981,9 +1047,13 @@
               <includeScope>runtime</includeScope>
 
               <includeTypes>jar</includeTypes>
+<<<<<<< HEAD
 
+              <excludeGroupIds>javax.activation,org.apache.karaf.features</excludeGroupIds>
+
+=======
               <excludeGroupIds>javax.activation,org.apache.karaf.features,org.lastnpe.eea</excludeGroupIds>
-
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
               <excludeArtifactIds>${dep.noembedding}</excludeArtifactIds>
 
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
@@ -999,6 +1069,9 @@
             </configuration>
 
           </execution>
+<<<<<<< HEAD
+
+=======
           <execution>
             <id>unpack-eea</id>
             <goals>
@@ -1015,6 +1088,7 @@
               </artifactItems>
             </configuration>
           </execution>
+>>>>>>> bc5ffb26e2c095dbfb5e63d12b06872717fd943f
         </executions>
 
       </plugin>

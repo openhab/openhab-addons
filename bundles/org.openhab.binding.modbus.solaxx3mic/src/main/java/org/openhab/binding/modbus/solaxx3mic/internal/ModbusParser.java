@@ -16,9 +16,9 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
-import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
  * The {@link InverterStatus} describes
@@ -83,7 +83,7 @@ public final class ModbusParser {
      * @return the parsed value or empty if the field is not implemented
      */
     public static Optional<Long> extractOptionalInt32(ModbusRegisterArray raw, int index, boolean littleEndian) {
-        ValueType type = littleEndian ? ValueType.INT32_SWAP : ValueType.INT32 ;
+        ValueType type = littleEndian ? ValueType.INT32_SWAP : ValueType.INT32;
         return ModbusBitUtilities.extractStateFromRegisters(raw, index, type).map(DecimalType::longValue);
     }
 
