@@ -107,7 +107,8 @@ public class UniFiControllerRequest<T> {
     }
 
     public void setAPIPath(String relativePath) {
-        this.path = "/proxy/network" + relativePath;
+        if(unifiOS) this.path = "/proxy/network" + relativePath;
+        else this.path = relativePath;
     }
 
     public void setPath(String path) {
