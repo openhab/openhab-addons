@@ -218,6 +218,7 @@ Number statusFanPow    "Fan Power [%1.0f%%]"  <signal>   (gVacStat) {channel="mi
 Number statusClean    "In Cleaning Status [%1.0f]"   <switch>  (gVacStat) {channel="miio:vacuum:034F0E45:status#in_cleaning" }
 Switch statusDND    "DND Activated"    (gVacStat) {channel="miio:vacuum:034F0E45:status#dnd_enabled" }
 Number statusStatus    "Status [%1.0f]"  <status>  (gVacStat) {channel="miio:vacuum:034F0E45:status#state"} 
+Switch isLocating    "Locating"    (gVacStat) {channel="miio:vacuum:034F0E45:status#is_locating" }
 
 Number consumableMain    "Main Brush [%1.0f]"    (gVacCons) {channel="miio:vacuum:034F0E45:consumables#main_brush_time"}
 Number consumableSide    "Side Brush [%1.0f]"    (gVacCons) {channel="miio:vacuum:034F0E45:consumables#side_brush_time"}
@@ -254,6 +255,7 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Number  | status#water_box_mode             | Water Box Mode             |
 | Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
 
 

@@ -344,6 +344,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (deviceCapabilities.containsKey(RobotCababilities.MOP_FORBIDDEN)) {
             safeUpdateState(RobotCababilities.MOP_FORBIDDEN.getChannel(), statusInfo.getMopForbiddenEnable());
         }
+        if (deviceCapabilities.containsKey(RobotCababilities.LOCATING)) {
+            safeUpdateState(RobotCababilities.LOCATING.getChannel(), statusInfo.getIsLocating());
+        }
         return true;
     }
 
