@@ -34,15 +34,11 @@ You can set the **color** for each panel or turn it on (white) or off (black) an
 | Shapes Mini Triangles  |  ??  | Mini Triangles                                             |     ?     |       ?       |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 
- x  = Supported
-(x) = Supported but only tested by community
-(-) = unknown (no device available to test)
-
+ x  = Supported  (x) = Supported but only tested by community   (-) = unknown (no device available to test)
 
 Note: In case of major changes of a binding (like adding more features to a thing) it becomes necessary to delete your things due to the things not being compatible anymore.
 Don't worry too much though as they will be easily redetected and nothing really is lost.
 Just make sure that you delete them and rediscover as described below.
-
 
 ## Discovery
 

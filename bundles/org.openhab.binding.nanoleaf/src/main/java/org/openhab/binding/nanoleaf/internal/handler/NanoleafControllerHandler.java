@@ -351,7 +351,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private boolean hasTouchSupport(@Nullable String deviceType) {
-        return (Arrays.asList(MODELS_WITH_TOUCHSUPPORT).contains(deviceType));
+        return (MODELS_WITH_TOUCHSUPPORT.contains(deviceType));
     }
 
     private synchronized void stopTouchJob() {

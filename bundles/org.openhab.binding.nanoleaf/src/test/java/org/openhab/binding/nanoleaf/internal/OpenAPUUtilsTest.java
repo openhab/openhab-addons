@@ -28,10 +28,6 @@ import org.junit.jupiter.api.Test;
 @NonNullByDefault
 public class OpenAPUUtilsTest {
 
-    @BeforeEach
-    public void setup() {
-    }
-
     @Test
     public void testStateOn() {
         int[] versions = OpenAPIUtils.getFirmwareVersionNumbers("5.1.2");

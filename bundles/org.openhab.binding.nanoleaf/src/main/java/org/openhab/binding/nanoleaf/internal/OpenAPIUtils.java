@@ -166,18 +166,19 @@ public class OpenAPIUtils {
     public static int[] getFirmwareVersionNumbers(String firmwareVersion) throws IllegalArgumentException {
         LOGGER.debug("firmwareVersion: {}", firmwareVersion);
         Matcher m = FIRMWARE_VERSION_PATTERN.matcher(firmwareVersion);
-        if (!m.matches()) {
+
+        if (m.matches()) {
+            return new int[]{Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
+                    Integer.parseInt(m.group(3))};
+        } else {
             m = FIRMWARE_VERSION_PATTERN_BETA.matcher(firmwareVersion);
-            if (!m.matches()) {
+            if (m.matches()) {
+                return new int[]{Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)),
+                        Integer.parseInt(m.group(4))};
+            } else {
                 throw new IllegalArgumentException("Malformed controller firmware version " + firmwareVersion);
             }
         }
-
-        if (m.groupCount() == 3)
-            return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
-                    Integer.parseInt(m.group(3)) };
-        else
-            return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)),
-                    Integer.parseInt(m.group(4)) };
     }
+
 }

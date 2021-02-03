@@ -15,6 +15,9 @@ package org.openhab.binding.nanoleaf.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * The {@link NanoleafBindingConstants} class defines common constants, which are
  * used across the whole binding.
@@ -72,7 +75,7 @@ public class NanoleafBindingConstants {
     public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
     public static final String MODEL_ID_LIGHTPANELS = "NL22";
 
-    public static final String[] MODELS_WITH_TOUCHSUPPORT = { "NL29", "NL42" };
+    public static final List<String> MODELS_WITH_TOUCHSUPPORT = Arrays.asList("NL29", "NL42");
     public static final String DEVICE_TYPE_LIGHTPANELS = "lightPanels";
     public static final String DEVICE_TYPE_TOUCHSUPPORT = "canvas"; // we need to keep this enum for backward
                                                                     // compatibility even though not only canvas type
