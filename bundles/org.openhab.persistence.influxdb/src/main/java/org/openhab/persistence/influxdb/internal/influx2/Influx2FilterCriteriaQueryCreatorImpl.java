@@ -21,13 +21,11 @@ import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.items.Metadata;
-import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.FilterCriteria;
-import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataUtils;
 import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
 
 import com.influxdb.query.dsl.Flux;
@@ -97,23 +95,8 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
     private String calculateMeasurementName(@Nullable String itemName) {
         String name = itemName;
 
-        if (configuration.isUseMetadataMeasurementName()) {
-            final MetadataRegistry currentMetadataRegistry = metadataRegistry;
-            if (currentMetadataRegistry != null) {
-                MetadataKey key = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, itemName);
-                Metadata metadata = currentMetadataRegistry.get(key);
-                if (metadata != null) {
-                    String metaName = metadata.getValue();
-                    if (!metaName.isBlank()) {
-                        name = metaName;
-                    }
-                }
-            }
-        }
-
-        if (configuration.isReplaceUnderscore()) {
-            name = name.replace('_', '.');
-        }
+        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadata(configuration, metadataRegistry, name,
+                itemName);
 
         return name;
     }
