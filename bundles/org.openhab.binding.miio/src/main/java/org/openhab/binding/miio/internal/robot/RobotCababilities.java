@@ -29,6 +29,7 @@ public enum RobotCababilities {
     WATERBOX_CARRIAGE("water_box_carriage_status", "status#water_box_carriage_status",
             "miio:water_box_carriage_status"),
     MOP_FORBIDDEN("mop_forbidden_enable", "status#mop_forbidden_enable", "miio:mop_forbidden_enable"),
+    LOCATING("is_locating", "status#is_locating", "miio:is_locating"),
     SEGMENT_CLEAN("", "actions#segment", "miio:segment");
 
     private final String statusFieldName;
