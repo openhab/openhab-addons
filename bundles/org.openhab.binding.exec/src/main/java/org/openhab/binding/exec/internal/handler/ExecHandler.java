@@ -208,6 +208,7 @@ public class ExecHandler extends BaseThingHandler {
                         break;
                     case LINUX:
                     case MAC:
+                    case BSD:
                     case SOLARIS:
                         // assume sh is present, should all be POSIX-compliant
                         shell = SHELL_NIX;
@@ -397,6 +398,7 @@ public class ExecHandler extends BaseThingHandler {
     public enum OS {
         WINDOWS,
         LINUX,
+        BSD,
         MAC,
         SOLARIS,
         UNKNOWN,
@@ -412,6 +414,8 @@ public class ExecHandler extends BaseThingHandler {
                 os = OS.WINDOWS;
             } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
                 os = OS.LINUX;
+            } else if (operSys.endsWith("bsd")) {
+                os = OS.BSD;
             } else if (operSys.contains("mac")) {
                 os = OS.MAC;
             } else if (operSys.contains("sunos")) {
