@@ -139,16 +139,18 @@ public class ReadmeHelper {
                     String link = device.getModel().replace(".", "-");
                     sw.write("### " + device.getDescription() + " (" + "<a name=\"" + link + "\">" + device.getModel()
                             + "</a>" + ") Channels\n" + "\n");
-                    sw.write("| Channel          | Type    | Description                         | Comment    |\n");
-                    sw.write("|------------------|---------|-------------------------------------|------------|\n");
+                    sw.write(
+                            "| Channel              | Type                 | Description                              | Comment    |\n");
+                    sw.write(
+                            "|----------------------|----------------------|------------------------------------------|------------|\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
                         if (UPDATE_OPTION_MAPPING_README_COMMENTS
                                 && ch.getReadmeComment().startsWith("Value mapping")) {
                             ch.setReadmeComment(readmeOptionMapping(ch, device.getModel()));
                         }
-                        sw.write("| " + minLengthString(ch.getChannel(), 16) + " | " + minLengthString(ch.getType(), 7)
-                                + " | " + minLengthString(ch.getFriendlyName(), 35) + " | "
+                        sw.write("| " + minLengthString(ch.getChannel(), 20) + " | " + minLengthString(ch.getType(), 20)
+                                + " | " + minLengthString(ch.getFriendlyName(), 40) + " | "
                                 + minLengthString(ch.getReadmeComment(), 10) + " |\n");
                     }
                     sw.write("\n");

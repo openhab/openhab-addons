@@ -344,15 +344,15 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "0"
+							"label": "Mode 0"
 						},
 						{
 							"value": "1",
-							"label": "1"
+							"label": "Mode 1"
 						},
 						{
 							"value": "2",
-							"label": "2"
+							"label": "Mode 2"
 						}
 					]
 				},
@@ -363,7 +363,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"0\",\"1\"\u003d\"1\",\"2\"\u003d\"2\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Mode 0\",\"1\"\u003d\"Mode 1\",\"2\"\u003d\"Mode 2\"]"
 			},
 			{
 				"property": "door-state",
@@ -377,25 +377,25 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "0"
+							"label": "Door 0"
 						},
 						{
 							"value": "1",
-							"label": "1"
+							"label": "Door 1"
 						},
 						{
 							"value": "2",
-							"label": "2"
+							"label": "Door 2"
 						},
 						{
 							"value": "3",
-							"label": "3"
+							"label": "Door 3"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"0\",\"1\"\u003d\"1\",\"2\"\u003d\"2\",\"3\"\u003d\"3\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Door 0\",\"1\"\u003d\"Door 1\",\"2\"\u003d\"Door 2\",\"3\"\u003d\"Door 3\"]"
 			},
 			{
 				"property": "contact-state",
@@ -409,17 +409,17 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "0"
+							"label": "Off"
 						},
 						{
 							"value": "1",
-							"label": "1"
+							"label": "On"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"0\",\"1\"\u003d\"1\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
 			},
 			{
 				"property": "contact-state1",
@@ -577,27 +577,14 @@
 				"piid": 1,
 				"friendlyName": "Viomi Vacuum - Repeat State",
 				"channel": "repeat-state",
-				"type": "Number",
-				"stateDescription": {
-					"options": [
-						{
-							"value": "0",
-							"label": "关"
-						},
-						{
-							"value": "1",
-							"label": "开"
-						}
-					]
-				},
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"关\",\"1\"\u003d\"开\"]"
+				]
 			},
 			{
 				"property": "remember-state",
@@ -605,19 +592,7 @@
 				"piid": 3,
 				"friendlyName": "Viomi Vacuum - Remember State",
 				"channel": "remember-state",
-				"type": "Number",
-				"stateDescription": {
-					"options": [
-						{
-							"value": "0",
-							"label": "关"
-						},
-						{
-							"value": "1",
-							"label": "开"
-						}
-					]
-				},
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
@@ -638,11 +613,11 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "弓字形"
+							"label": "C-Curved"
 						},
 						{
 							"value": "1",
-							"label": "Y字形"
+							"label": "Y-Route"
 						}
 					]
 				},
@@ -653,7 +628,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"弓字形\",\"1\"\u003d\"Y字形\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"C-Curved\",\"1\"\u003d\"Y-Route\"]"
 			},
 			{
 				"property": "side-brush-life",
@@ -810,19 +785,19 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "安静"
+							"label": "Silent"
 						},
 						{
 							"value": "1",
-							"label": "标准"
+							"label": "Standard"
 						},
 						{
 							"value": "2",
-							"label": "中档"
+							"label": "Medium"
 						},
 						{
 							"value": "3",
-							"label": "强力"
+							"label": "Strong"
 						}
 					]
 				},
@@ -833,7 +808,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"安静\",\"1\"\u003d\"标准\",\"2\"\u003d\"中档\",\"3\"\u003d\"强力\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]"
 			},
 			{
 				"property": "water-grade",
@@ -846,15 +821,15 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "1挡"
+							"label": "1 Block"
 						},
 						{
 							"value": "1",
-							"label": "2挡"
+							"label": "2 Blocks"
 						},
 						{
 							"value": "2",
-							"label": "3挡"
+							"label": "3Blocks"
 						}
 					]
 				},
@@ -865,7 +840,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"1挡\",\"1\"\u003d\"2挡\",\"2\"\u003d\"3挡\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"1 Block\",\"1\"\u003d\"2 Blocks\",\"2\"\u003d\"3Blocks\"]"
 			},
 			{
 				"property": "map-num",
@@ -983,25 +958,25 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "全局"
+							"label": "Everywhere"
 						},
 						{
 							"value": "1",
-							"label": "沿边"
+							"label": "Edges"
 						},
 						{
 							"value": "2",
-							"label": "区域"
+							"label": "Surface"
 						},
 						{
 							"value": "3",
-							"label": "定点"
+							"label": "Fixed Location"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"全局\",\"1\"\u003d\"沿边\",\"2\"\u003d\"区域\",\"3\"\u003d\"定点\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Everywhere\",\"1\"\u003d\"Edges\",\"2\"\u003d\"Surface\",\"3\"\u003d\"Fixed Location\"]"
 			},
 			{
 				"property": "clean-way",
@@ -1015,21 +990,21 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "扫地"
+							"label": "Sweep Floor"
 						},
 						{
 							"value": "1",
-							"label": "扫拖"
+							"label": "Sweep"
 						},
 						{
 							"value": "2",
-							"label": "拖地"
+							"label": "Mop"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"扫地\",\"1\"\u003d\"扫拖\",\"2\"\u003d\"拖地\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Sweep Floor\",\"1\"\u003d\"Sweep\",\"2\"\u003d\"Mop\"]"
 			},
 			{
 				"property": "cur-lang",
@@ -1108,17 +1083,17 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "没有记忆图"
+							"label": "No map in memory"
 						},
 						{
 							"value": "1",
-							"label": "有记忆图"
+							"label": "Map in memory"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"没有记忆图\",\"1\"\u003d\"有记忆图\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"No map in memory\",\"1\"\u003d\"Map in memory\"]"
 			},
 			{
 				"property": "has-newmap",
@@ -1187,11 +1162,11 @@
 					"options": [
 						{
 							"value": "0",
-							"label": ""
+							"label": "Disabled"
 						},
 						{
 							"value": "1",
-							"label": ""
+							"label": "Enabled"
 						}
 					]
 				},
@@ -1202,7 +1177,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"\",\"1\"\u003d\"\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Disabled\",\"1\"\u003d\"Enabled\"]"
 			},
 			{
 				"property": "dnd-start-hour",
@@ -1373,15 +1348,15 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "上传到url0"
+							"label": "Upload to url0"
 						},
 						{
 							"value": "1",
-							"label": "上传到url1"
+							"label": "Upload to url1"
 						},
 						{
 							"value": "2",
-							"label": "上传到url2"
+							"label": "Upload to url2"
 						}
 					]
 				},
@@ -1392,7 +1367,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"上传到url0\",\"1\"\u003d\"上传到url1\",\"2\"\u003d\"上传到url2\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Upload to url0\",\"1\"\u003d\"Upload to url1\",\"2\"\u003d\"Upload to url2\"]"
 			},
 			{
 				"property": "map-id",
