@@ -1,6 +1,6 @@
 # Bosch Smart Home Binding
 
-Binding for the Bosch Smart Home Controller.
+Binding for the Bosch Smart Home.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)

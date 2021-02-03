@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
@@ -90,20 +91,24 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // Read configuration
         BoschSHCBridgeConfiguration config = getConfigAs(BoschSHCBridgeConfiguration.class);
 
-        if (config.ipAddress.isEmpty()) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address set");
+        String ipAddress = config.ipAddress.trim();
+        if (ipAddress.isEmpty()) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-empty-ip");
             return;
         }
 
-        if (config.password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No system password set");
+        String password = config.password.trim();
+        if (password.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-empty-password");
             return;
         }
 
         SslContextFactory factory;
         try {
             // prepare SSL key and certificates
-            factory = new BoschSslUtil(config.ipAddress).getSslContextFactory();
+            factory = new BoschSslUtil(ipAddress).getSslContextFactory();
         } catch (PairingFailedException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-ssl");
@@ -111,7 +116,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
 
         // Instantiate HttpClient with the SslContextFactory
-        BoschHttpClient httpClient = this.httpClient = new BoschHttpClient(config.ipAddress, config.password, factory);
+        BoschHttpClient httpClient = this.httpClient = new BoschHttpClient(ipAddress, password, factory);
 
         // Start http client
         try {
@@ -122,6 +127,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        // general checks are OK, therefore set the status to unknown and wait for initial access
+        this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE);
+
         // Initialize bridge in the background.
         // Start initial access the first time
         scheduleInitialAccess(httpClient);
@@ -130,6 +138,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         // Cancel scheduled pairing.
+        @Nullable
         ScheduledFuture<?> scheduledPairing = this.scheduledPairing;
         if (scheduledPairing != null) {
             scheduledPairing.cancel(true);
@@ -139,6 +148,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // Stop long polling.
         this.longPolling.stop();
 
+        @Nullable
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient != null) {
             try {
@@ -175,9 +185,20 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {}", this, httpClient);
 
         try {
-            // check access and pair if necessary
-            if (!httpClient.isAccessPossible()) {
+            // check if SCH is offline
+            if (!httpClient.isOnline()) {
                 // update status already if access is not possible
+                this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
+                        "@text/offline.conf-error-offline");
+                // restart later initial access
+                scheduleInitialAccess(httpClient);
+                return;
+            }
+
+            // SHC is online
+            // check if SHC access is not possible and pairing necessary
+            if (!httpClient.isAccessPossible()) {
+                // update status description to show pairing test
                 this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
                         "@text/offline.conf-error-pairing");
                 if (!httpClient.doPairing()) {
@@ -186,52 +207,61 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 }
                 // restart initial access - needed also in case of successful pairing to check access again
                 scheduleInitialAccess(httpClient);
-            } else {
-                // print rooms and devices if things are reachable
-                boolean thingReachable = true;
-                thingReachable &= this.getRooms();
-                thingReachable &= this.getDevices();
-
-                if (thingReachable) {
-                    this.updateStatus(ThingStatus.ONLINE);
-
-                    // Start long polling
-                    try {
-                        this.longPolling.start(httpClient);
-                    } catch (LongPollingFailedException e) {
-                        this.handleLongPollFailure(e);
-                    }
-                } else {
-                    this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "@text/offline.not-reachable");
-                    // restart initial access
-                    scheduleInitialAccess(httpClient);
-                }
+                return;
             }
+
+            // SHC is online and access is possible
+            // print rooms and devices
+            boolean thingReachable = true;
+            thingReachable &= this.getRooms();
+            thingReachable &= this.getDevices();
+            if (!thingReachable) {
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "@text/offline.not-reachable");
+                // restart initial access
+                scheduleInitialAccess(httpClient);
+                return;
+            }
+
+            // start long polling loop
+            this.updateStatus(ThingStatus.ONLINE);
+            try {
+                this.longPolling.start(httpClient);
+            } catch (LongPollingFailedException e) {
+                this.handleLongPollFailure(e);
+            }
+
         } catch (InterruptedException e) {
-            this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
-                    String.format("Pairing was interrupted: %s", e.getMessage()));
+            this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.interrupted");
         }
     }
 
     /**
      * Get a list of connected devices from the Smart-Home Controller
      * 
-     * @throws InterruptedException
+     * @throws InterruptedException in case bridge is stopped
      */
     private boolean getDevices() throws InterruptedException {
+        @Nullable
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             return false;
         }
 
         try {
-            logger.debug("Sending http request to Bosch to request clients: {}", httpClient);
+            logger.debug("Sending http request to Bosch to request devices: {}", httpClient);
             String url = httpClient.getBoschSmartHomeUrl("devices");
             ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
 
+            // check HTTP status code
+            if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
+                logger.debug("Request devices failed with status code: {}", contentResponse.getStatus());
+                return false;
+            }
+
             String content = contentResponse.getContentAsString();
-            logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+            logger.debug("Request devices completed with success: {} - status code: {}", content,
+                    contentResponse.getStatus());
 
             Type collectionType = new TypeToken<ArrayList<Device>>() {
             }.getType();
@@ -249,13 +279,21 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (TimeoutException | ExecutionException e) {
-            logger.debug("HTTP request failed with exception {}", e.getMessage());
+            logger.warn("Request devices failed because of {}!", e.getMessage());
             return false;
         }
 
         return true;
     }
 
+    /**
+     * Bridge callback handler for the results of long polls.
+     *
+     * It will check the result and
+     * forward the received to the bosch thing handlers.
+     *
+     * @param result Results from Long Polling
+     */
     private void handleLongPollResult(LongPollResult result) {
         for (DeviceStatusUpdate update : result.result) {
             if (update != null && update.state != null) {
@@ -266,9 +304,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 Bridge bridge = this.getThing();
                 for (Thing childThing : bridge.getThings()) {
                     // All children of this should implement BoschSHCHandler
+                    @Nullable
                     ThingHandler baseHandler = childThing.getHandler();
                     if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
                         BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
+                        @Nullable
                         String deviceId = handler.getBoschID();
 
                         handled = true;
@@ -290,8 +330,16 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Bridge callback handler for the failures during long polls.
+     *
+     * It will update the bridge status and try to access the SHC again.
+     *
+     * @param e error during long polling
+     */
     private void handleLongPollFailure(Throwable e) {
         logger.warn("Long polling failed, will try to reconnect", e);
+        @Nullable
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -300,16 +348,17 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
 
         this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
-                String.format("@text/offline.long-polling-failed.trying-to-reconnect", e.getMessage()));
+                "@text/offline.long-polling-failed.trying-to-reconnect");
         scheduleInitialAccess(httpClient);
     }
 
     /**
      * Get a list of rooms from the Smart-Home controller
      * 
-     * @throws InterruptedException
+     * @throws InterruptedException in case bridge is stopped
      */
     private boolean getRooms() throws InterruptedException {
+        @Nullable
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient != null) {
             try {
@@ -317,8 +366,15 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 String url = httpClient.getBoschSmartHomeUrl("rooms");
                 ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
 
+                // check HTTP status code
+                if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
+                    logger.debug("Request rooms failed with status code: {}", contentResponse.getStatus());
+                    return false;
+                }
+
                 String content = contentResponse.getContentAsString();
-                logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+                logger.debug("Request rooms completed with success: {} - status code: {}", content,
+                        contentResponse.getStatus());
 
                 Type collectionType = new TypeToken<ArrayList<Room>>() {
                 }.getType();
@@ -333,7 +389,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 return true;
             } catch (TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed: {}", e.getMessage());
+                logger.warn("Request rooms failed because of {}!", e.getMessage());
                 return false;
             }
         } else {
@@ -354,6 +410,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      */
     public <T extends BoschSHCServiceState> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass)
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        @Nullable
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             logger.warn("HttpClient not initialized");
@@ -406,6 +463,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      */
     public <T extends BoschSHCServiceState> @Nullable Response putState(String deviceId, String serviceName, T state)
             throws InterruptedException, TimeoutException, ExecutionException {
+        @Nullable
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             logger.warn("HttpClient not initialized");
@@ -417,7 +475,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         Request request = httpClient.createRequest(url, PUT, state);
 
         // Send request
-        Response response = request.send();
-        return response;
+        return request.send();
     }
 }
