@@ -755,7 +755,7 @@ Often Modbus slave might have the numbers stored as integers, with no informatio
 In openHAB, it is recommended to scale and attach units for the read data.
 
 In the below example, modbus data needs to be multiplied by `0.1` to convert the value to Celsius.
-For example, `45` corresponds to `45 °C`.
+For example, raw modbus register value of `45` corresponds to `4.5 °C`.
 
 Note how that unit can be specified within the `gain` parameter of `modbus:gainOffset` profile.
 This enables the use of quantity-aware `Number` item `Number:Temperature`.
