@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.util;
+package org.openhab.binding.shelly.internal.provider;
 
 import java.util.Locale;
 
@@ -19,6 +19,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * {@link ShellyTranslationProvider} provides i18n message lookup
@@ -26,22 +30,18 @@ import org.osgi.framework.Bundle;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@Component(service = ShellyTranslationProvider.class)
 public class ShellyTranslationProvider {
-
     private final Bundle bundle;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
-    public ShellyTranslationProvider(Bundle bundle, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        this.bundle = bundle;
+    @Activate
+    public ShellyTranslationProvider(@Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider) {
+        this.bundle = FrameworkUtil.getBundle(this.getClass());
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
-    }
-
-    public ShellyTranslationProvider(final ShellyTranslationProvider other) {
-        this.bundle = other.bundle;
-        this.i18nProvider = other.i18nProvider;
-        this.localeProvider = other.localeProvider;
     }
 
     public @Nullable String get(String key, @Nullable Object... arguments) {

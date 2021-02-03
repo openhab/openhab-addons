@@ -31,7 +31,7 @@ To implement this use case you need
 For this how-to a roller with an electrical motor is required and will be controlled using A/C and a momentary switch.
 The same solutions works with other switch types (DC/AC, 2 button switch etc.).
 In this case you need to look into details and user a different Shelly configuration or adapt technical installation.
-Refer to the Alterco Shelly documentation and make sure to use proper technical installation and wiring.
+Refer to the Allterco Shelly documentation and make sure to use proper technical installation and wiring.
 Important: Electrical installation should be performed only be people knowing what they do - failures could harm you!!
 
 - Shelly 2.5 to control the roller with firmware 1.9.2+
@@ -63,7 +63,7 @@ Latest version is always available [here](https://github.com/markus7017/myfiles/
 Ideally the upgrade could be performed on a Raspberry with
 ```
 openhab-cli stop
-openhab-clu clean-cache
+openhab-cli clean-cache
 apt-get update
 apt-get upgrade
 openhab-cli start
@@ -133,7 +133,7 @@ It simplifies to identify the roller when you have a ton of Shelly things (belie
 
 ### Shelly setup - Positioning Favorites
 
-With version 1.9 Alterco introduced an interesting feature called Favorites.
+With version 1.9 Allterco introduced an interesting feature called Favorites.
 Those allow to store up to 4 pre-defined positions in the device, e.g. 15%, 50%, 65%, 98%.
 Once defined you have kind of a short-cut to bring the roller to that position and those favorites are also supported by the binding (see below).
 
@@ -171,7 +171,7 @@ There is also a dedicated channel (roller#rollerFav), which accepts this ids and
 
 ### Device events
 
-As you might know the binding supports the Alterco Shelly CoIoT protocol. 
+As you might know the binding supports the Allterco Shelly CoIoT protocol. 
 The device supports so called I/O URL Actions, which are kind of a callback to an application for certain events.
 Whenever possible you should prefer CoIoT events, because they are triggered near realtime and provide way more information compared to the Action URLs.
 The binding uses those CoIoT updates as triggers, but also to update the channel data.

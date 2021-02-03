@@ -30,7 +30,8 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortStatu
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -118,6 +119,19 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 requestUpdates(autoCoIoT ? 1 : 45 / UPDATE_STATUS_INTERVAL_SECONDS, false);
                 break;
 
+            case CHANNEL_ROL_CONTROL_FAV:
+                if (command instanceof Number) {
+                    int id = ((Number) command).intValue() - 1;
+                    int pos = profile.getRollerFav(id);
+                    if (pos > 0) {
+                        logger.debug("{}: Selecting favorite {}, position = {}", thingName, id, pos);
+                        api.setRollerPos(rIndex, pos);
+                        break;
+                    }
+                }
+                logger.debug("{}: Invalid favorite index: {}", thingName, command);
+                break;
+
             case CHANNEL_TIMER_AUTOON:
                 logger.debug("{}: Set Auto-ON timer to {}", thingName, command);
                 api.setTimer(rIndex, SHELLY_TIMER_AUTOON, getNumber(command));
@@ -152,7 +166,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             return;
         } else if (command instanceof IncreaseDecreaseType) {
             ShellyShortLightStatus light = api.getLightStatus(index);
-            if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
+            if (command == IncreaseDecreaseType.INCREASE) {
                 value = Math.min(light.brightness + DIM_STEPSIZE, 100);
             } else {
                 value = Math.max(light.brightness - DIM_STEPSIZE, 0);
@@ -172,14 +186,16 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     }
 
     private void updateBrightnessChannel(int lightId, OnOffType power, int brightness) throws ShellyApiException {
+        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", power);
         if (brightness > 0) {
             api.setBrightness(lightId, brightness, config.brightnessAutoOn);
         } else {
             api.setRelayTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
+            if (brightness >= 0) { // ignore -1
+                updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
+                        toQuantityType((double) (power == OnOffType.ON ? brightness : 0), DIGITS_NONE, Units.PERCENT));
+            }
         }
-        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", power);
-        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
-                toQuantityType(new Double(power == OnOffType.ON ? brightness : 0), DIGITS_NONE, Units.PERCENT));
     }
 
     @Override
@@ -209,10 +225,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             ShellyControlRoller rstatus = api.getRollerStatus(index);
 
             if (!getString(rstatus.state).isEmpty() && !getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) {
-                boolean up = command instanceof UpDownType && (UpDownType) command == UpDownType.UP;
-                boolean down = command instanceof UpDownType && (UpDownType) command == UpDownType.DOWN;
-                if ((up && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
-                        || (down && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_CLOSE))) {
+                if ((command == UpDownType.UP && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
+                        || (command == UpDownType.DOWN
+                                && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_CLOSE))) {
                     logger.debug("{}: Roller is already moving ({}), ignore command {}", thingName,
                             getString(rstatus.state), command);
                     requestUpdates(1, false);
@@ -220,20 +235,31 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             }
 
-            if (((command instanceof UpDownType) && UpDownType.UP.equals(command))
-                    || ((command instanceof OnOffType) && OnOffType.ON.equals(command))) {
+            if ((command == UpDownType.UP) || (command == OnOffType.ON)) {
                 logger.debug("{}: Open roller", thingName);
                 api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_OPEN);
-                position = SHELLY_MAX_ROLLER_POS;
-
-            }
-            if (((command instanceof UpDownType) && UpDownType.DOWN.equals(command))
-                    || ((command instanceof OnOffType) && OnOffType.OFF.equals(command))) {
+                int pos = profile.getRollerFav(config.favoriteUP - 1);
+                position = pos > 0 ? pos : SHELLY_MAX_ROLLER_POS;
+                if (pos > 0) {
+                    logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
+                            pos);
+                }
+            } else if ((command == UpDownType.DOWN) || (command == OnOffType.OFF)) {
                 logger.debug("{}: Closing roller", thingName);
-                api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_CLOSE);
-                position = SHELLY_MIN_ROLLER_POS;
+                int pos = profile.getRollerFav(config.favoriteDOWN - 1);
+                if (pos > 0) {
+                    // use favorite position
+                    if (pos > 0) {
+                        logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
+                                config.favoriteDOWN, pos);
+                    }
+                    api.setRollerPos(index, pos);
+                } else {
+                    api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_CLOSE);
+                }
+                position = SHELLY_MAX_ROLLER_POS - pos;
             }
-        } else if ((command instanceof StopMoveType) && StopMoveType.STOP.equals(command)) {
+        } else if (command == StopMoveType.STOP) {
             logger.debug("{}: Stop roller", thingName);
             api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_STOP);
         } else {
@@ -246,7 +272,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 position = d.intValue();
             } else {
                 throw new IllegalArgumentException(
-                        "Invalid value type for roller control/posiution" + command.getClass().toString());
+                        "Invalid value type for roller control/position" + command.getClass().toString());
             }
 
             // take position from RollerShutter control and map to Shelly positon (OH:
@@ -274,13 +300,19 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      */
     private void createRelayChannels(ShellyStatusRelay relay, int idx) {
         if (!areChannelsCreated()) {
-            updateChannelDefinitions(ShellyChannelDefinitionsDTO.createRelayChannels(getThing(), profile, relay, idx));
+            updateChannelDefinitions(ShellyChannelDefinitions.createRelayChannels(getThing(), profile, relay, idx));
+        }
+    }
+
+    private void createDimmerChannels(ShellySettingsStatus dstatus, int idx) {
+        if (!areChannelsCreated()) {
+            updateChannelDefinitions(ShellyChannelDefinitions.createDimmerChannels(getThing(), profile, dstatus, idx));
         }
     }
 
     private void createRollerChannels(ShellyControlRoller roller) {
         if (!areChannelsCreated()) {
-            updateChannelDefinitions(ShellyChannelDefinitionsDTO.createRollerChannels(getThing(), roller));
+            updateChannelDefinitions(ShellyChannelDefinitions.createRollerChannels(getThing(), roller));
         }
     }
 
@@ -343,16 +375,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
                                 toQuantityType(getDouble(rsettings.autoOff), Units.SECOND));
                     }
-
-                    // Update input(s) state
-                    updated |= updateInputs(groupName, status, i);
                 }
                 i++;
             }
-        }
-
-        // Check for Relay in Roller Mode
-        if (profile.hasRelays && profile.isRoller && (status.rollers != null)) {
+        } else if (profile.hasRelays && profile.isRoller && (status.rollers != null)) {
+            // Check for Relay in Roller Mode
             logger.trace("{}: Updating {} rollers", thingName, profile.numRollers);
             int i = 0;
 
@@ -373,15 +400,15 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     if (state.equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
                         int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
-                                toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
+                                toQuantityType((double) (SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
-                                toQuantityType(new Double(pos), Units.PERCENT));
+                                toQuantityType((double) pos, Units.PERCENT));
                         scheduledUpdates = 1; // one more poll and then stop
                     }
 
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STATE, new StringType(state));
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
-                    updated |= updateInputs(groupName, status, i);
+                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_SAFETY, getOnOff(control.safetySwitch));
 
                     i++;
                 }
@@ -406,7 +433,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             // the same structure as lights[] from Bulb,RGBW2 and Duo. The tag gets replaced by dimmers[] so that Gson
             // maps to a different structure (ShellyShortLight).
             Gson gson = new Gson();
-            ShellySettingsStatus dstatus = gson.fromJson(ShellyApiJsonDTO.fixDimmerJson(orgStatus.json),
+            ShellySettingsStatus dstatus = fromJson(gson, ShellyApiJsonDTO.fixDimmerJson(orgStatus.json),
                     ShellySettingsStatus.class);
 
             logger.trace("{}: Updating {} dimmers(s)", thingName, dstatus.dimmers.size());
@@ -416,17 +443,19 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
                         : CHANNEL_GROUP_DIMMER_CONTROL + r.toString();
 
+                createDimmerChannels(dstatus, l);
+
                 // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
                 // and send a OFF status to the same channel.
                 // When the device's brightness is > 0 we send the new value to the channel and a ON command
                 if (dimmer.ison) {
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                            toQuantityType(new Double(getInteger(dimmer.brightness)), DIGITS_NONE, Units.PERCENT));
+                            toQuantityType((double) getInteger(dimmer.brightness), DIGITS_NONE, Units.PERCENT));
                 } else {
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.OFF);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                            toQuantityType(new Double(0), DIGITS_NONE, Units.PERCENT));
+                            toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
                 }
 
                 ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
@@ -437,7 +466,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
                 }
 
-                updated |= updateInputs(groupName, orgStatus, l);
                 l++;
             }
         }
