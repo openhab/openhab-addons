@@ -938,9 +938,9 @@
 			<channel id="enablePrivacyMode" typeId="enablePrivacyMode"/>
 			<channel id="carAlarm" typeId="carAlarm"/>
 			<channel id="humanAlarm" typeId="humanAlarm"/>
-	        <channel id="tooDarkAlarm" typeId="tooDarkAlarm"/>
-            <channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
-            <channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
+			<channel id="tooDarkAlarm" typeId="tooDarkAlarm"/>
+			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
+			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
 		</channels>
 		<config-description>
 
