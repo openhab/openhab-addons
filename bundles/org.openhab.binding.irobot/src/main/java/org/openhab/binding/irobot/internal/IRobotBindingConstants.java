@@ -48,6 +48,7 @@ public class IRobotBindingConstants {
     public static final String CHANNEL_ALWAYS_FINISH = "always_finish";
     public static final String CHANNEL_POWER_BOOST = "power_boost";
     public static final String CHANNEL_CLEAN_PASSES = "clean_passes";
+    public static final String CHANNEL_MAP_UPLOAD = "map_upload";
     public static final String CHANNEL_LAST_COMMAND = "last_command";
 
     public static final String CMD_CLEAN = "clean";

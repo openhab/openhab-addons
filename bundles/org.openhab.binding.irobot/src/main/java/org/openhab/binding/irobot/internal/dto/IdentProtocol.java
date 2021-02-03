@@ -58,6 +58,10 @@ public class IdentProtocol {
     }
 
     public static IdentData decodeResponse(DatagramPacket packet) throws JsonParseException {
+        return decodeResponse(new String(packet.getData(), StandardCharsets.UTF_8));
+    }
+
+    public static IdentData decodeResponse(String reply) throws JsonParseException {
         /*
          * packet is a JSON of the following contents (addresses are undisclosed):
          * @formatter:off
@@ -87,7 +91,6 @@ public class IdentProtocol {
          * }
          * @formatter:on
          */
-        String reply = new String(packet.getData(), StandardCharsets.UTF_8);
         // We are not consuming all the fields, so we have to create the reader explicitly
         // If we use fromJson(String) or fromJson(java.util.reader), it will throw
         // "JSON not fully consumed" exception, because not all the reader's content has been
