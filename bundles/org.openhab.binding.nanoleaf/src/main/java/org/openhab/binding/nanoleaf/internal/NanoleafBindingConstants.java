@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
-
 import java.util.Arrays;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link NanoleafBindingConstants} class defines common constants, which are
