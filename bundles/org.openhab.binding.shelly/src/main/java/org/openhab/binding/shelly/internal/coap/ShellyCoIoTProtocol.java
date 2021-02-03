@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
@@ -34,6 +35,10 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link ShellyCoIoTProtocol} implements common functions for the CoIoT implementations
  *
@@ -47,12 +52,14 @@ public class ShellyCoIoTProtocol {
     protected final ShellyDeviceProfile profile;
     protected final Map<String, CoIotDescrBlk> blkMap;
     protected final Map<String, CoIotDescrSen> sensorMap;
+    private final Gson gson = new GsonBuilder().create();
 
     // Due to the fact that the device reports only the current/last status, but no real events, we need to distinguish
     // between a real update or just a repeated status on periodic updates
     protected int lastCfgCount = -1;
     protected int[] lastEventCount = { -1, -1, -1, -1, -1, -1, -1, -1 }; // 4Pro has 4 relays, so 8 should be fine
     protected String[] inputEvent = { "", "", "", "", "", "", "", "" };
+    protected String lastWakeup = "";
 
     public ShellyCoIoTProtocol(String thingName, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {
@@ -64,7 +71,7 @@ public class ShellyCoIoTProtocol {
     }
 
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates) {
+            Map<String, State> updates, ShellyColorUtils col) {
         // Process status information and convert into channel updates
         // Integer rIndex = Integer.parseInt(sen.links) + 1;
         // String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
@@ -72,6 +79,7 @@ public class ShellyCoIoTProtocol {
         int rIndex = getIdFromBlk(sen);
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                 : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
+
         switch (sen.type.toLowerCase()) {
             case "b": // BatteryLevel +
                 updateChannel(updates, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
@@ -131,22 +139,27 @@ public class ShellyCoIoTProtocol {
                         break;
                     // RGBW2/Bulb
                     case "red":
+                        col.setRed((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
                                 ShellyColorUtils.toPercent((int) s.value));
                         break;
                     case "green":
+                        col.setGreen((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
                                 ShellyColorUtils.toPercent((int) s.value));
                         break;
                     case "blue":
+                        col.setBlue((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
                                 ShellyColorUtils.toPercent((int) s.value));
                         break;
                     case "white":
+                        col.setWhite((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
                                 ShellyColorUtils.toPercent((int) s.value));
                         break;
                     case "gain":
+                        col.setGain((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
                                 ShellyColorUtils.toPercent((int) s.value, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
                         break;
@@ -167,7 +180,7 @@ public class ShellyCoIoTProtocol {
         return true;
     }
 
-    protected boolean updateChannel(Map<String, State> updates, String group, String channel, State value) {
+    public static boolean updateChannel(Map<String, State> updates, String group, String channel, State value) {
         updates.put(mkChannelId(group, channel), value);
         return true;
     }
@@ -175,26 +188,32 @@ public class ShellyCoIoTProtocol {
     protected void handleInput(CoIotDescrSen sen, CoIotSensor s, String rGroup, Map<String, State> updates) {
         int idx = getSensorNumber(sen.desc, sen.id) - 1;
         String iGroup = profile.getInputGroup(idx);
-        String iChannel = profile.getInputChannel(idx);
+        String iChannel = CHANNEL_INPUT + profile.getInputSuffix(idx);
         updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
     }
 
-    protected void handleInputEvent(CoIotDescrSen sen, String type, Integer count, Map<String, State> updates) {
+    protected void handleInputEvent(CoIotDescrSen sen, String type, int count, int serial, Map<String, State> updates) {
         int idx = getSensorNumber(sen.desc, sen.id) - 1;
         String group = profile.getInputGroup(idx);
         if (count == -1) {
             // event type
-            updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, new StringType(type));
+            updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(idx), new StringType(type));
             inputEvent[idx] = type;
         } else {
             // event count
-            updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
-            if (profile.inButtonMode(idx) && ((profile.hasBattery && (count == 1)) || (count != lastEventCount[idx]))) {
-                if (profile.isButton || (lastEventCount[idx] != -1)) { // skip the first one if binding was restarted
-                    thingHandler.triggerButton(group, inputEvent[idx]);
+            updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(idx), getDecimal(count));
+            logger.trace(
+                    "{}: Check button[{}] for event trigger (isButtonMode={}, isButton={}, hasBattery={}, serial={}, count={}, lastEventCount[{}]={}",
+                    thingName, idx, profile.inButtonMode(idx), profile.isButton, profile.hasBattery, serial, count, idx,
+                    lastEventCount[idx]);
+            if (profile.inButtonMode(idx) && ((profile.hasBattery && (count == 1))
+                    || ((lastEventCount[idx] != -1) && (count != lastEventCount[idx])))) {
+                if (!profile.isButton || (profile.isButton && (serial != 0x200))) { // skip duplicate on wake-up
+                    logger.debug("{}: Trigger event {}", thingName, inputEvent[idx]);
+                    thingHandler.triggerButton(group, idx, inputEvent[idx]);
                 }
-                lastEventCount[idx] = count;
             }
+            lastEventCount[idx] = count;
         }
     }
 
@@ -225,25 +244,25 @@ public class ShellyCoIoTProtocol {
             } else if (profile.isDimmer) {
                 group = CHANNEL_GROUP_RELAY_CONTROL;
             } else if (profile.isRGBW2) {
+                checkL = String.valueOf(id); // String.valueOf(id - 1); // id is 1-based, L is 0-based
                 group = CHANNEL_GROUP_LIGHT_CHANNEL + id;
-                checkL = String.valueOf(id - 1); // id is 1-based, L is 0-based
                 logger.trace("{}: updatePower() for L={}", thingName, checkL);
             }
 
-            // We need to update brigthtess and on/off state at the same time to avoid "flipping brightness slider" in
+            // We need to update brightness and on/off state at the same time to avoid "flipping brightness slider" in
             // the UI
-            Double brightness = -1.0;
-            Double power = -1.0;
+            double brightness = -1.0;
+            double power = -1.0;
             for (CoIotSensor update : allUpdates) {
-                CoIotDescrSen d = fixDescription(sensorMap.getOrDefault(update.id, new CoIotDescrSen()), blkMap);
+                CoIotDescrSen d = fixDescription(sensorMap.get(update.id), blkMap);
                 if (!checkL.isEmpty() && !d.links.equals(checkL)) {
                     // continue until we find the correct one
                     continue;
                 }
                 if (d.desc.equalsIgnoreCase("brightness")) {
-                    brightness = new Double(update.value);
+                    brightness = update.value;
                 } else if (d.desc.equalsIgnoreCase("output") || d.desc.equalsIgnoreCase("state")) {
-                    power = new Double(update.value);
+                    power = update.value;
                 }
             }
             if (power != -1) {
@@ -298,11 +317,11 @@ public class ShellyCoIoTProtocol {
 
     protected int getIdFromBlk(CoIotDescrSen sen) {
         int idx = -1;
-        if (blkMap.containsKey(sen.links)) {
-            CoIotDescrBlk blk = blkMap.get(sen.links);
+        CoIotDescrBlk blk = blkMap.get(sen.links);
+        if (blk != null) {
             String desc = blk.desc.toLowerCase();
             if (desc.startsWith(SHELLY_CLASS_RELAY) || desc.startsWith(SHELLY_CLASS_ROLLER)
-                    || desc.startsWith(SHELLY_CLASS_EMETER)) {
+                    || desc.startsWith(SHELLY_CLASS_LIGHT) || desc.startsWith(SHELLY_CLASS_EMETER)) {
                 if (desc.contains("_")) { // CoAP v2
                     idx = Integer.parseInt(substringAfter(desc, "_"));
                 } else { // CoAP v1
@@ -349,7 +368,28 @@ public class ShellyCoIoTProtocol {
         return profile;
     }
 
-    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
-        return sen;
+    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
+        return sen != null ? sen : new CoIotDescrSen();
+    }
+
+    public void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap) {
+    }
+
+    protected void addSensor(Map<String, CoIotDescrSen> sensorMap, String key, String json) {
+        try {
+            if (!sensorMap.containsKey(key)) {
+                CoIotDescrSen sen = gson.fromJson(json, CoIotDescrSen.class);
+                if (sen != null) {
+                    sensorMap.put(key, sen);
+                }
+            }
+        } catch (JsonSyntaxException e) {
+            // should never happen
+            logger.trace("Unable to parse sensor definition: {}", json, e);
+        }
+    }
+
+    public String getLastWakeup() {
+        return lastWakeup;
     }
 }

@@ -18,19 +18,18 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link ShellyDeviceProfile} creates a device profile based on the settings returned from the API's /settings
@@ -68,6 +67,7 @@ public class ShellyDeviceProfile {
     public int numRollers = 0; // number of Rollers, usually 1
     public boolean isRoller = false; // true for Shelly2 in roller mode
     public boolean isDimmer = false; // true for a Shelly Dimmer (SHDM-1)
+    public int numInputs = 0; // number of inputs
 
     public int numMeters = 0;
     public boolean isEMeter = false; // true for ShellyEM/3EM
@@ -101,14 +101,10 @@ public class ShellyDeviceProfile {
 
         initialized = false;
 
-        try {
-            initFromThingType(thingType);
-            settingsJson = json;
-            settings = Objects.requireNonNull(gson.fromJson(json, ShellySettingsGlobal.class));
-        } catch (IllegalArgumentException | JsonSyntaxException e) {
-            throw new ShellyApiException(
-                    thingName + ": Unable to transform settings JSON " + e.toString() + ", json='" + json + "'", e);
-        }
+        initFromThingType(thingType);
+        settingsJson = json;
+        ShellySettingsGlobal gs = fromJson(gson, json, ShellySettingsGlobal.class);
+        settings = gs; // only update when no exception
 
         // General settings
         deviceType = getString(settings.device.type);
@@ -131,8 +127,10 @@ public class ShellyDeviceProfile {
             numRelays = 0;
         }
         isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2);
+        isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(settings.device.numRollers);
+        numInputs = settings.inputs != null ? settings.inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
         numMeters = !isEMeter ? getInteger(settings.device.numMeters) : getInteger(settings.device.numEMeters);
@@ -140,18 +138,17 @@ public class ShellyDeviceProfile {
             // RGBW2 doesn't report, but has one
             numMeters = inColor ? 1 : getInteger(settings.device.numOutputs);
         }
-        isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
 
         if (settings.sleepMode != null) {
-            // Sensor, usally 12h
+            // Sensor, usually 12h, H&T in USB mode 10min
             updatePeriod = getString(settings.sleepMode.unit).equalsIgnoreCase("m") ? settings.sleepMode.period * 60 // minutes
                     : settings.sleepMode.period * 3600; // hours
-            updatePeriod += 600; // give 10min extra
+            updatePeriod += 60; // give 1min extra
         } else if ((settings.coiot != null) && (settings.coiot.updatePeriod != null)) {
-            // Derive from CoAP update interval, usually 2*15+5s=50sec -> 70sec
-            updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, 3 * getInteger(settings.coiot.updatePeriod)) + 10;
+            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
+            updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, 2 * getInteger(settings.coiot.updatePeriod)) + 10;
         } else {
-            updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+            updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
         }
 
         initialized = true;
@@ -178,7 +175,8 @@ public class ShellyDeviceProfile {
         }
 
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
-        isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR);
+        isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
+                || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR);
         isRGBW2 = thingType.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX);
         isLight = isBulb || isDuo || isRGBW2;
         if (isLight) {
@@ -189,14 +187,29 @@ public class ShellyDeviceProfile {
         boolean isFlood = thingType.equals(THING_TYPE_SHELLYFLOOD_STR);
         boolean isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
+        boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
+        boolean isMotion = thingType.equals(THING_TYPE_SHELLYMOTION_STR);
         isHT = thingType.equals(THING_TYPE_SHELLYHT_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
         isIX3 = thingType.equals(THING_TYPE_SHELLYIX3_STR);
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR);
-        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isSense;
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton; // we assume that Sense is connected to // the
-                                                                     // charger
+        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isSense;
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion; // we assume that Sense is connected to
+                                                                                 // the charger
+    }
+
+    public void updateFromStatus(ShellySettingsStatus status) {
+        if (hasRelays) {
+            // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after
+            // initialization
+            if (status.inputs != null) {
+                numInputs = status.inputs.size();
+            }
+        } else if (status.input != null) {
+            // RGBW2
+            numInputs = 1;
+        }
     }
 
     public String getControlGroup(int i) {
@@ -208,11 +221,13 @@ public class ShellyDeviceProfile {
         if (isDimmer) {
             return CHANNEL_GROUP_DIMMER_CONTROL;
         } else if (isRoller) {
-            return numRollers == 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
+            return numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
+        } else if (isDimmer) {
+            return CHANNEL_GROUP_RELAY_CONTROL;
         } else if (hasRelays) {
-            return numRelays == 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
+            return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isLight) {
-            return numRelays == 1 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_CONTROL + idx;
+            return numRelays <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_CONTROL + idx;
         } else if (isButton) {
             return CHANNEL_GROUP_STATUS;
         } else if (isSensor) {
@@ -239,14 +254,17 @@ public class ShellyDeviceProfile {
         }
     }
 
-    public String getInputChannel(int i) {
+    public String getInputSuffix(int i) {
         int idx = i + 1; // channel names are 1-based
         if (isRGBW2 || isIX3) {
-            return CHANNEL_INPUT; // RGBW2 has only 1 channel
+            return ""; // RGBW2 has only 1 channel
+        } else if (isRoller || isDimmer) {
+            // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
+            return String.valueOf(idx);
         } else if (hasRelays) {
-            return CHANNEL_INPUT + idx;
+            return (numRelays) == 1 && (numInputs >= 2) ? String.valueOf(idx) : "";
         }
-        return CHANNEL_INPUT;
+        return "";
     }
 
     public boolean inButtonMode(int idx) {
@@ -257,25 +275,43 @@ public class ShellyDeviceProfile {
         String btnType = "";
         if (isButton) {
             return true;
-        } else if (isIX3) {
-            if ((settings.inputs != null) && (idx >= 0) && (idx < settings.inputs.size())) {
-                ShellySettingsInput input = settings.inputs.get(idx);
-                btnType = input.btnType;
-            }
+        } else if (isIX3 && (settings.inputs != null) && (idx < settings.inputs.size())) {
+            ShellySettingsInput input = settings.inputs.get(idx);
+            btnType = getString(input.btnType);
         } else if (isDimmer) {
-            if ((settings.dimmers != null) && (idx >= 0) && (idx < settings.dimmers.size())) {
-                ShellySettingsDimmer dimmer = settings.dimmers.get(idx);
+            if (settings.dimmers != null) {
+                ShellySettingsDimmer dimmer = settings.dimmers.get(0);
                 btnType = dimmer.btnType;
             }
-        } else if ((settings.relays != null) && (idx >= 0) && (idx < settings.relays.size())) {
-            ShellySettingsRelay relay = settings.relays.get(idx);
-            btnType = relay.btnType;
+        } else if (settings.relays != null) {
+            if (numRelays == 1) {
+                ShellySettingsRelay relay = settings.relays.get(0);
+                if (relay.btnType != null) {
+                    btnType = getString(relay.btnType);
+                } else {
+                    // Shelly 1L has 2 inputs
+                    btnType = idx == 0 ? getString(relay.btnType1) : getString(relay.btnType2);
+                }
+            } else if (idx < settings.relays.size()) {
+                // only one input channel
+                ShellySettingsRelay relay = settings.relays.get(idx);
+                btnType = getString(relay.btnType);
+            }
+        } else if (isRGBW2 && (settings.lights != null) && (idx < settings.lights.size())) {
+            ShellySettingsRgbwLight light = settings.lights.get(idx);
+            btnType = light.btnType;
         }
 
-        if (btnType.equals(SHELLY_BTNT_MOMENTARY) || btnType.equals(SHELLY_BTNT_MOM_ON_RELEASE)
-                || btnType.equals(SHELLY_BTNT_DETACHED) || btnType.equals(SHELLY_BTNT_ONE_BUTTON)) {
-            return true;
+        logger.trace("{}: Checking for trigger, button-type[{}] is {}", thingName, idx, btnType);
+        return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON);
+    }
+
+    public int getRollerFav(int id) {
+        if ((id >= 0) && getBool(settings.favoritesEnabled) && (settings.favorites != null)
+                && (id < settings.favorites.size())) {
+            return settings.favorites.get(id).pos;
         }
-        return false;
+        return -1;
     }
 }

@@ -9,7 +9,7 @@
 		<description>Shelly H&amp;T Sensor</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="htSensor"/>
+			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -23,7 +23,7 @@
 		<description>Shelly Smoke Sensor (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="smokeSensor"/>
+			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -37,7 +37,7 @@
 		<description>Shelly Gas Sensor</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="gasSensor"/>
+			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -49,7 +49,7 @@
 		<label>Shelly Flood (SHWT-1)</label>
 		<description>Shelly Flood Sensor (battery powered)</description>
 		<channel-groups>
-			<channel-group id="sensors" typeId="floodSensor"/>
+			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -63,7 +63,7 @@
 		<description>Shelly Door/Window Sensor (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="doorWinSensors"/>
+			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -77,7 +77,7 @@
 		<description>Shelly Door/Window 2 Sensor (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="doorWinSensors"/>
+			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -91,7 +91,7 @@
 		<description>Shelly Sense Remote IR Controller</description>
 		<channel-groups>
 			<channel-group id="control" typeId="senseControl"/>
-			<channel-group id="sensors" typeId="senseSensors"/>
+			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -114,33 +114,25 @@
 		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
-	<channel-group-type id="htSensor">
+	<thing-type id="shellymotion">
+		<label>Shelly Motion</label>
+		<description>Shelly Motion Sensor (battery powered)</description>
+
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>deviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:battery"/>
+	</thing-type>
+
+	<channel-group-type id="sensorData">
 		<label>Sensor Data</label>
-		<description>Data from the HT Sensor</description>
+		<description>Data from the various sensors</description>
 	</channel-group-type>
 
-	<channel-group-type id="floodSensor">
-		<label>Sensor Data</label>
-		<description>Data from the Flood Sensor</description>
-	</channel-group-type>
-
-	<channel-group-type id="smokeSensor">
-		<label>Sensor Data</label>
-		<description>Data from the Flood Sensor</description>
-	</channel-group-type>
-	<channel-group-type id="gasSensor">
-		<label>Sensor Data</label>
-		<description>Data from the Gas Sensor</description>
-	</channel-group-type>
-	<channel-group-type id="doorWinSensors">
-		<label>Sensors</label>
-		<description>Data from the sensors</description>
-	</channel-group-type>
-
-	<channel-group-type id="senseSensors">
-		<label>Sensors</label>
-		<description>Data from the Sense sensors</description>
-	</channel-group-type>
 	<channel-group-type id="batteryStatus">
 		<label>Battery Status</label>
 	</channel-group-type>
@@ -154,12 +146,6 @@
 	<channel-group-type id="buttonState">
 		<label>Button State</label>
 		<description>Status of the Button</description>
-		<channels>
-			<channel id="input" typeId="inputState"/>
-			<channel id="button" typeId="system.button"/>
-			<channel id="lastEvent" typeId="lastEvent"/>
-			<channel id="eventCount" typeId="eventCount"/>
-		</channels>
 	</channel-group-type>
 
 
@@ -221,7 +207,7 @@
 		<item-type>Number</item-type>
 		<label>Event Count</label>
 		<description>Event Count</description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%.0f" readOnly="true">
 		</state>
 	</channel-type>
 
@@ -233,7 +219,7 @@
 		<tags>
 			<tag>CurrentTemperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorExtTemp">
@@ -244,7 +230,7 @@
 		<tags>
 			<tag>CurrentTemperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorExtHum">
@@ -255,7 +241,7 @@
 		<tags>
 			<tag>CurrentHumidity</tag>
 		</tags>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorHumidity">
@@ -265,7 +251,7 @@
 		<tags>
 			<tag>CurrentHumidity</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="sensorFlood">
 		<item-type>Switch</item-type>
@@ -285,7 +271,7 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Brightness from the sensor (Lux)</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorIllumination">
@@ -300,6 +286,20 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="motionTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Last motion</label>
+		<description>Timestamp of last detected motion</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="sensorMotion">
+		<item-type>Switch</item-type>
+		<label>Motion</label>
+		<description>ON: Motion detected</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="sensorVibration">
 		<item-type>Switch</item-type>
 		<label>Vibration</label>
@@ -311,14 +311,21 @@
 		<item-type>Number:Angle</item-type>
 		<label>Tilt</label>
 		<description>Tilt in degrees (requires calibration)</description>
-		<state readOnly="true">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorPPM">
 		<item-type>Number:Density</item-type>
 		<label>Concentration</label>
 		<description>Gas concentration in ppm</description>
-		<state readOnly="true" pattern="%d %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="sensorADC">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage (ADC)</label>
+		<description>ADC voltage in V</description>
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorValve">

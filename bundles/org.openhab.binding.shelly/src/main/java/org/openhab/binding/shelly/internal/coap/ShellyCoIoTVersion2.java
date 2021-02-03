@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.SIUnits;
@@ -60,17 +62,15 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
      * Process CoIoT status update message. If a status update is received, but the device description has not been
      * received yet a GET is send to query device description.
      *
-     * @param devId device id included in the status packet
-     * @param payload CoAP payload (Json format), example: {"G":[[0,112,0]]}
-     * @param serial Serial for this request. If this the the same as last serial
-     *            the update was already sent and processed so this one gets
-     *            ignored.
+     * @param sensorUpdates Complete list of sensor updates
+     * @param sen The specific sensor update to handle
+     * @param updates Resulting updates (new updates will be added to input list)
      */
     @Override
-    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates) {
+    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
+            Map<String, State> updates, ShellyColorUtils col) {
         // first check the base implementation
-        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates)) {
+        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, col)) {
             // process by the base class
             return true;
         }
@@ -80,7 +80,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
         int rIndex = getIdFromBlk(sen);
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                 : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
-        String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER
+        String mGroup = profile.numMeters <= 1 ? CHANNEL_GROUP_METER
                 : CHANNEL_GROUP_METER + (profile.isEMeter ? getIdFromBlk(sen) : rIndex);
 
         boolean processed = true;
@@ -89,14 +89,13 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
         switch (sen.id) {
             case "3103": // H, humidity, 0-100 percent, unknown 999
             case "3106": // L, luminosity, lux, U32, -1
-            case "3109": // S, tilt, 0-180deg, -1
             case "3110": // S, luminosityLevel, dark/twilight/bright, "unknown"=unknown
             case "3111": // B, battery, 0-100%, unknown -1
             case "3112": // S, charger, 0/1
             case "3115": // S, sensorError, 0/1
-            case "5101": // S, brightness, 1-100%
                 // processed by base handler
                 break;
+
             case "6109": // P, overpowerValue, W, U32
             case "9101":
                 // Relay: S, mode, relay/roller or
@@ -113,7 +112,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "1103": // roller_0: S, rollerPos, 0-100, unknown -1
                 int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min((int) value, SHELLY_MAX_ROLLER_POS));
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
-                        toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
+                        toQuantityType((double) (SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
                 break;
             case "1105": // S, valvle, closed/opened/not_connected/failure/closing/opening/checking or unbknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE, getStringType(s.valueStr));
@@ -129,13 +128,13 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "2202": // Input_1: EV, inputEvent
             case "2302": // Input_2: EV, inputEvent
             case "2402": // Input_3: EV, inputEvent
-                handleInputEvent(sen, getString(s.valueStr), -1, updates);
+                handleInputEvent(sen, getString(s.valueStr), -1, serial, updates);
                 break;
             case "2103": // EVC, inputEventCnt, U16
             case "2203": // EVC, inputEventCnt, U16
             case "2303": // EVC, inputEventCnt, U16
             case "2403": // EVC, inputEventCnt, U16
-                handleInputEvent(sen, "", getInteger((int) s.value), updates);
+                handleInputEvent(sen, "", getInteger((int) s.value), serial, updates);
                 break;
             case "3101": // sensor_0: T, extTemp, C, -55/125; unknown 999
             case "3201": // sensor_1: T, extTemp, C, -55/125; unknown 999
@@ -172,6 +171,10 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                     logger.debug("{}: Sensor error reported, check device, battery and installation", thingName);
                 }
                 break;
+            case "3109": // S, tilt, 0-180deg, -1
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
+                        toQuantityType(s.value, DIGITS_NONE, Units.DEGREE_ANGLE));
+                break;
             case "3113": // S, sensorOp, warmup/normal/fault
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE, getStringType(s.valueStr));
                 break;
@@ -181,19 +184,27 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "3117": // S, extInput, 0/1
                 handleInput(sen, s, rGroup, updates);
                 break;
+            case "3118":
+                updateChannel(updates, mGroup, CHANNEL_SENSOR_VOLTAGE,
+                        toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.VOLT));
+                break;
 
-            case "4101": // relay_0: P, power, W
-            case "4201": // relay_1: P, power, W
-            case "4301": // relay_2: P, power, W
-            case "4401": // relay_3: P, power, W
+            case "4101": // relay_0/light_0: P, power, W
+            case "4201": // relay_1/light_1: P, power, W
+            case "4301": // relay_2/light_2: P, power, W
+            case "4401": // relay_3/light_3: P, power, W
             case "4105": // emeter_0: P, power, W
             case "4205": // emeter_1: P, power, W
             case "4305": // emeter_2: P, power, W
             case "4102": // roller_0: P, rollerPower, W, 0-2300, unknown -1
             case "4202": // roller_1: P, rollerPower, W, 0-2300, unknown -1
+                logger.debug("{}: Updating {}:currentWatts with {}", thingName, mGroup, s.value);
                 updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
                         toQuantityType(s.value, DIGITS_WATT, Units.WATT));
-                updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
+                if (!profile.isRGBW2 && !profile.isRoller) {
+                    // only for regular, not-aggregated meters
+                    updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
+                }
                 break;
 
             case "4103": // relay_0: E, energy, Wmin, U32
@@ -237,6 +248,16 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));
                 break;
 
+            case "5101": // {"I":5101,"T":"S","D":"brightness","R":"0/100","L":1},
+            case "5102": // {"I":5102,"T":"S","D":"gain","R":"0/100","L":1},
+            case "5103": // {"I":5103,"T":"S","D":"colorTemp","U":"K","R":"3000/6500","L":1},
+            case "5105": // {"I":5105,"T":"S","D":"red","R":"0/255","L":1},
+            case "5106": // {"I":5106,"T":"S","D":"green","R":"0/255","L":1},
+            case "5107": // {"I":5107,"T":"S","D":"blue","R":"0/255","L":1},
+            case "5108": // {"I":5108,"T":"S","D":"white","R":"0/255","L":1},
+                // already covered by base handler
+                break;
+
             case "6101": // A, overtemp, 0/1
                 if (s.value == 1) {
                     thingHandler.postEvent(ALARM_TYPE_OVERTEMP, true);
@@ -268,6 +289,21 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
                         value == 1 ? OnOffType.ON : OnOffType.OFF);
                 break;
+
+            case "6107": // A, motion, 0/1, -1
+                // {"I":6107,"T":"A","D":"motion","R":["0/1","-1"],"L":1},
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
+                        value == 1 ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case "3119": // Motion timestamp
+                // {"I":3119,"T":"S","D":"timestamp","U":"s","R":["U32","-1"],"L":1},
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
+                        getTimestamp(getString(profile.settings.timezone), (long) s.value));
+                break;
+            case "3120": // motionActive
+                // {"I":3120,"T":"S","D":"motionActive","R":["0/1","-1"],"L":1},
+                break;
+
             case "6108": // A, gas, none/mild/heavy/test or unknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE, getStringType(s.valueStr));
                 break;
@@ -276,7 +312,10 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                         value == 1 ? OnOffType.ON : OnOffType.OFF);
                 break;
             case "9102": // EV, wakeupEvent, battery/button/periodic/poweron/sensor/ext_power, "unknown"=unknown
-                thingHandler.updateWakeupReason(s.valueArray);
+                if (s.valueArray.size() > 0) {
+                    thingHandler.updateWakeupReason(s.valueArray);
+                    lastWakeup = (String) s.valueArray.get(0);
+                }
                 break;
             case "9103": // EVC, cfgChanged, U16
                 if ((lastCfgCount != -1) && (lastCfgCount != s.value)) {
@@ -292,7 +331,19 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
     }
 
     @Override
-    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
-        return sen;
+    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
+        return super.fixDescription(sen, blkMap);
+    }
+
+    private static final String ID_4101_DESCR = "{ \"I\":4101, \"T\":\"P\", \"D\":\"power\",  \"U\": \"W\",    \"R\":\"0/3500\", \"L\": 1}";
+    private static final String ID_4103_DESCR = "{ \"I\":4103, \"T\":\"E\", \"D\":\"energy\", \"U\": \"Wmin\", \"R\":\"U32\", \"L\": 1}";
+
+    @Override
+    public void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap) {
+        if (profile.isDuo && profile.inColor) {
+            addSensor(sensorMap, "4101", ID_4101_DESCR);
+            addSensor(sensorMap, "4103", ID_4103_DESCR);
+        }
+        super.completeMissingSensorDefinition(sensorMap);
     }
 }
