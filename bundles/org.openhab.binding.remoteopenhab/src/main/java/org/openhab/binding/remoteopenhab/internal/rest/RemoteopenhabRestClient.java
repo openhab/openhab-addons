@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.remoteopenhab.internal.rest;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -39,8 +37,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabChannelTriggerEvent;
@@ -183,10 +181,8 @@ public class RemoteopenhabRestClient {
     public void sendCommandToRemoteItem(String itemName, Command command) throws RemoteopenhabException {
         try {
             String url = String.format("%s/%s", getRestApiUrl("items"), itemName);
-            InputStream stream = new ByteArrayInputStream(command.toFullString().getBytes(StandardCharsets.UTF_8));
-            executeUrl(HttpMethod.POST, url, "application/json", stream, "text/plain", false);
-            stream.close();
-        } catch (RemoteopenhabException | IOException e) {
+            executeUrl(HttpMethod.POST, url, "application/json", command.toFullString(), "text/plain", false);
+        } catch (RemoteopenhabException e) {
             throw new RemoteopenhabException("Failed to send command to the remote item " + itemName
                     + " using the items REST API: " + e.getMessage(), e);
         }
@@ -470,7 +466,7 @@ public class RemoteopenhabRestClient {
         return executeUrl(HttpMethod.GET, url, acceptHeader, null, null, asyncReading);
     }
 
-    public String executeUrl(HttpMethod httpMethod, String url, String acceptHeader, @Nullable InputStream content,
+    public String executeUrl(HttpMethod httpMethod, String url, String acceptHeader, @Nullable String content,
             @Nullable String contentType, boolean asyncReading) throws RemoteopenhabException {
         final Request request = httpClient.newRequest(url).method(httpMethod).timeout(REQUEST_TIMEOUT,
                 TimeUnit.MILLISECONDS);
@@ -482,10 +478,7 @@ public class RemoteopenhabRestClient {
 
         if (content != null && (HttpMethod.POST.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod))
                 && contentType != null) {
-            try (final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(
-                    content)) {
-                request.content(inputStreamContentProvider, contentType);
-            }
+            request.content(new StringContentProvider(content), contentType);
         }
 
         try {

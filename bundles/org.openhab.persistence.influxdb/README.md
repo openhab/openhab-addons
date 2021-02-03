@@ -49,7 +49,7 @@ This service can be configured in the file `services/influxdb.cfg`.
 | db                                 | openhab                 | No       | name of the database for V1 and name of the organization for V2 |
 | retentionPolicy                    | autogen                 | No       | name of the retention policy for V1 and name of the bucket for V2 |
 
-(*) For 1.X version you must provide user and password, for 2.X you can use also user and password or a token. That means
+(*) For 1.X version you must provide user and password, for 2.X you can use user and password or a token. That means
 that if you use all default values at minimum you must provide a password or a token. 
 
 All item- and event-related configuration is defined in the file `persistence/influxdb.persist`.

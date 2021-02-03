@@ -1875,7 +1875,7 @@ public class Connection {
 
     public @Nullable JsonAutomation @Nullable [] getRoutines()
             throws IOException, URISyntaxException, InterruptedException {
-        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations?limit=2000");
+        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/v2/automations?limit=2000");
         JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
         return result;
     }

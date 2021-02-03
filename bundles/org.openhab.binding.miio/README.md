@@ -467,6 +467,7 @@ Currently the miio binding supports more than 260 different models.
 | Smartmi Evaporative Humidifier | miio:basic       | [zhimi.humidifier.ca1](#zhimi-humidifier-ca1) | Yes       |            |
 | Smartmi Evaporative Humidifer 2 | miio:basic       | [zhimi.humidifier.ca4](#zhimi-humidifier-ca4) | Yes       |            |
 | Smartmi Evaporative Humidifier | miio:basic       | [zhimi.humidifier.cb1](#zhimi-humidifier-cb1) | Yes       |            |
+| Smartmi Evaporative Humidifier | miio:basic       | [zhimi.humidifier.cb2](#zhimi-humidifier-cb2) | Yes       |            |
 | Smartmi Humidifier           | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
 | Mi AI Alarm                  | miio:unsupported | zimi.clock.myk01       | No        |            |
 | Mi Smart Power Strip         | miio:basic       | [zimi.powerstrip.v2](#zimi-powerstrip-v2) | Yes       |            |
@@ -2521,7 +2522,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -2533,7 +2534,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -2545,7 +2546,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -2557,7 +2558,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2570,7 +2571,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2583,7 +2584,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2597,7 +2598,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness       | Dimmer  | Brightness                          |            |
 | ambientBrightness | Number  | Ambient Brightness                  |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | ambientPower     | Switch  | Ambient Power                       |            |
@@ -2614,7 +2615,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2627,7 +2628,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2640,7 +2641,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2653,7 +2654,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2666,7 +2667,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2679,7 +2680,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2693,7 +2694,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness       | Dimmer  | Brightness                          |            |
 | ambientBrightness | Number  | Ambient Brightness                  |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | ambientPower     | Switch  | Ambient Power                       |            |
@@ -2710,7 +2711,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2723,7 +2724,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2736,7 +2737,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2749,7 +2750,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2762,7 +2763,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2775,7 +2776,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2788,7 +2789,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2801,7 +2802,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2814,7 +2815,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2827,7 +2828,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2840,7 +2841,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2853,7 +2854,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2866,7 +2867,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2879,7 +2880,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2892,7 +2893,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2905,7 +2906,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -2918,7 +2919,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -2930,7 +2931,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -2942,7 +2943,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -2954,7 +2955,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -2966,7 +2967,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -2977,7 +2978,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -2988,7 +2989,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -2999,7 +3000,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3010,7 +3011,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3021,7 +3022,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3032,7 +3033,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3043,7 +3044,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3054,7 +3055,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3065,7 +3066,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3076,7 +3077,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3087,7 +3088,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3098,7 +3099,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -3111,7 +3112,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -3123,7 +3124,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
@@ -3135,7 +3136,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3146,7 +3147,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
@@ -3171,7 +3172,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -3184,7 +3185,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -3197,7 +3198,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | delayoff         | Number:Time | Shutdown Timer                      |            |
-| colorTemperature | Number:Temperature | Color Temperature                   |            |
+| colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 | customScene      | String  | Set Scene                           |            |
@@ -4353,7 +4354,24 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | humidifierMode   | String  | Humidifier Mode                     |            |
 | humidity         | Number:Dimensionless | Humidity                            |            |
-| setHumidity      | Number  | Humidity Set                        |            |
+| setHumidity      | Number:Dimensionless | Humidity Set                        |            |
+| bright           | Dimmer  | LED Brightness                      |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| depth            | Number  | Depth                               |            |
+| dry              | Switch  | Dry                                 |            |
+| usedhours        | Number:Time | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
+| childlock        | Switch  | Child Lock                          |            |
+
+### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-cb2">zhimi.humidifier.cb2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| humidifierMode   | String  | Humidifier Mode                     |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
+| setHumidity      | Number:Dimensionless | Humidity Set                        |            |
 | bright           | Dimmer  | LED Brightness                      |            |
 | buzzer           | Switch  | Buzzer Status                       |            |
 | depth            | Number  | Depth                               |            |
@@ -4464,7 +4482,7 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 
 note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airmonitor "Mi Multifunction Air Monitor" <status>
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
 Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
@@ -4478,7 +4496,7 @@ Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic
 
 note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airmonitor "Qingping Air Monitor" <status>
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
 Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
@@ -4492,7 +4510,7 @@ Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway)" <status>
 Switch on "Power" (G_plug) {channel="miio:basic:plug:on"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
@@ -4513,7 +4531,7 @@ Switch countdown_info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:ba
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Mi Smart Plug WiFi" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
@@ -4524,7 +4542,7 @@ Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Mi Smart Plug (WiFi)" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
@@ -4536,7 +4554,7 @@ Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Mi Smart Wi-Fi Plug (Bluetooth Gateway)" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
@@ -4548,7 +4566,7 @@ Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Mi Plug Mini" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
@@ -4559,7 +4577,7 @@ Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Mi Smart Plug (Wi-Fi) Basic" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
@@ -4570,7 +4588,7 @@ Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Mi Smart Power Plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
@@ -4581,7 +4599,7 @@ Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Mi Smart Power Plug v2" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
@@ -4591,7 +4609,7 @@ Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "MIJIA Smart  Plug Enhanced" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
@@ -4603,7 +4621,7 @@ Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_plug "Gosund Smart Plug" <status>
 String FirmwareRevision "Device Information-CurrentFirmware Version" (G_plug) {channel="miio:basic:plug:FirmwareRevision"}
 String Manufacturer "Device Information-Device Manufacturer" (G_plug) {channel="miio:basic:plug:Manufacturer"}
@@ -4616,7 +4634,7 @@ Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
 
 note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airfresh "Mi Fresh Air Ventilator A1-150" <status>
 Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
 String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
@@ -4639,7 +4657,7 @@ String airFreshResetFilterA1 "Reset Filter" (G_airfresh) {channel="miio:basic:ai
 
 note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airfresh "Mi Fresh Air Ventilator" <status>
 Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
 String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
@@ -4666,7 +4684,7 @@ String airFreshResetFilter "Reset Filter" (G_airfresh) {channel="miio:basic:airf
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Mi Smart Standing Fan 2 Lite" <status>
 String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
 String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
@@ -4686,7 +4704,7 @@ Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" 
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Mi Smart Standing Fan 1X" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch roll "Rotation" (G_fan) {channel="miio:basic:fan:roll"}
@@ -4703,7 +4721,7 @@ Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Mi Smart Standing Fan 1C" <status>
 String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
 String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
@@ -4723,7 +4741,7 @@ Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" 
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Mi Smart Tower Fan" <status>
 String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
 String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
@@ -4746,7 +4764,7 @@ Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" 
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Mi Smart Standing Fan 2" <status>
 String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
 String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
@@ -4769,7 +4787,7 @@ Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" 
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_vacuum "Mi Robot Vacuum Mop 1C STYTJ01ZHM" <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacuum:BatteryLevel"}
@@ -4808,7 +4826,7 @@ String TimeZone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:TimeZo
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_vacuum "Dreame Robot Vacuum-Mop F9" <status>
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
@@ -4848,7 +4866,7 @@ Number save_map_status "Vslam Extend - Save Map Status" (G_vacuum) {channel="mii
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_vacuum "Dreame Robot Vacuum D9 " <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
@@ -4893,7 +4911,7 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO ARIES For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4904,7 +4922,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO ARIES For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4915,7 +4933,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO Fan Light" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4930,7 +4948,7 @@ Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO Fan Light(2020)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4951,7 +4969,7 @@ Switch flabellum "Presets - Flabellum" (G_light) {channel="miio:basic:light:flab
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO PEGASUS For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4962,7 +4980,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO PEGASUS For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4973,7 +4991,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO PISCES For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4984,7 +5002,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO PISCES For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4995,7 +5013,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO TAURUS For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5006,7 +5024,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO TAURUS For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5017,7 +5035,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO VIRGO For Bedroom" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5028,7 +5046,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO VIRGO For Living Room" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5039,7 +5057,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO Ceiling Light" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5050,7 +5068,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO LIANGCHEN(BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5061,7 +5079,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO SAG Downlight (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5072,7 +5090,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO Bulb (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5083,7 +5101,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO YONG Downlight (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5094,7 +5112,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "huayi.light.wy204" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5105,7 +5123,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO Heating Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5120,7 +5138,7 @@ Switch screenshow "Other - Screenshow" (G_light) {channel="miio:basic:light:scre
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "HUIZUO ZIWEI Ceiling Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5131,7 +5149,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 note: Autogenerated example. Replace the id (curtain) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_curtain "Xiaomiyoupin Curtain Controller (Wi-Fi)" <status>
 Number fault "Curtain - Device Fault" (G_curtain) {channel="miio:basic:curtain:fault"}
 Number current_position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current-position"}
@@ -5148,7 +5166,7 @@ Number run_time "curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtai
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_gateway "Mi Air Purifier virtual" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
@@ -5161,7 +5179,7 @@ String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doo
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_gateway "Mi smart Home Gateway Hub v1" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
@@ -5174,7 +5192,7 @@ String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doo
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_gateway "Mi smart Home GatewayHub v2" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
@@ -5187,7 +5205,7 @@ String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doo
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_gateway "Mi mart Home Gateway Hub v3" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
@@ -5200,7 +5218,7 @@ String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doo
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_vacuum "Mi Robot Vacuum-Mop Essential" <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
@@ -5232,7 +5250,7 @@ Number mop_status "Other Status - Mop Status" (G_vacuum) {channel="miio:basic:va
 
 note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
 Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
 Switch on "Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
@@ -5250,7 +5268,7 @@ Number:Time no_water_time "No Water Flag - No Water Time" (G_pet_waterer) {chann
 
 note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
 Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
 Switch on "Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
@@ -5269,7 +5287,7 @@ Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channe
 
 note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
 Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
 Switch on "Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
@@ -5288,7 +5306,7 @@ Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channe
 
 note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_pet_waterer "XIAOWAN Smart Pet Water Dispenser" <status>
 Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
 Switch on "Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
@@ -5307,7 +5325,7 @@ Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channe
 
 note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
 Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
@@ -5322,7 +5340,7 @@ Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 
 note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
 Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
@@ -5337,7 +5355,7 @@ Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 
 note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
 Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
@@ -5352,7 +5370,7 @@ Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 
 note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_derh "WIDETECH WDH318EFW1 Internet Dehumidifier" <status>
 Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
 String mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
@@ -5374,7 +5392,7 @@ String alarm "Alarm" (G_derh) {channel="miio:basic:derh:alarm"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips Zhirui Ceiling Lamp Bedroom 40W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5393,7 +5411,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips Zhirui Ceiling Lamp Bedroom 28W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5412,7 +5430,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiRui E27 bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5427,7 +5445,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiRui E14 candle lamp Frosted version" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5441,7 +5459,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiRui E14 candle lamp crystal version" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5455,7 +5473,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mijia Philips Color Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5471,7 +5489,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5487,7 +5505,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips connected ceiling" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5501,7 +5519,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5517,7 +5535,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "ZhiRui dimmable downlight" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5535,7 +5553,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiRui downlight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5550,7 +5568,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips Wi-Fi bulb E27 White" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5565,7 +5583,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiYi Ceiling lamp FL 40W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5584,7 +5602,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiYi Ceiling lamp FL 28W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5603,7 +5621,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiYi Ceiling lamp FL 80W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5622,7 +5640,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips Zhirui Ceiling Lamp Living room 80W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5641,7 +5659,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Nordic 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5659,7 +5677,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Nordic 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5677,7 +5695,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Nordic 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5695,7 +5713,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips Smart Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5706,7 +5724,7 @@ Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiRui bedside lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5722,7 +5740,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Black 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5740,7 +5758,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light " Zhirui Ceiling Lamp Black 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5758,7 +5776,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Black 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5776,7 +5794,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mijia Philips Study Desk Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5789,7 +5807,7 @@ Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Starry 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5807,7 +5825,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Starry 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5825,7 +5843,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Starry 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5843,7 +5861,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips EyeCare connected desk lamp gen2." <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5858,7 +5876,7 @@ Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mijia Philips Desk Lamp 2S" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5873,7 +5891,7 @@ Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips connected lights" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5888,7 +5906,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Gorgeous 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5906,7 +5924,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Gorgeous 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5924,7 +5942,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Zhirui Ceiling Lamp Gorgeous 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
@@ -5942,7 +5960,7 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiYi ceiling lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5956,7 +5974,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiYi desk lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5971,7 +5989,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Philips ZhiYi strip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5986,7 +6004,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
 Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
@@ -6003,7 +6021,7 @@ Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:po
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_switch "PTX OneKey Switch (WIFI)" <status>
 Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
 String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
@@ -6013,7 +6031,7 @@ String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_switch "PTX Twokey switch(wifi)" <status>
 Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
 Number switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
@@ -6025,7 +6043,7 @@ String switch2name "Switch Name 2" (G_switch) {channel="miio:basic:switch:switch
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_switch "PTX ThreeKey Switch (WIFI)" <status>
 Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
 Number switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
@@ -6039,7 +6057,7 @@ String switch3name "Switch Name 3" (G_switch) {channel="miio:basic:switch:switch
 
 note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_coffee "SCISHARE Smart Capsule Coffee Machine" <status>
 Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
 String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
@@ -6052,7 +6070,7 @@ Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
 
 note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_coffee "Xiaomi Scishare smart capsule coffee machine" <status>
 Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
 String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
@@ -6065,7 +6083,7 @@ Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_vacuum "Viomi Cleaning Robot V-RVCLM21B" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
@@ -6088,7 +6106,7 @@ Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
@@ -6111,7 +6129,7 @@ Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
@@ -6134,7 +6152,7 @@ Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap
 
 note: Autogenerated example. Replace the id (waterheater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterheater "VIOMI Internet electric water heater 1A (60L)" <status>
 Number washStatus "Wash Status" (G_waterheater) {channel="miio:basic:waterheater:washStatus"}
 Number velocity "Velocity" (G_waterheater) {channel="miio:basic:waterheater:velocity"}
@@ -6152,7 +6170,7 @@ Number appointEnd "Appoint End" (G_waterheater) {channel="miio:basic:waterheater
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Inverter Air Conditioner (1.5HP)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6172,7 +6190,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6192,7 +6210,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Vertical Air Conditioner (2HP)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6212,7 +6230,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Vertical Air Conditioner C1 (2HP / Inverter / China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6232,7 +6250,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner C1 (1.5HP / Conventional / China Energy Label Level 3)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6252,7 +6270,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner C1 (1HP / Inverter / China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6272,7 +6290,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6299,7 +6317,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6326,7 +6344,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level <1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6353,7 +6371,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level <1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6380,7 +6398,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Vertical Air Conditioner A (2HP / Inverter / China Energy Label Level <1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6407,7 +6425,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Vertical Air Conditioner A (3HP / Inverter / China Energy Label Level <1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6434,7 +6452,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner(1.5HP/Inverter/New China Energy Label Level 3)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6461,7 +6479,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner(2HP/Inverter/New China Energy Label Level 3)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6488,7 +6506,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner (2HP/Inverter/New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6515,7 +6533,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner (3HP/Inverter/New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6542,7 +6560,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner C (1HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6569,7 +6587,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner C (1.5HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6596,7 +6614,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner(1HP/Inverter/New China Energy Label Level 3)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6623,7 +6641,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner X (1HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6650,7 +6668,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Air Conditioner X (1.5HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6677,7 +6695,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Gentle Breeze Air Conditioner (1HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6704,7 +6722,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Gentle Breeze Air Conditioner (1.5HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6731,7 +6749,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Gentle Breeze Vertical Air Conditioner (3HP / Inverter / New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6758,7 +6776,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6785,7 +6803,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1)" <status>
 Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
 Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
@@ -6812,7 +6830,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_toilet "Uclean Smart Toilet Seat" <status>
 Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
@@ -6825,7 +6843,7 @@ Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_le
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_toilet "Uclean smart toilet pure" <status>
 Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
@@ -6838,7 +6856,7 @@ Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_le
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_toilet "Uclean smart toilet relax" <status>
 Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
@@ -6851,7 +6869,7 @@ Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_le
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_toilet "Whale Spout Smart Toilet Zero" <status>
 Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
@@ -6864,7 +6882,7 @@ Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_le
 
 note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_bhf_light "Yeelight Smart Bath Heater Pro" <status>
 Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
 String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
@@ -6878,7 +6896,7 @@ Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio
 
 note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_bhf_light "Yeelight Smart Bath Heater" <status>
 Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
 String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
@@ -6892,12 +6910,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi Bedside Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -6907,12 +6925,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi Bedside Lamp 2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -6922,12 +6940,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Bedside Lamp II" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -6937,12 +6955,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -6953,12 +6971,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light SE" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -6969,12 +6987,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -6985,13 +7003,13 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
@@ -7006,12 +7024,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (ceiling4) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_ceiling4 "Yeelight LED Ceiling Ambi Lamp" <status>
 Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
 Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
 String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
 String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
@@ -7022,12 +7040,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7038,12 +7056,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight HaoShi LED Ceiling Lamp Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7054,12 +7072,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Haoshi Ceiling Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7070,12 +7088,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "LED Ceiling Light Crystal Plus" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7086,12 +7104,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight HaoShi LED Ceiling Lamp Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7102,13 +7120,13 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Crystal Pendant Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
@@ -7123,12 +7141,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (ceiling10) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_ceiling10 "Yeelight LED Ceiling Ambi Lamp" <status>
 Switch power "Power" (G_ceiling10) {channel="miio:basic:ceiling10:power"}
 Dimmer brightness "Brightness" (G_ceiling10) {channel="miio:basic:ceiling10:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_ceiling10) {channel="miio:basic:ceiling10:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_ceiling10) {channel="miio:basic:ceiling10:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_ceiling10) {channel="miio:basic:ceiling10:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling10) {channel="miio:basic:ceiling10:colorMode"}
 String name "Name" (G_ceiling10) {channel="miio:basic:ceiling10:name"}
 String customScene "Set Scene" (G_ceiling10) {channel="miio:basic:ceiling10:customScene"}
@@ -7139,12 +7157,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_ceiling10) {channel="miio
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light 320 1S" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7155,12 +7173,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight stylized Ceiling Light  Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7171,12 +7189,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7187,12 +7205,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light Mini" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7203,12 +7221,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light 480 1S" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7219,12 +7237,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Xingyu Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7235,12 +7253,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight ShaoHua Celing Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7251,12 +7269,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7267,12 +7285,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7283,12 +7301,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (ceiling19) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_ceiling19 "Yeelight LED Ceiling Ambi Lamp" <status>
 Switch power "Power" (G_ceiling19) {channel="miio:basic:ceiling19:power"}
 Dimmer brightness "Brightness" (G_ceiling19) {channel="miio:basic:ceiling19:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_ceiling19) {channel="miio:basic:ceiling19:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_ceiling19) {channel="miio:basic:ceiling19:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_ceiling19) {channel="miio:basic:ceiling19:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling19) {channel="miio:basic:ceiling19:colorMode"}
 String name "Name" (G_ceiling19) {channel="miio:basic:ceiling19:name"}
 String customScene "Set Scene" (G_ceiling19) {channel="miio:basic:ceiling19:customScene"}
@@ -7299,12 +7317,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_ceiling19) {channel="miio
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7315,12 +7333,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (ceiling20) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_ceiling20 "Yeelight LED Ceiling Ambi Lamp" <status>
 Switch power "Power" (G_ceiling20) {channel="miio:basic:ceiling20:power"}
 Dimmer brightness "Brightness" (G_ceiling20) {channel="miio:basic:ceiling20:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_ceiling20) {channel="miio:basic:ceiling20:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_ceiling20) {channel="miio:basic:ceiling20:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_ceiling20) {channel="miio:basic:ceiling20:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling20) {channel="miio:basic:ceiling20:colorMode"}
 String name "Name" (G_ceiling20) {channel="miio:basic:ceiling20:name"}
 String customScene "Set Scene" (G_ceiling20) {channel="miio:basic:ceiling20:customScene"}
@@ -7331,12 +7349,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_ceiling20) {channel="miio
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi Smart LED Living Room Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7347,12 +7365,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi Smart LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7363,12 +7381,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi Smart LED Ceiling Light (350mm)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7379,12 +7397,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Color Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -7394,12 +7412,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight LED Bulb (Color)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -7409,12 +7427,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi LED Smart Bulb (White and Color)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -7424,12 +7442,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight LED Bulb 1S（Color）" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -7439,12 +7457,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight LED Bulb (Tunable)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7453,12 +7471,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi LED Desk Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7467,12 +7485,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi Smart LED Desk Lamp Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7481,12 +7499,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight LED Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7495,12 +7513,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Mi LED Desk Lamp 1S" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7509,12 +7527,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Smart Desk Lamp Prime" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7523,12 +7541,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7537,12 +7555,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight LED Light Sensor Desk Lamp V1" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7551,12 +7569,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7565,12 +7583,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7579,12 +7597,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight White Bulb v2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7593,12 +7611,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight LED Filament Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7607,12 +7625,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Whiteglow Panel Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7623,12 +7641,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Lightstrip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -7638,12 +7656,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Lightstrip Plus" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
@@ -7653,12 +7671,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yeelight Willow LED Lightstrip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7667,12 +7685,12 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Light Group (Mi & Yeelight)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
@@ -7681,7 +7699,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_switch "Yeelight Smart Dual Control Module" <status>
 Switch on "First Switch - Switch Status" (G_switch) {channel="miio:basic:switch:on"}
 Number mode "First Switch Default - Mode" (G_switch) {channel="miio:basic:switch:mode"}
@@ -7698,12 +7716,12 @@ String rc_list "Extension - Rc List" (G_switch) {channel="miio:basic:switch:rc-l
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yilai Ceiling Light Aiyue 480" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7714,12 +7732,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yilai Ceiling Lamp Hefeng 430" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7730,12 +7748,12 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_light "Yilai Ceiling Lamp Hefeng Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
@@ -7746,7 +7764,7 @@ Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier lx2" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -7780,7 +7798,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier (Under Counter)" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -7814,7 +7832,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier lx4" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -7848,7 +7866,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier 1A/400G Pro" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -7882,7 +7900,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier (Under Counter)" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -7916,7 +7934,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier 500G/500G Pro" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -7950,7 +7968,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier 600G" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
@@ -7982,7 +8000,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier D1" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -8016,7 +8034,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier lx10" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -8050,7 +8068,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier C1 (Triple Setting)" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -8084,7 +8102,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpuri "Mi Water Purifier S1" <status>
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -8118,7 +8136,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpurifier "Mi Water Purifier v1" <status>
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
@@ -8152,7 +8170,7 @@ Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifi
 
 note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpurifier "Mi Water Purifier v2" <status>
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
@@ -8186,7 +8204,7 @@ Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifi
 
 note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpurifier "Mi Water Purifier (Under sink) v3" <status>
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
@@ -8220,7 +8238,7 @@ Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifi
 
 note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_waterpurifier "Mi Water Purifier v4" <status>
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
@@ -8254,7 +8272,7 @@ Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifi
 
 note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airmonitor "Mi PM2.5 Air Quality Monitor" <status>
 Switch power "Power" (G_airmonitor) {channel="miio:basic:airmonitor:power"}
 Number aqi "Air Quality Index" (G_airmonitor) {channel="miio:basic:airmonitor:aqi"}
@@ -8270,7 +8288,7 @@ Number night_end "Night End Time" (G_airmonitor) {channel="miio:basic:airmonitor
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 2 (mini)" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8294,7 +8312,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 2" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8318,7 +8336,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8342,7 +8360,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8366,7 +8384,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 3" <status>
 Number fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
 Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
@@ -8424,7 +8442,7 @@ Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8448,7 +8466,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 3/3H" <status>
 Number fault "Air Purifier - Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
 Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
@@ -8507,7 +8525,7 @@ Number country_code "Others - National Code" (G_airpurifier) {channel="miio:basi
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 3C" <status>
 Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
 String fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
@@ -8528,7 +8546,7 @@ Number:Time aqi_updata_heartbeat "Custom Service - Aqi Updata Heartbeat" (G_airp
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8552,7 +8570,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier 2H" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8576,7 +8594,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier Super" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8600,7 +8618,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier MAX / MAX Pro" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8624,7 +8642,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier v1" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8648,7 +8666,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier v2" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8672,7 +8690,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier v3" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8696,7 +8714,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier v5" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8720,7 +8738,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier Pro v6" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8744,7 +8762,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_airpurifier "Mi Air Purifier Pro v7" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
@@ -8768,7 +8786,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Mi Standing Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
@@ -8789,7 +8807,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Mi Smart Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
@@ -8814,7 +8832,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Smartmi DC Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
@@ -8839,7 +8857,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Smartmi DC Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
@@ -8864,7 +8882,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Smartmi Inverter Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
@@ -8885,7 +8903,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Smartmi Standing Fan 2" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
@@ -8905,7 +8923,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_fan "Smartmi Standing Fan 2S" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
@@ -8925,7 +8943,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_heater "Smartmi Radiant Heater Smart Version" <status>
 Switch power "Power" (G_heater) {channel="miio:basic:heater:power"}
 Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
@@ -8942,7 +8960,7 @@ Number:Time usedhours "Run Time" (G_heater) {channel="miio:basic:heater:usedhour
 
 note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
 Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
@@ -8960,7 +8978,7 @@ Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basi
 
 note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
 Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
@@ -8979,7 +8997,7 @@ Number country_code "Private-Service - Country-Code" (G_heater) {channel="miio:b
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
@@ -9001,7 +9019,7 @@ Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:chi
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_humidifier "Smartmi Evaporative Humidifer 2" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
@@ -9027,12 +9045,32 @@ Number countryCode "Country Code" (G_humidifier) {channel="miio:basic:humidifier
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
+Number:Dimensionless setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
+Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
+Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
+Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
+Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+```
+
+### Smartmi Evaporative Humidifier (zhimi.humidifier.cb2) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_humidifier "Smartmi Evaporative Humidifier" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+String humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
 Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
 Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
 Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
@@ -9047,7 +9085,7 @@ Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:chi
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_humidifier "Smartmi Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
@@ -9069,7 +9107,7 @@ Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:chi
 
 note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```java
+```
 Group G_powerstrip "Mi Smart Power Strip" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
 Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}

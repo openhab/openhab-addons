@@ -59,6 +59,8 @@ The OpenUV Report thing that is retrieved has these channels:
 The elevation channel will be used as an input in order to limit API queries to OpenUV. If not used, 
 the binding will not consider it. When value is provided queries will only be issued if the elevation is > 0°.
 
+Thing can be extended with as many SafeExposure channels as needed for each skin type.
+
 ## Examples
 
 demo.things:

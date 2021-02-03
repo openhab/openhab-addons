@@ -10,9 +10,12 @@ This happens because of a TTL=1 for ALIVE packets send by Sonos devices, resulti
 
 ## Supported Things
 
-All available Sonos (playback) devices are supported by this binding. This includes the One, OneSL, Play:1, Play:3, Play:5, Connect, Connect:Amp, Port, Amp, Playbar, Playbase, Beam and Sub. The Bridge and Boost are not supported, but these devices do only have an auxiliary role in the Sonos network and do not have any playback capability. All supported Sonos devices are registered as an audio sink in the framework.
+All available Sonos (playback) devices are supported by this binding.
+This includes the One, One SL, Move, Play:1, Play:3, Play:5, Connect, Connect:Amp, Port, Amp, SYMFONISK, Playbar, Playbase, Beam, Arc, Arc SL and Sub.
+The Bridge and Boost are not supported, but these devices do only have an auxiliary role in the Sonos network and do not have any playback capability.
+All supported Sonos devices are registered as an audio sink in the framework.
 
-When being defined in a \*.things file, the specific thing types One, OneSL, PLAY1, PLAY3, PLAY5, PLAYBAR, PLAYBASE, Beam, CONNECT, CONNECTAMP, Port and Amp should be used.
+When being defined in a \*.things file, the specific thing types One, OneSL, Move, PLAY1, PLAY3, PLAY5, SYMFONISK, PLAYBAR, PLAYBASE, Beam, Arc, ArcSL, CONNECT, CONNECTAMP, Port and Amp should be used.
 
 Please note that these thing types are case sensitive (you need to define them **exactly as stated above**).
 
@@ -52,6 +55,8 @@ The devices support the following channels:
 | alarmproperties     | String    | R           | Properties of the alarm currently running                                                                                                                 | all                                  |
 | alarmrunning        | Switch    | R           | Set to ON if the alarm was triggered                                                                                                                      | all                                  |
 | bass                | Number    | RW          | Set or get the bass level adjustment (value in range -10 / 10)                                                                                            | all                                  |
+| batterycharging     | Switch    | R           | Indicator set to ON when the battery is charging                                                                                                          | Move                                 |
+| batterylevel        | Number    | R           | Current battery level                                                                                                                                     | Move                                 |
 | clearqueue          | Switch    | W           | Suppress all songs from the current queue                                                                                                                 | all                                  |
 | control             | Player    | RW          | Control the Zone Player, e.g. PLAY/PAUSE/NEXT/PREVIOUS                                                                                      | all                                  |
 | coordinator         | String    | R           | UDN of the coordinator for the current group                                                                                                              | all                                  |
@@ -70,6 +75,7 @@ The devices support the following channels:
 | digitallinein       | Switch    | R           | Indicator set to ON when the digital line-in of the Zone Player is connected                                                                              | Amp                                  |
 | localcoordinator    | Switch    | R           | Indicator set to ON if the this Zone Player is the Zone Group Coordinator                                                                                 | all                                  |
 | loudness            | Switch    | RW          | Enable or disable the loudness                                                                                                                            | all                                  |
+| microphone          | Switch    | R           | Indicator set to ON when the microphone is enabled                                                                                                        | Arc, Beam, Move, One                 |
 | mute                | Switch    | RW          | Set or get the mute state of the master volume of the Zone Player                                                                                         | all                                  |
 | nightmode           | Switch    | RW          | Enable or disable the night mode feature                                                                                                                  | PLAYBAR, PLAYBASE, Beam, Amp         |
 | notificationsound   | String    | W           | Play a notification sound by a given URI                                                                                                                  | all                                  |
