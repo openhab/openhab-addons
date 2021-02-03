@@ -67,6 +67,10 @@ public class ItemToStorePointCreator {
         name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadata(configuration, metadataRegistry, name,
                 item.getName());
 
+        if (configuration.isReplaceUnderscore()) {
+            name = name.replace('_', '.');
+        }
+
         return name;
     }
 

@@ -50,10 +50,6 @@ public class InfluxDBMetadataUtils {
 
         }
 
-        if (configuration.isReplaceUnderscore()) {
-            name = name.replace('_', '.');
-        }
-
         return name;
     }
 }
