@@ -570,18 +570,16 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private void repeatSendCommandInternal(String io, String command, String params, String url, int retries) {
-        logger.info("Retrying command, retries left: {}", retries);
-        Boolean result = sendCommandInternal(io, command, params, url);
-        if (result != null && !result) {
-            if (retries > 0) {
-                scheduler.schedule(() -> {
-                    repeatSendCommandInternal(io, command, params, url, retries - 1);
-                }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS);
-            }
+        logger.debug("Retrying command, retries left: {}", retries);
+        boolean result = sendCommandInternal(io, command, params, url);
+        if (!result && (retries > 0)) {
+            scheduler.schedule(() -> {
+                repeatSendCommandInternal(io, command, params, url, retries - 1);
+            }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS);
         }
     }
 
-    private Boolean sendCommandInternal(String io, String command, String params, String url) {
+    private boolean sendCommandInternal(String io, String command, String params, String url) {
         String value = params.equals("[]") ? command : params.replace("\"", "");
         String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value
                 + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\"" + command
