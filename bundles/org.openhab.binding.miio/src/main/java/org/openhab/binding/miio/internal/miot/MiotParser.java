@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,8 +50,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * Support creation of the miot db files
@@ -69,7 +66,7 @@ public class MiotParser {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final JsonParser PARSER = new JsonParser();
 
-    private static final HttpClient httpClient = new HttpClient();
+    // private static final HttpClient httpClient = new HttpClient();
 
     private String model;
     private @Nullable String urn;
@@ -80,16 +77,14 @@ public class MiotParser {
         this.model = model;
     }
 
-    public static MiotParser parse(String model) throws MiotParseException {
+    public static MiotParser parse(String model, HttpClient httpClient) throws MiotParseException {
         MiotParser miotParser = new MiotParser(model);
         try {
-            httpClient.setFollowRedirects(false);
-            httpClient.start();
-            String urn = miotParser.getURN(model);
+            String urn = miotParser.getURN(model, httpClient);
             if (urn == null) {
                 throw new MiotParseException("Device not found in in miot specs : " + model);
             }
-            JsonElement urnData = miotParser.getUrnData(urn);
+            JsonElement urnData = miotParser.getUrnData(urn, httpClient);
             miotParser.getDevice(urnData);
             return miotParser;
         } catch (Exception e) {
@@ -153,7 +148,7 @@ public class MiotParser {
         }
     }
 
-    public MiIoBasicDevice getDevice(JsonElement urnData) {
+    public MiIoBasicDevice getDevice(JsonElement urnData) throws MiotParseException {
         Set<String> unknownUnits = new HashSet<>();
         StringBuilder channelConfigText = new StringBuilder("Suggested additional channelType \r\n");
 
@@ -162,12 +157,16 @@ public class MiotParser {
         MiIoBasicDevice device = new MiIoBasicDevice();
         DeviceMapping deviceMapping = new DeviceMapping();
         MiotDeviceDataDTO miotDevice = GSON.fromJson(urnData, MiotDeviceDataDTO.class);
+        if (miotDevice == null) {
+            throw new MiotParseException("Error parsing miot data: ");
+        }
         List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
         deviceMapping.setPropertyMethod(MiIoCommand.GET_PROPERTIES.getCommand());
         deviceMapping.setMaxProperties(1);
         deviceMapping.setExperimental(true);
         deviceMapping.setId(Arrays.asList(new String[] { model }));
         Set<String> propCheck = new HashSet<>();
+
         for (ServiceDTO service : miotDevice.services) {
             String serviceId = service.type.substring(service.type.indexOf("service:")).split(":")[1];
             logger.info("SID: {}, description: {}, identifier: {}", service.siid, service.description, serviceId);
@@ -387,55 +386,6 @@ public class MiotParser {
         return device;
     }
 
-    private StringBuilder printChannelDefinitions(StringBuilder sb, MiIoBasicChannel miIoBasicChannel, String model,
-            PropertyDTO property) {
-        /*
-         * <channel-type id="vacuumaction">
-         * <item-type>Number</item-type>
-         * <label>Vacuum Action</label>
-         * <state>
-         * <options>
-         * <option value="0">Stop</option>
-         * <option value="1">Vacuum</option>
-         * <option value="2">Pause</option>
-         * </options>
-         * </state>
-         * </channel-type>
-         */
-        if (property.valueList != null && property.valueList.size() > 0
-                || property.valueRange != null && property.valueRange.size() > 0) {
-            sb.append(String.format("<channel-type id=\"%s_%s\">\r\n", captializedName(model).replace(" ", ""),
-                    miIoBasicChannel.getChannel()));
-            sb.append(String.format("<item-type>%s</item-type>\r\n", miIoBasicChannel.getType()));
-            sb.append(String.format("<label>%s</label>\r\n", miIoBasicChannel.getFriendlyName()));
-
-            sb.append("<state");
-            if (!property.access.contains("write")) {
-                sb.append(" readOnly=\"true\"");
-            }
-            if (property.valueRange != null) {
-                if (property.valueRange.size() < 3) {
-                    logger.warn("unknown range - CHECK! ");
-                }
-                sb.append(String.format(" min=\"%s\"", property.valueRange.get(0)));
-                sb.append(String.format(" max=\"%s\"", property.valueRange.get(1)));
-                sb.append(String.format(" step=\"%s\"", property.valueRange.get(2)));
-            }
-            sb.append(">\r\n");
-            if (property.valueList != null && property.valueList.size() > 0) {
-                sb.append("<options>\r\n");
-                for (OptionsValueDescriptionsListDTO valueMap : property.valueList) {
-                    sb.append(String.format("<option value=\"%d\">%s</option>\r\n", valueMap.value,
-                            valueMap.description));
-                }
-                sb.append("</options>\r\n");
-            }
-            sb.append("</state>\r\n");
-            sb.append("</channel-type>\r\n");
-        }
-        return sb;
-    }
-
     private static String captializedName(String name) {
         if (name.isEmpty()) {
             return name;
@@ -449,7 +399,7 @@ public class MiotParser {
         return StandardCharsets.US_ASCII.newEncoder().canEncode(v);
     }
 
-    private JsonElement getUrnData(String urn)
+    private JsonElement getUrnData(String urn, HttpClient httpClient)
             throws InterruptedException, TimeoutException, ExecutionException, JsonParseException {
         ContentResponse response;
         String urlStr = BASEURL + "instance?type=" + urn;
@@ -460,17 +410,20 @@ public class MiotParser {
         return json;
     }
 
-    private @Nullable String getURN(String model) {
+    private @Nullable String getURN(String model, HttpClient httpClient) {
         ContentResponse response;
         try {
             response = httpClient.newRequest(BASEURL + "instances?status=released").timeout(15, TimeUnit.SECONDS)
                     .send();
+            // logger.info("{}", HttpUtil.executeUrl("GET", BASEURL + "instances?status=released", 15000));
+            // String resp2 = HttpUtil.executeUrl("GET", BASEURL + "instances?status=released", 15000);
+            // logger.info("COMPARISON ===>>>>> {} ", resp2.contentEquals(response.getContentAsString()));
             JsonElement json = PARSER.parse(response.getContentAsString());
-            urns data = GSON.fromJson(json, urns.class);
-            for (ModelUrns devices : data.getInstances()) {
-                if (devices.model.contentEquals(model)) {
-                    this.urn = devices.type;
-                    return devices.type;
+            UrnsDTO data = GSON.fromJson(json, UrnsDTO.class);
+            for (ModelUrnsDTO device : data.getInstances()) {
+                if (device.getModel().contentEquals(model)) {
+                    this.urn = device.getType();
+                    return device.getType();
                 }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -480,28 +433,6 @@ public class MiotParser {
         }
 
         return null;
-    }
-
-    public class urns {
-        @SerializedName("instances")
-        @Expose
-        private List<ModelUrns> instances = Collections.emptyList();
-
-        public List<ModelUrns> getInstances() {
-            return instances;
-        }
-    }
-
-    public class ModelUrns {
-        @SerializedName("model")
-        @Expose
-        private String model = "";
-        @SerializedName("version")
-        @Expose
-        private Integer version = 0;
-        @SerializedName("type")
-        @Expose
-        private String type = "";
     }
 
     public String getModel() {

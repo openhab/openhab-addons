@@ -21,6 +21,8 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Disabled;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.miot.MiotParseException;
@@ -32,17 +34,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Support creation of the json database files for miot devices
- *
- * Run after adding devices or changing database entries of basic devices
- *
+ * Supporting tool for creation of the json database files for miot devices
+ * *
  * Run in IDE with 'run as java application' or run in command line as:
  * mvn exec:java -Dexec.mainClass="org.openhab.binding.miio.internal.MiotJsonFileCreator" -Dexec.classpathScope="test"
  * -Dexec.args="zhimi.humidifier.ca4"
  *
  * The argument is the model string to create the database file for.
+ * If the digit at the end of the model is omitted, it will try a range of devices
  *
  * @author Marcel Verpaalen - Initial contribution
+ *
  */
 @NonNullByDefault
 public class MiotJsonFileCreator {
@@ -57,9 +59,8 @@ public class MiotJsonFileCreator {
     public static void main(String[] args) {
 
         LinkedHashMap<String, String> checksums = new LinkedHashMap<>();
-
         LinkedHashSet<String> models = new LinkedHashSet<>();
-
+        models.add("zhimi.humidifier.ca4");
         if (args.length > 0) {
             models.add(args[0]);
         }
@@ -76,13 +77,15 @@ public class MiotJsonFileCreator {
         for (String model : models) {
             LOGGER.info("Processing: {}", model);
             try {
-                miotParser = MiotParser.parse(model);
+                HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+                httpClient.setFollowRedirects(false);
+                httpClient.start();
+                miotParser = MiotParser.parse(model, httpClient);
                 LOGGER.info("urn: ", miotParser.getUrn());
                 LOGGER.info("{}", miotParser.getUrnData());
                 MiIoBasicDevice device = miotParser.getDevice();
                 if (device != null) {
                     LOGGER.info("Device: {}", device);
-
                     String fileName = String.format("%s%s%s", BASEDIR, model, FILENAME_EXTENSION);
                     if (!overwriteFile) {
                         int counter = 0;
@@ -95,7 +98,7 @@ public class MiotJsonFileCreator {
                     String channelsJson = GSON.toJson(device.getDevice().getChannels()).toString();
                     checksums.put(model, checksumMD5(channelsJson));
                 }
-                LOGGER.info("finished");
+                LOGGER.info("Finished");
             } catch (MiotParseException e) {
                 LOGGER.info("Error processing model {}: {}", model, e.getMessage());
             } catch (Exception e) {
@@ -105,7 +108,7 @@ public class MiotJsonFileCreator {
         StringBuilder sb = new StringBuilder();
         for (Entry<String, String> ch : checksums.entrySet()) {
             sb.append(ch.getValue());
-            sb.append(" -->");
+            sb.append(" --> ");
             sb.append(ch.getKey());
             sb.append("\r\n");
         }
