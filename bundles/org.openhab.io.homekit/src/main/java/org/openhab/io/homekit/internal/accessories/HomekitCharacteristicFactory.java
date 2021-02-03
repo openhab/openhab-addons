@@ -220,14 +220,8 @@ public class HomekitCharacteristicFactory {
         final State state = taggedItem.getItem().getState();
         if (state instanceof PercentType) {
             value = (int) ((((PercentType) state).intValue() * 90.0) / 50.0 - 90.0);
-        } else if (state instanceof DecimalType) {
-            value = ((DecimalType) state).intValue();
-        } else if (state instanceof UnDefType) {
-            logger.debug("Item state {} is UNDEF {}.", state, taggedItem.getName());
         } else {
-            logger.warn(
-                    "Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
-                    state, taggedItem.getName());
+            value = getIntFromItem(taggedItem);
         }
         return value;
     }
