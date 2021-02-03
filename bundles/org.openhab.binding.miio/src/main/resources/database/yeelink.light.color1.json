@@ -9,7 +9,8 @@
 			"yeelink.light.strip2",
 			"yeelink.light.bslamp1",
 			"yeelink.light.bslamp2",
-			"yeelink.light.bslamp3"
+			"yeelink.light.bslamp3",
+			"yeelink.light.colora"
 		],
 		"maxProperties": 7,
 		"channels": [
