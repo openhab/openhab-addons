@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.lutron.internal.protocol.leap;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,7 +39,11 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Class responsible for parsing incoming LEAP messages
+ * Class responsible for parsing incoming LEAP messages. Calls back to an object implementing the
+ * LeapMessageParserCallbacks interface.
+ *
+ * Thanks to the authors of the pylutron-caseta Python API (github.com/gurumitts/pylutron-caseta), which I used as a
+ * reference when first researching the LEAP protocol.
  *
  * @author Bob Adair - Initial contribution
  */
@@ -208,6 +213,7 @@ public class LeapMessageParser {
         try {
             if (messageBody.has(memberName)) {
                 JsonObject jsonObject = messageBody.get(memberName).getAsJsonObject();
+                @Nullable
                 T obj = gson.fromJson(jsonObject, type);
                 return obj;
             } else {
@@ -229,7 +235,7 @@ public class LeapMessageParser {
 
                 for (JsonElement element : jsonArray) {
                     JsonObject jsonObject = element.getAsJsonObject();
-                    T obj = gson.fromJson(jsonObject, type);
+                    T obj = Objects.requireNonNull(gson.fromJson(jsonObject, type));
                     objList.add(obj);
                 }
                 return objList;

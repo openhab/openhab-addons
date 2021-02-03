@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,20 +87,24 @@ public class DeviceSensorValue {
      * Creates a new {@link DeviceSensorValue} through the properties of a digitalSTROM
      * {@link EventNames#DEVICE_SENSOR_VALUE} event.
      *
-     * @param eventPropertie must not be null
+     * @param eventProperties must not be null
      */
-    public DeviceSensorValue(Map<EventResponseEnum, String> eventPropertie) {
-        if (eventPropertie.get(EventResponseEnum.SENSOR_VALUE_FLOAT) != null) {
-            floatValue = Float.parseFloat(eventPropertie.get(EventResponseEnum.SENSOR_VALUE_FLOAT));
+    public DeviceSensorValue(Map<EventResponseEnum, String> eventProperties) {
+        String strVal = eventProperties.get(EventResponseEnum.SENSOR_VALUE_FLOAT);
+        if (strVal != null) {
+            floatValue = Float.parseFloat(strVal);
         }
-        if (eventPropertie.get(EventResponseEnum.SENSOR_TYPE) != null) {
-            sensorType = SensorEnum.getSensor(Short.parseShort(eventPropertie.get(EventResponseEnum.SENSOR_TYPE)));
+        strVal = eventProperties.get(EventResponseEnum.SENSOR_TYPE);
+        if (strVal != null) {
+            sensorType = SensorEnum.getSensor(Short.parseShort(strVal));
         }
-        if (eventPropertie.get(EventResponseEnum.SENSOR_VALUE) != null) {
-            dsValue = Integer.parseInt(eventPropertie.get(EventResponseEnum.SENSOR_VALUE));
+        strVal = eventProperties.get(EventResponseEnum.SENSOR_VALUE);
+        if (strVal != null) {
+            dsValue = Integer.parseInt(strVal);
         }
-        if (eventPropertie.get(EventResponseEnum.SENSOR_INDEX) != null) {
-            sensorIndex = Short.parseShort(eventPropertie.get(EventResponseEnum.SENSOR_INDEX));
+        strVal = eventProperties.get(EventResponseEnum.SENSOR_INDEX);
+        if (strVal != null) {
+            sensorIndex = Short.parseShort(strVal);
         }
         timestamp = Date.from(Instant.ofEpochMilli(System.currentTimeMillis()));
         valid = true;

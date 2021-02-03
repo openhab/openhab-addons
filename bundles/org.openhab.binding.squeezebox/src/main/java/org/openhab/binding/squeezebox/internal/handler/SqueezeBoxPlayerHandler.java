@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -189,8 +189,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         // Some of the code below is not designed to handle REFRESH, only reply to channels where cached values exist
         if (command == RefreshType.REFRESH) {
             String channelID = channelUID.getId();
-            if (stateMap.containsKey(channelID)) {
-                updateState(channelID, stateMap.get(channelID));
+            State newState = stateMap.get(channelID);
+            if (newState != null) {
+                updateState(channelID, newState);
             }
             return;
         }

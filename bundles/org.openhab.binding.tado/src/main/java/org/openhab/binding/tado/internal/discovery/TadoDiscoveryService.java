@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,7 +123,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_ZONE_ID, zoneId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(zone.getName())
-                .withProperties(properties).build();
+                .withProperties(properties).withRepresentationProperty(CONFIG_ZONE_ID).build();
 
         thingDiscovered(result);
 
@@ -156,7 +156,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_MOBILE_DEVICE_ID, device.getId());
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(device.getName())
-                .withProperties(properties).build();
+                .withProperties(properties).withRepresentationProperty(CONFIG_MOBILE_DEVICE_ID).build();
 
         thingDiscovered(result);
 

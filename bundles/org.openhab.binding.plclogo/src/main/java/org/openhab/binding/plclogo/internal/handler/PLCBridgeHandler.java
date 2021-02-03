@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
 
-    private Map<ChannelUID, @Nullable String> oldValues = new HashMap<>();
+    private Map<ChannelUID, String> oldValues = new HashMap<>();
 
     @Nullable
     private volatile PLCLogoClient client; // S7 client used for communication with Logo!
@@ -94,7 +94,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             PLCLogoClient localClient = client;
-            Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(getLogoFamily());
+            Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(getLogoFamily());
             Layout layout = (memory != null) ? memory.get(MEMORY_SIZE) : null;
             if ((layout != null) && (localClient != null)) {
                 try {
@@ -172,7 +172,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                     rtc.set(clock);
                     updateState(channelUID, new DateTimeType(clock));
                 } else if (DAIGNOSTICS_CHANNEL.equals(channelId)) {
-                    Map<Integer, @Nullable String> states = LOGO_STATES.get(getLogoFamily());
+                    Map<Integer, String> states = LOGO_STATES.get(getLogoFamily());
                     if (states != null) {
                         for (Integer key : states.keySet()) {
                             String message = states.get(buffer[0] & key.intValue());

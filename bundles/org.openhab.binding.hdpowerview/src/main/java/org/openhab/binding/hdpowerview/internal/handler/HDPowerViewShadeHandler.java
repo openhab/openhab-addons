@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -200,7 +200,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private int getShadeId() throws NumberFormatException {
-        return Integer.parseInt(getConfigAs(HDPowerViewShadeConfiguration.class).id);
+        String str = getConfigAs(HDPowerViewShadeConfiguration.class).id;
+        if (str == null) {
+            throw new NumberFormatException("null input string");
+        }
+        return Integer.parseInt(str);
     }
 
     private void stopShade() {

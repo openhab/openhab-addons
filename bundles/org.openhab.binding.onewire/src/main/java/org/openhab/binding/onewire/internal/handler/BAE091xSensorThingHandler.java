@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ public class BAE091xSensorThingHandler extends OwBaseThingHandler {
         BAE091xHandlerConfiguration configuration = getConfig().as(BAE091xHandlerConfiguration.class);
 
         Set<OwChannelConfig> wantedChannel = new HashSet<>();
-        wantedChannel.addAll(SENSOR_TYPE_CHANNEL_MAP.get(sensorType));
+        wantedChannel.addAll(SENSOR_TYPE_CHANNEL_MAP.getOrDefault(sensorType, Set.of()));
 
         // Pin1:
         switch (configuration.pin1) {

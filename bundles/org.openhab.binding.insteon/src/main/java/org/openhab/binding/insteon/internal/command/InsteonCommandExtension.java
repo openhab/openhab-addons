@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -182,6 +182,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
     public void msg(Msg msg) {
         if (monitorAllDevices || monitoredAddresses.contains(msg.getAddr("fromAddress"))) {
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
+            Console console = this.console;
             if (console != null) {
                 console.println(date + " " + msg.toString());
             }
@@ -218,7 +219,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
 
     private void startMonitoring(Console console, String addr) {
         if (addr.equalsIgnoreCase("all")) {
-            if (monitorAllDevices != true) {
+            if (!monitorAllDevices) {
                 monitorAllDevices = true;
                 monitoredAddresses.clear();
                 console.println("Started monitoring all devices.");
@@ -240,7 +241,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
             }
         }
 
-        if (monitoring == false) {
+        if (!monitoring) {
             getInsteonBinding().getDriver().addMsgListener(this);
 
             this.console = console;
@@ -249,7 +250,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
     }
 
     private void stopMonitoring(Console console, String addr) {
-        if (monitoring == false) {
+        if (!monitoring) {
             console.println("Not mointoring any devices.");
             return;
         }
@@ -277,7 +278,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
             }
         }
 
-        if (monitorAllDevices == false && monitoredAddresses.isEmpty()) {
+        if (!monitorAllDevices && monitoredAddresses.isEmpty()) {
             getInsteonBinding().getDriver().removeListener(this);
             this.console = null;
             monitoring = false;
@@ -335,18 +336,12 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
         }
     }
 
-    @SuppressWarnings("null")
     private InsteonBinding getInsteonBinding() {
+        InsteonNetworkHandler handler = this.handler;
         if (handler == null) {
             throw new IllegalArgumentException("No Insteon network bridge configured.");
         }
 
-        @Nullable
-        InsteonBinding insteonBinding = handler.getInsteonBinding();
-        if (insteonBinding == null) {
-            throw new IllegalArgumentException("Insteon binding is null.");
-        }
-
-        return insteonBinding;
+        return handler.getInsteonBinding();
     }
 }

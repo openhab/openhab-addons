@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -367,14 +366,8 @@ public class BridgeHandler extends BaseBridgeHandler
 
     @Override
     public void handleRemoval() {
-        for (Thing thing : getThing().getThings()) {
-            // Inform Thing-Child's about removed bridge.
-            final ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler != null) {
-                thingHandler.bridgeStatusChanged(ThingStatusInfoBuilder.create(ThingStatus.REMOVED).build());
-            }
-        }
-        if (StringUtils.isNotBlank((String) super.getConfig().get(APPLICATION_TOKEN))) {
+        String applicationToken = (String) super.getConfig().get(APPLICATION_TOKEN);
+        if (applicationToken != null && !applicationToken.isEmpty()) {
             if (connMan == null) {
                 Config config = loadAndCheckConnectionData(this.getConfig());
                 if (config != null) {

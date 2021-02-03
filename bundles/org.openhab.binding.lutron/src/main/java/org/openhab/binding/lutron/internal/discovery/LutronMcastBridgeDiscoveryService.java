@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -171,7 +171,7 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
                     StandardCharsets.US_ASCII);
 
             Matcher matcher = BRIDGE_PROP_PATTERN.matcher(data);
-            Map<String, @Nullable String> bridgeProperties = new HashMap<>();
+            Map<String, String> bridgeProperties = new HashMap<>();
 
             while (matcher.find()) {
                 bridgeProperties.put(matcher.group(1), matcher.group(2));

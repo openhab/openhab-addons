@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,7 +173,11 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                                 "Unable to connect Netatmo API : " + e.getLocalizedMessage());
                 }
             } catch (RuntimeException e) {
-                logger.warn("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                if (logger.isDebugEnabled()) {
+                    logger.warn("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                } else {
+                    logger.warn("Unable to connect Netatmo API : {}", e.getMessage());
+                }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Netatmo Access Failed, will retry in " + configuration.reconnectInterval + " seconds.");
             }

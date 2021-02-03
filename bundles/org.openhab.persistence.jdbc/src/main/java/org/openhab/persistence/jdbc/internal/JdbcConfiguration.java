@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -20,7 +21,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.persistence.jdbc.db.JdbcBaseDAO;
 import org.openhab.persistence.jdbc.utils.MovingAverage;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
@@ -73,7 +73,7 @@ public class JdbcConfiguration {
         valid = updateConfig(configuration);
     }
 
-    private boolean updateConfig(Map<Object, @Nullable Object> config) {
+    private boolean updateConfig(Map<Object, Object> config) {
         configuration = config;
 
         logger.debug("JDBC::updateConfig: configuration size = {}", configuration.size());
@@ -243,12 +243,11 @@ public class JdbcConfiguration {
 
         logger.debug("JDBC::updateConfig: Init Data Access Object Class: '{}'", ddp);
         try {
-            dBDAO = (JdbcBaseDAO) Class.forName(ddp).newInstance();
+            dBDAO = (JdbcBaseDAO) Class.forName(ddp).getConstructor().newInstance();
             logger.debug("JDBC::updateConfig: dBDAO ClassName={}", dBDAO.getClass().getName());
-        } catch (InstantiationException e) {
-            logger.error("JDBC::updateConfig: InstantiationException: {}", e.getMessage());
-        } catch (IllegalAccessException e) {
-            logger.error("JDBC::updateConfig: IllegalAccessException: {}", e.getMessage());
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException
+                | NoSuchMethodException e) {
+            logger.error("JDBC::updateConfig: Exception: {}", e.getMessage());
         } catch (ClassNotFoundException e) {
             logger.warn("JDBC::updateConfig: no Configuration for serviceName '{}' found. ClassNotFoundException: {}",
                     serviceName, e.getMessage());
@@ -294,21 +293,21 @@ public class JdbcConfiguration {
                     e.getMessage());
             String warn = ""
                     + "\n\n\t!!!\n\tTo avoid this error, place an appropriate JDBC driver file for serviceName '{}' in addons directory.\n"
-                    + "\tCopy missing JDBC-Driver-jar to your OpenHab/addons Folder.\n\t!!!\n" + "\tDOWNLOAD: \n";
+                    + "\tCopy missing JDBC-Driver-jar to your openHab/addons Folder.\n\t!!!\n" + "\tDOWNLOAD: \n";
             if (serviceName.equals("derby")) {
-                warn += "\tDerby:     version >= 10.11.1.1 from          http://mvnrepository.com/artifact/org.apache.derby/derby\n";
+                warn += "\tDerby:     version >= 10.11.1.1 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
             } else if (serviceName.equals("h2")) {
-                warn += "\tH2:        version >= 1.4.189 from            http://mvnrepository.com/artifact/com.h2database/h2\n";
+                warn += "\tH2:        version >= 1.4.189 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
             } else if (serviceName.equals("hsqldb")) {
-                warn += "\tHSQLDB:    version >= 2.3.3 from              http://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
+                warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
             } else if (serviceName.equals("mariadb")) {
-                warn += "\tMariaDB:   version >= 1.2.0 from              http://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
+                warn += "\tMariaDB:   version >= 1.2.0 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
             } else if (serviceName.equals("mysql")) {
-                warn += "\tMySQL:     version >= 5.1.36 from             http://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
+                warn += "\tMySQL:     version >= 5.1.36 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
             } else if (serviceName.equals("postgresql")) {
-                warn += "\tPostgreSQL:version >= 9.4.1208 from    http://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                warn += "\tPostgreSQL:version >= 9.4.1208 from           https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
             } else if (serviceName.equals("sqlite")) {
-                warn += "\tSQLite:    version >= 3.16.1 from           http://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
             }
             logger.warn(warn, serviceName);
         }

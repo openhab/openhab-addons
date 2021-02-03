@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ public class ConnectionStateSegmentScan extends AbstractConnectionState {
     }
 
     private void update() {
-        long currTime = System.nanoTime();
+        long currTime = System.currentTimeMillis();
         try {
             if (statusSegmentScan.shouldSendNextRequest(connection.getSettings().getTimeout(), currTime)) {
                 connection.queueDirectly(new LcnAddrGrp(3, 3), false, PckGenerator.segmentCouplerScan());

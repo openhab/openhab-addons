@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.openhab.binding.draytonwiser.internal.model.SystemDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -132,11 +132,10 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
             final Integer overrideTimeout = firstChannel.getOverrideTimeoutUnixTime();
 
             if (overrideTimeout != null && !"NONE".equalsIgnoreCase(firstChannel.getOverrideType())) {
-                return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L),
-                        SmartHomeUnits.SECOND);
+                return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
             }
         }
-        return new QuantityType<Time>(0, SmartHomeUnits.SECOND);
+        return new QuantityType<Time>(0, Units.SECOND);
     }
 
     static class HotWaterData {

@@ -3,8 +3,8 @@
 Unlike LIP, which was designed to use a simple serial or telnet connection and authenticates using a username/password, LEAP uses a SSL connection and authenticates using certificates.
 This necessarily makes configuration more complicated.
 There are several open source utilities available for generating the certificate files necessary to access your Caseta or RA2 Select hub.
-One good choice is the get_lutron_cert.py script included with the pylutron library which is available on Github at https://github.com/gurumitts/pylutron-caseta .
-On a unix system, you can easily retrieve it using curl with a command like:
+One good choice is the get_lutron_cert.py script included with the popular pylutron library which is available on Github at https://github.com/gurumitts/pylutron-caseta .
+On a unix-like system, you can easily retrieve it using curl with a command like:
 
 ```
 curl https://raw.githubusercontent.com/gurumitts/pylutron-caseta/dev/get_lutron_cert.py >get_lutron_cert.py
@@ -30,11 +30,10 @@ keytool -importcert -file caseta-bridge.crt -keystore lutron.keystore -alias cas
 ```
 
 Respond to the password prompt(s) with a password, and then use that password in the -srcstorepass parameter of the keytool command and in the keystorePassword parameter for leapbridge.
-In the example above, the pkcs12 store password was set to “secret”, but hopefully you can think of a better one.
+In the example above, the pkcs12 store password was set to “secret”, but hopefully you can think of a better one!
 The lutron.keystore file that you end up with is the one you’ll need to give the binding access to.
 The caseta.p12 file is just an intermediate file that you can delete later.
 
 Finally you’ll then need to set the ipAddress, keystore, and keystorePassword parameters of the leapbridge thing.
 The ipAddress will be set for you if you used discovery to detect a Caseta Smart Bridge.
-
-
+This should also work with DHCP, although setting a static IP address for your bridge is still recommended.

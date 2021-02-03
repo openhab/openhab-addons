@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,14 +130,17 @@ class OpenHabToDeviceConverter {
         if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOBINDING_BINDING_ID, thing.getUID().getBindingId())) {
             final Map<String, String> properties = thing.getProperties();
             /** The following properties have matches in org.openhab.binding.neeo.NeeoDeviceHandler.java */
-            final String neeoType = StringUtils.isEmpty(properties.get("Type")) ? NeeoDeviceType.ACCESSOIRE.toString()
-                    : properties.get("Type");
-            final String manufacturer = StringUtils.isEmpty(properties.get("Manufacturer")) ? "openHAB"
-                    : properties.get("Manufacturer");
-
-            final Integer standbyDelay = parseInteger(properties.get("Standby Command Delay"));
-            final Integer switchDelay = parseInteger(properties.get("Source Switch Delay"));
-            final Integer shutDownDelay = parseInteger(properties.get("Shutdown Delay"));
+            String neeoType = properties.get("Type");
+            if (neeoType == null || neeoType.isEmpty()) {
+                neeoType = NeeoDeviceType.ACCESSOIRE.toString();
+            }
+            String manufacturer = properties.get("Manufacturer");
+            if (manufacturer == null || manufacturer.isEmpty()) {
+                manufacturer = "openHAB";
+            }
+            final Integer standbyDelay = parseInteger(properties.getOrDefault("Standby Command Delay", "0"));
+            final Integer switchDelay = parseInteger(properties.getOrDefault("Source Switch Delay", "0"));
+            final Integer shutDownDelay = parseInteger(properties.getOrDefault("Shutdown Delay", "0"));
 
             final NeeoDeviceTiming timing = new NeeoDeviceTiming(standbyDelay, switchDelay, shutDownDelay);
 

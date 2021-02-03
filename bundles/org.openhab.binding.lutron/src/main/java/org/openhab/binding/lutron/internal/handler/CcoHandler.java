@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,8 @@ package org.openhab.binding.lutron.internal.handler;
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.protocol.OutputCommand;
@@ -181,7 +181,7 @@ public class CcoHandler extends LutronHandler {
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        logger.debug("Update received for CCO: {} {}", type, StringUtils.join(parameters, ","));
+        logger.debug("Update received for CCO: {} {}", type, Arrays.asList(parameters));
 
         if (outputType == CcoOutputType.MAINTAINED) {
             if (type == LutronCommandType.OUTPUT && parameters.length > 1
@@ -193,7 +193,7 @@ public class CcoHandler extends LutronHandler {
                     BigDecimal state = new BigDecimal(parameters[1]);
                     updateState(CHANNEL_SWITCH, state.compareTo(BigDecimal.ZERO) == 0 ? OnOffType.OFF : OnOffType.ON);
                 } catch (NumberFormatException e) {
-                    logger.warn("Unable to parse update {} {} from CCO {}", type, StringUtils.join(parameters, ","),
+                    logger.warn("Unable to parse update {} {} from CCO {}", type, Arrays.asList(parameters),
                             integrationId);
                     return;
                 }

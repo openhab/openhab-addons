@@ -34,7 +34,7 @@ Connected to a bridge, the Niko Home Control Binding supports alloff actions, on
 
 ## Binding Configuration
 
-The bridge representing the Niko Home Control IP-interface needs to be added first in the things file or through Paper UI.
+The bridge representing the Niko Home Control IP-interface needs to be added first.
 A bridge can be auto-discovered or created manually.
 An auto-discovered bridge will have an IP-address parameter automatically filled with the current IP-address of the IP-interface.
 This IP-address for the discovered bridge will automatically update when the IP-address of the IP-interface changes.
@@ -66,19 +66,19 @@ A discovery scan will first discover the Niko Home Control IP-interface or Niko 
 Default parameters will be used.
 Note that this may fail to find the correct Niko Home Control IP-interface when there are multiple IP-interfaces in the network, or when traffic to port 10000 on the openHAB server is blocked.
 
-When the Niko Home Control bridge is added as a thing, from the discovery inbox or manually, system information will be read from the Niko Home Control Controller and will be put in the bridge properties, visible through Paper UI.
+When the Niko Home Control bridge is added as a thing, the system information will be read from the Niko Home Control Controller and will update the bridge properties.
 
 Subsequently, all defined actions that can be triggered from a smartphone/tablet in the Niko Home Control I system, respectively all actions in the Niko Home Control II system,  will be discovered and put in the inbox.
 It is possible to trigger a manual scan for things on the Niko Home Control bridge.
 Note that Niko Home Control II will require the token to be set on the bridge before the scan for actions can succeed.
 The bridge will remain offline as long as these parameters are not set.
 
-If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in Paper UI.
-Locations can subsequently be changed through the thing location parameter in Paper UI.
+If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such.
+Locations can subsequently be changed through the thing location parameter.
 
 ## Thing Configuration
 
-Besides using Paper UI to manually configure things or adding automatically discovered things through Paper UI, you can add thing definitions in the things file.
+If you wish to use textual config instead of automatic discovery, you can add thing definitions to a things file.
 
 The Thing configuration for the **bridge** uses the following syntax:
 
@@ -292,7 +292,7 @@ Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8884, password="
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]
     blind 4 [ actionId="abcdef01-abcd-1234-ab98-abcdefabcdef" ]
     thermostat 5 [ thermostatId="abcdef01-abcd-1234-ab98-012345abcdef", overruleTime=10 ]
-    electricitymeter 6 [ energyMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
+    energymeter 6 [ energyMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {

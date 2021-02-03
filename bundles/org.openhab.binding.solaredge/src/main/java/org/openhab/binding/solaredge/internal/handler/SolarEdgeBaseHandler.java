@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,7 +123,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      * will update all channels provided in the map
      */
     @Override
-    public void updateChannelStatus(Map<Channel, @Nullable State> values) {
+    public void updateChannelStatus(Map<Channel, State> values) {
         logger.debug("Handling channel update.");
 
         for (Channel channel : values.keySet()) {

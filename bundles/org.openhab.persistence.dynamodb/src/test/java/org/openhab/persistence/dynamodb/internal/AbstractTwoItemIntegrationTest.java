@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.persistence.dynamodb.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Iterator;
 
@@ -53,9 +54,9 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest {
 
-    protected static @Nullable ZonedDateTime beforeStore;
-    protected static @Nullable ZonedDateTime afterStore1;
-    protected static @Nullable ZonedDateTime afterStore2;
+    protected static ZonedDateTime beforeStore = ZonedDateTime.of(2100, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+    protected static ZonedDateTime afterStore1 = ZonedDateTime.of(1900, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+    protected static ZonedDateTime afterStore2 = ZonedDateTime.of(1900, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
 
     protected abstract String getItemName();
 

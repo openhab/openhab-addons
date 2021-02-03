@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.insteon.internal.message;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,9 +27,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class MsgDefinition {
-    private HashMap<String, @Nullable Field> fields = new HashMap<>();
+    private Map<String, Field> fields = new HashMap<>();
 
     MsgDefinition() {
     }
@@ -38,11 +38,11 @@ public class MsgDefinition {
      *
      * @param m the definition to copy
      */
-    MsgDefinition(@Nullable MsgDefinition m) {
+    MsgDefinition(MsgDefinition m) {
         fields = new HashMap<>(m.fields);
     }
 
-    public HashMap<String, @Nullable Field> getFields() {
+    public Map<String, Field> getFields() {
         return fields;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
     private final Logger logger = LoggerFactory.getLogger(TVControlChannel.class);
-    private final Map<ThingUID, @Nullable List<ChannelInfo>> channelListCache = new HashMap<>();
+    private final Map<ThingUID, List<ChannelInfo>> channelListCache = new HashMap<>();
     private final ResponseListener<CommandConfirmation> objResponseListener = createResponseListener();
 
     @Override

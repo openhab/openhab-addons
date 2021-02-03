@@ -5,7 +5,6 @@
 
 	<name>Shelly Binding</name>
 	<description>This binding supports the Shelly series of devices.</description>
-	<author>Markus Michels</author>
 
 	<config-description>
 		<parameter name="defaultUserId" type="text">

@@ -5,6 +5,5 @@
 
 	<name>VigiCrues Binding</name>
 	<description>Retrieves VigiCrues levels in France</description>
-	<author>Gaël L'hopital</author>
 
 </binding:binding>

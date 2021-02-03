@@ -5,6 +5,5 @@
 
 	<name>Astro Binding</name>
 	<description>The Astro binding calculates astronomical data from sun and moon.</description>
-	<author>Gerhard Riegler</author>
 
 </binding:binding>

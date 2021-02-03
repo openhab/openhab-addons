@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -343,11 +343,7 @@ public class VeluxKLFAPI {
         }
 
         public static Command get(short thisTypeId) {
-            if (LOOKUPTYPEID2ENUM.containsKey(thisTypeId)) {
-                return LOOKUPTYPEID2ENUM.get(thisTypeId);
-            } else {
-                return Command.UNDEFTYPE;
-            }
+            return LOOKUPTYPEID2ENUM.getOrDefault(thisTypeId, Command.UNDEFTYPE);
         }
     }
 }

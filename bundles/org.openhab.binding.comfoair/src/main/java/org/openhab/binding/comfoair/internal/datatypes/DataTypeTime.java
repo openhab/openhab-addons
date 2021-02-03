@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class DataTypeTime implements ComfoAirDataType {
                 return UnDefType.NULL;
             }
 
-            return new QuantityType<>(value, SmartHomeUnits.HOUR);
+            return new QuantityType<>(value, Units.HOUR);
         }
     }
 
@@ -61,7 +61,7 @@ public class DataTypeTime implements ComfoAirDataType {
         int[] template = commandType.getChangeDataTemplate();
         int[] possibleValues = commandType.getPossibleValues();
         int position = commandType.getChangeDataPos();
-        QuantityType<?> hours = ((QuantityType<?>) value).toUnit(SmartHomeUnits.HOUR);
+        QuantityType<?> hours = ((QuantityType<?>) value).toUnit(Units.HOUR);
 
         if (hours != null) {
             int intValue = hours.intValue();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -176,7 +176,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     /**
-     * This routine is called every time the Thing configuration has been changed (e.g. PaperUI)
+     * This routine is called every time the Thing configuration has been changed.
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {

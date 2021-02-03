@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,7 @@ public class AlarmDecoderHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
     // Marked as Nullable only to fix incorrect redundant null check complaints from null annotations
 
     @Override

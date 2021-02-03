@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -308,10 +308,11 @@ public class Scenes implements RegistryChangeListener<Rule> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
         }
 
+        List<String> lightsList = changeRequest.lights;
         return NetworkUtils.successList(cs.gson, Arrays.asList( //
                 new HueSuccessGeneric(changeRequest.name, "/scenes/" + id + "/name"), //
                 new HueSuccessGeneric(changeRequest.description, "/scenes/" + id + "/description"), //
-                new HueSuccessGeneric(changeRequest.lights != null ? String.join(",", changeRequest.lights) : null,
+                new HueSuccessGeneric(lightsList != null ? String.join(",", lightsList) : null,
                         "/scenes/" + id + "/lights") //
         ));
     }
@@ -382,7 +383,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
 
-        final HueStateChange changeRequest = cs.gson.fromJson(body, HueStateChange.class);
+        final HueStateChange changeRequest = Objects.requireNonNull(cs.gson.fromJson(body, HueStateChange.class));
 
         Rule rule = ruleRegistry.remove(id);
         if (rule == null) {

@@ -32,6 +32,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="bass" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bass</label>
+		<description>Set or get the bass level adjustment</description>
+		<state min="-10" max="10" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
 	<channel-type id="clearqueue" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Clear Queue</label>
@@ -104,6 +111,12 @@
 		<label>Local Coordinator</label>
 		<description>Indicator set to ON if this Zone Player is the Zone Group Coordinator</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="loudness" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Loudness</label>
+		<description>Enable or disable the loudness</description>
 	</channel-type>
 
 	<channel-type id="nightmode" advanced="true">
@@ -251,6 +264,58 @@
 		<description>Stop the Zone Player. ON if the player is stopped.</description>
 	</channel-type>
 
+	<channel-type id="treble" advanced="true">
+		<item-type>Number</item-type>
+		<label>Treble</label>
+		<description>Set or get the treble level adjustment</description>
+		<state min="-10" max="10" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="subwoofer" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Subwoofer</label>
+		<description>Enable or disable the subwoofer</description>
+	</channel-type>
+
+	<channel-type id="subwoofergain" advanced="true">
+		<item-type>Number</item-type>
+		<label>Subwoofer Gain</label>
+		<description>Set or get the subwoofer gain adjustment</description>
+		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="surround" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Surround Audio</label>
+		<description>Enable or disable the surround audio</description>
+	</channel-type>
+
+	<channel-type id="surroundmusicmode" advanced="true">
+		<item-type>String</item-type>
+		<label>Surround Music Mode</label>
+		<description>Set or get the surround playback mode for music</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Ambient</option>
+				<option value="1">Full</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="surroundmusiclevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Surround Music Level</label>
+		<description>Set or get the surround level adjustment for music</description>
+		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="surroundtvlevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Surround TV Level</label>
+		<description>Set or get the surround level adjustment for TV</description>
+		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
 	<channel-type id="tuneinstationid" advanced="true">
 		<item-type>String</item-type>
 		<label>TuneIn Station Id</label>
@@ -283,6 +348,22 @@
 		<item-type>String</item-type>
 		<label>Play Line-in</label>
 		<description>Play the line-in of the the Zone Player corresponding to the given UIN</description>
+	</channel-type>
+
+	<!-- Extended channels (for SONOS Move only) -->
+	<channel-type id="batterycharging" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Battery Charging</label>
+		<description>Indicator set to ON when the battery is charging</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Extended channels (for One, Beam, Arc and Move only) -->
+	<channel-type id="microphone" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Microphone</label>
+		<description>Indicator set to ON when the microphone is enabled</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

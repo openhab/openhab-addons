@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,11 +31,12 @@ public class SenecHomeEnergy implements Serializable {
     public @SerializedName("GUI_BAT_DATA_POWER") String batteryPower;
     public @SerializedName("GUI_BAT_DATA_FUEL_CHARGE") String batteryFuelCharge;
     public @SerializedName("STAT_STATE") String batteryState;
+    public @SerializedName("GUI_BAT_DATA_VOLTAGE") String batteryVoltage;
 
     @Override
     public String toString() {
         return "SenecHomeEnergy [homePowerConsumption=" + homePowerConsumption + ", inverterPowerGeneration="
                 + inverterPowerGeneration + ", batteryPower=" + batteryPower + ", batteryFuelCharge="
-                + batteryFuelCharge + ", batteryState=" + batteryState + "]";
+                + batteryFuelCharge + ", batteryState=" + batteryState + ", batteryVoltage" + batteryVoltage + "]";
     }
 }

@@ -5,6 +5,5 @@
 
 	<name>LogReader Binding</name>
 	<description>Binding that reads through log files and searches e.g. errors and warnings</description>
-	<author>Pauli Anttila, Miika Jukka</author>
 
 </binding:binding>

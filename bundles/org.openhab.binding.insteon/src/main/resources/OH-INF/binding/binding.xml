@@ -5,6 +5,5 @@
 
 	<name>Insteon Binding</name>
 	<description>This is the binding for Insteon.</description>
-	<author>Rob Nielsen</author>
 
 </binding:binding>

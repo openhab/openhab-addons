@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -221,7 +221,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         int type = readInt();
         switch (type) {
             case 1:
-                return new Integer(readInt());
+                return Integer.valueOf(readInt());
             case 2:
                 return binRpcData[offset++] != 0 ? Boolean.TRUE : Boolean.FALSE;
             case 3:
@@ -235,7 +235,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
                 return new Date(readInt() * 1000);
             case 0xD1:
                 // Int64
-                return new Long(readInt64());
+                return Long.valueOf(readInt64());
             case 0x100:
                 // Array
                 int numElements = readInt();

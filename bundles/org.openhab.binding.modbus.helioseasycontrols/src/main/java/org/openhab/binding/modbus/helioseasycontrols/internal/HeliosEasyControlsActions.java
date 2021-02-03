@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class HeliosEasyControlsActions implements ThingActions {
                 handler.writeValue(variableName, "1");
             }
         } catch (HeliosException e) {
-            logger.warn("Error executing action 'resetFilterChangeTimer': {}", e.getMessage());
+            logger.warn("Error executing action triggering switch for variable {}: {}", variableName, e.getMessage());
         }
     }
 

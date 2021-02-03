@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LogReaderHandler} is responsible for handling commands, which are
+ * The {@link LogHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Miika Jukka - Initial contribution
@@ -80,10 +80,15 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
 
     @Override
     public void initialize() {
-        configuration = getConfigAs(LogReaderConfiguration.class);
+        String logDir = System.getProperty("openhab.logdir");
+        if (logDir == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Cannot determine system log directory.");
+            return;
+        }
 
-        configuration.filePath = configuration.filePath.replaceFirst("\\$\\{OPENHAB_LOGDIR\\}",
-                System.getProperty("openhab.logdir"));
+        configuration = getConfigAs(LogReaderConfiguration.class);
+        configuration.filePath = configuration.filePath.replaceFirst("\\$\\{OPENHAB_LOGDIR\\}", logDir);
 
         logger.debug("Using configuration: {}", configuration);
 

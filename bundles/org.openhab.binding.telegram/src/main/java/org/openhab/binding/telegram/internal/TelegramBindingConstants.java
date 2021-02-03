@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.telegram.internal;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -25,6 +27,8 @@ import org.openhab.core.thing.ThingTypeUID;
 public class TelegramBindingConstants {
 
     private static final String BINDING_ID = "telegram";
+    public static final Set<String> PHOTO_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".gif", ".jpe", ".jif", ".jfif",
+            ".jfi", ".webp");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID TELEGRAM_THING = new ThingTypeUID(BINDING_ID, "telegramBot");

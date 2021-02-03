@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,7 +149,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
                 .map(DSMRMeterHandler.class::cast)
                 .map(DSMRMeterHandler::getMeterDescriptor)
                 .filter(Objects::nonNull)
-                .map(h -> h.getMeterType())
+                .map(d -> d.getMeterType())
                 .collect(Collectors.toSet());
         // @formatter:on
         // Create list of all configured meters that are not in the detected list. If not empty meters might not be

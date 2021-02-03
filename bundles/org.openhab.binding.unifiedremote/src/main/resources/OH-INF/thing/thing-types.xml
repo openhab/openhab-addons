@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="unifiedremote"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="server">
+		<label>Unified Remote Server</label>
+		<description>Unified Remote Server Thing for Unified Remote Binding</description>
+		<channels>
+			<channel id="mouse-move" typeId="mouse-move-channel"/>
+			<channel id="send-key" typeId="send-key-channel"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Hostname</label>
+				<context>network-address</context>
+				<description>Unified Remote Server Hostname</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer">
+				<label>TCP Port</label>
+				<description>Unified Remote Server Port TCP</description>
+			</parameter>
+			<parameter name="udpPort" type="integer">
+				<label>UDP Port</label>
+				<description>Unified Remote Server Port UDP</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="mouse-move-channel">
+		<item-type>String</item-type>
+		<label>Mouse Move Channel</label>
+		<description>Relative mouse control on the server host</description>
+	</channel-type>
+
+	<channel-type id="send-key-channel">
+		<item-type>String</item-type>
+		<label>Toggle Key Channel</label>
+		<description>Toggle Key</description>
+		<state>
+			<options>
+				<!-- MOUSE -->
+				<option value="LEFT_CLICK">LEFT_CLICK</option>
+				<option value="RIGHT_CLICK">RIGHT_CLICK</option>
+				<!-- SYSTEM -->
+				<option value="LOCK">LOCK</option>
+				<option value="UNLOCK">UNLOCK</option>
+				<option value="SLEEP">SLEEP</option>
+				<option value="SHUTDOWN">SHUTDOWN</option>
+				<option value="RESTART">RESTART</option>
+				<option value="LOGOFF">LOGOFF</option>
+				<!-- Media -->
+				<option value="PLAY/PAUSE">PLAY/PAUSE</option>
+				<option value="NEXT">NEXT</option>
+				<option value="PREVIOUS">PREVIOUS</option>
+				<option value="STOP">STOP</option>
+				<option value="VOLUME_MUTE">VOLUME_MUTE</option>
+				<option value="VOLUME_UP">VOLUME_UP</option>
+				<option value="VOLUME_DOWN">VOLUME_DOWN</option>
+				<option value="BRIGHTNESS_UP">BRIGHTNESS_UP</option>
+				<option value="BRIGHTNESS_DOWN">BRIGHTNESS_DOWN</option>
+				<option value="MONITOR_OFF">MONITOR_OFF</option>
+				<option value="MONITOR_ON">MONITOR_ON</option>
+				<!-- Navigation -->
+				<option value="ESCAPE">ESCAPE</option>
+				<option value="SPACE">SPACE</option>
+				<option value="BACK">BACK</option>
+				<option value="LWIN">LWIN</option>
+				<option value="CONTROL">CONTROL</option>
+				<option value="TAB">TAB</option>
+				<option value="MENU">MENU</option>
+				<option value="RETURN">RETURN</option>
+				<option value="UP">UP</option>
+				<option value="DOWN">DOWN</option>
+				<option value="LEFT">LEFT</option>
+				<option value="RIGHT">RIGHT</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

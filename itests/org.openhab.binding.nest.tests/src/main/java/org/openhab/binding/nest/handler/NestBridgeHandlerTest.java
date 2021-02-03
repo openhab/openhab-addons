@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,15 +16,15 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
 import org.openhab.binding.nest.internal.handler.NestRedirectUrlSupplier;
@@ -42,11 +42,10 @@ import org.osgi.service.jaxrs.client.SseEventSourceFactory;
  *
  * @author David Bennett - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 public class NestBridgeHandlerTest {
 
     private ThingHandler handler;
-
-    private AutoCloseable mocksCloseable;
 
     private @Mock Bridge bridge;
     private @Mock ThingHandlerCallback callback;
@@ -57,14 +56,8 @@ public class NestBridgeHandlerTest {
 
     @BeforeEach
     public void beforeEach() {
-        mocksCloseable = openMocks(this);
         handler = new NestTestBridgeHandler(bridge, clientBuilder, eventSourceFactory, "http://localhost");
         handler.setCallback(callback);
-    }
-
-    @AfterEach
-    public void afterEach() throws Exception {
-        mocksCloseable.close();
     }
 
     @SuppressWarnings("null")

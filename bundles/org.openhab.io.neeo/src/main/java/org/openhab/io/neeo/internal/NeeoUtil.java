@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -155,9 +155,12 @@ public class NeeoUtil {
      * @param s The UTF-8 encoded String to be decoded
      * @return the decoded String
      */
-    public static String decodeURIComponent(String s) {
-        String result = null;
+    public static String decodeURIComponent(@Nullable String s) {
+        if (s == null) {
+            return "";
+        }
 
+        String result = null;
         try {
             result = URLDecoder.decode(s, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {

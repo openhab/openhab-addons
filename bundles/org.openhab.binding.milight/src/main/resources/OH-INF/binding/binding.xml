@@ -5,6 +5,5 @@
 
 	<name>Milight Binding</name>
 	<description>A binding for Milight/Easybulb/compatible white, color and color+white bulbs.</description>
-	<author>David Gräff</author>
 
 </binding:binding>

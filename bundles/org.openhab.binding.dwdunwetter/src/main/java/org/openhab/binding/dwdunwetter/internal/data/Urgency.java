@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.dwdunwetter.internal.data;
 
 import java.util.Arrays;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Enum for the urgency of the warning.
@@ -38,7 +36,7 @@ public enum Urgency {
     }
 
     public static Urgency getUrgency(String input) {
-        return Arrays.asList(Urgency.values()).stream()
-                .filter(urg -> StringUtils.equalsIgnoreCase(input, urg.getText())).findAny().orElse(UNKNOWN);
+        return Arrays.asList(Urgency.values()).stream().filter(urg -> input.equalsIgnoreCase(urg.getText())).findAny()
+                .orElse(UNKNOWN);
     }
 }

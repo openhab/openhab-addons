@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -56,7 +57,7 @@ public class CloudConnector {
 
     private String username = "";
     private String password = "";
-    private String country = "ru,us,tw,sg,cn,de";
+    private String country = "ru,us,tw,sg,cn,de,i2";
     private List<CloudDeviceDTO> deviceList = new ArrayList<>();
     private boolean connected;
     private final HttpClient httpClient;
@@ -115,13 +116,21 @@ public class CloudConnector {
         return false;
     }
 
+    public String sendRPCCommand(String device, String country, MiIoSendCommand command) throws MiCloudException {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl == null || !isConnected()) {
+            throw new MiCloudException("Cannot execute request. Cloud service not available");
+        }
+        return cl.sendRPCCommand(device, country.trim().toLowerCase(), command.getCommandString());
+    }
+
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
         logger.debug("Getting vacuum map {} from Xiaomi cloud server: '{}'", mapId, country);
         String mapCountry;
         String mapUrl = "";
         final @Nullable MiCloudConnector cl = this.cloudConnector;
         if (cl == null || !isConnected()) {
-            throw new MiCloudException("Cannot execute request. Cloudservice not available");
+            throw new MiCloudException("Cannot execute request. Cloud service not available");
         }
         if (country.isEmpty()) {
             logger.debug("Server not defined in thing. Trying servers: {}", this.country);
@@ -137,14 +146,22 @@ public class CloudConnector {
             mapCountry = country.trim().toLowerCase();
             mapUrl = cl.getMapUrl(mapId, mapCountry);
         }
-        @Nullable
-        RawType mapData = HttpUtil.downloadData(mapUrl, null, false, -1);
-        if (mapData != null) {
-            return mapData;
-        } else {
-            logger.debug("Could not download '{}'", mapUrl);
+        if (mapUrl.isBlank()) {
+            logger.debug("Cannot download map data: Returned map URL is empty");
             return null;
         }
+        try {
+            RawType mapData = HttpUtil.downloadData(mapUrl, null, false, -1);
+            if (mapData != null) {
+                return mapData;
+            } else {
+                logger.debug("Could not download '{}'", mapUrl);
+                return null;
+            }
+        } catch (IllegalArgumentException e) {
+            logger.debug("Error downloading map: {}", e.getMessage());
+        }
+        return null;
     }
 
     public void setCredentials(@Nullable String username, @Nullable String password, @Nullable String country) {

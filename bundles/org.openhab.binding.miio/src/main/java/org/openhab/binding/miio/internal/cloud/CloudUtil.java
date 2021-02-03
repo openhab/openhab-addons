@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.miio.internal.cloud;
+
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_USERDATA_PATH;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -32,9 +34,7 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
-import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 
 /**
@@ -46,8 +46,6 @@ import org.slf4j.Logger;
 public class CloudUtil {
 
     private static final Random RANDOM = new Random();
-    private static final String DB_FOLDER_NAME = OpenHAB.getUserDataFolder() + File.separator
-            + MiIoBindingConstants.BINDING_ID;
 
     /**
      * Saves the Xiaomi cloud device info with tokens to file
@@ -57,7 +55,7 @@ public class CloudUtil {
      * @param logger
      */
     public static void saveDeviceInfoFile(String data, String country, Logger logger) {
-        File folder = new File(DB_FOLDER_NAME);
+        File folder = new File(BINDING_USERDATA_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
         }

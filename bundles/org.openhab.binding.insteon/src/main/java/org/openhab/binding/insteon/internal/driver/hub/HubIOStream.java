@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.driver.IOStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class HubIOStream extends IOStream implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(HubIOStream.class);
 
@@ -96,11 +96,17 @@ public class HubIOStream extends IOStream implements Runnable {
 
         polling = true;
         pollThread = new Thread(this);
-        pollThread.setName("Insteon Hub Poller");
-        pollThread.setDaemon(true);
-        pollThread.start();
+        setParamsAndStart(pollThread);
 
         return true;
+    }
+
+    private void setParamsAndStart(@Nullable Thread thread) {
+        if (thread != null) {
+            thread.setName("OH-binding-" + InsteonBindingConstants.BINDING_ID + "-hubPoller");
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
     @Override
@@ -111,22 +117,24 @@ public class HubIOStream extends IOStream implements Runnable {
             pollThread = null;
         }
 
+        InputStream in = this.in;
         if (in != null) {
             try {
                 in.close();
             } catch (IOException e) {
                 logger.warn("failed to close input stream", e);
             }
-            in = null;
+            this.in = null;
         }
 
+        OutputStream out = this.out;
         if (out != null) {
             try {
                 out.close();
             } catch (IOException e) {
                 logger.warn("failed to close output stream", e);
             }
-            out = null;
+            this.out = null;
         }
     }
 
@@ -235,7 +243,12 @@ public class HubIOStream extends IOStream implements Runnable {
         }
         if (msg.length() != 0) {
             ByteBuffer buf = ByteBuffer.wrap(hexStringToByteArray(msg.toString()));
-            ((HubInputStream) in).handle(buf);
+            InputStream in = this.in;
+            if (in != null) {
+                ((HubInputStream) in).handle(buf);
+            } else {
+                logger.warn("in is null");
+            }
         }
         bufferIdx = nIdx;
     }
@@ -344,7 +357,6 @@ public class HubIOStream extends IOStream implements Runnable {
      * @author Daniel Pfrommer - Initial contribution
      *
      */
-    @NonNullByDefault
     public class HubInputStream extends InputStream {
 
         // A buffer to keep bytes while we are waiting for the inputstream to read
@@ -381,7 +393,6 @@ public class HubIOStream extends IOStream implements Runnable {
      * @author Daniel Pfrommer - Initial contribution
      *
      */
-    @NonNullByDefault
     public class HubOutputStream extends OutputStream {
         private ByteArrayOutputStream out = new ByteArrayOutputStream();
 

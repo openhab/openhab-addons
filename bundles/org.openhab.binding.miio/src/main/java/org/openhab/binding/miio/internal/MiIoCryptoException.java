@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.miio.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Will be thrown instead of the many possible errors in the crypto module
@@ -31,11 +32,11 @@ public class MiIoCryptoException extends Exception {
         super();
     }
 
-    public MiIoCryptoException(String message) {
+    public MiIoCryptoException(@Nullable String message) {
         super(message);
     }
 
-    public MiIoCryptoException(String message, Exception e) {
+    public MiIoCryptoException(@Nullable String message, @Nullable Exception e) {
         super(message, e);
     }
 }

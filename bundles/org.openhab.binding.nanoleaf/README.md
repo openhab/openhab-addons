@@ -1,6 +1,6 @@
 # Nanoleaf Binding
 
-This binding integrates the [Nanoleaf Light Panels](https://nanoleaf.me/en/consumer-led-lighting/products/smarter-series/nanoleaf-light-panels-smarter-kit/). 
+This binding integrates the [Nanoleaf Light Panels](https://nanoleaf.me/en/consumer-led-lighting/products/smarter-series/nanoleaf-light-panels-smarter-kit/).
 
 ![Image](doc/Nanoleaf.jpg)
 
@@ -11,29 +11,45 @@ The binding uses the [Nanoleaf OpenAPI](https://forum.nanoleaf.me/docs/openapi),
 
 ## Supported Things
 
-Currently Nanoleaf's "Light Panels" and "Canvas" devices are supported. Note that only the canvas type does support the touch functionality.
+Nanoleaf provides a bunch of devices of which some are connected to Wifi whereas other use the new Thread Technology. This binding only supports devices that are connected to Wifi.
 
+Currently Nanoleaf's "Light Panels" and "Canvas" devices are supported.
+Note that only specific types do support the touch functionality, so the binding needs to check these types.
 
 The binding supports two thing types: controller and lightpanel.
 
 The controller thing is the bridge for the individually attached panels/canvas and can be perceived as the nanoleaf device at the wall as a whole (either called "light panels" or "canvas" by Nanoleaf).
 With the controller thing you can control channels which affect all panels, e.g. selecting effects or setting the brightness.
 
-The lightpanel (singular) thing controls one of the individual panels/canvas that are connected to each other. Each individual panel has therefore its own id assigned to it.
-You can set the **color** for each panel or turn it on (white) or off (black) and in the case of a nanoleaf canvas you can even detect single and double **touch events** related to an individual panel which opens a whole new world of controlling any other device within your openHAB environment. 
+The lightpanel (singular) thing controls one of the individual panels/canvas that are connected to each other.
+Each individual panel has therefore its own id assigned to it.
+You can set the **color** for each panel or turn it on (white) or off (black) and in the case of a nanoleaf canvas you can even detect single and double **touch events** related to an individual panel which opens a whole new world of controlling any other device within your openHAB environment.
 
-Note: In case of major changes of a binding (like adding more features to a thing) it becomes necessary to delete your things due to the things not being compatible anymore. Don't worry too much though as they will be easily redetected and nothing really is lost. Just make sure that you delete them and rediscover as described below.
+
+| Nanoleaf Name          | Type | Description                                                | supported | touch support |
+| ---------------------- | ---- | ---------------------------------------------------------- | --------- | ------------- |
+| Light Panels           | NL22 | Triangles 1st Generation                                   |     X     |      (-)      |  
+| Shapes Triangle        | NL42 | Triangles 2nd Generation (rounded edges)                   |     X     |       X       |
+| Shapes Hexagon         | NL42 | Triangles 2nd Generation (rounded edges)                   |    (X)    |      (X)      |
+| Shapes Mini Triangles  |  ??  | Mini Triangles                                             |     ?     |       ?       |
+| Canvas                 | NL29 | Squares                                                    |     X     |       X       |
+
+ x  = Supported  (x) = Supported but only tested by community   (-) = unknown (no device available to test)
+
+Note: In case of major changes of a binding (like adding more features to a thing) it becomes necessary to delete your things due to the things not being compatible anymore.
+Don't worry too much though as they will be easily redetected and nothing really is lost.
+Just make sure that you delete them and rediscover as described below.
 
 ## Discovery
 
 **Adding the Controller as a Thing**
 
-To add a nanoleaf controller you need to go to your inbox in Paper UI, press the plus sign which **starts a scan** (you can of course use habmin for that as well). Then choose "Nanoleaf Binding".
-A controller (also known as bridge) device is discovered automatically through mDNS in the local network.
+To add a nanoleaf controller, go to your inbox and start a scan.
+Then choose "Nanoleaf Binding".
+A controller (bridge) device is discovered automatically using mDNS in your local network.
 Alternatively, you can also provide a things file (see below for more details).
 After the device is discovered and added as a thing, it needs a valid authentication token that must be obtained by pairing it with your openHAB instance.
 Without the token the light panels remain in status OFFLINE.
-
 
 The binding supports pairing of the device with your openHAB instance as follows:
 
@@ -46,10 +62,11 @@ Tip: if you press (2) just before adding the item from the inbox it usually catc
 
 **Adding the invidual light panels as a thing**
 
-After you have added the controller as a thing and it has been successfully paired as described as above, the individual panels connected to it can be discovered by **starting another scan** for the Nanoleaf binding (e.g. from the Inbox in Paper UI). 
+After you have added the controller as a thing and it has been successfully paired as described as above, the individual panels connected to it can be discovered by **starting another scan** for the Nanoleaf binding.
 All connected panels will be added as separate things to the inbox.
 
-Troubleshooting: In seldom cases (in particular together with updating the binding) things or items do not work as expected, are offline or may not be detected. In this case
+Troubleshooting: In seldom cases (in particular together with updating the binding) things or items do not work as expected, are offline or may not be detected.
+In this case:
 
 - remove the panels (maybe twice by force removing it)
 - remove the controller (maybe twice by force removing it)
@@ -58,26 +75,25 @@ Troubleshooting: In seldom cases (in particular together with updating the bindi
 
 **Knowing which panel has which id**
 
-Unfortunately it is not easy to find out which panel gets which id while this is pretty important if you have lots of them and you want to assign rules to it. 
-Don't worry: the binding comes with some helpful support in the background the canvas type (this is only provided for the canvas device because triangles can have weird layouts that are hard to express in a log output)
+Unfortunately it is not easy to find out which panel gets which id, and this becomes pretty important if you have lots of them and want to assign rules.
+Don't worry as the binding comes with some helpful support in the background the canvas type (this is only provided for the canvas device because triangles can have weird layouts that are hard to express in a log output)
 
-- fire up your browser and open the openHAB server on port 9001 which shows the logs.
 - Set up a switch item with the channel panelLayout on the controller (see NanoRetrieveLayout below) and set the switch to true
-- look out for something like "Panel layout and ids" in the logs. Below that you will see a panel layout similar to
+- look out for something like "Panel layout and ids" in the openHAB logs. Below that you will see a panel layout similar to
 
 Compare the following output with the right picture at the beginning of the article
 
 ```                                     
             31413                    9162       13276     
 
-55836       56093       48111       38724       17870        5164       64279 
+55836       56093       48111       38724       17870        5164       64279
 
                         58086        8134                   39755             
 
                                     41451                                     
-                               
-```      
-           
+
+```
+
 Disclaimer: this works best with square devices and not necessarily well with triangles due to the more geometrically flexible layout.
 
 ## Thing Configuration
@@ -126,10 +142,9 @@ A lightpanel thing has the following channels:
 | singleTap           | Switch    | [Canvas Only] Is set when the user taps that panel once (1 second pulse)              | Yes       |
 | doubleTap           | Switch    | [Canvas Only] Is set when the user taps that panel twice (1 second pulse)              | Yes       |
 
-
 **color and panelColor**
 
-The color and panelColor channels support full color control with hue, saturation and brightness values. 
+The color and panelColor channels support full color control with hue, saturation and brightness values.
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.
 The same applies to the panelColor channel of an individual lightpanel thing.
 
@@ -138,13 +153,11 @@ What might not be obvious and even maybe confusing is the fact that brightness a
 **Limitations assigning specific colors on individual panels:**
 
 - Due to the way the API of the nanoleaf is designed, each time a color is assigned to a panel, it will be directly sent to that panel. The result is that if you send colors to several panels more or less at the same time, they will not be set at the same time but one after the other and rather appear like a sequence but as a one shot.
-- Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that the following happens 
+- Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that the following happens
   - As soon as you set an individual panel a so called "static effect" is created which replaces the chosen dynamic effect. You can even see that in the nanoleaf app that shows that a static effect is now running.
   - Unfortunately, at least at the moment, the colors of the current state cannot be retrieved due to the high frequency of color changes that cannot be read quickly enough from the canvas, so all panels go to OFF
   - The the first panelColor command is applied to that panel (and of course then all subsequent commands)
-  - The fact that it is called a static effect does not mean that you cannot create animations. The Rainbow rule below shows a good example for the whole canvas. Just replace the controller item with a panel item and you will get the rainbow effect with an individual panel.
-  
-  
+  - The fact that it is called a static effect does not mean that you cannot create animations. The Rainbow rule below shows a good example for the whole canvas. Just replace the controller item with a panel item and you will get the rainbow effect with an individual panel.   
 
 **Touch Support**
 
@@ -158,7 +171,7 @@ If a panel is tapped the switch is set to ON and automatically reset to OFF afte
 
 Keep in mind that the double tap is used as an already built-in functionality by default when you buy the nanoleaf: it switches all panels (hence the controller) to on or off like a light switch for all the panels at once. To circumvent that
 
-- Within the nanoleaf app go to the dashboard and choose your device. Enter the settings for that device by clicking the cog icon in the upper right corner. 
+- Within the nanoleaf app go to the dashboard and choose your device. Enter the settings for that device by clicking the cog icon in the upper right corner.
 - Enable "Touch Gesture" and assign the gestures you want to happen but set the double tap to unassigned.
 - To still have the possibility to switch on the whole canvas device with all its panels by double tapping a specific panel, you can easily write a rule that triggers on the double tap channel of that panel and then toggles the Power Channel of the controller. See the example below on Panel 1.
 
@@ -179,16 +192,16 @@ Bridge nanoleaf:controller:MyLightPanels @ "mylocation" [ address="192.168.1.100
 
 If you define your device statically in the thing file, autodiscovery of the same thing is suppressed by using
 
-* the [address="..." ]  of the controller 
+* the [address="..." ]  of the controller
 * and the [id=123] of the lightpanel
 
 in the bracket to identify the uniqueness of the discovered device. Therefore it is recommended to the give the controller a fixed ip address.
 
 Note: To generate the `authToken`:
-    
+
 * On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.
 * Send a POST request to the authorization endpoint within 30 seconds of activating pairing, like this:
-    
+
 `http://<address>:16021/api/v1/new`
 
 e.g. via command line `curl --location --request POST 'http://<address>:16021/api/v1/new'`
@@ -232,10 +245,10 @@ sitemap nanoleaf label="Nanoleaf"
 {
     Frame label="Controller" {
             Switch item=NanoleafPower
-            Slider item=NanoleafBrightness 
+            Slider item=NanoleafBrightness
             Colorpicker item=NanoleafColor           
             Text item=NanoleafHue
-            Text item=NanoleafSaturation 
+            Text item=NanoleafSaturation
             Slider item=NanoleafColorTemp     
             Setpoint item=NanoleafColorTempAbs step=100 minValue=1200 maxValue=6500            
             Text item=NanoleafColorMode
@@ -245,20 +258,20 @@ sitemap nanoleaf label="Nanoleaf"
             Selection item=NanoleafRhythmSource mappings=[0="Microphone", 1="Aux"]
             Switch item=NanoRetrieveLayout
     }
-    
+
     Frame label="Panels" {
         Colorpicker item=Panel1Color
         Slider item=Panel1Brightness
         Colorpicker item=Panel2Color
     }
-    
+
     Frame label="Scenes" {
         Switch item=NanoleafRainbowScene
     }
 }
 ```
 
-Note: The mappings to effects in the selection item are specific for each Nanoleaf installation and should be adapted accordingly. 
+Note: The mappings to effects in the selection item are specific for each Nanoleaf installation and should be adapted accordingly.
 Only the effects "\*Static\*" and "\*Dynamic\*" are predefined by the controller and should always be present in the mappings.
 
 ### nanoleaf.rules
@@ -281,7 +294,7 @@ then
 
     var hue = 0
     var direction = 1
-    
+
     while(NanoleafRainbowScene.state == ON) {        
         Thread::sleep(pause)        
         hue = hue + (5 * direction)

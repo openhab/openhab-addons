@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,8 +71,9 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 String label = service.getName();
 
                 properties.put(HPPrinterConfiguration.IP_ADDRESS, inetAddress);
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
-                        .build();
+                properties.put(HPPrinterConfiguration.UUID, service.getPropertyString("UUID"));
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withRepresentationProperty(HPPrinterConfiguration.UUID).withLabel(label).build();
                 logger.trace("Created a DiscoveryResult {} for printer on host '{}' name '{}'", result, inetAddress,
                         label);
                 return result;

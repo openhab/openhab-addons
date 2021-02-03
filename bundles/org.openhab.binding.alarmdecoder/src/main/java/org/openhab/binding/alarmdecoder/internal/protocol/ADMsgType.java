@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.alarmdecoder.internal.protocol;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,7 +35,7 @@ public enum ADMsgType {
     INVALID; // invalid message
 
     /** hash map from protocol message heading to type */
-    private static HashMap<String, @Nullable ADMsgType> startToMsgType = new HashMap<>();
+    private static Map<String, ADMsgType> startToMsgType = new HashMap<>();
 
     static {
         startToMsgType.put("!REL", ADMsgType.REL);

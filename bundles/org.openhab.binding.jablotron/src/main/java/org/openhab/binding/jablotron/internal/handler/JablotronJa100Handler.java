@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jablotron.internal.handler;
 
+import static org.openhab.binding.jablotron.JablotronBindingConstants.BINDING_ID;
 import static org.openhab.binding.jablotron.JablotronBindingConstants.CACHE_TIMEOUT_MS;
 import static org.openhab.binding.jablotron.JablotronBindingConstants.CHANNEL_LAST_CHECK_TIME;
 
@@ -98,7 +99,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     }
 
     private void createTempChannel(String name, String label) {
-        ChannelTypeUID temperature = new ChannelTypeUID("jablotron", "temperature");
+        ChannelTypeUID temperature = new ChannelTypeUID(BINDING_ID, "temperature");
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number:Temperature")
                 .withLabel(label).withType(temperature).build();
@@ -107,7 +108,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     }
 
     private void createThermostatChannel(String name, String label) {
-        ChannelTypeUID temperature = new ChannelTypeUID("jablotron", "thermostat");
+        ChannelTypeUID temperature = new ChannelTypeUID(BINDING_ID, "thermostat");
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number:Temperature")
                 .withLabel(label).withType(temperature).build();
@@ -116,15 +117,16 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     }
 
     private void createPGMChannel(String name, String label) {
+        ChannelTypeUID pgmStatus = new ChannelTypeUID(BINDING_ID, "pgm_state");
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label)
-                .build();
+                .withType(pgmStatus).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
 
     private void createStateChannel(String name, String label) {
-        ChannelTypeUID alarmStatus = new ChannelTypeUID("jablotron", "alarm_state");
+        ChannelTypeUID alarmStatus = new ChannelTypeUID(BINDING_ID, "alarm_state");
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "String").withLabel(label)
                 .withType(alarmStatus).build();
@@ -160,7 +162,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         if (channel != null) {
             logger.debug("Updating channel: {} to value: {}", channel.getUID(), segment.getSegmentState());
             State newState;
-            if (segmentId.startsWith("PGM_")) {
+            if (segmentId.startsWith("pgm_")) {
                 newState = "unset".equals(segment.getSegmentState()) ? OnOffType.OFF : OnOffType.ON;
             } else {
                 newState = new StringType(segment.getSegmentState());
@@ -177,6 +179,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         if (channel == null) {
             logger.debug("Creating a new temperature channel: {}", segmentId);
             createTempChannel(segmentId, segment.getSegmentName());
+            processThermometer(segment);
+            return;
         }
         updateTemperatureChannel(channel, segment);
     }
@@ -187,6 +191,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         if (channel == null) {
             logger.debug("Creating a new thermostat channel: {}", segmentId);
             createThermostatChannel(segmentId, segment.getSegmentName());
+            processThermostat(segment);
+            return;
         }
         updateTemperatureChannel(channel, segment);
     }

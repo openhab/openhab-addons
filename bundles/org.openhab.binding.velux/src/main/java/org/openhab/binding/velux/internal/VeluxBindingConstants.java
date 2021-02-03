@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,9 +91,17 @@ public class VeluxBindingConstants {
     // Definitions of different set of Things
     public static final Set<ThingTypeUID> SUPPORTED_THINGS_BINDING = new HashSet<>(Arrays.asList(THING_TYPE_BINDING));
     public static final Set<ThingTypeUID> SUPPORTED_THINGS_BRIDGE = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE));
+
     public static final Set<ThingTypeUID> SUPPORTED_THINGS_ITEMS = new HashSet<>(
             Arrays.asList(THING_TYPE_VELUX_SCENE, THING_TYPE_VELUX_ACTUATOR, THING_TYPE_VELUX_ROLLERSHUTTER,
                     THING_TYPE_VELUX_WINDOW, THING_TYPE_VELUX_VSHUTTER));
+
+    public static final Set<ThingTypeUID> DISCOVERABLE_THINGS = Set.of(THING_TYPE_VELUX_SCENE,
+            THING_TYPE_VELUX_ACTUATOR, THING_TYPE_VELUX_ROLLERSHUTTER, THING_TYPE_VELUX_WINDOW,
+            THING_TYPE_VELUX_VSHUTTER, THING_TYPE_BINDING, THING_TYPE_BRIDGE);
+
+    public static final Set<ThingTypeUID> ACTUATOR_THINGS = Set.of(THING_TYPE_VELUX_ACTUATOR,
+            THING_TYPE_VELUX_ROLLERSHUTTER, THING_TYPE_VELUX_WINDOW);
 
     // *** List of all Channel ids ***
 
@@ -113,7 +121,7 @@ public class VeluxBindingConstants {
     public static final String PROPERTY_BRIDGE_TIMESTAMP_SUCCESS = "connectionSuccess";
     public static final String PROPERTY_BRIDGE_TIMESTAMP_ATTEMPT = "connectionAttempt";
     public static final String PROPERTY_BRIDGE_FIRMWARE = "firmware";
-    public static final String PROPERTY_BRIDGE_IPADDRESS = "ipAddress";
+    public static final String PROPERTY_BRIDGE_ADDRESS = "address";
     public static final String PROPERTY_BRIDGE_SUBNETMASK = "subnetMask";
     public static final String PROPERTY_BRIDGE_DEFAULTGW = "defaultGW";
     public static final String PROPERTY_BRIDGE_DHCP = "DHCP";

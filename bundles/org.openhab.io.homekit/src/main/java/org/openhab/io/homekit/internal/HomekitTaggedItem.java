@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -193,9 +193,19 @@ public class HomekitTaggedItem {
     public <T> T getConfiguration(String key, T defaultValue) {
         if (configuration != null) {
             final @Nullable Object value = configuration.get(key);
-            if (value != null && value.getClass().equals(defaultValue.getClass())) {
-                return (T) value;
+            if (value != null) {
+                if (value.getClass().equals(defaultValue.getClass())) {
+                    return (T) value;
+                }
+                // fix for different handling of numbers via .items and via mainUI, see #1904
+                if ((value instanceof BigDecimal) && (defaultValue instanceof Double)) {
+                    return (T) Double.valueOf(((BigDecimal) value).doubleValue());
+                }
+                if ((value instanceof Double) && (defaultValue instanceof BigDecimal)) {
+                    return (T) BigDecimal.valueOf(((Double) value).doubleValue());
+                }
             }
+
         }
         return defaultValue;
     }

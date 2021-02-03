@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.tesla.internal.discovery;
 
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.TeslaHandlerFactory;
 import org.openhab.binding.tesla.internal.command.TeslaCommandExtension;
@@ -31,6 +31,7 @@ import org.osgi.service.component.annotations.Component;
  *
  */
 @Component(service = { TeslaAccountDiscoveryService.class, DiscoveryService.class })
+@NonNullByDefault
 public class TeslaAccountDiscoveryService extends AbstractDiscoveryService {
 
     public TeslaAccountDiscoveryService() throws IllegalArgumentException {
@@ -42,7 +43,7 @@ public class TeslaAccountDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 

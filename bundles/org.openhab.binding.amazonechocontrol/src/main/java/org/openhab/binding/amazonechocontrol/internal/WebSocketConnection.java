@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -74,12 +73,10 @@ public class WebSocketConnection {
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
         this.webSocketCommandHandler = webSocketCommandHandler;
         amazonEchoControlWebSocket = new AmazonEchoControlWebSocket();
-
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        webSocketClient = new WebSocketClient(sslContextFactory);
+        webSocketClient = new WebSocketClient(new SslContextFactory.Client());
         try {
             String host;
-            if (StringUtils.equalsIgnoreCase(amazonSite, "amazon.com")) {
+            if (amazonSite.equalsIgnoreCase("amazon.com")) {
                 host = "dp-gw-na-js." + amazonSite;
             } else {
                 host = "dp-gw-na." + amazonSite;
@@ -196,7 +193,6 @@ public class WebSocketConnection {
     }
 
     @WebSocket(maxTextMessageSize = 64 * 1024, maxBinaryMessageSize = 64 * 1024)
-    @SuppressWarnings("unused")
     public class AmazonEchoControlWebSocket {
         int msgCounter = -1;
         int messageId;
@@ -349,19 +345,17 @@ public class WebSocketConnection {
                             if (idDataElements.length == 2) {
                                 payload = idDataElements[1];
                             }
-                            if (message.content.payload == null) {
+                            if (payload == null) {
                                 payload = readString(data, idx, data.length - 4 - idx);
                             }
-                            message.content.payload = payload;
-                            if (StringUtils.isNotEmpty(payload)) {
+                            if (!payload.isEmpty()) {
                                 try {
-                                    message.content.pushCommand = gson.fromJson(message.content.payload,
-                                            JsonPushCommand.class);
+                                    message.content.pushCommand = gson.fromJson(payload, JsonPushCommand.class);
                                 } catch (JsonSyntaxException e) {
-                                    logger.info("Parsing json failed", e);
-                                    logger.info("Illegal json: {}", payload);
+                                    logger.info("Parsing json failed, illegal JSON: {}", payload, e);
                                 }
                             }
+                            message.content.payload = payload;
                         }
                     }
                 } else if (message.channel == 0x65) { // CHANNEL_FOR_HEARTBEAT

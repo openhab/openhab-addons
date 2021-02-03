@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,7 +113,7 @@ class NUTDynamicChannelFactory {
         final ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channel.getUID().getId() + "Type");
         final String label = channel.getLabel();
         final ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, label == null ? "" : label, itemType)
-                .withStateDescription(sdb.withReadOnly(Boolean.TRUE).build().toStateDescription())
+                .withStateDescriptionFragment(sdb.withReadOnly(Boolean.TRUE).build())
                 .withConfigDescriptionURI(NUTBindingConstants.DYNAMIC_CHANNEL_CONFIG_QUANTITY_TYPE).build();
         channelTypeProvider.addChannelType(channelType);
         return channelTypeUID;

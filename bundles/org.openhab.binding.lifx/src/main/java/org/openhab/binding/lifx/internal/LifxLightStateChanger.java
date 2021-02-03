@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,7 +85,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
 
     private @Nullable ScheduledFuture<?> sendJob;
 
-    private Map<Integer, @Nullable List<PendingPacket>> pendingPacketsMap = new ConcurrentHashMap<>();
+    private Map<Integer, List<PendingPacket>> pendingPacketsMap = new ConcurrentHashMap<>();
 
     private class PendingPacket {
 
@@ -230,12 +230,10 @@ public class LifxLightStateChanger implements LifxLightStateListener {
     private @Nullable PendingPacket findPacketToSend() {
         PendingPacket result = null;
         for (List<PendingPacket> pendingPackets : pendingPacketsMap.values()) {
-            if (pendingPackets != null) {
-                for (PendingPacket pendingPacket : pendingPackets) {
-                    if (pendingPacket.hasAcknowledgeIntervalElapsed()
-                            && (result == null || pendingPacket.lastSend < result.lastSend)) {
-                        result = pendingPacket;
-                    }
+            for (PendingPacket pendingPacket : pendingPackets) {
+                if (pendingPacket.hasAcknowledgeIntervalElapsed()
+                        && (result == null || pendingPacket.lastSend < result.lastSend)) {
+                    result = pendingPacket;
                 }
             }
         }
@@ -254,15 +252,13 @@ public class LifxLightStateChanger implements LifxLightStateListener {
 
     private void removeFailedPackets() {
         for (List<PendingPacket> pendingPackets : pendingPacketsMap.values()) {
-            if (pendingPackets != null) {
-                Iterator<PendingPacket> it = pendingPackets.iterator();
-                while (it.hasNext()) {
-                    PendingPacket pendingPacket = it.next();
-                    if (pendingPacket.sendCount > MAX_RETRIES && pendingPacket.hasAcknowledgeIntervalElapsed()) {
-                        logger.warn("{} failed (unacknowledged {} times to light {})",
-                                pendingPacket.packet.getClass().getSimpleName(), pendingPacket.sendCount, logId);
-                        it.remove();
-                    }
+            Iterator<PendingPacket> it = pendingPackets.iterator();
+            while (it.hasNext()) {
+                PendingPacket pendingPacket = it.next();
+                if (pendingPacket.sendCount > MAX_RETRIES && pendingPacket.hasAcknowledgeIntervalElapsed()) {
+                    logger.warn("{} failed (unacknowledged {} times to light {})",
+                            pendingPacket.packet.getClass().getSimpleName(), pendingPacket.sendCount, logId);
+                    it.remove();
                 }
             }
         }
@@ -270,14 +266,12 @@ public class LifxLightStateChanger implements LifxLightStateListener {
 
     private @Nullable PendingPacket removeAcknowledgedPacket(int sequenceNumber) {
         for (List<PendingPacket> pendingPackets : pendingPacketsMap.values()) {
-            if (pendingPackets != null) {
-                Iterator<PendingPacket> it = pendingPackets.iterator();
-                while (it.hasNext()) {
-                    PendingPacket pendingPacket = it.next();
-                    if (pendingPacket.packet.getSequence() == sequenceNumber) {
-                        it.remove();
-                        return pendingPacket;
-                    }
+            Iterator<PendingPacket> it = pendingPackets.iterator();
+            while (it.hasNext()) {
+                PendingPacket pendingPacket = it.next();
+                if (pendingPacket.packet.getSequence() == sequenceNumber) {
+                    it.remove();
+                    return pendingPacket;
                 }
             }
         }

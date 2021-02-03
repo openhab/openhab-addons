@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.openuv.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,12 +25,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class OpenUVBindingConstants {
-    public static final String BASE_URL = "https://api.openuv.io/api/v1/uv";
     public static final String BINDING_ID = "openuv";
     public static final String LOCAL = "local";
-
-    public static final String LOCATION = "location";
-    public static final String APIKEY = "apikey";
 
     // List of Bridge Type UIDs
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "openuvapi");
@@ -43,6 +36,7 @@ public class OpenUVBindingConstants {
 
     // List of all Channel id's
     public static final String UV_INDEX = "UVIndex";
+    public static final String ALERT_LEVEL = "Alert";
     public static final String UV_COLOR = "UVColor";
     public static final String UV_MAX = "UVMax";
     public static final String UV_MAX_TIME = "UVMaxTime";
@@ -53,7 +47,6 @@ public class OpenUVBindingConstants {
     public static final String SAFE_EXPOSURE = "SafeExposure";
     public static final String ELEVATION = "elevation";
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(APIBRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(LOCATION_REPORT_THING_TYPE));
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(LOCATION_REPORT_THING_TYPE);
 }

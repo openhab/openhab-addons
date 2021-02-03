@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.io.Serializable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Json model of senec home devices: This sub model provides the current power limitation by the inverter.
+ * Json model of senec home devices: This sub model provides the current power statistics by the inverter.
  *
  * @author Steven Schwarznau - Initial Contribution
  */
@@ -30,8 +30,31 @@ public class SenecHomeGrid implements Serializable {
      */
     public @SerializedName("P_TOTAL") String currentGridValue;
 
+    /**
+     * grid voltage for each phase
+     */
+    public @SerializedName("U_AC") String[] currentGridVoltagePerPhase;
+
+    /**
+     * grid current for each phase
+     */
+    public @SerializedName("I_AC") String[] currentGridCurrentPerPhase;
+
+    /**
+     * grid power for each phase, draw (for values larger zero) or supply (for negative values)
+     */
+    public @SerializedName("P_AC") String[] currentGridPowerPerPhase;
+
+    /**
+     * grid frequency
+     */
+    public @SerializedName("FREQ") String currentGridFrequency;
+
     @Override
     public String toString() {
-        return "SenecHomeGrid [currentGridValue=" + currentGridValue + "]";
+        return "SenecHomeGrid [currentGridValue=" + currentGridValue + ", gridVoltagePerPhase= "
+                + currentGridVoltagePerPhase + ", currentGridCurrentPerPhase= " + currentGridCurrentPerPhase
+                + ", currentGridPowerPerPhase= " + currentGridPowerPerPhase + ", currentGridFrequency="
+                + currentGridFrequency + "]";
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.openhab.binding.velux.internal.VeluxBindingConstants;
 @NonNullByDefault
 public enum VeluxProductVelocity {
     DEFAULT((short) 0, "default"),
-    SILENT((short) 1, "short"),
+    SILENT((short) 1, "silent"),
     FAST((short) 2, "fast"),
     VELOCITY_NOT_AVAILABLE((short) 255, ""),
     UNDEFTYPE((short) 0xffff, VeluxBindingConstants.UNKNOWN);
@@ -69,7 +69,7 @@ public enum VeluxProductVelocity {
         return velocity;
     }
 
-    public static VeluxProductVelocity get(int velocity) {
+    public static VeluxProductVelocity get(short velocity) {
         return LOOKUPTYPEID2ENUM.getOrDefault(velocity, VeluxProductVelocity.UNDEFTYPE);
     }
 

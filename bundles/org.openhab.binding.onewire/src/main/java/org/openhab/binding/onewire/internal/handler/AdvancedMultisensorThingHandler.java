@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,17 +90,20 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
             return;
         }
 
-        hwRevision = Integer.valueOf(properties.get(PROPERTY_HW_REVISION));
+        hwRevision = Integer.valueOf(properties.getOrDefault(PROPERTY_HW_REVISION, "0"));
 
-        sensors.add(new DS2438(sensorId, this));
-        sensors.add(new DS18x20(new SensorId(properties.get(PROPERTY_DS18B20)), this));
-        if (THING_TYPE_AMS.equals(thingType)) {
-            sensors.add(new DS2438(new SensorId(properties.get(PROPERTY_DS2438)), this));
-            sensors.add(new DS2406_DS2413(new SensorId(properties.get(PROPERTY_DS2413)), this));
-            digitalRefreshInterval = configuration.digitalRefresh * 1000;
-            digitalLastRefresh = 0;
+        try {
+            sensors.add(new DS2438(sensorId, this));
+            sensors.add(new DS18x20(new SensorId(properties.get(PROPERTY_DS18B20)), this));
+            if (THING_TYPE_AMS.equals(thingType)) {
+                sensors.add(new DS2438(new SensorId(properties.get(PROPERTY_DS2438)), this));
+                sensors.add(new DS2406_DS2413(new SensorId(properties.get(PROPERTY_DS2413)), this));
+                digitalRefreshInterval = configuration.digitalRefresh * 1000;
+                digitalLastRefresh = 0;
+            }
+        } catch (IllegalArgumentException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "properties invalid");
         }
-
         scheduler.execute(() -> {
             configureThingChannels();
         });

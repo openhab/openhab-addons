@@ -5,14 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:hue:presencesensor">
-		<parameter name="sensorId" type="text">
+		<parameter name="sensorId" type="text" required="true">
 			<label>Sensor ID</label>
 			<description>The identifier that is used within the hue bridge.</description>
-			<required>true</required>
-		</parameter>
-		<parameter name="on" type="boolean">
-			<label>Sensor Status</label>
-			<description>Enables or disables the sensor.</description>
 		</parameter>
 		<parameter name="ledindication" type="boolean">
 			<label>LED Indication</label>
@@ -29,11 +24,10 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:hue:geofecnesensor">
-		<parameter name="sensorId" type="text">
+	<config-description uri="thing-type:hue:geofencesensor">
+		<parameter name="sensorId" type="text" required="true">
 			<label>Sensor ID</label>
 			<description>The identifier that is used within the hue bridge.</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="on" type="boolean">
 			<label>Sensor Status</label>

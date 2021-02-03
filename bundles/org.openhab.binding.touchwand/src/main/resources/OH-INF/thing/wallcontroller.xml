@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="touchwand"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="wallcontroller">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"></bridge-type-ref>
+		</supported-bridge-type-refs>
+		<label>TouchWand WallController Unit</label>
+		<channels>
+			<channel id="wallaction" typeId="wallaction">
+				<description>WallController action</description>
+			</channel>
+		</channels>
+	</thing-type>
+	<channel-type id="wallaction">
+		<item-type>String</item-type>
+		<label>WallController action</label>
+		<event>
+			<options>
+				<option value="LONG">long</option>
+				<option value="SHORT">short</option>
+			</options>
+		</event>
+	</channel-type>
+</thing:thing-descriptions>

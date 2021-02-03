@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,9 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_ECHO_THING_TYPES_UIDS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_SMART_HOME_THING_TYPES_UIDS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ACCOUNT;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_FLASH_BRIEFING_PROFILE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -66,7 +57,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoControlHandlerFactory.class);
-    private final Map<ThingUID, @Nullable List<ServiceRegistration<?>>> discoveryServiceRegistrations = new HashMap<>();
+    private final Map<ThingUID, List<ServiceRegistration<?>>> discoveryServiceRegistrations = new HashMap<>();
 
     private final Set<AccountHandler> accountHandlers = new HashSet<>();
     private final HttpService httpService;
@@ -120,8 +111,8 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerDiscoveryService(AccountHandler bridgeHandler) {
-        List<ServiceRegistration<?>> discoveryServiceRegistration = discoveryServiceRegistrations
-                .computeIfAbsent(bridgeHandler.getThing().getUID(), k -> new ArrayList<>());
+        List<ServiceRegistration<?>> discoveryServiceRegistration = Objects.requireNonNull(discoveryServiceRegistrations
+                .computeIfAbsent(bridgeHandler.getThing().getUID(), k -> new ArrayList<>()));
         SmartHomeDevicesDiscovery smartHomeDevicesDiscovery = new SmartHomeDevicesDiscovery(bridgeHandler);
         smartHomeDevicesDiscovery.activate();
         discoveryServiceRegistration.add(bundleContext.registerService(DiscoveryService.class.getName(),

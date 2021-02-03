@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="gate_state" typeId="gate_state"></channel>
 			<channel id="gate_command" typeId="gate_command"></channel>
+			<channel id="gate_position" typeId="gate_position"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

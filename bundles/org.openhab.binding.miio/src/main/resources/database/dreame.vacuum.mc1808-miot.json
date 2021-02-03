@@ -1,510 +1,657 @@
 {
-    "deviceMapping": {
-        "id": [
-            "dreame.vacuum.mc1808"
-        ],
-        "propertyMethod": "get_properties",
-        "maxProperties": 2,
-        "channels": [
-            {
-                "property": "",
-                "friendlyName": "Vacuum Action",
-                "channel": "vacuumaction",
-                "channelType": "dreameControl",
-                "type": "String",
-                "refresh": false,
-                "actions": [
-                    {
-                        "command": "action",
-                        "parameterType": "EMPTY",
-                        "siid": 18,
-                        "aiid": 1,
-                        "condition": {
-                            "name": "matchValue",
-                            "parameters": [
-                                {
-                                    "matchValue": "vacuum",
-                                    "returnValue": [
-                                        {
-                                            "piid": 1,
-                                            "value": 2
-                                        }
-                                    ]
-                                },
-                                {
-                                    "matchValue": "start",
-                                    "returnValue": [
-                                        {
-                                            "piid": 1,
-                                            "value": 2
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "command": "action",
-                        "parameterType": "EMPTY",
-                        "siid": 18,
-                        "aiid": 2,
-                        "condition": {
-                            "name": "matchValue",
-                            "parameters": [
-                                {
-                                    "matchValue": "stop"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "command": "action",
-                        "parameterType": "EMPTY",
-                        "siid": 3,
-                        "aiid": 1,
-                        "condition": {
-                            "name": "matchValue",
-                            "parameters": [
-                                {
-                                    "matchValue": "sweep"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "command": "action",
-                        "parameterType": "EMPTY",
-                        "siid": 3,
-                        "aiid": 2,
-                        "condition": {
-                            "name": "matchValue",
-                            "parameters": [
-                                {
-                                    "matchValue": "stopsweep"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "command": "action",
-                        "parameterType": "EMPTY",
-                        "siid": 2,
-                        "aiid": 1,
-                        "condition": {
-                            "name": "matchValue",
-                            "parameters": [
-                                {
-                                    "matchValue": "dock"
-                                }
-                            ]
-                        }
-                    }
-                ]
-            },
-            {
-                "property": "battery-level",
-                "siid": 2,
-                "piid": 1,
-                "friendlyName": "Battery-Battery Level",
-                "channel": "BatteryLevel",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "charging-state",
-                "siid": 2,
-                "piid": 2,
-                "friendlyName": "Battery-Charging State",
-                "channel": "ChargingState",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "fault",
-                "siid": 3,
-                "piid": 1,
-                "friendlyName": "Robot Cleaner-Device Fault",
-                "channel": "Fault",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "status",
-                "siid": 3,
-                "piid": 2,
-                "friendlyName": "Robot Cleaner-Status",
-                "channel": "Status",
-                "channelType": "miot_int8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "brush-left-time",
-                "siid": 26,
-                "piid": 1,
-                "friendlyName": "Main Cleaning Brush-Brush Left Time",
-                "channel": "BrushLeftTime",
-                "channelType": "miot_uint16",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "brush-life-level",
-                "siid": 26,
-                "piid": 2,
-                "friendlyName": "Main Cleaning Brush-Brush Life Level",
-                "channel": "BrushLifeLevel",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "filter-life-level",
-                "siid": 27,
-                "piid": 1,
-                "friendlyName": "Filter-Filter Life Level",
-                "channel": "FilterLifeLevel",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "filter-left-time",
-                "siid": 27,
-                "piid": 2,
-                "friendlyName": "Filter-Filter Left Time",
-                "channel": "FilterLeftTime",
-                "channelType": "miot_uint16",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "brush-left-time1",
-                "siid": 28,
-                "piid": 1,
-                "friendlyName": "Side Cleaning Brush-Brush Left Time",
-                "channel": "BrushLeftTime1",
-                "channelType": "miot_uint16",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "brush-life-level1",
-                "siid": 28,
-                "piid": 2,
-                "friendlyName": "Side Cleaning Brush-Brush Life Level",
-                "channel": "BrushLifeLevel1",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "work-mode",
-                "siid": 18,
-                "piid": 1,
-                "friendlyName": "clean-workmode",
-                "channel": "WorkMode",
-                "channelType": "miot_int32",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "area",
-                "siid": 18,
-                "piid": 4,
-                "friendlyName": "clean-area",
-                "channel": "Area",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "timer",
-                "siid": 18,
-                "piid": 5,
-                "friendlyName": "clean-timer",
-                "channel": "Timer",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "mode",
-                "siid": 18,
-                "piid": 6,
-                "friendlyName": "clean-mode",
-                "channel": "Mode",
-                "channelType": "miot_int32",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "total-clean-time",
-                "siid": 18,
-                "piid": 13,
-                "friendlyName": "clean-total time",
-                "channel": "TotalCleanTime",
-                "channelType": "miot_uint32",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "total-clean-times",
-                "siid": 18,
-                "piid": 14,
-                "friendlyName": "clean-total times",
-                "channel": "TotalCleanTimes",
-                "channelType": "miot_uint32",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "total-clean-area",
-                "siid": 18,
-                "piid": 15,
-                "friendlyName": "clean-Total area",
-                "channel": "TotalCleanArea",
-                "channelType": "miot_uint32",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "clean-log-start-time",
-                "siid": 18,
-                "piid": 16,
-                "friendlyName": "clean-Start Time",
-                "channel": "CleanLogStartTime",
-                "channelType": "miot_uint32",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "button-led",
-                "siid": 18,
-                "piid": 17,
-                "friendlyName": "clean-led",
-                "channel": "ButtonLed",
-                "channelType": "miot_uint16",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "task-done",
-                "siid": 18,
-                "piid": 18,
-                "friendlyName": "clean-task done",
-                "channel": "TaskDone",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "life-sieve",
-                "siid": 19,
-                "piid": 1,
-                "friendlyName": "consumable-life-sieve",
-                "channel": "LifeSieve",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "life-brush-side",
-                "siid": 19,
-                "piid": 2,
-                "friendlyName": "consumable-life-brush-side",
-                "channel": "LifeBrushSide",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "life-brush-main",
-                "siid": 19,
-                "piid": 3,
-                "friendlyName": "consumable-life-brush-main",
-                "channel": "LifeBrushMain",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "enable",
-                "siid": 20,
-                "piid": 1,
-                "friendlyName": "annoy-enable",
-                "channel": "Enable",
-                "channelType": "miot_bool",
-                "type": "Switch",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "ONOFFBOOL"
-                    }
-                ]
-            },
-            {
-                "property": "start-time",
-                "siid": 20,
-                "piid": 2,
-                "friendlyName": "annoy-start-time",
-                "channel": "StartTime",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "stop-time",
-                "siid": 20,
-                "piid": 3,
-                "friendlyName": "annoy-stop-time",
-                "channel": "StopTime",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "map-view",
-                "siid": 23,
-                "piid": 1,
-                "friendlyName": "map-map-view",
-                "channel": "MapView",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "volume",
-                "siid": 24,
-                "piid": 1,
-                "friendlyName": "audio-volume",
-                "channel": "Volume",
-                "channelType": "miot_int32",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "voice-packets",
-                "siid": 24,
-                "piid": 3,
-                "friendlyName": "audio-voiceId",
-                "channel": "VoicePackets",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "time-zone",
-                "siid": 25,
-                "piid": 1,
-                "friendlyName": "timezone",
-                "channel": "TimeZone",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            }
-        ]
-    }
+	"deviceMapping": {
+		"id": [
+			"dreame.vacuum.mc1808"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Vacuum Action",
+				"channel": "vacuumaction",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "vacuum",
+							"label": "Vacuum"
+						},
+						{
+							"value": "stop",
+							"label": "Stop"
+						},
+						{
+							"value": "sweep",
+							"label": "Sweep"
+						},
+						{
+							"value": "stopsweep",
+							"label": "Stop Sweep"
+						},
+						{
+							"value": "dock",
+							"label": "Goto Dock"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 18,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum",
+									"returnValue": [
+										{
+											"piid": 1,
+											"value": 2
+										}
+									]
+								},
+								{
+									"matchValue": "start",
+									"returnValue": [
+										{
+											"piid": 1,
+											"value": 2
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 18,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stopsweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "dock"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping [\"vacuum\"\u003d\"Vacuum\",\"stop\"\u003d\"Stop\",\"sweep\"\u003d\"Sweep\",\"stopsweep\"\u003d\"Stop Sweep\",\"dock\"\u003d\"Goto Dock\"]"
+			},
+			{
+				"property": "battery-level",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Battery-Battery Level",
+				"channel": "BatteryLevel",
+				"channelType": "system:battery-level",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "charging-state",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Battery-Charging State",
+				"channel": "ChargingState",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Charging"
+						},
+						{
+							"value": "2",
+							"label": "Not Charging"
+						},
+						{
+							"value": "4",
+							"label": "Charging"
+						},
+						{
+							"value": "5",
+							"label": "Go Charging"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Go Charging\"]"
+			},
+			{
+				"property": "fault",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner-Device Fault",
+				"channel": "Fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\"]"
+			},
+			{
+				"property": "status",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Robot Cleaner-Status",
+				"channel": "Status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Sweeping"
+						},
+						{
+							"value": "2",
+							"label": "Idle"
+						},
+						{
+							"value": "3",
+							"label": "Paused"
+						},
+						{
+							"value": "4",
+							"label": "Error"
+						},
+						{
+							"value": "5",
+							"label": "Go Charging"
+						},
+						{
+							"value": "6",
+							"label": "Charging"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Go Charging\",\"6\"\u003d\"Charging\"]"
+			},
+			{
+				"property": "brush-left-time",
+				"siid": 26,
+				"piid": 1,
+				"friendlyName": "Main Cleaning Brush-Brush Left Time",
+				"channel": "BrushLeftTime",
+				"type": "Number:Time",
+				"unit": "hour",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "brush-life-level",
+				"siid": 26,
+				"piid": 2,
+				"friendlyName": "Main Cleaning Brush-Brush Life Level",
+				"channel": "BrushLifeLevel",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 27,
+				"piid": 1,
+				"friendlyName": "Filter - Filter Life Level",
+				"channel": "FilterLifeLevel",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-left-time",
+				"siid": 27,
+				"piid": 2,
+				"friendlyName": "Filter-Filter Left Time",
+				"channel": "FilterLeftTime",
+				"type": "Number:Time",
+				"unit": "hour",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "brush-left-time1",
+				"siid": 28,
+				"piid": 1,
+				"friendlyName": "Side Cleaning Brush-Brush Left Time",
+				"channel": "BrushLeftTime1",
+				"type": "Number:Time",
+				"unit": "hour",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "brush-life-level1",
+				"siid": 28,
+				"piid": 2,
+				"friendlyName": "Side Cleaning Brush-Brush Life Level",
+				"channel": "BrushLifeLevel1",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "work-mode",
+				"siid": 18,
+				"piid": 1,
+				"friendlyName": "clean-workmode",
+				"channel": "WorkMode",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.1f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "area",
+				"siid": 18,
+				"piid": 4,
+				"friendlyName": "clean-area",
+				"channel": "Area",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "timer",
+				"siid": 18,
+				"piid": 5,
+				"friendlyName": "clean-timer",
+				"channel": "Timer",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 18,
+				"piid": 6,
+				"friendlyName": "clean-mode",
+				"channel": "Mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "quiet"
+						},
+						{
+							"value": "1",
+							"label": "standard"
+						},
+						{
+							"value": "2",
+							"label": "medium"
+						},
+						{
+							"value": "3",
+							"label": "strong"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"quiet\",\"1\"\u003d\"standard\",\"2\"\u003d\"medium\",\"3\"\u003d\"strong\"]"
+			},
+			{
+				"property": "total-clean-time",
+				"siid": 18,
+				"piid": 13,
+				"friendlyName": "Clean - Total Clean Time",
+				"channel": "TotalCleanTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "total-clean-times",
+				"siid": 18,
+				"piid": 14,
+				"friendlyName": "Clean - Total Clean Times",
+				"channel": "TotalCleanTimes",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "total-clean-area",
+				"siid": 18,
+				"piid": 15,
+				"friendlyName": "Clean - Total Clean Area",
+				"channel": "TotalCleanArea",
+				"type": "Number:Area",
+				"unit": "square_meter",
+				"stateDescription": {
+					"pattern": "%.1f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "clean-log-start-time",
+				"siid": 18,
+				"piid": 16,
+				"friendlyName": "Clean - Clean Log Start Time",
+				"channel": "CleanLogStartTime",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.1f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "button-led",
+				"siid": 18,
+				"piid": 17,
+				"friendlyName": "Clean - Button Led",
+				"channel": "ButtonLed",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "task-done",
+				"siid": 18,
+				"piid": 18,
+				"friendlyName": "Clean - Task Done",
+				"channel": "TaskDone",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "in progress"
+						},
+						{
+							"value": "1",
+							"label": "done"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"in progress\",\"1\"\u003d\"done\"]"
+			},
+			{
+				"property": "life-sieve",
+				"siid": 19,
+				"piid": 1,
+				"friendlyName": "Consumable - Life Sieve",
+				"channel": "LifeSieve",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "life-brush-side",
+				"siid": 19,
+				"piid": 2,
+				"friendlyName": "Consumable - Life Brush Side",
+				"channel": "LifeBrushSide",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "life-brush-main",
+				"siid": 19,
+				"piid": 3,
+				"friendlyName": "Consumable - Life Brush Main",
+				"channel": "LifeBrushMain",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "enable",
+				"siid": 20,
+				"piid": 1,
+				"friendlyName": "Annoy - Enable",
+				"channel": "Enable",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "start-time",
+				"siid": 20,
+				"piid": 2,
+				"friendlyName": "Annoy - Start Time",
+				"channel": "StartTime",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "stop-time",
+				"siid": 20,
+				"piid": 3,
+				"friendlyName": "Annoy - Stop Time",
+				"channel": "StopTime",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "map-view",
+				"siid": 23,
+				"piid": 1,
+				"friendlyName": "Map - Map View",
+				"channel": "MapView",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "volume",
+				"siid": 24,
+				"piid": 1,
+				"friendlyName": "Audio - Volume",
+				"channel": "Volume",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.1f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "voice-packets",
+				"siid": 24,
+				"piid": 3,
+				"friendlyName": "Audio - Voice Packets",
+				"channel": "VoicePackets",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "time-zone",
+				"siid": 25,
+				"piid": 1,
+				"friendlyName": "Time - Time Zone",
+				"channel": "TimeZone",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"battery-start-charge\",\"siid\":2,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-start-sweep\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":3,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":26,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":27,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":28,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"clean-start-clean\",\"siid\":18,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"clean-stop-clean\",\"siid\":18,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remote-start-remote\",\"siid\":21,\"aiid\":1,\"in\":[1.0, 2.0]}`\u003cbr /\u003e`action{\"did\":\"remote-stop-remote\",\"siid\":21,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remote-exit-remote\",\"siid\":21,\"aiid\":3,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-map-req\",\"siid\":23,\"aiid\":1,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"audio-position\",\"siid\":24,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-set-voice\",\"siid\":24,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-play-sound\",\"siid\":24,\"aiid\":3,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
+		"experimental": true
+	}
 }

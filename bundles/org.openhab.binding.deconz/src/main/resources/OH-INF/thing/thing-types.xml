@@ -6,7 +6,9 @@
 
 	<bridge-type id="deconz">
 		<label>deCONZ</label>
-		<description>A running deCONZ software instance</description>
+		<description>A running deCONZ software instance.</description>
+
+		<representation-property>UDN</representation-property>
 
 		<config-description-ref uri="thing-type:deconz:bridge"/>
 	</bridge-type>

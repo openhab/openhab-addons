@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService
             .flatMap(i -> i).collect(Collectors.toSet()));
 
     // @formatter:off
-    private static final Map<String, @Nullable String> TYPE_TO_ZIGBEE_ID_MAP = Map.ofEntries(
+    private static final Map<String, String> TYPE_TO_ZIGBEE_ID_MAP = Map.ofEntries(
             new SimpleEntry<>("on_off_light", "0000"),
             new SimpleEntry<>("on_off_plug_in_unit", "0010"),
             new SimpleEntry<>("dimmable_light", "0100"),

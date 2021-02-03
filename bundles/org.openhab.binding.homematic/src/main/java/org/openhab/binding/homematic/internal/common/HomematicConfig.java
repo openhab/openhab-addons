@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,6 +58,7 @@ public class HomematicConfig {
     private long discoveryTimeToLive = -1;
     private boolean unpairOnDeletion = false;
     private boolean factoryResetOnDeletion = false;
+    private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
 
@@ -379,6 +380,13 @@ public class HomematicConfig {
         } else {
             return ISO_ENCODING;
         }
+    }
+
+    /**
+     * Returns the buffers size used for the communication with the Homematic gateway.
+     */
+    public int getBufferSize() {
+        return bufferSize;
     }
 
     /**

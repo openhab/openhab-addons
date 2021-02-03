@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,13 +98,14 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
 
         gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, new TypeAdapter<ZonedDateTime>() {
             @Override
-            public void write(final @NonNullByDefault({}) JsonWriter out, final ZonedDateTime value)
-                    throws IOException {
-                out.value(value.toString());
+            public void write(JsonWriter out, @Nullable ZonedDateTime value) throws IOException {
+                if (value != null) {
+                    out.value(value.toString());
+                }
             }
 
             @Override
-            public ZonedDateTime read(final @NonNullByDefault({}) JsonReader in) throws IOException {
+            public @Nullable ZonedDateTime read(final JsonReader in) throws IOException {
                 return ZonedDateTime.parse(in.nextString());
             }
         }).setLenient().setPrettyPrinting().create();

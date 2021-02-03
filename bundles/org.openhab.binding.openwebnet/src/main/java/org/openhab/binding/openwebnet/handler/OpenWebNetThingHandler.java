@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,6 @@ import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.OpenMessage;
 import org.openwebnet4j.message.Where;
-import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.WhereZigBee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,17 +71,22 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                 if (!(deviceWhereConfig instanceof String)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "WHERE parameter in configuration is null or invalid");
-                    return;
                 } else {
                     String deviceWhereStr = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
                     Where w;
-                    if (brH.isBusGateway()) {
-                        w = new WhereLightAutom(deviceWhereStr);
-                    } else {
-                        w = new WhereZigBee(deviceWhereStr);
+                    try {
+                        if (brH.isBusGateway()) {
+                            w = buildBusWhere(deviceWhereStr);
+                        } else {
+                            w = new WhereZigBee(deviceWhereStr);
+                        }
+                    } catch (IllegalArgumentException ia) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "WHERE parameter in configuration is invalid");
+                        return;
                     }
                     deviceWhere = w;
-                    final String oid = brH.ownIdFromDeviceWhere(w.value(), this);
+                    final String oid = brH.ownIdFromDeviceWhere(w, this);
                     ownId = oid;
                     Map<String, String> properties = editProperties();
                     properties.put(PROPERTY_OWNID, oid);
@@ -91,11 +95,11 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                     logger.debug("associated thing to bridge with ownId={}", ownId);
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
                 }
-                return;
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "No bridge associated, please assign a bridge in thing configuration.");
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "No bridge associated, please assign a bridge in thing configuration.");
     }
 
     @Override
@@ -105,8 +109,12 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         if (handler != null) {
             OpenGateway gw = handler.gateway;
             if (gw != null && !gw.isConnected()) {
-                logger.info("Cannot handle command {}:{} for {}: gateway is not connected", channel, command,
-                        getThing().getUID());
+                logger.info("Cannot handle {} command for {}: gateway is not connected", command, getThing().getUID());
+                return;
+            }
+            if (deviceWhere == null) {
+                logger.info("Cannot handle {} command for {}: 'where' parameter is not configured or is invalid",
+                        command, getThing().getUID());
                 return;
             }
             if (command instanceof RefreshType) {
@@ -182,6 +190,14 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      * @param channel the channel to request the state for
      */
     protected abstract void requestChannelState(ChannelUID channel);
+
+    /**
+     * Abstract builder for device Where address, to be implemented by each subclass to choose the right Where subclass
+     * (the method is used only if the Thing is associated to a BUS gateway).
+     *
+     * @param wStr the WHERE string
+     */
+    protected abstract Where buildBusWhere(String wStr) throws IllegalArgumentException;
 
     @Override
     public void dispose() {

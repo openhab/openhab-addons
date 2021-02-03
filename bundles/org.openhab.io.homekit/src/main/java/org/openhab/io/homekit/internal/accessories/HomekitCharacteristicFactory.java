@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,6 @@ import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltA
  * @author Eugen Freiter - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("deprecation")
 public class HomekitCharacteristicFactory {
     private static final Logger logger = LoggerFactory.getLogger(HomekitCharacteristicFactory.class);
 
@@ -136,8 +135,6 @@ public class HomekitCharacteristicFactory {
             put(PM25_DENSITY, HomekitCharacteristicFactory::createPM25DensityCharacteristic);
             put(PM10_DENSITY, HomekitCharacteristicFactory::createPM10DensityCharacteristic);
             put(VOC_DENSITY, HomekitCharacteristicFactory::createVOCDensityCharacteristic);
-            // LEGACY
-            put(OLD_BATTERY_LOW_STATUS, HomekitCharacteristicFactory::createStatusLowBatteryCharacteristic);
         }
     };
 

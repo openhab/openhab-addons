@@ -92,7 +92,7 @@ Thing hpprinter:printer:djprinter "Printer" @ "Office" [ ipAddress="192.168.1.1"
 ### Item File
 
 ```
-String PrinterStatus "Status" { channel="pprinter:printer:djprinter:status#status" }
+String PrinterStatus "Status" { channel="hpprinter:printer:djprinter:status#status" }
 
 Number:Dimensionless PrinterBlackLevel "Black Level" { channel="hpprinter:printer:djprinter:ink#blackLevel" }
 Number:Dimensionless PrinterCyanLevel "Cyan Level" { channel="hpprinter:printer:djprinter:ink#cyanLevel" }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import io.github.hapjava.server.impl.HomekitServer;
 
 /**
  * Provides a mechanism to store authenticated HomeKit client details inside the
- * ESH StorageService, by implementing HomekitAuthInfo.
+ * StorageService, by implementing HomekitAuthInfo.
  *
  * @author Andy Lintner - Initial contribution
  */
@@ -44,11 +44,14 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private String mac;
     private BigInteger salt;
     private byte[] privateKey;
-    private final String pin;
+    private String pin;
+    private String setupId;
 
-    public HomekitAuthInfoImpl(Storage<String> storage, String pin) throws InvalidAlgorithmParameterException {
+    public HomekitAuthInfoImpl(Storage<String> storage, String pin, String setupId)
+            throws InvalidAlgorithmParameterException {
         this.storage = storage;
         this.pin = pin;
+        this.setupId = setupId;
         initializeStorage();
     }
 
@@ -63,9 +66,26 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         return mac;
     }
 
+    public void setMac(String mac) {
+        this.mac = mac;
+    }
+
     @Override
     public String getPin() {
         return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
+    @Override
+    public String getSetupId() {
+        return setupId;
+    }
+
+    public void setSetupId(String setupId) {
+        this.setupId = setupId;
     }
 
     @Override

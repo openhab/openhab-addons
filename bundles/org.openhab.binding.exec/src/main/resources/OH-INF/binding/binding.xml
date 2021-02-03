@@ -5,6 +5,5 @@
 
 	<name>Exec Binding</name>
 	<description>This is the binding to execute arbitrary shell commands</description>
-	<author>Karel Goderis</author>
 
 </binding:binding>

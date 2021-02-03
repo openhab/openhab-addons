@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.persistence.jdbc.model;
 
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 
@@ -22,6 +23,7 @@ import org.openhab.core.types.State;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcHistoricItem implements HistoricItem {
 
     private final String name;

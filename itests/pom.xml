@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
@@ -34,6 +34,10 @@
     <module>org.openhab.binding.wemo.tests</module>
     <module>org.openhab.persistence.mapdb.tests</module>
   </modules>
+
+  <properties>
+    <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -71,6 +75,29 @@
       <plugin>
         <groupId>biz.aQute.bnd</groupId>
         <artifactId>bnd-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.1</version>
+        <executions>
+          <execution>
+            <id>unpack-eea</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.lastnpe.eea</groupId>
+                  <artifactId>eea-all</artifactId>
+                  <version>${eea.version}</version>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

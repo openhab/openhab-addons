@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.insteon.internal.config;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.core.thing.ChannelUID;
 
@@ -33,10 +32,10 @@ public class InsteonChannelConfiguration {
     private final InsteonAddress address;
     private final String feature;
     private final String productKey;
-    private final Map<String, @Nullable String> parameters;
+    private final Map<String, String> parameters;
 
     public InsteonChannelConfiguration(ChannelUID channelUID, String feature, InsteonAddress address, String productKey,
-            Map<String, @Nullable String> parameters) {
+            Map<String, String> parameters) {
         this.channelUID = channelUID;
         this.feature = feature;
         this.address = address;
@@ -66,7 +65,7 @@ public class InsteonChannelConfiguration {
         return productKey;
     }
 
-    public Map<String, @Nullable String> getParameters() {
+    public Map<String, String> getParameters() {
         return parameters;
     }
 }

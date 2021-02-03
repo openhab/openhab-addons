@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal.discovery;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -166,11 +163,11 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
         // The data returned from the Smartthings hub is a list of strings where each
         // element is the data for one device. That device string is another json object
-        List<String> devices = new ArrayList<String>();
+        List<String> devices = new ArrayList<>();
         devices = gson.fromJson(data, devices.getClass());
         for (String device : devices) {
             SmartthingsDeviceData deviceData = gson.fromJson(device, SmartthingsDeviceData.class);
-            createDevice(deviceData);
+            createDevice(Objects.requireNonNull(deviceData));
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,7 @@ public enum ComfoAirCommandType {
      */
     ACTIVATE(ComfoAirBindingConstants.CG_CONTROL_PREFIX + ComfoAirBindingConstants.CHANNEL_ACTIVATE,
             DataTypeBoolean.getInstance(), new int[] { 0x03 }, Constants.REQUEST_SET_RS232, 1, 0,
-            Constants.EMPTY_TYPE_ARRAY, Constants.REPLY_SET_RS232, Constants.REPLY_SET_RS232, new int[] { 0 }, 0x03),
+            Constants.EMPTY_TYPE_ARRAY),
     MENU20_MODE(ComfoAirBindingConstants.CG_MENUP1_PREFIX + ComfoAirBindingConstants.CHANNEL_MENU20_MODE,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 6 },
             0x01),
@@ -136,7 +136,7 @@ public enum ComfoAirCommandType {
     BYPASS_STATE(ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_BYPASS_STATE,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 8 },
             0x02),
-    EWT_STATE(ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_STATE,
+    GHX_STATE(ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_GHX_STATE,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 8 },
             0x04),
     HEATER_STATE(ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_STATE,
@@ -272,7 +272,7 @@ public enum ComfoAirCommandType {
     IS_T4_SENSOR(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_SENSOR_T4,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 5 },
             0x08),
-    IS_EWT_SENSOR(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_SENSOR_EWT,
+    IS_GHX_SENSOR(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_SENSOR_GHX,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 5 },
             0x10),
     IS_HEATER_SENSOR(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_SENSOR_HEATER,
@@ -282,76 +282,77 @@ public enum ComfoAirCommandType {
             ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_SENSOR_COOKERHOOD,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 5 },
             0x40),
-    EWT_TEMPERATURE(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_EWT,
+    GHX_TEMPERATURE(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_GHX,
             DataTypeTemperature.getInstance(), Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 6 }),
     HEATER_TEMPERATURE(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_HEATER,
             DataTypeTemperature.getInstance(), Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 7 }),
     COOKERHOOD_TEMPERATURE(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_COOKERHOOD,
             DataTypeTemperature.getInstance(), Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 8 }),
-    EWT_SPEED(ComfoAirBindingConstants.CG_EWT_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_SPEED,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_EWT, 5, 2,
-            new ComfoAirCommandType[] { EWT_STATE, EWT_TEMPERATURE }, Constants.REQUEST_GET_EWT,
-            Constants.REPLY_GET_EWT, new int[] { 2 }),
-    EWT_TEMPERATURE_LOW(ComfoAirBindingConstants.CG_EWT_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_TEMP_LOW,
-            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_EWT, 5, 0, new ComfoAirCommandType[] { EWT_STATE },
-            Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 0 }),
-    EWT_TEMPERATURE_HIGH(ComfoAirBindingConstants.CG_EWT_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_TEMP_HIGH,
-            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_EWT, 5, 1, new ComfoAirCommandType[] { EWT_STATE },
-            Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 1 }),
+    GHX_SPEED(ComfoAirBindingConstants.CG_GHX_PREFIX + ComfoAirBindingConstants.CHANNEL_GHX_SPEED,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_GHX, 5, 2,
+            new ComfoAirCommandType[] { GHX_STATE, GHX_TEMPERATURE }, Constants.REQUEST_GET_GHX,
+            Constants.REPLY_GET_GHX, new int[] { 2 }),
+    GHX_TEMPERATURE_LOW(ComfoAirBindingConstants.CG_GHX_PREFIX + ComfoAirBindingConstants.CHANNEL_GHX_TEMP_LOW,
+            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_GHX, 5, 0, new ComfoAirCommandType[] { GHX_STATE },
+            Constants.REQUEST_GET_GHX, Constants.REPLY_GET_GHX, new int[] { 0 }),
+    GHX_TEMPERATURE_HIGH(ComfoAirBindingConstants.CG_GHX_PREFIX + ComfoAirBindingConstants.CHANNEL_GHX_TEMP_HIGH,
+            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_GHX, 5, 1, new ComfoAirCommandType[] { GHX_STATE },
+            Constants.REQUEST_GET_GHX, Constants.REPLY_GET_GHX, new int[] { 1 }),
     COOKERHOOD_SPEED(ComfoAirBindingConstants.CG_COOKERHOOD_PREFIX + ComfoAirBindingConstants.CHANNEL_COOKERHOOD_SPEED,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_EWT, 5, 3,
-            new ComfoAirCommandType[] { COOKERHOOD_STATE, COOKERHOOD_TEMPERATURE }, Constants.REQUEST_GET_EWT,
-            Constants.REPLY_GET_EWT, new int[] { 3 }),
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_GHX, 5, 3,
+            new ComfoAirCommandType[] { COOKERHOOD_STATE, COOKERHOOD_TEMPERATURE }, Constants.REQUEST_GET_GHX,
+            Constants.REPLY_GET_GHX, new int[] { 3 }),
     HEATER_POWER(ComfoAirBindingConstants.CG_HEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_POWER,
-            DataTypeNumber.getInstance(), Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 4 }),
+            DataTypeNumber.getInstance(), Constants.REQUEST_GET_GHX, Constants.REPLY_GET_GHX, new int[] { 4 }),
     HEATER_POWER_I(ComfoAirBindingConstants.CG_HEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_POWER_I,
-            DataTypeNumber.getInstance(), Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 5 }),
+            DataTypeNumber.getInstance(), Constants.REQUEST_GET_GHX, Constants.REPLY_GET_GHX, new int[] { 5 }),
     HEATER_TARGET_TEMPERATURE(
             ComfoAirBindingConstants.CG_HEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_TEMP_TARGET,
-            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_EWT, 5, 4,
-            new ComfoAirCommandType[] { HEATER_STATE, HEATER_POWER, HEATER_TEMPERATURE }, Constants.REQUEST_GET_EWT,
-            Constants.REPLY_GET_EWT, new int[] { 6 }),
-    IS_PREHEATER(ComfoAirBindingConstants.PROPERTY_OPTION_PREHEATER, DataTypeBoolean.getInstance(),
-            Constants.REQUEST_SET_STATES, 8, 0,
+            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_GHX, 5, 4,
+            new ComfoAirCommandType[] { HEATER_STATE, HEATER_POWER, HEATER_TEMPERATURE }, Constants.REQUEST_GET_GHX,
+            Constants.REPLY_GET_GHX, new int[] { 6 }),
+    IS_PREHEATER(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_PREHEATER,
+            DataTypeBoolean.getInstance(), Constants.REQUEST_SET_STATES, 8, 0,
             new ComfoAirCommandType[] { OUTDOOR_TEMPERATURE_IN, INDOOR_TEMPERATURE_IN, PREHEATER_FROST_PROTECT,
                     PREHEATER_FROST_TIME, PREHEATER_HEATING, FROST_STATE, PREHEATER_OPTION, PREHEATER_TIME,
                     PREHEATER_VALVE },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 0 }),
-    IS_BYPASS(ComfoAirBindingConstants.PROPERTY_OPTION_BYPASS, DataTypeBoolean.getInstance(),
-            Constants.REQUEST_SET_STATES, 8, 1,
+    IS_BYPASS(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_BYPASS,
+            DataTypeBoolean.getInstance(), Constants.REQUEST_SET_STATES, 8, 1,
             new ComfoAirCommandType[] { INDOOR_TEMPERATURE_IN, OUTDOOR_TEMPERATURE_OUT }, Constants.REQUEST_GET_STATES,
             Constants.REPLY_GET_STATES, new int[] { 1 }),
-    RECU_TYPE(ComfoAirBindingConstants.PROPERTY_OPTION_RECU_TYPE, DataTypeNumber.getInstance(),
-            new int[] { 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 2,
+    RECU_TYPE(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_RECU_TYPE,
+            DataTypeNumber.getInstance(), new int[] { 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 2,
             new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_OUT_PERCENT, INDOOR_TEMPERATURE_IN, INDOOR_TEMPERATURE_OUT,
                     OUTDOOR_TEMPERATURE_IN, OUTDOOR_TEMPERATURE_OUT },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 2 }),
-    RECU_SIZE(ComfoAirBindingConstants.PROPERTY_OPTION_RECU_SIZE, DataTypeNumber.getInstance(),
-            new int[] { 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 3,
+    RECU_SIZE(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_RECU_SIZE,
+            DataTypeNumber.getInstance(), new int[] { 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 3,
             new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_OUT_PERCENT, FAN_IN_0, FAN_IN_1, FAN_IN_2, FAN_IN_3,
                     FAN_OUT_0, FAN_OUT_1, FAN_OUT_2, FAN_OUT_3 },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 3 }),
-    IS_CHIMNEY(ComfoAirBindingConstants.PROPERTY_OPTION_CHIMNEY, DataTypeBoolean.getInstance(), new int[] { 0x01 },
-            Constants.REQUEST_SET_STATES, 8, 4, Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_STATES,
-            Constants.REPLY_GET_STATES, new int[] { 4 }, 0x01),
-    IS_COOKERHOOD(ComfoAirBindingConstants.PROPERTY_OPTION_COOKERHOOD, DataTypeBoolean.getInstance(),
-            new int[] { 0x02 }, Constants.REQUEST_SET_STATES, 8, 4,
+    IS_CHIMNEY(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_CHIMNEY,
+            DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_STATES, 8, 4,
+            Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 4 },
+            0x01),
+    IS_COOKERHOOD(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_COOKERHOOD,
+            DataTypeBoolean.getInstance(), new int[] { 0x02 }, Constants.REQUEST_SET_STATES, 8, 4,
             new ComfoAirCommandType[] { COOKERHOOD_DELAY, COOKERHOOD_STATE, COOKERHOOD_SPEED, COOKERHOOD_TEMPERATURE },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 4 }, 0x02),
-    IS_HEATER(ComfoAirBindingConstants.PROPERTY_OPTION_HEATER, DataTypeBoolean.getInstance(), new int[] { 0x04 },
-            Constants.REQUEST_SET_STATES, 8, 4,
+    IS_HEATER(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_HEATER,
+            DataTypeBoolean.getInstance(), new int[] { 0x04 }, Constants.REQUEST_SET_STATES, 8, 4,
             new ComfoAirCommandType[] { HEATER_TARGET_TEMPERATURE, HEATER_POWER, HEATER_STATE, HEATER_POWER_I,
                     HEATER_TEMPERATURE },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 4 }, 0x04),
-    IS_ENTHALPY(ComfoAirBindingConstants.PROPERTY_OPTION_ENTHALPY, DataTypeNumber.getInstance(),
-            new int[] { 0x00, 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 6,
+    IS_ENTHALPY(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_ENTHALPY,
+            DataTypeNumber.getInstance(), new int[] { 0x00, 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 6,
             new ComfoAirCommandType[] { ENTHALPY_TEMPERATURE, ENTHALPY_HUMIDITY, ENTHALPY_LEVEL, ENTHALPY_STATE,
                     ENTHALPY_TIME },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 9 }),
-    IS_EWT(ComfoAirBindingConstants.PROPERTY_OPTION_EWT, DataTypeNumber.getInstance(), new int[] { 0x00, 0x01, 0x02 },
-            Constants.REQUEST_SET_STATES, 8, 7,
-            new ComfoAirCommandType[] { EWT_SPEED, EWT_TEMPERATURE_LOW, EWT_TEMPERATURE_HIGH, EWT_STATE,
-                    EWT_TEMPERATURE },
+    IS_GHX(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_GHX,
+            DataTypeNumber.getInstance(), new int[] { 0x00, 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 7,
+            new ComfoAirCommandType[] { GHX_SPEED, GHX_TEMPERATURE_LOW, GHX_TEMPERATURE_HIGH, GHX_STATE,
+                    GHX_TEMPERATURE },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 10 }),
     SOFTWARE_MAIN_VERSION(ComfoAirBindingConstants.PROPERTY_SOFTWARE_MAIN_VERSION, DataTypeNumber.getInstance(),
             Constants.REQUEST_GET_FIRMWARE, Constants.REPLY_GET_FIRMWARE, new int[] { 0 }),
@@ -448,7 +449,7 @@ public enum ComfoAirCommandType {
     RF_VALUE(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_VALUE,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 17, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 17 }),
-    ANALOG_MODE(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_PRIORITY,
+    ANALOG_MODE(ComfoAirBindingConstants.CG_OPTIONS_PREFIX + ComfoAirBindingConstants.CHANNEL_OPTION_PRIORITY,
             DataTypeNumber.getInstance(), new int[] { 0x00, 0x01 }, Constants.REQUEST_SET_ANALOGS, 19, 18,
             Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 18 }),
     ANALOG1_VOLT(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_VOLT,
@@ -684,9 +685,9 @@ public enum ComfoAirCommandType {
         public static final int REPLY_GET_PREHEATER = 0xe2;
         public static final int REQUEST_GET_RF = 0xe5;
         public static final int REPLY_GET_RF = 0xe6;
-        public static final int REQUEST_GET_EWT = 0xeb;
-        public static final int REPLY_GET_EWT = 0xec;
-        public static final int REQUEST_SET_EWT = 0xed;
+        public static final int REQUEST_GET_GHX = 0xeb;
+        public static final int REPLY_GET_GHX = 0xec;
+        public static final int REQUEST_SET_GHX = 0xed;
 
         public static final String[] EMPTY_STRING_ARRAY = new String[0];
         public static final int[] EMPTY_INT_ARRAY = new int[0];
@@ -770,7 +771,7 @@ public enum ComfoAirCommandType {
     public static @Nullable ComfoAirCommand getReadCommand(String key) {
         ComfoAirCommandType commandType = getCommandTypeByKey(key);
 
-        if (commandType != null) {
+        if (commandType != null && commandType.readCommand > 0) {
             return new ComfoAirCommand(key);
         }
         return null;
@@ -890,7 +891,6 @@ public enum ComfoAirCommandType {
         return null;
     }
 
-    @SuppressWarnings("null")
     private static void uniteCommandsMap(Map<Integer, ComfoAirCommand> commands, ComfoAirCommandType commandType) {
         if (commandType.readReplyCommand != 0) {
             int replyCmd = commandType.readReplyCommand;

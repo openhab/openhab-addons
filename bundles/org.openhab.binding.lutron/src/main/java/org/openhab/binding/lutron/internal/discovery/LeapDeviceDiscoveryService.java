@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.lutron.internal.discovery;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
@@ -150,9 +149,11 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
                     } else {
                         areaName = "Occupancy Group";
                     }
-                    logger.debug("Discovered occupancy group: {} areas: {} area name: {}", groupNum,
-                            oGroup.associatedAreas.length, areaName);
-                    notifyDiscovery(THING_TYPE_OGROUP, groupNum, areaName);
+                    if (areaName != null) {
+                        logger.debug("Discovered occupancy group: {} areas: {} area name: {}", groupNum,
+                                oGroup.associatedAreas.length, areaName);
+                        notifyDiscovery(THING_TYPE_OGROUP, groupNum, areaName);
+                    }
                 }
             }
             this.areaMap = null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -255,7 +255,7 @@ public class SenseBoxHandler extends BaseThingHandler {
             BigDecimal bd = new BigDecimal(sensorData.getLastMeasurement().getValue());
             switch (sensorData.getUnit()) {
                 case "%":
-                    result = new QuantityType<>(bd, SmartHomeUnits.PERCENT);
+                    result = new QuantityType<>(bd, Units.PERCENT);
                     break;
                 case "°C":
                     result = new QuantityType<>(bd, SIUnits.CELSIUS);
@@ -271,19 +271,19 @@ public class SenseBoxHandler extends BaseThingHandler {
                     result = new QuantityType<>(bd, MetricPrefix.HECTO(SIUnits.PASCAL));
                     break;
                 case "lx":
-                    result = new QuantityType<>(bd, SmartHomeUnits.LUX);
+                    result = new QuantityType<>(bd, Units.LUX);
                     break;
                 case "\u00b5g/m³":
-                    result = new QuantityType<>(bd, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                    result = new QuantityType<>(bd, Units.MICROGRAM_PER_CUBICMETRE);
                     break;
                 case "\u00b5W/cm²":
-                    result = new QuantityType<>(bd, SmartHomeUnits.MICROWATT_PER_SQUARE_CENTIMETRE);
+                    result = new QuantityType<>(bd, Units.MICROWATT_PER_SQUARE_CENTIMETRE);
                     break;
                 default:
                     // The data provider might have configured some unknown unit, accept at least the
                     // measurement
                     logger.debug("Could not determine unit for '{}', using default", sensorData.getUnit());
-                    result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+                    result = new QuantityType<>(bd, Units.ONE);
             }
             logger.debug("State: '{}'", result);
         }

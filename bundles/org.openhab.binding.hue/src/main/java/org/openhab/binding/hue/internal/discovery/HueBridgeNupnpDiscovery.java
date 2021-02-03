@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -87,6 +88,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
             if (isReachableAndValidHueBridge(bridge)) {
                 String host = bridge.getInternalIpAddress();
                 String serialNumber = bridge.getId().substring(0, 6) + bridge.getId().substring(10);
+                serialNumber = serialNumber.toLowerCase();
                 ThingUID uid = new ThingUID(THING_TYPE_BRIDGE, serialNumber);
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid)
                         .withProperties(buildProperties(host, serialNumber))
@@ -162,8 +164,10 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
         try {
             Gson gson = new Gson();
             String json = doGetRequest(DISCOVERY_URL);
-            return gson.fromJson(json, new TypeToken<List<BridgeJsonParameters>>() {
-            }.getType());
+            List<BridgeJsonParameters> bridgeParameters = gson.fromJson(json,
+                    new TypeToken<List<BridgeJsonParameters>>() {
+                    }.getType());
+            return Objects.requireNonNull(bridgeParameters);
         } catch (IOException e) {
             logger.debug("Philips Hue NUPnP service not reachable. Can't discover bridges");
         } catch (JsonParseException je) {

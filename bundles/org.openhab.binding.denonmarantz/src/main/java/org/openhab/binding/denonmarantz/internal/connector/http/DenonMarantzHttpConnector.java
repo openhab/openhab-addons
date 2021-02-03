@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -309,6 +309,8 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             if (StringUtils.isNotBlank(result)) {
                 JAXBContext jc = JAXBContext.newInstance(response);
                 XMLInputFactory xif = XMLInputFactory.newInstance();
+                xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+                xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
                 XMLStreamReader xsr = xif.createXMLStreamReader(IOUtils.toInputStream(result));
                 xsr = new PropertyRenamerDelegate(xsr);
 

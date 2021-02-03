@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,8 +126,9 @@ public class PJLinkDevice {
         Instant now = Instant.now();
         Socket socket = this.socket;
         boolean connectionTooOld = false;
-        if (this.socketCreatedOn != null) {
-            long millisecondsSinceLastConnect = Duration.between(this.socketCreatedOn, now).toMillis();
+        Instant socketCreatedOn = this.socketCreatedOn;
+        if (socketCreatedOn != null) {
+            long millisecondsSinceLastConnect = Duration.between(socketCreatedOn, now).toMillis();
             // according to the PJLink specification, the device closes the connection after 30s idle (without notice),
             // so to be on the safe side we do not reuse sockets older than 20s
             connectionTooOld = millisecondsSinceLastConnect > 20 * 1000;

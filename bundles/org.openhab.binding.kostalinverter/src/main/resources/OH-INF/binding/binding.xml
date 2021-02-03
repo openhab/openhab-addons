@@ -5,6 +5,5 @@
 
 	<name>Kostal Inverter Binding</name>
 	<description>Extracts informations from a Kostal Inverter</description>
-	<author>Christian Schneider</author>
 
 </binding:binding>

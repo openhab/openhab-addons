@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,11 @@ public class DbXmlInfoReader {
         xstream = new XStream(driver);
 
         configureSecurity(xstream);
-        setClassLoader(Project.class.getClassLoader());
+        ClassLoader classLoader = Project.class.getClassLoader();
+        if (classLoader == null) {
+            throw new UnknownError("Cannot find classloader");
+        }
+        setClassLoader(classLoader);
         registerAliases(xstream);
     }
 

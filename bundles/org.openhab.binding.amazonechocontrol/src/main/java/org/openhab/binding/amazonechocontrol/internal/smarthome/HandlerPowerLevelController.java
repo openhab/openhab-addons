@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -55,6 +56,10 @@ public class HandlerPowerLevelController extends HandlerBase {
             ITEM_TYPE_DIMMER /* Item Type */);
 
     private @Nullable Integer lastPowerLevel;
+
+    public HandlerPowerLevelController(SmartHomeDeviceHandler smartHomeDeviceHandler) {
+        super(smartHomeDeviceHandler);
+    }
 
     @Override
     public String[] getSupportedInterface() {
@@ -92,9 +97,10 @@ public class HandlerPowerLevelController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            List<SmartHomeCapability> capabilities, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(POWER_LEVEL.channelId)) {
-            if (containsCapabilityProperty(capabilties, POWER_LEVEL.propertyName)) {
+            if (containsCapabilityProperty(capabilities, POWER_LEVEL.propertyName)) {
                 if (command.equals(IncreaseDecreaseType.INCREASE)) {
                     Integer lastPowerLevel = this.lastPowerLevel;
                     if (lastPowerLevel != null) {

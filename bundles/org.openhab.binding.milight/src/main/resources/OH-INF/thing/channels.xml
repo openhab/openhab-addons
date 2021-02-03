@@ -75,7 +75,7 @@
 		<description>White leds and RGBWW allow to change between a cold and a warm color temperature. White support 16, RGBWW
 			support 64 steps
 		</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state min="0" max="100" step="1" pattern="%d"></state>
 	</channel-type>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.openhab.core.types.Type;
  * The {@link ApplianceChannelSelector} class defines a common interface for
  * all the data structures used by appliance thing handlers. It is used to traverse
  * the channels that possibly exist for an appliance, and convert data
- * returned by the appliance to a ESH compatible State
+ * returned by the appliance to a compatible State
  *
  * @author Karel Goderis - Initial contribution
  */
@@ -30,7 +30,7 @@ public interface ApplianceChannelSelector {
     String toString();
 
     /**
-     * Returns the ESH ChannelID for the given datapoint
+     * Returns the ChannelID for the given datapoint
      */
     String getChannelID();
 

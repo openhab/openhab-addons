@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,7 @@ public enum LightType {
     WINDOW_COVERING_DEVICE("Window covering device"),
     CONFIGURATION_TOOL("Configuration tool"),
     WARNING_DEVICE("Warning device"),
+    DOORLOCK("Door Lock"),
     UNKNOWN("");
 
     private static final Map<String, LightType> MAPPING = Arrays.stream(LightType.values())

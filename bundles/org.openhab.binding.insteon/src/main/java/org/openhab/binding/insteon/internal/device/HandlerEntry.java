@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.insteon.internal.device;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Ugly little helper class to facilitate late instantiation of handlers
@@ -25,15 +24,15 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class HandlerEntry {
-    Map<String, @Nullable String> params;
+    Map<String, String> params;
     String name;
 
-    HandlerEntry(String name, Map<String, @Nullable String> params) {
+    HandlerEntry(String name, Map<String, String> params) {
         this.name = name;
         this.params = params;
     }
 
-    Map<String, @Nullable String> getParams() {
+    Map<String, String> getParams() {
         return params;
     }
 

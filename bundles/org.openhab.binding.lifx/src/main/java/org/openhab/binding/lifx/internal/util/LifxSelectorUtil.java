@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -135,6 +135,7 @@ public class LifxSelectorUtil {
                     e.getMessage());
         }
 
+        ByteBuffer readBuffer = ByteBuffer.allocate(LifxNetworkUtil.getBufferSize());
         Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
 
         while (keyIterator.hasNext()) {
@@ -151,22 +152,34 @@ public class LifxSelectorUtil {
             }
 
             if (key.isValid() && key.isReadable()) {
-                LOGGER.trace("{} : Channel is ready for reading", logId);
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("{} : Channel is ready for reading", logId);
+                }
+
                 SelectableChannel channel = key.channel();
-                ByteBuffer readBuffer = ByteBuffer.allocate(LifxNetworkUtil.getBufferSize());
+                readBuffer.rewind();
 
                 try {
                     if (channel instanceof DatagramChannel) {
                         InetSocketAddress address = (InetSocketAddress) ((DatagramChannel) channel).receive(readBuffer);
-                        if (isRemoteAddress(address.getAddress())) {
+                        if (address == null) {
+                            if (LOGGER.isTraceEnabled()) {
+                                LOGGER.trace("{} : No datagram is available", logId);
+                            }
+                        } else if (isRemoteAddress(address.getAddress())) {
                             supplyParsedPacketToConsumer(readBuffer, address, packetConsumer, logId);
                         }
                     } else if (channel instanceof SocketChannel) {
-                        InetSocketAddress address = (InetSocketAddress) ((SocketChannel) channel).getRemoteAddress();
                         ((SocketChannel) channel).read(readBuffer);
-                        if (isRemoteAddress(address.getAddress())) {
+                        InetSocketAddress address = (InetSocketAddress) ((SocketChannel) channel).getRemoteAddress();
+                        if (address == null) {
+                            if (LOGGER.isTraceEnabled()) {
+                                LOGGER.trace("{} : Channel socket is not connected", logId);
+                            }
+                        } else if (isRemoteAddress(address.getAddress())) {
                             supplyParsedPacketToConsumer(readBuffer, address, packetConsumer, logId);
                         }
+
                     }
                 } catch (Exception e) {
                     LOGGER.debug("{} while reading data for the light ({}) : {}", e.getClass().getSimpleName(), logId,

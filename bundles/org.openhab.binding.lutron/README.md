@@ -1,18 +1,18 @@
 # Lutron Binding
 
 This binding integrates with [Lutron](http://www.lutron.com) lighting control and home automation systems.
-It contains separate binding support for four different types of Lutron systems:
+It contains support for four different types of Lutron systems via different bridge things:
 
-* RadioRA 2, HomeWorks QS, and other systems that can be controlled by Lutron Integration Protocol (LIP) or LEAP, such as RA2 Select, and Caseta
+* RadioRA 2, HomeWorks QS, Caseta, RA2 Select, and other current systems that can be controlled via Lutron Integration Protocol (LIP) or LEAP
 * The original RadioRA system, referred to here as RadioRA Classic
 * Legacy HomeWorks RS232 Processors
 * Grafik Eye 3x/4x systems with GRX-PRG or GRX-CI-PRG control interfaces
 
 Each is described in a separate section below.
 
-# Lutron RadioRA 2/HomeWorks QS/Caseta Binding
+# Lutron RadioRA 2/HomeWorks QS/RA2 Select/Caseta Binding
 
-**Note:** While the Lutron Integration Protocol used by this binding should largely be compatible with other current Lutron systems, this binding has only been fully tested with RadioRA 2, HomeWorks QS, and Caseta with Smart Bridge Pro.
+**Note:** While the Lutron Integration Protocol used by ipbridge in this binding should largely be compatible with other current Lutron systems, it has only been fully tested with RadioRA 2, HomeWorks QS, and Caseta with Smart Bridge Pro.
 Homeworks QS support is still a work in progress, since not all features/devices are supported yet.
 RA2 Select systems work with the binding, but full support for all devices still needs to be confirmed.
 Caseta Smart Bridge (non-Pro model) support and support for Caseta occupancy sensors is available only through the experimental leapbridge thing.
@@ -49,15 +49,19 @@ This binding currently supports the following thing types:
 ## Discovery
 
 Full discovery is supported for RadioRA 2 and HomeWorks QS systems.
-Both the main repeaters/processors themselves and the devices connected to them can be automatically discovered.
+Both the main repeaters/processors themselves and the devices connected to them will be automatically discovered.
 Discovered repeaters/processors will be accessed using the default integration credentials.
 These can be changed in the bridge thing configuration.
-Discovered keypad devices should now have their model parameters automatically set to the correct value.
+Discovered keypad devices should have their model parameters automatically set to the correct value.
 
-Caseta Smart Bridge hubs, Smart Bridge Pro 2 hubs, and RA2 Select main repeaters should now be discovered automatically via mDNS.
-Devices attached to them still need to be configured manually unless the experimental leapbridge is used.
+Caseta Smart Bridge hubs, Smart Bridge Pro 2 hubs, and RA2 Select main repeaters should be discovered automatically via mDNS.
+Devices attached to them need to be configured manually when using ipbridge.
+The experimental leapbridge supports full automated discovery of these systems, but authentication information must be manually entered.
 
 Other supported Lutron systems must be configured manually.
+
+**Note:** Discovery selects ipbridge for HomeWorks QS, RadioRA 2, RA2 Select, and Caseta Smart Bridge Pro.
+It select leapbridge for Caseta Smart Bridge, since only LEAP protocol is supported by this system.
 
 ## Binding Configuration
 
@@ -71,9 +75,9 @@ If a thing will not come online, but instead has the status "UNKNOWN: Awaiting i
 
 ### Bridges
 
-Two different bridges are now supported by the binding, ipbridge and leapbridge.
+Two different bridges are now supported by the binding for current Lutron systems, ipbridge and leapbridge.
 The LIP protocol is supported by ipbridge while the LEAP protocol is supported by leapbridge.
-Current Lutron systems support one or both protocols as shown below.
+Current systems support one or both protocols as shown below.
 
 |Bridge Device           | LIP | LEAP |
 |------------------------|-----|------|

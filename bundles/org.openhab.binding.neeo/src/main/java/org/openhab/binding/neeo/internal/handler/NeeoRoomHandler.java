@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
@@ -99,7 +98,7 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
         }
 
         final String localGroupId = channelUID.getGroupId();
-        final String groupId = localGroupId == null || StringUtils.isEmpty(localGroupId) ? "" : localGroupId;
+        final String groupId = localGroupId == null || localGroupId.isEmpty() ? "" : localGroupId;
         final String channelId = channelIds[0];
         final String channelKey = channelIds.length > 1 ? channelIds[1] : "";
 
@@ -195,7 +194,7 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
         final NeeoRoomConfig config = getConfigAs(NeeoRoomConfig.class);
 
         final String roomKey = config.getRoomKey();
-        if (roomKey == null || StringUtils.isEmpty(roomKey)) {
+        if (roomKey == null || roomKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Room key (from the parent room bridge) was not found");
             return;

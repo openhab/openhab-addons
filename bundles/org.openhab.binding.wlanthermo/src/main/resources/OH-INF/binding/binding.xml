@@ -5,6 +5,5 @@
 
 	<name>WlanThermo Binding</name>
 	<description>This is the binding for WlanThermo, ref. https://wlanthermo.de/</description>
-	<author>Christian Schlipp</author>
 
 </binding:binding>

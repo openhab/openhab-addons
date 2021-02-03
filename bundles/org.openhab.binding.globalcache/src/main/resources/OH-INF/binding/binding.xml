@@ -6,6 +6,5 @@
 	<name>GlobalCache Binding</name>
 	<description>Binding for GlobalCache iTach and GC-100 devices supporting infrared, serial, and contact closure
 		interfaces.</description>
-	<author>Mark Hilbush</author>
 
 </binding:binding>

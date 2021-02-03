@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,25 +128,43 @@ public class StationHandler extends BaseThingHandler {
      */
     public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
-        if (IS_NUMERIC_PATTERN.matcher(station.getDiesel()).matches()) {
-            DecimalType diesel = new DecimalType(station.getDiesel());
-            updateState(CHANNEL_DIESEL, diesel);
+        if (station.isOpen() == true) {
+            logger.debug("Checked Station is open! '{}'", getThing().getUID());
+            updateState(CHANNEL_STATION_OPEN, OpenClosedType.OPEN);
+            if (station.getDiesel() != null) {
+                if (IS_NUMERIC_PATTERN.matcher(station.getDiesel()).matches()) {
+                    DecimalType diesel = new DecimalType(station.getDiesel());
+                    updateState(CHANNEL_DIESEL, diesel);
+                } else {
+                    updateState(CHANNEL_DIESEL, UnDefType.UNDEF);
+                }
+            } else {
+                updateState(CHANNEL_DIESEL, UnDefType.UNDEF);
+            }
+            if (station.getE10() != null) {
+                if (IS_NUMERIC_PATTERN.matcher(station.getE10()).matches()) {
+                    DecimalType e10 = new DecimalType(station.getE10());
+                    updateState(CHANNEL_E10, e10);
+                } else {
+                    updateState(CHANNEL_E10, UnDefType.UNDEF);
+                }
+            } else {
+                updateState(CHANNEL_E10, UnDefType.UNDEF);
+            }
+            if (station.getE10() != null) {
+                if (IS_NUMERIC_PATTERN.matcher(station.getE5()).matches()) {
+                    DecimalType e5 = new DecimalType(station.getE5());
+                    updateState(CHANNEL_E5, e5);
+                } else {
+                    updateState(CHANNEL_E5, UnDefType.UNDEF);
+                }
+            } else {
+                updateState(CHANNEL_E5, UnDefType.UNDEF);
+            }
         } else {
-            updateState(CHANNEL_DIESEL, UnDefType.UNDEF);
+            logger.debug("Checked Station is closed!");
+            updateState(CHANNEL_STATION_OPEN, OpenClosedType.CLOSED);
         }
-        if (IS_NUMERIC_PATTERN.matcher(station.getE10()).matches()) {
-            DecimalType e10 = new DecimalType(station.getE10());
-            updateState(CHANNEL_E10, e10);
-        } else {
-            updateState(CHANNEL_E10, UnDefType.UNDEF);
-        }
-        if (IS_NUMERIC_PATTERN.matcher(station.getE5()).matches()) {
-            DecimalType e5 = new DecimalType(station.getE5());
-            updateState(CHANNEL_E5, e5);
-        } else {
-            updateState(CHANNEL_E5, UnDefType.UNDEF);
-        }
-        updateState(CHANNEL_STATION_OPEN, (station.isOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED));
         updateStatus(ThingStatus.ONLINE);
     }
 

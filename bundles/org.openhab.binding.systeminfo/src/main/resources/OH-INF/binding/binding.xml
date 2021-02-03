@@ -5,6 +5,5 @@
 
 	<name>Systeminfo Binding</name>
 	<description>This binding provides information about the operating system and the hardware.</description>
-	<author>Svilen Valkanov</author>
 
 </binding:binding>

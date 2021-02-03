@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoDevices;
@@ -39,6 +40,7 @@ import org.openhab.binding.miio.internal.basic.DeviceMapping;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -77,12 +79,13 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     private String model = conf.model != null ? conf.model : "";
 
     private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-        scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
+        miIoScheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
         return true;
     });
 
-    public MiIoUnsupportedHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
-        super(thing, miIoDatabaseWatchService);
+    public MiIoUnsupportedHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
+            CloudConnector cloudConnector) {
+        super(thing, miIoDatabaseWatchService, cloudConnector);
     }
 
     @Override
@@ -103,8 +106,8 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
                 sendCommand("set_power[\"off\"]");
             }
         }
-        if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString()), command.toString());
+        if (handleCommandsChannels(channelUID, command)) {
+            return;
         }
         if (channelUID.getId().equals(CHANNEL_TESTCOMMANDS)) {
             executeExperimentalCommands();
@@ -146,7 +149,8 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             sb.append(response.getResponse());
             sb.append("\r\n");
             String res = response.getResult().toString();
-            if (!response.isError() && !res.contentEquals("[null]") && !res.contentEquals("[]")) {
+            if (!response.isError() && !res.contentEquals("[null]") && !res.contentEquals("[]")
+                    && !res.contentEquals("[\"\"]")) {
                 if (testChannelList.containsKey(response.getId())) {
                     supportedChannelList.put(testChannelList.get(response.getId()), res);
                 }
@@ -170,7 +174,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         sb.append("Properties: ");
         int lastCommand = -1;
         for (String c : channelList.keySet()) {
-            String cmd = "get_prop[" + c + "]";
+            MiIoBasicChannel ch = channelList.get(c);
+            String cmd = ch.getChannelCustomRefreshCommand().isBlank() ? ("get_prop[" + c + "]")
+                    : ch.getChannelCustomRefreshCommand();
             sb.append(c);
             sb.append(" -> ");
             lastCommand = sendCommand(cmd);
@@ -183,10 +189,13 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         logger.info("{}", sb.toString());
     }
 
-    private LinkedHashMap<String, MiIoBasicChannel> collectProperties(String model) {
+    private LinkedHashMap<String, MiIoBasicChannel> collectProperties(@Nullable String model) {
         LinkedHashMap<String, MiIoBasicChannel> testChannelsList = new LinkedHashMap<>();
         LinkedHashSet<MiIoDevices> testDeviceList = new LinkedHashSet<>();
-
+        if (model == null || model.length() < 2) {
+            logger.info("Wait until the model is determined, than try again");
+            return testChannelsList;
+        }
         // first add similar devices to test those channels first, then test all others
         int[] subset = { model.length() - 1, model.lastIndexOf("."), model.indexOf("."), 0 };
         for (int i : subset) {
@@ -203,8 +212,15 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         for (MiIoDevices dev : testDeviceList) {
             for (MiIoBasicChannel ch : getBasicChannels(dev.getModel())) {
-                if (!ch.isMiOt() && !ch.getProperty().isBlank() && !testChannelsList.containsKey(ch.getProperty())) {
-                    testChannelsList.put(ch.getProperty(), ch);
+                // Add all (unique) properties
+                if (!ch.isMiOt() && !ch.getProperty().isBlank() && ch.getChannelCustomRefreshCommand().isBlank()
+                        && !testChannelsList.containsKey(ch.getProperty())) {
+                    testChannelsList.putIfAbsent(ch.getProperty(), ch);
+                }
+                // Add all (unique) custom refresh commands
+                if (!ch.isMiOt() && !ch.getChannelCustomRefreshCommand().isBlank()
+                        && !testChannelsList.containsKey(ch.getChannelCustomRefreshCommand())) {
+                    testChannelsList.putIfAbsent(ch.getChannelCustomRefreshCommand(), ch);
                 }
             }
         }
@@ -250,17 +266,19 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         if (supportedChannelList.size() > 0) {
             MiIoBasicDevice mbd = createBasicDeviceDb(model, new ArrayList<>(supportedChannelList.keySet()));
-            writeDevice(mbd);
             sb.append("Created experimental database for your device:\r\n");
             sb.append(GSONP.toJson(mbd));
+            sb.append("\r\nDatabase file saved to: ");
+            sb.append(writeDevice(mbd));
             isIdentified = false;
         } else {
             sb.append("No supported channels found.\r\n");
         }
+        sb.append("\r\nDevice testing file saved to: ");
+        sb.append(writeLog());
         sb.append(
-                "\r\nPlease share your this output on the community forum or github to get this device supported.\r\n");
+                "\r\nPlease share your these files on the community forum or github to get this device supported.\r\n");
         logger.info("{}", sb.toString());
-        writeLog();
     }
 
     private MiIoBasicDevice createBasicDeviceDb(String model, List<MiIoBasicChannel> miIoBasicChannels) {
@@ -285,7 +303,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         return device;
     }
 
-    private void writeDevice(MiIoBasicDevice device) {
+    private String writeDevice(MiIoBasicDevice device) {
         File folder = new File(BINDING_DATABASE_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -293,13 +311,15 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         File dataFile = new File(folder, model + "-experimental.json");
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(GSONP.toJson(device));
-            logger.info("Database file created: {}", dataFile.getAbsolutePath());
+            logger.debug("Experimental database file created: {}", dataFile.getAbsolutePath());
+            return dataFile.getAbsolutePath().toString();
         } catch (IOException e) {
             logger.info("Error writing database file {}: {}", dataFile.getAbsolutePath(), e.getMessage());
         }
+        return "Failed creating database file";
     }
 
-    private void writeLog() {
+    private String writeLog() {
         File folder = new File(BINDING_USERDATA_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -307,9 +327,11 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         File dataFile = new File(folder, "test-" + model + "-" + LocalDateTime.now().format(DATEFORMATTER) + ".txt");
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(sb.toString());
-            logger.info("Saved device testing file to {}", dataFile.getAbsolutePath());
+            logger.debug("Saved device testing file to {}", dataFile.getAbsolutePath());
+            return dataFile.getAbsolutePath().toString();
         } catch (IOException e) {
             logger.info("Error writing file {}: {}", dataFile.getAbsolutePath(), e.getMessage());
         }
+        return "Failed creating testlog file";
     }
 }

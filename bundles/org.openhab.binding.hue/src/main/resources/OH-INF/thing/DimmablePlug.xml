@@ -13,16 +13,15 @@
 		<description>An outlet that can be dimmed.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
 
 		<config-description>
-			<parameter name="lightId" type="text">
+			<parameter name="lightId" type="text" required="true">
 				<label>Light ID</label>
 				<description>The identifier that is used within the hue bridge.</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
 				<label>Fade Time</label>

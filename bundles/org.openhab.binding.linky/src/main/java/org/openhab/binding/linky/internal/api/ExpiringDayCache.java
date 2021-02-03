@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.linky.internal.api;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,7 +65,7 @@ public class ExpiringDayCache<V> {
     /**
      * Returns the value - possibly from the cache, if it is still valid.
      */
-    public synchronized @Nullable V getValue() {
+    public synchronized Optional<V> getValue() {
         @Nullable
         V cachedValue = value;
         if (cachedValue == null || isExpired()) {
@@ -73,7 +74,7 @@ public class ExpiringDayCache<V> {
         } else {
             logger.debug("getValue from cache \"{}\" is returning a cached value", name);
         }
-        return cachedValue;
+        return Optional.ofNullable(cachedValue);
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -58,14 +56,9 @@ public class FoscamHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = msg.toString();
         try {
-            if (!content.isEmpty()) {
-                ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-            } else {
-                return;
-            }
-
+            String content = msg.toString();
+            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             ////////////// Motion Alarm //////////////
             if (content.contains("<motionDetectAlarm>")) {
                 if (content.contains("<motionDetectAlarm>0</motionDetectAlarm>")) {
@@ -116,7 +109,6 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 ctx.close();
                 ipCameraHandler.logger.debug("End of FOSCAM handler reached, so closing the channel to the camera now");
             }
-
         } finally {
             ReferenceCountUtil.release(msg);
         }
@@ -214,19 +206,6 @@ public class FoscamHandler extends ChannelDuplexHandler {
                     ipCameraHandler.sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig1&isEnable=0&usr="
                             + username + "&pwd=" + password);
                 }
-                return;
-            case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = false;
-                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                } else {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                    ipCameraHandler.motionThreshold = Double.valueOf(command.toString());
-                    ipCameraHandler.motionThreshold = ipCameraHandler.motionThreshold / 10000;
-                }
-                ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                 return;
         }
     }

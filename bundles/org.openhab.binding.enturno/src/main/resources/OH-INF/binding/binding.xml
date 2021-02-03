@@ -5,6 +5,5 @@
 
 	<name>Entur Binding</name>
 	<description>Real-time timetable binding for Norwegian public transport operators.</description>
-	<author>Michal Kloc</author>
 
 </binding:binding>

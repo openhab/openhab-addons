@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.darksky.internal.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link DarkSkyConfigurationException} is a configuration exception for the connections to Dark Sky API.
@@ -36,7 +37,7 @@ public class DarkSkyConfigurationException extends IllegalArgumentException {
      *
      * @param message Detail message
      */
-    public DarkSkyConfigurationException(String message) {
+    public DarkSkyConfigurationException(@Nullable String message) {
         super(message);
     }
 
@@ -45,7 +46,7 @@ public class DarkSkyConfigurationException extends IllegalArgumentException {
      *
      * @param cause The cause
      */
-    public DarkSkyConfigurationException(Throwable cause) {
+    public DarkSkyConfigurationException(@Nullable Throwable cause) {
         super(cause);
     }
 
@@ -55,7 +56,7 @@ public class DarkSkyConfigurationException extends IllegalArgumentException {
      * @param message Detail message
      * @param cause The cause
      */
-    public DarkSkyConfigurationException(String message, Throwable cause) {
+    public DarkSkyConfigurationException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 }

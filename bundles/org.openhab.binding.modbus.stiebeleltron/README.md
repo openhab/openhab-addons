@@ -5,9 +5,6 @@ This extension adds support for the Stiebel Eltron modbus protocol.
 An Internet Service Gateway (ISG) with an installed modbus extension is required in order to run this binding. 
 In case the modbus extension is not yet installed on the ISG, the ISG Updater Tool for the update can be found here: https://www.stiebel-eltron.de/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/internet_servicegateway/isg_web/downloads.html
 
-
-
-
 ## Supported Things
 
 This bundle adds the following thing types to the Modbus binding.
@@ -26,7 +23,6 @@ A typical bridge configuration would look like this:
 ```
 Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ]
 ```
-
 
 ## Thing Configuration
 
@@ -102,17 +98,15 @@ This group contains about the energy consumption and delivery of the heat pump.
 | consumption-water-today | Number:Energy | true      | The power consumption for water heating today    |
 | consumption-water-total | Number:Energy | true      | The power consumption for water heating in total |
 
-
-
 ## Full Example
 
 ### Thing Configuration
 
 ```
-Bridge modbus:tcp:bridge [ host="hostname|ip", port=502, id=1]
-Thing modbus:heatpump:stiebelEltron "StiebelEltron" (modbus:tcp:modbusbridge) [ ]
+Bridge modbus:tcp:bridge "Stiebel Modbus TCP"[ host="hostname|ip", port=502, id=1 ] {
+	Thing heatpump stiebelEltron "StiebelEltron" (modbus:tcp:modbusbridge) @"Room"  [ ]
+}
 ```
-
 
 ### Item Configuration
 
@@ -152,7 +146,6 @@ Number:Energy stiebel_eltron_consumption_heat_total             "Heating power c
 Number:Energy stiebel_eltron_consumption_heat_today            "Heating power consumption today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_today" }
 Number:Energy stiebel_eltron_consumption_water_today            "Water heating power consumption today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_today" }
 Number:Energy stiebel_eltron_consumption_water_total            "Water heating power consumption total [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_total"}
-
 
 ```
 

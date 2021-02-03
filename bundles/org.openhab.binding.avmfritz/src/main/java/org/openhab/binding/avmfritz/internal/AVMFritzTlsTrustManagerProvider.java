@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,13 +16,13 @@ import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
-import org.openhab.core.io.net.http.TrustAllTrustMananger;
+import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.osgi.service.component.annotations.Component;
 
 /**
  * Provides a TrustManager to allow secure connections to any FRITZ!Box
  *
- * @author Chritoph Weitkamp - Initial Contribution
+ * @author Christoph Weitkamp - Initial Contribution
  */
 @Component
 @NonNullByDefault
@@ -35,6 +35,6 @@ public class AVMFritzTlsTrustManagerProvider implements TlsTrustManagerProvider 
 
     @Override
     public X509ExtendedTrustManager getTrustManager() {
-        return TrustAllTrustMananger.getInstance();
+        return TrustAllTrustManager.getInstance();
     }
 }

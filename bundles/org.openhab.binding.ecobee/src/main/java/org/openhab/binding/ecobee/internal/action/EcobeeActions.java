@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -306,9 +306,7 @@ public class EcobeeActions implements ThingActions {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("coolHoldTemp", coolHoldTemp);
         params.put("heatHoldTemp", heatHoldTemp);
-        params.put("holdType", HoldType.HOLD_HOURS);
-        params.put("holdHours", Integer.valueOf(holdHours.intValue()));
-        return setHold(params, null, null, null, null);
+        return setHold(params, HoldType.HOLD_HOURS.toString(), holdHours, null, null);
     }
 
     public static boolean setHold(ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
@@ -359,9 +357,7 @@ public class EcobeeActions implements ThingActions {
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("holdClimateRef", holdClimateRef);
-        params.put("holdType", HoldType.HOLD_HOURS);
-        params.put("holdHours", Integer.valueOf(holdHours.intValue()));
-        return setHold(params, null, null, null, null);
+        return setHold(params, HoldType.HOLD_HOURS.toString(), holdHours, null, null);
     }
 
     public static boolean setHold(ThingActions actions, @Nullable String holdClimateRef, @Nullable Number holdHours) {
@@ -418,6 +414,10 @@ public class EcobeeActions implements ThingActions {
         EventDTO event = new EventDTO();
         for (String key : params.keySet()) {
             Object value = params.get(key);
+            if (value == null) {
+                LOGGER.warn("Event field '{}' has null value, ignored.", key);
+                continue;
+            }
             switch (key) {
                 case "isOccupied":
                     event.isOccupied = ((Boolean) value);

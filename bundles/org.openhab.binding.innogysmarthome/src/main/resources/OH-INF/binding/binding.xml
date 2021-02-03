@@ -5,6 +5,5 @@
 
 	<name>innogy SmartHome Binding</name>
 	<description>The innogy SmartHome binding integrates your innogy SmartHome system.</description>
-	<author>Oliver Kuhl</author>
 
 </binding:binding>

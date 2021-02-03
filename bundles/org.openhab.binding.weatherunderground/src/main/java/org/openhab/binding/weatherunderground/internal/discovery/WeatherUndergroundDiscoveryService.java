@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.weatherunderground.internal.handler.WeatherUndergroundHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -73,7 +71,7 @@ public class WeatherUndergroundDiscoveryService extends AbstractDiscoveryService
 
     /* We override this method to allow a call from the thing handler factory */
     @Override
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+    public void activate(Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 

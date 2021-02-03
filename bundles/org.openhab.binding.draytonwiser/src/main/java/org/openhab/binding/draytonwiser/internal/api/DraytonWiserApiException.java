@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.draytonwiser.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exception thrown in case of api problems.
@@ -24,11 +25,11 @@ public class DraytonWiserApiException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public DraytonWiserApiException(final String message) {
+    public DraytonWiserApiException(final @Nullable String message) {
         super(message);
     }
 
-    public DraytonWiserApiException(final String message, final Throwable cause) {
+    public DraytonWiserApiException(final @Nullable String message, final @Nullable Throwable cause) {
         super(message, cause);
     }
 }

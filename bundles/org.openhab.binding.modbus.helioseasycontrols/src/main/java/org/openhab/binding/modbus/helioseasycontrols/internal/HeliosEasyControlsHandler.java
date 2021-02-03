@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,13 +31,20 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
+import org.openhab.core.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -50,14 +57,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
-import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegister;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,16 +95,44 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                                                          // before reading from device
 
     private class BypassDate {
+        private final int[] MONTH_MAX_DAYS = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
         // initialization to avoid issues when updating before all variables were read
         private int month = 1;
         private int day = 1;
 
+        public BypassDate() {
+        }
+
+        public BypassDate(int day, int month) {
+            this.setDay(day);
+            this.setMonth(month);
+        }
+
         public void setMonth(int month) {
-            this.month = month;
+            if (month < 1) {
+                this.month = 1;
+            } else if (month > 12) {
+                this.month = 12;
+            } else {
+                this.month = month;
+            }
+        }
+
+        public int getMonth() {
+            return this.month;
         }
 
         public void setDay(int day) {
-            this.day = day;
+            if (day < 1) {
+                this.day = 1;
+            } else {
+                this.day = Math.min(day, MONTH_MAX_DAYS[month - 1]);
+            }
+        }
+
+        public int getDay() {
+            return this.day;
         }
 
         public DateTimeType toDateTimeType() {
@@ -305,25 +332,25 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     if (unit != null) {
                         switch (unit) {
                             case HeliosVariable.UNIT_DAY:
-                                val = val.toUnit(SmartHomeUnits.DAY);
+                                val = val.toUnit(Units.DAY);
                                 break;
                             case HeliosVariable.UNIT_HOUR:
-                                val = val.toUnit(SmartHomeUnits.HOUR);
+                                val = val.toUnit(Units.HOUR);
                                 break;
                             case HeliosVariable.UNIT_MIN:
-                                val = val.toUnit(SmartHomeUnits.MINUTE);
+                                val = val.toUnit(Units.MINUTE);
                                 break;
                             case HeliosVariable.UNIT_SEC:
-                                val = val.toUnit(SmartHomeUnits.SECOND);
+                                val = val.toUnit(Units.SECOND);
                                 break;
                             case HeliosVariable.UNIT_VOLT:
-                                val = val.toUnit(SmartHomeUnits.VOLT);
+                                val = val.toUnit(Units.VOLT);
                                 break;
                             case HeliosVariable.UNIT_PERCENT:
-                                val = val.toUnit(SmartHomeUnits.PERCENT);
+                                val = val.toUnit(Units.PERCENT);
                                 break;
                             case HeliosVariable.UNIT_PPM:
-                                val = val.toUnit(SmartHomeUnits.PARTS_PER_MILLION);
+                                val = val.toUnit(Units.PARTS_PER_MILLION);
                                 break;
                             case HeliosVariable.UNIT_TEMP:
                                 val = val.toUnit(SIUnits.CELSIUS);
@@ -339,8 +366,11 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     try {
                         writeValue(channelId, v);
                         if (variableMap != null) {
-                            updateState(variableMap.get(channelId), v);
-                            updateStatus(ThingStatus.ONLINE);
+                            HeliosVariable variable = variableMap.get(channelId);
+                            if (variable != null) {
+                                updateState(variable, v);
+                                updateStatus(ThingStatus.ONLINE);
+                            }
                         }
                     } catch (HeliosException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -398,9 +428,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                             lock.acquire();
                             comms.submitOneTimeWrite(
                                     new ModbusWriteRegisterRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
-                                            HeliosEasyControlsBindingConstants.START_ADDRESS,
-                                            new ModbusRegisterArray(preparePayload(payload)), true,
-                                            HeliosEasyControlsBindingConstants.MAX_TRIES),
+                                            HeliosEasyControlsBindingConstants.START_ADDRESS, preparePayload(payload),
+                                            true, HeliosEasyControlsBindingConstants.MAX_TRIES),
                                     result -> {
                                         lock.release();
                                         updateStatus(ThingStatus.ONLINE);
@@ -446,8 +475,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 String payload = v.getVariableString();
                 comms.submitOneTimeWrite(new ModbusWriteRegisterRequestBlueprint(
                         HeliosEasyControlsBindingConstants.UNIT_ID, HeliosEasyControlsBindingConstants.START_ADDRESS,
-                        new ModbusRegisterArray(preparePayload(payload)), true,
-                        HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
+                        preparePayload(payload), true, HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
                             comms.submitOneTimePoll(
                                     new ModbusReadRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
                                             ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
@@ -548,11 +576,14 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     }
 
     protected void setBypass(boolean from, int day, int month) {
+        BypassDate bypassDate = new BypassDate(day, month);
         try {
             this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY
-                    : HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, Integer.toString(day));
-            this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH
-                    : HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH, Integer.toString(month));
+                    : HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, Integer.toString(bypassDate.getDay()));
+            this.writeValue(
+                    from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH
+                            : HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH,
+                    Integer.toString(bypassDate.getMonth()));
         } catch (HeliosException e) {
             logger.warn("{} encountered Exception when trying to set bypass period: {}",
                     HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
@@ -630,19 +661,19 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         if (unit == null) {
             return null;
         } else if (unit.equals(HeliosVariable.UNIT_DAY)) {
-            return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.DAY);
+            return new QuantityType<>(Integer.parseInt(value), Units.DAY);
         } else if (unit.equals(HeliosVariable.UNIT_HOUR)) {
-            return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.HOUR);
+            return new QuantityType<>(Integer.parseInt(value), Units.HOUR);
         } else if (unit.equals(HeliosVariable.UNIT_MIN)) {
-            return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.MINUTE);
+            return new QuantityType<>(Integer.parseInt(value), Units.MINUTE);
         } else if (unit.equals(HeliosVariable.UNIT_SEC)) {
-            return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.SECOND);
+            return new QuantityType<>(Integer.parseInt(value), Units.SECOND);
         } else if (unit.equals(HeliosVariable.UNIT_VOLT)) {
-            return new QuantityType<>(Float.parseFloat(value), SmartHomeUnits.VOLT);
+            return new QuantityType<>(Float.parseFloat(value), Units.VOLT);
         } else if (unit.equals(HeliosVariable.UNIT_PERCENT)) {
-            return new QuantityType<>(Float.parseFloat(value), SmartHomeUnits.PERCENT);
+            return new QuantityType<>(Float.parseFloat(value), Units.PERCENT);
         } else if (unit.equals(HeliosVariable.UNIT_PPM)) {
-            return new QuantityType<>(Float.parseFloat(value), SmartHomeUnits.PARTS_PER_MILLION);
+            return new QuantityType<>(Float.parseFloat(value), Units.PARTS_PER_MILLION);
         } else if (unit.equals(HeliosVariable.UNIT_TEMP)) {
             return new QuantityType<>(Float.parseFloat(value), SIUnits.CELSIUS);
         } else {
@@ -656,25 +687,21 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @param payload The String representation of the payload
      * @return The Register representation of the payload
      */
-    private ModbusRegister[] preparePayload(String payload) {
-
+    private static ModbusRegisterArray preparePayload(String payload) {
         // determine number of registers
-        int l = (payload.length() + 1) / 2; // +1 because we need to include at least one termination symbol 0x00
-        if ((payload.length() + 1) % 2 != 0) {
-            l++;
-        }
+        byte[] asciiBytes = payload.getBytes(StandardCharsets.US_ASCII);
+        int bufferLength = asciiBytes.length // ascii characters
+                + 1 // NUL byte
+                + ((asciiBytes.length % 2 == 0) ? 1 : 0); // to have even number of bytes
+        assert bufferLength % 2 == 0; // Invariant, ensured above
 
-        ModbusRegister reg[] = new ModbusRegister[l];
-        byte[] b = payload.getBytes();
-        int ch = 0;
-        for (int i = 0; i < reg.length; i++) {
-            byte b1 = ch < b.length ? b[ch] : (byte) 0x00; // terminate with 0x00 if at the end of the payload
-            ch++;
-            byte b2 = ch < b.length ? b[ch] : (byte) 0x00;
-            ch++;
-            reg[i] = new ModbusRegister(b1, b2);
+        byte[] buffer = new byte[bufferLength];
+        System.arraycopy(asciiBytes, 0, buffer, 0, asciiBytes.length);
+        // Fill in rest of bytes with NUL bytes
+        for (int i = asciiBytes.length; i < buffer.length; i++) {
+            buffer[i] = '\0';
         }
-        return reg;
+        return new ModbusRegisterArray(buffer);
     }
 
     /**
@@ -684,8 +711,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @return The value or <tt>null</tt> if an error occurred
      */
     private void processResponse(HeliosVariable v, ModbusRegisterArray registers) {
-        String r = ModbusBitUtilities
-                .extractStringFromRegisters(registers, 0, registers.size() * 2, StandardCharsets.US_ASCII).toString();
+        String r = ModbusBitUtilities.extractStringFromRegisters(registers, 0, registers.size() * 2,
+                StandardCharsets.US_ASCII);
         String[] parts = r.split("=", 2); // remove the part "vXXXX=" from the string
         // making sure we have a proper response and the response matches the requested variable
         if ((parts.length == 2) && (v.getVariableString().equals(parts[0]))) {

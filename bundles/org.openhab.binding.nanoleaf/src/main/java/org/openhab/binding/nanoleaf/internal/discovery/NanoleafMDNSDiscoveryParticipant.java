@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,7 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         properties.put(Thing.PROPERTY_MODEL_ID, modelId);
         properties.put(Thing.PROPERTY_VENDOR, "Nanoleaf");
         String qualifiedName = service.getQualifiedName();
-        logger.debug("AVR found: {}", qualifiedName);
+        logger.debug("Device found: {}", qualifiedName);
 
         logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {} qualifiedName: {}", host, port,
                 firmwareVersion, modelId, qualifiedName);

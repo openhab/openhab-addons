@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,6 +61,7 @@ public final class MiIoBindingConstants {
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
+    public static final String CHANNEL_RPC = "actions#rpc";
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
@@ -105,6 +106,10 @@ public final class MiIoBindingConstants {
     public static final String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
     public static final String PROPERTY_TIMEOUT = "timeout";
     public static final String PROPERTY_CLOUDSERVER = "cloudServer";
+
+    public static final Set<String> PERSISTENT_CHANNELS = Collections.unmodifiableSet(
+            Stream.of(CHANNEL_COMMAND, CHANNEL_RPC, CHANNEL_SSID, CHANNEL_BSSID, CHANNEL_RSSI, CHANNEL_LIFE)
+                    .collect(Collectors.toSet()));
 
     public static final byte[] DISCOVER_STRING = org.openhab.binding.miio.internal.Utils
             .hexStringToByteArray("21310020ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,9 @@ package org.openhab.binding.neeo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.neeo.internal.handler.NeeoBrainHandler;
 
 /**
- * The configuration class a neeo brain and used by {@link NeeoBrainHandler}
+ * Configuration used by {@link org.openhab.binding.neeo.internal.handler.NeeoBrainHandler}
  *
  * @author Tim Roberts - initial contribution
  */
@@ -131,5 +130,12 @@ public class NeeoBrainConfig {
      */
     public void setCheckStatusInterval(int checkStatusInterval) {
         this.checkStatusInterval = checkStatusInterval;
+    }
+
+    @Override
+    public String toString() {
+        return "NeeoBrainConfig{" + "ipAddress='" + ipAddress + '\'' + ", enableForwardActions=" + enableForwardActions
+                + ", forwardChain='" + forwardChain + '\'' + ", discoverEmptyRooms=" + discoverEmptyRooms
+                + ", checkStatusInterval=" + checkStatusInterval + '}';
     }
 }

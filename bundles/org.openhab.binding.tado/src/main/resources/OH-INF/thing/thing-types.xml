@@ -9,6 +9,10 @@
 		<label>Tado Home</label>
 		<description>The user's tado home</description>
 
+		<channels>
+			<channel typeId="homePresence" id="homePresence"></channel>
+		</channels>
+
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>User Name</label>
@@ -56,6 +60,11 @@
 			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 		</channels>
 
+		<properties>
+			<property name="vendor">tado°</property>
+		</properties>
+		<representation-property>id</representation-property>
+
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>Zone Id</label>
@@ -94,6 +103,11 @@
 			<channel typeId="atHome" id="atHome"></channel>
 		</channels>
 
+		<properties>
+			<property name="vendor">tado°</property>
+		</properties>
+		<representation-property>id</representation-property>
+
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>Mobile Device Id</label>
@@ -107,6 +121,12 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-type id="homePresence">
+		<item-type>Switch</item-type>
+		<label>At Home</label>
+		<description>ON if at home, OFF if away</description>
+	</channel-type>
 
 	<channel-type id="currentTemperature">
 		<item-type>Number:Temperature</item-type>

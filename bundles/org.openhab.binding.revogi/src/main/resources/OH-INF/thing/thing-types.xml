@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="revogi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- SmartStrip Thing Type -->
+	<thing-type id="smartstrip">
+		<label>SmartStrip</label>
+		<description>A Thing to control Revogi SmartStrip</description>
+		<category>PowerOutlet</category>
+
+		<channel-groups>
+			<channel-group id="overallPlug" typeId="overallPlugActuator"/>
+			<channel-group id="plug1" typeId="plugActuator">
+				<label>Plug 1</label>
+			</channel-group>
+			<channel-group id="plug2" typeId="plugActuator">
+				<label>Plug 2</label>
+			</channel-group>
+			<channel-group id="plug3" typeId="plugActuator">
+				<label>Plug 3</label>
+			</channel-group>
+			<channel-group id="plug4" typeId="plugActuator">
+				<label>Plug 4</label>
+			</channel-group>
+			<channel-group id="plug5" typeId="plugActuator">
+				<label>Plug 5</label>
+			</channel-group>
+			<channel-group id="plug6" typeId="plugActuator">
+				<label>Plug 6</label>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>serialNumber</representation-property>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Serial number of your smart strip.</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="10" unit="s">
+				<label>Poll Interval</label>
+				<default>60</default>
+				<description>How often (seconds) should the smart strip status be polled?</description>
+			</parameter>
+			<parameter name="ipAddress" type="text">
+				<label>IP Address</label>
+				<description>IP Address of your smart strip</description>
+				<context>network-address</context>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="plugActuator">
+		<label>Single Plug Actuator</label>
+		<description>Switches a single plug and retrieve stats for it</description>
+		<channels>
+			<channel id="switch" typeId="single-plug"/>
+			<channel id="watt" typeId="watts"/>
+			<channel id="amp" typeId="amps"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="overallPlugActuator">
+		<label>Overall Plug Actuator</label>
+		<description>Switches all plugs</description>
+		<channels>
+			<channel id="switch" typeId="single-plug"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="single-plug">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch a single plug</description>
+	</channel-type>
+	<channel-type id="watts" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Contains the current watt value for the given plug</description>
+		<state readOnly="true" pattern="%.1f W"/>
+	</channel-type>
+	<channel-type id="amps" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Contains the current Amp value for the given plug</description>
+		<state readOnly="true" pattern="%.1f A"/>
+	</channel-type>
+
+</thing:thing-descriptions>

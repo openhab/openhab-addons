@@ -5,7 +5,6 @@
 
 	<name>SNMP Binding</name>
 	<description>This is the binding for SNMP.</description>
-	<author>Jan N. Klug</author>
 
 	<config-description>
 		<parameter name="port" type="integer" min="0" max="65535">

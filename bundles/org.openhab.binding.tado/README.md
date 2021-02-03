@@ -3,7 +3,7 @@
 The tado° binding integrates devices from [tado°](https://www.tado.com).
 
 It requires a fully functional tado° installation.
-You can then monitor and control all zone types (Heating, AC, Hot Water) as well as retrieve the HOME/AWAY status of mobile devices.
+You can then monitor and control all zone types (Heating, AC, Hot Water) as well as retrieve the HOME/AWAY status of mobile devices, and setting the HOME/AWAY status of your home.
 
 ## `home` Thing (the Bridge)
 
@@ -23,6 +23,12 @@ Bridge tado:home:demo [ username="mail@example.com", password="secret" ]
 ```
 
 Afterwards the discovery will show all zones and mobile devices associated with the user's home.
+
+### Channels
+
+Name | Type | Description | Read/Write
+-|-|-|-|-
+`homePresence` | String | Current presence value of the tado home. `HOME` and `AWAY` can be set | RW
 
 ## `zone` Thing
 
@@ -143,6 +149,7 @@ Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
 ## tado.items
 
 ```
+Switch             TADO_PRESENCE_home             "Tado Presence: [MAP(presence.map):%s]"               { channel="tado:home:demo:homePresence" }
 Number:Temperature HEAT_inside_temperature    "Inside Temperature"      { channel="tado:zone:demo:heating:currentTemperature" }
 Number             HEAT_humidity              "Humidity"                { channel="tado:zone:demo:heating:humidity" }
 Number             HEAT_heating_power         "Heating Power"           { channel="tado:zone:demo:heating:heatingPower" }
@@ -179,6 +186,10 @@ Switch             Phone_atHome               "Phone location [MAP(presence.map)
 ```
 sitemap tado label="Tado"
 {
+    Frame label="Status" {
+        Switch item=TADO_PRESENCE_home  icon="presence"
+    }
+
     Frame label="Heating" {
         Text      item=HEAT_inside_temperature
         Text      item=HEAT_humidity

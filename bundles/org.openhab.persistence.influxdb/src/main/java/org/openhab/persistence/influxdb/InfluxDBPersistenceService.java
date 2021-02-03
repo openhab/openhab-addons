@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,7 +103,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
      * Connect to database when service is activated
      */
     @Activate
-    public void activate(final @Nullable Map<String, @Nullable Object> config) {
+    public void activate(final @Nullable Map<String, Object> config) {
         logger.debug("InfluxDB persistence service is being activated");
 
         if (loadConfiguration(config)) {
@@ -141,7 +141,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
      * Rerun deactivation/activation code each time configuration is changed
      */
     @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> config) {
+    protected void modified(@Nullable Map<String, Object> config) {
         if (config != null) {
             logger.debug("Config has been modified will deactivate/activate with new config");
 
@@ -152,7 +152,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    private boolean loadConfiguration(@Nullable Map<String, @Nullable Object> config) {
+    private boolean loadConfiguration(@Nullable Map<String, Object> config) {
         boolean configurationIsValid;
         if (config != null) {
             configuration = new InfluxDBConfiguration(config);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nuki.internal;
-
-import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -118,9 +116,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
-        ArrayList<String> parameters = new ArrayList<>();
-        parameters.add(ipAddress + ":" + port);
-        String callbackUrl = String.format(NukiBindingConstants.CALLBACK_URL, parameters.toArray());
+        String callbackUrl = String.format(NukiBindingConstants.CALLBACK_URL, ipAddress + ":" + port);
         logger.trace("callbackUrl[{}]", callbackUrl);
         return callbackUrl;
     }

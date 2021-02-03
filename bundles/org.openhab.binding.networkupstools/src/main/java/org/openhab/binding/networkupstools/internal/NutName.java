@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -38,31 +38,31 @@ import org.openhab.core.types.UnDefType;
 enum NutName {
     // UPS
     UPS_ALARM("upsAlarm", "ups.alarm", StringType.class),
-    UPS_LOAD("upsLoad", "ups.load", SmartHomeUnits.PERCENT),
+    UPS_LOAD("upsLoad", "ups.load", Units.PERCENT),
     UPS_POWER("upsPower", "ups.power", NUTBindingConstants.VOLT_AMPERE),
-    UPS_REALPOWER("upsRealpower", "ups.realpower", SmartHomeUnits.WATT),
+    UPS_REALPOWER("upsRealpower", "ups.realpower", Units.WATT),
     UPS_STATUS("upsStatus", "ups.status", StringType.class),
     UPS_TEMPERATURE("upsTemperature", "ups.temperature", SIUnits.CELSIUS),
     UPS_TEST_RESULT("upsTestResult", "ups.test.result", StringType.class),
 
     // Input
-    INPUT_CURRENT("inputCurrent", "input.current", SmartHomeUnits.AMPERE),
+    INPUT_CURRENT("inputCurrent", "input.current", Units.AMPERE),
     INPUT_CURRENT_STATUS("inputCurrentStatus", "input.current.status", StringType.class),
-    INPUT_LOAD("inputLoad", "input.load", SmartHomeUnits.PERCENT),
-    INPUT_REALPOWER("inputRealpower", "input.realpower", SmartHomeUnits.WATT),
+    INPUT_LOAD("inputLoad", "input.load", Units.PERCENT),
+    INPUT_REALPOWER("inputRealpower", "input.realpower", Units.WATT),
     INPUT_QUALITY("inputQuality", "input.quality", StringType.class),
     INPUT_TRANSFER_REASON("inputTransferReason", "input.transfer.reason", StringType.class),
-    INPUT_VOLTAGE("inputVoltage", "input.voltage", SmartHomeUnits.VOLT),
+    INPUT_VOLTAGE("inputVoltage", "input.voltage", Units.VOLT),
     INPUT_VOLTAGE_STATUS("inputVoltageStatus", "input.voltage.status", StringType.class),
 
     // Output
-    OUTPUT_CURRENT("outputCurrent", "output.current", SmartHomeUnits.AMPERE),
-    OUTPUT_VOLTAGE("outputVoltage", "output.voltage", SmartHomeUnits.VOLT),
+    OUTPUT_CURRENT("outputCurrent", "output.current", Units.AMPERE),
+    OUTPUT_VOLTAGE("outputVoltage", "output.voltage", Units.VOLT),
 
     // Battery
-    BATTERY_CHARGE("batteryCharge", "battery.charge", SmartHomeUnits.PERCENT),
-    BATTERY_RUNTIME("batteryRuntime", "battery.runtime", SmartHomeUnits.SECOND),
-    BATTERY_VOLTAGE("batteryVoltage", "battery.voltage", SmartHomeUnits.VOLT);
+    BATTERY_CHARGE("batteryCharge", "battery.charge", Units.PERCENT),
+    BATTERY_RUNTIME("batteryRuntime", "battery.runtime", Units.SECOND),
+    BATTERY_VOLTAGE("batteryVoltage", "battery.voltage", Units.VOLT);
 
     private static final Map<String, NutName> NUT_NAME_MAP = Stream.of(NutName.values())
             .collect(Collectors.toMap(NutName::getChannelId, Function.identity()));

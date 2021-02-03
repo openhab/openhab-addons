@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.utils.Utils;
 import org.openhab.binding.insteon.internal.utils.Utils.ParsingException;
 import org.openhab.core.library.types.DecimalType;
@@ -52,6 +51,12 @@ public class FeatureTemplateLoader {
         List<FeatureTemplate> features = new ArrayList<>();
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbFactory.setXIncludeAware(false);
+            dbFactory.setExpandEntityReferences(false);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             // Parse it!
             Document doc = dBuilder.parse(input);
@@ -111,7 +116,7 @@ public class FeatureTemplateLoader {
         }
 
         NamedNodeMap attributes = e.getAttributes();
-        Map<String, @Nullable String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         for (int i = 0; i < attributes.getLength(); i++) {
             Node n = attributes.item(i);
             params.put(n.getNodeName(), n.getNodeValue());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -241,8 +241,7 @@ public class BAE0910 extends AbstractOwDevice {
             // Analog
             if (enabledChannels.contains(CHANNEL_VOLTAGE)) {
                 State analogValue = bridgeHandler.readDecimalType(sensorId, pin7AnalogParameter);
-                callback.postUpdate(CHANNEL_VOLTAGE,
-                        new QuantityType<>((DecimalType) analogValue, SmartHomeUnits.VOLT));
+                callback.postUpdate(CHANNEL_VOLTAGE, new QuantityType<>((DecimalType) analogValue, Units.VOLT));
             }
 
             // PWM
@@ -251,32 +250,32 @@ public class BAE0910 extends AbstractOwDevice {
             if (enabledChannels.contains(CHANNEL_PWM_FREQ1)) {
                 period1 = ((DecimalType) bridgeHandler.readDecimalType(sensorId, period1Parameter)).intValue();
                 double frequency = (period1 > 0) ? 1 / (period1 * resolution1 * 1e-6) : 0;
-                callback.postUpdate(CHANNEL_PWM_FREQ1, new QuantityType<>(frequency, SmartHomeUnits.HERTZ));
+                callback.postUpdate(CHANNEL_PWM_FREQ1, new QuantityType<>(frequency, Units.HERTZ));
             }
             if (enabledChannels.contains(CHANNEL_PWM_FREQ2)) {
                 period2 = ((DecimalType) bridgeHandler.readDecimalType(sensorId, period2Parameter)).intValue();
                 double frequency = (period2 > 0) ? 1 / (period2 * resolution2 * 1e-6) : 0;
-                callback.postUpdate(CHANNEL_PWM_FREQ2, new QuantityType<>(frequency, SmartHomeUnits.HERTZ));
+                callback.postUpdate(CHANNEL_PWM_FREQ2, new QuantityType<>(frequency, Units.HERTZ));
             }
             if (enabledChannels.contains(CHANNEL_PWM_DUTY1)) {
                 int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty1Parameter)).intValue();
                 double duty = (period1 > 0 && dutyValue <= period1) ? 100 * dutyValue / period1 : 100;
-                callback.postUpdate(CHANNEL_PWM_DUTY1, new QuantityType<>(duty, SmartHomeUnits.PERCENT));
+                callback.postUpdate(CHANNEL_PWM_DUTY1, new QuantityType<>(duty, Units.PERCENT));
             }
             if (enabledChannels.contains(CHANNEL_PWM_DUTY2)) {
                 int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty2Parameter)).intValue();
                 double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
-                callback.postUpdate(CHANNEL_PWM_DUTY2, new QuantityType<>(duty, SmartHomeUnits.PERCENT));
+                callback.postUpdate(CHANNEL_PWM_DUTY2, new QuantityType<>(duty, Units.PERCENT));
             }
             if (enabledChannels.contains(CHANNEL_PWM_DUTY3)) {
                 int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty3Parameter)).intValue();
                 double duty = (period1 > 0 && dutyValue <= period1) ? 100 * dutyValue / period1 : 100;
-                callback.postUpdate(CHANNEL_PWM_DUTY3, new QuantityType<>(duty, SmartHomeUnits.PERCENT));
+                callback.postUpdate(CHANNEL_PWM_DUTY3, new QuantityType<>(duty, Units.PERCENT));
             }
             if (enabledChannels.contains(CHANNEL_PWM_DUTY4)) {
                 int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty4Parameter)).intValue();
                 double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
-                callback.postUpdate(CHANNEL_PWM_DUTY4, new QuantityType<>(duty, SmartHomeUnits.PERCENT));
+                callback.postUpdate(CHANNEL_PWM_DUTY4, new QuantityType<>(duty, Units.PERCENT));
             }
         }
     }
@@ -382,7 +381,7 @@ public class BAE0910 extends AbstractOwDevice {
 
     private DecimalType convertFrequencyToPeriod(Command command, double resolution) throws OwException {
         @SuppressWarnings("unchecked")
-        QuantityType<Frequency> fHz = ((QuantityType<Frequency>) command).toUnit(SmartHomeUnits.HERTZ);
+        QuantityType<Frequency> fHz = ((QuantityType<Frequency>) command).toUnit(Units.HERTZ);
         if (fHz == null) {
             throw new OwException("could not convert command to frequency");
         }

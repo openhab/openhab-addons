@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,4 +44,6 @@ public class BindingConstants {
     public static final String CHANNEL_OWD5_BOOSTENDTIME = "boostEndTime";
     public static final String CHANNEL_OWD5_MANUALSETPOINT = "manualSetpoint";
     public static final String CHANNEL_OWD5_VACATIONENABLED = "vacationEnabled";
+    public static final String CHANNEL_OWD5_VACATIONBEGINDAY = "vacationBeginDay";
+    public static final String CHANNEL_OWD5_VACATIONENDDAY = "vacationEndDay";
 }

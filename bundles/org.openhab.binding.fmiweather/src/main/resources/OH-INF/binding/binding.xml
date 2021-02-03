@@ -5,6 +5,5 @@
 
 	<name>FMI Weather Binding</name>
 	<description>This is the binding for Finnish Meteorological Institute (FMI) Weather</description>
-	<author>Sami Salonen</author>
 
 </binding:binding>

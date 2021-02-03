@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class Util {
         Double saturationVaporPressure = 611.2 * Math.exp(17.62 * theta / (243.12 + theta));
         // absolute humidity in kg/m^3
         Double aH = relativeHumidity.doubleValue() / 100 * saturationVaporPressure / (461.52 * (273.15 + theta));
-        State absoluteHumidity = new QuantityType<>(aH, SmartHomeUnits.KILOGRAM_PER_CUBICMETRE).toUnit("g/m³");
+        State absoluteHumidity = new QuantityType<>(aH, Units.KILOGRAM_PER_CUBICMETRE).toUnit("g/m³");
         if (absoluteHumidity != null) {
             return absoluteHumidity;
         } else {

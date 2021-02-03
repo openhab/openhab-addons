@@ -5,6 +5,5 @@
 
 	<name>Keba Binding</name>
 	<description>This is the binding for Keba EV Charging Stations</description>
-	<author>Karel Goderis</author>
 
 </binding:binding>

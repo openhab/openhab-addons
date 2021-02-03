@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,11 +63,11 @@ import com.google.gson.JsonParseException;
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
+    private final ClientBuilder clientBuilder;
 
     private long refreshInterval;
     private long hardRefreshInterval;
 
-    private final Client client = ClientBuilder.newClient();
     private @Nullable HDPowerViewWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> hardRefreshFuture;
@@ -76,8 +75,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
-    public HDPowerViewHubHandler(Bridge bridge) {
+    public HDPowerViewHubHandler(Bridge bridge, ClientBuilder clientBuilder) {
         super(bridge);
+        this.clientBuilder = clientBuilder;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        webTargets = new HDPowerViewWebTargets(client, host);
+        webTargets = new HDPowerViewWebTargets(clientBuilder.build(), host);
         refreshInterval = config.refresh;
         hardRefreshInterval = config.hardRefresh;
         schedulePoll();

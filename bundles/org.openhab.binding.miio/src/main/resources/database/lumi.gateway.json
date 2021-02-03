@@ -13,7 +13,6 @@
 				"property": "",
 				"friendlyName": "Enable Telnet",
 				"channel": "telnetEnable",
-				"readmeComment": "Access the device with telnet to further unlock developer mode. See forum",
 				"type": "Switch",
 				"refresh": false,
 				"actions": [
@@ -21,7 +20,8 @@
 						"command": "enable_telnet_service",
 						"parameterType": "EMPTY"
 					}
-				]
+				],
+				"readmeComment": "Access the device with telnet to further unlock developer mode. See forum"
 			},
 			{
 				"property": "doorbell_volume",

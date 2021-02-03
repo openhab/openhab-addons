@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,10 +74,10 @@ public class KeContactHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
 
-    protected JsonParser parser = new JsonParser();
+    protected final JsonParser parser = new JsonParser();
+    private final KeContactTransceiver transceiver;
 
     private ScheduledFuture<?> pollingJob;
-    private static KeContactTransceiver transceiver = new KeContactTransceiver();
     private ExpiringCacheMap<String, ByteBuffer> cache;
 
     private int maxPresetCurrent = 0;
@@ -87,8 +87,9 @@ public class KeContactHandler extends BaseThingHandler {
     private int lastState = -1; // trigger a report100 at startup
     private boolean isReport100needed = true;
 
-    public KeContactHandler(Thing thing) {
+    public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
         super(thing);
+        this.transceiver = transceiver;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class KeContactHandler extends BaseThingHandler {
 
             if (pollingJob == null || pollingJob.isCancelled()) {
                 try {
-                    pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0,
+                    pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0,
                             ((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue(), TimeUnit.SECONDS);
                 } catch (Exception e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
@@ -147,7 +148,7 @@ public class KeContactHandler extends BaseThingHandler {
         return super.getConfig();
     }
 
-    private Runnable pollingRunnable = () -> {
+    private void pollingRunnable() {
         try {
             long stamp = System.currentTimeMillis();
             if (!InetAddress.getByName(((String) getConfig().get(IP_ADDRESS))).isReachable(PING_TIME_OUT)) {
@@ -194,7 +195,7 @@ public class KeContactHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         }
-    };
+    }
 
     protected void onData(ByteBuffer byteBuffer) {
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());

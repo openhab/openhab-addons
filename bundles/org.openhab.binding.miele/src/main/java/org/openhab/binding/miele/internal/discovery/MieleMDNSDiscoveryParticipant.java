@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,8 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 }
 
                 return DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(uid.getId()).withLabel("Miele XGW3000 Gateway").build();
+                        .withRepresentationProperty(MieleBindingConstants.HOST).withLabel("Miele XGW3000 Gateway")
+                        .build();
             }
         }
         return null;

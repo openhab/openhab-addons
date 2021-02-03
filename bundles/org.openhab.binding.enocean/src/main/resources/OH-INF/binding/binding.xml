@@ -5,6 +5,5 @@
 
 	<name>EnOcean Binding</name>
 	<description>The EnOcean binding integrates the EnOcean system into openHAB.</description>
-	<author>Daniel Weber</author>
 
 </binding:binding>

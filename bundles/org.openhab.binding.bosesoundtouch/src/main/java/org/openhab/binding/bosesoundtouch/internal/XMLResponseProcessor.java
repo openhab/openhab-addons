@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ public class XMLResponseProcessor {
 
     public void handleMessage(String msg) throws SAXException, IOException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
+        reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         reader.setContentHandler(new XMLResponseHandler(handler, stateSwitchingMap));
         reader.parse(new InputSource(new StringReader(msg)));
     }

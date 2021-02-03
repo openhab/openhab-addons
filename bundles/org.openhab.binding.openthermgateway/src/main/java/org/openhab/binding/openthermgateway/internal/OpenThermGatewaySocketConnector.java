@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -110,6 +110,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             }
         } catch (IOException ex) {
             logger.warn("Unable to connect to the OpenTherm Gateway.", ex);
+            callback.disconnected();
         }
     }
 
@@ -208,7 +209,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             }
         }
 
-        if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA) {
+        if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA
+                || msg.getID() == 0 || msg.getID() == 1) {
             receiveMessage(msg);
         }
     }

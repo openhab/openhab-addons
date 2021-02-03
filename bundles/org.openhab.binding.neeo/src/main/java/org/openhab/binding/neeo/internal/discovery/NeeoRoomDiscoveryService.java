@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
 import org.openhab.binding.neeo.internal.NeeoBrainConfig;
@@ -91,7 +90,7 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Brain {} ({}) found, scanning {} rooms in it", brain.getName(), brainId, rooms.length);
             for (NeeoRoom room : rooms) {
                 final String roomKey = room.getKey();
-                if (roomKey == null || StringUtils.isEmpty(roomKey)) {
+                if (roomKey == null || roomKey.isEmpty()) {
                     logger.debug("Room didn't have a room key: {}", room);
                     continue;
                 }

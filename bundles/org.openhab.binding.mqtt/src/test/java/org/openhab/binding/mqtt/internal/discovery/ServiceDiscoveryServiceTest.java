@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,6 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.naming.ConfigurationException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +48,7 @@ public class ServiceDiscoveryServiceTest {
     private @Mock DiscoveryListener discoverListener;
 
     @BeforeEach
-    public void initMocks() throws ConfigurationException {
+    public void initMocks() {
         Map<String, MqttBrokerConnection> brokers = new TreeMap<>();
         brokers.put("testname", new MqttBrokerConnection("tcp://123.123.123.123", null, false, null));
         brokers.put("textual", new MqttBrokerConnection("tcp://123.123.123.123", null, true, null));
@@ -58,7 +56,7 @@ public class ServiceDiscoveryServiceTest {
     }
 
     @Test
-    public void testDiscovery() throws ConfigurationException {
+    public void testDiscovery() {
         // Setting the MqttService will enable the background scanner
         MqttServiceDiscoveryService d = new MqttServiceDiscoveryService();
         d.addDiscoveryListener(discoverListener);

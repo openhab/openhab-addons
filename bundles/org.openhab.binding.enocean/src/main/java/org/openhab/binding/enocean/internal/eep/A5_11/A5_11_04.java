@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.HexUtils;
@@ -135,7 +135,7 @@ public class A5_11_04 extends _4BSMessage {
 
             return new QuantityType<>(
                     Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2() }), 16) * factor,
-                    SmartHomeUnits.KILOWATT_HOUR);
+                    Units.KILOWATT_HOUR);
         }
 
         return UnDefType.UNDEF;
@@ -163,8 +163,7 @@ public class A5_11_04 extends _4BSMessage {
             }
 
             return new QuantityType<>(
-                    Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2() }), 16) * factor,
-                    SmartHomeUnits.WATT);
+                    Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2() }), 16) * factor, Units.WATT);
         }
 
         return UnDefType.UNDEF;

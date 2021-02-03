@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -281,8 +281,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid port number");
             return;
         } catch (InterruptedIOException e) {
-            Thread.currentThread().interrupt();
             logger.debug("Interrupted while establishing connection");
+            Thread.currentThread().interrupt();
             return;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -337,9 +337,6 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private synchronized void disconnect(boolean interruptAll) {
         logger.debug("Disconnecting");
 
-        Thread senderThread = this.senderThread;
-        Thread readerThread = this.readerThread;
-
         ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
         if (connectRetryJob != null) {
             connectRetryJob.cancel(true);
@@ -351,9 +348,12 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         reconnectTaskCancel(interruptAll); // May be called from keepAliveReconnectJob thread
 
+        Thread senderThread = this.senderThread;
         if (senderThread != null && senderThread.isAlive()) {
             senderThread.interrupt();
         }
+
+        Thread readerThread = this.readerThread;
         if (readerThread != null && readerThread.isAlive()) {
             readerThread.interrupt();
         }
@@ -727,6 +727,9 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         }
     }
 
+    /**
+     * Executed by keepAliveJob. Sends a LEAP ping request and schedules a reconnect task.
+     */
     private void sendKeepAlive() {
         logger.trace("Sending keepalive query");
         sendCommand(new LeapCommand(Request.ping()));
@@ -734,12 +737,20 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         reconnectTaskSchedule();
     }
 
+    /**
+     * Schedules the reconnect task keepAliveReconnectJob to execute in KEEPALIVE_TIMEOUT_SECONDS. This should be
+     * cancelled by calling reconnectTaskCancel() if a valid response is received from the bridge.
+     */
     private void reconnectTaskSchedule() {
         synchronized (keepAliveReconnectLock) {
-            keepAliveReconnectJob = scheduler.schedule(this::reconnect, KEEPALIVE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            keepAliveReconnectJob = scheduler.schedule(this::keepaliveTimeoutExpired, KEEPALIVE_TIMEOUT_SECONDS,
+                    TimeUnit.SECONDS);
         }
     }
 
+    /**
+     * Cancels the reconnect task keepAliveReconnectJob.
+     */
     private void reconnectTaskCancel(boolean interrupt) {
         synchronized (keepAliveReconnectLock) {
             ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
@@ -749,6 +760,15 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                 this.keepAliveReconnectJob = null;
             }
         }
+    }
+
+    /**
+     * Executed by keepAliveReconnectJob if it is not cancelled by the LEAP message parser calling
+     * validMessageReceived() which in turn calls reconnectTaskCancel().
+     */
+    private void keepaliveTimeoutExpired() {
+        logger.debug("Keepalive response timeout expired. Initiating reconnect.");
+        reconnect();
     }
 
     @Override

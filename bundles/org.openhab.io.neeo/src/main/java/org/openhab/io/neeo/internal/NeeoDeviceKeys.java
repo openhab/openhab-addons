@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,9 +21,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
@@ -48,20 +49,23 @@ public class NeeoDeviceKeys {
     private final Logger logger = LoggerFactory.getLogger(NeeoDeviceKeys.class);
 
     /** The mapping between ThingUID to brain keys */
-    private final ConcurrentHashMap<NeeoThingUID, @Nullable Set<String>> uidToKey = new ConcurrentHashMap<>();
+    private final Map<NeeoThingUID, Set<String>> uidToKey = new ConcurrentHashMap<>();
 
     /** The brain's url */
     private final String brainUrl;
+
+    private final ClientBuilder clientBuilder;
 
     /**
      * Creates the object from the context and brainUrl
      *
      * @param brainUrl the non-empty brain url
      */
-    NeeoDeviceKeys(String brainUrl) {
+    NeeoDeviceKeys(String brainUrl, ClientBuilder clientBuilder) {
         NeeoUtil.requireNotEmpty(brainUrl, "brainUrl cannot be empty");
 
         this.brainUrl = brainUrl;
+        this.clientBuilder = clientBuilder;
     }
 
     /**
@@ -70,7 +74,7 @@ public class NeeoDeviceKeys {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void refresh() throws IOException {
-        try (HttpRequest request = new HttpRequest()) {
+        try (HttpRequest request = new HttpRequest(clientBuilder)) {
             logger.debug("Getting existing device mappings from {}{}", brainUrl, NeeoConstants.PROJECTS_HOME);
             final HttpResponse resp = request.sendGetCommand(brainUrl + NeeoConstants.PROJECTS_HOME);
             if (resp.getHttpCode() != HttpStatus.OK_200) {
@@ -163,7 +167,7 @@ public class NeeoDeviceKeys {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(200);
-        for (Entry<NeeoThingUID, @Nullable Set<String>> entry : uidToKey.entrySet()) {
+        for (Entry<NeeoThingUID, Set<String>> entry : uidToKey.entrySet()) {
             final Set<String> entries = entry.getValue();
             if (entries == null) {
                 continue;

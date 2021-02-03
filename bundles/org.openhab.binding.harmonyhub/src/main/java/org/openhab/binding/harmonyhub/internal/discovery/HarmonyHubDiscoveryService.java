@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,9 +35,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.harmonyhub.internal.HarmonyHubBindingConstants;
 import org.openhab.binding.harmonyhub.internal.handler.HarmonyHubHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -223,7 +223,9 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
         public void start() {
             running = true;
-            Thread localThread = new Thread(this::run, "HarmonyDiscoveryServer(tcp/" + getPort() + ")");
+            Thread localThread = new Thread(this::run,
+                    "OH-binding-" + HarmonyHubBindingConstants.BINDING_ID + "discoveryServer");
+            localThread.setDaemon(true);
             localThread.start();
         }
 
@@ -253,8 +255,8 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                         String friendlyName = properties.get("friendlyName");
                         String hostName = properties.get("host_name");
                         String ip = properties.get("ip");
-                        if (StringUtils.isNotBlank(friendlyName) && StringUtils.isNotBlank(hostName)
-                                && StringUtils.isNotBlank(ip) && !responses.contains(hostName)) {
+                        if (friendlyName != null && !friendlyName.isBlank() && hostName != null && !hostName.isBlank()
+                                && ip != null && !ip.isBlank() && !responses.contains(hostName)) {
                             responses.add(hostName);
                             hubDiscovered(ip, friendlyName, hostName);
                         }

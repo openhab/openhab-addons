@@ -5,6 +5,5 @@
 
 	<name>Linky Binding</name>
 	<description>Retrieves your energy consumption data from Enedis website</description>
-	<author>Gaël L'hopital</author>
 
 </binding:binding>

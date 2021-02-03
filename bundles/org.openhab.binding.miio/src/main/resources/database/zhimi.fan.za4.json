@@ -1,13 +1,15 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.fan.za4"
+			"zhimi.fan.za4",
+			"zhimi.fan.za3"
 		],
 		"channels": [
 			{
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -15,12 +17,17 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "angle_enable",
 				"friendlyName": "Rotation",
 				"channel": "angleEnable",
+				"channelType": "angleEnable",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -34,16 +41,20 @@
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
-				"type": "Number",
+				"channelType": "usedhours",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "angle",
 				"friendlyName": "Angle",
 				"channel": "angle",
+				"channelType": "angle",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -58,6 +69,7 @@
 				"property": "poweroff_time",
 				"friendlyName": "Timer",
 				"channel": "poweroffTime",
+				"channelType": "poweroffTime",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -72,6 +84,7 @@
 				"property": "buzzer",
 				"friendlyName": "Buzzer",
 				"channel": "buzzer",
+				"channelType": "buzzer",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -114,6 +127,7 @@
 				"property": "speed_level",
 				"friendlyName": "Speed Level",
 				"channel": "speedLevel",
+				"channelType": "speedLevel",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -128,6 +142,7 @@
 				"property": "speed",
 				"friendlyName": "Speed",
 				"channel": "speed",
+				"channelType": "speed",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -142,6 +157,7 @@
 				"property": "natural_level",
 				"friendlyName": "Natural Level",
 				"channel": "naturalLevel",
+				"channelType": "naturalLevel",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -156,6 +172,7 @@
 				"property": "",
 				"friendlyName": "Move Direction",
 				"channel": "move",
+				"channelType": "move",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",

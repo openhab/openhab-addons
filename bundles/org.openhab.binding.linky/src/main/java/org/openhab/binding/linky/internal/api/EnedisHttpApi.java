@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -44,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * {@link EnedisHttpApi} wraps the Enedis Webservice.
@@ -72,17 +74,6 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
-        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
-        httpClient.setFollowRedirects(false);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            throw new LinkyException("Unable to start Jetty HttpClient", e);
-        }
-        connect();
-    }
-
-    private void connect() throws LinkyException {
         addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
 
         logger.debug("Starting login process for user : {}", config.username);
@@ -125,8 +116,8 @@ public class EnedisHttpApi {
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
             if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.size() == 0
-                    || authData.callbacks.get(1).input.size() == 0
-                    || !config.username.contentEquals(authData.callbacks.get(0).input.get(0).valueAsString())) {
+                    || authData.callbacks.get(1).input.size() == 0 || !config.username
+                            .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
 
@@ -159,7 +150,7 @@ public class EnedisHttpApi {
                 throw new LinkyException("Connection failed step 5");
             }
             connected = true;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             throw new LinkyException("Error opening connection with Enedis webservice", e);
         }
     }
@@ -170,6 +161,7 @@ public class EnedisHttpApi {
 
     public void disconnect() throws LinkyException {
         if (connected) {
+            logger.debug("Logout process");
             try { // Three times in a row to get disconnected
                 String location = getLocation(httpClient.GET(URL_APPS_LINCS + "/logout"));
                 location = getLocation(httpClient.GET(location));
@@ -183,13 +175,12 @@ public class EnedisHttpApi {
         }
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
+
     public void dispose() throws LinkyException {
-        try {
-            disconnect();
-            httpClient.stop();
-        } catch (Exception e) {
-            throw new LinkyException("Error stopping Jetty client", e);
-        }
+        disconnect();
     }
 
     private void addCookie(String key, String value) {
@@ -219,16 +210,40 @@ public class EnedisHttpApi {
     }
 
     public PrmInfo getPrmInfo() throws LinkyException {
+        if (!connected) {
+            initialize();
+        }
         final String prm_info_url = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/null/prms";
         String data = getData(prm_info_url);
-        PrmInfo[] prms = gson.fromJson(data, PrmInfo[].class);
-        return prms[0];
+        if (data.isEmpty()) {
+            throw new LinkyException(String.format("Requesting '%s' returned an empty response", prm_info_url));
+        }
+        try {
+            PrmInfo[] prms = gson.fromJson(data, PrmInfo[].class);
+            return prms[0];
+        } catch (JsonSyntaxException e) {
+            logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
+            throw new LinkyException(String.format("Requesting '%s' returned an invalid JSON response : %s",
+                    prm_info_url, e.getMessage()), e);
+        }
     }
 
     public UserInfo getUserInfo() throws LinkyException {
+        if (!connected) {
+            initialize();
+        }
         final String user_info_url = URL_APPS_LINCS + "/userinfos";
         String data = getData(user_info_url);
-        return gson.fromJson(data, UserInfo.class);
+        if (data.isEmpty()) {
+            throw new LinkyException(String.format("Requesting '%s' returned an empty response", user_info_url));
+        }
+        try {
+            return Objects.requireNonNull(gson.fromJson(data, UserInfo.class));
+        } catch (JsonSyntaxException e) {
+            logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
+            throw new LinkyException(String.format("Requesting '%s' returned an invalid JSON response : %s",
+                    user_info_url, e.getMessage()), e);
+        }
     }
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
@@ -238,15 +253,31 @@ public class EnedisHttpApi {
         String url = String.format(measure_url, userId, prmId, request, from.format(API_DATE_FORMAT),
                 to.format(API_DATE_FORMAT));
         String data = getData(url);
-        ConsumptionReport report = gson.fromJson(data, ConsumptionReport.class);
-        return report.firstLevel.consumptions;
+        if (data.isEmpty()) {
+            throw new LinkyException(String.format("Requesting '%s' returned an empty response", url));
+        }
+        logger.trace("getData returned {}", data);
+        try {
+            ConsumptionReport report = gson.fromJson(data, ConsumptionReport.class);
+            return report.firstLevel.consumptions;
+        } catch (JsonSyntaxException e) {
+            logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
+            throw new LinkyException(
+                    String.format("Requesting '%s' returned an invalid JSON response : %s", url, e.getMessage()), e);
+        }
     }
 
     public Consumption getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
+        if (!connected) {
+            initialize();
+        }
         return getMeasures(userId, prmId, from, to, "energie");
     }
 
     public Consumption getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
+        if (!connected) {
+            initialize();
+        }
         return getMeasures(userId, prmId, from, to, "pmax");
     }
 }

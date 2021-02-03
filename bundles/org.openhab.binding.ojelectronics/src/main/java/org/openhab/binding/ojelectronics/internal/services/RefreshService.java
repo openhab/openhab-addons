@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,14 +25,13 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.ojelectronics.internal.common.OJGSonBuilder;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
 import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentResponseModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -46,7 +45,7 @@ public final class RefreshService implements AutoCloseable {
     private final OJElectronicsBridgeConfiguration config;
     private final Logger logger = LoggerFactory.getLogger(RefreshService.class);
     private final HttpClient httpClient;
-    private final Gson gson = createGson();
+    private final Gson gson = OJGSonBuilder.getGSon();
 
     private final ScheduledExecutorService schedulerService;
 
@@ -62,6 +61,7 @@ public final class RefreshService implements AutoCloseable {
      *
      * @param config Configuration of the bridge
      * @param httpClient HTTP client
+     * @param updateService Service to update the thermostat in the cloud
      */
     public RefreshService(OJElectronicsBridgeConfiguration config, HttpClient httpClient,
             ScheduledExecutorService schedulerService) {
@@ -103,11 +103,6 @@ public final class RefreshService implements AutoCloseable {
         this.scheduler = null;
     }
 
-    private Gson createGson() {
-        return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).setPrettyPrinting()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
-    }
-
     private void refresh() {
         final String sessionId = this.sessionId;
         if (sessionId == null) {
@@ -124,6 +119,8 @@ public final class RefreshService implements AutoCloseable {
                         if (unauthorized != null) {
                             unauthorized.run();
                         }
+                    } else if (result.getResponse().getStatus() == HttpStatus.FORBIDDEN_403) {
+                        handleConnectionLost();
                     } else {
                         handleRefreshDone(getContentAsString());
                     }

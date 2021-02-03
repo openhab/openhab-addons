@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -46,8 +45,8 @@ public class DeviceFeatureListener {
 
     private String itemName;
     private ChannelUID channelUID;
-    private Map<String, @Nullable String> parameters = new HashMap<>();
-    private Map<Class<?>, @Nullable State> state = new HashMap<>();
+    private Map<String, String> parameters = new HashMap<>();
+    private Map<Class<?>, State> state = new HashMap<>();
     private List<InsteonAddress> relatedDevices = new ArrayList<>();
     private InsteonBinding binding;
     private static final int TIME_DELAY_POLL_RELATED_MSEC = 5000;
@@ -91,7 +90,7 @@ public class DeviceFeatureListener {
      *
      * @param p the parameters to set
      */
-    public void setParameters(Map<String, @Nullable String> p) {
+    public void setParameters(Map<String, String> p) {
         parameters = p;
         updateRelatedDevices();
     }

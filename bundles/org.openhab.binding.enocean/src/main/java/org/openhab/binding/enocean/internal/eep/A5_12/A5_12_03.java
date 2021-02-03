@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.enocean.internal.eep.A5_12;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
@@ -36,6 +36,6 @@ public class A5_12_03 extends A5_12 {
     @Override
     protected State calcCurrentValue(float value) {
         // value is given in litre/second, hence multiply by 60
-        return new QuantityType<>(value * 60, SmartHomeUnits.LITRE_PER_MINUTE);
+        return new QuantityType<>(value * 60, Units.LITRE_PER_MINUTE);
     }
 }

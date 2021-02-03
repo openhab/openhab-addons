@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public class LcnModuleThresholdSubHandler extends AbstractLcnModuleVariableSubHa
                     info.hasExtendedMeasurementProcessing()));
 
             // request new value, if the module doesn't send it on itself
-            if (variable.shouldPollStatusAfterCommand(info.getFirmwareVersion())) {
+            if (info.getFirmwareVersion().map(v -> variable.shouldPollStatusAfterCommand(v)).orElse(true)) {
                 info.refreshVariable(variable);
             }
         } catch (LcnException e) {

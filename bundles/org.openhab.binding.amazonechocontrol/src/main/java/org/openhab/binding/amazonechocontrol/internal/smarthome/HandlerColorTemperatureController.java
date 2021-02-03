@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.DecimalType;
@@ -65,6 +65,10 @@ public class HandlerColorTemperatureController extends HandlerBase {
 
     private @Nullable Integer lastColorTemperature;
     private @Nullable String lastColorName;
+
+    public HandlerColorTemperatureController(SmartHomeDeviceHandler smartHomeDeviceHandler) {
+        super(smartHomeDeviceHandler);
+    }
 
     @Override
     public String[] getSupportedInterface() {
@@ -121,10 +125,11 @@ public class HandlerColorTemperatureController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            List<SmartHomeCapability> capabilities, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(COLOR_TEMPERATURE_IN_KELVIN.channelId)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
-            if (containsCapabilityProperty(capabilties, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
+            if (containsCapabilityProperty(capabilities, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
                 if (command instanceof DecimalType) {
                     int intValue = ((DecimalType) command).intValue();
                     if (intValue < 1000) {
@@ -139,10 +144,10 @@ public class HandlerColorTemperatureController extends HandlerBase {
             }
         }
         if (channelId.equals(COLOR_TEMPERATURE_NAME.channelId)) {
-            if (containsCapabilityProperty(capabilties, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
+            if (containsCapabilityProperty(capabilities, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
                 if (command instanceof StringType) {
-                    String colorTemperatureName = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(colorTemperatureName)) {
+                    String colorTemperatureName = command.toFullString();
+                    if (!colorTemperatureName.isEmpty()) {
                         lastColorName = colorTemperatureName;
                         connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureName",
                                 colorTemperatureName);

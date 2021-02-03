@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,6 +58,7 @@ public class HueBindingConstants {
 
     // List all channels
     public static final String CHANNEL_COLORTEMPERATURE = "color_temperature";
+    public static final String CHANNEL_COLORTEMPERATURE_ABS = "color_temperature_abs";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_ALERT = "alert";
@@ -66,6 +67,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_DIMMER_SWITCH = "dimmer_switch";
     public static final String CHANNEL_TAP_SWITCH = "tap_switch";
     public static final String CHANNEL_PRESENCE = "presence";
+    public static final String CHANNEL_ENABLED = "enabled";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
