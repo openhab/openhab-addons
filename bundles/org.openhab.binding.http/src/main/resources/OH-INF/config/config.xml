@@ -5,6 +5,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="channel-type:http:channel-config">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
@@ -15,13 +23,10 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="stateTransformation" type="text">
-			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
-		</parameter>
-		<parameter name="commandTransformation" type="text">
-			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="mode" type="text">
 			<label>Read/Write Mode</label>
@@ -37,6 +42,14 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-color">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
@@ -47,13 +60,10 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="stateTransformation" type="text">
-			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
-		</parameter>
-		<parameter name="commandTransformation" type="text">
-			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="onValue" type="text">
 			<label>On Value</label>
@@ -101,6 +111,14 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-contact">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
@@ -111,13 +129,10 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="stateTransformation" type="text">
-			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
-		</parameter>
-		<parameter name="commandTransformation" type="text">
-			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="openValue" type="text" required="true">
 			<label>Open Value</label>
@@ -141,6 +156,14 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-dimmer">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
@@ -151,13 +174,10 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="stateTransformation" type="text">
-			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
-		</parameter>
-		<parameter name="commandTransformation" type="text">
-			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="onValue" type="text">
 			<label>On Value</label>
@@ -200,9 +220,22 @@
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-number">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
@@ -213,13 +246,10 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="stateTransformation" type="text">
-			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
-		</parameter>
-		<parameter name="commandTransformation" type="text">
-			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="mode" type="text">
 			<label>Read/Write Mode</label>
@@ -240,6 +270,14 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-player">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
@@ -250,15 +288,11 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="stateTransformation" type="text">
-			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
-			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
-		</parameter>
-
 		<parameter name="playValue" type="text">
 			<label>Play Value</label>
 			<description>The value that represents PLAY</description>
@@ -297,6 +331,14 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-rollershutter">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
@@ -307,13 +349,10 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="stateTransformation" type="text">
-			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
-		</parameter>
-		<parameter name="commandTransformation" type="text">
-			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="upValue" type="text">
 			<label>Up Value</label>
@@ -345,6 +384,14 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-switch">
+		<parameter name="stateTransformation" type="text">
+			<label>State Transformation</label>
+			<description>Transformation pattern used when receiving values.</description>
+		</parameter>
+		<parameter name="commandTransformation" type="text">
+			<label>Command Transformation</label>
+			<description>Transformation pattern used when sending values.</description>
+		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
@@ -355,13 +402,10 @@
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="stateTransformation" type="text">
-			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
-		</parameter>
-		<parameter name="commandTransformation" type="text">
-			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values.</description>
+		<parameter name="stateContent" type="text">
+			<label>State Content</label>
+			<description>Content for state request (only used if method is POST/PUT)</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="onValue" type="text" required="true">
 			<label>On Value</label>
