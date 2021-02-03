@@ -32,41 +32,47 @@ The configuration settings for the thing are Hostname/IP address and Port, which
 
 The OpenTherm Gateway binding supports the following channels:
 
-| Channel Type ID          | Item Type            | Description                                              | Read Only |
-|--------------------------|----------------------|----------------------------------------------------------|-----------|
-| roomtemp                 | Number:Temperature   | Current sensed room temperature                          | yes       |
-| roomsetpoint             | Number:Temperature   | Current room temperature setpoint                        | yes       |
-| temperaturetemporary     | Number:Temperature   | Temporary override room temperature setpoint             | no        |
-| temperatureconstant      | Number:Temperature   | Constant override room temperature setpoint              | no        |
-| controlsetpoint          | Number:Temperature   | Central heating water setpoint set at boiler             | yes       |
-| controlsetpointrequested | Number:Temperature   | Central heating water setpoint requested by thermostat   | yes       |
-| controlsetpointoverride  | Number:Temperature   | Central heating water setpoint configured at gateway     | no        |
-| dhwtemp                  | Number:Temperature   | Domestic hot water temperature                           | yes       |
-| tdhwset                  | Number:Temperature   | Domestic hot water temperature setpoint                  | yes       |
-| overridedhwsetpoint      | Number:Temperature   | Domestic hot water temperature setpoint override         | no        |
-| flowtemp                 | Number:Temperature   | Boiler water temperature                                 | yes       |
-| returntemp               | Number:Temperature   | Return water temperature                                 | yes       |
-| outsidetemp              | Number:Temperature   | Outside temperature                                      | no        |
-| waterpressure            | Number:Pressure      | Central heating water pressure                           | yes       |
-| ch_enable                | Switch               | Central heating enabled set at boiler                    | yes       |
-| ch_enablerequested       | Switch               | Central heating enabled requested by thermostat          | yes       |
-| ch_enableoverride        | Switch               | Central heating enabled overridden at gateway            | yes       |
-| ch_mode                  | Switch               | Central heating active                                   | yes       |
-| dhw_enable               | Switch               | Domestic hot water enabled                               | yes       |
-| dhw_mode                 | Switch               | Domestic hot water active                                | yes       |
-| flame                    | Switch               | Burner active                                            | yes       |
-| modulevel                | Number:Dimensionless | Relative modulation level                                | yes       |
-| maxrelmdulevel           | Number:Dimensionless | Maximum relative modulation level                        | yes       |
-| fault                    | Switch               | Fault indication                                         | yes       |
-| servicerequest           | Switch               | Service required                                         | yes       |
-| lockout-reset            | Switch               | Lockout-reset enabled                                    | yes       |
-| lowwaterpress            | Switch               | Low water pressure fault                                 | yes       |
-| gasflamefault            | Switch               | Gas or flame fault                                       | yes       |
-| airpressfault            | Switch               | Air pressure fault                                       | yes       |
-| waterovtemp              | Switch               | Water over-temperature fault                             | yes       |
-| oemfaultcode             | Switch               | OEM fault code                                           | yes       |
-| diag                     | Switch               | Diagnostics indication                                   | yes       |
-| sendcommand              | Text                 | Channel to send commands to the OpenTherm Gateway device | no        |
+| Channel Type ID           | Item Type            | Description                                              | Read / Write |
+|---------------------------|----------------------|----------------------------------------------------------|--------------|
+| roomtemp                  | Number:Temperature   | Current sensed room temperature                          | r            |
+| roomsetpoint              | Number:Temperature   | Current room temperature setpoint                        | r            |
+| temperaturetemporary      | Number:Temperature   | Temporary override room temperature setpoint             | r / w        |
+| temperatureconstant       | Number:Temperature   | Constant override room temperature setpoint              | r / w        |
+| controlsetpoint           | Number:Temperature   | Central heating water setpoint set at boiler             | r            |
+| controlsetpointrequested  | Number:Temperature   | Central heating water setpoint requested by thermostat   | r            |
+| controlsetpointoverride   | Number:Temperature   | Central heating water setpoint configured at gateway     | r / w        |
+| controlsetpoint2          | Number:Temperature   | Central heating 2 water setpoint set at boiler           | r            |
+| controlsetpoint2requested | Number:Temperature   | Central heating 2 water setpoint requested by thermostat | r            |
+| controlsetpoint2override  | Number:Temperature   | Central heating 2 water setpoint configured at gateway   | r / w        |
+| dhwtemp                   | Number:Temperature   | Domestic hot water temperature                           | r            |
+| tdhwset                   | Number:Temperature   | Domestic hot water temperature setpoint                  | r            |
+| overridedhwsetpoint       | Number:Temperature   | Domestic hot water temperature setpoint override         | r / w        |
+| flowtemp                  | Number:Temperature   | Boiler water temperature                                 | r            |
+| returntemp                | Number:Temperature   | Return water temperature                                 | r            |
+| outsidetemp               | Number:Temperature   | Outside temperature                                      | r / w        |
+| waterpressure             | Number:Pressure      | Central heating water pressure                           | r            |
+| ch_enable                 | Switch               | Central heating enabled set at boiler                    | r            |
+| ch_enablerequested        | Switch               | Central heating enabled requested by thermostat          | r            |
+| ch_enableoverride         | Switch               | Central heating enabled overridden at gateway            | r            |
+| ch2_enable                | Switch               | Central heating 2 enabled set at boiler                  | r            |
+| ch2_enablerequested       | Switch               | Central heating 2 enabled requested by thermostat        | r            |
+| ch2_enableoverride        | Switch               | Central heating 2 enabled overridden at gateway          | r            |
+| ch_mode                   | Switch               | Central heating active                                   | r            |
+| dhw_enable                | Switch               | Domestic hot water enabled                               | r            |
+| dhw_mode                  | Switch               | Domestic hot water active                                | r            |
+| flame                     | Switch               | Burner active                                            | r            |
+| modulevel                 | Number:Dimensionless | Relative modulation level                                | r            |
+| maxrelmdulevel            | Number:Dimensionless | Maximum relative modulation level                        | r            |
+| fault                     | Switch               | Fault indication                                         | r            |
+| servicerequest            | Switch               | Service required                                         | r            |
+| lockout-reset             | Switch               | Lockout-reset enabled                                    | r            |
+| lowwaterpress             | Switch               | Low water pressure fault                                 | r            |
+| gasflamefault             | Switch               | Gas or flame fault                                       | r            |
+| airpressfault             | Switch               | Air pressure fault                                       | r            |
+| waterovtemp               | Switch               | Water over-temperature fault                             | r            |
+| oemfaultcode              | Switch               | OEM fault code                                           | r            |
+| diag                      | Switch               | Diagr / wstics indication                                | r            |
+| sendcommand               | Text                 | Channel to send commands to the OpenTherm Gateway device | r / w        |
 
 ## Full Example
 
@@ -86,6 +92,9 @@ Number:Temperature ConstantRoomSetpointOverride "Constant room setpoint override
 Number:Temperature ControlSetpoint "Control setpoint [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:controlsetpoint" }
 Number:Temperature ControlSetpointRequested "Control setpoint requested [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:controlsetpointrequested" }
 Number:Temperature ControlSetpointOverride "Control setpoint override [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:controlsetpointoverride" }
+Number:Temperature ControlSetpoint2 "Control setpoint 2 [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:controlsetpoint2" }
+Number:Temperature ControlSetpoint2Requested "Control setpoint 2 requested [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:controlsetpoint2requested" }
+Number:Temperature ControlSetpoint2Override "Control setpoint 2 override [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:controlsetpoint2override" }
 Number:Temperature DomesticHotWaterTemperature "Domestic hot water temperature [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:dhwtemp" }
 Number:Temperature DomesticHotWaterSetpoint "Domestic hot water setpoint [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:tdhwset" }
 Number:Temperature DomesticHotWaterSetpointOverride "Domestic hot water setpoint override [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:overridedhwsetpoint" }
@@ -96,6 +105,9 @@ Number:Pressure CentralHeatingWaterPressure "Central heating water pressure [%.1
 Switch CentralHeatingEnabled "Central heating enabled" <switch> { channel="openthermgateway:otgw:1:ch_enable" }
 Switch CentralHeatingEnabledRequested "Central heating enabled requested" <switch> { channel="openthermgateway:otgw:1:ch_enablerequested" }
 Switch CentralHeatingEnabledOverride "Central heating enabled override" <switch> { channel="openthermgateway:otgw:1:ch_enableoverride" }
+Switch CentralHeating2Enabled "Central heating 2 enabled" <switch> { channel="openthermgateway:otgw:1:ch2_enable" }
+Switch CentralHeating2EnabledRequested "Central 2 heating enabled requested" <switch> { channel="openthermgateway:otgw:1:ch2_enablerequested" }
+Switch CentralHeating2EnabledOverride "Central 2 heating enabled override" <switch> { channel="openthermgateway:otgw:1:ch2_enableoverride" }
 Switch CentralHeatingActive "Central heating active" <switch> { channel="openthermgateway:otgw:1:ch_mode" }
 Switch DomesticHotWaterEnabled "Domestic hot water enabled" <switch> { channel="openthermgateway:otgw:1:dhw_enable" }
 Switch DomesticHotWaterActive "Domestic hot water active" <switch> { channel="openthermgateway:otgw:1:dhw_mode" }
@@ -153,5 +165,4 @@ sitemap demo label="Main Menu" {
         Switch item="Diagnostics" icon="" label="Diagnostics indication"
     }
 }
-
 ```
