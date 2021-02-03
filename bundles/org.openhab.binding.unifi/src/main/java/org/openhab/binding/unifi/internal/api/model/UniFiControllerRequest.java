@@ -83,6 +83,10 @@ public class UniFiControllerRequest<T> {
 
     private String path = "/";
 
+    private String csrfToken;
+
+    private Boolean unifiOS;
+
     private Map<String, String> queryParameters = new HashMap<>();
 
     private Map<String, String> bodyParameters = new HashMap<>();
@@ -91,12 +95,19 @@ public class UniFiControllerRequest<T> {
 
     // Public API
 
-    public UniFiControllerRequest(Class<T> resultType, Gson gson, HttpClient httpClient, String host, int port) {
+    public UniFiControllerRequest(Class<T> resultType, Gson gson, HttpClient httpClient, String host, int port,
+            String csrfToken, Boolean unifiOS) {
         this.resultType = resultType;
         this.gson = gson;
         this.httpClient = httpClient;
         this.host = host;
         this.port = port;
+        this.csrfToken = csrfToken;
+        this.unifiOS = unifiOS;
+    }
+
+    public void setAPIPath(String relativePath) {
+        this.path = "/proxy/network" + relativePath;
     }
 
     public void setPath(String path) {
@@ -136,6 +147,10 @@ public class UniFiControllerRequest<T> {
                 if (logger.isTraceEnabled()) {
                     logger.trace("<< {} {} \n{}", status, HttpStatus.getMessage(status), prettyPrintJson(content));
                 }
+
+                String csrfToken = response.getHeaders().get("X-CSRF-Token");
+                if (csrfToken != null && !csrfToken.isEmpty())
+                    this.csrfToken = csrfToken;
                 break;
             case HttpStatus.BAD_REQUEST_400:
                 throw new UniFiInvalidCredentialsException("Invalid Credentials");
@@ -184,6 +199,10 @@ public class UniFiControllerRequest<T> {
         return response;
     }
 
+    public String getCsrfToken() {
+        return csrfToken;
+    }
+
     private Request newRequest() {
         HttpMethod method = bodyParameters.isEmpty() ? HttpMethod.GET : HttpMethod.POST;
         HttpURI uri = new HttpURI(HttpScheme.HTTPS.asString(), host, port, path);
@@ -198,6 +217,10 @@ public class UniFiControllerRequest<T> {
                     StandardCharsets.UTF_8);
             request = request.content(content);
         }
+
+        if (!csrfToken.isEmpty())
+            request.header("x-csrf-token", this.csrfToken);
+
         return request;
     }
 
