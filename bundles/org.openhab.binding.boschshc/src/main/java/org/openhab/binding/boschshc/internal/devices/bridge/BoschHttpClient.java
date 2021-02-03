@@ -196,7 +196,10 @@ public class BoschHttpClient extends HttpClient {
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
         logger.trace("Create request for http client {}", this.toString());
 
-        Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
+        Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
+                .header("api-version", "2.1") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/46
+                .timeout(10, TimeUnit.SECONDS); // Set default timeout
+
         if (content != null) {
             String body = GSON.toJson(content);
             logger.trace("create request for {} and content {}", url, body);
@@ -204,9 +207,6 @@ public class BoschHttpClient extends HttpClient {
         } else {
             logger.trace("create request for {}", url);
         }
-
-        // Set default timeout
-        request.timeout(10, TimeUnit.SECONDS);
 
         return request;
     }
