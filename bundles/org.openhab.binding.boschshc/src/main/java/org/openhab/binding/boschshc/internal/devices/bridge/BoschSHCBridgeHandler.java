@@ -43,6 +43,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +84,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        logger.debug("Initialize {} Version {}", FrameworkUtil.getBundle(getClass()).getSymbolicName(),
+                FrameworkUtil.getBundle(getClass()).getVersion());
+
         // Read configuration
         BoschSHCBridgeConfiguration config = getConfigAs(BoschSHCBridgeConfiguration.class);
 
@@ -168,7 +172,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * and starts the first log poll.
      */
     private void initialAccess(BoschHttpClient httpClient) {
-        logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05", this, httpClient);
+        logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {}", this, httpClient);
 
         try {
             // check access and pair if necessary
