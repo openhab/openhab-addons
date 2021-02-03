@@ -189,7 +189,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 vehicleStatusCallback.onResponse(vehicleStatusCache);
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
                 if (chargeProfileEdit.isEmpty()) {
-                    chargeProfileCallback.onResponse(chargeProfileCache);
+                    updateChargeProfile(chargeProfileCache);
                 } else {
                     updateChargeProfile(chargeProfileEdit.get());
                 }
@@ -225,7 +225,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                             remote.get().execute(RemoteService.CHARGE_NOW);
                             break;
                         case REMOTE_SERVICE_CHARGING_CONTROL:
-                            sendChargeProfile(chargeProfileEdit.get());
+                            sendChargeProfile(chargeProfileEdit);
                             break;
                         default:
                             logger.info("Remote service execution {} unknown", serviceCommand);
@@ -534,11 +534,8 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onResponse(Optional<String> content) {
             chargeProfileCache = content;
-            if (content.isPresent() && chargeProfileEdit.isEmpty()) {
-                final ChargeProfileWrapper profile = ChargeProfileWrapper.fromJson(content.get());
-                if (profile != null) {
-                    updateChargeProfile(profile);
-                }
+            if (chargeProfileEdit.isEmpty()) {
+                updateChargeProfile(chargeProfileCache);
             }
             removeCallback(this);
         }
@@ -847,20 +844,22 @@ public class VehicleHandler extends VehicleChannelHandler {
     }
 
     private void cancelChargeProfileEdit() {
+        editTimeout = Optional.empty();
         chargeProfileEdit = Optional.empty();
-        final ChargeProfileWrapper profile = ChargeProfileWrapper.fromJson(chargeProfileCache.get());
-        if (profile != null) {
-            updateChargeProfile(profile);
-        }
+        updateChargeProfile(chargeProfileCache);
     }
 
     private void saveChargeProfileSent() {
+        if (editTimeout.isPresent()) {
+            editTimeout.get().cancel(true);
+            editTimeout = Optional.empty();
+        }
         if (chargeProfileSent.isPresent()) {
             chargeProfileCache = Optional.of(chargeProfileSent.get());
+            chargeProfileSent = Optional.empty();
+            chargeProfileEdit = Optional.empty();
+            updateChargeProfile(chargeProfileCache);
         }
-        chargeProfileEdit = Optional.empty();
-        chargeProfileSent = Optional.empty();
-        chargeProfileCallback.onResponse(chargeProfileCache);
     }
 
     @Override
@@ -885,9 +884,9 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    public void sendChargeProfile(final @Nullable ChargeProfileWrapper profile) {
-        if (remote.isPresent() && profile != null) {
-            final String json = profile.getJson();
+    public void sendChargeProfile(Optional<ChargeProfileWrapper> profile) {
+        if (remote.isPresent() && profile.isPresent()) {
+            final String json = profile.get().getJson();
             logger.info("sending charging profile: {}", json);
             chargeProfileSent = Optional.of(json);
             remote.get().execute(RemoteService.CHARGING_CONTROL, json);

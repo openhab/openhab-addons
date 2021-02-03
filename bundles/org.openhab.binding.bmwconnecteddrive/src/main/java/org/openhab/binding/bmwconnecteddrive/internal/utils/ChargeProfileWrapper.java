@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper.ProfileKey.*;
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.NULL_LOCAL_TIME;
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.TIME_FORMATER;
+
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -30,6 +34,8 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargingWindow;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.Timer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ChargeProfileWrapper} Wrapper for ChargeProfiles
@@ -40,7 +46,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
 @NonNullByDefault
 public class ChargeProfileWrapper {
 
-    public static final DateTimeFormatter TIMEFORMATER = DateTimeFormatter.ofPattern("HH:mm");
+    private final Logger logger = LoggerFactory.getLogger(ChargeProfileWrapper.class);
 
     public enum ProfileType {
         WEEKLY,
@@ -58,7 +64,7 @@ public class ChargeProfileWrapper {
         WINDOWEND
     }
 
-    protected ProfileType type = ProfileType.EMPTY;
+    final protected ProfileType type;
 
     @Nullable
     private ChargingMode mode;
@@ -90,26 +96,25 @@ public class ChargeProfileWrapper {
             return;
         }
 
-        preference = planner.chargingPreferences == null ? null
-                : ChargingPreference.valueOf(planner.chargingPreferences);
-        mode = planner.chargingMode == null ? null : ChargingMode.valueOf(planner.chargingMode);
+        setPreference(planner.chargingPreferences);
+        setMode(planner.chargingMode);
 
-        this.setEnabled(ProfileKey.CLIMATE, planner.climatizationEnabled);
+        setEnabled(CLIMATE, planner.climatizationEnabled);
 
-        addTimer(ProfileKey.TIMER1, planner.timer1);
-        addTimer(ProfileKey.TIMER2, planner.timer2);
+        addTimer(TIMER1, planner.timer1);
+        addTimer(TIMER2, planner.timer2);
 
         if (planner.preferredChargingWindow != null) {
-            addTime(ProfileKey.WINDOWSTART, planner.preferredChargingWindow.startTime);
-            addTime(ProfileKey.WINDOWEND, planner.preferredChargingWindow.endTime);
+            addTime(WINDOWSTART, planner.preferredChargingWindow.startTime);
+            addTime(WINDOWEND, planner.preferredChargingWindow.endTime);
         } else if (ChargingPreference.CHARGING_WINDOW.equals(preference)) {
-            addTime(ProfileKey.WINDOWSTART, Constants.NULL_TIME);
-            addTime(ProfileKey.WINDOWEND, Constants.NULL_TIME);
+            addTime(WINDOWSTART, null);
+            addTime(WINDOWEND, null);
         }
 
-        if (ProfileType.WEEKLY.equals(type)) {
-            addTimer(ProfileKey.TIMER3, planner.timer3);
-            addTimer(ProfileKey.OVERRIDE, planner.overrideTimer);
+        if (isWeekly()) {
+            addTimer(TIMER3, planner.timer3);
+            addTimer(OVERRIDE, planner.overrideTimer);
         }
     }
 
@@ -129,6 +134,7 @@ public class ChargeProfileWrapper {
         try {
             this.mode = ChargingMode.valueOf(mode);
         } catch (IllegalArgumentException iae) {
+            logger.warn("unexpected value for chargingMode: {}", mode);
             this.mode = null;
         }
     }
@@ -141,6 +147,7 @@ public class ChargeProfileWrapper {
         try {
             this.preference = ChargingPreference.valueOf(preference);
         } catch (IllegalArgumentException iae) {
+            logger.warn("unexpected value for chargingPreference: {}", preference);
             this.preference = null;
         }
     }
@@ -157,10 +164,16 @@ public class ChargeProfileWrapper {
         return null;
     }
 
-    public void setDays(final ProfileKey key, final List<String> days) {
+    public void setDays(final ProfileKey key, @Nullable final List<String> days) {
         final EnumSet<Day> daySet = EnumSet.noneOf(Day.class);
-        for (String day : days) {
-            daySet.add(Day.valueOf(day));
+        if (days != null) {
+            for (String day : days) {
+                try {
+                    daySet.add(Day.valueOf(day));
+                } catch (IllegalArgumentException iae) {
+                    logger.warn("unexpected value for {} day: {}", key.name(), day);
+                }
+            }
         }
         daysOfWeek.put(key, daySet);
     }
@@ -197,7 +210,7 @@ public class ChargeProfileWrapper {
     public void setHour(final ProfileKey key, final int hour) {
         LocalTime dateTime = times.get(key);
         if (dateTime == null) {
-            dateTime = LocalTime.parse(Constants.NULL_TIME, TIMEFORMATER);
+            dateTime = NULL_LOCAL_TIME;
         }
         times.put(key, dateTime.withHour(hour));
     }
@@ -205,7 +218,7 @@ public class ChargeProfileWrapper {
     public void setMinute(final ProfileKey key, int minute) {
         LocalTime dateTime = times.get(key);
         if (dateTime == null) {
-            dateTime = LocalTime.parse(Constants.NULL_TIME, TIMEFORMATER);
+            dateTime = NULL_LOCAL_TIME;
         }
         times.put(key, dateTime.withMinute(minute));
     }
@@ -215,47 +228,49 @@ public class ChargeProfileWrapper {
         final WeeklyPlanner planner = new WeeklyPlanner();
 
         planner.chargingPreferences = preference == null ? null : preference.name();
-        planner.climatizationEnabled = isEnabled(ProfileKey.CLIMATE);
+        planner.climatizationEnabled = isEnabled(CLIMATE);
         if (ChargingPreference.CHARGING_WINDOW.equals(preference)) {
             planner.chargingMode = getMode();
-            final LocalTime start = getTime(ProfileKey.WINDOWSTART);
-            final LocalTime end = getTime(ProfileKey.WINDOWEND);
+            final LocalTime start = getTime(WINDOWSTART);
+            final LocalTime end = getTime(WINDOWEND);
             if (start != null || end != null) {
                 planner.preferredChargingWindow = new ChargingWindow();
-                planner.preferredChargingWindow.startTime = start == null ? null : start.format(TIMEFORMATER);
-                planner.preferredChargingWindow.endTime = end == null ? null : end.format(TIMEFORMATER);
+                planner.preferredChargingWindow.startTime = start == null ? null : start.format(TIME_FORMATER);
+                planner.preferredChargingWindow.endTime = end == null ? null : end.format(TIME_FORMATER);
             }
         }
-        planner.timer1 = getTimer(ProfileKey.TIMER1);
-        planner.timer2 = getTimer(ProfileKey.TIMER2);
-        if (ProfileType.WEEKLY.equals(type)) {
-            planner.timer3 = getTimer(ProfileKey.TIMER3);
-            planner.overrideTimer = getTimer(ProfileKey.OVERRIDE);
+        planner.timer1 = getTimer(TIMER1);
+        planner.timer2 = getTimer(TIMER2);
+        if (isWeekly()) {
+            planner.timer3 = getTimer(TIMER3);
+            planner.overrideTimer = getTimer(OVERRIDE);
             profile.weeklyPlanner = planner;
-        } else if (ProfileType.TWO_TIMES.equals(type)) {
+        } else if (isTwoTimes()) {
             profile.twoTimesTimer = planner;
         }
         return Converter.getGson().toJson(profile);
     }
 
-    private void addTime(final ProfileKey key, final String time) {
-        times.put(key, LocalTime.parse(time, TIMEFORMATER));
+    private void addTime(final ProfileKey key, @Nullable final String time) {
+        try {
+            times.put(key, time == null ? NULL_LOCAL_TIME : LocalTime.parse(time, TIME_FORMATER));
+        } catch (DateTimeParseException dtpe) {
+            logger.warn("unexpected value for {} time: {}", key.name(), time);
+        }
     }
 
     private void addTimer(final ProfileKey key, @Nullable final Timer timer) {
         if (timer == null) {
             enabled.put(key, false);
-            addTime(key, Constants.NULL_TIME);
-            if (ProfileType.WEEKLY.equals(type)) {
-                setDays(key, List.of());
+            addTime(key, null);
+            if (isWeekly()) {
+                setDays(key, null);
             }
         } else {
             enabled.put(key, timer.timerEnabled);
-            addTime(key, timer.departureTime == null ? Constants.NULL_TIME : timer.departureTime);
-            if (timer.weekdays != null) {
+            addTime(key, timer.departureTime);
+            if (isWeekly()) {
                 setDays(key, timer.weekdays);
-            } else if (ProfileType.WEEKLY.equals(type)) {
-                setDays(key, List.of());
             }
         }
     }
@@ -264,8 +279,8 @@ public class ChargeProfileWrapper {
         final Timer timer = new Timer();
         timer.timerEnabled = enabled.get(key);
         final LocalTime time = times.get(key);
-        timer.departureTime = time == null ? null : time.format(TIMEFORMATER);
-        if (ProfileType.WEEKLY.equals(type)) {
+        timer.departureTime = time == null ? null : time.format(TIME_FORMATER);
+        if (isWeekly()) {
             final Set<Day> days = daysOfWeek.get(key);
             if (days != null) {
                 timer.weekdays = new ArrayList<>();
@@ -275,5 +290,13 @@ public class ChargeProfileWrapper {
             }
         }
         return timer.timerEnabled == null && timer.departureTime == null && timer.weekdays == null ? null : timer;
+    }
+
+    private boolean isWeekly() {
+        return ProfileType.WEEKLY.equals(type);
+    }
+
+    private boolean isTwoTimes() {
+        return ProfileType.TWO_TIMES.equals(type);
     }
 }
