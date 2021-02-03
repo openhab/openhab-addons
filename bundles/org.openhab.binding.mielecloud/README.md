@@ -609,11 +609,8 @@ When this is the first time you pair an account, you will need to allow openHAB 
 
 When everything worked, you are presented with a page stating that pairing was successful.
 Select the locale which should be used to display localized texts in openHAB channels.
-Note that there is currently an issue with the endpoint of the Miele cloud service which is used by the binding that prevents the locale setting from functioning correctly.
-This will be fixed in the future.
 From here, you have two options:
 Either let the binding automatically configure a bridge instance or copy the presented things-file template to a things file and return to the overview page.
-We recommend the former for reasons outlined under [Account Configuration](#account-configuration).
 
 ![Pairing Successful](doc/pairing-success.png)
 
