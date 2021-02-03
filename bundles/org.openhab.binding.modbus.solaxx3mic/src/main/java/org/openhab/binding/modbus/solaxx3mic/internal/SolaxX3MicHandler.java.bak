@@ -95,7 +95,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SolaxX3MicConfiguration.class);
-        logger.debug("Initializing thing with properties: {} and config {}", thing.getProperties(), config.toString());
+        logger.debug("Initializing thing with properties: {}", thing.getProperties());
 
         startUp();
     }
@@ -126,7 +126,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
         connectEndpoint();
 
         if (comms == null || config == null) {
-            logger.debug("Invalid endpoint/config/manager ref for Solax X3 handler");
+            logger.debug("Invalid endpoint/config/manager ref for sunspec handler");
             return;
         }
 
@@ -253,7 +253,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            //@SuppressWarnings("null")
+            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' is offline", label));
@@ -269,7 +269,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
         }
 
         if (comms == null) {
-            //@SuppressWarnings("null")
+            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' not completely initialized", label));
@@ -306,7 +306,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
         logger.debug("Setting up regular polling");
 
         ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
-                ModbusReadFunctionCode.READ_INPUT_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
+                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
         long refreshMillis = myconfig.getRefreshMillis();
         pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
@@ -323,17 +323,12 @@ public class SolaxX3MicHandler extends BaseThingHandler {
      */
     protected void handlePolledData(ModbusRegisterArray registers) {
         Thing mything = this.getThing();
-        //logger.debug("Invoked loopback for handling polled data");
         for (Channel localchannel : mything.getChannels()) {
-            //logger.debug("Handling Channel with UID = {}", localchannel.getUID());
             SolaxX3MicChannelConfiguration solaxChannelConfig = localchannel.getConfiguration().as(SolaxX3MicChannelConfiguration.class);
             Long value = 0L;
             switch (solaxChannelConfig.registerType) {
                 case "INT":
-                    value = ModbusParser.extractInt32(registers, solaxChannelConfig.registerNumber, true, 0);
-                    break;
-                case "INT_BIGENDIAN":
-                    value = ModbusParser.extractInt32(registers, solaxChannelConfig.registerNumber, false, 0);
+                    value = ModbusParser.extractInt32(registers, solaxChannelConfig.registerNumber, 0);
                     break;
                 case "SHORT":
                     value = (long) ModbusParser.extractInt16(registers, solaxChannelConfig.registerNumber, (short) 0);
@@ -349,11 +344,9 @@ public class SolaxX3MicHandler extends BaseThingHandler {
                 try {
                     Field field = SmartHomeUnits.class.getDeclaredField(solaxChannelConfig.registerUnit);
                     Unit<?> unit = (Unit<?>) field.get(field.getClass());
-                    State s = getScaled(value, solaxChannelConfig.registerScaleFactor, unit);
-                    //logger.debug("value of channel is {} (real value = {}, scaleFactor = {}, unit = {}", s.toString(), value, solaxChannelConfig.registerScaleFactor, unit.toString());
-                    updateState(localchannel.getUID(), s);
+                    updateState(localchannel.getUID(), getScaled(value, solaxChannelConfig.registerScaleFactor, unit));
                 } catch (NoSuchFieldException ex) {
-                    logger.warn("Incorrectly set up of Channel UUID = {}, ex = {}", localchannel.getUID(), ex.getMessage());
+                    logger.warn("Incorrectly set up of Channel UUID = ");
                 } catch (IllegalAccessException ex) {
                     logger.error("Illegal access exception during reflection to Units!");
                 }
@@ -448,7 +441,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
      * @param scaleFactor the scale factor to use (may be negative)
      * @return the scaled value as a DecimalType
      */
-    protected State getScaled(Optional<? extends Number> value, Optional<Integer> scaleFactor, Unit<?> unit) {
+    protected State getScaled(Optional<? extends Number> value, Optional<Short> scaleFactor, Unit<?> unit) {
         if (!value.isPresent() || !scaleFactor.isPresent()) {
             return UnDefType.UNDEF;
         }
@@ -462,7 +455,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
      * @param scaleFactor the scale factor to use (may be negative)
      * @return the scaled value as a DecimalType
      */
-    protected State getScaled(Optional<? extends Number> value, int scaleFactor, Unit<?> unit) {
+    protected State getScaled(Optional<? extends Number> value, Short scaleFactor, Unit<?> unit) {
         return getScaled(value, Optional.of(scaleFactor), unit);
     }
 
@@ -473,7 +466,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
      * @param scaleFactor the scale factor to use (may be negative)
      * @return the scaled value as a DecimalType
      */
-    protected State getScaled(Number value, int scaleFactor, Unit<?> unit) {
+    protected State getScaled(Number value, Short scaleFactor, Unit<?> unit) {
         if (scaleFactor == 0) {
             return new QuantityType<>(value.longValue(), unit);
         }

@@ -82,9 +82,8 @@ public final class ModbusParser {
      * @param index the address of the field
      * @return the parsed value or empty if the field is not implemented
      */
-    public static Optional<Long> extractOptionalInt32(ModbusRegisterArray raw, int index, boolean littleEndian) {
-        ValueType type = littleEndian ? ValueType.INT32_SWAP : ValueType.INT32 ;
-        return ModbusBitUtilities.extractStateFromRegisters(raw, index, type).map(DecimalType::longValue);
+    public static Optional<Long> extractOptionalInt32(ModbusRegisterArray raw, int index) {
+        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT32).map(DecimalType::longValue);
     }
 
     /**
@@ -95,7 +94,7 @@ public final class ModbusParser {
      * @param def the default value
      * @return the parsed value or default if the field is not implemented
      */
-    public static Long extractInt32(ModbusRegisterArray raw, int index, boolean littleEndian, long def) {
-        return extractOptionalInt32(raw, index, littleEndian).orElse(def);
+    public static Long extractInt32(ModbusRegisterArray raw, int index, long def) {
+        return extractOptionalInt32(raw, index).orElse(def);
     }
 }

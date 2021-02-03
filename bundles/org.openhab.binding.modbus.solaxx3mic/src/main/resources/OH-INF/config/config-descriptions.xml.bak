@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:modbus:solaxx3mic-modbusconfig">
+	<config-description uri="thing-type:inverter:modbusconfig">
 
 		<parameter name="refresh" type="integer" min="0" unit="s">
 			<label>Refresh Interval</label>
@@ -47,7 +47,7 @@
 
 	</config-description>
 
-	<config-description uri="channel-type:modbus:solaxx3mic-channel-config">
+	<config-description uri="channel-type:inverter:channel-config">
 
 		<parameter name="registerNumber" type="integer">
 			<label>Modbus Register number</label>
@@ -68,7 +68,6 @@
 				<option value="SHORT">Short 16 bit</option>
 				<option value="USHORT">Unsigned Short 16 bit</option>
 				<option value="INT">Integer 32 bit</option>
-				<option value="INT_BIGENDIAN">Integer 32 bit with big endian</option>
 			</options>
 			<limitToOptions>true</limitToOptions>
 			<default>SHORT</default>
@@ -87,12 +86,6 @@
 			</options>
 			<limitToOptions>false</limitToOptions>
 			<default>WATT</default>
-		</parameter>
-
-		<parameter name="registerScaleFactor" type="integer">
-			<label>Scale factor of Register</label>
-			<description>This value is passed to scaling function as a power of 10</description>
-			<default>0</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="inverter-solax-x3-mic">
+	<thing-type id="solax-x3-mic">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
 			<bridge-type-ref id="serial"/>
@@ -45,7 +45,7 @@
 
 		<representation-property>uniqueAddress</representation-property>
 
-		<config-description-ref uri="thing-type:modbus:solaxx3mic-modbusconfig"/>
+		<config-description-ref uri="thing-type:inverter:modbusconfig"/>
 
 	</thing-type>
 
