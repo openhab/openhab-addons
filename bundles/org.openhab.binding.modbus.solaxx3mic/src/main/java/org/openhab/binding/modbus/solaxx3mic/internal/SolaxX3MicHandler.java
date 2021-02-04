@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,40 +12,31 @@
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
-import static org.openhab.binding.modbus.solaxx3mic.internal.SolaxX3MicBindingConstants.*;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
-import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
+import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
+import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
-import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
-import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.core.io.transport.modbus.PollTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Stanislaw Wawszczak - Initial contribution
  */
 @NonNullByDefault
-public class SolaxX3MicHandler extends BaseThingHandler {
+public class SolaxX3MicHandler extends BaseModbusThingHandler {
 
     /**
      * Logger instance
@@ -68,20 +59,6 @@ public class SolaxX3MicHandler extends BaseThingHandler {
      */
     private @Nullable SolaxX3MicConfiguration config;
 
-    /**
-     * This is the task used to poll the device
-     */
-    private volatile @Nullable PollTask pollTask = null;
-
-    /**
-     * Communication interface to the slave endpoint we're connecting to
-     */
-    protected volatile @Nullable ModbusCommunicationInterface comms = null;
-
-    /**
-     * This is the slave id, we store this once initialization is complete
-     */
-    private volatile int slaveId;
 
     public SolaxX3MicHandler(Thing thing) {
         super(thing);
@@ -93,53 +70,15 @@ public class SolaxX3MicHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
+    public void modbusInitialize() {
         config = getConfigAs(SolaxX3MicConfiguration.class);
         logger.debug("Initializing thing with properties: {} and config {}", thing.getProperties(), config.toString());
-
-        startUp();
-    }
-    /*
-     * 
-     * updateStatus(ThingStatus.UNKNOWN);
-     * 
-     * // Example for background initialization:
-     * scheduler.execute(() -> {
-     * boolean thingReachable = true; // <background task with long running initialization here>
-     * // when done do:
-     * if (thingReachable) {
-     * updateStatus(ThingStatus.ONLINE);
-     * } else {
-     * updateStatus(ThingStatus.OFFLINE);
-     * }
-     * });
-     */
-
-    /*
-     * This method starts the operation of this handler
-     * Load the config object of the block
-     * Connect to the slave bridge
-     * Start the periodic polling
-     */
-    private void startUp() {
-
-        connectEndpoint();
-
-        if (comms == null || config == null) {
-            logger.debug("Invalid endpoint/config/manager ref for Solax X3 handler");
-            return;
-        }
-
-        if (pollTask != null) {
-            return;
-        }
 
         // Try properties first
         @Nullable
         RegisterBlock inputBlock = getRegisterBlockFromConfig(RegisterBlockFunction.INPUT_REGISTER_BLOCK);
 
         if (inputBlock != null) {
-            publishUniqueAddress(inputBlock);
             updateStatus(ThingStatus.UNKNOWN);
             registerPollTask(inputBlock);
         } else {
@@ -172,144 +111,19 @@ public class SolaxX3MicHandler extends BaseThingHandler {
     }
 
     /**
-     * Publish the unique address property if it has not been set before
-     */
-    private void publishUniqueAddress(RegisterBlock block) {
-        Map<String, String> properties = getThing().getProperties();
-        if (properties.containsKey(PROPERTY_UNIQUE_ADDRESS) && !properties.get(PROPERTY_UNIQUE_ADDRESS).isEmpty()) {
-            logger.debug("Current unique address is: {}", properties.get(PROPERTY_UNIQUE_ADDRESS));
-            return;
-        }
-
-        ModbusEndpointThingHandler handler = getEndpointThingHandler();
-        if (handler == null) {
-            return;
-        }
-        getThing().setProperty(PROPERTY_UNIQUE_ADDRESS, handler.getUID().getAsString() + ":" + block.address);
-    }
-
-    /**
-     * Dispose the binding correctly
-     */
-    @Override
-    public void dispose() {
-        tearDown();
-    }
-
-    /**
-     * Unregister the poll task and release the endpoint reference
-     */
-    private void tearDown() {
-        unregisterPollTask();
-        unregisterEndpoint();
-    }
-
-    /**
-     * Returns the current slave id from the bridge
-     */
-    public int getSlaveId() {
-        return slaveId;
-    }
-
-    /**
-     * Get the endpoint handler from the bridge this handler is connected to
-     * Checks that we're connected to the right type of bridge
-     *
-     * @return the endpoint handler or null if the bridge does not exist
-     */
-    private @Nullable ModbusEndpointThingHandler getEndpointThingHandler() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            logger.debug("Bridge is null");
-            return null;
-        }
-        if (bridge.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Bridge is not online");
-            return null;
-        }
-
-        ThingHandler handler = bridge.getHandler();
-        if (handler == null) {
-            logger.debug("Bridge handler is null");
-            return null;
-        }
-
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
-        } else {
-            logger.debug("Unexpected bridge handler: {}", handler);
-            return null;
-        }
-    }
-
-    /**
-     * Get a reference to the modbus endpoint
-     */
-    private void connectEndpoint() {
-        if (comms != null) {
-            return;
-        }
-
-        ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
-        if (slaveEndpointThingHandler == null) {
-            // @SuppressWarnings("null")
-            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' is offline", label));
-            logger.debug("No bridge handler available -- aborting init for {}", label);
-            return;
-        }
-
-        try {
-            slaveId = slaveEndpointThingHandler.getSlaveId();
-            comms = slaveEndpointThingHandler.getCommunicationInterface();
-        } catch (EndpointNotInitializedException e) {
-            // this will be handled below as endpoint remains null
-        }
-
-        if (comms == null) {
-            // @SuppressWarnings("null")
-            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' not completely initialized", label));
-            logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
-            return;
-        }
-    }
-
-    /**
-     * Remove the endpoint if exists
-     */
-    private void unregisterEndpoint() {
-        // Comms will be close()'d by endpoint thing handler
-        comms = null;
-    }
-
-    /**
      * Register poll task
      * This is where we set up our regular poller
      */
     private synchronized void registerPollTask(RegisterBlock mainBlock) {
-        if (pollTask != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            throw new IllegalStateException("pollTask should be unregistered before registering a new one!");
-        }
-        // this must be because of Nullable checker bug.
-        SolaxX3MicConfiguration myconfig = config;
-        // this must be because of Nullable checker bug.
-        ModbusCommunicationInterface mycomms = comms;
-        if (myconfig == null || mycomms == null) {
-            throw new IllegalStateException("registerPollTask called without proper configuration");
-        }
-
+        SolaxX3MicConfiguration myconfig = config; // this is because of bug in Nullness checker      
         logger.debug("Setting up regular polling");
 
         ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
                 ModbusReadFunctionCode.READ_INPUT_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
         long refreshMillis = myconfig.getRefreshMillis();
-        pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
+
+        registerRegularPoll(request, refreshMillis, 1000, result -> {
             result.getRegisters().ifPresent(this::handlePolledData);
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
@@ -350,10 +164,14 @@ public class SolaxX3MicHandler extends BaseThingHandler {
                 try {
                     Field field = Units.class.getDeclaredField(solaxChannelConfig.registerUnit);
                     Unit<?> unit = (Unit<?>) field.get(field.getClass());
-                    State s = getScaled(value, solaxChannelConfig.registerScaleFactor, unit);
-                    // logger.debug("value of channel is {} (real value = {}, scaleFactor = {}, unit = {}",
-                    // s.toString(), value, solaxChannelConfig.registerScaleFactor, unit.toString());
-                    updateState(localchannel.getUID(), s);
+                    if (unit != null) {
+                        State s = getScaled(value, solaxChannelConfig.registerScaleFactor, unit);
+                        // logger.debug("value of channel is {} (real value = {}, scaleFactor = {}, unit = {}",
+                        // s.toString(), value, solaxChannelConfig.registerScaleFactor, unit.toString());
+                        updateState(localchannel.getUID(), s);
+                    } else {
+                        throw new IllegalAccessException();
+                    }
                 } catch (NoSuchFieldException ex) {
                     logger.warn("Incorrectly set up of Channel UUID = {}, ex = {}", localchannel.getUID(),
                             ex.getMessage());
@@ -362,88 +180,15 @@ public class SolaxX3MicHandler extends BaseThingHandler {
                 }
             }
         }
-        resetCommunicationError();
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-
-        logger.debug("Thing status changed to {}", this.getThing().getStatus().name());
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
-            startUp();
-        } else if (getThing().getStatus() == ThingStatus.OFFLINE) {
-            tearDown();
-        }
-    }
-
-    /**
-     * Unregister poll task.
-     *
-     * No-op in case no poll task is registered, or if the initialization is incomplete.
-     */
-    private synchronized void unregisterPollTask() {
-        @Nullable
-        PollTask task = pollTask;
-        if (task == null) {
-            return;
-        }
-        logger.debug("Unregistering polling from ModbusManager");
-        @Nullable
-        ModbusCommunicationInterface mycomms = comms;
-        if (mycomms != null) {
-            mycomms.unregisterRegularPoll(task);
-        }
-        pollTask = null;
     }
 
     /**
      * Handle errors received during communication
      */
-    protected void handleError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
-        // Ignore all incoming data and errors if configuration is not correct
-        if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
-            return;
-        }
-        String msg = failure.getCause().getMessage();
-        String cls = failure.getCause().getClass().getName();
+    private void handleError(AsyncModbusFailure<ModbusReadRequestBlueprint> error) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with read: %s: %s", cls, msg));
+                "Failed to retrieve data: " + error.getCause().getMessage());
     }
-
-    /**
-     * Returns true, if we're in a CONFIGURATION_ERROR state
-     *
-     * @return
-     */
-    protected boolean hasConfigurationError() {
-        ThingStatusInfo statusInfo = getThing().getStatusInfo();
-        return statusInfo.getStatus() == ThingStatus.OFFLINE
-                && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
-    }
-
-    /**
-     * Reset communication status to ONLINE if we're in an OFFLINE state
-     */
-    protected void resetCommunicationError() {
-        ThingStatusInfo statusInfo = thing.getStatusInfo();
-        if (ThingStatus.OFFLINE.equals(statusInfo.getStatus())
-                && ThingStatusDetail.COMMUNICATION_ERROR.equals(statusInfo.getStatusDetail())) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    /**
-     * Returns the channel UID for the specified group and channel id
-     *
-     * @param string the channel group
-     * @param string the channel id in that group
-     * @return the globally unique channel uid
-     */
-    ChannelUID channelUID(String group, String id) {
-        return new ChannelUID(getThing().getUID(), group, id);
-    }
-
     /**
      * Returns value multiplied by the 10 on the power of scaleFactory
      *
