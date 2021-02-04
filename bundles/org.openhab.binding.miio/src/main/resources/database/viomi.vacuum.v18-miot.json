@@ -829,7 +829,7 @@
 						},
 						{
 							"value": "2",
-							"label": "3Blocks"
+							"label": "3 Blocks"
 						}
 					]
 				},
@@ -840,7 +840,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"1 Block\",\"1\"\u003d\"2 Blocks\",\"2\"\u003d\"3Blocks\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"1 Block\",\"1\"\u003d\"2 Blocks\",\"2\"\u003d\"3 Blocks\"]"
 			},
 			{
 				"property": "map-num",
@@ -1519,7 +1519,8 @@
 				"piid": 6,
 				"friendlyName": "Voice - Download Progress",
 				"channel": "download-progress",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 100,

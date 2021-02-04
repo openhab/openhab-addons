@@ -1886,7 +1886,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | mop-life             | Number:Dimensionless | Viomi Vacuum - Mop Life                  |            |
 | mop-hours            | Number:Time          | Viomi Vacuum - Mop Hours                 |            |
 | suction-grade        | Number               | Viomi Vacuum - Suction Grade             | Value mapping ["0"="Silent","1"="Standard","2"="Medium","3"="Strong"] |
-| water-grade          | Number               | Viomi Vacuum - Water Grade               | Value mapping ["0"="1 Block","1"="2 Blocks","2"="3Blocks"] |
+| water-grade          | Number               | Viomi Vacuum - Water Grade               | Value mapping ["0"="1 Block","1"="2 Blocks","2"="3 Blocks"] |
 | map-num              | Number               | Viomi Vacuum - Map Num                   |            |
 | time-zone            | Number               | Viomi Vacuum - Time Zone                 |            |
 | clean-start-time     | Number:Time          | Viomi Vacuum - Clean Start Time          |            |
@@ -1921,7 +1921,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | target-voice         | String               | Voice - Target Voice                     |            |
 | cur-voice            | String               | Voice - Cur Voice                        |            |
 | download-status      | Number               | Voice - Download Status                  | Value mapping ["0"="Free","1"="Downloading"] |
-| download-progress    | Number               | Voice - Download Progress                |            |
+| download-progress    | Number:Dimensionless | Voice - Download Progress                |            |
 
 ### VIOMI Internet electric water heater 1A (60L) (<a name="viomi-waterheater-e1">viomi.waterheater.e1</a>) Channels
 
@@ -6293,7 +6293,7 @@ Number auto_area_id "Map - Auto Area Id" (G_vacuum) {channel="miio:basic:vacuum:
 String target_voice "Voice - Target Voice" (G_vacuum) {channel="miio:basic:vacuum:target-voice"}
 String cur_voice "Voice - Cur Voice" (G_vacuum) {channel="miio:basic:vacuum:cur-voice"}
 Number download_status "Voice - Download Status" (G_vacuum) {channel="miio:basic:vacuum:download-status"}
-Number download_progress "Voice - Download Progress" (G_vacuum) {channel="miio:basic:vacuum:download-progress"}
+Number:Dimensionless download_progress "Voice - Download Progress" (G_vacuum) {channel="miio:basic:vacuum:download-progress"}
 ```
 
 ### VIOMI Internet electric water heater 1A (60L) (viomi.waterheater.e1) item file lines
