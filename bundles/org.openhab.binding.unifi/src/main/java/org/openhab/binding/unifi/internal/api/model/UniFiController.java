@@ -65,20 +65,20 @@ public class UniFiController {
 
     private final String password;
 
-    private final Gson gson;
-
-    private Boolean unifiOS;
+    private final boolean unifios;
 
     private String csrfToken;
 
+    private final Gson gson;
+
     public UniFiController(HttpClient httpClient, String host, int port, String username, String password,
-            Boolean unifiOS) {
+            boolean unifios) {
         this.httpClient = httpClient;
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
-        this.unifiOS = unifiOS;
+        this.unifios = unifios;
         this.csrfToken = "";
         UniFiSiteInstanceCreator siteInstanceCreator = new UniFiSiteInstanceCreator(this);
         UniFiDeviceInstanceCreator deviceInstanceCreator = new UniFiDeviceInstanceCreator(this);
@@ -106,7 +106,7 @@ public class UniFiController {
         csrfToken = "";
 
         UniFiControllerRequest<Void> req = newRequest(Void.class);
-        req.setPath(unifiOS ? "/api/auth/login" : "/api/login");
+        req.setPath(unifios ? "/api/auth/login" : "/api/login");
         req.setBodyParameter("username", username);
         req.setBodyParameter("password", password);
         // scurb: Changed strict = false to make blocking feature work
@@ -118,7 +118,7 @@ public class UniFiController {
     public void logout() throws UniFiException {
         csrfToken = "";
         UniFiControllerRequest<Void> req = newRequest(Void.class);
-        req.setPath(unifiOS ? "/api/auth/logout" : "/logout");
+        req.setPath(unifios ? "/api/auth/logout" : "/logout");
         executeRequest(req);
     }
 
@@ -199,7 +199,7 @@ public class UniFiController {
     // Internal API
 
     private <T> UniFiControllerRequest<T> newRequest(Class<T> responseType) {
-        return new UniFiControllerRequest<>(responseType, gson, httpClient, host, port, csrfToken, unifiOS);
+        return new UniFiControllerRequest<>(responseType, gson, httpClient, host, port, csrfToken, unifios);
     }
 
     private <T> @Nullable T executeRequest(UniFiControllerRequest<T> request) throws UniFiException {

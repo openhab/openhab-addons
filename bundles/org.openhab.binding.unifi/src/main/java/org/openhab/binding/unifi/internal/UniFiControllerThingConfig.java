@@ -33,7 +33,7 @@ public class UniFiControllerThingConfig {
 
     private int refresh = 10;
 
-    private Boolean unifios = false;
+    private boolean unifios = false;
 
     public String getHost() {
         return host;
@@ -55,7 +55,7 @@ public class UniFiControllerThingConfig {
         return refresh;
     }
 
-    public Boolean getUnifios() {
+    public boolean isUniFiOS() {
         return unifios;
     }
 

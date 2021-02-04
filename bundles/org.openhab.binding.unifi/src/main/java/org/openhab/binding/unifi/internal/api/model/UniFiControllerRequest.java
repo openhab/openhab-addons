@@ -83,9 +83,9 @@ public class UniFiControllerRequest<T> {
 
     private String path = "/";
 
-    private String csrfToken;
+    private final boolean unifios;
 
-    private Boolean unifiOS;
+    private String csrfToken;
 
     private Map<String, String> queryParameters = new HashMap<>();
 
@@ -96,21 +96,22 @@ public class UniFiControllerRequest<T> {
     // Public API
 
     public UniFiControllerRequest(Class<T> resultType, Gson gson, HttpClient httpClient, String host, int port,
-            String csrfToken, Boolean unifiOS) {
+            String csrfToken, boolean unifios) {
         this.resultType = resultType;
         this.gson = gson;
         this.httpClient = httpClient;
         this.host = host;
         this.port = port;
         this.csrfToken = csrfToken;
-        this.unifiOS = unifiOS;
+        this.unifios = unifios;
     }
 
     public void setAPIPath(String relativePath) {
-        if (unifiOS)
+        if (unifios) {
             this.path = "/proxy/network" + relativePath;
-        else
+        } else {
             this.path = relativePath;
+        }
     }
 
     public void setPath(String path) {
@@ -152,8 +153,9 @@ public class UniFiControllerRequest<T> {
                 }
 
                 String csrfToken = response.getHeaders().get("X-CSRF-Token");
-                if (csrfToken != null && !csrfToken.isEmpty())
+                if (csrfToken != null && !csrfToken.isEmpty()) {
                     this.csrfToken = csrfToken;
+                }
                 break;
             case HttpStatus.BAD_REQUEST_400:
                 throw new UniFiInvalidCredentialsException("Invalid Credentials");
