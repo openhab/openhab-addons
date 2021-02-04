@@ -66,6 +66,8 @@ public class WLedHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
+    private BigDecimal hue65535 = BigDecimal.ZERO;
+    private BigDecimal saturation255 = BigDecimal.ZERO;
     private BigDecimal masterBrightness255 = BigDecimal.ZERO;
     private HSBType primaryColor = new HSBType();
     private BigDecimal primaryWhite = BigDecimal.ZERO;
@@ -320,6 +322,8 @@ public class WLedHandler extends BaseThingHandler {
                         sendGetRequest("/win&TT=500&T=0");
                     }
                     primaryColor = (HSBType) command;
+                    hue65535 = primaryColor.getHue().toBigDecimal().multiply(BIG_DECIMAL_182_04);
+                    saturation255 = primaryColor.getSaturation().toBigDecimal().multiply(BIG_DECIMAL_2_55);
                     masterBrightness255 = primaryColor.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55);
                     if (primaryColor.getSaturation().intValue() < config.saturationThreshold) {
                         sendWhite();
@@ -328,8 +332,13 @@ public class WLedHandler extends BaseThingHandler {
                         // Google sends this when it wants white
                         sendWhite();
                     } else {
-                        sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A="
-                                + masterBrightness255);
+                        if (config.segmentIndex == -1) {
+                            sendGetRequest("/win&TT=1000&FX=0&CY=0&HU=" + hue65535 + "&SA=" + saturation255 + "&A="
+                                    + masterBrightness255);
+                        } else {
+                            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A="
+                                    + masterBrightness255);
+                        }
                     }
                 } else if (command instanceof PercentType) {
                     masterBrightness255 = ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55);
