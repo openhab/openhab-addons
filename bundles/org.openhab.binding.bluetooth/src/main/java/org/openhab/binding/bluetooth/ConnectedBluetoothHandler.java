@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -197,7 +198,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                                   // will not run on the connectionTaskExecutor
                 .whenCompleteAsync((r, th) -> {
                     // we us a while loop here in case the exceptions get nested
-                    while (th instanceof ExecutionException) {
+                    while (th instanceof CompletionException || th instanceof ExecutionException) {
                         th = th.getCause();
                     }
                     if (th instanceof InterruptedException) {
