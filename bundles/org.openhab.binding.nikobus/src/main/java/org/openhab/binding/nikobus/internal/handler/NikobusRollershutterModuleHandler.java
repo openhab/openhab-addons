@@ -13,6 +13,8 @@
 package org.openhab.binding.nikobus.internal.handler;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +46,8 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
     private final Logger logger = LoggerFactory.getLogger(NikobusRollershutterModuleHandler.class);
     private final List<PositionEstimator> positionEstimators = new CopyOnWriteArrayList<>();
 
+    private final Map<String, DirectionConfiguration> directionConfigurations = new ConcurrentHashMap<>();
+
     public NikobusRollershutterModuleHandler(Thing thing) {
         super(thing);
     }
@@ -57,43 +61,50 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
         }
 
         positionEstimators.clear();
+        directionConfigurations.clear();
 
         for (Channel channel : thing.getChannels()) {
             PositionEstimatorConfig config = channel.getConfiguration().as(PositionEstimatorConfig.class);
             if (config.delay >= 0 && config.duration > 0) {
                 positionEstimators.add(new PositionEstimator(channel.getUID(), config));
             }
+
+            DirectionConfiguration configuration = config.reverse ? DirectionConfiguration.REVERSED
+                    : DirectionConfiguration.NORMAL;
+            directionConfigurations.put(channel.getUID().getId(), configuration);
         }
 
         logger.debug("Position estimators for {} = {}", thing.getUID(), positionEstimators);
     }
 
     @Override
-    protected int valueFromCommand(Command command) {
-        if (command == UpDownType.DOWN || command == StopMoveType.MOVE) {
-            return 0x02;
-        }
-        if (command == UpDownType.UP) {
-            return 0x01;
-        }
+    protected int valueFromCommand(String channelId, Command command) {
         if (command == StopMoveType.STOP) {
             return 0x00;
         }
-
+        if (command == UpDownType.DOWN || command == StopMoveType.MOVE) {
+            return getDirectionConfiguration(channelId).down;
+        }
+        if (command == UpDownType.UP) {
+            return getDirectionConfiguration(channelId).up;
+        }
         throw new IllegalArgumentException("Command '" + command + "' not supported");
     }
 
     @Override
-    protected State stateFromValue(int value) {
+    protected State stateFromValue(String channelId, int value) {
         if (value == 0x00) {
             return OnOffType.OFF;
         }
-        if (value == 0x01) {
+
+        DirectionConfiguration configuration = getDirectionConfiguration(channelId);
+        if (value == configuration.up) {
             return UpDownType.UP;
         }
-        if (value == 0x02) {
+        if (value == configuration.down) {
             return UpDownType.DOWN;
         }
+
         throw new IllegalArgumentException("Unexpected value " + value + " received");
     }
 
@@ -119,9 +130,18 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
         super.updateState(channelUID, new PercentType(percent));
     }
 
+    private DirectionConfiguration getDirectionConfiguration(String channelId) {
+        DirectionConfiguration configuration = directionConfigurations.get(channelId);
+        if (configuration == null) {
+            throw new IllegalArgumentException("Direction configuration not found for " + channelId);
+        }
+        return configuration;
+    }
+
     public static class PositionEstimatorConfig {
         public int duration = -1;
         public int delay = 5;
+        public boolean reverse = false;
     }
 
     private class PositionEstimator {
@@ -201,6 +221,19 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
         public String toString() {
             return "PositionEstimator('" + channelUID + "', duration = " + durationInMillis + "ms, delay = "
                     + delayInMillis + "ms)";
+        }
+    }
+
+    private static class DirectionConfiguration {
+        final int up;
+        final int down;
+
+        final static DirectionConfiguration NORMAL = new DirectionConfiguration(1, 2);
+        final static DirectionConfiguration REVERSED = new DirectionConfiguration(2, 1);
+
+        private DirectionConfiguration(int up, int down) {
+            this.up = up;
+            this.down = down;
         }
     }
 }
