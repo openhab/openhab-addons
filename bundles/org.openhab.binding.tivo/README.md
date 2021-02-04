@@ -52,8 +52,8 @@ All devices support the following channels:
 |-----------------|-----------------|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | channelSet      | Number (1-9999) | Current Channel - Request (SETCH)     | Displays the current channel number. When changed, tunes the DVR to the specified channel (unless a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work.                                                 |
 | channelForce    | Number (1-9999) | Current Channel - Forced (FORCECH)    | Displays the current channel number. When changed, tunes the DVR to the specified channel, **cancelling any recordings in progress if necessary** i.e. when all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work. |
-| menuTeleport    | String          | Change Special/Menu Screen (TELEPORT) | Change to one of the following TiVo menu screens: TIVO (Home), LIVETV, GUIDE, NOWPLAYING (My Shows), SEARCH, NETFLIX.                                                                                                                                                   |
-| irCommand       | String          | Remote Control Button (IRCOMMAND)     | Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes.                                                                                                                         |
+| menuTeleport    | String          | Change Special/Menu Screen (TELEPORT) | Change to one of the following TiVo menu screens: TIVO (Home), LIVETV, GUIDE, NOWPLAYING (My Shows), SEARCH, NETFLIX.                                                                                                                                             |
+| irCommand       | String          | Remote Control Button (IRCOMMAND)     | Send a simulated button push from the remote control to the TiVo. See below for available IR COMMANDS.                                                                                                                                                            |
 | kbdCommand      | String          | Keyboard Command (KEYBOARD)           | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes.                                                                                 |
 | dvrStatus       | String          | TiVo Status                           | Action return code / channel information returned by the TiVo.                                                                                                                                                                                                    |
 
@@ -61,6 +61,61 @@ All devices support the following channels:
 * Keyboard commands must currently be issued one character at a time to the item (this is how the TiVo natively supports this command).
 * To send multiple copies of the same keyboard command, append an asterisk with the number of repeats required e.g. NUM2*4 would send the number 2 four times. This is useful for performing searches where the number characters can only be accessed by pressing the keys multiple times in rapid succession i.e. each key press cycles through characters A, B, C, 2.
 * Special characters must also be changed to the appropriate command e.g. the comma symbol(`,`) must not be sent it should be replaced by 'COMMA'.
+
+Available IR Commands to use with `irCommand` channel:  
+UP  
+DOWN  
+LEFT  
+RIGHT  
+SELECT  
+TIVO  
+LIVETV  
+GUIDE  
+INFO  
+EXIT  
+THUMBSUP  
+THUMBSDOWN  
+CHANNELUP  
+CHANNELDOWN  
+PLAY  
+FORWARD  
+REVERSE  
+PAUSE  
+SLOW  
+REPLAY  
+ADVANCE  
+RECORD  
+NUM0  
+NUM1  
+NUM2  
+NUM3  
+NUM4  
+NUM5  
+NUM6  
+NUM7  
+NUM8  
+NUM9  
+ENTER  
+CLEAR  
+ACTION_A  
+ACTION_B  
+ACTION_C  
+ACTION_D  
+CC_ON  
+CC_OFF  
+FIND_REMOTE  
+ASPECT_CORRECTION_FULL  
+ASPECT_CORRECTION_PANEL  
+ASPECT_CORRECTION_ZOOM  
+ASPECT_CORRECTION_WIDE_ZOOM  
+VIDEO_MODE_FIXED_480i  
+VIDEO_MODE_FIXED_480p  
+VIDEO_MODE_FIXED_720p  
+VIDEO_MODE_FIXED_1080i  
+VIDEO_MODE_HYBRID  
+VIDEO_MODE_HYBRID_720p  
+VIDEO_MODE_HYBRID_1080i  
+VIDEO_MODE_NATIVE  
 
 ## Full Example
 
