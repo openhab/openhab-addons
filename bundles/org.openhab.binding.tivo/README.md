@@ -121,7 +121,7 @@ VIDEO_MODE_NATIVE
 
 **tivo.things**
 
-````java
+```java
 tivo:sckt:Living_Room "Living Room TiVo" [ host="192.168.0.19" ]
 ```
 
@@ -142,6 +142,7 @@ Switch      TiVo_Search         "Search Demo"
 ```
 
 * The item `TiVo_SetChannelName` depends upon a valid `tivo.map` file to translate channel numbers to channel names. The openHAB **MAP** transformation service must also be installed.
+* See [this discussion thread] (https://community.openhab.org/t/bogob-big-ol-grid-o-buttons-is-this-even-possible-yes-yes-it-is/115343) for an example of setting up an advanced UI to simulate the look of the TiVo remote.
 
 **tivo.sitemap:**
 
