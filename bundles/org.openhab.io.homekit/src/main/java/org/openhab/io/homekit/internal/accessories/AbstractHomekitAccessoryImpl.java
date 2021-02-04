@@ -218,18 +218,30 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * 
      * @param characteristicType characteristicType to identify item
      * @param map mapping to update
+     * @param customEnumList list to store custom state enumeration
      */
     @NonNullByDefault
-    protected void updateMapping(HomekitCharacteristicType characteristicType, Map<?, String> map) {
+    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map,
+            @Nullable List<T> customEnumList) {
         getCharacteristic(characteristicType).ifPresent(c -> {
             final Map<String, Object> configuration = c.getConfiguration();
             if (configuration != null) {
-                map.replaceAll((k, current_value) -> {
-                    final Object new_value = configuration.get(current_value);
-                    return (new_value instanceof String) ? (String) new_value : current_value;
+                map.forEach((k, current_value) -> {
+                    final Object new_value = configuration.get(k.toString());
+                    if (new_value instanceof String) {
+                        map.put(k, (String) new_value);
+                        if (customEnumList != null) {
+                            customEnumList.add(k);
+                        }
+                    }
                 });
             }
         });
+    }
+
+    @NonNullByDefault
+    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map) {
+        updateMapping(characteristicType, map, null);
     }
 
     /**
