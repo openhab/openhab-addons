@@ -21,6 +21,10 @@
 				<description>Port of the UniFi Controller</description>
 				<default>8443</default>
 			</parameter>
+			<parameter name="unifios" type="boolean" required="true">
+				<label>UniFi OS</label>
+				<description>If the UniFi Controller is running on UniFi OS.</description>
+			</parameter>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
 				<description>The username to access the UniFi Controller.</description>
