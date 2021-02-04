@@ -129,7 +129,9 @@ A HomeKit accessory has mandatory and optional characteristics (listed below in 
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
 
 ### UI based Configuration
+
 In order to add metadata to an item:
+
 - select desired item in mainUI
 - click on "Add Metadata"
   
@@ -151,6 +153,7 @@ In order to add metadata to an item:
 
 
 ### Textual configuration
+
 ```xtend
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```
@@ -283,7 +286,19 @@ Rollershutter   window_covering         "Blind"                         (gBlind)
 Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)        {homekit = "WindowCovering.CurrentHorizontalTiltAngle, WindowCovering.TargetHorizontalTiltAngle"}
 Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)        {homekit = "WindowCovering.CurrentVerticalTiltAngle, WindowCovering.TargetVerticalTiltAngle"}
  ```
+
+Current and Target Position characteristics can be linked to Rollershutter but also to Number or Dimmer item types.
+e.g.
+
+```xtend
+Group           gBlind   "Blinds"       		         {homekit = "WindowCovering"}
+Dimmer          blind_current_position    (gBlind)       {homekit = "CurrentPosition"}
+Number          blind_target_position     (gBlind)       {homekit = "TargetPosition"}
+String          blind_position            (gBlind)       {homekit = "PositionState"}
+```
+
 ### Thermostat
+
 A HomeKit thermostat has following mandatory characteristics:
 
 - CurrentTemperature
@@ -319,6 +334,7 @@ Number 			thermostat_heat_thrs 	    "Thermostat Heat Threshold Temp [%.1f C]"  	
 
 Current  and target temperatures have default min and max values. Any values below or above max limits will be replaced with min or max limits.
 Default limits are:
+
 - current temperature: min value = 0 C, max value = 100 C
 - target temperature: min value = 10 C, max value = 38 C
 
@@ -526,23 +542,23 @@ Switch          motionsensor_tampered      "Motion Sensor Tampered"             
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
 | Door                 |                             |                              |                          | Motorized door. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter            | Current position of motorized door                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter            | Target position of motorized door                                                                                                                                                                                                                                                                       |
-|                      | PositionState               |                              | Rollershutter            | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number   | Current position of motorized door                                                                                                                                                                                                                                                                       |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number   | Target position of motorized door                                                                                                                                                                                                                                                                       |
+|                      | PositionState               |                              | Rollershutter, String           | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
 |                      |                             | Name                         | String                   | Name of the motorized door                                                                                                                                                                                                                                                                             |
 |                      |                             | HoldPosition                 | Switch                   | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
 |                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
 | Window               |                             |                              |                          | Motorized window. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter            | Current position of motorized window                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter            | Target position of motorized window                                                                                                                                                                                                                                                                       |
-|                      | PositionState               |                              | Rollershutter            | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number | Current position of motorized window                                                                                                                                                                                                                                                                       |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of motorized window                                                                                                                                                                                                                                                                       |
+|                      | PositionState               |                              | Rollershutter, String         | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
 |                      |                             | Name                         | String                   | Name of the motorized window                                                                                                                                                                                                                                                                             |
 |                      |                             | HoldPosition                 | Switch                   | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
 |                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
 | WindowCovering       |                             |                              |                          | Window covering / blinds. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter            | Current position of window covering                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter            | Target position of window covering                                                                                                                                                                                                                                                                        |
-|                      | PositionState               |                              | Rollershutter            | current only "STOPPED" is supported.                                                                                                                                                                                                                                                                      |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number            | Current position of window covering                                                                                                                                                                                                                                                                       |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number            | Target position of window covering                                                                                                                                                                                                                                                                        |
+|                      | PositionState               |                              | Rollershutter, String             | current only "STOPPED" is supported.                                                                                                                                                                                                                                                                      |
 |                      |                             | Name                         | String                   | Name of the windows covering                                                                                                                                                                                                                                                                              |
 |                      |                             | HoldPosition                 | Switch                   | Window covering should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
 |                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
