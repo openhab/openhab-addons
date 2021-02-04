@@ -60,7 +60,7 @@ public class MiotJsonFileCreator {
 
         LinkedHashMap<String, String> checksums = new LinkedHashMap<>();
         LinkedHashSet<String> models = new LinkedHashSet<>();
-        models.add("zhimi.humidifier.ca4");
+        models.add("dreame.vacuum.p2009");
         if (args.length > 0) {
             models.add(args[0]);
         }
@@ -76,8 +76,9 @@ public class MiotJsonFileCreator {
         MiotParser miotParser;
         for (String model : models) {
             LOGGER.info("Processing: {}", model);
+            HttpClient httpClient = null;
             try {
-                HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+                httpClient = new HttpClient(new SslContextFactory.Client());
                 httpClient.setFollowRedirects(false);
                 httpClient.start();
                 miotParser = MiotParser.parse(model, httpClient);
@@ -103,6 +104,14 @@ public class MiotJsonFileCreator {
                 LOGGER.info("Error processing model {}: {}", model, e.getMessage());
             } catch (Exception e) {
                 LOGGER.info("Failed to initiate http Client: {}", e.getMessage());
+            } finally {
+                try {
+                    if (httpClient != null && httpClient.isRunning()) {
+                        httpClient.stop();
+                    }
+                } catch (Exception e) {
+                    // ignore
+                }
             }
         }
         StringBuilder sb = new StringBuilder();

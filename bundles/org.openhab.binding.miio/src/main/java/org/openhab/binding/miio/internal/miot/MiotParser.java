@@ -20,14 +20,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -38,6 +41,7 @@ import org.openhab.binding.miio.internal.basic.DeviceMapping;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
+import org.openhab.binding.miio.internal.basic.MiIoDeviceActionCondition;
 import org.openhab.binding.miio.internal.basic.OptionsValueListDTO;
 import org.openhab.binding.miio.internal.basic.StateDescriptionDTO;
 import org.slf4j.Logger;
@@ -45,9 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
@@ -65,8 +67,6 @@ public class MiotParser {
     private static final String BASEURL = "http://miot-spec.org/miot-spec-v2/";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final JsonParser PARSER = new JsonParser();
-
-    // private static final HttpClient httpClient = new HttpClient();
 
     private String model;
     private @Nullable String urn;
@@ -89,56 +89,13 @@ public class MiotParser {
             return miotParser;
         } catch (Exception e) {
             throw new MiotParseException("Error parsing miot data: " + e.getMessage(), e);
-        } finally {
-            try {
-                if (httpClient.isRunning()) {
-                    httpClient.stop();
-                }
-            } catch (Exception e) {
-                // ignore
-            }
-        }
-    }
-
-    public void writeEmuDevice(String path, MiIoBasicDevice device) {
-        JsonObject usersJson = new JsonObject();
-        JsonArray properties = new JsonArray();
-
-        for (MiIoBasicChannel ch : device.getDevice().getChannels()) {
-            JsonObject prop = new JsonObject();
-            prop.addProperty("property", ch.getProperty());
-            switch (ch.getType()) {
-                case "Dimmer":
-                case "Number":
-                    prop.addProperty("fakeresponse", (int) (Math.random() * 100));
-                    break;
-                case "Switch":
-                    prop.addProperty("fakeresponse", "true");
-                    break;
-                default:
-                    prop.addProperty("fakeresponse", "normal");
-                    break;
-
-            }
-            prop.addProperty("datatype", ch.getType());
-            properties.add(prop);
-        }
-
-        usersJson.add("properties", properties);
-        try (
-
-                PrintWriter out = new PrintWriter(path)) {
-            out.println(usersJson);
-            logger.info("Database file created:{}", path);
-        } catch (FileNotFoundException e) {
-            logger.info("Error writing file: {}", e.getMessage());
         }
     }
 
     public void writeDevice(String path, MiIoBasicDevice device) {
         String usersJson = GSON.toJson(device);
         try (PrintWriter out = new PrintWriter(path)) {
-            // touch up
+            // touch up so the format matches the regular OH standard formatting
             usersJson = usersJson.replace(".0,\n", ",\n");
             usersJson = usersJson.replace("\n", "\r\n").replace("  ", "\t");
             out.println(usersJson);
@@ -150,6 +107,7 @@ public class MiotParser {
 
     public MiIoBasicDevice getDevice(JsonElement urnData) throws MiotParseException {
         Set<String> unknownUnits = new HashSet<>();
+        Map<ActionDTO, ServiceDTO> deviceActions = new LinkedHashMap<>();
         StringBuilder channelConfigText = new StringBuilder("Suggested additional channelType \r\n");
 
         StringBuilder actionText = new StringBuilder("Manual actions for execution\r\n");
@@ -158,7 +116,7 @@ public class MiotParser {
         DeviceMapping deviceMapping = new DeviceMapping();
         MiotDeviceDataDTO miotDevice = GSON.fromJson(urnData, MiotDeviceDataDTO.class);
         if (miotDevice == null) {
-            throw new MiotParseException("Error parsing miot data: ");
+            throw new MiotParseException("Error parsing miot data: null");
         }
         List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
         deviceMapping.setPropertyMethod(MiIoCommand.GET_PROPERTIES.getCommand());
@@ -189,7 +147,7 @@ public class MiotParser {
                                                 : captializedName(propertyId)));
                         miIoBasicChannel.setSiid(service.siid);
                         miIoBasicChannel.setPiid(property.piid);
-                        // avoid duplicates and make camel case and avoid wrong names
+                        // avoid duplicates and make camel case and avoid invalid channel names
                         String chanId = propertyId.replace(" ", "").replace(".", "_").replace("-", "_");
 
                         int cnt = 0;
@@ -203,16 +161,12 @@ public class MiotParser {
                             logger.warn("duplicate for property:{} - {} ({}", chanId, property.description, cnt);
                         }
                         if (property.unit != null && !property.unit.isBlank()) {
-                            // TODO: can I do something with this info?
                             if (!property.unit.contains("none")) {
                                 miIoBasicChannel.setUnit(property.unit);
                             }
                         }
                         miIoBasicChannel.setProperty(propertyId);
                         miIoBasicChannel.setChannel(chanId);
-
-                        // miIoBasicChannel.setChannelType("miot_" + property.format);
-
                         switch (property.format) {
                             case "bool":
                                 miIoBasicChannel.setType("Switch");
@@ -243,10 +197,8 @@ public class MiotParser {
                                             "%." + (property.format.contentEquals("float") ? "1" : "0") + "f %unit%");
                                 } else {
                                     miIoBasicChannel.setType("Number");
-
                                     stateDescription.setPattern(
                                             "%." + (property.format.contentEquals("uint8") ? "0" : "1") + "f");
-
                                     if (property.unit != null) {
                                         unknownUnits.add(property.unit);
                                     }
@@ -293,10 +245,8 @@ public class MiotParser {
                             }
                             stateDescription.setOptions(channeloptions);
                             miIoBasicChannel.setStateDescription(stateDescription);
-                            // Use custom channelType to support the properties mapping
-                            // miIoBasicChannel.setChannelType(captializedName(model).replace(" ", "") + "_" + chanId);
 
-                            // Add the mapping to the readme
+                            // Add the mapping for the readme
                             StringBuilder mapping = new StringBuilder();
                             mapping.append("Value mapping [");
 
@@ -339,16 +289,14 @@ public class MiotParser {
                             miIoBasicChannel.setStateDescription(stateDescription);
                         }
                         miIoBasicChannels.add(miIoBasicChannel);
-                        // channelConfigText = printChannelDefinitions(channelConfigText, miIoBasicChannel, model,
-                        // property);
                     } else {
                         logger.info("No reading siid: {}, description: {}, piid: {},description: {}", service.siid,
                                 service.description, property.piid, property.description);
                     }
-
                 }
                 if (service.actions != null) {
                     for (ActionDTO action : service.actions) {
+                        deviceActions.put(action, service);
                         String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
                         actionText.append("`action{");
                         actionText.append(String.format("\"did\":\"%s-%s\",", serviceId, actionId));
@@ -362,7 +310,9 @@ public class MiotParser {
             } else {
                 logger.info("SID: {}, description: {} has no identified properties", service.siid, service.description);
             }
-            // TODO: Process actions
+        }
+        if (!deviceActions.isEmpty()) {
+            miIoBasicChannels.add(0, actionChannel(deviceActions));
         }
         deviceMapping.setChannels(miIoBasicChannels);
         device.setDevice(deviceMapping);
@@ -384,6 +334,45 @@ public class MiotParser {
 
         this.device = device;
         return device;
+    }
+
+    private MiIoBasicChannel actionChannel(Map<ActionDTO, ServiceDTO> deviceActions) {
+        MiIoBasicChannel miIoBasicChannel = new MiIoBasicChannel();
+        if (!deviceActions.isEmpty()) {
+            miIoBasicChannel.setProperty("");
+            miIoBasicChannel.setChannel("actions");
+            miIoBasicChannel.setFriendlyName("Actions");
+            miIoBasicChannel.setType("String");
+            StateDescriptionDTO stateDescription = new StateDescriptionDTO();
+            List<@NonNull OptionsValueListDTO> options = new LinkedList<>();
+            List<@NonNull MiIoDeviceAction> miIoDeviceActions = new LinkedList<>();
+            // TODO
+            deviceActions.forEach((action, service) -> {
+                String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
+                String serviceId = service.type.substring(service.type.indexOf("service:")).split(":")[1];
+                String description = String.format("%s-%s", serviceId, actionId);
+                OptionsValueListDTO option = new OptionsValueListDTO();
+                option.label = description;
+                option.value = description;
+                options.add(option);
+                MiIoDeviceAction miIoDeviceAction = new MiIoDeviceAction();
+                miIoDeviceAction.setCommand("action");
+                miIoDeviceAction.setparameterType("EMPTY");
+                miIoDeviceAction.setSiid(service.siid);
+                miIoDeviceAction.setAiid(action.iid);
+                miIoDeviceAction.setParameters(new JsonParser().parse(GSON.toJson(action.in)).getAsJsonArray());
+                MiIoDeviceActionCondition miIoDeviceActionCondition = new MiIoDeviceActionCondition();
+                String json = String.format("[{ \"matchValue\"=\"%s\"}]", description);
+                miIoDeviceActionCondition.setName("matchValue");
+                miIoDeviceActionCondition.setParameters(new JsonParser().parse(json).getAsJsonArray());
+                miIoDeviceAction.setCondition(miIoDeviceActionCondition);
+                miIoDeviceActions.add(miIoDeviceAction);
+            });
+            stateDescription.setOptions(options);
+            miIoBasicChannel.setStateDescription(stateDescription);
+            miIoBasicChannel.setActions(miIoDeviceActions);
+        }
+        return miIoBasicChannel;
     }
 
     private static String captializedName(String name) {
