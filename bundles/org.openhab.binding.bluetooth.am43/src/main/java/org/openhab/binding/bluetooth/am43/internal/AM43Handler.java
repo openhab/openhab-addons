@@ -178,7 +178,6 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
             // there is no consequence to calling this as much as we like
             device.enableNotifications(characteristic);
 
-            // characteristic.setValue(command.getRequest());
             command.setState(AM43Command.State.ENQUEUED);
             device.writeCharacteristic(characteristic, command.getRequest()).whenComplete((v, t) -> {
                 if (t != null) {
