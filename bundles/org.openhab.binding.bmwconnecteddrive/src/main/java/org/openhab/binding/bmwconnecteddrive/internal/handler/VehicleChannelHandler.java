@@ -581,8 +581,8 @@ public class VehicleChannelHandler extends BaseThingHandler {
         updateState(tripAvgRecuperation, QuantityType.valueOf(Converter.round(avgRecuperation), Units.KILOWATT_HOUR));
     }
 
-    protected void updateChargeProfileFromContent(Optional<String> content) {
-        content.flatMap(cont -> ChargeProfileWrapper.fromJson(cont)).ifPresent(wrapper -> updateChargeProfile(wrapper));
+    protected void updateChargeProfileFromContent(String content) {
+        ChargeProfileWrapper.fromJson(content).ifPresent(wrapper -> updateChargeProfile(wrapper));
     }
 
     protected void updateChargeProfile(ChargeProfileWrapper wrapper) {

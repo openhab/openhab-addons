@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.discovery.VehicleDiscovery;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
@@ -136,13 +137,14 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
      * There's only the Vehicles response available
      */
     @Override
-    public void onResponse(Optional<String> response) {
+    public void onResponse(@Nullable String response) {
         boolean firstResponse = troubleshootFingerprint.isEmpty();
-        if (response.isPresent()) {
-            troubleshootFingerprint = response;
-            VehiclesContainer container = Converter.getGson().fromJson(response.get(), VehiclesContainer.class);
+        if (response != null) {
             updateStatus(ThingStatus.ONLINE);
-            if (discoveryService.isPresent()) {
+            if (discoveryService.isEmpty()) {
+                troubleshootFingerprint = Optional.of(response);
+            } else {
+                VehiclesContainer container = Converter.getGson().fromJson(response, VehiclesContainer.class);
                 if (container != null) {
                     if (container.vehicles != null) {
                         discoveryService.get().onResponse(container);

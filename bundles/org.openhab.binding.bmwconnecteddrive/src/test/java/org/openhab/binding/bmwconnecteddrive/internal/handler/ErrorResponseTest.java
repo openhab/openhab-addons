@@ -15,7 +15,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -72,8 +71,8 @@ public class ErrorResponseTest {
     public void testErrorResponseCallbacks() {
         String error = "{\"error\":true,\"reason\":\"offline\"}";
         setup("BEV", false);
-        cch.vehicleStatusCallback.onResponse(Optional.of(error));
-        cch.allTripsCallback.onResponse(Optional.of(error));
-        cch.lastTripCallback.onResponse(Optional.of(error));
+        cch.vehicleStatusCallback.onResponse(error);
+        cch.allTripsCallback.onResponse(error);
+        cch.lastTripCallback.onResponse(error);
     }
 }

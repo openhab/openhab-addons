@@ -81,7 +81,7 @@ public class LastTripTests {
 
     private boolean testTrip(String statusContent, int callbacksExpected, Optional<Map<String, State>> concreteChecks) {
         assertNotNull(statusContent);
-        cch.lastTripCallback.onResponse(Optional.of(statusContent));
+        cch.lastTripCallback.onResponse(statusContent);
         verify(tc, times(callbacksExpected)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
         allChannels = channelCaptor.getAllValues();
         allStates = stateCaptor.getAllValues();
