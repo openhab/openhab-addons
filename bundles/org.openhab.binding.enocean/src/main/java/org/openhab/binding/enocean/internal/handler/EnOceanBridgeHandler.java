@@ -16,9 +16,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -70,7 +68,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     private Logger logger = LoggerFactory.getLogger(EnOceanBridgeHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private EnOceanTransceiver transceiver; // holds connection to serial/tcp port and sends/receives messages
     private ScheduledFuture<?> connectorTask; // is used for reconnection if something goes wrong

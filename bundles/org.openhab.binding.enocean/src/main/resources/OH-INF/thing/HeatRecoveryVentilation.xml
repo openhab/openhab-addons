@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="heatRecoveryVentilation">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Heat Recovery Ventilation</label>
+		<description>Sensor and actuator to control heat recovery ventilation units (EEP: D2-50)</description>
+
+		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="senderIdOffset" type="integer">
+				<label>Sender Id</label>
+				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be
+					determined by bridge</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="sendingEEPId" type="text">
+				<label>EEP for Sending Commands</label>
+				<options>
+					<option value="D2_50_00">D2-50-00 Single Room Ventilation Unit</option>
+					<option value="D2_50_01">D2-50-01 Single Room Ventilation Unit With Pre-Heater</option>
+					<option value="D2_50_10">D2-50-10 Multi Room Ventilation Unit Without Bypass</option>
+					<option value="D2_50_11">D2-50-11 Multi Room Ventilation Unit With Bypass</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+			</parameter>
+			<parameter name="broadcastMessages" type="boolean">
+				<label>Send Broadcast Messages</label>
+				<default>false</default>
+			</parameter>
+			<parameter name="receivingEEPId" type="text">
+				<label>EEP</label>
+				<description>EEP which is used by Ventilation Unit</description>
+				<options>
+					<option value="D2_50_00">D2-50-00 Single Room Ventilation Unit</option>
+					<option value="D2_50_01">D2-50-01 Single Room Ventilation Unit With Pre-Heater</option>
+					<option value="D2_50_10">D2-50-10 Multi Room Ventilation Unit Without Bypass</option>
+					<option value="D2_50_11">D2-50-11 Multi Room Ventilation Unit With Bypass</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+			</parameter>
+			<parameter name="suppressRepeating" type="boolean">
+				<label>Suppress Repeating of Messages</label>
+				<default>false</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

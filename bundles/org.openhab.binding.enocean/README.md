@@ -90,6 +90,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | rollershutter                   | A5-3F/D2-05/A5-38 | 0x7F/00/08 | rollershutter             | Eltako FSB14, NodOn SIN-2-RS-01| Teach-in/Discovery |
 | measurementSwitch               | D2-01       | 0x00-0F,11,12 | generalSwitch(/A/B), instantpower,<br/>totalusage, repeaterMode | NodOn In Wall Switch | Discovery |
 | multiFunctionSmokeDetector      | D2-14/F6-05 | 0x30/02       | smokeDetection, batteryLow   | Insafe+, Afriso ASD | Discovery |
+| heatRecoveryVentilation         | D2-50       | 0x00,01,10,11 | a lot of different state channels | Dimplex DL WE2 | Discovery |
 | classicDevice                   | F6-02       | 0x01-02       | virtualRockerswitchA, virtualRockerswitchB | - | Teach-in |
 
 ¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support `rssi`, `repeatCount` and `lastReceived` channels
@@ -210,6 +211,12 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | suppressRepeating |                             | true, false |
 | multiFunctionSmokeDetector      | receivingEEPId    |                             | F6_05_02, D2_14_30 |
 |                                 | enoceanId         | | |
+| heatRecoveryVentilation         | senderIdOffset    |                             | 1-127 |
+|                                 | enoceanId         | | |
+|                                 | sendingEEPId      |                             | D2_50_00, D2_50_01,<br/>D2_50_10, D2_50_11 |
+|                                 | receivingEEPId    |                             | D2_50_00, D2_50_01,<br/>D2_50_10, D2_50_11 |
+|                                 | broadcastMessages |                             | true, false |
+|                                 | suppressRepeating |                             | true, false |
 | classicDevice                   | senderIdOffset    |                             | 1-127 |
 |                                 | sendingEEPId      |                             | F6_02_01, F6_02_02 |
 |                                 | broadcastMessages |                             | true, false |
@@ -267,6 +274,29 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | remainingPLT         | Number:Time        | Remaining product life time |
 | hygroComfortIndex    | String             | Hygrothermal Comfort Index |
 | indoorAirAnalysis    | String             | Indoor Air Analysis |
+| ventilationOperationMode | String         | Direct Operation Mode Control |
+| fireplaceSafetyMode  | Switch             | Fireplace Safety Mode |
+| heatExchangerBypassStatus | Contact       | Heat Exchanger Bypass Status |
+| supplyAirFlapStatus  | Contact            | Supply Air Flap Position |
+| exhaustAirFlapStatus | Contact            | Exhaust Air Flap Position |
+| defrostMode          | Switch             | Defrost Mode |
+| coolingProtectionMode | Switch            | Cooling Protection Mode |
+| outdoorAirHeaterStatus | Switch           | Outdoor Air Heater Status |
+| supplyAirHeaterStatus | Switch            | Supply Air Heater Status |
+| drainHeaterStatus    | Switch             | Drain Heater Status |
+| timerOperationMode   | Switch             | Timer Operation Mode |
+| weeklyTimerProgramStatus | Switch         | Weekly Timer Program Status |
+| roomTemperatureControlStatus | Switch     | Room Temperature Control Status |
+| airQualityValue1     | Number:Dimensionless | Air Quality Value in percent |
+| airQualityValue2     | Number:Dimensionless | Air Quality Value in percent |
+| outdoorAirTemperature | Number:Temperature | Outdoor Temperature |
+| supplyAirTemperature | Number:Temperature | Supply Air Temperature |
+| indoorAirTemperature | Number:Temperature | Indoor Temperature |
+| exhaustAirTemperature | Number:Temperature | Exhaust Air Temperature |
+| supplyAirFanAirFlowRate | Number:VolumetricFlowRate | Supply Air Fan Air Flow Rate |
+| exhaustAirFanAirFlowRate | Number:VolumetricFlowRate | Exhaust Air Fan Air Flow Rate |
+| supplyFanSpeed       | Number:Dimensionless | Supply Fan Speed in rpm |
+| exhaustFanSpeed      | Number:Dimensionless | Exhaust Fan Speed |
 | rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
 | repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
 | lastReceived         | DateTime                 | Date and time the last telegram was received |

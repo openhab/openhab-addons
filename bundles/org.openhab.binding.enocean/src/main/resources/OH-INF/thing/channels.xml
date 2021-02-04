@@ -576,4 +576,187 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="ventilationOperationMode">
+		<item-type>String</item-type>
+		<label>Direct Operation Mode Control</label>
+		<description>Sets the ventilation mode/level.</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Level 1</option>
+				<option value="2">Level 2</option>
+				<option value="3">Level 3</option>
+				<option value="4">Level 4</option>
+				<option value="5">Reserved</option>
+				<option value="6">Reserved</option>
+				<option value="7">Reserved</option>
+				<option value="8">Reserved</option>
+				<option value="9">Reserved</option>
+				<option value="10">Reserved</option>
+				<option value="11">Automatic</option>
+				<option value="12">Automatic on demand</option>
+				<option value="13">Supply air only</option>
+				<option value="14">Exhaust air only</option>
+				<option value="15">Reserved</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fireplaceSafetyMode">
+		<item-type>Switch</item-type>
+		<label>Fireplace Safety Mode</label>
+		<description>Indicates if device is running in fireplace safety mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatExchangerBypassStatus">
+		<item-type>Contact</item-type>
+		<label>Heat Exchanger Bypass Status</label>
+		<description>Indicates if heat exchanger bypass is open (heat recovery inactive) or closed (heat recovery active)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="supplyAirFlapStatus">
+		<item-type>Contact</item-type>
+		<label>Supply Air Flap Position</label>
+		<description>Indicates if supply air flap is open or closed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exhaustAirFlapStatus">
+		<item-type>Contact</item-type>
+		<label>Exhaust Air Flap Position</label>
+		<description>Indicates if exhaust air flap is open or closed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="defrostMode">
+		<item-type>Switch</item-type>
+		<label>Defrost Mode</label>
+		<description>Indicates if defrosting of heat exchanger is active or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="coolingProtectionMode">
+		<item-type>Switch</item-type>
+		<label>Cooling Protection Mode</label>
+		<description>Indicates if device is running in cooling protection mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outdoorAirHeaterStatus">
+		<item-type>Switch</item-type>
+		<label>Outdoor Air Heater Status</label>
+		<description>Indicates if outdoor air heater is active or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="supplyAirHeaterStatus">
+		<item-type>Switch</item-type>
+		<label>Supply Air Heater Status</label>
+		<description>Indicates if supply air heater is active or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="drainHeaterStatus">
+		<item-type>Switch</item-type>
+		<label>Drain Heater Status</label>
+		<description>Indicates if drain heater is active or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timerOperationMode">
+		<item-type>Switch</item-type>
+		<label>Timer Operation Mode</label>
+		<description>Indicates if timer operation mode is active or not</description>
+	</channel-type>
+
+	<channel-type id="weeklyTimerProgramStatus">
+		<item-type>Switch</item-type>
+		<label>Weekly Timer Program Status</label>
+		<description>Indicates if device is running according to configured program or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="roomTemperatureControlStatus">
+		<item-type>Switch</item-type>
+		<label>Room Temperature Control Status</label>
+		<description>Indicates if room temperature control is active or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="airQualityValue1">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Air Quality Value</label>
+		<description>Air quality value of first sensor in percentages</description>
+		<state min="0" max="100" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="airQualityValue2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Air Quality Value</label>
+		<description>Air quality value of second sensor in percentages</description>
+		<state min="0" max="100" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outdoorAirTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+		<description>Current outdoor air temperature in degree Celsius</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="supplyAirTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Supply Air Temperature</label>
+		<description>Current supply air temperature in degree Celsius</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="indoorAirTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Indoor Temperature</label>
+		<description>Current indoor air temperature in degree Celsius</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exhaustAirTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Exhaust Air Temperature</label>
+		<description>Current exhaust air temperature in degree Celsius</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="supplyAirFanAirFlowRate">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Supply Air Fan Air Flow Rate</label>
+		<description>Current supply air fan air flow rate</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exhaustAirFanAirFlowRate">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Exhaust Air Fan Air Flow Rate</label>
+		<description>Current exhaust air fan air flow rate</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="supplyFanSpeed">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Supply Fan Speed</label>
+		<description>Supply fan speed in revolutions per minutes</description>
+		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exhaustFanSpeed">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Exhaust Fan Speed</label>
+		<description>Exhaust fan speed in revolutions per minutes</description>
+		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
