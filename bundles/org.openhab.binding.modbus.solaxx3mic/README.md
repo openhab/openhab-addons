@@ -52,27 +52,23 @@ Groups:
 
 Channels in every group type:
 
-device-information
-	Label: Device Information
-    	1. status (status-type)
-		2. cabinet-temperature (cabinet-temperature-type)
-		3. heatsink-temperature(heatsink-temperature-type)
-ac-general
-    Label: AC Summary
-    	1. ac-power (ac-power-type)
-		2. ac-dayly-energy (ac-dayly-energy-type)
-		3. ac-lifetime-energy (ac-lifetime-energy-type)
-ac-phase
-    Label: AC Phase
-    	1. ac-phase-voltage-to-n (ac-phase-voltage-to-n-type)
-		2. ac-phase-current (ac-phase-current-type)
-		3. ac-phase-frequency (ac-phase-frequency-type)
-		4. ac-phase-power (ac-power-type)
-dc-general
-    Label: DC summary
-    	1. dc-current (dc-current-type)
-		2. dc-voltage (dc-voltage-type)
-		3. dc-power (dc-power-type)
+1. Device Information (device-information)
+    	a. status (status-type)
+		b. cabinet-temperature (cabinet-temperature-type)
+		c. heatsink-temperature(heatsink-temperature-type)
+2. AC Summary (ac-general)
+    	a. ac-power (ac-power-type)
+		b. ac-dayly-energy (ac-dayly-energy-type)
+		c. ac-lifetime-energy (ac-lifetime-energy-type)
+3. AC Phase (ac-phase)
+    	a. ac-phase-voltage-to-n (ac-phase-voltage-to-n-type)
+		b. ac-phase-current (ac-phase-current-type)
+		c. ac-phase-frequency (ac-phase-frequency-type)
+		d. ac-phase-power (ac-power-type)
+4. DC summary (dc-general )
+    	a. dc-current (dc-current-type)
+		b. dc-voltage (dc-voltage-type)
+		c. dc-power (dc-power-type)
 
 Every channel configuration consists of five parameters:
 1. registerFunction - identification of block where register resides.
@@ -93,7 +89,7 @@ Every channel configuration consists of five parameters:
 ## Full Example
 
 SolaxX3Mic.things
-
+```
 Bridge modbus:tcp:Solax-X3-Mic-TCP "Solax X3 Mic TCP Connection" @ "HeatingRoom"[ host="10.0.0.100", port=502, id=1, enableDiscovery=false ]
 Thing  modbus:inverter-solax-x3-mic:Solax-X3-Mic "Solax X3 Mic Inverter" (modbus:tcp:Solax-X3-Mic-TCP) @ "Kanciapa" [ refresh=2, inputAddress=1024, inputBlockLength=53, maxTries=3, holdingAddress=769, holdingBlockLength=59 ] {
         Channels:
@@ -266,10 +262,10 @@ Thing  modbus:inverter-solax-x3-mic:Solax-X3-Mic "Solax X3 Mic Inverter" (modbus
                         registerScaleFactor=0
                 ]
 }
-
+```
 
 SolaxX3Mic.items
-
+```
 Group House
 Group Sensors_Solax_X3_Mic
 Number modbus_inverter_Solax_X3_Mic_deviceInformation_cabinet_temperature "Cabinet Temperature [%.1f °C]" <temperature> (Sensors_Solax_X3_Mic) {channel="modbus:inverter-solax-x3-mic:Solax-X3-Mic:deviceInformation#cabinet-temperature" }
@@ -292,3 +288,4 @@ Number modbus_inverter_Solax_X3_Mic_acPhaseC_ac_phase_power "AC Phase C Power [%
 Number modbus_inverter_Solax_X3_Mic_dcGeneral2_dc_current "DC Chain 2 Current [%.1f A]" <current> [Sensors_Solax_X3_Mic] {channel="modbus:inverter-solax-x3-mic:Solax-X3-Mic:dcGeneral2#dc-current" }
 Number modbus_inverter_Solax_X3_Mic_dcGeneral2_dc_voltage "DC Chain 2 Voltage [%.1f V]" <voltage> [Sensors_Solax_X3_Mic] {channel="modbus:inverter-solax-x3-mic:Solax-X3-Mic:dcGeneral2#dc-voltage" }
 Number modbus_inverter_Solax_X3_Mic_dcGeneral2_dc_power "DC Chain 2 Power [%.1f W]" <power> [Sensors_Solax_X3_Mic] {channel="modbus:inverter-solax-x3-mic:Solax-X3-Mic:dcGeneral2#dc-power" }
+```
