@@ -21,6 +21,7 @@
 			<channel id="cnt2_5" typeId="cnt2_5"/>
 			<channel id="cnt5" typeId="cnt5"/>
 			<channel id="cnt10" typeId="cnt10"/>
+            <channel id="co" typeId="co"/>
 			<channel id="co2" typeId="co2"/>
 			<channel id="dCO2dt" typeId="dco2dt"/>
 			<channel id="dHdt" typeId="dhdt"/>
@@ -53,6 +54,7 @@
 			<channel id="cnt2_5_maxerr" typeId="cnt2_5_maxerr"/>
 			<channel id="cnt5_maxerr" typeId="cnt5_maxerr"/>
 			<channel id="cnt10_maxerr" typeId="cnt10_maxerr"/>
+            <channel id="co_maxerr" typeId="co_maxerr"/>
 			<channel id="co2_maxerr" typeId="co2_maxerr"/>
 			<channel id="dewpt_maxerr" typeId="dewpt_maxerr"/>
 			<channel id="humidity_maxerr" typeId="humidity_maxerr"/>
@@ -207,11 +209,17 @@ also sends data from other devices (then with another Device ID)
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
-	<channel-type id="co2" advanced="false">
+	<channel-type id="co" advanced="false">
 		<item-type>Number</item-type>
-		<label>CO2 Concentration</label>
-		<state readOnly="true" pattern="%.0f ppm"></state>
+		<label>CO Concentration</label>
+		<state readOnly="true" pattern="%.0f mg/m³"></state>
 	</channel-type>
+
+    <channel-type id="co2" advanced="false">
+        <item-type>Number</item-type>
+        <label>CO2 Concentration</label>
+        <state readOnly="true" pattern="%.0f ppm"></state>
+    </channel-type>
 
 	<channel-type id="dco2dt" advanced="false">
 		<item-type>Number</item-type>

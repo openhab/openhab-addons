@@ -357,7 +357,7 @@ public class airqHandler extends BaseThingHandler {
                             JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
                             if (decEl != null) {
                                 JsonObject decObj = decEl.getAsJsonObject();
-                                logger.trace("air-Q - airqHandler - run(): decObj={}", decObj);
+                                logger.debug("air-Q - airqHandler - run(): decObj={}", decObj);
                                 processType(decObj, "bat", "bat", "pair");
                                 processType(decObj, "cnt0_3", "cnt0_3", "pair");
                                 processType(decObj, "cnt0_5", "cnt0_5", "pair");
@@ -365,6 +365,7 @@ public class airqHandler extends BaseThingHandler {
                                 processType(decObj, "cnt2_5", "cnt2_5", "pair");
                                 processType(decObj, "cnt5", "cnt5", "pair");
                                 processType(decObj, "cnt10", "cnt10", "pair");
+                                processType(decObj, "co", "co", "pair");
                                 processType(decObj, "co2", "co2", "pair");
                                 processType(decObj, "dewpt", "dewpt", "pair");
                                 processType(decObj, "humidity", "humidity", "pair");
@@ -623,7 +624,7 @@ public class airqHandler extends BaseThingHandler {
                                 JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
                                 if (decEl != null) {
                                     JsonObject decObj = decEl.getAsJsonObject();
-                                    logger.trace("air-Q - airqHandler - processConfigData(): decObj={}", decObj);
+                                    logger.debug("air-Q - airqHandler - processConfigData(): decObj={}", decObj);
                                     processType(decObj, "Wifi", "Wifi", "boolean");
                                     processType(decObj, "WLANssid", "WLANssid", "arr");
                                     processType(decObj, "pass", "pass", "string");
