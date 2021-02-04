@@ -855,6 +855,8 @@ def actionAlarm(device, attribute, value) {
 }
 
 // This is the original color control
+// 1-19-2021 The color values of on and off were added in response to issue https://github.com/BobRak/OpenHAB-Smartthings/issues/102
+// These changes were made because OH 3.0 uses color values of on/off. OH 2 and 3.1 don't seem to need this.
 def actionColorControl(device, attribute, value) {
     log.debug "actionColor: attribute \"${attribute}\", value \"${value}\""
     switch (attribute) {
@@ -865,15 +867,23 @@ def actionColorControl(device, attribute, value) {
             device.setSaturation(value as int)
         break
         case "color":
-            def colormap = ["hue": value[0] as int, "saturation": value[1] as int]
-            // log.debug "actionColor: Setting device \"${device}\" with attribute \"${attribute}\" to colormap \"${colormap}\""
-            device.setColor(colormap)
-            device.setLevel(value[2] as int)
+    		if (value == "off") {
+        		device.off()
+    		} else if (value == "on") {
+        		device.on()
+    		} else {
+            	def colormap = ["hue": value[0] as int, "saturation": value[1] as int]
+            	log.debug "actionColorControl: Setting device \"${device}\" with attribute \"${attribute}\" to colormap \"${colormap}\""
+            	device.setColor(colormap)
+            	device.setLevel(value[2] as int)
+            }
         break
     }
 }
 
 // This is the new "proposed" color. Here hue is 0-360
+// 1-19-2021 The attributes of on and off were added in response to issue https://github.com/BobRak/OpenHAB-Smartthings/issues/102
+// These changes were made because OH 3.0 uses color values of on/off. OH 2 and 3.1 don't seem to need this.
 def actionColor(device, attribute, value) {
     log.debug "actionColor: attribute \"${attribute}\", value \"${value}\""
     switch (attribute) {
@@ -888,6 +898,14 @@ def actionColor(device, attribute, value) {
             // log.debug "actionColor: Setting device \"${device}\" with attribute \"${attribute}\" to colormap \"${colormap}\""
             device.setColor(colormap)
             device.setLevel(value[2] as int)
+        break
+        case "off":
+            // log.debug "actionColor: Setting device \"${device}\" with attribute \"${attribute}\" to off"
+            device.off()
+        break
+        case "on":
+            // log.debug "actionColor: Setting device \"${device}\" with attribute \"${attribute}\" to on"
+            device.on()        
         break
     }
 }
