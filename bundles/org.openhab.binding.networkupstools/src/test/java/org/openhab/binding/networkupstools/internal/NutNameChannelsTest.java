@@ -16,8 +16,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.CoreItemFactory;
 
@@ -121,7 +121,7 @@ public class NutNameChannelsTest {
         final String path = getClass().getProtectionDomain().getClassLoader().getResource(".").getFile() + "../..";
 
         try {
-            final List<String> lines = FileUtils.readLines(new File(path, "README.md"));
+            final List<String> lines = Files.readAllLines(Paths.get(path, "README.md"));
 
             return lines.stream().filter(line -> README_PATTERN.matcher(line).find())
                     .collect(Collectors.toMap(this::lineToNutName, Function.identity()));
@@ -135,7 +135,7 @@ public class NutNameChannelsTest {
         final String path = getClass().getProtectionDomain().getClassLoader().getResource(".").getFile()
                 + "../../src/main/resources/OH-INF/thing";
         try {
-            final List<String> lines = FileUtils.readLines(new File(path, filename));
+            final List<String> lines = Files.readAllLines(Paths.get(path, filename));
             return lines.stream().filter(line -> pattern.matcher(line).find()).map(String::trim).sorted()
                     .collect(Collectors.toList());
         } catch (final IOException e) {
