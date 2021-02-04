@@ -23,6 +23,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -67,17 +68,17 @@ public class ChargeProfileWrapper {
     final protected ProfileType type;
 
     @Nullable
-    private ChargingMode mode;
+    private Optional<ChargingMode> mode;
     @Nullable
-    private ChargingPreference preference;
+    private Optional<ChargingPreference> preference;
 
     private final Map<ProfileKey, Boolean> enabled = new HashMap<>();
     private final Map<ProfileKey, LocalTime> times = new HashMap<>();
     private final Map<ProfileKey, Set<Day>> daysOfWeek = new HashMap<>();
 
-    public static @Nullable ChargeProfileWrapper fromJson(final String content) {
-        final ChargeProfile cp = Converter.getGson().fromJson(content, ChargeProfile.class);
-        return cp == null ? null : new ChargeProfileWrapper(cp);
+    public static Optional<ChargeProfileWrapper> fromJson(final String content) {
+        return Optional.ofNullable(Converter.getGson().fromJson(content, ChargeProfile.class))
+                .map(cp -> new ChargeProfileWrapper(cp));
     }
 
     private ChargeProfileWrapper(final ChargeProfile profile) {
@@ -107,9 +108,13 @@ public class ChargeProfileWrapper {
         if (planner.preferredChargingWindow != null) {
             addTime(WINDOWSTART, planner.preferredChargingWindow.startTime);
             addTime(WINDOWEND, planner.preferredChargingWindow.endTime);
-        } else if (ChargingPreference.CHARGING_WINDOW.equals(preference)) {
-            addTime(WINDOWSTART, null);
-            addTime(WINDOWEND, null);
+        } else {
+            preference.ifPresent(pref -> {
+                if (ChargingPreference.CHARGING_WINDOW.equals(pref)) {
+                    addTime(WINDOWSTART, null);
+                    addTime(WINDOWEND, null);
+                }
+            });
         }
 
         if (isWeekly()) {
@@ -127,28 +132,28 @@ public class ChargeProfileWrapper {
     }
 
     public @Nullable String getMode() {
-        return mode == null ? null : mode.name();
+        return mode.map(m -> m.name()).get();
     }
 
     public void setMode(final String mode) {
         try {
-            this.mode = ChargingMode.valueOf(mode);
+            this.mode = Optional.of(ChargingMode.valueOf(mode));
         } catch (IllegalArgumentException iae) {
             logger.warn("unexpected value for chargingMode: {}", mode);
-            this.mode = null;
+            this.mode = Optional.empty();
         }
     }
 
     public @Nullable String getPreference() {
-        return preference == null ? null : preference.name();
+        return preference.map(pref -> pref.name()).get();
     }
 
     public void setPreference(final String preference) {
         try {
-            this.preference = ChargingPreference.valueOf(preference);
+            this.preference = Optional.of(ChargingPreference.valueOf(preference));
         } catch (IllegalArgumentException iae) {
             logger.warn("unexpected value for chargingPreference: {}", preference);
-            this.preference = null;
+            this.preference = Optional.empty();
         }
     }
 
@@ -227,18 +232,20 @@ public class ChargeProfileWrapper {
         final ChargeProfile profile = new ChargeProfile();
         final WeeklyPlanner planner = new WeeklyPlanner();
 
-        planner.chargingPreferences = preference == null ? null : preference.name();
+        preference.ifPresent(pref -> planner.chargingPreferences = pref.name());
         planner.climatizationEnabled = isEnabled(CLIMATE);
-        if (ChargingPreference.CHARGING_WINDOW.equals(preference)) {
-            planner.chargingMode = getMode();
-            final LocalTime start = getTime(WINDOWSTART);
-            final LocalTime end = getTime(WINDOWEND);
-            if (start != null || end != null) {
-                planner.preferredChargingWindow = new ChargingWindow();
-                planner.preferredChargingWindow.startTime = start == null ? null : start.format(TIME_FORMATER);
-                planner.preferredChargingWindow.endTime = end == null ? null : end.format(TIME_FORMATER);
+        preference.ifPresent(pref -> {
+            if (ChargingPreference.CHARGING_WINDOW.equals(pref)) {
+                planner.chargingMode = getMode();
+                final LocalTime start = getTime(WINDOWSTART);
+                final LocalTime end = getTime(WINDOWEND);
+                if (start != null || end != null) {
+                    planner.preferredChargingWindow = new ChargingWindow();
+                    planner.preferredChargingWindow.startTime = start == null ? null : start.format(TIME_FORMATER);
+                    planner.preferredChargingWindow.endTime = end == null ? null : end.format(TIME_FORMATER);
+                }
             }
-        }
+        });
         planner.timer1 = getTimer(TIMER1);
         planner.timer2 = getTimer(TIMER2);
         if (isWeekly()) {
