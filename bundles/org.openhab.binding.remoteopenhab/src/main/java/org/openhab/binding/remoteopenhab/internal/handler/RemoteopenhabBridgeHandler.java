@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -55,7 +54,6 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -134,14 +132,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         if (host.length() == 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Undefined server address setting in the thing configuration");
-            return;
-        }
-        List<String> localIpAddresses = NetUtil.getAllInterfaceAddresses().stream()
-                .filter(a -> !a.getAddress().isLinkLocalAddress())
-                .map(a -> a.getAddress().getHostAddress().split("%")[0]).collect(Collectors.toList());
-        if (localIpAddresses.contains(host)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Do not use the local server as a remote server in the thing configuration");
             return;
         }
         String path = config.restPath.trim();
