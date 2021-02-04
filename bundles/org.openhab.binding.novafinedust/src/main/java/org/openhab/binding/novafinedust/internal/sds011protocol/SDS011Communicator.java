@@ -134,7 +134,7 @@ public class SDS011Communicator {
         try {
             write(commandData);
         } catch (IOException ioex) {
-            logger.debug("Got an exception while writing a command, will not try to fetch a reply for it.");
+            logger.debug("Got an exception while writing a command, will not try to fetch a reply for it.", ioex);
             throw ioex;
         }
 

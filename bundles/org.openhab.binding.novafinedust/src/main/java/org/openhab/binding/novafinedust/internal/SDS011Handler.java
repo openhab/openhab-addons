@@ -165,7 +165,7 @@ public class SDS011Handler extends BaseThingHandler {
                         localCommunicator.readSensorData();
                     } catch (IOException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "Cannot query data from device");
+                                "Cannot query data from device, because: " + e.getMessage());
                     }
                 }, reportingReadStartDelay, readReportedDataInterval, TimeUnit.SECONDS);
             }
