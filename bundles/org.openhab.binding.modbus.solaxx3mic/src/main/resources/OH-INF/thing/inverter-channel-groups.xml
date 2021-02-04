@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="device-information">
+		<label>Device Information</label>
+		<channels>
+			<channel id="status" typeId="status-type"/>
+			<channel id="cabinet-temperature" typeId="cabinet-temperature-type"/>
+			<channel id="heatsink-temperature" typeId="heatsink-temperature-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ac-general">
+		<label>AC Summary</label>
+		<channels>
+			<channel id="ac-power" typeId="ac-power-type"/>
+			<channel id="ac-dayly-energy" typeId="ac-dayly-energy-type"/>
+			<channel id="ac-lifetime-energy" typeId="ac-lifetime-energy-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ac-phase">
+		<label>AC Phase</label>
+		<channels>
+			<channel id="ac-phase-voltage-to-n" typeId="ac-phase-voltage-to-n-type"/>
+			<channel id="ac-phase-current" typeId="ac-phase-current-type"/>
+			<channel id="ac-phase-frequency" typeId="ac-phase-frequency-type"/>
+			<channel id="ac-phase-power" typeId="ac-power-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="dc-general">
+		<label>DC summary</label>
+		<channels>
+			<channel id="dc-current" typeId="dc-current-type"/>
+			<channel id="dc-voltage" typeId="dc-voltage-type"/>
+			<channel id="dc-power" typeId="dc-power-type"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

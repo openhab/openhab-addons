@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="ac-phase-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Phase Current Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="ac-phase-voltage-to-n-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage Phase To N Value</label>
+		<description>This phase's AC voltage relative to N line</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="ac-phase-power-type">
+		<item-type>Number:Power</item-type>
+		<label>AC Power Value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="ac-phase-frequency-type">
+		<item-type>Number:Frequency</item-type>
+		<label>AC Frequency Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="ac-lifetime-energy-type">
+		<item-type>Number:Energy</item-type>
+		<label>AC Lifetime Energy Production</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="ac-dayly-energy-type">
+		<item-type>Number:Energy</item-type>
+		<label>AC Dayly Energy Production</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="dc-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="dc-voltage-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage Value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="dc-power-type">
+		<item-type>Number:Power</item-type>
+		<label>DC Power Value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="cabinet-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Cabinet Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="heatsink-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Sink Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+	<channel-type id="status-type">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Device status</description>
+		<state readOnly="true">
+			<options>
+				<option value="WAIT">OFF - Wait for Light</option>
+				<option value="CHECK">INIT - Checking operation conditions</option>
+				<option value="NORMAL">ON - Producing power</option>
+				<option value="FAULT">Transient Fault Condition</option>
+				<option value="PERMANENT_FAULT">Permanent Fault Condition</option>
+				<option value="UPDATE">Updating system</option>
+				<option value="EPS_CHECK">Checking EPS</option>
+				<option value="EPS">Running EPS</option>
+				<option value="SELF_TEST">Self Testing</option>
+				<option value="IDLE">IDLE</option>
+				<option value="STANDBY">STANDING BY</option>
+			</options>
+		</state>
+		<config-description-ref uri="channel-type:modbus:solaxx3mic-channel-config"/>
+	</channel-type>
+
+</thing:thing-descriptions>
