@@ -654,6 +654,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     }
 
     private static String completeUrl(String ipAddress, int port, String uri) {
-        return "coap://" + ipAddress + ":" + String.valueOf(port) + uri;
+        return "coap://" + ipAddress + ":" + port + uri;
     }
 }

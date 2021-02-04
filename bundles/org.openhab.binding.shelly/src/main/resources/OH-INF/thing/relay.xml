@@ -466,7 +466,7 @@
 	<channel-type id="meterAccuTotal" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Accumulated Total</label>
-		<description>Accumulated total power consumptionfrom all meters</description>
+		<description>Accumulated total power consumption from all meters</description>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
