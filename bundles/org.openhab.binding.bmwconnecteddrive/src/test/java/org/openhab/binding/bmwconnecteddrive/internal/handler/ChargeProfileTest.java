@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -80,7 +79,7 @@ public class ChargeProfileTest {
     private boolean testProfile(String statusContent, int callbacksExpected) {
         assertNotNull(statusContent);
 
-        cch.chargeProfileCallback.onResponse(Optional.of(statusContent));
+        cch.chargeProfileCallback.onResponse(statusContent);
         verify(tc, times(callbacksExpected)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
         allChannels = channelCaptor.getAllValues();
         allStates = stateCaptor.getAllValues();

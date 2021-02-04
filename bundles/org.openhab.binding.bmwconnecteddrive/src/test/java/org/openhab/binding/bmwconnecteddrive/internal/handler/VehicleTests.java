@@ -97,7 +97,7 @@ public class VehicleTests {
     private boolean testVehicle(String statusContent, int callbacksExpected,
             Optional<Map<String, State>> concreteChecks) {
         assertNotNull(statusContent);
-        cch.vehicleStatusCallback.onResponse(Optional.of(statusContent));
+        cch.vehicleStatusCallback.onResponse(statusContent);
         verify(tc, times(callbacksExpected)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
         allChannels = channelCaptor.getAllValues();
         allStates = stateCaptor.getAllValues();

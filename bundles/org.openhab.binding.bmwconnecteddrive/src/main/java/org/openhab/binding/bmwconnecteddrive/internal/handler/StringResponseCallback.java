@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link StringResponseCallback} Interface for all String results from ASYNC REST API
@@ -24,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface StringResponseCallback extends ResponseCallback {
 
-    public void onResponse(Optional<String> result);
+    public void onResponse(@Nullable String result);
 }

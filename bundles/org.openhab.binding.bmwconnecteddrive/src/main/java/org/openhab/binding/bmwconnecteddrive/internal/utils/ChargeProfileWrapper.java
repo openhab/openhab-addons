@@ -133,26 +133,32 @@ public class ChargeProfileWrapper {
         return mode.map(m -> m.name()).get();
     }
 
-    public void setMode(final String mode) {
-        try {
-            this.mode = Optional.of(ChargingMode.valueOf(mode));
-        } catch (IllegalArgumentException iae) {
-            logger.warn("unexpected value for chargingMode: {}", mode);
-            this.mode = Optional.empty();
+    public void setMode(final @Nullable String mode) {
+        if (mode != null) {
+            try {
+                this.mode = Optional.of(ChargingMode.valueOf(mode));
+                return;
+            } catch (IllegalArgumentException iae) {
+                logger.warn("unexpected value for chargingMode: {}", mode);
+            }
         }
+        this.mode = Optional.empty();
     }
 
     public @Nullable String getPreference() {
         return preference.map(pref -> pref.name()).get();
     }
 
-    public void setPreference(final String preference) {
-        try {
-            this.preference = Optional.of(ChargingPreference.valueOf(preference));
-        } catch (IllegalArgumentException iae) {
-            logger.warn("unexpected value for chargingPreference: {}", preference);
-            this.preference = Optional.empty();
+    public void setPreference(final @Nullable String preference) {
+        if (preference != null) {
+            try {
+                this.preference = Optional.of(ChargingPreference.valueOf(preference));
+                return;
+            } catch (IllegalArgumentException iae) {
+                logger.warn("unexpected value for chargingPreference: {}", preference);
+            }
         }
+        this.preference = Optional.empty();
     }
 
     public @Nullable List<String> getDays(final ProfileKey key) {

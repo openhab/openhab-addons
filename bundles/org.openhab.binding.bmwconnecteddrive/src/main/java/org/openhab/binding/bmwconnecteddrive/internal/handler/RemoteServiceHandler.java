@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatus;
@@ -87,12 +88,12 @@ public class RemoteServiceHandler implements StringResponseCallback {
         }
     }
 
-    private ConnectedDriveProxy proxy;
-    private VehicleHandler handler;
+    private final ConnectedDriveProxy proxy;
+    private final VehicleHandler handler;
     private Optional<String> serviceExecuting = Optional.empty();
 
-    private String serviceExecutionAPI;
-    private String serviceExecutionStateAPI;
+    private final String serviceExecutionAPI;
+    private final String serviceExecutionStateAPI;
 
     public RemoteServiceHandler(VehicleHandler vehicleHandler, ConnectedDriveProxy connectedDriveProxy) {
         handler = vehicleHandler;
@@ -126,26 +127,26 @@ public class RemoteServiceHandler implements StringResponseCallback {
     }
 
     public void getState() {
-        if (!serviceExecuting.isPresent()) {
+        serviceExecuting.ifPresentOrElse(service -> {
+            if (counter >= GIVEUP_COUNTER) {
+                logger.warn("Giving up updating state for {} after {} times", service, GIVEUP_COUNTER);
+                reset();
+                // immediately refresh data
+                handler.getData();
+            }
+            counter++;
+            MultiMap<String> dataMap = new MultiMap<String>();
+            dataMap.add(SERVICE_TYPE, serviceExecuting.get());
+            proxy.get(serviceExecutionStateAPI, Optional.of(dataMap), this);
+        }, () -> {
             logger.warn("No Service executed to get state");
-            return;
-        }
-        if (counter >= GIVEUP_COUNTER) {
-            logger.warn("Giving up updating state for {} after {} times", serviceExecuting, GIVEUP_COUNTER);
-            reset();
-            // immediately refresh data
-            handler.getData();
-        }
-        counter++;
-        MultiMap<String> dataMap = new MultiMap<String>();
-        dataMap.add(SERVICE_TYPE, serviceExecuting.get());
-        proxy.get(serviceExecutionStateAPI, Optional.of(dataMap), this);
+        });
     }
 
     @Override
-    public void onResponse(Optional<String> result) {
-        if (result.isPresent()) {
-            ExecutionStatusContainer esc = Converter.getGson().fromJson(result.get(), ExecutionStatusContainer.class);
+    public void onResponse(@Nullable String result) {
+        if (result != null) {
+            ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);
             if (esc != null) {
                 ExecutionStatus execStatus = esc.executionStatus;
                 handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);

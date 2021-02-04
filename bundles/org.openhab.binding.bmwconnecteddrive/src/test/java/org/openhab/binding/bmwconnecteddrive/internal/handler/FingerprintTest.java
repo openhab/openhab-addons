@@ -15,8 +15,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
@@ -43,14 +41,14 @@ public class FingerprintTest {
         ConnectedDriveBridgeHandler bh = new ConnectedDriveBridgeHandler(b, hcf);
         // when(bh.getThing()).thenReturn(b);
 
-        bh.onResponse(Optional.of(Constants.EMPTY_VEHICLES));
+        bh.onResponse(Constants.EMPTY_VEHICLES);
         assertEquals(Constants.EMPTY_VEHICLES, bh.getDiscoveryFingerprint(), "Empty Response");
 
-        bh.onResponse(Optional.empty());
+        bh.onResponse(null);
         assertEquals(Constants.EMPTY_VEHICLES, bh.getDiscoveryFingerprint(), "Empty Response");
 
         String content = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
-        bh.onResponse(Optional.of(content));
+        bh.onResponse(content);
         String fingerprint = bh.getDiscoveryFingerprint();
         logger.info("{}", fingerprint);
         assertFalse(fingerprint.contains("My Real"), "Anonymous Fingerprint");

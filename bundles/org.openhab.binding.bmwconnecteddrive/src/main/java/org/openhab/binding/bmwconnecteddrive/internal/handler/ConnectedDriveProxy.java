@@ -108,9 +108,9 @@ public class ConnectedDriveProxy {
         // SimulationTest.testSimulationOff() assures Injector is off when releasing
         if (Injector.isActive()) {
             if (url.equals(baseUrl)) {
-                ((StringResponseCallback) callback).onResponse(Optional.of(Injector.getDiscovery()));
+                ((StringResponseCallback) callback).onResponse(Injector.getDiscovery());
             } else if (url.endsWith(vehicleStatusAPI)) {
-                ((StringResponseCallback) callback).onResponse(Optional.of(Injector.getStatus()));
+                ((StringResponseCallback) callback).onResponse(Injector.getStatus());
             } else {
                 logger.info("Simulation of {} not supported", url);
             }
@@ -153,7 +153,7 @@ public class ConnectedDriveProxy {
                     callback.onError(error);
                 } else {
                     if (callback instanceof StringResponseCallback) {
-                        ((StringResponseCallback) callback).onResponse(Optional.of(getContentAsString()));
+                        ((StringResponseCallback) callback).onResponse(getContentAsString());
                     } else {
                         ((ByteResponseCallback) callback).onResponse(Optional.of(getContent()));
                     }
