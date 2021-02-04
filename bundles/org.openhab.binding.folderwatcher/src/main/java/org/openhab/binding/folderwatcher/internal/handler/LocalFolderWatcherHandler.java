@@ -79,7 +79,7 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
             return;
         }
         try {
-            previousLocalListing = WatcherCommon.initStorage(currentLocalListingFile);
+            previousLocalListing = WatcherCommon.initStorage(currentLocalListingFile, config.localDir);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             logger.debug("Can't write file {}: {}", currentLocalListingFile, e.getMessage());

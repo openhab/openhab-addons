@@ -92,7 +92,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                 + thing.getUID().getAsString().replace(':', '_') + ".data");
         try {
             this.currentFtpListingFile = currentFtpListingFile;
-            previousFtpListing = WatcherCommon.initStorage(currentFtpListingFile);
+            previousFtpListing = WatcherCommon.initStorage(currentFtpListingFile, config.ftpAddress + config.ftpDir);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             logger.debug("Can't write file {}, error message {}", currentFtpListingFile, e.getMessage());

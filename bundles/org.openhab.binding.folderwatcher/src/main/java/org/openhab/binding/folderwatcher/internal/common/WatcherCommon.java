@@ -30,16 +30,26 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class WatcherCommon {
 
-    public static List<String> initStorage(File file) throws IOException {
+    private static void initFile(File file, String watchDir) throws IOException {
+        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file))) {
+            fileWriter.write(watchDir);
+            fileWriter.newLine();
+        }
+    }
+
+    public static List<String> initStorage(File file, String watchDir) throws IOException {
         List<String> returnList = new ArrayList<>();
+        List<String> currentFileListing = new ArrayList<>();
         if (!file.exists()) {
             Files.createDirectories(file.toPath().getParent());
-            try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file))) {
-                fileWriter.write("INIT");
-                fileWriter.newLine();
-            }
+            initFile(file, watchDir);
         } else {
-            returnList = Files.readAllLines(file.toPath().toAbsolutePath());
+            currentFileListing = Files.readAllLines(file.toPath().toAbsolutePath());
+            if (currentFileListing.get(0).equals(watchDir)) {
+                returnList = currentFileListing;
+            } else {
+                initFile(file, watchDir);
+            }
         }
         return returnList;
     }
