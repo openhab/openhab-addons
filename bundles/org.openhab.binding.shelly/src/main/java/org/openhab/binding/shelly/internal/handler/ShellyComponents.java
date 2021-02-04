@@ -56,7 +56,7 @@ public class ShellyComponents {
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                 toQuantityType((double) getLong(status.uptime), DIGITS_NONE, Units.SECOND));
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
-        if (status.tmp != null) {
+        if ((status.tmp != null) && !thingHandler.getProfile().isSensor) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                     toQuantityType(getDouble(status.tmp.tC), DIGITS_NONE, SIUnits.CELSIUS));
         } else if (status.temperature != null) {
@@ -217,7 +217,7 @@ public class ShellyComponents {
                 }
             }
 
-            if (updated && !profile.isRoller && !profile.isRGBW2) {
+            if (!profile.isRoller && !profile.isRGBW2) {
                 thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS,
                         toQuantityType(accumulatedWatts, DIGITS_WATT, Units.WATT));
                 thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL,

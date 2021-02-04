@@ -81,6 +81,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private Request reqDescription = new Request(Code.GET, Type.CON);
     private Request reqStatus = new Request(Code.GET, Type.CON);
     private boolean discovering = false;
+    private int coiotPort = COIOT_PORT;
 
     private int lastSerial = -1;
     private String lastPayload = "";
@@ -118,8 +119,12 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
 
             logger.debug("{}: Starting CoAP Listener", thingName);
-            coapServer.start(config.localIp, this);
-            statusClient = new CoapClient(completeUrl(config.deviceIp, COLOIT_URI_DEVSTATUS))
+            if (!profile.coiotEndpoint.isEmpty() && profile.coiotEndpoint.contains(":")) {
+                String ps = substringAfter(profile.coiotEndpoint, ":");
+                coiotPort = Integer.parseInt(ps);
+            }
+            coapServer.start(config.localIp, coiotPort, this);
+            statusClient = new CoapClient(completeUrl(config.deviceIp, coiotPort, COLOIT_URI_DEVSTATUS))
                     .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
             @Nullable
             Endpoint endpoint = null;
@@ -154,8 +159,38 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         if (response == null) {
             return; // other device instance
         }
+        ResponseCode code = response.getCode();
+        if (code != ResponseCode.CONTENT) {
+            // error handling
+            logger.debug("{}: Unknown Response Code {} received, payload={}", thingName, code,
+                    response.getPayloadString());
+            return;
+        }
+
+        List<Option> options = response.getOptions().asSortedList();
         String ip = response.getSourceContext().getPeerAddress().toString();
-        if (!ip.contains(config.deviceIp)) {
+        boolean match = ip.contains(config.deviceIp);
+        if (!match) {
+            // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
+            int i = 0;
+            while (i < options.size()) {
+                Option opt = options.get(i);
+                if (opt.getNumber() == COIOT_OPTION_GLOBAL_DEVID) {
+                    String devid = opt.getStringValue();
+                    if (devid.contains("#")) {
+                        // Format: <device type>#<mac address>#<coap version>
+                        String macid = substringBetween(devid, "#", "#");
+                        if (profile.mac.toUpperCase().contains(macid.toUpperCase())) {
+                            match = true;
+                            break;
+                        }
+                    }
+                }
+                i++;
+            }
+        }
+        if (!match) {
+            // other instance
             return;
         }
 
@@ -173,84 +208,79 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 return;
             }
 
-            if (response.getCode() == ResponseCode.CONTENT) {
-                payload = response.getPayloadString();
-                List<Option> options = response.getOptions().asSortedList();
-                int i = 0;
-                while (i < options.size()) {
-                    Option opt = options.get(i);
-                    switch (opt.getNumber()) {
-                        case OptionNumberRegistry.URI_PATH:
-                            uri = COLOIT_URI_BASE + opt.getStringValue();
-                            break;
-                        case COIOT_OPTION_GLOBAL_DEVID:
-                            devId = opt.getStringValue();
-                            String sVersion = substringAfterLast(devId, "#");
-                            int iVersion = Integer.parseInt(sVersion);
-                            if (coiotBound && (coiotVers != iVersion)) {
-                                logger.debug(
-                                        "{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
-                                        thingName, coiotVers, iVersion);
-                                thingHandler.reinitializeThing();
-                                coiotBound = false;
+            payload = response.getPayloadString();
+            int i = 0;
+            while (i < options.size()) {
+                Option opt = options.get(i);
+                switch (opt.getNumber()) {
+                    case OptionNumberRegistry.URI_PATH:
+                        uri = COLOIT_URI_BASE + opt.getStringValue();
+                        break;
+                    case OptionNumberRegistry.URI_HOST: // ignore
+                        break;
+                    case OptionNumberRegistry.CONTENT_FORMAT: // ignore
+                        break;
+                    case COIOT_OPTION_GLOBAL_DEVID:
+                        devId = opt.getStringValue();
+                        String sVersion = substringAfterLast(devId, "#");
+                        int iVersion = Integer.parseInt(sVersion);
+                        if (coiotBound && (coiotVers != iVersion)) {
+                            logger.debug("{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
+                                    thingName, coiotVers, iVersion);
+                            thingHandler.reinitializeThing();
+                            coiotBound = false;
+                        }
+                        if (!coiotBound) {
+                            thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
+                            logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
+                            if (iVersion == COIOT_VERSION_1) {
+                                coiot = new ShellyCoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
+                            } else if (iVersion == COIOT_VERSION_2) {
+                                coiot = new ShellyCoIoTVersion2(thingName, thingHandler, blkMap, sensorMap);
+                            } else {
+                                logger.warn("{}: Unsupported CoAP version detected: {}", thingName, sVersion);
+                                return;
                             }
-                            if (!coiotBound) {
-                                thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
-                                logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
-                                if (iVersion == COIOT_VERSION_1) {
-                                    coiot = new ShellyCoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
-                                } else if (iVersion == COIOT_VERSION_2) {
-                                    coiot = new ShellyCoIoTVersion2(thingName, thingHandler, blkMap, sensorMap);
-                                } else {
-                                    logger.warn("{}: Unsupported CoAP version detected: {}", thingName, sVersion);
-                                    return;
-                                }
-                                coiotVers = iVersion;
-                                coiotBound = true;
-                            }
-                            break;
-                        case COIOT_OPTION_STATUS_VALIDITY:
-                            // validity = o.getIntegerValue();
-                            break;
-                        case COIOT_OPTION_STATUS_SERIAL:
-                            serial = opt.getIntegerValue();
-                            break;
-                        default:
-                            logger.debug("{} ({}): COAP option {} with value {} skipped", thingName, devId,
-                                    opt.getNumber(), opt.getValue());
-                    }
-                    i++;
+                            coiotVers = iVersion;
+                            coiotBound = true;
+                        }
+                        break;
+                    case COIOT_OPTION_STATUS_VALIDITY:
+                        // validity = o.getIntegerValue();
+                        break;
+                    case COIOT_OPTION_STATUS_SERIAL:
+                        serial = opt.getIntegerValue();
+                        break;
+                    default:
+                        logger.debug("{} ({}): COAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
+                                opt.getValue());
                 }
+                i++;
+            }
 
-                // If we received a CoAP message successful the thing must be online
-                thingHandler.setThingOnline();
+            // If we received a CoAP message successful the thing must be online
+            thingHandler.setThingOnline();
 
-                // The device changes the serial on every update, receiving a message with the same serial is a
-                // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
-                if ((serial == lastSerial) && payload.equals(lastPayload) && (!profile.hasBattery
-                        || coiot.getLastWakeup().equalsIgnoreCase("ext_power") || ((serial & 0xFF) != 0))) {
-                    logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
-                    return;
+            // The device changes the serial on every update, receiving a message with the same serial is a
+            // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
+            if ((serial == lastSerial) && payload.equals(lastPayload) && (!profile.hasBattery
+                    || coiot.getLastWakeup().equalsIgnoreCase("ext_power") || ((serial & 0xFF) != 0))) {
+                logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
+                return;
+            }
+
+            // fixed malformed JSON :-(
+            payload = fixJSON(payload);
+
+            try {
+                if (uri.equalsIgnoreCase(COLOIT_URI_DEVDESC) || (uri.isEmpty() && payload.contains(COIOT_TAG_BLK))) {
+                    handleDeviceDescription(devId, payload);
+                } else if (uri.equalsIgnoreCase(COLOIT_URI_DEVSTATUS)
+                        || (uri.isEmpty() && payload.contains(COIOT_TAG_GENERIC))) {
+                    handleStatusUpdate(devId, payload, serial);
                 }
-
-                // fixed malformed JSON :-(
-                payload = fixJSON(payload);
-
-                try {
-                    if (uri.equalsIgnoreCase(COLOIT_URI_DEVDESC)
-                            || (uri.isEmpty() && payload.contains(COIOT_TAG_BLK))) {
-                        handleDeviceDescription(devId, payload);
-                    } else if (uri.equalsIgnoreCase(COLOIT_URI_DEVSTATUS)
-                            || (uri.isEmpty() && payload.contains(COIOT_TAG_GENERIC))) {
-                        handleStatusUpdate(devId, payload, serial);
-                    }
-                } catch (ShellyApiException e) {
-                    logger.debug("{}: Unable to process CoIoT message: {}", thingName, e.toString());
-                }
-            } else {
-                // error handling
-                logger.debug("{}: Unknown Response Code {} received, payload={}", thingName, response.getCode(),
-                        response.getPayloadString());
+            } catch (ShellyApiException e) {
+                logger.debug("{}: Unable to process CoIoT message: {}", thingName, e.toString());
             }
 
             if (!discovering) {
@@ -541,7 +571,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         }
 
         resetSerial();
-        return newRequest(ipAddress, uri, con).send();
+        return newRequest(ipAddress, coiotPort, uri, con).send();
     }
 
     /**
@@ -555,10 +585,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      * @return new packet
      */
 
-    private Request newRequest(String ipAddress, String uri, Type con) {
+    private Request newRequest(String ipAddress, int port, String uri, Type con) {
         // We need to build our own Request to set an empty Token
         Request request = new Request(Code.GET, con);
-        request.setURI(completeUrl(ipAddress, uri));
+        request.setURI(completeUrl(ipAddress, port, uri));
         request.setToken(EMPTY_BYTE);
         request.addMessageObserver(new MessageObserverAdapter() {
             @Override
@@ -601,15 +631,18 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         if (isStarted()) {
             logger.debug("{}: Stopping CoAP Listener", thingName);
             coapServer.stop(this);
-            if (statusClient != null) {
-                statusClient.shutdown();
+            CoapClient cclient = statusClient;
+            if (cclient != null) {
+                cclient.shutdown();
                 statusClient = null;
             }
-            if (!reqDescription.isCanceled()) {
-                reqDescription.cancel();
+            Request request = reqDescription;
+            if (!request.isCanceled()) {
+                request.cancel();
             }
-            if (!reqStatus.isCanceled()) {
-                reqStatus.cancel();
+            request = reqStatus;
+            if (!request.isCanceled()) {
+                request.cancel();
             }
         }
         resetSerial();
@@ -620,7 +653,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         stop();
     }
 
-    private static String completeUrl(String ipAddress, String uri) {
-        return "coap://" + ipAddress + ":" + COIOT_PORT + uri;
+    private static String completeUrl(String ipAddress, int port, String uri) {
+        return "coap://" + ipAddress + ":" + String.valueOf(port) + uri;
     }
 }

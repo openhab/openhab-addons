@@ -145,6 +145,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     }
 
     /**
+     * PaperUI Control has a combined Slider for Brightness combined with On/Off
      * Brightness channel has 2 functions: Switch On/Off (OnOnType) and setting brightness (PercentType)
      * There is some more logic in the control. When brightness is set to 0 the control sends also an OFF command
      * When current brightness is 0 and slider will be moved the new brightness will be set, but also a ON command is
@@ -244,7 +245,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
                             pos);
                 }
-            } else if ((command == UpDownType.DOWN) || (command == OnOffType.OFF)) {
+            }
+            if ((command == UpDownType.DOWN) || ((command == OnOffType.OFF))) {
                 logger.debug("{}: Closing roller", thingName);
                 int pos = profile.getRollerFav(config.favoriteDOWN - 1);
                 if (pos > 0) {
