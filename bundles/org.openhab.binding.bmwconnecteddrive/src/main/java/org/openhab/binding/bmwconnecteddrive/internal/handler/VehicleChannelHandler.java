@@ -156,6 +156,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     // Charging
     protected ChannelUID chargingStatus;
+    protected ChannelUID chargingTimeRemaining;
     protected ChannelUID chargeProfileClimate;
     protected ChannelUID chargeProfileChargeMode;
     protected ChannelUID chargeProfilePreference;
@@ -241,6 +242,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         serviceNextMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_MILEAGE);
         checkControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHECK_CONTROL);
         chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHARGE_STATUS);
+        chargingTimeRemaining = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHARGE_REMAINING);
         lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LAST_UPDATE);
 
         serviceDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, DATE);
@@ -767,6 +769,18 @@ public class VehicleChannelHandler extends BaseThingHandler {
                     // State INVALID is somehow misleading. Instead show the Last Charging End Reason
                     updateState(chargingStatus, StringType.valueOf(Converter.toTitleCase(vStatus.chargingStatus)));
                 }
+            } else {
+                updateState(chargingStatus, UnDefType.NULL);
+            }
+            if (vStatus.chargingTimeRemaining != null) {
+                try {
+                    updateState(chargingTimeRemaining,
+                            QuantityType.valueOf(vStatus.chargingTimeRemaining, Units.MINUTE));
+                } catch (NumberFormatException nfe) {
+                    updateState(chargingTimeRemaining, UnDefType.UNDEF);
+                }
+            } else {
+                updateState(chargingTimeRemaining, UnDefType.NULL);
             }
         }
     }
