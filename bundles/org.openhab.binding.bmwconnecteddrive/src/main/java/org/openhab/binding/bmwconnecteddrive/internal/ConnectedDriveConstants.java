@@ -127,6 +127,8 @@ public class ConnectedDriveConstants {
     public static final String SERVICE_MILEAGE = "service-mileage";
     public static final String CHECK_CONTROL = "check-control";
     public static final String CHARGE_STATUS = "charge";
+    public static final String CHARGE_END_REASON = "reason";
+    public static final String CHARGE_REMAINING = "remaining";
     public static final String LAST_UPDATE = "last-update";
 
     // Door Details

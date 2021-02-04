@@ -57,6 +57,7 @@ public class VehicleStatus {
     public String chargingStatus;// ": "INVALID","
     public String lastChargingEndReason;// ": "CHARGING_GOAL_REACHED",
     public String lastChargingEndResult;// ": "SUCCESS","
+    public Double chargingTimeRemaining;// ": "45",
     public Position position;
     public String internalDataTimeUTC;// ": "2020-08-24 T15:55:32",
     public boolean singleImmediateCharging;// ":false,

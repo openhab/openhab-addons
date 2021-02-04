@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,6 +43,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 
@@ -112,6 +114,7 @@ public class StatusWrapper {
         String cUid = channelUID.getIdWithoutGroup();
         String gUid = channelUID.getGroupId();
         QuantityType<Length> qt;
+        QuantityType<Time> qtt;
         StringType st;
         StringType wanted;
         DateTimeType dtt;
@@ -251,13 +254,24 @@ public class StatusWrapper {
                 }
                 break;
             case CHARGE_STATUS:
-                assertTrue(isElectric, "Is Eelctric");
+                assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
                 if (vStatus.chargingStatus.contentEquals(Constants.INVALID)) {
                     assertEquals(Converter.toTitleCase(vStatus.lastChargingEndReason), st.toString(), "Charge Status");
                 } else {
                     assertEquals(Converter.toTitleCase(vStatus.chargingStatus), st.toString(), "Charge Status");
+                }
+                break;
+            case CHARGE_REMAINING:
+                assertTrue(isElectric, "Is Electric");
+                if (vStatus.chargingTimeRemaining == null) {
+                    assertTrue(state instanceof UnDefType, "expected UndefType");
+                } else {
+                    assertTrue(state instanceof QuantityType);
+                    qtt = ((QuantityType) state);
+                    assertEquals(qtt.doubleValue(), vStatus.chargingTimeRemaining);
+                    assertEquals(Units.MINUTE, qtt.getUnit(), "Minutes");
                 }
                 break;
             case LAST_UPDATE:
