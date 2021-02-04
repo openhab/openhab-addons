@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.nikobus.internal.handler;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -47,8 +46,7 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
     private final Logger logger = LoggerFactory.getLogger(NikobusRollershutterModuleHandler.class);
     private final List<PositionEstimator> positionEstimators = new CopyOnWriteArrayList<>();
 
-    private final Map<String, DirectionConfiguration> directionConfigurations = Collections
-            .synchronizedMap(new HashMap<>());
+    private final Map<String, DirectionConfiguration> directionConfigurations = new ConcurrentHashMap<>();
 
     public NikobusRollershutterModuleHandler(Thing thing) {
         super(thing);
@@ -71,8 +69,8 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
                 positionEstimators.add(new PositionEstimator(channel.getUID(), config));
             }
 
-            DirectionConfiguration configuration = config.reverse ? DirectionConfiguration.reversed
-                    : DirectionConfiguration.normal;
+            DirectionConfiguration configuration = config.reverse ? DirectionConfiguration.REVERSED
+                    : DirectionConfiguration.NORMAL;
             directionConfigurations.put(channel.getUID().getId(), configuration);
         }
 
@@ -230,8 +228,8 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
         final int up;
         final int down;
 
-        final static DirectionConfiguration normal = new DirectionConfiguration(1, 2);
-        final static DirectionConfiguration reversed = new DirectionConfiguration(2, 1);
+        final static DirectionConfiguration NORMAL = new DirectionConfiguration(1, 2);
+        final static DirectionConfiguration REVERSED = new DirectionConfiguration(2, 1);
 
         private DirectionConfiguration(int up, int down) {
             this.up = up;
