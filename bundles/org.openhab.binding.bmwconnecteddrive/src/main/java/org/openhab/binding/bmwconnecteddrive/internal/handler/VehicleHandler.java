@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.action.ChargeProfileActions;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
@@ -188,11 +187,8 @@ public class VehicleHandler extends VehicleChannelHandler {
             } else if (CHANNEL_GROUP_STATUS.equals(group)) {
                 vehicleStatusCallback.onResponse(vehicleStatusCache);
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
-                if (chargeProfileEdit.isEmpty()) {
-                    updateChargeProfile(chargeProfileCache);
-                } else {
-                    updateChargeProfile(chargeProfileEdit.get());
-                }
+                chargeProfileEdit.ifPresentOrElse(profile -> updateChargeProfile(profile),
+                        () -> updateChargeProfileFromContent(chargeProfileCache));
             } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
                 imageCallback.onResponse(imageCache);
             }
@@ -535,7 +531,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onResponse(Optional<String> content) {
             chargeProfileCache = content;
             if (chargeProfileEdit.isEmpty()) {
-                updateChargeProfile(chargeProfileCache);
+                updateChargeProfileFromContent(chargeProfileCache);
             }
             removeCallback(this);
         }
@@ -772,94 +768,86 @@ public class VehicleHandler extends VehicleChannelHandler {
     private void handleChargeProfileCommand(ChannelUID channelUID, Command command) {
 
         if (chargeProfileEdit.isEmpty()) {
-            if (chargeProfileCache.isPresent()) {
-                chargeProfileEdit = Optional.ofNullable(getChargeProfileWrapper());
-                if (chargeProfileEdit.isEmpty()) {
-                    return;
-                }
-            } else {
-                return;
-            }
+            chargeProfileEdit = getChargeProfileWrapper();
         }
 
-        boolean processed = false;
+        chargeProfileEdit.ifPresent(profile -> {
 
-        final String id = channelUID.getIdWithoutGroup();
-        final ChargeProfileWrapper profile = chargeProfileEdit.get();
+            boolean processed = false;
 
-        if (command instanceof StringType) {
-            final String stringCommand = ((StringType) command).toFullString();
-            switch (id) {
-                case CHARGE_PROFILE_PREFERENCE:
-                    profile.setPreference(stringCommand);
-                    updateState(chargeProfilePreference,
-                            StringType.valueOf(Converter.toTitleCase(profile.getPreference())));
-                    processed = true;
-                    break;
-                case CHARGE_PROFILE_MODE:
-                    profile.setMode(stringCommand);
-                    updateState(chargeProfileChargeMode, StringType.valueOf(Converter.toTitleCase(profile.getMode())));
-                    processed = true;
-                    break;
-                default:
-                    break;
-            }
-        } else if (command instanceof OnOffType) {
-            final ProfileKey enableKey = chargeEnableChannelKeys.get(id);
-            if (enableKey != null) {
-                profile.setEnabled(enableKey, OnOffType.ON.equals(command));
-                updateTimedState(profile, enableKey);
-                processed = true;
-            } else {
-                final ChargeKeyDay chargeKeyDay = chargeDayChannelKeys.get(id);
-                if (chargeKeyDay != null) {
-                    profile.setDayEnabled(chargeKeyDay.key, chargeKeyDay.day, OnOffType.ON.equals(command));
-                    updateTimedState(profile, chargeKeyDay.key);
-                    processed = true;
+            final String id = channelUID.getIdWithoutGroup();
+
+            if (command instanceof StringType) {
+                final String stringCommand = ((StringType) command).toFullString();
+                switch (id) {
+                    case CHARGE_PROFILE_PREFERENCE:
+                        profile.setPreference(stringCommand);
+                        updateState(chargeProfilePreference,
+                                StringType.valueOf(Converter.toTitleCase(profile.getPreference())));
+                        processed = true;
+                        break;
+                    case CHARGE_PROFILE_MODE:
+                        profile.setMode(stringCommand);
+                        updateState(chargeProfileChargeMode,
+                                StringType.valueOf(Converter.toTitleCase(profile.getMode())));
+                        processed = true;
+                        break;
+                    default:
+                        break;
                 }
-            }
-        } else if (command instanceof DecimalType) {
-            final ChargeKeyHour keyHour = chargeTimeChannelKeys.get(id);
-            if (keyHour != null) {
-                if (keyHour.isHour) {
-                    profile.setHour(keyHour.key, ((DecimalType) command).intValue());
+            } else if (command instanceof OnOffType) {
+                final ProfileKey enableKey = chargeEnableChannelKeys.get(id);
+                if (enableKey != null) {
+                    profile.setEnabled(enableKey, OnOffType.ON.equals(command));
+                    updateTimedState(profile, enableKey);
+                    processed = true;
                 } else {
-                    profile.setMinute(keyHour.key, ((DecimalType) command).intValue());
+                    final ChargeKeyDay chargeKeyDay = chargeDayChannelKeys.get(id);
+                    if (chargeKeyDay != null) {
+                        profile.setDayEnabled(chargeKeyDay.key, chargeKeyDay.day, OnOffType.ON.equals(command));
+                        updateTimedState(profile, chargeKeyDay.key);
+                        processed = true;
+                    }
                 }
-                updateTimedState(profile, keyHour.key);
-                processed = true;
+            } else if (command instanceof DecimalType) {
+                final ChargeKeyHour keyHour = chargeTimeChannelKeys.get(id);
+                if (keyHour != null) {
+                    if (keyHour.isHour) {
+                        profile.setHour(keyHour.key, ((DecimalType) command).intValue());
+                    } else {
+                        profile.setMinute(keyHour.key, ((DecimalType) command).intValue());
+                    }
+                    updateTimedState(profile, keyHour.key);
+                    processed = true;
+                }
             }
-        }
 
-        if (processed) {
-            // start edit timer with 5 min timeout
-            if (editTimeout.isPresent()) {
+            if (processed) {
                 // cancel current timer and add another 5 mins - valid for each edit
-                editTimeout.get().cancel(true);
+                editTimeout.ifPresent(timeout -> timeout.cancel(true));
+                // start edit timer with 5 min timeout
+                editTimeout = Optional.of(scheduler.schedule(() -> {
+                    editTimeout = Optional.empty();
+                    chargeProfileEdit = Optional.empty();
+                    updateChargeProfileFromContent(chargeProfileCache);
+                }, 5, TimeUnit.MINUTES));
+            } else {
+                logger.info("unexpected command {} not processed", command.toFullString());
             }
-            editTimeout = Optional.of(scheduler.schedule(this::cancelChargeProfileEdit, 5, TimeUnit.MINUTES));
-        } else {
-            logger.info("unexpected command {} not processed", command.toFullString());
-        }
-    }
-
-    private void cancelChargeProfileEdit() {
-        editTimeout = Optional.empty();
-        chargeProfileEdit = Optional.empty();
-        updateChargeProfile(chargeProfileCache);
+        });
     }
 
     private void saveChargeProfileSent() {
-        if (editTimeout.isPresent()) {
-            editTimeout.get().cancel(true);
+        editTimeout.ifPresent(timeout -> {
+            timeout.cancel(true);
             editTimeout = Optional.empty();
-        }
-        if (chargeProfileSent.isPresent()) {
-            chargeProfileCache = Optional.of(chargeProfileSent.get());
+        });
+        chargeProfileSent.ifPresent(sent -> {
+            chargeProfileCache = Optional.of(sent);
             chargeProfileSent = Optional.empty();
             chargeProfileEdit = Optional.empty();
-            updateChargeProfile(chargeProfileCache);
-        }
+            updateChargeProfileFromContent(chargeProfileCache);
+        });
     }
 
     @Override
@@ -867,29 +855,27 @@ public class VehicleHandler extends VehicleChannelHandler {
         return Set.of(ChargeProfileActions.class);
     }
 
-    @Nullable
-    public ChargeProfileWrapper getChargeProfileWrapper() {
-        if (chargeProfileCache.isEmpty()) {
-            logger.info("No ChargeProfile recieved so far - cannot start editing");
-            return null;
-        } else {
-            final ChargeProfileWrapper wrapper = ChargeProfileWrapper.fromJson(chargeProfileCache.get());
-            if (wrapper == null) {
-                logger.info("cannot parse charging profile: {}", chargeProfileCache.get());
-            } else {
+    public Optional<ChargeProfileWrapper> getChargeProfileWrapper() {
+        return chargeProfileCache.flatMap(cache -> {
+            return ChargeProfileWrapper.fromJson(cache).flatMap(wrapper -> {
                 logger.info("Charge Profile editing - start");
                 logger.info("{}", wrapper.getJson());
-            }
-            return wrapper;
-        }
+                return Optional.of(wrapper);
+            }).or(() -> {
+                logger.info("cannot parse charging profile: {}", cache);
+                return Optional.empty();
+            });
+        }).or(() -> {
+            logger.info("No ChargeProfile recieved so far - cannot start editing");
+            return Optional.empty();
+        });
     }
 
     public void sendChargeProfile(Optional<ChargeProfileWrapper> profile) {
-        if (remote.isPresent() && profile.isPresent()) {
-            final String json = profile.get().getJson();
+        profile.map(profil -> profil.getJson()).ifPresent(json -> {
             logger.info("sending charging profile: {}", json);
             chargeProfileSent = Optional.of(json);
-            remote.get().execute(RemoteService.CHARGING_CONTROL, json);
-        }
+            remote.ifPresent(rem -> rem.execute(RemoteService.CHARGING_CONTROL, json));
+        });
     }
 }

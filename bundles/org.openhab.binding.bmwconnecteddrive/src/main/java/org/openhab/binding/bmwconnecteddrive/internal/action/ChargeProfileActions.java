@@ -162,15 +162,13 @@ public class ChargeProfileActions implements ThingActions {
     }
 
     @RuleAction(label = "getChargingMode", description = "gets the charging-mode")
-    public @Nullable @ActionOutput(name = "mode", type = "StringType") StringType getChargingMode() {
-        return hasProfile() ? StringType.valueOf(profile.get().getMode()) : null;
+    public @ActionOutput(name = "mode", type = "StringType") StringType getChargingMode() {
+        return getProfile().map(profile -> StringType.valueOf(profile.getMode())).get();
     }
 
     @RuleAction(label = "setChargingMode", description = "sets the charging-mode")
     public void setChargingMode(@ActionInput(name = "mode", type = "StringType") StringType mode) {
-        if (hasProfile()) {
-            profile.get().setMode(mode.toFullString());
-        }
+        getProfile().ifPresent(profile -> profile.setMode(mode.toFullString()));
     }
 
     @RuleAction(label = "getTimer1Days", description = "returns the days of week timer1 is enabled for")
@@ -215,9 +213,7 @@ public class ChargeProfileActions implements ThingActions {
 
     @RuleAction(label = "send", description = "sends the charging profile to the vehicle")
     public void send() {
-        if (hasProfile() && handler.isPresent()) {
-            handler.get().sendChargeProfile(profile);
-        }
+        handler.ifPresent(handle -> handle.sendChargeProfile(getProfile()));
     }
 
     @RuleAction(label = "cancel", description = "cancel current edit of charging profile")
@@ -373,65 +369,53 @@ public class ChargeProfileActions implements ThingActions {
         return handler.get();
     }
 
-    private boolean hasProfile() {
-        if (profile.isEmpty() && handler.isPresent()) {
-            profile = Optional.ofNullable(handler.get().getChargeProfileWrapper());
+    private Optional<ChargeProfileWrapper> getProfile() {
+        if (profile.isEmpty()) {
+            profile = handler.flatMap(handle -> handle.getChargeProfileWrapper());
         }
-        return profile.isPresent();
+        return profile;
     }
 
     private @Nullable DateTimeType getDateTime(ProfileKey key) {
-        if (hasProfile()) {
-            final LocalTime time = profile.get().getTime(key);
-            if (time != null) {
-                return new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault()));
-            }
-        }
-        return null;
+        return getProfile().map(profile -> {
+            final LocalTime time = profile.getTime(key);
+            return time == null ? null
+                    : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault()));
+        }).get();
     }
 
     private void setDateTime(ProfileKey key, DateTimeType time) {
-        if (hasProfile()) {
-            profile.get().setTime(key, time.getZonedDateTime().toLocalTime());
-        }
+        getProfile().ifPresent(profile -> profile.setTime(key, time.getZonedDateTime().toLocalTime()));
     }
 
     private @Nullable OnOffType getEnabled(ProfileKey key) {
-        if (hasProfile()) {
-            final Boolean enabled = profile.get().isEnabled(key);
-            if (enabled != null) {
-                return OnOffType.from(enabled);
-            }
-        }
-        return null;
+        return getProfile().map(profile -> {
+            final Boolean enabled = profile.isEnabled(key);
+            return enabled == null ? null : OnOffType.from(enabled);
+        }).get();
     }
 
     private void setEnabled(ProfileKey key, OnOffType enabled) {
-        if (hasProfile()) {
-            profile.get().setEnabled(key, OnOffType.ON.equals(enabled));
-        }
+        getProfile().ifPresent(profile -> profile.setEnabled(key, OnOffType.ON.equals(enabled)));
     }
 
     private @Nullable StringListType getDays(ProfileKey key) {
-        if (hasProfile()) {
-            final List<String> days = profile.get().getDays(key);
-            if (days != null) {
-                return new StringListType(days);
-            }
-        }
-        return null;
+        return getProfile().map(profile -> {
+            final List<String> days = profile.getDays(key);
+            return days == null ? null : new StringListType(days);
+        }).get();
     }
 
     private void setDays(ProfileKey key, StringListType days) {
-        if (hasProfile()) {
-            List<String> dayList = new ArrayList<>();
+        getProfile().ifPresent(profile -> {
+            final List<String> dayList = new ArrayList<>();
             try {
                 for (int i = 0;; i++) {
                     dayList.add(days.getValue(i));
                 }
             } catch (IllegalArgumentException iae) {
             }
-            profile.get().setDays(key, dayList);
-        }
+            profile.setDays(key, dayList);
+        });
     }
 }
