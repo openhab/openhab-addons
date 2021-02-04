@@ -67,9 +67,7 @@ public class ChargeProfileWrapper {
 
     final protected ProfileType type;
 
-    @Nullable
     private Optional<ChargingMode> mode;
-    @Nullable
     private Optional<ChargingPreference> preference;
 
     private final Map<ProfileKey, Boolean> enabled = new HashMap<>();

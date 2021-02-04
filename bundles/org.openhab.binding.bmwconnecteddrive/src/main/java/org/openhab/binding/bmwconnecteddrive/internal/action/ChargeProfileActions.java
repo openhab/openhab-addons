@@ -162,7 +162,7 @@ public class ChargeProfileActions implements ThingActions {
     }
 
     @RuleAction(label = "getChargingMode", description = "gets the charging-mode")
-    public @ActionOutput(name = "mode", type = "StringType") StringType getChargingMode() {
+    public @Nullable @ActionOutput(name = "mode", type = "StringType") StringType getChargingMode() {
         return getProfile().map(profile -> StringType.valueOf(profile.getMode())).get();
     }
 

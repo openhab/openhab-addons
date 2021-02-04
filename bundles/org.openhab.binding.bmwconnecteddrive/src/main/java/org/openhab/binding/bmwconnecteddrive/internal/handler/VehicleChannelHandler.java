@@ -602,8 +602,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
         final TimedChannels channels = timedChannels.get(key);
         if (channels != null) {
             final LocalTime time = profile.getTime(key);
-            // updateState(channels.time, time == null ? UnDefType.UNDEF :
-            // StringType.valueOf(time.format(TIMEFORMATER)));
             updateState(channels.time, time == null ? UnDefType.UNDEF
                     : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())));
             updateState(channels.hour, time == null ? UnDefType.UNDEF : new DecimalType(time.getHour()));
