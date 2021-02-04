@@ -32,6 +32,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.PrimitiveType;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SoulissT11Handler} is responsible for handling commands, which are
@@ -45,7 +47,7 @@ import org.openhab.core.types.RefreshType;
 public class SoulissT11Handler extends SoulissGenericHandler {
 
     private @NonNullByDefault({}) Configuration gwConfigurationMap;
-    // private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
+    private Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
     byte t1nRawState;
     byte xSleepTime = 0;
 
@@ -66,6 +68,8 @@ public class SoulissT11Handler extends SoulissGenericHandler {
                         updateState(channelUID, val);
                     }
                     break;
+                default:
+                    logger.debug("Unknown channel for T11 thing: {}", channelUID);
             }
         } else {
             switch (channelUID.getId()) {
@@ -80,14 +84,15 @@ public class SoulissT11Handler extends SoulissGenericHandler {
                     break;
 
                 case SoulissBindingConstants.SLEEP_CHANNEL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            commandSEND((byte) (SoulissBindingProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
-                            // set Off
-                            updateState(channelUID, OnOffType.OFF);
-                        }
+                    if ((command instanceof OnOffType) && (command.equals(OnOffType.ON))) {
+                        commandSEND((byte) (SoulissBindingProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
+                        // set Off
+                        updateState(channelUID, OnOffType.OFF);
+
                     }
                     break;
+                default:
+                    logger.debug("Unknown channel for T11 thing: {}", channelUID);
 
             }
         }
