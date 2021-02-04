@@ -22,14 +22,13 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
-import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
+import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
@@ -58,7 +57,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private final Gson gson;
 
-    private @Nullable SmartthingsHandlerFactory smartthingsHandlerFactory;
+    private @Nullable SmartthingsHubCommand smartthingsHubCommand;
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
@@ -71,16 +70,14 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     }
 
     @Reference
-    protected void setThingHandlerFactory(ThingHandlerFactory handlerFactory) {
-        if (handlerFactory instanceof SmartthingsHandlerFactory) {
-            smartthingsHandlerFactory = (SmartthingsHandlerFactory) handlerFactory;
-        }
+    protected void setSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
+        smartthingsHubCommand = hubCommand;
     }
 
-    protected void unsetThingHandlerFactory(ThingHandlerFactory handlerFactory) {
+    protected void unsetSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
         // Make sure it is this handleFactory that should be unset
-        if (handlerFactory == smartthingsHandlerFactory) {
-            this.smartthingsHandlerFactory = null;
+        if (hubCommand == smartthingsHubCommand) {
+            this.smartthingsHubCommand = null;
         }
     }
 
@@ -129,11 +126,10 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      * Start the discovery process by sending a discovery request to the Smartthings Hub
      */
     private void sendSmartthingsDiscoveryRequest() {
-        final SmartthingsHandlerFactory currentSmartthingsHandlerFactory = smartthingsHandlerFactory;
-        if (currentSmartthingsHandlerFactory != null) {
+        if (smartthingsHubCommand != null) {
             try {
                 String discoveryMsg = "{\"discovery\": \"yes\"}";
-                currentSmartthingsHandlerFactory.sendDeviceCommand("/discovery", 5, discoveryMsg);
+                smartthingsHubCommand.sendDeviceCommand("/discovery", 5, discoveryMsg);
                 // Smartthings will not return a response to this message but will send it's response message
                 // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -188,14 +184,11 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
         String deviceNameNoSpaces = name.replaceAll("\\s", "_");
         String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        final SmartthingsHandlerFactory currentSmartthingsHandlerFactory = smartthingsHandlerFactory;
-        if (currentSmartthingsHandlerFactory == null) {
-            logger.info(
-                    "SmartthingsDiscoveryService: smartthingshandlerfactory is unexpectedly null, could not create device {}",
-                    deviceData);
+        if (smartthingsHubCommand == null) {
+            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", deviceData);
             return;
         }
-        ThingUID bridgeUid = currentSmartthingsHandlerFactory.getBridgeHandler().getThing().getUID();
+        ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
         String bridgeId = bridgeUid.getId();
         String uidStr = String.format("smartthings:%s:%s:%s", deviceData.capability, bridgeId, smartthingsDeviceName);
 
