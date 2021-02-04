@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -59,7 +58,6 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
      */
     private @Nullable SolaxX3MicConfiguration config;
 
-
     public SolaxX3MicHandler(Thing thing) {
         super(thing);
     }
@@ -72,8 +70,12 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
     @Override
     public void modbusInitialize() {
         config = getConfigAs(SolaxX3MicConfiguration.class);
-        logger.debug("Initializing thing with properties: {} and config {}", thing.getProperties(), config.toString());
-
+        if (config != null) {
+            logger.debug("Initializing thing with properties: {} and config {}", thing.getProperties(),
+                    config.toString());
+        } else {
+            return;
+        }
         // Try properties first
         @Nullable
         RegisterBlock inputBlock = getRegisterBlockFromConfig(RegisterBlockFunction.INPUT_REGISTER_BLOCK);
@@ -115,20 +117,24 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
      * This is where we set up our regular poller
      */
     private synchronized void registerPollTask(RegisterBlock mainBlock) {
-        SolaxX3MicConfiguration myconfig = config; // this is because of bug in Nullness checker      
+        SolaxX3MicConfiguration myconfig = config; // this is because of bug in Nullness checker
         logger.debug("Setting up regular polling");
 
-        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
-                ModbusReadFunctionCode.READ_INPUT_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
+        if (myconfig != null) {
+            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
+                    ModbusReadFunctionCode.READ_INPUT_REGISTERS, mainBlock.address, mainBlock.length,
+                    myconfig.maxTries);
+            long refreshMillis = myconfig.getRefreshMillis();
 
-        long refreshMillis = myconfig.getRefreshMillis();
-
-        registerRegularPoll(request, refreshMillis, 1000, result -> {
-            result.getRegisters().ifPresent(this::handlePolledData);
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        }, this::handleError);
+            registerRegularPoll(request, refreshMillis, 1000, result -> {
+                result.getRegisters().ifPresent(this::handlePolledData);
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            }, this::handleError);
+        } else {
+            return;
+        }
     }
 
     /**
@@ -189,6 +195,7 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "Failed to retrieve data: " + error.getCause().getMessage());
     }
+
     /**
      * Returns value multiplied by the 10 on the power of scaleFactory
      *
