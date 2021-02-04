@@ -306,18 +306,16 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
         }
 
-        CompletableFuture<@Nullable Void> future = new CompletableFuture<>();
-        scheduler.submit(() -> {
+        return RetryFuture.callWithRetry(() -> {
             try {
                 c.writeValue(value, null);
-                future.complete(null);
+                return null;
             } catch (DBusException e) {
                 logger.debug("Exception occurred when trying to write characteristic '{}': {}",
                         characteristic.getUuid(), e.getMessage());
-                future.completeExceptionally(e);
+                throw e;
             }
-        });
-        return future;
+        }, scheduler);
     }
 
     @Override
@@ -437,18 +435,15 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
         }
 
-        CompletableFuture<byte[]> future = new CompletableFuture<>();
-        scheduler.submit(() -> {
+        return RetryFuture.callWithRetry(() -> {
             try {
-                byte[] value = c.readValue(null);
-                future.complete(value);
+                return c.readValue(null);
             } catch (DBusException e) {
                 logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
                         e.getMessage());
-                future.completeExceptionally(e);
+                throw e;
             }
-        });
-        return future;
+        }, scheduler);
     }
 
     @Override
