@@ -33,6 +33,8 @@ public class UniFiControllerThingConfig {
 
     private int refresh = 10;
 
+    private boolean unifios = false;
+
     public String getHost() {
         return host;
     }
@@ -53,6 +55,10 @@ public class UniFiControllerThingConfig {
         return refresh;
     }
 
+    public boolean isUniFiOS() {
+        return unifios;
+    }
+
     public boolean isValid() {
         return StringUtils.isNotBlank(host) && StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password);
     }
@@ -60,6 +66,6 @@ public class UniFiControllerThingConfig {
     @Override
     public String toString() {
         return "UniFiControllerConfig{host = " + host + ", port = " + port + ", username = " + username
-                + ", password = *****, refresh = " + refresh + "}";
+                + ", password = *****, refresh = " + refresh + ", unifios = " + unifios + "}";
     }
 }
