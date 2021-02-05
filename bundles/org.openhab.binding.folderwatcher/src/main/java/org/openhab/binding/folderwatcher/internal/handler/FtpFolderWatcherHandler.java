@@ -122,34 +122,30 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
         }
     }
 
-    private List<String> listDirectory(FTPClient ftpClient, String parentDir, String currentDir, boolean recursive)
+    private void listDirectory(FTPClient ftpClient, String dirPath, boolean recursive, List<String> dirFiles)
             throws IOException {
         Instant dateNow = Instant.now();
-        List<String> dirList = new ArrayList<>();
-        final String dirToList = parentDir + ((!currentDir.equals("")) ? ("/" + currentDir) : "");
-
-        for (FTPFile file : ftpClient.listFiles(dirToList)) {
+        for (FTPFile file : ftpClient.listFiles(dirPath)) {
             String currentFileName = file.getName();
             if (currentFileName.equals(".") || currentFileName.equals("..")) {
                 continue;
             }
+            String filePath = dirPath + "/" + currentFileName;
             if (file.isDirectory()) {
                 if (recursive) {
                     try {
-                        dirList.addAll(listDirectory(ftpClient, dirToList, currentFileName, recursive));
+                        listDirectory(ftpClient, filePath, recursive, dirFiles);
                     } catch (IOException e) {
-                        logger.debug("Can't read FTP directory: {}", dirToList, e);
+                        logger.debug("Can't read FTP directory: {}", filePath, e);
                     }
                 }
             } else {
                 long diff = ChronoUnit.HOURS.between(file.getTimestamp().toInstant(), dateNow);
-
                 if (diff < config.diffHours) {
-                    dirList.add("ftp:/" + ftpClient.getRemoteAddress().toString() + dirToList + "/" + currentFileName);
+                    dirFiles.add("ftp:/" + ftpClient.getRemoteAddress() + filePath);
                 }
             }
         }
-        return dirList;
     }
 
     private void connectionKeepAlive() {
@@ -224,8 +220,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                     ftpRootDir = "/" + ftpRootDir;
                 }
                 List<String> currentFtpListing = new ArrayList<>();
-
-                currentFtpListing.addAll(listDirectory(ftp, ftpRootDir, "", config.listRecursiveFtp));
+                listDirectory(ftp, ftpRootDir, config.listRecursiveFtp, currentFtpListing);
                 List<String> diffFtpListing = new ArrayList<>(currentFtpListing);
                 diffFtpListing.removeAll(previousFtpListing);
                 diffFtpListing.forEach(file -> triggerChannel(CHANNEL_NEWFILE, file));

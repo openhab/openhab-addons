@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.folderwatcher.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link FolderWatcherBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Alexandr Salamatov - Initial contribution
  */
+@NonNullByDefault
 public enum SecureMode {
     NONE,
     IMPLICIT,

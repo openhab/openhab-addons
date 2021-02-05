@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,8 +37,8 @@ public class WatcherCommon {
     }
 
     public static List<String> initStorage(File file, String watchDir) throws IOException {
-        List<String> returnList = new ArrayList<>();
-        List<String> currentFileListing = new ArrayList<>();
+        List<String> returnList = List.of();
+        List<String> currentFileListing = List.of();
         if (!file.exists()) {
             Files.createDirectories(file.toPath().getParent());
             initFile(file, watchDir);
