@@ -155,7 +155,7 @@ public class ConnectedDriveProxy {
                     if (callback instanceof StringResponseCallback) {
                         ((StringResponseCallback) callback).onResponse(getContentAsString());
                     } else {
-                        ((ByteResponseCallback) callback).onResponse(Optional.of(getContent()));
+                        ((ByteResponseCallback) callback).onResponse(getContent());
                     }
                 }
             }
