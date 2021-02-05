@@ -118,6 +118,13 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                     }
                     updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
                             OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
+                } else if (code == GatewayCommandCode.ControlSetpoint2) {
+                    if (gatewayCommand.getMessage().equals("0.0")) {
+                        updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT,
+                                UnDefType.UNDEF);
+                    }
+                    updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED,
+                            OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
                 }
             } else {
                 connect();
@@ -274,6 +281,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 return GatewayCommandCode.ControlSetpoint;
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED:
                 return GatewayCommandCode.CentralHeating;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT:
+                return GatewayCommandCode.ControlSetpoint2;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED:
+                return GatewayCommandCode.CentralHeating2;
             case OpenThermGatewayBindingConstants.CHANNEL_SEND_COMMAND:
                 return null;
             default:
