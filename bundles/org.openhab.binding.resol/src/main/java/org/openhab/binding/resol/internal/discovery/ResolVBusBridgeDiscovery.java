@@ -40,7 +40,13 @@ import de.resol.vbus.TcpDataSourceProvider;
 @Component(service = DiscoveryService.class)
 @NonNullByDefault
 public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
+    public static final String THING_PROPERTY_IPADDRESS = "ipAddress";
+    public static final String THING_PROPERTY_PORT = "port";
+    public static final String THING_PROPERTY_ADAPTER_SERIAL = "adapterSerial";
+
     private final Logger logger = LoggerFactory.getLogger(ResolVBusBridgeDiscovery.class);
+
+    private boolean discoveryRunning = false;
 
     public ResolVBusBridgeDiscovery() throws IllegalArgumentException {
         super(ResolBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 35, false);
@@ -48,7 +54,13 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        discoveryRunning = true;
         scheduler.execute(this::searchRunnable);
+    }
+
+    @Override
+    protected void stopScan() {
+        discoveryRunning = false;
     }
 
     /*
@@ -63,6 +75,9 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
 
             HashMap<String, TcpDataSource> currentDataSourceById = new HashMap<String, TcpDataSource>();
             for (TcpDataSource ds : dataSources) {
+                if (!discoveryRunning) {
+                    break;
+                }
                 InetAddress address = ds.getAddress();
                 String addressId = address.getHostAddress();
                 TcpDataSource dsWithInfo;
@@ -87,12 +102,12 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
     private void addAdapter(String remoteIP, TcpDataSource dsWithInfo) {
         String adapterSerial = dsWithInfo.getSerial();
         Map<String, Object> properties = new HashMap<>(3);
-        properties.put("ipAddress", remoteIP);
-        properties.put("port", dsWithInfo.getLivePort());
-        properties.put("adapterSerial", adapterSerial);
+        properties.put(THING_PROPERTY_IPADDRESS, remoteIP);
+        properties.put(THING_PROPERTY_PORT, dsWithInfo.getLivePort());
+        properties.put(THING_PROPERTY_ADAPTER_SERIAL, adapterSerial);
 
         ThingUID uid = new ThingUID(ResolBindingConstants.THING_TYPE_UID_BRIDGE, adapterSerial);
-        thingDiscovered(DiscoveryResultBuilder.create(uid).withRepresentationProperty("ipAddress")
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withRepresentationProperty(THING_PROPERTY_IPADDRESS)
                 .withProperties(properties).withLabel(dsWithInfo.getName()).build());
     }
 }

@@ -42,13 +42,15 @@ import org.slf4j.LoggerFactory;
 public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
-    public ResolDeviceDiscoveryService() throws IllegalArgumentException {
-        super(Set.of(ResolBindingConstants.THING_TYPE_UID_DEVICE), 15, false);
-    }
+    private static final String THING_PROPERTY_TYPE = "type";
 
     private final Logger logger = LoggerFactory.getLogger(ResolDeviceDiscoveryService.class);
 
     private @Nullable ResolBridgeHandler resolBridgeHandler;
+
+    public ResolDeviceDiscoveryService() throws IllegalArgumentException {
+        super(Set.of(ResolBindingConstants.THING_TYPE_UID_DEVICE), 15, false);
+    }
 
     public void addThing(ThingUID bridgeUID, String thingType, String type, String name) {
         logger.trace("Adding new Resol thing: {}", type);
@@ -64,10 +66,10 @@ public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
                     bridgeUID.getAsString());
 
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put("type", type);
+            properties.put(THING_PROPERTY_TYPE, type);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withRepresentationProperty("type").withProperties(properties).withLabel(name).build();
+                    .withRepresentationProperty(THING_PROPERTY_TYPE).withProperties(properties).withLabel(name).build();
             logger.trace("call register: {} label: {}", discoveryResult.getBindingId(), discoveryResult.getLabel());
             thingDiscovered(discoveryResult);
         } else {

@@ -34,7 +34,7 @@
 				<context>refresh</context>
 				<label>Refresh Interval</label>
 				<description>Refresh time in seconds to check the connection to the VBus gateway. Data updates are propagated to
-					openHAB independent from this setting as soon as the are received on the VBus.</description>
+					openHAB independently from this setting as soon as the are received on the VBus.</description>
 				<default>300</default>
 			</parameter>
 		</config-description>

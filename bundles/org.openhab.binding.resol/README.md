@@ -71,9 +71,9 @@ After a bridge is detected in the local network the password needs to be given a
 ## Bridge Configuration
 
 The bridge is the device connecting the Resol VBUS to the network, usually a VBus-LAN adapter or integrated in some of the solar controllers like DL3.
-For the connection from the Resol binding the bridge requires the configuration of
+For the connection from the Resol binding the bridge requires the configuration of the following parameters:
 
-| property             | type    | Required | description                                                |
+| Parameter            | Type    | Required | Description                                                |
 |----------------------|---------|----------|------------------------------------------------------------|
 | ipAddress            | String  | yes      | IP address or hostname of the VBUS adapter                 |
 | password             | String  | yes      | Password, defaults to 'vbus' for factory setting devices   |
@@ -90,7 +90,7 @@ For configuration in files you can enable the logging with at least DEBUG level 
 ## Emulated EM Configuration
 
 *emulatedEM* devices cannot be auto-discovered and require beside the bridge the following configuration:
-| property  | type | Required | description                                                |
+| Parameter | Type | Required | Description                                                |
 |-----------|------|----------|-----------------------------------------------------------------------------------------------------------------|
 | moduleID  | int  | yes      | The module ID on the VBUS in range 0-15, but further restrictions might apply depending on the resol controller. |
 
@@ -101,19 +101,19 @@ The channels of a thing are determined automatically based on the received VBUS 
 Here is a list of the channels of a DeltaSol MX with a heat quantity meter (HQM) and an extension module EM.
 The channels supported for your device can be seen in the UI or in the logs if DEBUG logging is enabled for this binding after data is received from the physical device.
 
-| channel                           | type                     | description                                        |
+| Channel                           | Type                     | Description                                        |
 |-----------------------------------|--------------------------|----------------------------------------------------|
 | pump_speed_relay_x                | Number:Dimensionless     | Percentage of the output state of relay 'x'        |
 | temperature_sensor_x              | Number:Temperature       | Temperature sensor 'x' of the controller           |
-| temperature_Module_y_Sensor_x     | Number:Temperature       | Temperature sensor 'x' of the extension module 'y' |
+| temperature_module_y_sensor_x     | Number:Temperature       | Temperature sensor 'x' of the extension module 'y' |
 | pressure_sensor_x                 | Number:Pressure          | Pressure sensor 'x'                                |
 | humidity_sensor_x                 | Number:Dimensionless     | Humidity sensor 'x'                                |
 | irradiation_sensor_x              | Number:Intensity         | Sunlight intensity sensor                          |
 | output_m                          | Number:Dimensionless     | PWM/0-10V level value of the output 'm'            |
 | system_date                       | DateTime                 | Date and time of the controller clock              |
 | error_mask                        | Number                   | Bitmask for the different errors                   |
-| error_sensor_line_broken          | Number                   | Sensor line broken status (details for Error_mask) |
-| error_sensor_line_short-circuited | Number                   | Sensor short circuit status (details for Error_mask) |
+| error_sensor_line_broken          | Number                   | Sensor line broken status (details for error_mask) |
+| error_sensor_line_short-circuited | Number                   | Sensor short circuit status (details for error_mask) |
 | flow_rate_sensor_x                | Number:VolumetricFlowRate| Flow rate of sensor 'x'                            |
 | flow_set_temperature              | Number:Temperature       | Heating circuit set temperature                    |
 | operating_state                   | Number                   | Heating circuit operating state                    |
@@ -144,7 +144,7 @@ Additionally the virtual input device for adjusting the heating circuits as a *B
 The type of the sensor inputs must be configured in the Resol Controller accordingly.
 From all possible sensor channels (temperatureX, switchX, etc.) only one shall be linked to an item at a time, except for BAS which emulates a RCP12 room control unit where both, BasTempAdjustmentX and BasModeX shall be written from OH.
 
-| channel              | type                      | description                                        |
+| Channel              | Type                      | Description                                        |
 |----------------------|---------------------------|----------------------------------------------------|
 | relayX               | Number:Dimensionless      | Read-only percentage of the virtual output state of relay 'x' as set by the Resol Controller.        |
 | temperatureX         | Number:Temperature        | Writable temperature value for the virtual input for sensor 'x'. |

@@ -14,6 +14,7 @@ package org.openhab.binding.resol.handler;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +24,7 @@ import org.openhab.binding.resol.internal.ResolEmuEMConfiguration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -73,8 +75,7 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
     private long lastTime = System.currentTimeMillis();
 
     // Background Runnable
-    @Nullable
-    private ScheduledFuture<?> updateJob;
+    private @Nullable ScheduledFuture<?> updateJob;
 
     public ResolEmuEMThingHandler(Thing thing) {
         super(thing);
@@ -187,7 +188,8 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
         int intValue = 0;
 
         if (command instanceof QuantityType<?>) {
-            value = ((QuantityType<?>) command).floatValue();
+            value = Objects.requireNonNullElse(((QuantityType<?>) command).toUnit(SIUnits.CELSIUS),
+                    new QuantityType<>(888.8, SIUnits.CELSIUS)).floatValue();
             update = true;
         } else if (command instanceof OnOffType) {
             intValue = ((OnOffType) command).equals(OnOffType.ON) ? 1 : 0;
@@ -279,7 +281,7 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
                 if (ste.equals(ConnectionState.CONNECTED)) {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ste.toString());
                 }
             }
         }

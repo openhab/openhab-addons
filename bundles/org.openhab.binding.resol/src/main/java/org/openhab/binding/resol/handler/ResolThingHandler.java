@@ -65,7 +65,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     ResolBridgeHandler bridgeHandler;
     private ResolStateDescriptionOptionProvider stateDescriptionProvider;
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
 
     public ResolThingHandler(Thing thing, ResolStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
@@ -243,7 +243,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
             if (pfv.getEnumVariant() != null) {
                 /* update the enum / State channel */
-                setChannelValue(channelId, pfv.getRawValueLong()); // pfv.getEnumVariant().getText(lang));
+                setChannelValue(channelId, pfv.getRawValueLong());
 
             } else {
                 switch (pfv.getPacketFieldSpec().getType()) {

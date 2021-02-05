@@ -274,7 +274,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                             || ConnectionState.INTERRUPTED.equals(connState)) {
                         isConnected = false;
                     }
-                    logger.info("Connection state changed to: {}", connState.toString());
+                    logger.debug("Connection state changed to: {}", connState.toString());
 
                     if (isConnected) {
                         unconnectedReason = "";
@@ -306,10 +306,12 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
              * 0x10, because the MX redelivers the data from the EM to the DFA.
              * But the MX is the exception in this case and many other controllers do not redeliver data, so we keep it.
              */
-            logger.trace("Received Data from {} (0x{}/0x{}) naming it {}",
-                    spec.getSourceDeviceSpec(packet).getName(lang),
-                    Integer.toHexString(spec.getSourceDeviceSpec(packet).getSelfAddress()),
-                    Integer.toHexString(spec.getSourceDeviceSpec(packet).getPeerAddress()), thingType);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Received Data from {} (0x{}/0x{}) naming it {}",
+                        spec.getSourceDeviceSpec(packet).getName(lang),
+                        Integer.toHexString(spec.getSourceDeviceSpec(packet).getSelfAddress()),
+                        Integer.toHexString(spec.getSourceDeviceSpec(packet).getPeerAddress()), thingType);
+            }
 
             for (Thing t : getThing().getThings()) {
                 ResolBaseThingHandler th = (ResolBaseThingHandler) t.getHandler();
