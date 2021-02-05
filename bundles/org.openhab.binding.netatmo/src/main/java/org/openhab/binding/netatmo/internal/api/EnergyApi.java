@@ -93,7 +93,7 @@ public class EnergyApi extends RestManager {
      */
     public boolean setthermpoint(String deviceId, String moduleId, SetpointMode targetMode, long setpointEndtime,
             double setpointTemp) throws NetatmoException {
-        String req = "api/setthermpoint?device_id=%s&module_id=%s&setpoint_mode=%s";
+        String req = "setthermpoint?device_id=%s&module_id=%s&setpoint_mode=%s";
         req = String.format(req, deviceId, moduleId, targetMode.getDescriptor());
         if (targetMode == SetpointMode.MANUAL || targetMode == SetpointMode.MAX) {
             req += "&setpoint_endtime=" + setpointEndtime;

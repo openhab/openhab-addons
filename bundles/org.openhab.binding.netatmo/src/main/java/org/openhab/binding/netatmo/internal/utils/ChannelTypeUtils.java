@@ -85,12 +85,8 @@ public class ChannelTypeUtils {
         return (zonedDateTime == null) ? UnDefType.NULL : new DateTimeType(zonedDateTime);
     }
 
-    public static State toDecimalType(@Nullable Double value) {
-        return (value == null) ? UnDefType.NULL : toDecimalType(new BigDecimal(value));
-    }
-
-    public static State toDecimalType(@Nullable BigDecimal decimal) {
-        return decimal == null ? UnDefType.NULL : new DecimalType(decimal.setScale(2, RoundingMode.HALF_UP));
+    public static State toDecimalType(@Nullable BigDecimal value) {
+        return value == null ? UnDefType.NULL : new DecimalType(value.setScale(2, RoundingMode.HALF_UP));
     }
 
     public static State toDecimalType(@Nullable String textualDecimal) {
@@ -98,7 +94,7 @@ public class ChannelTypeUtils {
     }
 
     public static State toQuantityType(@Nullable Double value, @Nullable MeasureClass measureClass) {
-        if (value != null) {
+        if (value != null && !value.isNaN()) {
             if (measureClass != null) {
                 Measure measureDef = NetatmoConstants.NA_MEASURES.get(measureClass);
                 if (measureDef != null) {
@@ -107,7 +103,7 @@ public class ChannelTypeUtils {
                     return new QuantityType<>(measure, measureDef.unit);
                 }
             } else {
-                return toDecimalType(value);
+                return new DecimalType(value);
             }
         }
         return UnDefType.NULL;
@@ -115,7 +111,7 @@ public class ChannelTypeUtils {
 
     public static State toQuantityType(@Nullable Double value, @Nullable Unit<?> unit) {
         return value == null || value.isNaN() ? UnDefType.NULL
-                : unit == null ? toDecimalType(value)
+                : unit == null ? new DecimalType(value)
                         : toQuantityType(new BigDecimal(value).setScale(2, RoundingMode.HALF_UP), unit);
     }
 

@@ -60,4 +60,12 @@ public abstract class NAEvent extends NAObject {
     public void setEventType(EventType type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "NAEvent [" + (type != null ? "type=" + type + ", " : "")
+                + (cameraId != null ? "cameraId=" + cameraId + ", " : "")
+                + (message != null ? "message=" + message + ", " : "") + "subType=" + subType + ", "
+                + ("getId()=" + getId() + ", ") + (getName() != null ? "getName()=" + getName() : "") + "]";
+    }
 }

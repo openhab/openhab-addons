@@ -35,6 +35,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link PersonHandler} is the class used to handle the Welcome Home Data
@@ -44,6 +46,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class PersonHandler extends NetatmoDeviceHandler {
+    private final Logger logger = LoggerFactory.getLogger(PersonHandler.class);
 
     public PersonHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
@@ -69,6 +72,8 @@ public class PersonHandler extends NetatmoDeviceHandler {
 
     @Override
     public void setEvent(NAEvent event) {
+        logger.debug("Updating person  with event : " + event.toString());
+
         updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime(), zoneId));
         updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID, toStringType(event.getCameraId()));
         updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SUBTYPE,

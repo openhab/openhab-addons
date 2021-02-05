@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.ThermostatZoneType;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermProgram;
@@ -70,13 +71,15 @@ public class Therm1SetpointChannelHelper extends AbstractChannelHelper {
                 NATimeTableItem currentProgramMode = getCurrentProgramMode(thermostat.getActiveProgram());
                 if (currentProgram != null && currentProgramMode != null) {
                     ThermostatZoneType zoneType = currentProgramMode.getZoneType();
-                    return toDecimalType(currentProgram.getZoneTemperature(zoneType));
+                    return toQuantityType(currentProgram.getZoneTemperature(zoneType),
+                            MeasureClass.INTERIOR_TEMPERATURE);
                 }
             case AWAY:
             case FROST_GUARD:
-                return toDecimalType(currentProgram != null ? currentProgram.getZoneTemperature(currentMode) : null);
+                return toQuantityType(currentProgram != null ? currentProgram.getZoneTemperature(currentMode) : null,
+                        MeasureClass.INTERIOR_TEMPERATURE);
             case MANUAL:
-                return toDecimalType(thermostat.getSetpointTemp());
+                return toQuantityType(thermostat.getSetpointTemp(), MeasureClass.INTERIOR_TEMPERATURE);
             case OFF:
             case MAX:
             case UNKNOWN:

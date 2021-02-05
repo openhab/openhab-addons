@@ -112,6 +112,7 @@ public class CameraHandler extends NetatmoDeviceHandler {
 
     @Override
     public void setEvent(NAEvent event) {
+        logger.debug("Updating camera with event : " + event.toString());
         updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
         updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getMessage()));
         updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime(), zoneId));

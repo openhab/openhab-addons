@@ -95,21 +95,19 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
     @Override
     protected void updateChildModules() {
         super.updateChildModules();
-        NAHome localNaThing = (NAHome) naThing;
-        if (localNaThing != null) {
+        if (naThing instanceof NAHome) {
+            NAHome localNaThing = (NAHome) naThing;
             localNaThing.getPersons().entrySet().forEach(entry -> notifyListener(entry.getKey(), entry.getValue()));
 
-            List<NAHomeEvent> actualEvents = localNaThing.getEvents().stream().filter(e -> e.getTime() > maxEventTime)
-                    .sorted(Comparator.comparingLong(NAHomeEvent::getTime)).collect(Collectors.toList());
-
-            actualEvents.stream().forEach(event -> {
-                String personId = event.getPersonId();
-                if (personId != null) {
-                    notifyListener(personId, event);
-                }
-                notifyListener(event.getCameraId(), event);
-                maxEventTime = event.getTime() - 1;
-            });
+            localNaThing.getEvents().stream().filter(e -> e.getTime() > maxEventTime)
+                    .sorted(Comparator.comparingLong(NAHomeEvent::getTime)).forEach(event -> {
+                        String personId = event.getPersonId();
+                        if (personId != null) {
+                            notifyListener(personId, event);
+                        }
+                        notifyListener(event.getCameraId(), event);
+                        maxEventTime = event.getTime();
+                    });
 
             updateProperty(PROPERTY_MAX_EVENT_TIME, Long.toString(maxEventTime));
         }
@@ -139,7 +137,7 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
             if (event.getEventType().appliesOn(ModuleType.NAPerson)) {
                 modules.addAll(whEvent.getPersons().keySet());
             }
-            modules.forEach(module -> this.notifyListener(module, whEvent));
+            modules.forEach(module -> notifyListener(module, whEvent));
         } else {
             super.setEvent(event);
         }
