@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.discovery.internal;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
+import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -63,8 +65,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
     private final Set<BluetoothDiscoveryParticipant> participants = new CopyOnWriteArraySet<>();
-    @NonNullByDefault({})
-    private final Map<BluetoothAddress, DiscoveryCache> discoveryCaches = new ConcurrentHashMap<>();
+    private final ExpiringCacheMap<BluetoothAddress, DiscoveryCache> discoveryCaches = new ExpiringCacheMap<>(
+            Duration.ofMinutes(1));
 
     private final Set<ThingTypeUID> supportedThingTypes = new CopyOnWriteArraySet<>();
 
@@ -136,15 +138,20 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void deviceRemoved(BluetoothDevice device) {
-        discoveryCaches.computeIfPresent(device.getAddress(), (addr, cache) -> cache.removeDiscoveries(device));
+        DiscoveryCache cache = discoveryCaches.get(device.getAddress());
+        if (cache != null) {
+            cache.removeDiscoveries(device);
+        }
     }
 
     @Override
     public void deviceDiscovered(BluetoothDevice device) {
         logger.debug("Discovered bluetooth device '{}': {}", device.getName(), device);
 
-        DiscoveryCache cache = discoveryCaches.computeIfAbsent(device.getAddress(), addr -> new DiscoveryCache());
-        cache.handleDiscovery(device);
+        DiscoveryCache cache = discoveryCaches.putIfAbsentAndGet(device.getAddress(), DiscoveryCache::new);
+        if (cache != null) {
+            cache.handleDiscovery(device);
+        }
     }
 
     private static ThingUID createThingUIDWithBridge(DiscoveryResult result, BluetoothAdapter adapter) {
