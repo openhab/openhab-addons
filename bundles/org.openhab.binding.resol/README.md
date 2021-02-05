@@ -54,7 +54,7 @@ The supported devices include
 
 A more complete list can be found in the doc of the [resol-vbus-java library](http://danielwippermann.github.io/resol-vbus/vbus-packets.html).
 
-###Emulated Extension Module EM
+### Emulated Extension Module EM
 
 Some controllers like the Deltasol MX can be connected to an extension module, which can be emulated by the thing type *emulatedEM*.
 The emulated EM is a virtual device, visible on the VBUS to a Resol controller and provides an interface between openHAB and the controller.
