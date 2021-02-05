@@ -14,7 +14,6 @@
 package org.openhab.binding.souliss.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
 import org.openhab.binding.souliss.internal.HalfFloatUtils;
@@ -39,8 +38,7 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SoulissT31Handler extends SoulissGenericHandler {
 
-    @Nullable
-    Configuration gwConfigurationMap;
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
 
     DecimalType setPointValue = DecimalType.ZERO;
     StringType fanStateValue = StringType.EMPTY;
@@ -131,6 +129,11 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
+
+        gwConfigurationMap = thingGeneric.getConfiguration();
+        if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
+            bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
+        }
     }
 
     public void setState(PrimitiveType state) {
@@ -206,10 +209,8 @@ public class SoulissT31Handler extends SoulissGenericHandler {
         }
     }
 
-    String sMessage = "";
-
     public void setRawStateValues(byte rawStateByte0, float valTemp, float valSetPoint) {
-        sMessage = "";
+        String sMessage = "";
         switch (getBitState(rawStateByte0, 0)) {
             case 0:
                 sMessage = SoulissBindingConstants.T31_OFF_MESSAGE_SYSTEM_CHANNEL;
