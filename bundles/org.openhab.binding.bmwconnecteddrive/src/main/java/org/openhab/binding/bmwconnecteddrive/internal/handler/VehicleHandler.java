@@ -192,7 +192,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                         () -> chargeProfileCache
                                 .ifPresent(profileCache -> updateChargeProfileFromContent(profileCache)));
             } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
-                imageCallback.onResponse(imageCache);
+                imageCache.ifPresent(image -> imageCallback.onResponse(image));
             }
             // Check for Channel Group and corresponding Actions
         } else if (CHANNEL_GROUP_REMOTE.equals(group)) {
@@ -605,11 +605,11 @@ public class VehicleHandler extends VehicleChannelHandler {
     @NonNullByDefault({})
     public class ImageCallback implements ByteResponseCallback {
         @Override
-        public void onResponse(Optional<byte[]> content) {
-            imageCache = content;
-            if (content.isPresent()) {
-                String contentType = HttpUtil.guessContentTypeFromData(content.get());
-                updateState(imageChannel, new RawType(content.get(), contentType));
+        public void onResponse(@Nullable byte[] content) {
+            if (content != null) {
+                imageCache = Optional.of(content);
+                String contentType = HttpUtil.guessContentTypeFromData(content);
+                updateState(imageChannel, new RawType(content, contentType));
             } else {
                 synchronized (imageProperties) {
                     imageProperties.failed();
