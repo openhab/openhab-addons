@@ -18,9 +18,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Collections;
-import java.util.Date;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.LinkedList;
+import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,9 +44,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @NonNullByDefault
-public class PilightConnector extends Thread {
+public class PilightConnector implements Runnable {
 
-    private static final Integer RECONNECT_DELAY_MSEC = 10 * 1000; // 10 seconds
+    private static final int RECONNECT_DELAY_MSEC = 10 * 1000; // 10 seconds
 
     private final Logger logger = LoggerFactory.getLogger(PilightConnector.class);
 
@@ -62,74 +61,74 @@ public class PilightConnector extends Thread {
             new MappingJsonFactory().configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false))
                     .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
 
-    private boolean running = true;
-
     private @Nullable Socket socket;
     private @Nullable PrintStream printStream;
 
-    private Date lastUpdate = new Date(0);
+    private final ScheduledExecutorService scheduler;
+    private final LinkedList<Action> delayedActionQueue = new LinkedList<>();
+    private @Nullable ScheduledFuture<?> delayedActionWorkerFuture;
 
-    private ExecutorService delayedUpdateThreadPool = Executors.newSingleThreadExecutor();
-
-    public PilightConnector(PilightBridgeConfiguration config, IPilightCallback callback) {
+    public PilightConnector(final PilightBridgeConfiguration config, final IPilightCallback callback,
+            final ScheduledExecutorService scheduler) {
         this.config = config;
         this.callback = callback;
-        setDaemon(true);
+        this.scheduler = scheduler;
     }
 
     @Override
     public void run() {
-        connect();
+        try {
+            connect();
 
-        while (running) {
-            try {
-                final @Nullable Socket socket = this.socket;
-                if (socket != null && !socket.isClosed()) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    String line = in.readLine();
-                    while (running && line != null) {
-                        if (!line.isEmpty()) {
-                            logger.trace("Received from pilight: {}", line);
-                            if (line.startsWith("{\"message\":\"config\"")) {
-                                // Configuration received
-                                logger.debug("Config received");
-                                callback.configReceived(inputMapper.readValue(line, Message.class).getConfig());
-                            } else if (line.startsWith("{\"message\":\"values\"")) {
-                                AllStatus status = inputMapper.readValue(line, AllStatus.class);
-                                callback.statusReceived(status.getValues());
-                            } else if (line.startsWith("{\"version\":")) {
-                                Version version = inputMapper.readValue(line, Version.class);
-                                callback.versionReceived(version);
-                                logger.debug("version received: {}", line);
-                            } else if (line.startsWith("{\"status\":")) {
-                                // Status message, we're not using this for now.
-                                Response response = inputMapper.readValue(line, Response.class);
-                                logger.trace("Response success: {}", response.isSuccess());
-                            } else if (line.equals("1")) {
-                                // pilight stopping
-                                throw new IOException("Connection to pilight lost");
-                            } else {
-                                Status status = inputMapper.readValue(line, Status.class);
-                                callback.statusReceived(Collections.singletonList(status));
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    final Socket socket = this.socket;
+                    if (socket != null && !socket.isClosed()) {
+                        try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                            String line = in.readLine();
+                            while (!Thread.currentThread().isInterrupted() && line != null) {
+                                if (!line.isEmpty()) {
+                                    logger.trace("Received from pilight: {}", line);
+                                    if (line.startsWith("{\"message\":\"config\"")) {
+                                        callback.configReceived(inputMapper.readValue(line, Message.class).getConfig());
+                                    } else if (line.startsWith("{\"message\":\"values\"")) {
+                                        AllStatus status = inputMapper.readValue(line, AllStatus.class);
+                                        callback.statusReceived(status.getValues());
+                                    } else if (line.startsWith("{\"version\":")) {
+                                        Version version = inputMapper.readValue(line, Version.class);
+                                        callback.versionReceived(version);
+                                    } else if (line.startsWith("{\"status\":")) {
+                                        Response response = inputMapper.readValue(line, Response.class);
+                                    } else if (line.equals("1")) {
+                                        throw new IOException("Connection to pilight lost");
+                                    } else {
+                                        Status status = inputMapper.readValue(line, Status.class);
+                                        callback.statusReceived(Collections.singletonList(status));
+                                    }
+                                }
+                                line = in.readLine();
                             }
                         }
-                        line = in.readLine();
+                    }
+                } catch (IOException e) {
+                    if (!Thread.currentThread().isInterrupted()) {
+                        logger.debug("Error in pilight listener thread: {}", e.getMessage());
                     }
                 }
-            } catch (IOException e) {
-                if (running) {
-                    logger.debug("Error in pilight listener thread", e);
+
+                logger.debug("Disconnected from pilight server at {}:{}", config.getIpAddress(), config.getPort());
+
+                if (!Thread.currentThread().isInterrupted()) {
+                    callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, null);
+                    // empty line received (socket closed) or pilight stopped but binding
+                    // is still running, try to reconnect
+                    connect();
                 }
             }
 
-            logger.info("Disconnected from pilight server at {}:{}", config.getIpAddress(), config.getPort());
-
-            if (running) {
-                callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, null);
-                // empty line received (socket closed) or pilight stopped but binding
-                // is still running, try to reconnect
-                connect();
-            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupting thread.");
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -137,7 +136,6 @@ public class PilightConnector extends Thread {
      * Tells the connector to refresh the configuration
      */
     public void refreshConfig() {
-        logger.trace("refreshConfig");
         doSendAction(new Action(Action.ACTION_REQUEST_CONFIG));
     }
 
@@ -145,7 +143,6 @@ public class PilightConnector extends Thread {
      * Tells the connector to refresh the status of all devices
      */
     public void refreshStatus() {
-        logger.trace("refreshStatus");
         doSendAction(new Action(Action.ACTION_REQUEST_VALUES));
     }
 
@@ -153,35 +150,34 @@ public class PilightConnector extends Thread {
      * Stops the listener
      */
     public void close() {
-        running = false;
         disconnect();
-        interrupt();
+        Thread.currentThread().interrupt();
     }
 
     private void disconnect() {
-        final @Nullable PrintStream printStream = this.printStream;
+        final PrintStream printStream = this.printStream;
         if (printStream != null) {
             printStream.close();
             this.printStream = null;
         }
 
-        final @Nullable Socket socket = this.socket;
+        final Socket socket = this.socket;
         if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.debug("Error while closing pilight socket", e);
+                logger.debug("Error while closing pilight socket: {}", e.getMessage());
             }
             this.socket = null;
         }
     }
 
     private boolean isConnected() {
-        final @Nullable Socket socket = this.socket;
+        final Socket socket = this.socket;
         return socket != null && !socket.isClosed();
     }
 
-    private void connect() {
+    private void connect() throws InterruptedException {
         disconnect();
 
         int delay = 0;
@@ -206,20 +202,20 @@ public class PilightConnector extends Thread {
                 Response response = inputMapper.readValue(socket.getInputStream(), Response.class);
 
                 if (response.getStatus().equals(Response.SUCCESS)) {
-                    logger.info("Established connection to pilight server at {}:{}", config.getIpAddress(),
+                    logger.debug("Established connection to pilight server at {}:{}", config.getIpAddress(),
                             config.getPort());
                     this.socket = socket;
                     this.printStream = printStream;
                     callback.updateThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                 } else {
+                    printStream.close();
                     socket.close();
                     logger.debug("pilight client not accepted: {}", response.getStatus());
                 }
             } catch (IOException e) {
-                logger.debug("connect failed", e);
+                this.printStream.close();
+                logger.debug("connect failed: {}", e.getMessage());
                 callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (InterruptedException e) {
-                logger.debug("connect interrupted", e);
             }
 
             delay = RECONNECT_DELAY_MSEC;
@@ -232,8 +228,18 @@ public class PilightConnector extends Thread {
      * @param action action to send
      */
     public synchronized void sendAction(Action action) {
-        DelayedUpdate delayed = new DelayedUpdate(action);
-        delayedUpdateThreadPool.execute(delayed);
+        delayedActionQueue.add(action);
+
+        if (delayedActionWorkerFuture == null || delayedActionWorkerFuture.isCancelled()) {
+            delayedActionWorkerFuture = scheduler.scheduleWithFixedDelay(() -> {
+                if (!delayedActionQueue.isEmpty()) {
+                    doSendAction(delayedActionQueue.pop());
+                } else {
+                    delayedActionWorkerFuture.cancel(false);
+                    delayedActionWorkerFuture = null;
+                }
+            }, 0, config.getDelay(), TimeUnit.MILLISECONDS);
+        }
     }
 
     private void doSendAction(Action action) {
@@ -242,40 +248,11 @@ public class PilightConnector extends Thread {
             try {
                 printStream.println(outputMapper.writeValueAsString(action));
             } catch (IOException e) {
-                logger.debug("Error while sending action '{}' to pilight server", action.getAction(), e);
+                logger.debug("Error while sending action '{}' to pilight server: {}", action.getAction(),
+                        e.getMessage());
             }
         } else {
             logger.debug("Cannot send action '{}', not connected to pilight!", action.getAction());
-        }
-    }
-
-    /**
-     * Simple thread to allow calls to pilight to be throttled
-     */
-    private class DelayedUpdate implements Runnable {
-
-        private final Action action;
-
-        public DelayedUpdate(Action action) {
-            this.action = action;
-        }
-
-        @Override
-        public void run() {
-            long delayBetweenUpdates = config.getDelay();
-
-            long diff = new Date().getTime() - lastUpdate.getTime();
-            if (diff < delayBetweenUpdates) {
-                long delay = Math.min(delayBetweenUpdates - diff, config.getDelay());
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    logger.debug("Error while processing pilight throttling delay");
-                }
-            }
-
-            lastUpdate = new Date();
-            doSendAction(action);
         }
     }
 }

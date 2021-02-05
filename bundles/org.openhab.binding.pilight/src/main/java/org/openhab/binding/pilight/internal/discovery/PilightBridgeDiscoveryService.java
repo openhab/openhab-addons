@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.pilight")
 public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
 
-    private static final int AUTODISCOVERY_SEARCH_TIME = 5; // in seconds
-    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL = 60 * 10; // in seconds
+    private static final int AUTODISCOVERY_SEARCH_TIME_SEC = 5;
+    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 60 * 10;
 
     private static final String SSDP_DISCOVERY_REQUEST_MESSAGE = "M-SEARCH * HTTP/1.1\r\n"
             + "Host:239.255.255.250:1900\r\n" + "ST:urn:schemas-upnp-org:service:pilight:1\r\n"
@@ -59,7 +59,7 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> backgroundDiscoveryJob;
 
     public PilightBridgeDiscoveryService() throws IllegalArgumentException {
-        super(getSupportedThingTypeUIDs(), AUTODISCOVERY_SEARCH_TIME, true);
+        super(getSupportedThingTypeUIDs(), AUTODISCOVERY_SEARCH_TIME_SEC, true);
     }
 
     public static Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -90,35 +90,38 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
                             DatagramPacket recvPack = new DatagramPacket(new byte[1024], 1024);
                             ssdp.receive(recvPack);
                             byte[] recvData = recvPack.getData();
-                            InputStreamReader recvInput = new InputStreamReader(new ByteArrayInputStream(recvData),
-                                    StandardCharsets.UTF_8);
-                            StringBuilder recvOutput = new StringBuilder();
-                            for (int value; (value = recvInput.read()) != -1;) {
-                                recvOutput.append((char) value);
-                            }
-                            BufferedReader bufReader = new BufferedReader(new StringReader(recvOutput.toString()));
-                            Pattern pattern = Pattern.compile("Location:([0-9.]+):(.*)");
-                            String line;
-                            while ((line = bufReader.readLine()) != null) {
-                                Matcher matcher = pattern.matcher(line);
-                                if (matcher.matches()) {
-                                    String server = matcher.group(1);
-                                    Integer port = Integer.parseInt(matcher.group(2));
-                                    loop = false;
-                                    logger.debug("Found pilight daemon at {}:{}", server, port);
+                            try (InputStreamReader recvInput = new InputStreamReader(new ByteArrayInputStream(recvData),
+                                    StandardCharsets.UTF_8)) {
+                                StringBuilder recvOutput = new StringBuilder();
+                                for (int value; (value = recvInput.read()) != -1;) {
+                                    recvOutput.append((char) value);
+                                }
+                                try (BufferedReader bufReader = new BufferedReader(
+                                        new StringReader(recvOutput.toString()))) {
+                                    Pattern pattern = Pattern.compile("Location:([0-9.]+):(.*)");
+                                    String line;
+                                    while ((line = bufReader.readLine()) != null) {
+                                        Matcher matcher = pattern.matcher(line);
+                                        if (matcher.matches()) {
+                                            String server = matcher.group(1);
+                                            Integer port = Integer.parseInt(matcher.group(2));
+                                            loop = false;
+                                            logger.debug("Found pilight daemon at {}:{}", server, port);
 
-                                    Map<String, Object> properties = new HashMap<>(2);
-                                    properties.put(PilightBindingConstants.PROPERTY_IP_ADDRESS, server);
-                                    properties.put(PilightBindingConstants.PROPERTY_PORT, port);
+                                            Map<String, Object> properties = new HashMap<>(2);
+                                            properties.put(PilightBindingConstants.PROPERTY_IP_ADDRESS, server);
+                                            properties.put(PilightBindingConstants.PROPERTY_PORT, port);
 
-                                    ThingUID uid = new ThingUID(PilightBindingConstants.THING_TYPE_BRIDGE,
-                                            server.replace(".", "") + "" + port);
+                                            ThingUID uid = new ThingUID(PilightBindingConstants.THING_TYPE_BRIDGE,
+                                                    server.replace(".", "") + "" + port);
 
-                                    DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                                            .withProperties(properties).withLabel("Pilight Bridge (" + server + ")")
-                                            .build();
+                                            DiscoveryResult result = DiscoveryResultBuilder.create(uid)
+                                                    .withProperties(properties)
+                                                    .withLabel("Pilight Bridge (" + server + ")").build();
 
-                                    thingDiscovered(result);
+                                            thingDiscovered(result);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -143,7 +146,7 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Start Pilight device background discovery");
         if (backgroundDiscoveryJob == null || backgroundDiscoveryJob.isCancelled()) {
             backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 5,
-                    AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL, TimeUnit.SECONDS);
+                    AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC, TimeUnit.SECONDS);
         }
     }
 

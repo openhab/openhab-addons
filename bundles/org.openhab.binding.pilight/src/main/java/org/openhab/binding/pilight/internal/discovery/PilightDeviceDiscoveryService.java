@@ -50,11 +50,10 @@ import org.slf4j.LoggerFactory;
 public class PilightDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            PilightHandlerFactory.SUPPORTED_THING_TYPES_UIDS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = PilightHandlerFactory.SUPPORTED_THING_TYPES_UIDS;
 
-    private static final int AUTODISCOVERY_SEARCH_TIME = 10; // in seconds
-    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL = 60 * 10; // in seconds
+    private static final int AUTODISCOVERY_SEARCH_TIME_SEC = 10;
+    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 60 * 10;
 
     private final Logger logger = LoggerFactory.getLogger(PilightDeviceDiscoveryService.class);
 
@@ -65,8 +64,8 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService
     private CompletableFuture<Config> configFuture;
     private CompletableFuture<List<Status>> statusFuture;
 
-    public PilightDeviceDiscoveryService() throws IllegalArgumentException {
-        super(SUPPORTED_THING_TYPES_UIDS, AUTODISCOVERY_SEARCH_TIME);
+    public PilightDeviceDiscoveryService() {
+        super(SUPPORTED_THING_TYPES_UIDS, AUTODISCOVERY_SEARCH_TIME_SEC);
         configFuture = new CompletableFuture<>();
         statusFuture = new CompletableFuture<>();
     }
@@ -78,9 +77,7 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService
             statusFuture = new CompletableFuture<>();
 
             CompletableFuture.allOf(configFuture, statusFuture).thenAccept(unused -> {
-                @Nullable
                 Config config = null;
-                @Nullable
                 List<Status> allStatus = null;
 
                 try {
@@ -94,23 +91,23 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService
                     List<Status> finalAllStatus = allStatus;
                     config.getDevices().forEach((deviceId, device) -> {
                         if (this.pilightBridgeHandler != null) {
-                            final @Nullable Status status = finalAllStatus.stream()
-                                    .filter(s -> deviceId.equals(s.getDevices().get(0))).findFirst().orElse(null);
+                            final Optional<Status> status = finalAllStatus.stream()
+                                    .filter(s -> deviceId.equals(s.getDevices().get(0))).findFirst();
 
                             final ThingTypeUID thingTypeUID;
                             final String typeString;
 
-                            if (status != null) {
-                                if (status.getType().equals(DeviceType.SWITCH)) {
+                            if (status.isPresent()) {
+                                if (status.get().getType().equals(DeviceType.SWITCH)) {
                                     thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_SWITCH.getId());
                                     typeString = "Switch";
-                                } else if (status.getType().equals(DeviceType.DIMMER)) {
+                                } else if (status.get().getType().equals(DeviceType.DIMMER)) {
                                     thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_DIMMER.getId());
                                     typeString = "Dimmer";
-                                } else if (status.getType().equals(DeviceType.VALUE)) {
+                                } else if (status.get().getType().equals(DeviceType.VALUE)) {
                                     thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_GENERIC.getId());
                                     typeString = "Generic";
-                                } else if (status.getType().equals(DeviceType.CONTACT)) {
+                                } else if (status.get().getType().equals(DeviceType.CONTACT)) {
                                     thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_CONTACT.getId());
                                     typeString = "Contact";
                                 } else {
@@ -130,6 +127,7 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService
 
                             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                     .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)
+                                    .withRepresentationProperty(deviceId)
                                     .withLabel("Pilight " + typeString + " Device '" + deviceId + "'").build();
 
                             thingDiscovered(discoveryResult);
@@ -154,8 +152,8 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService
     protected void startBackgroundDiscovery() {
         logger.debug("Start Pilight device background discovery");
         if (backgroundDiscoveryJob == null || backgroundDiscoveryJob.isCancelled()) {
-            backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 5,
-                    AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL, TimeUnit.SECONDS);
+            backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 20,
+                    AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC, TimeUnit.SECONDS);
         }
     }
 
@@ -169,7 +167,7 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
+    public void setThingHandler(final ThingHandler handler) {
         if (handler instanceof PilightBridgeHandler) {
             pilightBridgeHandler = (PilightBridgeHandler) handler;
             bridgeUID = pilightBridgeHandler.getThing().getUID();

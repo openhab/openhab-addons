@@ -9,7 +9,7 @@
 		<description>Pilight Bridge which connects to a Pilight instance.</description>
 
 		<properties>
-			<property name="softwareVersion">-</property>
+			<property name="firmwareVersion">-</property>
 		</properties>
 
 		<config-description>

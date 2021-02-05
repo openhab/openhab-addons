@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class PilightDimmerHandler extends PilightBaseHandler {
 
     private static final int MAX_DIM_LEVEL_DEFAULT = 15;
+    private static final BigDecimal PERCENTAGE_FROM_DIMLEVEL_MULTIPLICAND = new BigDecimal(100);
 
     private final Logger logger = LoggerFactory.getLogger(PilightDimmerHandler.class);
 
@@ -77,7 +78,6 @@ public class PilightDimmerHandler extends PilightBaseHandler {
     @Override
     protected void updateFromConfigDevice(Device device) {
         Integer max = device.getDimlevelMaximum();
-        logger.trace("updateFromConfigDevice {}", max);
 
         if (max != null) {
             maxDimLevel = max;
@@ -105,7 +105,7 @@ public class PilightDimmerHandler extends PilightBaseHandler {
 
     private BigDecimal getPercentageFromDimLevel(String string) {
         return new BigDecimal(string).setScale(2).divide(new BigDecimal(maxDimLevel), RoundingMode.HALF_UP)
-                .multiply(new BigDecimal(100));
+                .multiply(PERCENTAGE_FROM_DIMLEVEL_MULTIPLICAND);
     }
 
     private void setDimmerValue(PercentType percent, Code code) {

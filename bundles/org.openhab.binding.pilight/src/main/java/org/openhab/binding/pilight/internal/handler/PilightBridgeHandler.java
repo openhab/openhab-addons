@@ -16,6 +16,8 @@ package org.openhab.binding.pilight.internal.handler;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +28,7 @@ import org.openhab.binding.pilight.internal.PilightBridgeConfiguration;
 import org.openhab.binding.pilight.internal.PilightConnector;
 import org.openhab.binding.pilight.internal.discovery.PilightDeviceDiscoveryService;
 import org.openhab.binding.pilight.internal.dto.*;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -44,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PilightBridgeHandler extends BaseBridgeHandler {
 
-    private static final Integer REFRESH_CONFIG_MSEC = 500;
+    private static final int REFRESH_CONFIG_MSEC = 500;
 
     private final Logger logger = LoggerFactory.getLogger(PilightBridgeHandler.class);
 
@@ -95,14 +98,16 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
             @Override
             public void versionReceived(Version version) {
-                getThing().setProperty("softwareVersion", version.getVersion());
+                getThing().setProperty(Thing.PROPERTY_FIRMWARE_VERSION, version.getVersion());
             }
-        });
+        }, scheduler);
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        connector.setName("OH-binding-" + getThing().getUID().getAsString());
-        connector.start();
+        final ExecutorService executor = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString(), true));
+        executor.execute(connector);
+
         this.connector = connector;
     }
 
@@ -149,7 +154,6 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
     }
 
     private void doRefreshConfigAndStatus() {
-        logger.trace("do refresh config and status");
         final @Nullable PilightConnector connector = this.connector;
         if (connector != null) {
             // the config is required for dimmers to get the minimum and maximum dim levels

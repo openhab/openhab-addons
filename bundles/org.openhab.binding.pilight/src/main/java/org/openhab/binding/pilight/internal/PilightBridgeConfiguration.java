@@ -24,8 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PilightBridgeConfiguration {
 
     private String ipAddress = "";
-    private Integer port = 0;
-    private Integer delay = 500;
+    private int port = 0;
+    private int delay = 500;
 
     public String getIpAddress() {
         return ipAddress;
@@ -43,7 +43,7 @@ public class PilightBridgeConfiguration {
         this.port = port;
     }
 
-    public Integer getDelay() {
+    public int getDelay() {
         return delay;
     }
 

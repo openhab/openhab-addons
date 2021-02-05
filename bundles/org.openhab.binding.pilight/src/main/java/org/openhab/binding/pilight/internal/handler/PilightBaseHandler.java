@@ -48,7 +48,6 @@ public class PilightBaseHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            logger.debug("command refresh {}", name);
             refreshConfigAndStatus();
             return;
         }
@@ -65,18 +64,7 @@ public class PilightBaseHandler extends BaseThingHandler {
         PilightDeviceConfiguration config = getConfigAs(PilightDeviceConfiguration.class);
         name = config.getName();
 
-        logger.debug("initialize {}", name);
-
         refreshConfigAndStatus();
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridge status changed to {}.", bridgeStatusInfo.getStatus());
-
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
     }
 
     public void updateFromStatusIfMatches(Status status) {
@@ -87,7 +75,6 @@ public class PilightBaseHandler extends BaseThingHandler {
             if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 updateStatus(ThingStatus.ONLINE);
             }
-            logger.trace("update '{}'", name);
             updateFromStatus(status);
         }
     }

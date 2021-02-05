@@ -15,8 +15,6 @@ package org.openhab.binding.pilight.internal;
 import static org.openhab.binding.pilight.internal.PilightBindingConstants.*;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,9 +45,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.pilight", service = ThingHandlerFactory.class)
 public class PilightHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_BRIDGE, THING_TYPE_CONTACT, THING_TYPE_DIMMER, THING_TYPE_GENERIC, THING_TYPE_SWITCH)
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_CONTACT,
+            THING_TYPE_DIMMER, THING_TYPE_GENERIC, THING_TYPE_SWITCH);
 
     private final ChannelTypeRegistry channelTypeRegistry;
 

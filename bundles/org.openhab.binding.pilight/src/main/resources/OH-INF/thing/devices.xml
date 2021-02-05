@@ -13,7 +13,7 @@
 		<description>Pilight Switch</description>
 
 		<channels>
-			<channel id="state" typeId="switch-state"/>
+			<channel id="state" typeId="power"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:pilight:device"/>
@@ -43,7 +43,7 @@
 		<description>Pilight Dimmer</description>
 
 		<channels>
-			<channel id="dimlevel" typeId="dimlevel"/>
+			<channel id="dimlevel" typeId="brightness"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:pilight:device"/>
@@ -62,31 +62,9 @@
 
 	<channel-type id="contact-state">
 		<item-type>Contact</item-type>
-		<label>State of contact</label>
-		<description>State of pilight contact.</description>
+		<label>State of Contact</label>
+		<description>State of Pilight Contact.</description>
 		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dimlevel">
-		<item-type>Dimmer</item-type>
-		<label>Dim level</label>
-		<description>Dim level of pilight dimmer.</description>
-		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-			<tag>Switchable</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="switch-state">
-		<item-type>Switch</item-type>
-		<label>State of switch</label>
-		<description>State of pilight switch.</description>
-		<category>Switch</category>
-		<tags>
-			<tag>Lighting</tag>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="string">
@@ -96,7 +74,7 @@
 		<config-description>
 			<parameter name="property" type="text">
 				<label>Property</label>
-				<description>The property of the device.</description>
+				<description>The Property of the Device.</description>
 				<required>true</required>
 			</parameter>
 		</config-description>
@@ -109,7 +87,7 @@
 		<config-description>
 			<parameter name="property" type="text">
 				<label>Property</label>
-				<description>The property of the device.</description>
+				<description>The Property of the Device.</description>
 				<required>true</required>
 			</parameter>
 		</config-description>
