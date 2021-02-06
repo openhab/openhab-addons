@@ -81,6 +81,17 @@ Number TemperaturFeuer "TemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemp
 >>>>>>> 2217548ad (Fixed latest code reviews and changed types. Fixed Typos and information in README.md)
 ```
 
+## Google Assistant configuation
+See also: https://www.openhab.org/docs/ecosystem/google-assistant/
+
+googleassistantdemo.items
+```
+Group g_FeuerThermostat "FeuerThermostat" {ga="Thermostat" }
+Number StatusFeuer "Status Feuer" (g_FeuerThermostat) { ga="thermostatMode" }
+Number ZieltemperaturFeuer "ZieltemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemperatureSetpoint"}
+Number TemperaturFeuer "TemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemperatureAmbient"}
+```
+
 ## Tested Hardware
 
 The binding was succesfully tested with the following ovens:
