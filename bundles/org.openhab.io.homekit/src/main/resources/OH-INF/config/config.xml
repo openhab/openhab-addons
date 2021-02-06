@@ -41,10 +41,6 @@
 			<label>Setup ID</label>
 			<description>Setup ID used for pairing using QR Code. Alphanumeric code of length 4.</description>
 		</parameter>
-		<parameter name="networkInterface" type="text" required="false" groupName="core">
-			<label>Network Interface</label>
-			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
-		</parameter>
 		<parameter name="startDelay" type="integer" required="true" groupName="core" unit="s">
 			<label>Start Delay</label>
 			<description>HomeKit start delay in case of item configuration differences.</description>

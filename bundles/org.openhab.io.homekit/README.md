@@ -88,7 +88,6 @@ org.openhab.homekit:thermostatTargetModeCool=CoolOn
 org.openhab.homekit:thermostatTargetModeHeat=HeatOn
 org.openhab.homekit:thermostatTargetModeAuto=Auto
 org.openhab.homekit:thermostatTargetModeOff=Off
-org.openhab.homekit:networkInterface=192.168.0.6
 ```
 
 The following additional settings can be added or edited in Paper UI after switching to expert mode:
@@ -103,7 +102,6 @@ org.openhab.homekit:maximumTemperature=100
 
 | Setting                  | Description                                                                                                                                                                                                                             | Default value |
 |:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address.                                                                                  | (none)        |
 | port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                     | 9123          |
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
@@ -712,16 +710,6 @@ String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           
 Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
-
-
-## Common Problems
-
-**openHAB HomeKit hub shows up when I manually scan for devices, but Home app reports "can't connect to device"**
-
-If you see this error in the Home app, and don't see any log messages, it could be because your IP address in the `networkInterface` setting is misconfigured.
-The openHAB HomeKit hub is advertised via mDNS.
-If you register an IP address that isn't reachable from your phone (such as `localhost`, `0.0.0.0`, `127.0.0.1`, etc.), then Home will be unable to reach openHAB.
-
 ## Additional Notes
 
 HomeKit allows only a single pairing to be established with the bridge.
