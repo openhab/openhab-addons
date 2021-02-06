@@ -183,7 +183,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         logger.debug("Disposing remote openHAB handler for bridge {}", getThing().getUID());
-        stopStreamingUpdates();
+        stopStreamingUpdates(false);
         stopCheckConnectionJob();
         channelsLastStates.clear();
     }
@@ -380,7 +380,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         if (localCheckConnectionJob == null || localCheckConnectionJob.isCancelled()) {
             checkConnectionJob = scheduler.scheduleWithFixedDelay(() -> {
                 long millisSinceLastEvent = System.currentTimeMillis() - restClient.getLastEventTimestamp();
-                if (aliveInterval == 0 || restClient.getLastEventTimestamp() == 0) {
+                if (getThing().getStatus() != ThingStatus.ONLINE || aliveInterval == 0
+                        || restClient.getLastEventTimestamp() == 0) {
                     logger.debug("Time to check server accessibility");
                     checkConnection();
                 } else if (millisSinceLastEvent > (aliveInterval * 60000)) {
@@ -421,8 +422,12 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     }
 
     private void stopStreamingUpdates() {
+        stopStreamingUpdates(true);
+    }
+
+    private void stopStreamingUpdates(boolean waitingForCompletion) {
         synchronized (restClient) {
-            restClient.stop();
+            restClient.stop(waitingForCompletion);
             restClient.removeStreamingDataListener(this);
             restClient.removeItemsDataListener(this);
         }
@@ -435,6 +440,11 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     @Override
     public void onConnected() {
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void onDisconnected() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Disconected from the remote server");
     }
 
     @Override
