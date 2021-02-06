@@ -190,12 +190,11 @@ public class HomekitImpl implements Homekit {
 
     private void startHomekitServer() throws IOException {
         if (homekitServer == null) {
-            if ((mdnsClient != null) && (!mdnsClient.getClientInstances().isEmpty())) {
+            if (!mdnsClient.getClientInstances().isEmpty()) {
                 homekitServer = new HomekitServer(mdnsClient.getClientInstances().iterator().next(), settings.port);
                 startBridge();
             } else {
                 logger.warn("openHAB MDNS service not found. HomeKit cannot be initialised.");
-
             }
         } else {
             logger.warn("trying to start HomeKit server but it is already initialized");
