@@ -45,7 +45,8 @@ The `server` thing has the following configuration parameters:
 | restPath              | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                                |
 | token                 | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API.    |
 | accessibilityInterval | no       | Minutes between checking the remote server accessibility. 0 to disable the check. Default is 3.           |
-| aliveInterval         | no       | Number of last minutes to take into account to determine whether the remote server is alive. 0 to disable this feature. Default is 5. |
+| aliveInterval         | no       | Number of last minutes to consider when monitoring the receipt of events from the remote server. If an event is received during this interval, the remote server is considered alive and its accessibility will not be verified. Use 0 to disable this feature. Default is 5. |
+| restartIfNoActivity   | no       | Set it to true if you want to restart the connection (SSE) to the remote server when no events are received in the monitored interval. It is not necessary if the goal is to properly handle a short network outage (few seconds). This can be useful if you want to deal with a long network outage. Do not enable it if you remote server does not send events during the monitored interval under normal conditions, it will cause frequent restart of the connection and potential loss of events. Default is false. |
 
 The `thing` thing has the following configuration parameters:
 
