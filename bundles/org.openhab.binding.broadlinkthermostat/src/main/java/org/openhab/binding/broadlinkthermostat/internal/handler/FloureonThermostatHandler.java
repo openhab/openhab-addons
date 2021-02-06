@@ -17,9 +17,11 @@ import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermost
 import java.io.IOException;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -52,6 +54,10 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     private final Logger logger = LoggerFactory.getLogger(FloureonThermostatHandler.class);
     private @Nullable FloureonDevice floureonDevice;
 
+    private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toSeconds(3);
+    private final ExpiringCache<AdvancedStatusInfo> advancedStatusInfoExpiringCache = new ExpiringCache<>(CACHE_EXPIRY,
+            this::refreshAdvancedStatus);
+
     /**
      * Creates a new instance of this class for the {@link FloureonThermostatHandler}.
      *
@@ -71,18 +77,19 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
             try {
                 blDevice = new FloureonDevice(host, new Mac(macAddress));
                 this.floureonDevice = (FloureonDevice) blDevice;
+                updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not find broadlinkthermostat device at host" + host + "with MAC+" + macAddress + ": "
                                 + e.getMessage());
             }
-            authenticate();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command: {}", command.toFullString());
+        authenticate(false);
 
         if (command == RefreshType.REFRESH) {
             refreshData();
@@ -211,10 +218,10 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
         }
     }
 
-    @Override
-    protected void refreshData() {
+    @Nullable
+    private AdvancedStatusInfo refreshAdvancedStatus() {
         if (ThingStatus.ONLINE != thing.getStatus()) {
-            return;
+            return null;
         }
 
         FloureonDevice floureonDevice = this.floureonDevice;
@@ -223,29 +230,41 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
                 AdvancedStatusInfo advancedStatusInfo = floureonDevice.getAdvancedStatus();
                 if (advancedStatusInfo == null) {
                     logger.warn("Device {} did not return any data. Trying to reauthenticate...", thing.getUID());
-                    authenticate();
+                    authenticate(true);
                     advancedStatusInfo = floureonDevice.getAdvancedStatus();
                 }
                 if (advancedStatusInfo == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
-                    return;
+                    return null;
                 }
-                logger.trace("Retrieved data from device {}: {}", thing.getUID(), advancedStatusInfo);
-                updateState(ROOM_TEMPERATURE, new QuantityType<>(advancedStatusInfo.getRoomTemp(), SIUnits.CELSIUS));
-                updateState(ROOM_TEMPERATURE_EXTERNAL_SENSOR,
-                        new QuantityType<>(advancedStatusInfo.getExternalTemp(), SIUnits.CELSIUS));
-                updateState(SETPOINT, new QuantityType<>(advancedStatusInfo.getThermostatTemp(), SIUnits.CELSIUS));
-                updateState(POWER, OnOffType.from(advancedStatusInfo.getPower()));
-                updateState(MODE, StringType.valueOf(advancedStatusInfo.getAutoMode() ? "auto" : "manual"));
-                updateState(SENSOR, StringType.valueOf(advancedStatusInfo.getSensorControl().name()));
-                updateState(TEMPERATURE_OFFSET, new QuantityType<>(advancedStatusInfo.getDif(), SIUnits.CELSIUS));
-                updateState(ACTIVE, OnOffType.from(advancedStatusInfo.getActive()));
-                updateState(REMOTE_LOCK, OnOffType.from(advancedStatusInfo.getRemoteLock()));
-                updateState(TIME, new DateTimeType(getTimestamp(advancedStatusInfo)));
+                return advancedStatusInfo;
             } catch (Exception e) {
-                logger.warn("Error while retrieving data for {}: {}", thing.getUID(), e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error while retrieving data for " + thing.getUID() + ":  " + e.getMessage());
             }
         }
+        return null;
+    }
+
+    @Override
+    protected void refreshData() {
+
+        AdvancedStatusInfo advancedStatusInfo = advancedStatusInfoExpiringCache.getValue();
+        if (advancedStatusInfo == null) {
+            return;
+        }
+        logger.trace("Retrieved data from device {}: {}", thing.getUID(), advancedStatusInfo);
+        updateState(ROOM_TEMPERATURE, new QuantityType<>(advancedStatusInfo.getRoomTemp(), SIUnits.CELSIUS));
+        updateState(ROOM_TEMPERATURE_EXTERNAL_SENSOR,
+                new QuantityType<>(advancedStatusInfo.getExternalTemp(), SIUnits.CELSIUS));
+        updateState(SETPOINT, new QuantityType<>(advancedStatusInfo.getThermostatTemp(), SIUnits.CELSIUS));
+        updateState(POWER, OnOffType.from(advancedStatusInfo.getPower()));
+        updateState(MODE, StringType.valueOf(advancedStatusInfo.getAutoMode() ? "auto" : "manual"));
+        updateState(SENSOR, StringType.valueOf(advancedStatusInfo.getSensorControl().name()));
+        updateState(TEMPERATURE_OFFSET, new QuantityType<>(advancedStatusInfo.getDif(), SIUnits.CELSIUS));
+        updateState(ACTIVE, OnOffType.from(advancedStatusInfo.getActive()));
+        updateState(REMOTE_LOCK, OnOffType.from(advancedStatusInfo.getRemoteLock()));
+        updateState(TIME, new DateTimeType(getTimestamp(advancedStatusInfo)));
     }
 
     private ZonedDateTime getTimestamp(AdvancedStatusInfo advancedStatusInfo) {

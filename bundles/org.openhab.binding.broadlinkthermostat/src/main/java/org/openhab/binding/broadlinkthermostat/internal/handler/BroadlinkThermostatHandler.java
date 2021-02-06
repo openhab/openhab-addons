@@ -55,11 +55,11 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
         super(thing);
     }
 
-    void authenticate() {
+    void authenticate(boolean reauth) {
         logger.debug("Authenticating with broadlinkthermostat device {}...", thing.getLabel());
         try {
             BLDevice blDevice = this.blDevice;
-            if (blDevice != null && blDevice.auth()) {
+            if (blDevice != null && blDevice.auth(reauth)) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {

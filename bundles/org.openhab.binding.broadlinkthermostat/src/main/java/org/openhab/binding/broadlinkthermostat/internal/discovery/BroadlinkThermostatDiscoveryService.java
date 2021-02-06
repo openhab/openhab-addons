@@ -59,12 +59,12 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
 
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
             UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);
-    private static final int DISCOVERY_TIMEOUT = 30;
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 30;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     @Activate
     public BroadlinkThermostatDiscoveryService(@Reference NetworkAddressService networkAddressService) {
-        super(DISCOVERABLE_THING_TYPES_UIDS, DISCOVERY_TIMEOUT);
+        super(DISCOVERABLE_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
         this.networkAddressService = networkAddressService;
     }
 
@@ -77,9 +77,9 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
             InetAddress sourceAddress = getIpAddress();
             if (sourceAddress != null) {
                 logger.debug("Using source address {} for sending out broadcast request.", sourceAddress);
-                blDevices = BLDevice.discoverDevices(sourceAddress, 0, DISCOVERY_TIMEOUT * 1000);
+                blDevices = BLDevice.discoverDevices(sourceAddress, 0, DISCOVERY_TIMEOUT_SECONDS * 1000);
             } else {
-                blDevices = BLDevice.discoverDevices(DISCOVERY_TIMEOUT * 1000);
+                blDevices = BLDevice.discoverDevices(DISCOVERY_TIMEOUT_SECONDS * 1000);
             }
         } catch (IOException e) {
             logger.debug("Error while trying to discover broadlinkthermostat devices: {}", e.getMessage());
