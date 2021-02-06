@@ -73,8 +73,8 @@
 			<parameter name="restartIfNoActivity" type="boolean">
 				<label>Restart if no Activity</label>
 				<description>Set it to true if you want to restart the connection (SSE) to the remote server when no events are
-					received on the monitored interval. It is not necessary if the goal is to properly handle a short network outage
-					(few seconds). This can be usefull if you want to deal with a long network outage. Do not enable it if you remote
+					received in the monitored interval. It is not necessary if the goal is to properly handle a short network outage
+					(few seconds). This can be useful if you want to deal with a long network outage. Do not enable it if you remote
 					server does not send events during the monitored interval under normal conditions, it will cause frequent restart
 					of the connection and potential loss of events. Default is false.
 				</description>
