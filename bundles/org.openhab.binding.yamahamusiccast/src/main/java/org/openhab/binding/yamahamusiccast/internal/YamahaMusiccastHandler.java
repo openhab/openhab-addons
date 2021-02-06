@@ -341,7 +341,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         thingLabel = thing.getLabel();
-        logger.debug("YXC - Start initializing! - {}", thingLabel);
+        logger.debug("Start initializing! - {}", thingLabel);
         this.config = getConfigAs(YamahaMusiccastConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         if (config.host != null) {
@@ -349,18 +349,18 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         }
         if (!this.host.equals("")) {
             zoneNum = getNumberOfZones(this.host);
-            logger.debug("YXC - Zones found: {} - {}", zoneNum, thingLabel);
+            logger.debug("Zones found: {} - {}", zoneNum, thingLabel);
 
             if (zoneNum > 0) {
                 refreshOnStartup();
                 generalHousekeepingTask = scheduler.scheduleWithFixedDelay(this::generalHousekeeping, 5, 300,
                         TimeUnit.SECONDS);
-                logger.debug("YXC - Start Keep Alive UDP events (5 minutes - {}) ", thingLabel);
+                logger.debug("Start Keep Alive UDP events (5 minutes - {}) ", thingLabel);
 
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
-                logger.debug("YXC - No host found");
+                logger.debug("No host found");
             }
         }
     }
@@ -412,68 +412,22 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         String jsonZone4;
         String netUsb;
         String dist;
-        // try {
-        // jsonMain = targetObject.getMain().toString();
-        // if (!jsonMain.equals("")) {
-        // updateStateFromUDPEvent("main", targetObject);
-        // }
-        // } catch (Exception e) {
-        // }
 
         if (Objects.nonNull(targetObject.getMain())) {
             updateStateFromUDPEvent("main", targetObject);
         }
-
-        // try {
-        // jsonZone2 = targetObject.getZone2().toString();
-        // if (!jsonZone2.equals("")) {
-        // updateStateFromUDPEvent("zone2", targetObject);
-        // }
-        // } catch (Exception e) {
-        // }
         if (Objects.nonNull(targetObject.getZone2())) {
             updateStateFromUDPEvent("zone2", targetObject);
         }
-
-        // try {
-        // jsonZone3 = targetObject.getZone3().toString();
-        // if (!jsonZone3.equals("")) {
-        // updateStateFromUDPEvent("zone3", targetObject);
-        // }
-        // } catch (Exception e) {
-        // }
         if (Objects.nonNull(targetObject.getZone3())) {
             updateStateFromUDPEvent("zone3", targetObject);
         }
-        // try {
-        // jsonZone4 = targetObject.getZone4().toString();
-        // if (!jsonZone4.equals("")) {
-        // updateStateFromUDPEvent("zone4", targetObject);
-        // }
-        // } catch (Exception e) {
-        // }
         if (Objects.nonNull(targetObject.getZone4())) {
             updateStateFromUDPEvent("zone4", targetObject);
         }
-
-        // try {
-        // netUsb = targetObject.getNetUSB().toString();
-        // if (!netUsb.equals("")) {
-        // updateStateFromUDPEvent("netusb", targetObject);
-        // }
-        // } catch (Exception e) {
-        // }
         if (Objects.nonNull(targetObject.getNetUSB())) {
             updateStateFromUDPEvent("netusb", targetObject);
         }
-
-        // try {
-        // dist = targetObject.getDist().toString();
-        // if (!dist.equals("")) {
-        // updateStateFromUDPEvent("dist", targetObject);
-        // }
-        // } catch (Exception e) {
-        // }
         if (Objects.nonNull(targetObject.getDist())) {
             updateStateFromUDPEvent("dist", targetObject);
         }
@@ -490,159 +444,43 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         int presetNumber = 0;
         int playTime = 0;
         String distInfoUpdated = "";
-        logger.debug("YXC - Handling UDP for {}", zoneToUpdate);
+        logger.debug("Handling UDP for {}", zoneToUpdate);
         switch (zoneToUpdate) {
             case "main":
-                // try {
-                // powerState = targetObject.getMain().getPower();
-                // } catch (Exception e) {
-                // powerState = "";
-                // }
                 powerState = targetObject.getMain().getPower();
-                // try {
-                // muteState = targetObject.getMain().getMute();
-                // } catch (Exception e) {
-                // muteState = "";
-                // }
                 muteState = targetObject.getMain().getMute();
-                // try {
-                // inputState = targetObject.getMain().getInput();
-                // } catch (Exception e) {
-                // inputState = "";
-                // }
                 inputState = targetObject.getMain().getInput();
-                // try {
-                // volumeState = targetObject.getMain().getVolume();
-                // } catch (Exception e) {
-                // volumeState = 0;
-                // }
                 volumeState = targetObject.getMain().getVolume();
-                // try {
-                // statusUpdated = targetObject.getMain().getstatusUpdated();
-                // } catch (Exception e) {
-                // statusUpdated = "";
-                // }
                 statusUpdated = targetObject.getMain().getstatusUpdated();
                 break;
             case "zone2":
-                // try {
-                // powerState = targetObject.getZone2().getPower();
-                // } catch (Exception e) {
-                // powerState = "";
-                // }
                 powerState = targetObject.getZone2().getPower();
-                // try {
-                // muteState = targetObject.getZone2().getMute();
-                // } catch (Exception e) {
-                // muteState = "";
-                // }
                 muteState = targetObject.getZone2().getMute();
-                // try {
-                // inputState = targetObject.getZone2().getInput();
-                // } catch (Exception e) {
-                // inputState = "";
-                // }
                 inputState = targetObject.getZone2().getInput();
-                // try {
-                // volumeState = targetObject.getZone2().getVolume();
-                // } catch (Exception e) {
-                // volumeState = 0;
-                // }
                 volumeState = targetObject.getZone2().getVolume();
-                // try {
-                // statusUpdated = targetObject.getZone2().getstatusUpdated();
-                // } catch (Exception e) {
-                // statusUpdated = "";
-                // }
                 statusUpdated = targetObject.getZone2().getstatusUpdated();
                 break;
             case "zone3":
-                // try {
-                // powerState = targetObject.getZone3().getPower();
-                // } catch (Exception e) {
-                // powerState = "";
-                // }
                 powerState = targetObject.getZone3().getPower();
-                // try {
-                // muteState = targetObject.getZone3().getMute();
-                // } catch (Exception e) {
-                // muteState = "";
-                // }
                 muteState = targetObject.getZone3().getMute();
-                // try {
-                // inputState = targetObject.getZone3().getInput();
-                // } catch (Exception e) {
-                // inputState = "";
-                // }
                 inputState = targetObject.getZone3().getInput();
-                // try {
-                // volumeState = targetObject.getZone3().getVolume();
-                // } catch (Exception e) {
-                // volumeState = 0;
-                // }
                 volumeState = targetObject.getZone3().getVolume();
-                // try {
-                // statusUpdated = targetObject.getZone3().getstatusUpdated();
-                // } catch (Exception e) {
-                // statusUpdated = "";
-                // }
                 statusUpdated = targetObject.getZone3().getstatusUpdated();
                 break;
             case "zone4":
-                // try {
-                // powerState = targetObject.getZone4().getPower();
-                // } catch (Exception e) {
-                // powerState = "";
-                // }
                 powerState = targetObject.getZone4().getPower();
-                // try {
-                // muteState = targetObject.getZone4().getMute();
-                // } catch (Exception e) {
-                // muteState = "";
-                // }
                 muteState = targetObject.getZone4().getMute();
-                // try {
-                // inputState = targetObject.getZone4().getInput();
-                // } catch (Exception e) {
-                // inputState = "";
-                // }
                 inputState = targetObject.getZone4().getInput();
-                // try {
-                // volumeState = targetObject.getZone4().getVolume();
-                // } catch (Exception e) {
-                // volumeState = 0;
-                // }
                 volumeState = targetObject.getZone4().getVolume();
-                // try {
-                // statusUpdated = targetObject.getZone4().getstatusUpdated();
-                // } catch (Exception e) {
-                // statusUpdated = "";
-                // }
                 statusUpdated = targetObject.getZone4().getstatusUpdated();
                 break;
             case "netusb":
-                // get rid of try/catch blocks
-                // try {
-                // presetNumber = targetObject.getNetUSB().getPresetControl().getNum();
-                // } catch (Exception e) {
-                // presetNumber = 0;
-                // }
                 if (Objects.isNull(targetObject.getNetUSB().getPresetControl())) {
                     presetNumber = 0;
                 } else {
                     presetNumber = targetObject.getNetUSB().getPresetControl().getNum();
                 }
-                // try {
-                // playInfoUpdated = targetObject.getNetUSB().getPlayInfoUpdated();
-                // } catch (Exception e) {
-                // playInfoUpdated = "";
-                // }
                 playInfoUpdated = targetObject.getNetUSB().getPlayInfoUpdated();
-                // try {
-                // playTime = targetObject.getNetUSB().getPlayTime();
-                // } catch (Exception e) {
-                // playTime = 0;
-                // }
                 playTime = targetObject.getNetUSB().getPlayTime();
                 // totalTime is not in UDP event
                 break;
@@ -796,7 +634,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 }
                 break;
             case "999":
-                logger.info("YXC - Nothing to do! - {} ({})", thingLabel, zoneToUpdate);
+                logger.info("Nothing to do! - {} ({})", thingLabel, zoneToUpdate);
                 break;
         }
     }
@@ -810,11 +648,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         PresetInfo presetinfo = gson.fromJson(tmpString, PresetInfo.class);
         responseCode = presetinfo.getResponseCode();
         if (responseCode.equals("0")) {
-
-            // try {
-            // JsonElement jsonTree = parser.parse(tmpString);
-            // JsonObject jsonObject = jsonTree.getAsJsonObject();
-            // JsonArray presetsArray = jsonObject.getAsJsonArray("preset_info");
 
             List<StateOption> optionsPresets = new ArrayList<>();
             inputText = getLastInput(); // Without zone
@@ -846,9 +679,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 }
             }
         }
-        // } catch (Exception e) {
-        // logger.info("YXC - Something went wrong with fetching Presets");
-        // }
     }
 
     private void updateNetUSBPlayer() {
@@ -933,14 +763,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         RecentInfo recentinfo = gson.fromJson(tmpString, RecentInfo.class);
         responseCode = recentinfo.getResponseCode();
         if (responseCode.equals("0")) {
-            // JsonElement jsonTree = parser.parse(tmpString);
-            // JsonObject jsonObject = jsonTree.getAsJsonObject();
-            // JsonArray recentsArray = jsonObject.getAsJsonArray("recent_info");
-            // for (JsonElement re : recentsArray) {
-            // JsonObject recentObject = re.getAsJsonObject();
-            // text = recentObject.get("text").getAsString();
-            // break;
-            // }
             for (JsonElement ri : recentinfo.getRecentInfo()) {
                 JsonObject recentObject = ri.getAsJsonObject();
                 text = recentObject.get("text").getAsString();
@@ -968,7 +790,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 host = "";
                 zonesPerHost = 0;
             } else {
-                logger.debug("YXC - Thing found on Bridge: {} - {}", label, host);
+                logger.debug("Thing found on Bridge: {} - {}", label, host);
                 zonesPerHost = getNumberOfZones(host);
                 for (int i = 1; i <= zonesPerHost; i++) {
                     switch (i) {
@@ -1231,135 +1053,54 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         topicAVR = "Status";
         url = "http://" + host + "/YamahaExtendedControl/v1/" + zone + "/getStatus";
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + host + "/YamahaExtendedControl/v1/" + zone +
-        // "/getStatus", connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setPower(String value, @Nullable String zone) {
         topicAVR = "Power";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/" + zone + "/setPower?power=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host + "/YamahaExtendedControl/v1/" + zone +
-        // "/setPower?power=" + value, connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setMute(String value, @Nullable String zone) {
         topicAVR = "Mute";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/" + zone + "/setMute?enable=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host + "/YamahaExtendedControl/v1/" + zone +
-        // "/setMute?enable=" + value, connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setVolume(int value, @Nullable String zone, @Nullable String host) {
         topicAVR = "Volume";
         url = "http://" + host + "/YamahaExtendedControl/v1/" + zone + "/setVolume?volume=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + host + "/YamahaExtendedControl/v1/" + zone +
-        // "/setVolume?volume=" + value, connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setInput(String value, @Nullable String zone) {
         topicAVR = "setInput";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/" + zone + "/setInput?input=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host + "/YamahaExtendedControl/v1/" + zone +
-        // "/setInput?input=" + value, connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setSoundProgram(String value, @Nullable String zone) {
         topicAVR = "setSoundProgram";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/" + zone + "/setSoundProgram?program=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host + "/YamahaExtendedControl/v1/" + zone +
-        // "/setSoundProgram?program=" + value, connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setPreset(String value, @Nullable String zone) {
         topicAVR = "setPreset";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/netusb/recallPreset?zone=" + zone + "&num=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host +
-        // "/YamahaExtendedControl/v1/netusb/recallPreset?zone=" + zone + "&num=" + value, longConnectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setSleep(String value, @Nullable String zone) {
         topicAVR = "setSleep";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/" + zone + "/setSleep?sleep=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host + "/YamahaExtendedControl/v1/" + zone +
-        // "/setSleep?sleep=" + value, connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String recallScene(String value, @Nullable String zone) {
         topicAVR = "recallScene";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/" + zone + "/recallScene?num=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host + "/YamahaExtendedControl/v1/" + zone +
-        // "/recallScene?num=" + value, connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
     // End Zone Related
 
@@ -1369,90 +1110,36 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         topicAVR = "PresetInfo";
         url = "http://" + this.host + "/YamahaExtendedControl/v2/netusb/getPresetInfo";
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host +
-        // "/YamahaExtendedControl/v2/netusb/getPresetInfo", longConnectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String getRecentInfo() {
         topicAVR = "RecentInfo";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/netusb/getRecentInfo";
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host +
-        // "/YamahaExtendedControl/v1/netusb/getRecentInfo", longConnectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String getPlayInfo() {
         topicAVR = "PlayInfo";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/netusb/getPlayInfo";
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host +
-        // "/YamahaExtendedControl/v1/netusb/getPlayInfo", longConnectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setPlayback(String value) {
         topicAVR = "Playback";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/netusb/setPlayback?playback=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host +
-        // "/YamahaExtendedControl/v1/netusb/setPlayback?playback=" + value, longConnectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setRepeat(String value) {
         topicAVR = "Repeat";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/netusb/setRepeat?mode=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host +
-        // "/YamahaExtendedControl/v1/netusb/setRepeat?mode=" + value, longConnectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setShuffle(String value) {
         topicAVR = "Shuffle";
         url = "http://" + this.host + "/YamahaExtendedControl/v1/netusb/setShuffle?mode=" + value;
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + this.host +
-        // "/YamahaExtendedControl/v1/netusb/setShuffle?mode=" + value, longConnectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     // End Net Radio/USB Related
@@ -1462,15 +1149,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         topicAVR = "DistributionInfo";
         url = "http://" + host + "/YamahaExtendedControl/v1/dist/getDistributionInfo";
         return makeRequest(topicAVR, url);
-        // try {
-        // httpResponse = HttpUtil.executeUrl("GET", "http://" + host +
-        // "/YamahaExtendedControl/v1/dist/getDistributionInfo", connectionTimeout);
-        // logger.debug("{}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     private @Nullable String setServerInfo(@Nullable String host, String json) {
@@ -1507,15 +1185,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         topicAVR = "StartDistribution";
         url = "http://" + host + "/YamahaExtendedControl/v1/dist/startDistribution?num=1";
         return makeRequest(topicAVR, url);
-        // try {
-        // url = "http://" + host + "/YamahaExtendedControl/v1/dist/startDistribution?num=1";
-        // httpResponse = HttpUtil.executeUrl("GET", url, longConnectionTimeout);
-        // logger.debug("MC Start Distribution {}", httpResponse);
-        // return httpResponse;
-        // } catch (IOException e) {
-        // logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
-        // return "{\"response_code\":\"999\"}";
-        // }
     }
 
     // End Music Cast API calls
@@ -1565,6 +1234,5 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.warn("UDP refresh failed - {}", e.getMessage());
         }
     }
-
     // End General/System API calls
 }

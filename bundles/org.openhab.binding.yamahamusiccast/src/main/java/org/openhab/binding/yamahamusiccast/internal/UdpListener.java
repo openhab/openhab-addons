@@ -54,7 +54,7 @@ public class UdpListener extends Thread {
     public void shutdown() {
         if (socket != null) {
             socket.close();
-            logger.debug("YXC - UDP Listener socket closed");
+            logger.debug("UDP Listener socket closed");
             socket = null;
         }
     }
@@ -67,10 +67,9 @@ public class UdpListener extends Thread {
             InetSocketAddress address = new InetSocketAddress(UDP_PORT);
             s.bind(address);
             socket = s;
-            logger.debug("YXC - UDP Listener got socket on port {} with timeout {}", UDP_PORT,
-                    SOCKET_TIMEOUT_MILLISECONDS);
+            logger.debug("UDP Listener got socket on port {} with timeout {}", UDP_PORT, SOCKET_TIMEOUT_MILLISECONDS);
         } catch (SocketException e) {
-            logger.debug("YXC - UDP Listener got SocketException: {}", e.getMessage(), e);
+            logger.debug("UDP Listener got SocketException: {}", e.getMessage(), e);
             socket = null;
             return;
         }
@@ -81,15 +80,15 @@ public class UdpListener extends Thread {
                 socket.receive(packet);
                 String received = new String(packet.getData(), 0, packet.getLength());
                 String trackingID = UUID.randomUUID().toString().replace("-", "").substring(0, 32);
-                logger.debug("YXC - Received packet: {} (Tracking: {})", received, trackingID);
+                logger.debug("Received packet: {} (Tracking: {})", received, trackingID);
                 bridgeHandler.handleUDPEvent(received, trackingID);
             } catch (SocketTimeoutException e) {
                 // Nothing to do on socket timeout
             } catch (IOException e) {
-                logger.debug("YXC - UDP Listener got IOException waiting for datagram: {}", e.getMessage());
+                logger.debug("UDP Listener got IOException waiting for datagram: {}", e.getMessage());
                 socket = null;
             }
         }
-        logger.debug("YXC - UDP Listener exiting");
+        logger.debug("UDP Listener exiting");
     }
 }
