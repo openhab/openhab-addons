@@ -40,6 +40,7 @@ public class PlayerItemRewindFastForwardIntegrationTest extends AbstractTwoItemI
     @SuppressWarnings("null")
     @BeforeAll
     public static void storeData(TestInfo testInfo) throws InterruptedException {
+        @NonNull
         RewindFastforwardType localState1, localState2;
         if (isLegacyTest(testInfo)) {
             // In legacy, FASTFORWARD < REWIND
@@ -50,8 +51,8 @@ public class PlayerItemRewindFastForwardIntegrationTest extends AbstractTwoItemI
             STATE1 = RewindFastforwardType.REWIND;
             STATE2 = RewindFastforwardType.FASTFORWARD;
         }
-        localState1 = STATE1;
-        localState2 = STATE2;
+        localState1 = (@NonNull RewindFastforwardType) STATE1;
+        localState2 = (@NonNull RewindFastforwardType) STATE2;
         assert localState1 != null;
         assert localState2 != null;
 
