@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -343,6 +343,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (deviceCapabilities.containsKey(RobotCababilities.MOP_FORBIDDEN)) {
             safeUpdateState(RobotCababilities.MOP_FORBIDDEN.getChannel(), statusInfo.getMopForbiddenEnable());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.LOCATING)) {
+            safeUpdateState(RobotCababilities.LOCATING.getChannel(), statusInfo.getIsLocating());
         }
         return true;
     }

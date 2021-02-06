@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,6 +100,7 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
                         @Override
                         public void newDataMessage(@Nullable DataMessage dataMessage) {
                             logger.debug("Datamessage read: {}", dataMessage);
+                            emitter.onError(new IllegalArgumentException("Error while emitting dataMessage"));
                             emitter.onNext(dataMessage);
                         }
 

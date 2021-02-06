@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,7 +128,8 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                 protocol);
 
         try {
-            communicator = new CaddxCommunicator(portManager, protocol, serialPortName, baudRate);
+            communicator = new CaddxCommunicator(getThing().getUID().getAsString(), portManager, protocol,
+                    serialPortName, baudRate);
         } catch (IOException | TooManyListenersException | UnsupportedCommOperationException | PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication cannot be initialized. " + e.toString());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,12 +59,12 @@ public class BlueGigaSerialHandler {
     private final InputStream inputStream;
     private final Thread parserThread;
 
-    public BlueGigaSerialHandler(final InputStream inputStream, final OutputStream outputStream) {
+    public BlueGigaSerialHandler(final String uid, final InputStream inputStream, final OutputStream outputStream) {
         this.outputStream = outputStream;
         this.inputStream = inputStream;
 
         flush();
-        parserThread = createBlueGigaBLEHandler();
+        parserThread = createBlueGigaBLEHandler(uid);
         parserThread.setUncaughtExceptionHandler((t, th) -> {
             logger.warn("BluegigaSerialHandler terminating due to unhandled error", th);
         });
@@ -323,7 +323,7 @@ public class BlueGigaSerialHandler {
         logger.debug("BlueGiga BLE exited.");
     }
 
-    private Thread createBlueGigaBLEHandler() {
-        return new Thread(this::inboundMessageHandlerLoop, "BlueGigaBLEHandler");
+    private Thread createBlueGigaBLEHandler(String uid) {
+        return new Thread(this::inboundMessageHandlerLoop, "OH-binding-" + uid + "-blueGigaBLEHandler");
     }
 }

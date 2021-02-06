@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.http.internal.http;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.Util;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
 import org.slf4j.Logger;
@@ -47,20 +47,24 @@ public class RefreshingUrlCache {
     private final @Nullable String fallbackEncoding;
     private final Set<Consumer<Content>> consumers = ConcurrentHashMap.newKeySet();
     private final List<String> headers;
+    private final HttpMethod httpMethod;
+    private final String httpContent;
 
     private final ScheduledFuture<?> future;
     private @Nullable Content lastContent;
 
     public RefreshingUrlCache(ScheduledExecutorService executor, RateLimitedHttpClient httpClient, String url,
-            HttpThingConfig thingConfig) {
+            HttpThingConfig thingConfig, String httpContent) {
         this.httpClient = httpClient;
         this.url = url;
         this.timeout = thingConfig.timeout;
         this.bufferSize = thingConfig.bufferSize;
         this.headers = thingConfig.headers;
+        this.httpMethod = thingConfig.stateMethod;
+        this.httpContent = httpContent;
         fallbackEncoding = thingConfig.encoding;
 
-        future = executor.scheduleWithFixedDelay(this::refresh, 0, thingConfig.refresh, TimeUnit.SECONDS);
+        future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);
         logger.trace("Started refresh task for URL '{}' with interval {}s", url, thingConfig.refresh);
     }
 
@@ -76,11 +80,10 @@ public class RefreshingUrlCache {
 
         // format URL
         try {
-            URI finalUrl = new URI(String.format(this.url, new Date()));
+            URI uri = Util.uriFromString(String.format(this.url, new Date()));
+            logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
-            logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, finalUrl, timeout);
-
-            httpClient.newRequest(finalUrl).thenAccept(request -> {
+            httpClient.newRequest(uri, httpMethod, httpContent).thenAccept(request -> {
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
 
                 headers.forEach(header -> {
@@ -96,17 +99,16 @@ public class RefreshingUrlCache {
                 response.exceptionally(e -> {
                     if (e instanceof HttpAuthException) {
                         if (isRetry) {
-                            logger.warn("Retry after authentication  failure failed again for '{}', failing here",
-                                    finalUrl);
+                            logger.warn("Retry after authentication failure failed again for '{}', failing here", uri);
                         } else {
                             AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                            Authentication.Result authResult = authStore.findAuthenticationResult(finalUrl);
+                            Authentication.Result authResult = authStore.findAuthenticationResult(uri);
                             if (authResult != null) {
                                 authStore.removeAuthenticationResult(authResult);
-                                logger.debug("Cleared authentication result for '{}', retrying immediately", finalUrl);
+                                logger.debug("Cleared authentication result for '{}', retrying immediately", uri);
                                 refresh(true);
                             } else {
-                                logger.warn("Could not find authentication result for '{}', failing here", finalUrl);
+                                logger.warn("Could not find authentication result for '{}', failing here", uri);
                             }
                         }
                     }
@@ -114,19 +116,19 @@ public class RefreshingUrlCache {
                 }).thenAccept(this::processResult);
 
                 if (logger.isTraceEnabled()) {
-                    logger.trace("Sending to '{}': {}", finalUrl, Util.requestToLogString(request));
+                    logger.trace("Sending to '{}': {}", uri, Util.requestToLogString(request));
                 }
 
                 request.send(new HttpResponseListener(response, fallbackEncoding, bufferSize));
             }).exceptionally(e -> {
                 if (e instanceof CancellationException) {
-                    logger.debug("Request to URL {} was cancelled by thing handler.", finalUrl);
+                    logger.debug("Request to URL {} was cancelled by thing handler.", uri);
                 } else {
-                    logger.warn("Request to URL {} failed: {}", finalUrl, e.getMessage());
+                    logger.warn("Request to URL {} failed: {}", uri, e.getMessage());
                 }
                 return null;
             });
-        } catch (IllegalArgumentException | URISyntaxException e) {
+        } catch (IllegalArgumentException | URISyntaxException | MalformedURLException e) {
             logger.warn("Creating request for '{}' failed: {}", url, e.getMessage());
         }
     }

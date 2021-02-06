@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,7 +107,7 @@ public class LcnModuleOutputSubHandler extends AbstractLcnModuleSubHandler {
         currentColor = hsbType;
         handler.updateChannel(LcnChannelGroup.OUTPUT, OUTPUT_COLOR, currentColor);
 
-        if (info.getFirmwareVersion() >= LcnBindingConstants.FIRMWARE_2014) {
+        if (info.getFirmwareVersion().map(v -> v >= LcnBindingConstants.FIRMWARE_2014).orElse(true)) {
             handler.sendPck(PckGenerator.dimAllOutputs(currentColor.getRed().doubleValue(),
                     currentColor.getGreen().doubleValue(), currentColor.getBlue().doubleValue(), output4.doubleValue(),
                     COLOR_RAMP_MS));

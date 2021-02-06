@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,20 +65,33 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        TeleinfoAbstractControllerHandler controllerHandler = getControllerHandler();
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            if (controllerHandler != null) {
+                controllerHandler.removeListener(this);
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
             return;
         }
 
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            TeleinfoAbstractControllerHandler controllerHandler = (TeleinfoAbstractControllerHandler) bridge
-                    .getHandler();
-            if (controllerHandler != null) {
-                controllerHandler.addListener(this);
-                updateStatus(ThingStatus.ONLINE);
-            }
+        if (controllerHandler != null) {
+            controllerHandler.addListener(this);
+            updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    @Override
+    public void dispose() {
+        TeleinfoAbstractControllerHandler controllerHandler = getControllerHandler();
+        if (controllerHandler != null) {
+            controllerHandler.removeListener(this);
+        }
+        super.dispose();
+    }
+
+    private @Nullable TeleinfoAbstractControllerHandler getControllerHandler() {
+        Bridge bridge = getBridge();
+        return bridge != null ? (TeleinfoAbstractControllerHandler) bridge.getHandler() : null;
     }
 
     @Override

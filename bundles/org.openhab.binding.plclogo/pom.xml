@@ -14,7 +14,17 @@
 
   <name>openHAB Add-ons :: Bundles :: PLCLogo Binding</name>
 
+  <properties>
+    <dep.noembedding>commons-net</dep.noembedding>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>${commons.net.version}</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.openhab.binding.plclogo</groupId>
       <artifactId>Moka7</artifactId>

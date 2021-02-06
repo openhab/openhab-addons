@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.List;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class JsonAutomation {
     public @Nullable String automationId;
     public @Nullable String name;
-    public @Nullable Trigger @Nullable [] triggers;
+    public @Nullable List<Trigger> triggers;
     public @Nullable TreeMap<String, Object> sequence;
     public @Nullable String status;
     public long creationTimeEpochMillis;

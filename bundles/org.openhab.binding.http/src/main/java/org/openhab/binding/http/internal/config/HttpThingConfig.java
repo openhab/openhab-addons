@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.http.internal.config;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,6 +34,8 @@ public class HttpThingConfig {
     public String password = "";
 
     public HttpAuthMode authMode = HttpAuthMode.BASIC;
+    public HttpMethod stateMethod = HttpMethod.GET;
+
     public HttpMethod commandMethod = HttpMethod.GET;
     public int bufferSize = 2048;
 
@@ -43,5 +44,6 @@ public class HttpThingConfig {
 
     public boolean ignoreSSLErrors = false;
 
-    public List<String> headers = Collections.emptyList();
+    // ArrayList is required as implementation because list may be modified later
+    public ArrayList<String> headers = new ArrayList<>();
 }

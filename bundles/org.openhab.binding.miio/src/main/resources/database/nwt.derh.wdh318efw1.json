@@ -1,0 +1,197 @@
+{
+	"deviceMapping": {
+		"id": [
+			"nwt.derh.wdh318efw1"
+		],
+		"channels": [
+			{
+				"property": "on_off",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Power",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mode",
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_mode",
+						"parameterType": "STRING"
+					}
+				],
+				"tags": [
+					"Control"
+				]
+			},
+			{
+				"property": "auto",
+				"friendlyName": "Auto humidity",
+				"channel": "autohumidity",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_auto",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "fan_speed",
+				"friendlyName": "Fan Speed",
+				"channel": "fanspeed",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_fan_level",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan_box",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "buzzer",
+				"friendlyName": "Buzzer",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_buzzer",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "led",
+				"friendlyName": "LED",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_led",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "childlock",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "humidity",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "temp",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "CELCIUS",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "tank_full",
+				"friendlyName": "Tank Full",
+				"channel": "tankfull",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "compressor_status",
+				"friendlyName": "Compressor Status",
+				"channel": "compressorstatus",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "defrost_status",
+				"friendlyName": "Defrost Status",
+				"channel": "defroststatus",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "fan_st",
+				"friendlyName": "Fan St",
+				"channel": "fanst",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "alarm",
+				"friendlyName": "Alarm",
+				"channel": "alarm",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"tags": [
+					"Alarm"
+				]
+			}
+		]
+	}
+}

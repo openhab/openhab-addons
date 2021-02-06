@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.atlona.internal.AtlonaHandlerCallback;
 import org.openhab.binding.atlona.internal.net.SocketSession;
 import org.openhab.binding.atlona.internal.net.SocketSessionListener;
@@ -599,7 +598,7 @@ class AtlonaPro3PortocolHandler {
      * @param portNbr a greater than zero port number
      * @param level a volume level in decibels (must range from -79 to +15)
      */
-    void setVolume(int portNbr, double level) {
+    void setVolume(int portNbr, int level) {
         if (portNbr <= 0) {
             throw new IllegalArgumentException("portNbr must be greater than 0");
         }
@@ -906,7 +905,7 @@ class AtlonaPro3PortocolHandler {
                 int hdmiPortNbr = Integer.parseInt(m.group(1));
 
                 // could be "off" (if mirror off), "on"/"Out" (with 3rd group representing out)
-                String oper = StringUtils.trimToEmpty(m.group(2)).toLowerCase();
+                String oper = (m.group(2) == null ? "" : m.group(2).trim()).toLowerCase();
 
                 if (oper.equals("off")) {
                     callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,

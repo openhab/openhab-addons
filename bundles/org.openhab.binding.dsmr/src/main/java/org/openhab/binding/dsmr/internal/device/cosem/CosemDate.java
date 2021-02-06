@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +36,10 @@ import org.slf4j.LoggerFactory;
 class CosemDate extends CosemValueDescriptor<DateTimeType> {
 
     public static final CosemDate INSTANCE = new CosemDate("timestamp");
+    /*
+     * Some meters can return the following value when something is wrong.
+     */
+    public static final String INVALID_METER_VALUE = "632525252525W";
 
     private final Logger logger = LoggerFactory.getLogger(CosemDate.class);
 
@@ -102,8 +107,16 @@ class CosemDate extends CosemValueDescriptor<DateTimeType> {
             if (m.matches()) {
                 logger.trace("{} matches pattern: {}", cosemValue, cosemDateFormat.pattern);
 
-                LocalDateTime localDateTime = LocalDateTime.parse(m.group(1), cosemDateFormat.formatter);
-                return new DateTimeType(ZonedDateTime.of(localDateTime, ZoneId.systemDefault()));
+                try {
+                    LocalDateTime localDateTime = LocalDateTime.parse(m.group(1), cosemDateFormat.formatter);
+                    return new DateTimeType(ZonedDateTime.of(localDateTime, ZoneId.systemDefault()));
+                } catch (DateTimeParseException e) {
+                    if (INVALID_METER_VALUE.equals(cosemValue)) {
+                        throw new ParseException(
+                                "Cosem value: '" + cosemValue + "' might indicate something is wrong with the meter.",
+                                0);
+                    }
+                }
             }
         }
         throw new ParseException("Cosem value: '" + cosemValue + "' is not a known CosemDate string", 0);

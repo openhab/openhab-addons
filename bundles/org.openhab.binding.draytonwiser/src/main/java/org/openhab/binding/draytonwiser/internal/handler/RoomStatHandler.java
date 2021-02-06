@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,11 +104,13 @@ public class RoomStatHandler extends DraytonWiserThingHandler<RoomStatData> {
     }
 
     private State getSignalRSSI() {
-        return new DecimalType(getData().device.getRssi());
+        final Integer rssi = getData().device.getRssi();
+        return rssi == null ? UnDefType.UNDEF : new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS);
     }
 
     private State getSignalLQI() {
-        return new DecimalType(getData().device.getLqi());
+        final Integer lqi = getData().device.getLqi();
+        return lqi == null ? UnDefType.UNDEF : new DecimalType(lqi);
     }
 
     private State getWiserSignalStrength() {
@@ -120,7 +122,8 @@ public class RoomStatHandler extends DraytonWiserThingHandler<RoomStatData> {
     }
 
     private State getBatteryVoltage() {
-        return new QuantityType<>(getData().device.getBatteryVoltage() / 10.0, Units.VOLT);
+        final Integer voltage = getData().device.getBatteryVoltage();
+        return voltage == null ? UnDefType.UNDEF : new QuantityType<>(voltage / 10.0, Units.VOLT);
     }
 
     private State getWiserBatteryLevel() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -234,7 +234,8 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             }, executor);
 
             serialHandler = serialPortFuture
-                    .thenApply(sp -> new BlueGigaSerialHandler(inputStream.get(), outputStream.get()));
+                    .thenApply(sp -> new BlueGigaSerialHandler(getThing().getUID().getAsString(), inputStream.get(),
+                            outputStream.get()));
             transactionManager = serialHandler.thenApply(sh -> {
                 BlueGigaTransactionManager th = new BlueGigaTransactionManager(sh, executor);
                 sh.addHandlerListener(this);
