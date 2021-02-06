@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: DynamoDB</name>
 
   <properties>
-    <bnd.importpackage>!com.amazonaws.*,!org.joda.convert.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.apache.avalon.*</bnd.importpackage>
+    <bnd.importpackage>!com.amazonaws.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.joda.convert.*,!org.slf4j.impl,!scala.util.*,!software.amazon.*</bnd.importpackage>
   </properties>
 
   <!--Custom repository for DynamoDBLocal -->
