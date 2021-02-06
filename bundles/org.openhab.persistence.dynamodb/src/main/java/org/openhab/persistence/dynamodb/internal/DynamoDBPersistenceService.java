@@ -633,10 +633,11 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private void logIfManyQueuedTasks() {
         if (executor instanceof ThreadPoolExecutor) {
             ThreadPoolExecutor localExecutor = (ThreadPoolExecutor) executor;
-            logger.trace("executor queue size: {}, remaining space {}. Active threads {}",
-                    localExecutor.getQueue().size(), localExecutor.getQueue().remainingCapacity(),
-                    localExecutor.getActiveCount());
-            if (localExecutor.getQueue().size() >= 50) {
+            if (localExecutor.getQueue().size() >= 5) {
+                logger.trace("executor queue size: {}, remaining space {}. Active threads {}",
+                        localExecutor.getQueue().size(), localExecutor.getQueue().remainingCapacity(),
+                        localExecutor.getActiveCount());
+            } else if (localExecutor.getQueue().size() >= 50) {
                 logger.warn(
                         "Many ({}) tasks queued in executor! This might be sign of bad design or bug in the addon code.",
                         localExecutor.getQueue().size());
