@@ -332,7 +332,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                         value = formatDate(channelId, ((DateTimeType) command).getZonedDateTime());
                     }
                 } catch (InterruptedException e) {
-                    logger.warn(
+                    logger.debug(
                             "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
                             HeliosEasyControlsHandler.class.getSimpleName(), channelId, e.getMessage());
                 }
@@ -394,7 +394,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Writing value " + v + "to channel " + channelId + " failed: " + e.getMessage());
                     } catch (InterruptedException e) {
-                        logger.warn(
+                        logger.debug(
                                 "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
                                 HeliosEasyControlsHandler.class.getSimpleName(), channelId, e.getMessage());
 

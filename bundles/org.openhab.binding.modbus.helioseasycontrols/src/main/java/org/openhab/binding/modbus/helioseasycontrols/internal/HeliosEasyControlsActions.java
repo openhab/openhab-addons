@@ -60,9 +60,9 @@ public class HeliosEasyControlsActions implements ThingActions {
         } catch (HeliosException e) {
             logger.warn("Error executing action triggering switch for variable {}: {}", variableName, e.getMessage());
         } catch (InterruptedException e) {
-            logger.warn(
+            logger.debug(
                     "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
-                    HeliosEasyControlsHandler.class.getSimpleName(), variableName, e.getMessage());
+                    HeliosEasyControlsActions.class.getSimpleName(), variableName, e.getMessage());
         }
     }
 
@@ -109,9 +109,9 @@ public class HeliosEasyControlsActions implements ThingActions {
             try {
                 handler.setSysDateTime();
             } catch (InterruptedException e) {
-                logger.warn(
+                logger.debug(
                         "{} encountered Exception when trying to lock Semaphore for setting system date and time on the device: {}",
-                        HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
+                        HeliosEasyControlsActions.class.getSimpleName(), e.getMessage());
             }
         }
     }
@@ -126,9 +126,9 @@ public class HeliosEasyControlsActions implements ThingActions {
             try {
                 handler.setBypass(from, day, month);
             } catch (InterruptedException e) {
-                logger.warn(
+                logger.debug(
                         "{} encountered Exception when trying to lock Semaphore for setting bypass date on the device: {}",
-                        HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
+                        HeliosEasyControlsActions.class.getSimpleName(), e.getMessage());
             }
         }
     }
