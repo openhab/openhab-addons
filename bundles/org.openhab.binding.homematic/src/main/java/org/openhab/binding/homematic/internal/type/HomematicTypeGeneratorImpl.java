@@ -236,7 +236,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
         List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
         for (ChannelGroupType groupType : groupTypes) {
-            int usPos = groupType.getUID().getId().indexOf("_");
+            int usPos = groupType.getUID().getId().lastIndexOf("_");
             String id = usPos == -1 ? groupType.getUID().getId() : groupType.getUID().getId().substring(usPos + 1);
             groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
         }
