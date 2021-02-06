@@ -337,6 +337,22 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         logIfManyQueuedTasks();
+        Instant start = Instant.now();
+        String filterDescription = filterToString(filter);
+        logger.trace("Got a query with filter {}", filterDescription);
+        DynamoDbEnhancedAsyncClient localClient = client;
+        if (!isProperlyConfigured) {
+            logger.debug("Configuration for dynamodb not yet loaded or broken. Returning empty query results.");
+            return Collections.<HistoricItem> emptyList();
+        }
+        if (!ensureClient() || localClient == null) {
+            logger.warn("DynamoDB not connected. Returning empty query results.");
+            return Collections.<HistoricItem> emptyList();
+        }
+
+        //
+        // Resolve unclear table schema if needed
+        //
         try {
             Boolean resolved = resolveTableSchema().get();
             if (!resolved) {
@@ -353,20 +369,10 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                     cause == null ? e.getMessage() : cause.getMessage());
             return Collections.<HistoricItem> emptyList();
         }
-
-        Instant start = Instant.now();
-        String filterDescription = filterToString(filter);
-        logger.trace("Got a query with filter {}", filterDescription);
-        DynamoDbEnhancedAsyncClient localClient = client;
-        if (!isProperlyConfigured) {
-            logger.debug("Configuration for dynamodb not yet loaded or broken. Returning empty query results.");
-            return Collections.<HistoricItem> emptyList();
-        }
-        if (!ensureClient() || localClient == null) {
-            logger.warn("DynamoDB not connected. Returning empty query results.");
-            return Collections.<HistoricItem> emptyList();
-        }
         try {
+            //
+            // Proceed with query
+            //
             String itemName = filter.getItemName();
             Item item = getItemFromRegistry(itemName);
             if (item == null) {
