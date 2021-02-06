@@ -1,7 +1,7 @@
 # Epson Projector Binding
 
 This binding is compatible with Epson projectors that support the ESC/VP21 protocol over the built-in network (ethernet or Wi-Fi) port, serial port or USB to serial adapter.
-If your projector does not have a built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.
+If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.
 
 ## Supported Things
 
