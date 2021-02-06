@@ -28,7 +28,7 @@
             
             <channel id="result_url" typeId="result_url"/>
             
-            <channel id="trigger_Test" typeId="trigger_Test"/>
+            <channel id="trigger_test" typeId="trigger_test"/>
         </channels>
         <properties>
             <property name="Server List 1"></property>
@@ -153,5 +153,4 @@
         <label>Test Trigger</label>
         <description>Switch item to test manually</description>
     </channel-type>       
-
 </thing:thing-descriptions>
