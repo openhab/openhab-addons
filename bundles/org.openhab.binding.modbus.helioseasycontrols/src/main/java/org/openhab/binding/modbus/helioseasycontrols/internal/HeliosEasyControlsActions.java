@@ -54,10 +54,15 @@ public class HeliosEasyControlsActions implements ThingActions {
     private void triggerSwitch(String variableName) {
         try {
             if (handler != null) {
+
                 handler.writeValue(variableName, "1");
             }
         } catch (HeliosException e) {
             logger.warn("Error executing action triggering switch for variable {}: {}", variableName, e.getMessage());
+        } catch (InterruptedException e) {
+            logger.warn(
+                    "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
+                    HeliosEasyControlsHandler.class.getSimpleName(), variableName, e.getMessage());
         }
     }
 
@@ -101,7 +106,13 @@ public class HeliosEasyControlsActions implements ThingActions {
     public void setSysDateTime() {
         HeliosEasyControlsHandler handler = this.handler;
         if (handler != null) {
-            handler.setSysDateTime();
+            try {
+                handler.setSysDateTime();
+            } catch (InterruptedException e) {
+                logger.warn(
+                        "{} encountered Exception when trying to lock Semaphore for setting system date and time on the device: {}",
+                        HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
+            }
         }
     }
 
@@ -112,7 +123,13 @@ public class HeliosEasyControlsActions implements ThingActions {
     private void setBypass(boolean from, int day, int month) {
         HeliosEasyControlsHandler handler = this.handler;
         if (handler != null) {
-            handler.setBypass(from, day, month);
+            try {
+                handler.setBypass(from, day, month);
+            } catch (InterruptedException e) {
+                logger.warn(
+                        "{} encountered Exception when trying to lock Semaphore for setting bypass date on the device: {}",
+                        HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
+            }
         }
     }
 

@@ -320,15 +320,21 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             if (command instanceof OnOffType) {
                 value = command == OnOffType.ON ? "1" : "0";
             } else if (command instanceof DateTimeType) {
-                ZonedDateTime d = ((DateTimeType) command).getZonedDateTime();
-                if (channelId.equals(HeliosEasyControlsBindingConstants.SYS_DATE)) {
-                    setSysDateTime(d);
-                } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_FROM)) {
-                    this.setBypass(true, d.getDayOfMonth(), d.getMonthValue());
-                } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_TO)) {
-                    this.setBypass(false, d.getDayOfMonth(), d.getMonthValue());
-                } else {
-                    value = formatDate(channelId, ((DateTimeType) command).getZonedDateTime());
+                try {
+                    ZonedDateTime d = ((DateTimeType) command).getZonedDateTime();
+                    if (channelId.equals(HeliosEasyControlsBindingConstants.SYS_DATE)) {
+                        setSysDateTime(d);
+                    } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_FROM)) {
+                        this.setBypass(true, d.getDayOfMonth(), d.getMonthValue());
+                    } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_TO)) {
+                        this.setBypass(false, d.getDayOfMonth(), d.getMonthValue());
+                    } else {
+                        value = formatDate(channelId, ((DateTimeType) command).getZonedDateTime());
+                    }
+                } catch (InterruptedException e) {
+                    logger.warn(
+                            "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
+                            HeliosEasyControlsHandler.class.getSimpleName(), channelId, e.getMessage());
                 }
             } else if ((command instanceof DecimalType) || (command instanceof StringType)) {
                 value = command.toString();
@@ -387,6 +393,11 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     } catch (HeliosException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Writing value " + v + "to channel " + channelId + " failed: " + e.getMessage());
+                    } catch (InterruptedException e) {
+                        logger.warn(
+                                "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
+                                HeliosEasyControlsHandler.class.getSimpleName(), channelId, e.getMessage());
+
                     }
                 });
             }
@@ -416,7 +427,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @return The value if the transaction succeeded, <tt>null</tt> otherwise
      * @throws HeliosException Thrown if the variable is read-only or the provided value is out of range
      */
-    public void writeValue(String variableName, String value) throws HeliosException {
+    public void writeValue(String variableName, String value) throws HeliosException, InterruptedException {
         if (this.variableMap == null) {
             this.handleError("Variable definition is unavailable.", ThingStatusDetail.CONFIGURATION_ERROR);
             return;
@@ -437,26 +448,19 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                         ModbusCommunicationInterface comms = this.comms;
                         if (comms != null) {
                             final Semaphore lock = transactionLocks.get(comms.getEndpoint());
-                            try {
-                                if (lock != null) {
-                                    lock.acquire();
-                                    comms.submitOneTimeWrite(new ModbusWriteRegisterRequestBlueprint(
-                                            HeliosEasyControlsBindingConstants.UNIT_ID,
-                                            HeliosEasyControlsBindingConstants.START_ADDRESS, preparePayload(payload),
-                                            true, HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
-                                                lock.release();
-                                                updateStatus(ThingStatus.ONLINE);
-                                            }, failureInfo -> {
-                                                lock.release();
-                                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                                        "Error writing to device: "
-                                                                + failureInfo.getCause().getMessage());
-                                            });
-                                }
-                            } catch (InterruptedException e) {
-                                logger.warn(
-                                        "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
-                                        HeliosEasyControlsHandler.class.getSimpleName(), variableName, e.getMessage());
+                            if (lock != null) {
+                                lock.acquire();
+                                comms.submitOneTimeWrite(new ModbusWriteRegisterRequestBlueprint(
+                                        HeliosEasyControlsBindingConstants.UNIT_ID,
+                                        HeliosEasyControlsBindingConstants.START_ADDRESS, preparePayload(payload), true,
+                                        HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
+                                            lock.release();
+                                            updateStatus(ThingStatus.ONLINE);
+                                        }, failureInfo -> {
+                                            lock.release();
+                                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                                    "Error writing to device: " + failureInfo.getCause().getMessage());
+                                        });
                             }
                         }
                     } else { // comms is null
@@ -553,7 +557,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         this.sysDate = sysDate;
     }
 
-    private void setSysDateTime(ZonedDateTime date) {
+    private void setSysDateTime(ZonedDateTime date) throws InterruptedException {
         try {
             this.writeValue(HeliosEasyControlsBindingConstants.DATE,
                     this.formatDate(HeliosEasyControlsBindingConstants.DATE, date));
@@ -567,7 +571,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         }
     }
 
-    protected void setSysDateTime() {
+    protected void setSysDateTime() throws InterruptedException {
         this.setSysDateTime(ZonedDateTime.now());
     }
 
@@ -592,7 +596,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         }
     }
 
-    protected void setBypass(boolean from, int day, int month) {
+    protected void setBypass(boolean from, int day, int month) throws InterruptedException {
         BypassDate bypassDate = new BypassDate(day, month);
         try {
             this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY
