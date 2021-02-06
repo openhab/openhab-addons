@@ -73,6 +73,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClientBuilder;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
@@ -96,6 +97,8 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
         property = Constants.SERVICE_PID + "=org.openhab.dynamodb")
 @ConfigurableService(category = "persistence", label = "DynamoDB Persistence Service", description_uri = DynamoDBPersistenceService.CONFIG_URI)
 public class DynamoDBPersistenceService implements QueryablePersistenceService {
+
+    private static final int MAX_CONCURRENCY = 100;
 
     protected static final String CONFIG_URI = "persistence:dynamodb";
 
@@ -224,6 +227,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                     }
                     DynamoDbAsyncClientBuilder lowlevelClientBuilder = DynamoDbAsyncClient.builder()
                             .credentialsProvider(StaticCredentialsProvider.create(dbConfig.getCredentials()))
+                            .httpClient(NettyNioAsyncHttpClient.builder().maxConcurrency(MAX_CONCURRENCY).build())
                             .asyncConfiguration(ClientAsyncConfiguration.builder()
                                     .advancedOption(SdkAdvancedAsyncClientOption.FUTURE_COMPLETION_EXECUTOR, executor)
                                     .build())

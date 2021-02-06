@@ -16,6 +16,7 @@
 
   <properties>
     <bnd.importpackage>!com.amazonaws.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.joda.convert.*,!org.slf4j.impl,!scala.util.*,!software.amazon.*</bnd.importpackage>
+    <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler</dep.noembedding>
   </properties>
 
   <!--Custom repository for DynamoDBLocal -->
@@ -117,6 +118,16 @@
 
     <!-- SDK (runtime) dependencies -->
     <dependency>
+      <groupId>com.typesafe.netty</groupId>
+      <artifactId>netty-reactive-streams-http</artifactId>
+      <version>2.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe.netty</groupId>
+      <artifactId>netty-reactive-streams</artifactId>
+      <version>2.0.4</version>
+    </dependency>
+    <dependency>
       <groupId>org.reactivestreams</groupId>
       <artifactId>reactive-streams</artifactId>
       <version>1.0.2</version>
@@ -159,7 +170,12 @@
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>metrics-spi</artifactId>
-      <version>2.15.56</version>
+      <version>2.15.77</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>netty-nio-client</artifactId>
+      <version>2.15.77</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
@@ -191,7 +207,5 @@
       <artifactId>eventstream</artifactId>
       <version>1.0.1</version>
     </dependency>
-
-
   </dependencies>
 </project>
