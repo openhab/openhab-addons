@@ -135,9 +135,9 @@
 		<parameter name="expireDays" type="integer" required="false" min="1">
 			<label>Expire time for data, in days</label>
 			<description><![CDATA[Expire time for data. Data older than this is automatically removed by DynamoDB Time to Live (TTL) feature.
-            <br />
-            Use empty value to disable data expiration.
-            ]]></description>
+			<br />
+			Use empty value to disable data expiration.
+			]]></description>
 			<advanced>true</advanced>
 			<default></default> <!-- empty by default, giving preference to new table schema -->
 		</parameter>
