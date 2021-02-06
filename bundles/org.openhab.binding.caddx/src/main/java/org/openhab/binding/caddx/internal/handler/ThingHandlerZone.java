@@ -71,7 +71,7 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommand(): Command Received - {} {}.", channelUID, command);
+        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         String cmd1 = null;
         String cmd2 = null;
