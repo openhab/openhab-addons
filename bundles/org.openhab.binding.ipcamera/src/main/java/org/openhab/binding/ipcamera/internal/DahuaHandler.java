@@ -178,6 +178,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 case "VideoMotionInfo":
                 case "RtspSessionDisconnect":
                 case "LeFunctionStatusSync":
+                case "RecordDelete":
                     break;
                 default:
                     ipCameraHandler.logger.debug("Unrecognised Dahua event, Code={}, action={}", code, action);

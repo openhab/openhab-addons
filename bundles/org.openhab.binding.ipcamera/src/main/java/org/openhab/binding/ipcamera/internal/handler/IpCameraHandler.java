@@ -1747,6 +1747,7 @@ public class IpCameraHandler extends BaseThingHandler {
         Ffmpeg localFfmpeg = ffmpegHLS;
         if (localFfmpeg != null) {
             localFfmpeg.stopConverting();
+            localFfmpeg = null;
         }
         localFfmpeg = ffmpegRecord;
         if (localFfmpeg != null) {
