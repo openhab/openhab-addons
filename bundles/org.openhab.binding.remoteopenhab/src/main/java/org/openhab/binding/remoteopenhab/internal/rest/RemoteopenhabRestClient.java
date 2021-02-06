@@ -90,6 +90,7 @@ public class RemoteopenhabRestClient {
     private String accessToken;
     private boolean trustedCertificate;
     private boolean connected;
+    private boolean completed;
 
     private @Nullable SseEventSource eventSource;
     private long lastEventTimestamp;
@@ -237,10 +238,10 @@ public class RemoteopenhabRestClient {
         }
     }
 
-    public void stop() {
+    public void stop(boolean waitingForCompletion) {
         synchronized (startStopLock) {
             logger.debug("Closing EventSource");
-            closeEventSource(0, TimeUnit.SECONDS);
+            closeEventSource(waitingForCompletion);
             logger.debug("EventSource stopped");
             lastEventTimestamp = 0;
         }
@@ -263,7 +264,7 @@ public class RemoteopenhabRestClient {
                     .register(new RemoteopenhabStreamingRequestFilter(accessToken)).build();
         }
         SseEventSource eventSource = eventSourceFactory.newSource(client.target(restSseUrl));
-        eventSource.register(this::onEvent, this::onError);
+        eventSource.register(this::onEvent, this::onError, this::onComplete);
         return eventSource;
     }
 
@@ -279,7 +280,7 @@ public class RemoteopenhabRestClient {
             return;
         }
 
-        closeEventSource(10, TimeUnit.SECONDS);
+        closeEventSource(true);
 
         logger.debug("Opening new EventSource {}", url);
         SseEventSource localEventSource = createEventSource(url);
@@ -288,12 +289,12 @@ public class RemoteopenhabRestClient {
         eventSource = localEventSource;
     }
 
-    private void closeEventSource(long timeout, TimeUnit timeoutUnit) {
+    private void closeEventSource(boolean waitingForCompletion) {
         SseEventSource localEventSource = eventSource;
         if (localEventSource != null) {
-            if (!localEventSource.isOpen()) {
+            if (!localEventSource.isOpen() || completed) {
                 logger.debug("Existing EventSource is already closed");
-            } else if (localEventSource.close(timeout, timeoutUnit)) {
+            } else if (localEventSource.close(waitingForCompletion ? 10 : 0, TimeUnit.SECONDS)) {
                 logger.debug("Succesfully closed existing EventSource");
             } else {
                 logger.debug("Failed to close existing EventSource");
@@ -433,6 +434,12 @@ public class RemoteopenhabRestClient {
             logger.debug("An exception occurred while processing the inbound '{}' event containg data: {}", name, data,
                     e);
         }
+    }
+
+    private void onComplete() {
+        logger.debug("Disconnected from streaming events");
+        completed = true;
+        listeners.forEach(listener -> listener.onDisconnected());
     }
 
     private void onError(Throwable error) {
