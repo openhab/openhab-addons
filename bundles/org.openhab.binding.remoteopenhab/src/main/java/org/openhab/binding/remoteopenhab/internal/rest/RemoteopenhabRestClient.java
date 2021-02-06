@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,7 @@ public class RemoteopenhabRestClient {
     private Map<String, @Nullable String> apiEndPointsUrls = new HashMap<>();
     private @Nullable String topicNamespace;
     private String accessToken;
+    private String credentialToken;
     private boolean trustedCertificate;
     private boolean connected;
     private boolean completed;
@@ -102,6 +104,7 @@ public class RemoteopenhabRestClient {
         this.eventSourceFactory = eventSourceFactory;
         this.jsonParser = jsonParser;
         this.accessToken = "";
+        this.credentialToken = "";
     }
 
     public void setHttpClient(HttpClient httpClient) {
@@ -122,6 +125,15 @@ public class RemoteopenhabRestClient {
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public void setCredential(String username, String password) {
+        if (username.isBlank() || password.isBlank()) {
+            this.credentialToken = "";
+        } else {
+            String token = username + ":" + password;
+            this.credentialToken = Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     public void setTrustedCertificate(boolean trustedCertificate) {
@@ -257,11 +269,11 @@ public class RemoteopenhabRestClient {
                         public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
                             return true;
                         }
-                    }).readTimeout(0, TimeUnit.SECONDS).register(new RemoteopenhabStreamingRequestFilter(accessToken))
-                    .build();
+                    }).readTimeout(0, TimeUnit.SECONDS)
+                    .register(new RemoteopenhabStreamingRequestFilter(accessToken, credentialToken)).build();
         } else {
             client = clientBuilder.readTimeout(0, TimeUnit.SECONDS)
-                    .register(new RemoteopenhabStreamingRequestFilter(accessToken)).build();
+                    .register(new RemoteopenhabStreamingRequestFilter(accessToken, credentialToken)).build();
         }
         SseEventSource eventSource = eventSourceFactory.newSource(client.target(restSseUrl));
         eventSource.register(this::onEvent, this::onError, this::onComplete);
@@ -475,12 +487,15 @@ public class RemoteopenhabRestClient {
 
     public String executeUrl(HttpMethod httpMethod, String url, String acceptHeader, @Nullable String content,
             @Nullable String contentType, boolean asyncReading) throws RemoteopenhabException {
-        final Request request = httpClient.newRequest(url).method(httpMethod).timeout(REQUEST_TIMEOUT,
-                TimeUnit.MILLISECONDS);
+        final Request request = httpClient.newRequest(url).method(httpMethod)
+                .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).followRedirects(false);
 
         request.header(HttpHeaders.ACCEPT, acceptHeader);
         if (!accessToken.isEmpty()) {
             request.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        }
+        if (!credentialToken.isEmpty()) {
+            request.header(HttpHeaders.AUTHORIZATION, "Basic " + credentialToken);
         }
 
         if (content != null && (HttpMethod.POST.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod))
@@ -507,7 +522,9 @@ public class RemoteopenhabRestClient {
             } else {
                 ContentResponse response = request.send();
                 int statusCode = response.getStatus();
-                if (statusCode >= HttpStatus.BAD_REQUEST_400) {
+                if (statusCode >= 300) {
+                    response.getHeaders().forEach(
+                            field -> logger.debug("response header {} = {}", field.getName(), field.getValue()));
                     String statusLine = statusCode + " " + response.getReason();
                     throw new RemoteopenhabException("HTTP call failed: " + statusLine);
                 }

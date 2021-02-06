@@ -13,6 +13,8 @@
 package org.openhab.binding.remoteopenhab.internal.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -31,17 +33,26 @@ import org.eclipse.jdt.annotation.Nullable;
 public class RemoteopenhabStreamingRequestFilter implements ClientRequestFilter {
 
     private final String accessToken;
+    private final String credentialToken;
 
-    public RemoteopenhabStreamingRequestFilter(String accessToken) {
+    public RemoteopenhabStreamingRequestFilter(String accessToken, String credentialToken) {
         this.accessToken = accessToken;
+        this.credentialToken = credentialToken;
     }
 
     @Override
     public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
         if (requestContext != null) {
             MultivaluedMap<String, Object> headers = requestContext.getHeaders();
+            List<Object> values = new ArrayList<>();
             if (!accessToken.isEmpty()) {
-                headers.putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+                values.add("Bearer " + accessToken);
+            }
+            if (!credentialToken.isEmpty()) {
+                values.add("Basic " + credentialToken);
+            }
+            if (!values.isEmpty()) {
+                headers.put(HttpHeaders.AUTHORIZATION, values);
             }
             headers.putSingle(HttpHeaders.CACHE_CONTROL, "no-cache");
         }

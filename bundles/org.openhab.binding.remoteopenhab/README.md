@@ -44,6 +44,8 @@ The `server` thing has the following configuration parameters:
 | trustedCertificate    | no       | Set to true if you want to use HTTPS even without a valid SSL certificate provided by your remote server. |
 | restPath              | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                                |
 | token                 | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API.    |
+| username              | no       | The username to use when the remote openHAB server is setup to require basic authorization to run its REST API. |
+| password              | no       | The password to use when the remote openHAB server is setup to require basic authorization to run its REST API. |
 | accessibilityInterval | no       | Minutes between checking the remote server accessibility. 0 to disable the check. Default is 3.           |
 | aliveInterval         | no       | Number of last minutes to take into account to determine whether the remote server is alive. 0 to disable this feature. Default is 5. |
 

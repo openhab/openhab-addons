@@ -54,6 +54,21 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>The username to use when the remote openHAB server is setup to require basic authorization to run its
+					REST API.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password to use when the remote openHAB server is setup to require basic authorization to run its
+					REST API.</description>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="accessibilityInterval" type="integer" min="0" step="1" unit="min">
 				<label>Accessibility Interval</label>
 				<description>Minutes between checking the remote server accessibility. 0 to disable the check. Default is 3.</description>

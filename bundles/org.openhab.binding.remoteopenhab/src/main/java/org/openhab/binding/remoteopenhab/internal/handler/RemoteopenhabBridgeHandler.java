@@ -167,6 +167,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
         restClient.setRestUrl(urlStr);
         restClient.setAccessToken(config.token);
+        restClient.setCredential(config.username, config.password);
         if (config.useHttps && config.trustedCertificate) {
             restClient.setHttpClient(httpClientTrustingCert);
             restClient.setTrustedCertificate(true);
