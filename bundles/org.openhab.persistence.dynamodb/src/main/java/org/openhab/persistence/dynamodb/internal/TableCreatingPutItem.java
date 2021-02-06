@@ -73,7 +73,7 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
  */
 @NonNullByDefault
 class TableCreatingPutItem {
-    private final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
+    private final Logger logger = LoggerFactory.getLogger(TableCreatingPutItem.class);
 
     private final DynamoDBPersistenceService service;
     private DynamoDBItem<?> dto;
