@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.lutron.internal.radiora.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for Switch thing type.
  *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class SwitchConfig {
 
     private int zoneNumber;

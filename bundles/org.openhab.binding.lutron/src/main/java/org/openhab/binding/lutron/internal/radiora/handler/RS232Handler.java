@@ -61,6 +61,7 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> zoneMapScheduledTask = this.zoneMapScheduledTask;
         if (zoneMapScheduledTask != null) {
             zoneMapScheduledTask.cancel(true);
         }
