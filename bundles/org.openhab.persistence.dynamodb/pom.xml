@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: DynamoDB</name>
 
   <properties>
-    <bnd.importpackage>!com.amazonaws.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.joda.convert.*,!org.slf4j.impl,!scala.util.*,!software.amazon.*</bnd.importpackage>
+    <bnd.importpackage>!com.amazonaws.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.joda.convert.*,!scala.util.*,!software.amazon.*</bnd.importpackage>
     <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler</dep.noembedding>
   </properties>
 
