@@ -49,7 +49,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
     }
 
     private void processEvent(String content) {
-        int startIndex = content.indexOf("Code=") + 5;
+        int startIndex = content.indexOf("Code=", 12) + 5;// skip --myboundary
         int endIndex = content.indexOf(";", startIndex + 1);
         try {
             String code = content.substring(startIndex, endIndex);
@@ -184,7 +184,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.logger.debug("Unrecognised Dahua event, Code={}, action={}", code, action);
             }
         } catch (IndexOutOfBoundsException e) {
-            ipCameraHandler.logger.debug("IndexOutOfBoundsException on Dahua event occurred.");
+            ipCameraHandler.logger.debug("IndexOutOfBoundsException on Dahua event. Content was:{}", content);
             return;
         }
     }
@@ -197,12 +197,11 @@ public class DahuaHandler extends ChannelDuplexHandler {
         }
         try {
             String content = msg.toString();
-            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             if (content.startsWith("--myboundary")) {
                 processEvent(content);
                 return;
             }
-
+            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             // determine if the motion detection is turned on or off.
             if (content.contains("table.MotionDetect[0].Enable=true")) {
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
