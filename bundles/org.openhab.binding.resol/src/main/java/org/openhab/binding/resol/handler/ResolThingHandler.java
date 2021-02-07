@@ -65,12 +65,12 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     ResolBridgeHandler bridgeHandler;
     private ResolStateDescriptionOptionProvider stateDescriptionProvider;
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
             DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
 
     public ResolThingHandler(Thing thing, ResolStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -142,7 +142,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
             logger.trace("Channel '{}:{}' expected to have a DateTime type for parameters '{}'",
                     getThing().getUID().getId(), channelId, value.toString());
         } else {
-            this.updateState(channelId, new DateTimeType(dateFormat.format(value)));
+            this.updateState(channelId, new DateTimeType(DATE_FORMAT.format(value)));
         }
     }
 
