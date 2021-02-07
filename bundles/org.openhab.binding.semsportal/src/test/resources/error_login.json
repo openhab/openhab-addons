@@ -1,0 +1,13 @@
+{
+  "hasError": false,
+  "code": 100005,
+  "msg": "Email or password error.",
+  "data": null,
+  "components": {
+    "para": null,
+    "langVer": 97,
+    "timeSpan": 0,
+    "api": "http://www.semsportal.com:82/api/v2/Common/CrossLogin",
+    "msgSocketAdr": "https://eu-xxzx.semsportal.com"
+  }
+}

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="semsportal"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="station">
+		<label>SEMSPortal Power Station</label>
+		<description>A Power Station is the GoodWE converter that is connected through the internet with the SEMSPortal.
+			Configuration will only work if you have used this account at least once in the portal itsself.</description>
+
+		<channels>
+			<channel id="online_state" typeId="online_state"/>
+			<channel id="last_update" typeId="last_update"/>
+			<channel id="current_output" typeId="current_output"/>
+			<channel id="today_total" typeId="today_total"/>
+			<channel id="month_total" typeId="month_total"/>
+			<channel id="overall_total" typeId="overall_total"/>
+			<channel id="today_income" typeId="today_income"/>
+			<channel id="total_income" typeId="total_income"/>
+		</channels>
+
+		<config-description>
+
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Account name of the SEMS portal</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password of the SEMS portal</description>
+			</parameter>
+
+			<parameter name="station" type="text" required="true">
+				<label>Station</label>
+				<description>Unique ID of the station. Can be obtained after logging in to the SEMS portal. After logging in, the
+					URL contains this value after the last / character.
+					https://www.semsportal.com/powerstation/powerstatussnmin/&gt;all-characters-here&lt;</description>
+			</parameter>
+
+			<parameter name="update" type="integer" required="false" min="1" max="60">
+				<label>Update Frequency</label>
+				<description>Number of minutes between two updates. Defaults to 5 minutes.</description>
+			</parameter>
+
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="online_state">
+		<item-type>Switch</item-type>
+		<label>Online State</label>
+		<description>If the device is currently reporting to the SEMS portal</description>
+	</channel-type>
+	<channel-type id="last_update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp that the last information was received from the station. This is not the same as the last time
+			that was checked: the station goes offline at night.</description>
+	</channel-type>
+	<channel-type id="current_output">
+		<item-type>Number</item-type>
+		<label>Current Output</label>
+		<description>Current output in Watts</description>
+	</channel-type>
+	<channel-type id="today_total">
+		<item-type>Number</item-type>
+		<label>Todays total output </label>
+		<description>Todays total output in kWh</description>
+	</channel-type>
+	<channel-type id="month_total">
+		<item-type>Number</item-type>
+		<label>Current Month Total Output</label>
+		<description>The total output of this month in kWh</description>
+	</channel-type>
+	<channel-type id="overall_total">
+		<item-type>Number</item-type>
+		<label>Total Output</label>
+		<description>The total output from the start of the installation in kWh</description>
+	</channel-type>
+	<channel-type id="today_income">
+		<item-type>Number</item-type>
+		<label>Todays Income</label>
+		<description>Todays income. Only reports if you have set the tariffs in the SEMS portal. Unit is the currency that is
+			set in these tariffs.</description>
+	</channel-type>
+	<channel-type id="total_income">
+		<item-type>Number</item-type>
+		<label>Total Income</label>
+		<description>Total income since installation. Only reports if you have set the tariffs in the SEMS portal. Unit is the
+			currency that is set in these tariffs.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

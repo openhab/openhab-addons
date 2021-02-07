@@ -1,0 +1,17 @@
+{
+  "language": "en",
+  "function": [
+    "ADD"
+  ],
+  "hasError": true,
+  "msg": "未将对象引用设置到对象的实例。",
+  "code": "innerexception",
+  "data": "",
+  "components": {
+    "para": "{\"model\":{\"PowerStationId\":\"ERRORCODE\"}}",
+    "langVer": 97,
+    "timeSpan": 8,
+    "api": "http://www.semsportal.com:82/api/v2/PowerStation/GetMonitorDetailByPowerstationId",
+    "msgSocketAdr": null
+  }
+}
