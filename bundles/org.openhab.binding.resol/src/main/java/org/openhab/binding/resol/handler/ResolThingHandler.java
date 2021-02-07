@@ -70,7 +70,9 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
     public ResolThingHandler(Thing thing, ResolStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+        synchronized (DATE_FORMAT) {
+            DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -142,7 +144,9 @@ public class ResolThingHandler extends ResolBaseThingHandler {
             logger.trace("Channel '{}:{}' expected to have a DateTime type for parameters '{}'",
                     getThing().getUID().getId(), channelId, value.toString());
         } else {
-            this.updateState(channelId, new DateTimeType(DATE_FORMAT.format(value)));
+            synchronized (DATE_FORMAT) {
+                this.updateState(channelId, new DateTimeType(DATE_FORMAT.format(value)));
+            }
         }
     }
 
@@ -255,12 +259,12 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                                 /* only set the value if no error occurred */
                                 setChannelValue(channelId, dd.doubleValue());
                             }
-                        } else {
-                            /*
-                             * field not available in this packet, e. g. old firmware version
-                             * not (yet) transmitting it
-                             */
                         }
+                        /*
+                         * else {
+                         * field not available in this packet, e. g. old firmware version not (yet) transmitting it
+                         * }
+                         */
                         break;
                     case DateTime:
                         setChannelValue(channelId, pfv.getRawValueDate());
