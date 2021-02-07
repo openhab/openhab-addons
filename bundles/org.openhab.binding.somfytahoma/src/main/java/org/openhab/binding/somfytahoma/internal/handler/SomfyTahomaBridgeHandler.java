@@ -78,6 +78,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private @Nullable ScheduledFuture<?> reconciliationFuture;
 
+    // List of futures used for command retries
+    private List<ScheduledFuture<?>> retryFutures = new ArrayList<ScheduledFuture<?>>();
+
     /**
      * List of executions
      */
@@ -275,6 +278,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("Doing cleanup");
         stopPolling();
         executions.clear();
+        // cancel all scheduled retries
+        retryFutures.forEach(x -> x.cancel(false));
+
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -561,11 +567,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        Boolean result = sendCommandInternal(io, command, params, url);
+        removeFinishedRetries();
+
+        boolean result = sendCommandInternal(io, command, params, url);
         if (!result) {
-            scheduler.schedule(() -> {
-                repeatSendCommandInternal(io, command, params, url, thingConfig.getRetries());
-            }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS);
+            scheduleRetry(io, command, params, url, thingConfig.getRetries());
         }
     }
 
@@ -573,9 +579,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("Retrying command, retries left: {}", retries);
         boolean result = sendCommandInternal(io, command, params, url);
         if (!result && (retries > 0)) {
-            scheduler.schedule(() -> {
-                repeatSendCommandInternal(io, command, params, url, retries - 1);
-            }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS);
+            scheduleRetry(io, command, params, url, retries - 1);
         }
     }
 
@@ -597,6 +601,17 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return true;
         }
         return false;
+    }
+
+    private void removeFinishedRetries() {
+        retryFutures.removeIf(x -> x.isDone());
+        logger.debug("Currently {} retries are scheduled.", retryFutures.size());
+    }
+
+    private void scheduleRetry(String io, String command, String params, String url, int retries) {
+        retryFutures.add(scheduler.schedule(() -> {
+            repeatSendCommandInternal(io, command, params, url, retries);
+        }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS));
     }
 
     private String getThingLabelByURL(String io) {
