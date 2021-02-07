@@ -100,7 +100,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     private PowerMeterModel powermeterModel;
 
     @XmlElement(name = "colorcontrol")
-    private ColorControlModel colortrolModel;
+    private ColorControlModel colorControlModel;
 
     @XmlElement(name = "levelcontrol")
     private LevelControlModel levelControlModel;
@@ -120,7 +120,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     }
 
     public ColorControlModel getColorControlModel() {
-        return colortrolModel;
+        return colorControlModel;
     }
 
     public LevelControlModel getLevelControlModel() {

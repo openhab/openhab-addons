@@ -60,7 +60,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
- * @author Joshua Bacher - Adds support for DECT!500 device
  */
 @NonNullByDefault
 public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements FritzAhaStatusListener {

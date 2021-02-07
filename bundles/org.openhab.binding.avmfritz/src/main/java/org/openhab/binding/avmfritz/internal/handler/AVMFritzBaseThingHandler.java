@@ -134,8 +134,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
 
     private void updateOnOffUnit(SimpleOnOffModel simpleOnOffUnit) {
         if (simpleOnOffUnit != null) {
-            logger.info("updating unit state to " + simpleOnOffUnit + " with state "
-                    + SimpleOnOffModel.asState(simpleOnOffUnit.getState()));
             updateThingChannelState(CHANNEL_ONOFF_STATE, SimpleOnOffModel.asState(simpleOnOffUnit.getState()));
         }
     }

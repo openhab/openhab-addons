@@ -339,10 +339,7 @@
 		<description>FRITZ!DECT500 dimmable light.</description>
 
 		<channels>
-			<channel id="mode" typeId="mode"/>
-			<channel id="locked" typeId="locked"/>
-			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="onoffstate" typeId="onoffstate"/>
+			<channel id="onoffstate" typeId="system.power"/>
 		</channels>
 
 		<representation-property>ain</representation-property>

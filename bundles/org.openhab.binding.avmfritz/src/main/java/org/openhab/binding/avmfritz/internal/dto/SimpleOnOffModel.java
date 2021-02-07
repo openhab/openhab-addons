@@ -30,16 +30,17 @@ import org.openhab.core.types.State;
 @XmlRootElement(name = "simpleonoff")
 public class SimpleOnOffModel {
 
-    Boolean state;
+    public boolean state;
 
     public static State asState(Boolean state) {
         if (state != null && state == true) {
             return OnOffType.ON;
-        } else
+        } else {
             return OnOffType.OFF;
+        }
     }
 
-    public Boolean getState() {
+    public boolean getState() {
         return state;
     }
 

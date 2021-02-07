@@ -79,8 +79,7 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
         } else if (GROUP_HEATING_THING_TYPE.equals(thingTypeUID)) {
             return new AVMFritzHeatingGroupHandler(thing);
         } else if (SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)) {
-            logger.info("WOOHOOOOOO!");
-            return new AVMFritzLightingDeviceHandler(thing);
+            return new AVMFritzDimmingLightingDeviceHandler(thing);
         } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new GroupHandler(thing);
         } else {
