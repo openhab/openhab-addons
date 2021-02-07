@@ -41,7 +41,7 @@ public class DaliBindingConstants {
 
     public static final String CHANNEL_DIM_AT_FADE_RATE = "dim-at-fade-rate";
     public static final String CHANNEL_DIM_IMMEDIATELY = "dim-immediately";
-    public static final String CHANNEL_RGB = "rgb";
+    public static final String CHANNEL_COLOR = "color";
 
     public static final String TARGET_ID = "targetId";
     public static final String TARGET_ID_R = "targetIdR";

@@ -88,7 +88,7 @@ public class DaliRgbHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (CHANNEL_RGB.equals(channelUID.getId())) {
+            if (CHANNEL_COLOR.equals(channelUID.getId())) {
                 List<Integer> outputs = List.of(
                         ((BigDecimal) this.thing.getConfiguration().get(TARGET_ID_R)).intValueExact(),
                         ((BigDecimal) this.thing.getConfiguration().get(TARGET_ID_G)).intValueExact(),

@@ -1,35 +1,24 @@
 # DALI Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding supports controlling devices on a DALI bus (Digital Addressable Lighting Interface) via a [daliserver](https://github.com/onitake/daliserver) connection.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+Daliserver supports the Tridonic/Lunatone DALI USB adapter.
+As it only provides a thin multiplexer for the USB interface, the DALI messages themselves are implemented as part of this binding.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Currently, these things are supported:
+
+ - daliserver (bridge)
+ - device (single device/ballast on the DALI bus)
+ - group (group of DALI devices)
+ - rgb (virtual device consisting of three directly addressed devices that represent r/g/b (LED) color channels)
+ 
+This binding was tested on a DALI 1-bus with daliserver 0.2.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Automatic device discovery is not yet implemented.
 
 ## Thing Configuration
 
@@ -37,20 +26,38 @@ _Describe what is needed to manually configure a thing, either through the (Pape
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
+### daliserver
+
+| Parameter   | Parameter ID | Required/Optional |  description                           |
+|-------------|--------------|-------------------|----------------------------------------|
+| Hostname    | host         | Required          | IP address or host name of daliserver  |
+| Port Number | port         | Required          | Port of the daliserver TCP interface   |
+
+### device
+
+| Parameter   | Parameter ID | Required/Optional |  description                           |
+|-------------|--------------|-------------------|----------------------------------------|
+| Device ID   | targetId     | Required          | Address of device in the DALI bus      |
+
+### group
+
+| Parameter   | Parameter ID | Required/Optional |  description                           |
+|-------------|--------------|-------------------|----------------------------------------|
+| Group  ID   | targetId     | Required          | Address of group in the DALI bus       |
+
+### rgb
+
+| Parameter   | Parameter ID | Required/Optional |  description                           |
+|-------------|--------------|-------------------|----------------------------------------|
+| R Device ID | targetIdR    | Required          | Address of device in the DALI bus      |
+| G Device ID | targetIdG    | Required          | Address of device in the DALI bus      |
+| B Device ID | targetIdB    | Required          | Address of device in the DALI bus      |
+
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The following channels are supported by the binding.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+| channel  | type   | description                                |
+|----------|--------|--------------------------------------------|
+| dimmer   | Dimmer | Dimmer for a single device or device group |
+| color    | HSB    | Combined light color for rgb things        |
