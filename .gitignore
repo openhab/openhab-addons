@@ -6,6 +6,7 @@
 *.iml
 npm-debug.log
 .build.log
+.swp
 
 .metadata/
 bin/
