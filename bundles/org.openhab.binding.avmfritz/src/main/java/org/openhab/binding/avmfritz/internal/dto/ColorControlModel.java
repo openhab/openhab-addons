@@ -1,18 +1,21 @@
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * See {@link DeviceListModel}.
@@ -24,34 +27,31 @@ import javax.xml.bind.annotation.*;
 public class ColorControlModel {
 
     @XmlAttribute(name = "supported_modes")
-    Integer supportedModes;
+    public int supportedModes;
 
     @XmlAttribute(name = "current_mode")
-    Integer currentMode;
+    public int currentMode;
+    public int hue;
+    public int saturation;
+    public int temperature;
 
     public Integer getHue() {
         return hue;
     }
 
-    public Integer getSaturation() {
+    public int getSaturation() {
         return saturation;
     }
 
-    public Integer getTemperature() {
+    public int getTemperature() {
         return temperature;
     }
 
-    Integer hue;
-
-    Integer saturation;
-
-    Integer temperature;
-
-    public Integer getSupportedModes() {
+    public int getSupportedModes() {
         return supportedModes;
     }
 
-    public Integer getCurrentMode() {
+    public int getCurrentMode() {
         return currentMode;
     }
 }
