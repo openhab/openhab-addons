@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.measure.quantity.Temperature;
 
@@ -114,6 +115,10 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.isOnOffUnit()) {
                 updateOnOffUnit(device.getSimpleOnOffUnit());
             }
+            if (device.isDimmableLightDevice()) {
+                updateLightColor(device.getColorControlModel(), device.getLevelControlModel());
+                updateLightLevel(device.getLevelControlModel());
+            }
             if (device.isHeatingThermostat()) {
                 updateHeatingThermostat(device.getHkr());
             }
@@ -129,6 +134,18 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateHANFUNAlarmSensor(deviceModel.getAlert());
                 }
             }
+        }
+    }
+
+    private void updateLightColor(ColorControlModel colorControlModel, LevelControlModel levelControlModel) {
+        if (colorControlModel != null && levelControlModel != null) {
+            updateThingChannelState(CHANNEL_COLOR, new HSBType(new DecimalType(colorControlModel.hue), new PercentType(colorControlModel.saturation), new PercentType(levelControlModel.level )) );
+        }
+    }
+
+    private void updateLightLevel(LevelControlModel levelControlModel) {
+        if (levelControlModel != null) {
+            updateThingChannelState(CHANNEL_BRIGHTNESS, new PercentType(levelControlModel.level));
         }
     }
 
@@ -350,6 +367,16 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     if (state != null) {
                         state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
                     }
+                }
+                break;
+            case CHANNEL_BRIGHTNESS:
+                BigDecimal level = null;
+                if (command instanceof PercentType) {
+                    level = ((PercentType) command).toBigDecimal();
+                }
+                if (Objects.nonNull(level)) {
+                    fritzBox.setLevel(ain, level);
+                    updateLightLevel(state.getLevelControlModel());
                 }
                 break;
             case CHANNEL_SETTEMP:

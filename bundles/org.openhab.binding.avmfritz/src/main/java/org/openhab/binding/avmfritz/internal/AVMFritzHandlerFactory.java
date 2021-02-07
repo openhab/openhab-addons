@@ -74,12 +74,12 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
             return new AVMFritzButtonHandler(thing);
         } else if (SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)) {
             return new AVMFritzHeatingDeviceHandler(thing);
+        } else if (SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)) {
+            return new AVMFritzDimmingLightingDeviceHandler(thing);
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new DeviceHandler(thing);
         } else if (GROUP_HEATING_THING_TYPE.equals(thingTypeUID)) {
             return new AVMFritzHeatingGroupHandler(thing);
-        } else if (SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)) {
-            return new AVMFritzDimmingLightingDeviceHandler(thing);
         } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new GroupHandler(thing);
         } else {

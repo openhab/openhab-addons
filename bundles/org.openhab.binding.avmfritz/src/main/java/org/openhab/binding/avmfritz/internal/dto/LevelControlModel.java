@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Joshua Bacher - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"level", "levelpercentage"})
+@XmlType(propOrder = { "level", "levelpercentage" })
 @XmlRootElement(name = "levelcontrol")
 public class LevelControlModel {
 

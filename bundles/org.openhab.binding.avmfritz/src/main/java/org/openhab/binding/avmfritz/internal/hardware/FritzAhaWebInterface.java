@@ -31,11 +31,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingModeCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.*;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -259,6 +255,7 @@ public class FritzAhaWebInterface {
         if (!isAuthenticated()) {
             authenticate();
         }
+
         FritzAhaContentExchange getExchange = new FritzAhaContentExchange(callback);
         httpClient.newRequest(getURL(path, addSID(args))).method(GET).onResponseSuccess(getExchange)
                 .onResponseFailure(getExchange).send(getExchange);
@@ -294,6 +291,11 @@ public class FritzAhaWebInterface {
 
     public FritzAhaContentExchange setSwitch(String ain, boolean switchOn) {
         FritzAhaSetSwitchCallback callback = new FritzAhaSetSwitchCallback(this, ain, switchOn);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setLevel(String ain, BigDecimal level) {
+        FritzAhaSetLevelCallback callback = new FritzAhaSetLevelCallback(this, ain, level);
         return asyncGet(callback);
     }
 

@@ -33,7 +33,7 @@ public class SimpleOnOffModel {
     public boolean state;
 
     public static State asState(Boolean state) {
-        if (state != null && state == true) {
+        if (state != null && state) {
             return OnOffType.ON;
         } else {
             return OnOffType.OFF;

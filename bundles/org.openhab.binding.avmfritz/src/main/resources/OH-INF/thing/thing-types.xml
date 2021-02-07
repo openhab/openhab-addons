@@ -340,6 +340,8 @@
 
 		<channels>
 			<channel id="onoffstate" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
 		</channels>
 
 		<representation-property>ain</representation-property>

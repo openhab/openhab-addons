@@ -127,6 +127,8 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_PRESS = "press";
     public static final String CHANNEL_LAST_CHANGE = "last_change";
     public static final String CHANNEL_ONOFF_STATE = "onoffstate";
+    public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_BRIGHTNESS = "brightness";
 
     // List of all Channel config ids
     public static final String CONFIG_CHANNEL_TEMP_OFFSET = "offset";
@@ -178,6 +180,6 @@ public class AVMFritzBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
-                    SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS)
+                    SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS, SUPPORTED_LIGHTING_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet()));
 }
