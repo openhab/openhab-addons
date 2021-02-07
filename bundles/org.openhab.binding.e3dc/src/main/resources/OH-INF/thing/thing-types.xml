@@ -12,49 +12,51 @@
 			<!-- 01: TAG_EMS_REQ_POWER_PV => TAG_EMS_POWER_PV -->
 			<channel id="CurrentPowerPV" typeId="CurrentPowerPV"/>
 			<!-- 01: TAG_EMS_REQ_POWER_BAT => TAG_EMS_POWER_BAT -->
-			<channel id="CurrentPowerBat" typeId="CurrentPowerBat"/> 
+			<channel id="CurrentPowerBat" typeId="CurrentPowerBat"/>
 			<!-- 01: TAG_EMS_REQ_POWER_HOME => TAG_EMS_POWER_HOME -->
 			<channel id="CurrentPowerHome" typeId="CurrentPowerHome"/>
 			<!-- 01: TAG_EMS_REQ_POWER_GRID => TAG_EMS_POWER_GRID -->
 			<channel id="CurrentPowerGrid" typeId="CurrentPowerGrid"/>
 			<!-- 01: TAG_EMS_REQ_POWER_ADD => TAG_EMS_POWER_ADD -->
 			<channel id="CurrentPowerAdd" typeId="CurrentPowerAdd"/>
-            <!-- 01: TAG_EMS_REQ_BAT_SOC => TAG_EMS_BAT_SOC -->
-            <channel id="BatterySOC" typeId="BatterySOC"/>
-            <!-- 01: TAG_EMS_REQ_SELF_CONSUMPTION => TAG_EMS_SELF_CONSUMPTION -->
-            <channel id="SelfConsumption" typeId="SelfConsumption"/>
-            <!-- 01: TAG_EMS_REQ_AUTARKY => TAG_EMS_AUTARKY -->
-            <channel id="Autarky" typeId="Autarky"/>
-            <!-- 05: TAG_PM_REQ_DATA(TAG_PM_INDEX=0)/TAG_PM_REQ_ENERGY_L1  => TAG_PM_DATA/TAG_PM_ENERGY_L1 -->
+			<!-- 01: TAG_EMS_REQ_BAT_SOC => TAG_EMS_BAT_SOC -->
+			<channel id="BatterySOC" typeId="BatterySOC"/>
+			<!-- 01: TAG_EMS_REQ_SELF_CONSUMPTION => TAG_EMS_SELF_CONSUMPTION -->
+			<channel id="SelfConsumption" typeId="SelfConsumption"/>
+			<!-- 01: TAG_EMS_REQ_AUTARKY => TAG_EMS_AUTARKY -->
+			<channel id="Autarky" typeId="Autarky"/>
+			<!-- 05: TAG_PM_REQ_DATA(TAG_PM_INDEX=0)/TAG_PM_REQ_ENERGY_L1 => TAG_PM_DATA/TAG_PM_ENERGY_L1 -->
 			<channel id="CurrentPMEnergyL1" typeId="CurrentPMEngergy"/>
-            <channel id="CurrentPMEnergyL2" typeId="CurrentPMEngergy"/>
-            <channel id="CurrentPMEnergyL3" typeId="CurrentPMEngergy"/>
-            <!-- 05: TAG_PM_REQ_DATA(TAG_PM_INDEX=0)/TAG_PM_REQ_POWER_L1  => TAG_PM_DATA/TAG_PM_POWER_L1 -->
-            <channel id="CurrentPMPowerL1" typeId="CurrentPMPower"/>
-            <channel id="CurrentPMPowerL2" typeId="CurrentPMPower"/>
-            <channel id="CurrentPMPowerL3" typeId="CurrentPMPower"/>
-            <!-- 05: TAG_PM_REQ_DATA(TAG_PM_INDEX=0)/TAG_PM_REQ_VOLTAGE_L1  => TAG_PM_DATA/TAG_PM_VOLTAGE_L1 -->
-            <channel id="CurrentPMVoltageL1" typeId="CurrentPMVoltage"/>
-            <channel id="CurrentPMVoltageL2" typeId="CurrentPMVoltage"/>
-            <channel id="CurrentPMVoltageL3" typeId="CurrentPMVoltage"/>
-            <!-- 05: TAG_PM_REQ_DATA(TAG_PM_INDEX=0)/TAG_PM_REQ_MODE  => TAG_PM_DATA/TAG_PM_MODE -->
-            <channel id="Mode" typeId="Mode"/>
-            <!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_POWER_LIMITS_USED -->
-            <channel id="PowerLimitsUsed" typeId="PowerLimitsUsed"/>
-            <!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_MAX_DISCHARGE_POWER -->
-            <channel id="MaxDischarge" typeId="MaxDischarge"/>
-            <!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_MAX_CHARGE_POWER -->
-            <channel id="MaxCharge" typeId="MaxCharge"/>
-            <!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_WEATHER_REGULATED_CHARGE_ENABLED -->
-            <channel id="WeatherRegulatedCharge" typeId="WeatherRegulatedCharge"/>
-            <!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_POWERSAVE_ENABLED -->
-            <channel id="PowerSave" typeId="PowerSave"/>
-            <!-- 01: TAG_EMS_REQ_EMERGENCY_POWER_STATUS => TAG_EMS_EMERGENCY_POWER_STATUS -->
-            <channel id="EmergencyPowerStatus" typeId="EmergencyPowerStatus"/>
-            <!-- 0B: TAG_EP_REQ_IS_GRID_CONNECTED => TAG_EP_IS_GRID_CONNECTED -->
-            <channel id="GridConnected" typeId="GridConnected"/>
-            <!-- 0A: TAG_INFO_REQ_SW_RELEASE => TAG_INFO_SW_RELEASE -->
-            <channel id="SWRelease" typeId="SWRelease"/>
+			<channel id="CurrentPMEnergyL2" typeId="CurrentPMEngergy"/>
+			<channel id="CurrentPMEnergyL3" typeId="CurrentPMEngergy"/>
+			<!-- 05: TAG_PM_REQ_DATA(TAG_PM_INDEX=0)/TAG_PM_REQ_POWER_L1 => TAG_PM_DATA/TAG_PM_POWER_L1 -->
+			<channel id="CurrentPMPowerL1" typeId="CurrentPMPower"/>
+			<channel id="CurrentPMPowerL2" typeId="CurrentPMPower"/>
+			<channel id="CurrentPMPowerL3" typeId="CurrentPMPower"/>
+			<!-- 05: TAG_PM_REQ_DATA(TAG_PM_INDEX=0)/TAG_PM_REQ_VOLTAGE_L1 => TAG_PM_DATA/TAG_PM_VOLTAGE_L1 -->
+			<channel id="CurrentPMVoltageL1" typeId="CurrentPMVoltage"/>
+			<channel id="CurrentPMVoltageL2" typeId="CurrentPMVoltage"/>
+			<channel id="CurrentPMVoltageL3" typeId="CurrentPMVoltage"/>
+			<!-- 05: TAG_PM_REQ_DATA(TAG_PM_INDEX=0)/TAG_PM_REQ_MODE => TAG_PM_DATA/TAG_PM_MODE -->
+			<channel id="Mode" typeId="Mode"/>
+			<!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_POWER_LIMITS_USED -->
+			<channel id="PowerLimitsUsed" typeId="PowerLimitsUsed"/>
+			<!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_MAX_DISCHARGE_POWER -->
+			<channel id="MaxDischarge" typeId="MaxDischarge"/>
+			<!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_MAX_DISHARGE_POWER -->
+			<channel id="MaxCharge" typeId="MaxCharge"/>
+			<!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_MAX_CHARGE_POWER -->
+			<channel id="DischargeStart" typeId="DischargeStart"/>
+			<!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_DISCHARGE_START_POWER -->
+			<channel id="WeatherRegulatedCharge" typeId="WeatherRegulatedCharge"/>
+			<!-- 01: TAG_EMS_REQ_GET_POWER_SETTINGS => TAG_EMS_GET_POWER_SETTINGS / TAG_EMS_POWERSAVE_ENABLED -->
+			<channel id="PowerSave" typeId="PowerSave"/>
+			<!-- 01: TAG_EMS_REQ_EMERGENCY_POWER_STATUS => TAG_EMS_EMERGENCY_POWER_STATUS -->
+			<channel id="EmergencyPowerStatus" typeId="EmergencyPowerStatus"/>
+			<!-- 0B: TAG_EP_REQ_IS_GRID_CONNECTED => TAG_EP_IS_GRID_CONNECTED -->
+			<channel id="GridConnected" typeId="GridConnected"/>
+			<!-- 0A: TAG_INFO_REQ_SW_RELEASE => TAG_INFO_SW_RELEASE -->
+			<channel id="SWRelease" typeId="SWRelease"/>
 		</channels>
 
 		<config-description>
@@ -119,103 +121,109 @@
 		<description>Current power exchange with an additionally connected external device</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-    <channel-type id="BatterySOC">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Battery load</label>
-        <description>Battery load</description>
-        <state readOnly="true" pattern="%d %unit%"/>
-    </channel-type>
-    <channel-type id="SelfConsumption">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Self consumption</label>
-        <description>Share of PV energy that is self consumed</description>
-        <state readOnly="true" pattern="%.2f %%"/>
-    </channel-type>
-    <channel-type id="Autarky">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Autarky</label>
-        <description>Share of consumed energy that is self generated</description>
-        <state readOnly="true" pattern="%.2f %%"/>
-    </channel-type>
-    <channel-type id="CurrentPMEngergy">
-        <item-type>Number:Energy</item-type>
-        <label>Phase Energy</label>
-        <description>Consumed net energy on Phase</description>
-        <state pattern="%.2f %unit%" readOnly="true"/>
-    </channel-type>
-    <channel-type id="CurrentPMPower">
-        <item-type>Number:Power</item-type>
-        <label>Phase Power</label>
-        <description>Current net power on Phase</description>
-        <state pattern="%.2f %unit%" readOnly="true"/>
-    </channel-type>
-    <channel-type id="CurrentPMVoltage">
-        <item-type>Number:ElectricPotential</item-type>
-        <label>Phase Voltage</label>
-        <description>Current voltage on Phase</description>
-        <state pattern="%.2f %unit%" readOnly="true"/>
-    </channel-type>
-    <channel-type id="Mode">
-        <item-type>Number</item-type>
-        <label>Mode</label>
-        <description>Mode</description>
-        <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="PowerLimitsUsed">
-        <item-type>Switch</item-type>
-        <label>Power Limits used</label>
-        <description>Indicates if manual power limits are used</description>
-        <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="MaxDischarge">
-        <item-type>Number:Power</item-type>
-        <label>Max Discharge</label>
-        <description>Manual limit for maximum battery discharge power</description>
-        <state pattern="%.2f %unit%" readOnly="true"/>
-    </channel-type>
-    <channel-type id="MaxCharge">
-        <item-type>Number:Power</item-type>
-        <label>Max Charge</label>
-        <description>Manual limit for maximum battery charge power</description>
-        <state pattern="%.2f %unit%" readOnly="true"/>
-    </channel-type>
-    <channel-type id="WeatherRegulatedCharge">
-        <item-type>Switch</item-type>
-        <label>Weather Regulated Charge</label>
-        <description>Auto charging controlled by weather forecast to lower max power to grid</description>
-        <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="PowerSave">
-        <item-type>Switch</item-type>
-        <label>Power Save</label>
-        <description>Power save mode when battery is idle</description>
-        <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="EmergencyPowerStatus">
-        <item-type>Number</item-type>
-        <label>Emergency Power Status</label>
-        <description>Emergency Power ready or island</description>
-        <state readOnly="true">
-            <options>
-                <option value="0">Not supported</option>
-                <option value="1">Active</option>
-                <option value="2">Inactive</option>
-                <option value="3">n/a</option>
-                <option value="4">Motor switch misaligned</option>
-            </options>
-        </state>
-    </channel-type>
-    <channel-type id="GridConnected">
-        <item-type>Switch</item-type>
-        <label>Grid Connected</label>
-        <description>Indicates connection to Grid</description>
-        <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="SWRelease">
-        <item-type>String</item-type>
-        <label>Software Release</label>
-        <description>Version of Software Release</description>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="BatterySOC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery load</label>
+		<description>Battery load</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="SelfConsumption">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self consumption</label>
+		<description>Share of PV energy that is self consumed</description>
+		<state readOnly="true" pattern="%.2f %%"/>
+	</channel-type>
+	<channel-type id="Autarky">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky</label>
+		<description>Share of consumed energy that is self generated</description>
+		<state readOnly="true" pattern="%.2f %%"/>
+	</channel-type>
+	<channel-type id="CurrentPMEngergy">
+		<item-type>Number:Energy</item-type>
+		<label>Phase Energy</label>
+		<description>Consumed net energy on Phase</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="CurrentPMPower">
+		<item-type>Number:Power</item-type>
+		<label>Phase Power</label>
+		<description>Current net power on Phase</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="CurrentPMVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase Voltage</label>
+		<description>Current voltage on Phase</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="Mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="PowerLimitsUsed">
+		<item-type>Switch</item-type>
+		<label>Power Limits used</label>
+		<description>Indicates if manual power limits are used</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="MaxDischarge">
+		<item-type>Number:Power</item-type>
+		<label>Max Discharge</label>
+		<description>Manual limit for maximum battery discharge power</description>
+		<state pattern="%.0f %unit%" min="100" max="3000" step="10" readOnly="false"/>
+	</channel-type>
+	<channel-type id="MaxCharge">
+		<item-type>Number:Power</item-type>
+		<label>Max Charge</label>
+		<description>Manual limit for maximum battery charge power</description>
+		<state pattern="%.0f %unit%" min="100" max="3000" step="10" readOnly="false"/>
+	</channel-type>
+	<channel-type id="DischargeStart">
+		<item-type>Number:Power</item-type>
+		<label>Discharge Start Value</label>
+		<description>Manual limit for lower charge/discharge threshold</description>
+		<state pattern="%.0f %unit%" min="0" max="50" step="5" readOnly="false"/>
+	</channel-type>
+	<channel-type id="WeatherRegulatedCharge">
+		<item-type>Switch</item-type>
+		<label>Weather Regulated Charge</label>
+		<description>Auto charging controlled by weather forecast to lower max power to grid</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="PowerSave">
+		<item-type>Switch</item-type>
+		<label>Power Save</label>
+		<description>Power save mode when battery is idle</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="EmergencyPowerStatus">
+		<item-type>Number</item-type>
+		<label>Emergency Power Status</label>
+		<description>Emergency Power ready or island</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Not supported</option>
+				<option value="1">Active</option>
+				<option value="2">Inactive</option>
+				<option value="3">n/a</option>
+				<option value="4">Motor switch misaligned</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="GridConnected">
+		<item-type>Switch</item-type>
+		<label>Grid Connected</label>
+		<description>Indicates connection to Grid</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="SWRelease">
+		<item-type>String</item-type>
+		<label>Software Release</label>
+		<description>Version of Software Release</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 </thing:thing-descriptions>

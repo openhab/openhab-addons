@@ -17,12 +17,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +53,63 @@ public class E3DCHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
+        this.logger.debug("handleCommand channel:{}  command:{}", channelUID, command);
+        if (command instanceof RefreshType) {
+            return;
+        }
+
+        if (E3DCBindingConstants.CHANNEL_WeatherRegulatedCharge.equals(channelUID.getId())) {
+            boolean value = (command == OnOffType.ON);
+            e3dcconnect.setWeatherRegulatedChargeEnable(value);
+        }
+
+        if (E3DCBindingConstants.CHANNEL_PowerSave.equals(channelUID.getId())) {
+            boolean value = (command == OnOffType.ON);
+            e3dcconnect.setPowerSaveEnable(value);
+        }
+
+        if (E3DCBindingConstants.CHANNEL_PowerLimitsUsed.equals(channelUID.getId())) {
+            boolean value = (command == OnOffType.ON);
+            e3dcconnect.setPowerLimitsUsed(value);
+        }
+
+        if (E3DCBindingConstants.CHANNEL_MaxCharge.equals(channelUID.getId())) {
+            int value = convertCommandToIntValue(command, 100, 3000);
+            e3dcconnect.setMaxChargePower(value);
+        }
+
+        if (E3DCBindingConstants.CHANNEL_MaxDischarge.equals(channelUID.getId())) {
+            int value = convertCommandToIntValue(command, 100, 3000);
+            e3dcconnect.setMaxDischargePower(value);
+        }
+
+        if (E3DCBindingConstants.CHANNEL_DischargeStart.equals(channelUID.getId())) {
+            int value = convertCommandToIntValue(command, 0, 500);
+            e3dcconnect.setDischargeStartPower(value);
+        }
+    }
+
+    public int convertCommandToIntValue(Command command, int min, int max) {
+        this.logger.debug("convertCommandToIntValue  command: {}", command);
+
+        int value;
+        double fValue;
+
+        if (command instanceof DecimalType) {
+            fValue = ((DecimalType) command).floatValue();
+            logger.trace("convertCommandToIntValue DecimalType fValue: {}", Double.valueOf(fValue));
+        } else if (command instanceof QuantityType) {
+            fValue = ((QuantityType<?>) command).doubleValue();
+            logger.trace("convertCommandToIntValue QuantityType fValue: {}", Double.valueOf(fValue));
+        } else {
+            throw new NumberFormatException("Command type '" + command + "' not supported");
+        }
+
+        value = (int) fValue;
+        value = Math.min(max, value);
+        value = Math.max(min, value);
+
+        return value;
     }
 
     @Override

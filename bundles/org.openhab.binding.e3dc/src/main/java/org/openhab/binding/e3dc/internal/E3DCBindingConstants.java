@@ -51,6 +51,7 @@ public class E3DCBindingConstants {
     public static final String CHANNEL_PowerLimitsUsed = "PowerLimitsUsed";
     public static final String CHANNEL_MaxDischarge = "MaxDischarge";
     public static final String CHANNEL_MaxCharge = "MaxCharge";
+    public static final String CHANNEL_DischargeStart = "DischargeStart";
     public static final String CHANNEL_WeatherRegulatedCharge = "WeatherRegulatedCharge";
     public static final String CHANNEL_PowerSave = "PowerSave";
     public static final String CHANNEL_EmergencyPowerStatus = "EmergencyPowerStatus";
