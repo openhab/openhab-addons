@@ -29,7 +29,6 @@ import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterAll;
@@ -113,7 +112,8 @@ public class BaseIntegrationTest extends JavaTest {
      * @return
      */
     protected static boolean isRunningInCI() {
-        return "true".equals(System.getenv("CI")) || StringUtils.isNotBlank(System.getenv("JENKINS_HOME"));
+        return "true".equals(System.getenv("CI"))
+                || (System.getenv("JENKINS_HOME") != null && !System.getenv("JENKINS_HOME").isBlank());
     }
 
     private static boolean credentialsSet() {
