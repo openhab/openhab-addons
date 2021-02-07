@@ -67,6 +67,8 @@ public class Communicator {
     public void pollDataFromDevice() {
         String messageJson = gson.toJson(new Message(header));
 
+        logger.debug("Opening connection to device for polling");
+
         try (Socket socket = new Socket(ipAddress, VentaAirBindingConstants.PORT)) {
             InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
@@ -92,7 +94,7 @@ public class Communicator {
             }
             socket.close();
         } catch (IOException e) {
-            logger.debug("Communcation problem while polling data from device", e);
+            logger.debug("Communication problem while polling data from device", e);
             callback.communicationProblem();
         }
     }
