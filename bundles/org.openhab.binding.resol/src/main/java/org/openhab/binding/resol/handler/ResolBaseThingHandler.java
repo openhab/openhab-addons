@@ -33,5 +33,5 @@ public abstract class ResolBaseThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    public abstract void packetReceived(Specification spec, Language lang, Packet packet);
+    protected abstract void packetReceived(Specification spec, Language lang, Packet packet);
 }

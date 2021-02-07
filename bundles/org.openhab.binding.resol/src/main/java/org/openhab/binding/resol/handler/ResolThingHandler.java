@@ -65,7 +65,8 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     ResolBridgeHandler bridgeHandler;
     private ResolStateDescriptionOptionProvider stateDescriptionProvider;
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
+            DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
 
     public ResolThingHandler(Thing thing, ResolStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
@@ -109,7 +110,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         return bridgeHandler;
     }
 
-    public void setChannelValue(String channelId, String value) {
+    protected void setChannelValue(String channelId, String value) {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
@@ -121,7 +122,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         }
     }
 
-    public void setChannelValue(String channelId, long value) {
+    protected void setChannelValue(String channelId, long value) {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
@@ -133,7 +134,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         }
     }
 
-    public void setChannelValue(String channelId, Date value) {
+    protected void setChannelValue(String channelId, Date value) {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
@@ -145,7 +146,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         }
     }
 
-    public void setChannelValue(String channelId, double value) {
+    protected void setChannelValue(String channelId, double value) {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.warn("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
@@ -162,7 +163,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     }
 
     @Override
-    public void packetReceived(Specification spec, Language lang, Packet packet) {
+    protected void packetReceived(Specification spec, Language lang, Packet packet) {
         PacketFieldValue[] pfvs = spec.getPacketFieldValuesForHeaders(new Packet[] { packet });
         for (PacketFieldValue pfv : pfvs) {
             logger.trace("Id: {}, Name: {}, Raw: {}, Text: {}", pfv.getPacketFieldId(), pfv.getName(lang),

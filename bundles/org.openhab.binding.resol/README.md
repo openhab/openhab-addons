@@ -90,6 +90,7 @@ For configuration in files you can enable the logging with at least DEBUG level 
 ## Emulated EM Configuration
 
 *emulatedEM* devices cannot be auto-discovered and require beside the bridge the following configuration:
+
 | Parameter | Type | Required | Description                                                |
 |-----------|------|----------|-----------------------------------------------------------------------------------------------------------------|
 | moduleID  | int  | yes      | The module ID on the VBUS in range 0-15, but further restrictions might apply depending on the resol controller. |
