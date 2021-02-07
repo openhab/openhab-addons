@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarwatt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="energymanager">
+		<label>Solarwatt</label>
+		<description>Solarwatt Energymanager</description>
+
+		<representation-property>hostname</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Host Name / IP Address</label>
+				<description>The host name/ip address of the solarwatt energymanager.</description>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s">
+				<label>Refresh Period</label>
+				<description>Period between updates to the devices data in seconds.
+				</description>
+				<default>30</default>
+				<unitLabel>s</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="rescan" type="integer" unit="min">
+				<label>Refresh Period</label>
+				<description>Period between updates to the detected devices in minutes.
+				</description>
+				<default>5</default>
+				<unitLabel>min</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="evstation">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>EVStation</label>
+		<description>Electric Vehicle Charger</description>
+
+		<representation-property>IdName</representation-property>
+
+	</thing-type>
+
+	<thing-type id="batteryconverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>BatteryConverter</label>
+		<description>Battery Converter</description>
+
+		<representation-property>IdName</representation-property>
+
+	</thing-type>
+
+	<thing-type id="location">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>Location</label>
+		<description>Location</description>
+
+		<representation-property>IdName</representation-property>
+
+	</thing-type>
+
+	<thing-type id="pvpplant">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>PVPPlant</label>
+		<description>Photovoltaic Producing Plant</description>
+
+		<representation-property>IdName</representation-property>
+
+	</thing-type>
+
+	<thing-type id="gridflow">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>Gridflow</label>
+		<description>Gridflow</description>
+
+		<representation-property>IdName</representation-property>
+
+	</thing-type>
+
+	<thing-type id="powermeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>PowerMeter</label>
+		<description>PowerMeter</description>
+
+		<representation-property>IdName</representation-property>
+
+	</thing-type>
+
+	<thing-type id="inverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>Inverter</label>
+		<description>Inverter</description>
+
+		<representation-property>IdName</representation-property>
+
+	</thing-type>
+
+</thing:thing-descriptions>
