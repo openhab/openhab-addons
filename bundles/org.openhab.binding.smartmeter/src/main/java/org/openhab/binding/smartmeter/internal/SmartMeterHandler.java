@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +203,9 @@ public class SmartMeterHandler extends BaseThingHandler {
                     if (!channel.getProperties().containsKey(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS)) {
                         addObisPropertyToChannel(obis, channel);
                     }
-                    updateState(channel.getUID(), state);
+                    if (state != null) {
+                        updateState(channel.getUID(), state);
+                    }
 
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 } else {
@@ -256,7 +257,9 @@ public class SmartMeterHandler extends BaseThingHandler {
                     MeterValue<?> value = this.smlDevice.getMeterValue(obis);
                     if (value != null) {
                         State state = getStateForObisValue(value, channel);
-                        updateState(channel.getUID(), state);
+                        if (state != null) {
+                            updateState(channel.getUID(), state);
+                        }
                     }
                 }
             }
@@ -264,13 +267,14 @@ public class SmartMeterHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private <Q extends Quantity<Q>> State getStateForObisValue(MeterValue<?> value, @Nullable Channel channel) {
+    private @Nullable <Q extends Quantity<Q>> State getStateForObisValue(MeterValue<?> value,
+            @Nullable Channel channel) {
         Unit<?> unit = value.getUnit();
         String valueString = value.getValue();
         if (unit != null) {
             valueString += " " + value.getUnit();
         }
-        State state = TypeParser.parseState(Arrays.asList(QuantityType.class, StringType.class), valueString);
+        State state = TypeParser.parseState(List.of(QuantityType.class, StringType.class), valueString);
         if (channel != null && state instanceof QuantityType) {
             state = applyConformity(channel, (QuantityType<Q>) state);
             Number conversionRatio = (Number) channel.getConfiguration()

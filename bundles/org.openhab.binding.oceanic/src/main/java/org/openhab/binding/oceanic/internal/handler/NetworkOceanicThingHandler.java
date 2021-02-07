@@ -22,6 +22,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.oceanic.internal.NetworkOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
 import org.openhab.core.thing.Thing;
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class NetworkOceanicThingHandler extends OceanicThingHandler {
 
     private static final int REQUEST_TIMEOUT = 3000;
@@ -43,10 +46,10 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NetworkOceanicThingHandler.class);
 
-    private Socket socket;
-    private InputStream inputStream;
-    private OutputStream outputStream;
-    protected ScheduledFuture<?> reconnectJob;
+    private @Nullable Socket socket;
+    private @Nullable InputStream inputStream;
+    private @Nullable OutputStream outputStream;
+    protected @Nullable ScheduledFuture<?> reconnectJob;
 
     public NetworkOceanicThingHandler(Thing thing) {
         super(thing);
@@ -99,7 +102,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
     }
 
     @Override
-    protected String requestResponse(String commandAsString) {
+    protected @Nullable String requestResponse(String commandAsString) {
         synchronized (this) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 NetworkOceanicBindingConfiguration config = getConfigAs(NetworkOceanicBindingConfiguration.class);
