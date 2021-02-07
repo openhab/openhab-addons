@@ -1,7 +1,7 @@
 # Epson Projector Binding
 
-This binding is compatible with Epson projectors that support the ESC/VP21 protocol over the built-in ethernet port, serial port or USB to serial adapter.
-If your projector does not have a built-in ethernet port, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.
+This binding is compatible with Epson projectors that support the ESC/VP21 protocol over the built-in network (ethernet or Wi-Fi) port, serial port or USB to serial adapter.
+If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.
 
 ## Supported Things
 
@@ -27,7 +27,7 @@ The `projector-serial` thing has the following configuration parameters:
 The `projector-tcp` thing has the following configuration parameters:
 
 - _host_: IP address for the projector or serial over IP device
-- _port_: Port for the projector or serial over IP device; default 3629 for projectors with built-in ethernet connector
+- _port_: Port for the projector or serial over IP device; default 3629 for projectors with built-in ethernet connector or Wi-Fi
 - _pollingInterval_: Polling interval in seconds to update channel states | 5-60 seconds; default 10 seconds
 
 Some notes:
