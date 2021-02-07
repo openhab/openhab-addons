@@ -68,7 +68,7 @@
 		<label>DALI RGB Device</label>
 		<description>Controls three DALI devices representing R,G,B lighting channels</description>
 		<channels>
-			<channel id="rgb" typeId="rgb"/>
+			<channel id="color" typeId="color"/>
 		</channels>
 
 		<config-description>
@@ -87,10 +87,10 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="rgb">
+	<channel-type id="color">
 		<item-type>HSB</item-type>
-		<label>HSB</label>
-		<description>HSB</description>
+		<label>Color</label>
+		<description>Light Color</description>
 		<category>ColorLight</category>
 	</channel-type>
 
