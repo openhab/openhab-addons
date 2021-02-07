@@ -49,7 +49,7 @@ public class LcnModuleRvarLockSubHandler extends AbstractLcnModuleVariableSubHan
 
         // request new lock state, if the module doesn't send it on itself
         Variable variable = getVariable(LcnChannelGroup.RVARSETPOINT, number);
-        if (variable.shouldPollStatusAfterRegulatorLock(info.getFirmwareVersion(), locked)) {
+        if (info.getFirmwareVersion().map(v -> variable.shouldPollStatusAfterRegulatorLock(v, locked)).orElse(true)) {
             info.refreshVariable(variable);
         }
     }

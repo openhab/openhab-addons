@@ -14,6 +14,7 @@
 
 		<channels>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="alert" typeId="alert"/>
 			<channel id="effect" typeId="effect"/>

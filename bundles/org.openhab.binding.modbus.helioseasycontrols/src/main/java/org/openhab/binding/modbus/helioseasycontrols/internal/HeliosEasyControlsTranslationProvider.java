@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.util;
+package org.openhab.binding.modbus.helioseasycontrols.internal;
 
 import java.util.Locale;
 
@@ -19,42 +19,48 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * {@link ShellyTranslationProvider} provides i18n message lookup
+ * This class provides translated texts
  *
- * @author Markus Michels - Initial contribution
+ * @author Bernhard Bauer - Initial contribution
  */
 @NonNullByDefault
-public class ShellyTranslationProvider {
+@Component(service = HeliosEasyControlsTranslationProvider.class)
+public class HeliosEasyControlsTranslationProvider {
 
     private final Bundle bundle;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
-    public ShellyTranslationProvider(Bundle bundle, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        this.bundle = bundle;
+    @Activate
+    public HeliosEasyControlsTranslationProvider(@Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider, BundleContext context) {
+        this.bundle = context.getBundle();
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
     }
 
-    public ShellyTranslationProvider(final ShellyTranslationProvider other) {
+    public HeliosEasyControlsTranslationProvider(final HeliosEasyControlsTranslationProvider other) {
         this.bundle = other.bundle;
         this.i18nProvider = other.i18nProvider;
         this.localeProvider = other.localeProvider;
     }
 
-    public @Nullable String get(String key, @Nullable Object... arguments) {
-        return getText(key.contains("@text/") || key.contains(".shelly.") ? key : "message." + key, arguments);
-    }
-
-    public @Nullable String getText(String key, @Nullable Object... arguments) {
+    public String getText(String key, @Nullable Object... arguments) {
         try {
             Locale locale = localeProvider.getLocale();
-            return i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments);
+            String message = i18nProvider.getText(bundle, key, this.getDefaultText(key), locale, arguments);
+            if (message != null) {
+                return message;
+            }
         } catch (IllegalArgumentException e) {
-            return "Unable to load message for key " + key;
         }
+        return "Unable to load message for key " + key;
     }
 
     public @Nullable String getDefaultText(String key) {

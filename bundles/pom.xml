@@ -63,6 +63,7 @@
     <module>org.openhab.binding.bluetooth.daikinmadoka</module>
     <module>org.openhab.binding.bluetooth.enoceanble</module>
     <module>org.openhab.binding.bluetooth.generic</module>
+    <module>org.openhab.binding.bluetooth.govee</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.boschindego</module>
@@ -187,6 +188,7 @@
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
     <module>org.openhab.binding.modbus.e3dc</module>
+    <module>org.openhab.binding.modbus.sbc</module>
     <module>org.openhab.binding.modbus.studer</module>
     <module>org.openhab.binding.modbus.sunspec</module>
     <module>org.openhab.binding.modbus.stiebeleltron</module>
@@ -194,6 +196,7 @@
     <module>org.openhab.binding.monopriceaudio</module>
     <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
+    <module>org.openhab.binding.mqtt.espmilighthub</module>
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
@@ -365,6 +368,12 @@
       <artifactId>org.openhab.core.bom.openhab-core</artifactId>
       <type>pom</type>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-net</groupId>
+          <artifactId>commons-net</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.openhab.core.bom</groupId>

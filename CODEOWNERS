@@ -32,6 +32,7 @@
 /bundles/org.openhab.binding.bluetooth.daikinmadoka/ @blafois
 /bundles/org.openhab.binding.bluetooth.enoceanble/ @pfink
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
+/bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
 /bundles/org.openhab.binding.boschindego/ @jofleck
@@ -157,17 +158,19 @@
 /bundles/org.openhab.binding.modbus/ @ssalonen
 /bundles/org.openhab.binding.modbus.e3dc/ @weymann
 /bundles/org.openhab.binding.modbus.helioseasycontrols/ @bern77
+/bundles/org.openhab.binding.modbus.sbc/ @fwolter
 /bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
 /bundles/org.openhab.binding.modbus.studer/ @giovannimirulla
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
 /bundles/org.openhab.binding.monopriceaudio/ @mlobstein
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @davidgraeff
+/bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
 /bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homie/ @davidgraeff
 /bundles/org.openhab.binding.mystrom/ @pail23
-/bundles/org.openhab.binding.nanoleaf/ @raepple
+/bundles/org.openhab.binding.nanoleaf/ @raepple @stefan-hoehn
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @tmrobert8
 /bundles/org.openhab.binding.neohub/ @andrewfg

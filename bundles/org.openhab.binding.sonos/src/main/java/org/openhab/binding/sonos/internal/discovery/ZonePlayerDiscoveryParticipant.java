@@ -91,6 +91,9 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                     case "One SL":
                         modelName = "OneSL";
                         break;
+                    case "Arc SL":
+                        modelName = "ArcSL";
+                        break;
                     default:
                         break;
                 }

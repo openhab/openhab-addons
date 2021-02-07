@@ -14,10 +14,12 @@ package org.openhab.binding.hue.internal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.State.ColorMode;
+import org.openhab.binding.hue.internal.dto.ColorTemperature;
 import org.openhab.binding.hue.internal.handler.LightStateConverter;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -30,6 +32,38 @@ import org.openhab.core.library.types.PercentType;
  * @author Markus Rathgeb - migrated to plain Java test
  */
 public class LightStateConverterTest {
+
+    @Test
+    public void colorTemperatureLightStateConverterConversionIsBijectiveDefaultColorTemperatureCapabilities() {
+        final State lightState = new State();
+        final ColorTemperature colorTemperature = new ColorTemperature();
+        for (int percent = 1; percent <= 100; ++percent) {
+            StateUpdate stateUpdate = LightStateConverter
+                    .toColorTemperatureLightStateFromPercentType(new PercentType(percent), colorTemperature);
+            assertThat(stateUpdate.commands, hasSize(1));
+            assertThat(stateUpdate.commands.get(0).key, is("ct"));
+            lightState.ct = Integer.parseInt(stateUpdate.commands.get(0).value.toString());
+            assertThat(LightStateConverter.toColorTemperaturePercentType(lightState, colorTemperature).intValue(),
+                    is(percent));
+        }
+    }
+
+    @Test
+    public void colorTemperatureLightStateConverterConversionIsBijectiveIndividualColorTemperatureCapabilities() {
+        final State lightState = new State();
+        final ColorTemperature colorTemperature = new ColorTemperature();
+        colorTemperature.min = 250;
+        colorTemperature.max = 454;
+        for (int percent = 1; percent <= 100; ++percent) {
+            StateUpdate stateUpdate = LightStateConverter
+                    .toColorTemperatureLightStateFromPercentType(new PercentType(percent), colorTemperature);
+            assertThat(stateUpdate.commands, hasSize(1));
+            assertThat(stateUpdate.commands.get(0).key, is("ct"));
+            lightState.ct = Integer.parseInt(stateUpdate.commands.get(0).value.toString());
+            assertThat(LightStateConverter.toColorTemperaturePercentType(lightState, colorTemperature).intValue(),
+                    is(percent));
+        }
+    }
 
     @Test
     public void brightnessOfZeroIsZero() {

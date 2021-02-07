@@ -155,7 +155,14 @@ public abstract class DLinkHNAPCommunication {
             uri = new URI("http://" + ipAddress + "/HNAP1");
             httpClient.start();
 
-            parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setXIncludeAware(false);
+            dbf.setExpandEntityReferences(false);
+            parser = dbf.newDocumentBuilder();
 
             final MessageFactory messageFactory = MessageFactory.newInstance();
             requestAction = messageFactory.createMessage();

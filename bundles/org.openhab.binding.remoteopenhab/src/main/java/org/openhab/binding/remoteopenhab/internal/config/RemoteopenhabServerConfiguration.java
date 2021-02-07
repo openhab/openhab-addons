@@ -35,4 +35,5 @@ public class RemoteopenhabServerConfiguration {
     public String token = "";
     public int accessibilityInterval = 3;
     public int aliveInterval = 5;
+    public boolean restartIfNoActivity = false;
 }

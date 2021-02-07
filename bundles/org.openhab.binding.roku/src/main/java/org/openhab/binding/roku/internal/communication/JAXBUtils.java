@@ -14,6 +14,7 @@ package org.openhab.binding.roku.internal.communication;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLInputFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +39,7 @@ public class JAXBUtils {
     public static final @Nullable JAXBContext JAXBCONTEXT_APPS = initJAXBContextApps();
     public static final @Nullable JAXBContext JAXBCONTEXT_DEVICE_INFO = initJAXBContextDeviceInfo();
     public static final @Nullable JAXBContext JAXBCONTEXT_PLAYER = initJAXBContextPlayer();
+    public static final XMLInputFactory XMLINPUTFACTORY = initXMLInputFactory();
 
     private static @Nullable JAXBContext initJAXBContextActiveApp() {
         try {
@@ -73,5 +75,12 @@ public class JAXBUtils {
             LOGGER.error("Exception creating JAXBContext for player info: {}", e.getLocalizedMessage(), e);
             return null;
         }
+    }
+
+    private static XMLInputFactory initXMLInputFactory() {
+        XMLInputFactory xif = XMLInputFactory.newInstance();
+        xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        return xif;
     }
 }
