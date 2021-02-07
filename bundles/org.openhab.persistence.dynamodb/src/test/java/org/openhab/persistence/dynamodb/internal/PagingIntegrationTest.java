@@ -48,7 +48,6 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
     @SuppressWarnings("null")
     @BeforeAll
     public static void populateData() {
-        System.err.println("starting population");
         storeStart = ZonedDateTime.now();
 
         NumberItem item = (NumberItem) ITEMS.get(NAME);
@@ -63,7 +62,6 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
             }
             service.store(item);
         }
-        System.err.println("ending population");
     }
 
     @SuppressWarnings("null")
