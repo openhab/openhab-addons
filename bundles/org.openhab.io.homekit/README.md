@@ -345,6 +345,8 @@ Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermo
 Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature" [minValue=10.5, maxValue=27]} 
 ```
 
+If "useFahrenheitTemperature" is set to true, the min and max temperature must be provided in Fahrenheit.
+
 #### Thermostat modes
 
 HomeKit thermostat supports following modes
