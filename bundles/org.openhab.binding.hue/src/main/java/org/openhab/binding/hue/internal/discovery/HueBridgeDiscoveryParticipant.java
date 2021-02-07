@@ -36,6 +36,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -57,9 +58,12 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
     // Hue bridges have maxAge 100 seconds, so set the default grace period to half of that
     private long removalGracePeriodSeconds = 50;
 
-    @Reference
-    @Nullable
-    ConfigurationAdmin configAdmin;
+    private final ConfigurationAdmin configAdmin;
+
+    @Activate
+    public HueBridgeDiscoveryParticipant(final @Reference ConfigurationAdmin configAdmin) {
+        this.configAdmin = configAdmin;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -112,17 +116,15 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public long getRemovalGracePeriodSeconds(RemoteDevice device) {
-        if (configAdmin != null) {
-            try {
-                Configuration conf = configAdmin.getConfiguration("binding.hue");
-                Dictionary<String, @Nullable Object> properties = conf.getProperties();
-                Object property = properties.get(HueBindingConstants.REMOVAL_GRACE_PERIOD);
-                if (property != null) {
-                    removalGracePeriodSeconds = Integer.valueOf(property.toString()).longValue();
-                }
-            } catch (IOException | IllegalStateException | NullPointerException | NumberFormatException e) {
-                // fall through to pre-initialised (default) value
+        try {
+            Configuration conf = configAdmin.getConfiguration("binding.hue");
+            Dictionary<String, @Nullable Object> properties = conf.getProperties();
+            Object property = properties.get(HueBindingConstants.REMOVAL_GRACE_PERIOD);
+            if (property != null) {
+                removalGracePeriodSeconds = Integer.valueOf(property.toString()).longValue();
             }
+        } catch (IOException | IllegalStateException | NullPointerException | NumberFormatException e) {
+            // fall through to pre-initialised (default) value
         }
         logger.trace("getRemovalGracePeriodSeconds={}", removalGracePeriodSeconds);
         return removalGracePeriodSeconds;
