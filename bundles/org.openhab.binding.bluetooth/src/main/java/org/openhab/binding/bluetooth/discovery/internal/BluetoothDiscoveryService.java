@@ -31,7 +31,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
-import org.openhab.core.cache.ExpiringCacheMap;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -65,8 +65,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
     private final Set<BluetoothDiscoveryParticipant> participants = new CopyOnWriteArraySet<>();
-    private final ExpiringCacheMap<BluetoothAddress, DiscoveryCache> discoveryCaches = new ExpiringCacheMap<>(
-            Duration.ofMinutes(1));
+    @NonNullByDefault({})
+    private final Map<BluetoothAddress, DiscoveryCache> discoveryCaches = new ConcurrentHashMap<>();
 
     private final Set<ThingTypeUID> supportedThingTypes = new CopyOnWriteArraySet<>();
 
@@ -138,20 +138,15 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void deviceRemoved(BluetoothDevice device) {
-        DiscoveryCache cache = discoveryCaches.get(device.getAddress());
-        if (cache != null) {
-            cache.removeDiscoveries(device);
-        }
+        discoveryCaches.computeIfPresent(device.getAddress(), (addr, cache) -> cache.removeDiscoveries(device));
     }
 
     @Override
     public void deviceDiscovered(BluetoothDevice device) {
         logger.debug("Discovered bluetooth device '{}': {}", device.getName(), device);
 
-        DiscoveryCache cache = discoveryCaches.putIfAbsentAndGet(device.getAddress(), DiscoveryCache::new);
-        if (cache != null) {
-            cache.handleDiscovery(device);
-        }
+        DiscoveryCache cache = discoveryCaches.computeIfAbsent(device.getAddress(), addr -> new DiscoveryCache());
+        cache.handleDiscovery(device);
     }
 
     private static ThingUID createThingUIDWithBridge(DiscoveryResult result, BluetoothAdapter adapter) {
@@ -179,7 +174,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         private final Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
         private final Map<BluetoothAdapter, Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
 
-        private @Nullable BluetoothDeviceSnapshot latestSnapshot;
+        private ExpiringCache<BluetoothDeviceSnapshot> latestSnapshot = new ExpiringCache<>(Duration.ofMinutes(1),
+                () -> null);
 
         /**
          * This is meant to be used as part of a Map.compute function
@@ -216,7 +212,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             CompletableFuture<DiscoveryResult> future = null;
 
             BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(device);
-            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot;
+            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot.getValue();
             if (latestSnapshot != null) {
                 snapshot.merge(latestSnapshot);
 
@@ -243,7 +239,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                     }
                 }
             }
-            this.latestSnapshot = snapshot;
+            this.latestSnapshot.putValue(snapshot);
 
             if (future == null) {
                 // we pass in the snapshot since it acts as a delegate for the device. It will also retain any new
