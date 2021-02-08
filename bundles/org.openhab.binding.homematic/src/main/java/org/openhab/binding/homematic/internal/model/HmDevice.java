@@ -16,11 +16,8 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
 /**
@@ -202,7 +199,7 @@ public class HmDevice {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(address).toHashCode();
+        return Objects.hash(address);
     }
 
     @Override
@@ -211,13 +208,12 @@ public class HmDevice {
             return false;
         }
         HmDevice comp = (HmDevice) obj;
-        return new EqualsBuilder().append(address, comp.getAddress()).isEquals();
+        return Objects.equals(address, comp.getAddress());
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("hmInterface", hmInterface)
-                .append("address", address).append("type", type).append("name", name).append("firmware", firmware)
-                .append("gatewayId", gatewayId).toString();
+        return String.format("%s[hmInterface=%s,address=%s,type=%s,name=%s,firmware=%s,gatewayId=%s]",
+                getClass().getSimpleName(), hmInterface, address, type, name, firmware, gatewayId);
     }
 }
