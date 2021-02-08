@@ -176,13 +176,12 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      *
      * @return true if connected or false if not
      */
-    public boolean open() {
+    public void open() throws Exception {
         if (connector != null) {
             connector.open();
         }
         lastSendMsg = null;
         msgQueue = new ConcurrentLinkedQueue<>();
-        return isConnected();
     }
 
     /**
@@ -255,28 +254,37 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         }
 
         PowermaxState updateState = message.handleMessage(this);
-        if (updateState != null) {
-            if (updateState.getUpdateSettings() != null) {
-                panelSettings.updateRawSettings(updateState.getUpdateSettings());
-            }
-            if (!updateState.getUpdatedZoneNames().isEmpty()) {
-                for (Integer zoneIdx : updateState.getUpdatedZoneNames().keySet()) {
-                    panelSettings.updateZoneName(zoneIdx, updateState.getUpdatedZoneNames().get(zoneIdx));
-                }
-            }
-            if (!updateState.getUpdatedZoneInfos().isEmpty()) {
-                for (Integer zoneIdx : updateState.getUpdatedZoneInfos().keySet()) {
-                    panelSettings.updateZoneInfo(zoneIdx, updateState.getUpdatedZoneInfos().get(zoneIdx));
-                }
-            }
 
-            PowermaxStateEvent newEvent = new PowermaxStateEvent(this, updateState);
+        if (updateState == null) {
+            updateState = createNewState();
+        }
 
-            // send message to event listeners
-            for (int i = 0; i < listeners.size(); i++) {
-                listeners.get(i).onNewStateEvent(newEvent);
+        updateState.lastMessageReceived.setValue(System.currentTimeMillis());
+
+        if (updateState.getUpdateSettings() != null) {
+            panelSettings.updateRawSettings(updateState.getUpdateSettings());
+        }
+        if (!updateState.getUpdatedZoneNames().isEmpty()) {
+            for (Integer zoneIdx : updateState.getUpdatedZoneNames().keySet()) {
+                panelSettings.updateZoneName(zoneIdx, updateState.getUpdatedZoneNames().get(zoneIdx));
             }
         }
+        if (!updateState.getUpdatedZoneInfos().isEmpty()) {
+            for (Integer zoneIdx : updateState.getUpdatedZoneInfos().keySet()) {
+                panelSettings.updateZoneInfo(zoneIdx, updateState.getUpdatedZoneInfos().get(zoneIdx));
+            }
+        }
+
+        PowermaxStateEvent newEvent = new PowermaxStateEvent(this, updateState);
+
+        // send message to event listeners
+        listeners.forEach(listener -> listener.onNewStateEvent(newEvent));
+    }
+
+    @Override
+    public void onCommunicationFailure(String message) {
+        close();
+        listeners.forEach(listener -> listener.onCommunicationFailure(message));
     }
 
     /**
