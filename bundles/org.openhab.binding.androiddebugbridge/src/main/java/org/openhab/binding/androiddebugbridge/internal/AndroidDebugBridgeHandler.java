@@ -311,7 +311,10 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             logger.warn("Unable to refresh awake state: Timeout");
             return;
         }
-        updateState(new ChannelUID(this.thing.getUID(), AWAKE_STATE_CHANNEL), OnOffType.from(awakeState));
+        var awakeStateChannelUID = new ChannelUID(this.thing.getUID(), AWAKE_STATE_CHANNEL);
+        if (isLinked(awakeStateChannelUID)) {
+            updateState(awakeStateChannelUID, OnOffType.from(awakeState));
+        }
         if (!awakeState && !prevDeviceAwake) {
             logger.debug("device {} is sleeping", config.ip);
             return;
