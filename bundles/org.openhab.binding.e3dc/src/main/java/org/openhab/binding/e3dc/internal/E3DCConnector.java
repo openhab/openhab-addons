@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.rscp.RSCPData;
 import org.openhab.binding.e3dc.internal.rscp.RSCPFrame;
+import org.openhab.binding.e3dc.internal.rscp.RSCPTag;
 import org.openhab.binding.e3dc.internal.rscp.util.AES256Helper;
 import org.openhab.binding.e3dc.internal.rscp.util.BouncyAES256Helper;
 import org.openhab.binding.e3dc.internal.rscp.util.ByteUtils;
@@ -92,14 +93,64 @@ public class E3DCConnector {
         }
     }
 
+    public void setPowerLimitsUsed(Boolean value) {
+        setBoolValue(RSCPTag.TAG_EMS_REQ_SET_POWER_SETTINGS, RSCPTag.TAG_EMS_POWER_LIMITS_USED, value);
+    }
+
+    public void setMaxDischargePower(int value) {
+        setuint32CharValue(RSCPTag.TAG_EMS_REQ_SET_POWER_SETTINGS, RSCPTag.TAG_EMS_MAX_DISCHARGE_POWER, value);
+    }
+
+    public void setMaxChargePower(int value) {
+        setuint32CharValue(RSCPTag.TAG_EMS_REQ_SET_POWER_SETTINGS, RSCPTag.TAG_EMS_MAX_CHARGE_POWER, value);
+    }
+
+    public void setDischargeStartPower(int value) {
+        setuint32CharValue(RSCPTag.TAG_EMS_REQ_SET_POWER_SETTINGS, RSCPTag.TAG_EMS_DISCHARGE_START_POWER, value);
+    }
+
+    public void setWeatherRegulatedChargeEnable(Boolean value) {
+        char charValue = (char) (value ? 1 : 0);
+        setCharValue(RSCPTag.TAG_EMS_REQ_SET_POWER_SETTINGS, RSCPTag.TAG_EMS_WEATHER_REGULATED_CHARGE_ENABLED,
+                charValue);
+    }
+
+    public void setPowerSaveEnable(Boolean value) {
+        char charValue = (char) (value ? 1 : 0);
+        setCharValue(RSCPTag.TAG_EMS_REQ_SET_POWER_SETTINGS, RSCPTag.TAG_EMS_POWERSAVE_ENABLED, charValue);
+    }
+
+    public void setuint32CharValue(RSCPTag containerTag, RSCPTag tag, int value) {
+        logger.debug("setuint32CharValue container:{} tag:{} vale:{}", containerTag.name(), tag.name(), value);
+        byte[] reqFrame = E3DCRequests.buildRequestSetFrame(containerTag, tag, value);
+        handleRequest(reqFrame);
+    }
+
+    public void setCharValue(RSCPTag containerTag, RSCPTag tag, char value) {
+        logger.tracetrace("setCharValue container:{} tag:{} vale:{}", containerTag.name(), tag.name(), value);
+        byte[] reqFrame = E3DCRequests.buildRequestSetFrame(containerTag, tag, value);
+        handleRequest(reqFrame);
+    }
+
+    public void setBoolValue(RSCPTag containerTag, RSCPTag tag, Boolean value) {
+        logger.trace("setBoolValue container:{} tag:{} vale:{}", containerTag.name(), tag.name(), value);
+        byte[] reqFrame = E3DCRequests.buildRequestSetFrame(containerTag, tag, value);
+        handleRequest(reqFrame);
+    }
+
     public void requestE3DCData() {
+        byte[] reqFrame = E3DCRequests.buildRequestFrame();
+        handleRequest(reqFrame);
+    }
+
+    public void handleRequest(byte[] reqFrame) {
         if (isNotConnected()) {
             connectE3DC();
         }
-        byte[] reqFrame = E3DCRequests.buildRequestFrame();
+        logger.debug("Unencrypted frame to send: {}", ByteUtils.byteArrayToHexString(reqFrame));
         Integer bytesSent = sendFrameToServer(aesHelper::encrypt, reqFrame);
         byte[] decBytesReceived = receiveFrameFromServer(aesHelper::decrypt);
-        logger.warn("Decrypted frame received: {}", ByteUtils.byteArrayToHexString(decBytesReceived));
+        logger.debug("Decrypted frame received: {}", ByteUtils.byteArrayToHexString(decBytesReceived));
         RSCPFrame responseFrame = RSCPFrame.builder().buildFromRawBytes(decBytesReceived);
 
         handleE3DCResponse(responseFrame);
@@ -146,6 +197,11 @@ public class E3DCConnector {
                 handleUpdatePMData(containedData);
             }
         } else if ("TAG_EMS_GET_POWER_SETTINGS".equals(dt)) {
+            List<RSCPData> containedDataList = data.getContainerData();
+            for (RSCPData containedData : containedDataList) {
+                handleUpdatePowerSettingsData(containedData);
+            }
+        } else if ("TAG_EMS_SET_POWER_SETTINGS".equals(dt)) {
             List<RSCPData> containedDataList = data.getContainerData();
             for (RSCPData containedData : containedDataList) {
                 handleUpdatePowerSettingsData(containedData);
@@ -199,23 +255,39 @@ public class E3DCConnector {
 
     private void handleUpdatePowerSettingsData(RSCPData data) {
         String dt = data.getDataTag().name();
+        logger.debug("handleUpdatePowerSettingsData  : {}: {}", dt, data.getValueAsString());
 
         if ("TAG_EMS_POWER_LIMITS_USED".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_PowerLimitsUsed,
                     OnOffType.from(data.getValueAsBool().orElse(false)));
+        } else if ("TAG_EMS_RES_TAG_EMS_POWER_LIMITS_USED".equals(dt)) {
+            // maybe update TAG_EMS_POWER_LIMITS_USED...?
         } else if ("TAG_EMS_MAX_DISCHARGE_POWER".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_MaxDischarge,
                     new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
+        } else if ("TAG_EMS_RES_MAX_DISCHARGE_POWER".equals(dt)) {
+            // maybe update TAG_EMS_MAX_DISCHARGE_POWER...?
         } else if ("TAG_EMS_MAX_CHARGE_POWER".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_MaxCharge,
                     new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
+        } else if ("TAG_EMS_RES_MAX_CHARGE_POWER".equals(dt)) {
+            // maybe update TAG_EMS_MAX_CHARGE_POWER...?
+        } else if ("TAG_EMS_DISCHARGE_START_POWER".equals(dt)) {
+            handle.updateState(E3DCBindingConstants.CHANNEL_DischargeStart,
+                    new QuantityType<>(data.getValueAsInt().get(), Units.WATT));
+        } else if ("TAG_EMS_RES_DISCHARGE_START_POWER".equals(dt)) {
+            // maybe update TAG_EMS_DISCHARGE_START_POWER...?
         } else if ("TAG_EMS_WEATHER_REGULATED_CHARGE_ENABLED".equals(dt)) {
             handle.updateState(E3DCBindingConstants.CHANNEL_WeatherRegulatedCharge,
                     OnOffType.from(data.getValueAsBool().orElse(false)));
+        } else if ("TAG_EMS_RES_WEATHER_REGULATED_CHARGE_ENABLE".equals(dt)) {
+            // maybe update TAG_EMS_WEATHER_REGULATED_CHARGE_ENABLED...?
         } else if ("TAG_EMS_POWERSAVE_ENABLED".equals(dt)) {
             boolean result = data.getValueAsBool().orElse(false);
 
             handle.updateState(E3DCBindingConstants.CHANNEL_PowerSave, OnOffType.from(result));
+        } else if ("TAG_EMS_RES_POWERSAVE_ENABLED".equals(dt)) {
+            // maybe update TAG_EMS_POWERSAVE_ENABLED...?
         }
     }
 
@@ -225,8 +297,10 @@ public class E3DCConnector {
 
     public void close() {
         try {
-            socket.close();
-            socket = null;
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
         } catch (IOException e) {
             logger.info("Couldn't close connection: {}", e);
         }

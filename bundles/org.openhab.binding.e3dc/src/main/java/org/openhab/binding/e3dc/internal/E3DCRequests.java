@@ -247,6 +247,41 @@ public class E3DCRequests {
         return reqFrame1.getAsByteArray();
     }
 
+    public static byte[] buildRequestSetFrame(RSCPTag containerTag, RSCPTag tag, Boolean value) {
+        Builder buildFrame = RSCPFrame.builder().timestamp(Instant.now()).addData(
+                RSCPData.builder().tag(containerTag).containerValues(Arrays.asList(ReqGeni(tag, value))).build());
+        return requestFrameFromBuildFrame(buildFrame);
+    }
+
+    public static byte[] buildRequestSetFrame(RSCPTag containerTag, RSCPTag tag, char value) {
+        Builder buildFrame = RSCPFrame.builder().timestamp(Instant.now()).addData(
+                RSCPData.builder().tag(containerTag).containerValues(Arrays.asList(ReqGeni(tag, value))).build());
+        return requestFrameFromBuildFrame(buildFrame);
+    }
+
+    public static byte[] buildRequestSetFrame(RSCPTag containerTag, RSCPTag tag, int value) {
+        Builder buildFrame = RSCPFrame.builder().timestamp(Instant.now()).addData(
+                RSCPData.builder().tag(containerTag).containerValues(Arrays.asList(ReqGeni(tag, value))).build());
+        return requestFrameFromBuildFrame(buildFrame);
+    }
+
+    public static byte[] requestFrameFromBuildFrame(Builder buildFrame) {
+        RSCPFrame reqFrame = buildFrame.build();
+        return reqFrame.getAsByteArray();
+    }
+
+    public static RSCPData ReqGeni(RSCPTag tag, Boolean i) {
+        return RSCPData.builder().tag(tag).boolValue(i).build();
+    }
+
+    public static RSCPData ReqGeni(RSCPTag tag, int i) {
+        return RSCPData.builder().tag(tag).uint32Value(i).build();
+    }
+
+    public static RSCPData ReqGeni(RSCPTag tag, char c) {
+        return RSCPData.builder().tag(tag).uchar8Value(c).build();
+    }
+
     public static RSCPData ReqGeni(RSCPTag tag, short s) {
         return RSCPData.builder().tag(tag).int16Value(s).build();
     }
