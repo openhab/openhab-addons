@@ -22,7 +22,7 @@ sudo raspi-config
 
 -> Interfacing Options --> Remote GPIO --> YES --> OK --> Finish
 
-Note: if you are setting this up on a Raspberry Pi running openHabian, raspi-config is no longer available. However, you can still create the service config file manually:
+Note: if you are setting this up on a Raspberry Pi without `raspi-config` you can create the service config file manually:
 
 ```
 sudo mkdir -p /etc/systemd/system/pigpiod.service.d/
