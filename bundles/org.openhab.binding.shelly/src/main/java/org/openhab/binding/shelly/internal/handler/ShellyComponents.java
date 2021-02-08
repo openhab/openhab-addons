@@ -30,6 +30,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
 
 /***
  * The{@link ShellyComponents} implements updates for supplemental components
@@ -260,6 +261,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         getString(sdata.sensor.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
+                String sensorError = getString(sdata.sensorError);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
                         getStringType(sdata.sensorError));
                 if (changed) {
@@ -328,7 +330,7 @@ public class ShellyComponents {
             if (sdata.bat != null) { // no update for Sense
                 thingHandler.logger.trace("{}: Updating battery", thingHandler.thingName);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                        toQuantityType(getDouble(sdata.bat.value), DIGITS_PERCENT, Units.PERCENT));
+                        toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                         getDouble(sdata.bat.value) < thingHandler.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
                 updated |= changed;
@@ -343,8 +345,10 @@ public class ShellyComponents {
             if (sdata.sensor != null) { // Shelly Motion
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
                         getOnOff(sdata.sensor.motion));
+                long timestamp = getLong(sdata.sensor.motionTimestamp);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
-                        getTimestamp(getString(profile.settings.timezone), sdata.sensor.motionTimestamp));
+                        timestamp != 0 ? getTimestamp(getString(profile.settings.timezone), timestamp)
+                                : UnDefType.UNDEF);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                         getOnOff(sdata.sensor.vibration));
             }

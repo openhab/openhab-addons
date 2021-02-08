@@ -91,7 +91,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     protected boolean stopping = false;
     private boolean channelsCreated = false;
 
-    private long lastAlarmTs = 0;
     private long watchdog = now();
 
     private @Nullable ScheduledFuture<?> statusJob;
@@ -382,6 +381,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_NAME, getStringType(profile.settings.name));
                 updated |= this.updateDeviceStatus(status);
                 updated |= ShellyComponents.updateDeviceStatus(this, status);
+                fillDeviceStatus(status, updated);
                 updated |= updateInputs(status);
                 updated |= updateMeters(this, status);
                 updated |= updateSensors(this, status);
@@ -391,10 +391,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                 // Restart watchdog when status update was successful (no exception)
                 restartWatchdog();
-
-                if (scheduledUpdates <= 1) {
-                    fillDeviceStatus(status, updated);
-                }
             }
         } catch (ShellyApiException e) {
             // http call failed: go offline except for battery devices, which might be in
@@ -506,14 +502,17 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         stats.remainingWatchdog = watchdog > 0 ? now() - watchdog : 0;
 
         // Check various device indicators like overheating
-        if ((status.uptime < stats.lastUptime) && (profile.isInitialized()) && !profile.hasBattery) {
+        logger.debug("{}: status.update={}, lastUpdate={}", thingName, status.uptime, stats.lastUptime);
+        if ((status.uptime < stats.lastUptime) && profile.isInitialized()) {
             alarm = ALARM_TYPE_RESTARTED;
             force = true;
+            stats.unexpectedRestarts++;
+            logger.info("{}: Unexpected device restart #{}", thingName, stats.unexpectedRestarts);
+
             // Force re-initialization on next status update
-            if (!profile.hasBattery) {
+            if (!profile.hasBattery || profile.isMotion) {
                 reinitializeThing();
             }
-            stats.unexpectedRestarts++;
         } else if (getBool(status.overtemperature)) {
             alarm = ALARM_TYPE_OVERTEMP;
         } else if (getBool(status.overload)) {
@@ -525,7 +524,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
         if (!alarm.isEmpty()) {
             postEvent(alarm, force);
-            stats.alarms++;
         }
     }
 
@@ -539,14 +537,16 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         State value = cache.getValue(channelId);
         String lastAlarm = value != UnDefType.NULL ? value.toString() : "";
 
-        if (force || !lastAlarm.equals(alarm) || (now() > (lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))) {
-            if (alarm.equals(ALARM_TYPE_NONE)) {
+        if (force || !lastAlarm.equals(alarm) || (now() > (stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))) {
+            if (alarm.isEmpty() || alarm.equals(ALARM_TYPE_NONE)) {
                 cache.updateChannel(channelId, getStringType(alarm));
             } else {
                 logger.info("{}: {}", thingName, messages.get("event.triggered", alarm));
                 triggerChannel(channelId, alarm);
                 cache.updateChannel(channelId, getStringType(alarm));
-                lastAlarmTs = now();
+                stats.lastAlarm = alarm;
+                stats.lastAlarmTs = now();
+                stats.alarms++;
             }
         }
     }
@@ -1183,6 +1183,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     public Map<String, String> getStatsProp() {
-        return stats.asProperties();
+        return stats.asProperties(getString(profile.settings.timezone));
+    }
+
+    public void resetStats() {
+        // reset statistics
+        stats = new ShellyDeviceStats();
     }
 }

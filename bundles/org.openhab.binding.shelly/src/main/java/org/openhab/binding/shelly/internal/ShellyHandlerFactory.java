@@ -151,7 +151,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
         if (thingHandler instanceof ShellyBaseHandler) {
-            deviceListeners.remove(thingHandler.getThing().getThingTypeUID().getId());
+            String uid = thingHandler.getThing().getUID().getAsString();
+            deviceListeners.remove(uid);
         }
     }
 
