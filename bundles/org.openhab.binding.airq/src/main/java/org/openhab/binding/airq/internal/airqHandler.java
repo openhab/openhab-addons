@@ -13,8 +13,6 @@
 package org.openhab.binding.airq.internal;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -29,7 +27,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -98,8 +95,6 @@ public class airqHandler extends BaseThingHandler {
         public ResultPair(String input) {
             value = Float.parseFloat(input.substring(1, input.indexOf(',')));
             maxdev = Float.parseFloat(input.substring(input.indexOf(',') + 1, input.length() - 1));
-            // value = new Float(input.substring(1, input.indexOf(',')));
-            // maxdev = new Float(input.substring(input.indexOf(',') + 1, input.length() - 1));
         }
     }
 
@@ -154,10 +149,13 @@ public class airqHandler extends BaseThingHandler {
                     newobj.addProperty(channelUID.getId(), ohCmd2airqCmd(command.toString()));
                     changeSettings(newobj);
                     break;
-                case "getHistoryFiles":
-                    getDataFiles();
-                    break;
-                case "ppm_and_ppb":
+                /*
+                 * Not supported yet!
+                 *
+                 * case "getHistoryFiles":
+                 * getDataFiles();
+                 * break;
+                 */ case "ppm_and_ppb":
                     newobj.addProperty("ppm&ppb", ohCmd2airqCmd(command.toString()));
                     changeSettings(newobj);
                 case "nightmode_FanNightOff":
@@ -293,42 +291,8 @@ public class airqHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "We tried to get data from the air-Q device, but failed. Maybe the password is wrong.");
             }
-            /*
-             * try {
-             * Result testres = null;
-             * if (ipaddress != null) {
-             * testres = doNetwork("http://".concat(ipaddress.concat("/data")), "GET", null);
-             * }
-             * if (testres != null) {
-             * String jsontext = testres.getBody();
-             * Gson gson = new Gson();
-             * JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
-             * JsonObject jsonObj = ans.getAsJsonObject();
-             * // We don't actually use the result here, it is just to try if it doesn't throw an Exception that
-             * // shows a wrong password
-             * decrypt(jsonObj.get("content").getAsString().getBytes(),
-             * getThing().getConfiguration().get("password").toString());
-             * }
-             * } catch (Exception e) {
-             * System.out.println("air-Q - airqHandler - polldata.run(): Error while testing air-Q data retrieval: "
-             * + e.toString());
-             * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-             * "We tried to get data from the air-Q device, but failed. Maybe the password is wrong.");
-             * }
-             */
         }
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using
-        // WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in
-        // the
-        // background.
-
-        // Example for background initialization:
         scheduler.execute(() ->
 
         {
@@ -358,13 +322,13 @@ public class airqHandler extends BaseThingHandler {
                             if (decEl != null) {
                                 JsonObject decObj = decEl.getAsJsonObject();
                                 logger.debug("air-Q - airqHandler - run(): decObj={}", decObj);
-                                processType(decObj, "bat", "bat", "pair");
-                                processType(decObj, "cnt0_3", "cnt0_3", "pair");
-                                processType(decObj, "cnt0_5", "cnt0_5", "pair");
-                                processType(decObj, "cnt1", "cnt1", "pair");
-                                processType(decObj, "cnt2_5", "cnt2_5", "pair");
-                                processType(decObj, "cnt5", "cnt5", "pair");
-                                processType(decObj, "cnt10", "cnt10", "pair");
+                                processType(decObj, "bat", "battery", "pair");
+                                processType(decObj, "cnt0_3", "fineDustCnt00_3", "pair");
+                                processType(decObj, "cnt0_5", "fineDustCnt00_5", "pair");
+                                processType(decObj, "cnt1", "fineDustCnt01", "pair");
+                                processType(decObj, "cnt2_5", "fineDustCnt02_5", "pair");
+                                processType(decObj, "cnt5", "fineDustCnt05", "pair");
+                                processType(decObj, "cnt10", "fineDustCnt10", "pair");
                                 processType(decObj, "co", "co", "pair");
                                 processType(decObj, "co2", "co2", "pair");
                                 processType(decObj, "dewpt", "dewpt", "pair");
@@ -372,10 +336,10 @@ public class airqHandler extends BaseThingHandler {
                                 processType(decObj, "humidity_abs", "humidity_abs", "pair");
                                 processType(decObj, "no2", "no2", "pair");
                                 processType(decObj, "o3", "o3", "pair");
-                                processType(decObj, "oxygen", "oxygen", "pair");
-                                processType(decObj, "pm1", "pm1", "pair");
-                                processType(decObj, "pm2_5", "pm2_5", "pair");
-                                processType(decObj, "pm10", "pm10", "pair");
+                                processType(decObj, "oxygen", "o2", "pair");
+                                processType(decObj, "pm1", "fineDustConc01", "pair");
+                                processType(decObj, "pm2_5", "fineDustConc02_5", "pair");
+                                processType(decObj, "pm10", "fineDustConc10", "pair");
                                 processType(decObj, "pressure", "pressure", "pair");
                                 processType(decObj, "so2", "so2", "pair");
                                 processType(decObj, "sound", "sound", "pair");
@@ -391,8 +355,8 @@ public class airqHandler extends BaseThingHandler {
                                  *
                                  * processType(decObj, "DeviceID", "DeviceID", "string");
                                  */
-                                processType(decObj, "Status", "Status", "string");
-                                processType(decObj, "TypPS", "TypPS", "number");
+                                processType(decObj, "Status", "status", "string");
+                                processType(decObj, "TypPS", "avgFineDustSize", "number");
                                 processType(decObj, "dCO2dt", "dCO2dt", "number");
                                 processType(decObj, "dHdt", "dHdt", "number");
                                 processType(decObj, "door_event", "door_event", "number");
@@ -625,39 +589,39 @@ public class airqHandler extends BaseThingHandler {
                                 if (decEl != null) {
                                     JsonObject decObj = decEl.getAsJsonObject();
                                     logger.debug("air-Q - airqHandler - processConfigData(): decObj={}", decObj);
-                                    processType(decObj, "Wifi", "Wifi", "boolean");
-                                    processType(decObj, "WLANssid", "WLANssid", "arr");
-                                    processType(decObj, "pass", "pass", "string");
-                                    processType(decObj, "WifiInfo", "WifiInfo", "boolean");
-                                    processType(decObj, "TimeServer", "TimeServer", "string");
-                                    processType(decObj, "geopos", "geopos", "coord");
+                                    processType(decObj, "Wifi", "wifi", "boolean");
+                                    processType(decObj, "WLANssid", "SSID", "arr");
+                                    processType(decObj, "pass", "password", "string");
+                                    processType(decObj, "WifiInfo", "wifiInfo", "boolean");
+                                    processType(decObj, "TimeServer", "timeServer", "string");
+                                    processType(decObj, "geopos", "location", "coord");
                                     processType(decObj, "NightMode", "", "nightmode");
                                     processType(decObj, "devicename", "devicename", "string");
-                                    processType(decObj, "RoomType", "RoomType", "string");
-                                    processType(decObj, "Logging", "Logging", "string");
-                                    processType(decObj, "DeleteKey", "DeleteKey", "string");
-                                    processType(decObj, "FireAlarm", "FireAlarm", "boolean");
-                                    processType(decObj, "air-Q-Hardware-Version", "air-Q-Hardware-Version", "property");
+                                    processType(decObj, "RoomType", "roomType", "string");
+                                    processType(decObj, "Logging", "logLevel", "string");
+                                    processType(decObj, "DeleteKey", "deleteKey", "string");
+                                    processType(decObj, "FireAlarm", "fireAlarm", "boolean");
+                                    processType(decObj, "air-Q-Hardware-Version", "hardwareVersion", "property");
                                     processType(decObj, "WLAN config", "", "wlan");
                                     processType(decObj, "cloudUpload", "cloudUpload", "boolean");
-                                    processType(decObj, "SecondsMeasurementDelay", "SecondsMeasurementDelay", "number");
-                                    processType(decObj, "Rejection", "Rejection", "string");
-                                    processType(decObj, "air-Q-Software-Version", "air-Q-Software-Version", "property");
-                                    processType(decObj, "sensors", "sensors", "proparr");
-                                    processType(decObj, "AutoDriftCompensation", "AutoDriftCompensation", "boolean");
-                                    processType(decObj, "AutoUpdate", "AutoUpdate", "boolean");
-                                    processType(decObj, "AdvancedDataProcessing", "AdvancedDataProcessing", "boolean");
+                                    processType(decObj, "SecondsMeasurementDelay", "averagingRhythm", "number");
+                                    processType(decObj, "Rejection", "powerFreqSuppression", "string");
+                                    processType(decObj, "air-Q-Software-Version", "softwareVersion", "property");
+                                    processType(decObj, "sensors", "sensorList", "proparr");
+                                    processType(decObj, "AutoDriftCompensation", "autoDriftCompensation", "boolean");
+                                    processType(decObj, "AutoUpdate", "autoUpdate", "boolean");
+                                    processType(decObj, "AdvancedDataProcessing", "advancedDataProcessing", "boolean");
                                     processType(decObj, "Industry", "Industry", "property");
                                     processType(decObj, "ppm&ppb", "ppm_and_ppb", "boolean");
-                                    processType(decObj, "GasAlarm", "GasAlarm", "boolean");
+                                    processType(decObj, "GasAlarm", "gasAlarm", "boolean");
                                     processType(decObj, "id", "id", "property");
-                                    processType(decObj, "SoundInfo", "SoundInfo", "boolean");
-                                    processType(decObj, "AlarmForwarding", "AlarmForwarding", "boolean");
-                                    processType(decObj, "usercalib", "usercalib", "calib");
-                                    processType(decObj, "InitialCalFinished", "InitialCalFinished", "boolean");
-                                    processType(decObj, "Averaging", "Averaging", "boolean");
-                                    processType(decObj, "SensorInfo", "SensorInfo", "property");
-                                    processType(decObj, "ErrorBars", "ErrorBars", "boolean");
+                                    processType(decObj, "SoundInfo", "soundPressure", "boolean");
+                                    processType(decObj, "AlarmForwarding", "alarmForwarding", "boolean");
+                                    processType(decObj, "usercalib", "userCalib", "calib");
+                                    processType(decObj, "InitialCalFinished", "initialCalFinished", "boolean");
+                                    processType(decObj, "Averaging", "averaging", "boolean");
+                                    processType(decObj, "SensorInfo", "sensorInfo", "property");
+                                    processType(decObj, "ErrorBars", "errorBars", "boolean");
                                 } else {
                                     logger.error("The air-Q data could not be extracted from this string: {}", decEl);
                                 }
@@ -734,12 +698,12 @@ public class airqHandler extends BaseThingHandler {
                     JsonElement daynightdata = new Gson().fromJson(dec.get(airqName).toString(), JsonElement.class);
                     if (daynightdata != null) {
                         JsonObject json_daynightdata = daynightdata.getAsJsonObject();
-                        processType(json_daynightdata, "StartDay", "nightmode_StartDay", "string");
-                        processType(json_daynightdata, "StartNight", "nightmode_StartNight", "string");
-                        processType(json_daynightdata, "BrightnessDay", "nightmode_BrightnessDay", "number");
-                        processType(json_daynightdata, "BrightnessNight", "nightmode_BrightnessNight", "number");
-                        processType(json_daynightdata, "FanNightOff", "nightmode_FanNightOff", "boolean");
-                        processType(json_daynightdata, "WifiNightOff", "nightmode_WifiNightOff", "boolean");
+                        processType(json_daynightdata, "StartDay", "nightMode_startDay", "string");
+                        processType(json_daynightdata, "StartNight", "nightMode_startNight", "string");
+                        processType(json_daynightdata, "BrightnessDay", "nightMode_brightnessDay", "number");
+                        processType(json_daynightdata, "BrightnessNight", "nightMode_brightnessNight", "number");
+                        processType(json_daynightdata, "FanNightOff", "nightMode_fanNightOff", "boolean");
+                        processType(json_daynightdata, "WifiNightOff", "nightMode_wifiNightOff", "boolean");
                     } else {
                         logger.error("Cannot extract day/night data: {}", dec.get(airqName).toString());
                     }
@@ -748,11 +712,11 @@ public class airqHandler extends BaseThingHandler {
                     JsonElement wlandata = new Gson().fromJson(dec.get(airqName).toString(), JsonElement.class);
                     if (wlandata != null) {
                         JsonObject json_wlandata = wlandata.getAsJsonObject();
-                        processType(json_wlandata, "Gateway", "WLAN_config_Gateway", "string");
+                        processType(json_wlandata, "Gateway", "WLAN_config_gateway", "string");
                         processType(json_wlandata, "MAC", "WLAN_config_MAC", "string");
                         processType(json_wlandata, "SSID", "WLAN_config_SSID", "string");
                         processType(json_wlandata, "IP address", "WLAN_config_IPAddress", "string");
-                        processType(json_wlandata, "Net Mask", "WLAN_config_NetMask", "string");
+                        processType(json_wlandata, "Net Mask", "WLAN_config_netMask", "string");
                         processType(json_wlandata, "BSSID", "WLAN_config_BSSID", "string");
                     } else {
                         logger.error("Cannot extract WLAN data from this string: {}", dec.get(airqName).toString());
@@ -866,143 +830,127 @@ public class airqHandler extends BaseThingHandler {
             }
         }
     }
-
-    private void getDataFiles() {
-        Result res = null;
-        String url = "http://".concat(ipaddress.concat("/dirbuff"));
-        try {
-            File f_base = createDataDir("/air-q_data");
-            if (f_base.isDirectory()) {
-                res = getData(url, "GET", null);
-                if (res != null) {
-                    /*
-                     * res = doNetwork(url, "GET", null);
-                     * if (res == null) {
-                     * if (thStatus != ThingStatus.OFFLINE) {
-                     * logger.error(
-                     * "air-Q - airqHandler - getDataFiles(): cannot reach air-Q device. Status set to OFFLINE.");
-                     * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                     * thStatus = ThingStatus.OFFLINE;
-                     * } else {
-                     * logger.warn(
-                     * "air-Q - airqHandler - getDataFiles(): retried but still cannot reach the air-Q device.");
-                     * }
-                     * } else {
-                     * if (thStatus == ThingStatus.OFFLINE) {
-                     * logger.error(
-                     * "air-Q - airqHandler - getDataFiles(): can reach air-Q device again, Status set back to ONLINE."
-                     * );
-                     * thStatus = ThingStatus.ONLINE;
-                     * updateStatus(ThingStatus.ONLINE);
-                     * }
-                     */ logger.trace("air-Q - airqHandler - getDataFiles(): Result from doNetwork is {} with body={}",
-                            res, res.getBody());
-                    String answer = decrypt(res.getBody().getBytes(),
-                            (String) (getThing().getConfiguration().get("password")));
-                    logger.trace("air-Q - airqHandler - getDataFiles(): Result after decrypt: {}", answer);
-                    // We got the directory and file structure. Now iterate through all files and copy them to the file
-                    // system
-                    Gson gson = new Gson();
-                    JsonElement gsonEl = gson.fromJson(answer, JsonElement.class);
-                    if (gsonEl != null) {
-                        JsonObject jsonObj = gsonEl.getAsJsonObject();
-                        Iterator<String> ityr = jsonObj.keySet().iterator();
-                        while (ityr.hasNext()) {
-                            String year = ityr.next();
-                            JsonObject jsonmonths = jsonObj.getAsJsonObject(year);
-                            Iterator<String> itmon = jsonmonths.keySet().iterator();
-                            while (itmon.hasNext()) {
-                                String month = itmon.next();
-                                JsonObject jsondays = jsonmonths.getAsJsonObject(month);
-                                Iterator<String> itday = jsondays.keySet().iterator();
-                                while (itday.hasNext()) {
-                                    String day = itday.next();
-                                    File f_day = createDataDir("/air-q_data/" + year + "/" + month + "/" + day);
-                                    if (f_day.isDirectory()) {
-                                        JsonArray jsonfilearr = jsondays.getAsJsonArray(day);
-                                        for (JsonElement el : jsonfilearr) {
-                                            String filename = el.getAsString();
-                                            String fullfilename = "air-q_data/" + year + "/" + month + "/" + day + "/"
-                                                    + filename;
-                                            // We test if the file exists already. If it does, we do not download it
-                                            // again.
-                                            File f = new File(fullfilename);
-                                            if (f.isFile()) {
-                                                logger.trace("Element in year {}, month {}, day {}, file {}", year,
-                                                        month, day, filename);
-                                                String encodedFileRequest = encrypt(
-                                                        (year + "/" + month + "/" + day + "/" + filename).getBytes(),
-                                                        (String) (getThing().getConfiguration().get("password")));
-                                                String fileurl = "http://".concat(
-                                                        ipaddress.concat("/file?request=").concat(encodedFileRequest));
-                                                res = getData(fileurl, "GET", null);
-                                                if (res != null) {
-                                                    FileWriter datafile = new FileWriter(fullfilename);
-                                                    logger.debug("Writing data to {}", fullfilename);
-                                                    for (String line : res.getBody().split("\\n")) {
-                                                        String decodedText = decrypt(line.getBytes(),
-                                                                (String) (getThing().getConfiguration()
-                                                                        .get("password")));
-                                                        datafile.append(decodedText);
-                                                    }
-                                                    datafile.close();
-                                                }
-                                            } else {
-                                                logger.debug("Skipping file {} as it exists already", fullfilename);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        logger.error("No data received; answer cannot be interpreted. Answer={}", answer);
-                    }
-
-                }
-            }
-        } catch (
-
-        Exception e) {
-            System.out.println("Error in getDataFiles(): " + e.toString());
-        }
-    }
-
-    private File createDataDir(String dir) {
-        File f = new File(System.getProperty("user.dir") + dir);
-        if (f.exists()) {
-            if (!f.isDirectory()) {
-                logger.error(
-                        "Cannot create or use directory {} as there is already a file (and not a directory) with that name",
-                        dir);
-            }
-        } else {
-            if (!f.mkdir()) {
-                logger.error("Cannot create or use directory {} as the directory could not be created.", dir);
-            }
-        }
-        return f;
-    }
-
-    private File createDataFile(String dir) {
-        File f = new File(System.getProperty("user.dir") + dir);
-        if (f.exists()) {
-            if (!f.isFile()) {
-                logger.error(
-                        "Cannot create or use file {} as there is already such an entry, but not a file (maybe a directory) with that name",
-                        dir);
-            } else if (!f.canWrite()) {
-                logger.error("Cannot write file {}", dir);
-            }
-        } else {
-            try {
-                if (!f.createNewFile()) {
-                    logger.error("Cannot create new file {}.", dir);
-                }
-            } catch (IOException exc) {
-                logger.error("Error while creating data file {}: ", dir, exc);
-            }
-        }
-        return f;
-    }
+    // Getting the data files will be implemented in future, but it is not ready yet
+    /*
+     * private void getDataFiles() {
+     * Result res = null;
+     * String url = "http://".concat(ipaddress.concat("/dirbuff"));
+     * try {
+     * File f_base = createDataDir("/air-q_data");
+     * if (f_base.isDirectory()) {
+     * res = getData(url, "GET", null);
+     * if (res != null) {
+     * logger.trace("air-Q - airqHandler - getDataFiles(): Result from doNetwork is {} with body={}", res,
+     * res.getBody());
+     * String answer = decrypt(res.getBody().getBytes(),
+     * (String) (getThing().getConfiguration().get("password")));
+     * logger.trace("air-Q - airqHandler - getDataFiles(): Result after decrypt: {}", answer);
+     * // We got the directory and file structure. Now iterate through all files and copy them to the file
+     * // system
+     * Gson gson = new Gson();
+     * JsonElement gsonEl = gson.fromJson(answer, JsonElement.class);
+     * if (gsonEl != null) {
+     * JsonObject jsonObj = gsonEl.getAsJsonObject();
+     * Iterator<String> ityr = jsonObj.keySet().iterator();
+     * while (ityr.hasNext()) {
+     * String year = ityr.next();
+     * JsonObject jsonmonths = jsonObj.getAsJsonObject(year);
+     * Iterator<String> itmon = jsonmonths.keySet().iterator();
+     * while (itmon.hasNext()) {
+     * String month = itmon.next();
+     * JsonObject jsondays = jsonmonths.getAsJsonObject(month);
+     * Iterator<String> itday = jsondays.keySet().iterator();
+     * while (itday.hasNext()) {
+     * String day = itday.next();
+     * File f_day = createDataDir("/air-q_data/" + year + "/" + month + "/" + day);
+     * if (f_day.isDirectory()) {
+     * JsonArray jsonfilearr = jsondays.getAsJsonArray(day);
+     * for (JsonElement el : jsonfilearr) {
+     * String filename = el.getAsString();
+     * String fullfilename = "air-q_data/" + year + "/" + month + "/" + day + "/"
+     * + filename;
+     * // We test if the file exists already. If it does, we do not download it
+     * // again.
+     * File f = new File(fullfilename);
+     * if (f.isFile()) {
+     * logger.trace("Element in year {}, month {}, day {}, file {}", year,
+     * month, day, filename);
+     * String encodedFileRequest = encrypt(
+     * (year + "/" + month + "/" + day + "/" + filename).getBytes(),
+     * (String) (getThing().getConfiguration().get("password")));
+     * String fileurl = "http://".concat(
+     * ipaddress.concat("/file?request=").concat(encodedFileRequest));
+     * res = getData(fileurl, "GET", null);
+     * if (res != null) {
+     * FileWriter datafile = new FileWriter(fullfilename);
+     * logger.debug("Writing data to {}", fullfilename);
+     * for (String line : res.getBody().split("\\n")) {
+     * String decodedText = decrypt(line.getBytes(),
+     * (String) (getThing().getConfiguration()
+     * .get("password")));
+     * datafile.append(decodedText);
+     * }
+     * datafile.close();
+     * }
+     * } else {
+     * logger.debug("Skipping file {} as it exists already", fullfilename);
+     * }
+     * }
+     * }
+     * }
+     * }
+     * }
+     * } else {
+     * logger.error("No data received; answer cannot be interpreted. Answer={}", answer);
+     * }
+     *
+     * }
+     * }
+     * } catch (
+     *
+     * Exception e) {
+     * System.out.println("Error in getDataFiles(): " + e.toString());
+     * }
+     * }
+     *
+     * private File createDataDir(String dir) {
+     * File f = new File(System.getProperty("user.dir") + dir);
+     * if (f.exists()) {
+     * if (!f.isDirectory()) {
+     * logger.error(
+     * "Cannot create or use directory {} as there is already a file (and not a directory) with that name",
+     * dir);
+     * }
+     * } else {
+     * if (!f.mkdir()) {
+     * logger.error("Cannot create or use directory {} as the directory could not be created.", dir);
+     * }
+     * }
+     * return f;
+     * }
+     *
+     * private File createDataFile(String dir) {
+     * File f = new File(System.getProperty("user.dir") + dir);
+     * if (f.exists()) {
+     * if (!f.isFile()) {
+     * logger.error(
+     * "Cannot create or use file {} as there is already such an entry, but not a file (maybe a directory) with that name"
+     * ,
+     * dir);
+     * } else if (!f.canWrite()) {
+     * logger.error("Cannot write file {}", dir);
+     * }
+     * } else {
+     * try {
+     * if (!f.createNewFile()) {
+     * logger.error("Cannot create new file {}.", dir);
+     * }
+     * } catch (IOException exc) {
+     * logger.error("Error while creating data file {}: ", dir, exc);
+     * }
+     * }
+     * return f;
+     * }
+     *
+     */
 };

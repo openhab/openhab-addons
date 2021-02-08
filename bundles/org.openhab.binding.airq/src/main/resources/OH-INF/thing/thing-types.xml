@@ -12,15 +12,15 @@
 
 		<channels>
 <!-- 		<channel id="DeviceID" typeId="devid"/>  -->
-			<channel id="Status" typeId="status"/>
-			<channel id="TypPS" typeId="typps"/>
-			<channel id="bat" typeId="bat"/>
-			<channel id="cnt0_3" typeId="cnt0_3"/>
-			<channel id="cnt0_5" typeId="cnt0_5"/>
-			<channel id="cnt1" typeId="cnt1"/>
-			<channel id="cnt2_5" typeId="cnt2_5"/>
-			<channel id="cnt5" typeId="cnt5"/>
-			<channel id="cnt10" typeId="cnt10"/>
+			<channel id="status" typeId="status"/>
+			<channel id="avgFineDustSize" typeId="typps"/>
+			<channel id="battery" typeId="bat"/>
+			<channel id="fineDustCnt00_3" typeId="cnt0_3"/>
+			<channel id="fineDustCnt00_5" typeId="cnt0_5"/>
+			<channel id="fineDustCnt01" typeId="cnt1"/>
+			<channel id="fineDustCnt02_5" typeId="cnt2_5"/>
+			<channel id="fineDustCnt05" typeId="cnt5"/>
+			<channel id="fineDustCnt10" typeId="cnt10"/>
             <channel id="co" typeId="co"/>
 			<channel id="co2" typeId="co2"/>
 			<channel id="dCO2dt" typeId="dco2dt"/>
@@ -33,11 +33,11 @@
 			<channel id="measuretime" typeId="mtime"/>
 			<channel id="no2" typeId="no2"/>
 			<channel id="o3" typeId="o3"/>
-			<channel id="oxygen" typeId="oxygen"/>
+			<channel id="o2" typeId="oxygen"/>
 			<channel id="performance" typeId="performance"/>
-			<channel id="pm1" typeId="pm1"/>
-			<channel id="pm2_5" typeId="pm2_5"/>
-			<channel id="pm10" typeId="pm10"/>
+			<channel id="fineDustConc01" typeId="pm1"/>
+			<channel id="fineDustConc02_5" typeId="pm2_5"/>
+			<channel id="fineDustConc10" typeId="pm10"/>
 			<channel id="pressure" typeId="pressure"/>
 			<channel id="so2" typeId="so2"/>
 			<channel id="sound" typeId="sound"/>
@@ -47,7 +47,7 @@
 			<channel id="uptime" typeId="uptime"/>
 
 			<!-- Maximum error -->
-			<channel id="bat_maxerr" typeId="bat_maxerr"/>
+<!-- 		<channel id="bat_maxerr" typeId="bat_maxerr"/> -->
 			<channel id="cnt0_3_maxerr" typeId="cnt0_3_maxerr"/>
 			<channel id="cnt0_5_maxerr" typeId="cnt0_5_maxerr"/>
 			<channel id="cnt1_maxerr" typeId="cnt1_maxerr"/>
@@ -72,61 +72,61 @@
 			<channel id="tvoc_maxerr" typeId="tvoc_maxerr"/>
 
 			<!-- configuration data -->
-			<channel id="Wifi" typeId="Wifi"/>
-			<channel id="WLANssid" typeId="WLANssid"/>
-			<channel id="pass" typeId="pass"/>
-			<channel id="WifiInfo" typeId="WifiInfo"/>
-			<channel id="TimeServer" typeId="TimeServer"/>
-			<channel id="geopos" typeId="geopos"/>
-			<channel id="nightmode_StartDay" typeId="nightmode_StartDay"/>
-			<channel id="nightmode_StartNight" typeId="nightmode_StartNight"/>
-			<channel id="nightmode_BrightnessDay" typeId="nightmode_BrightnessDay"/>
-			<channel id="nightmode_BrightnessNight" typeId="nightmode_BrightnessNight"/>
-			<channel id="nightmode_FanNightOff" typeId="nightmode_FanNightOff"/>
-			<channel id="nightmode_WifiNightOff" typeId="nightmode_WifiNightOff"/>
+			<channel id="wifi" typeId="Wifi"/>
+			<channel id="SSID" typeId="WLANssid"/>
+			<channel id="password" typeId="pass"/>
+			<channel id="wifiInfo" typeId="WifiInfo"/>
+			<channel id="timeServer" typeId="TimeServer"/>
+			<channel id="location" typeId="geopos"/>
+			<channel id="nightMode_startDay" typeId="nightmode_StartDay"/>
+			<channel id="nightMode_startNight" typeId="nightmode_StartNight"/>
+			<channel id="nightMode_brightnessDay" typeId="nightmode_BrightnessDay"/>
+			<channel id="nightMode_brightnessNight" typeId="nightmode_BrightnessNight"/>
+			<channel id="nightMode_fanNightOff" typeId="nightmode_FanNightOff"/>
+			<channel id="nightMode_wifiNightOff" typeId="nightmode_WifiNightOff"/>
 			<channel id="devicename" typeId="devicename"/>
-			<channel id="RoomType" typeId="RoomType"/>
-			<channel id="logging" typeId="Logging"/>
-			<channel id="DeleteKey" typeId="DeleteKey"/>
-			<channel id="FireAlarm" typeId="FireAlarm"/>
+			<channel id="roomType" typeId="RoomType"/>
+			<channel id="logLevel" typeId="Logging"/>
+			<channel id="deleteKey" typeId="DeleteKey"/>
+			<channel id="fireAlarm" typeId="FireAlarm"/>
 			<!-- <channel id="air-Q-Hardware-Version" typeId="air-Q-Hardware-Version"/> -->
-			<channel id="WLAN_config_Gateway" typeId="WLAN_config_Gateway"/>
+			<channel id="WLAN_config_gateway" typeId="WLAN_config_Gateway"/>
 			<channel id="WLAN_config_MAC" typeId="WLAN_config_MAC"/>
 			<channel id="WLAN_config_SSID" typeId="WLAN_config_SSID"/>
 			<channel id="WLAN_config_IPAddress" typeId="WLAN_config_IPAddress"/>
-			<channel id="WLAN_config_NetMask" typeId="WLAN_config_NetMask"/>
+			<channel id="WLAN_config_netMask" typeId="WLAN_config_NetMask"/>
 			<channel id="WLAN_config_BSSID" typeId="WLAN_config_BSSID"/>
 			<channel id="cloudUpload" typeId="cloudUpload"/>
-			<channel id="SecondsMeasurementDelay" typeId="SecondsMeasurementDelay"/>
-			<channel id="Rejection" typeId="Rejection"/>
+			<channel id="averagingRhythm" typeId="SecondsMeasurementDelay"/>
+			<channel id="powerFreqSuppression" typeId="Rejection"/>
 			<!-- <channel id="air-Q-Software-Version" typeId="air-Q-Software-Version"/> -->
 			<!-- <channel id="sensors" typeId="sensors"/> -->
-			<channel id="AutoDriftCompensation" typeId="AutoDriftCompensation"/>
-			<channel id="AutoUpdate" typeId="AutoUpdate"/>
-			<channel id="AdvancedDataProcessing" typeId="AdvancedDataProcessing"/>
+			<channel id="autoDriftCompensation" typeId="AutoDriftCompensation"/>
+			<channel id="autoUpdate" typeId="AutoUpdate"/>
+			<channel id="advancedDataProcessing" typeId="AdvancedDataProcessing"/>
 			<!-- <channel id="Industry" typeId="Industry"/> -->
 			<channel id="ppm_and_ppb" typeId="ppm_and_ppb"/>
-			<channel id="GasAlarm" typeId="GasAlarm"/>
+			<channel id="gasAlarm" typeId="GasAlarm"/>
 			<!-- <channel id="id" typeId="id"/> -->
-			<channel id="SoundInfo" typeId="SoundInfo"/>
-			<channel id="AlarmForwarding" typeId="AlarmForwarding"/>
-			<channel id="usercalib" typeId="usercalib"/>
-			<channel id="InitialCalFinished" typeId="InitialCalFinished"/>
-			<channel id="Averaging" typeId="Averaging"/>
+			<channel id="soundPressure" typeId="SoundInfo"/>
+			<channel id="alarmForwarding" typeId="AlarmForwarding"/>
+			<channel id="userCalib" typeId="usercalib"/>
+			<channel id="initialCalFinished" typeId="InitialCalFinished"/>
+			<channel id="averaging" typeId="Averaging"/>
 			<!-- <channel id="SensorInfo" typeId="SensorInfo"/> -->
-			<channel id="ErrorBars" typeId="ErrorBars"/>
+			<channel id="errorBars" typeId="ErrorBars"/>
 
-			<!-- command data -->
-			<channel id="getHistoryFiles" typeId="getHistoryFiles"/>
+			<!-- command data, not implemented yet
+			<channel id="getHistoryFiles" typeId="getHistoryFiles"/> -->
 		</channels>
 
 		<properties>
 			<property name="id">Unknown Device ID</property>
-			<property name="air-Q-Hardware-Version">Unknown Hardware version</property>
-			<property name="air-Q-Software-Version">Unknown Software version</property>
-			<property name="sensors">Unknown sensor list</property>
-			<property name="SensorInfo">No info about sensors</property>
-			<property name="Industry">No industry info</property>
+			<property name="hardwareVersion">Unknown Hardware version</property>
+			<property name="softwareVersion">Unknown Software version</property>
+			<property name="sensorList">Unknown sensor list</property>
+			<property name="sensorInfo">No info about sensors</property>
+			<property name="industry">No industry info</property>
 		</properties>
 
 		<config-description>
@@ -685,9 +685,10 @@ also sends data from other devices (then with another Device ID)
 		<label>Calculate Maximum Errors</label>
 	</channel-type>
 
-	<channel-type id="getHistoryFiles" advanced="false">
+<!--
+ 	<channel-type id="getHistoryFiles" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Retrieve History Files</label>
 	</channel-type>
-
+-->
 </thing:thing-descriptions>
