@@ -14,7 +14,6 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
@@ -57,8 +56,7 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                     }
                     dp.setReadOnly(entry.readOnly);
                     dp.setUnit(entry.unit);
-
-                    String[] result = StringUtils.splitByWholeSeparatorPreserveAllTokens(entry.options, ";");
+                    String[] result = entry.options == null ? null : entry.options.split(";");
                     dp.setOptions(result == null || result.length == 0 ? null : result);
 
                     if (dp.getOptions() != null) {

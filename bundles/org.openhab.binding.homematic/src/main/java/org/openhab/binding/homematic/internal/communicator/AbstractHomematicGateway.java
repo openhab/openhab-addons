@@ -29,7 +29,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.BinRpcClient;
@@ -800,7 +799,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Creates a virtual device for handling variables, scripts and other special gateway functions.
      */
     private HmDevice createGatewayDevice() {
-        String type = String.format("%s-%s", HmDevice.TYPE_GATEWAY_EXTRAS, StringUtils.upperCase(id));
+        String type = String.format("%s-%s", HmDevice.TYPE_GATEWAY_EXTRAS, id.toUpperCase());
         HmDevice device = new HmDevice(HmDevice.ADDRESS_GATEWAY_EXTRAS, getDefaultInterface(), type,
                 config.getGatewayInfo().getId(), null, null);
         device.setName(HmDevice.TYPE_GATEWAY_EXTRAS);
