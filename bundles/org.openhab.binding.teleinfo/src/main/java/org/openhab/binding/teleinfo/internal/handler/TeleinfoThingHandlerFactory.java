@@ -71,18 +71,7 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
             return new TeleinfoSerialControllerHandler((Bridge) thing, serialPortManager);
         }
 
-        if (THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())
-                || THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new TeleinfoElectricityMeterHandler(thing);
         } else {
             throw new IllegalStateException("Teleinfo frame type not supported: " + thing.getThingTypeUID());
