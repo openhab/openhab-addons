@@ -35,9 +35,9 @@ The thing needs the username and password to connect and retreive the data. It a
 
 | parameter   | required? | description                                                                                                |
 | ----------- |:---------:| ---------------------------------------------------------------------------------------------------------- |
-| username    | X         | If the powerStation is currently on and reporting to the portal                                            |
-| password    | X         | Last time the powerStation sent information to the portal                                                  |
-| station     | X         | The current output of the powerStation in Watt                                                             |
+| username    | X         | Account name (emailaddress) at the SEMS portal. Account must have been used at least once to log in.       |
+| password    | X         | Password of the SEMS portal                                                                                |
+| station     | X         | UUID of the station. See Thing Configuration which value to use here.                                      |
 | update      |           | Number of minutes between two updates. Between 1 and 60 minutes, defaults to 5 minutes                     |
 
 ## Credits
