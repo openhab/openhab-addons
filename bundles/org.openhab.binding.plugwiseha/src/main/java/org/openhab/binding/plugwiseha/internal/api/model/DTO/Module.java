@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.plugwiseha.internal.api.model.dto;
 
+import java.time.ZonedDateTime;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -23,6 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * extends the abstract class {@link PlugwiseBaseModel}.
  * 
  * @author B. van Wetten - Initial contribution
+ * @author Leo Siepel - finish initial contribution
  */
 @XStreamAlias("module")
 public class Module extends PlugwiseBaseModel implements PlugwiseComparableDate<Module> {
@@ -59,8 +62,19 @@ public class Module extends PlugwiseBaseModel implements PlugwiseComparableDate<
     }
 
     @Override
-    public int compareDateWith(Module hasModifiedDate) {
-        return this.getModifiedDate().compareTo(hasModifiedDate.getModifiedDate());
+    public int compareDateWith(Module compareTo) {
+        if (compareTo == null) {
+            return -1;
+        }
+        ZonedDateTime compareToDate = compareTo.getModifiedDate();
+        ZonedDateTime compareFromDate = this.getModifiedDate();
+        if (compareFromDate == null) {
+            return -1;
+        } else if (compareToDate == null) {
+            return 1;
+        } else {
+            return compareFromDate.compareTo(compareToDate);
+        }
     }
 
     @Override

@@ -24,6 +24,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * interface and extends the abstract class {@link PlugwiseBaseModel}.
  * 
  * @author B. van Wetten - Initial contribution
+ * @author Leo Siepel - finish initial contribution
  */
 @XStreamAlias("actuator_functionality")
 public class ActuatorFunctionality extends PlugwiseBaseModel implements PlugwiseComparableDate<ActuatorFunctionality> {
@@ -83,27 +84,28 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
     }
 
     @Override
-    public int compareDateWith(ActuatorFunctionality hasUpdatedDate) {
-        if (hasUpdatedDate == null) {
+    public int compareDateWith(ActuatorFunctionality compareTo) {
+        if (compareTo == null) {
             return -1;
         }
-        ZonedDateTime compareToDate = this.getUpdatedDate();
-        ZonedDateTime localcompareFromDate = hasUpdatedDate.getUpdatedDate();
-        if (localcompareFromDate == null) {
+        ZonedDateTime compareToDate = compareTo.getModifiedDate();
+        ZonedDateTime compareFromDate = this.getModifiedDate();
+        if (compareFromDate == null) {
             return -1;
         } else if (compareToDate == null) {
             return 1;
         } else {
-            return localcompareFromDate.compareTo(compareToDate);
+            return compareFromDate.compareTo(compareToDate);
         }
     }
 
     @Override
-    public boolean isOlderThan(ActuatorFunctionality hasUpdatedDate) {
-        return this.compareDateWith(hasUpdatedDate) < 0;
+    public boolean isNewerThan(ActuatorFunctionality hasModifiedDate) {
+        return compareDateWith(hasModifiedDate) > 0;
     }
 
-    public boolean isNewerThan(ActuatorFunctionality hasUpdatedDate) {
-        return this.compareDateWith(hasUpdatedDate) > 0;
+    @Override
+    public boolean isOlderThan(ActuatorFunctionality hasModifiedDate) {
+        return compareDateWith(hasModifiedDate) < 0;
     }
 }

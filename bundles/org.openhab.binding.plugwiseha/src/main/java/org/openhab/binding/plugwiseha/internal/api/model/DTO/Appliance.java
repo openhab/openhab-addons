@@ -26,6 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * extends the abstract class {@link PlugwiseBaseModel}.
  * 
  * @author B. van Wetten - Initial contribution
+ * @author Leo Siepel - finish initial contribution
  */
 @XStreamAlias("appliance")
 public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDate<Appliance> {
@@ -228,18 +229,18 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
     }
 
     @Override
-    public int compareDateWith(Appliance hasModifiedDate) {
-        if (hasModifiedDate == null) {
+    public int compareDateWith(Appliance compareTo) {
+        if (compareTo == null) {
             return -1;
         }
-        ZonedDateTime compareToDate = this.getModifiedDate();
-        ZonedDateTime localcompareFromDate = hasModifiedDate.getModifiedDate();
-        if (localcompareFromDate == null) {
+        ZonedDateTime compareToDate = compareTo.getModifiedDate();
+        ZonedDateTime compareFromDate = this.getModifiedDate();
+        if (compareFromDate == null) {
             return -1;
         } else if (compareToDate == null) {
             return 1;
         } else {
-            return localcompareFromDate.compareTo(compareToDate);
+            return compareFromDate.compareTo(compareToDate);
         }
     }
 

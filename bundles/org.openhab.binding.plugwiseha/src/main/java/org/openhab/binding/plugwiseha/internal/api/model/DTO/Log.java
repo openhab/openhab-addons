@@ -19,6 +19,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * @author B. van Wetten - Initial contribution
+ * @author Leo Siepel - finish initial contribution
  */
 @XStreamAlias("point_log")
 public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log> {
@@ -86,26 +87,29 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
         return updatedDate;
     }
 
-    public int compareDateWith(Log hasMeasurementDate) {
-        if (hasMeasurementDate == null) {
+    @Override
+    public int compareDateWith(Log compareTo) {
+        if (compareTo == null) {
             return -1;
         }
-        ZonedDateTime compareToDate = hasMeasurementDate.getMeasurementDate();
-        ZonedDateTime localcompareFromDate = this.measurementDate;
-        if (localcompareFromDate == null) {
+        ZonedDateTime compareToDate = compareTo.getModifiedDate();
+        ZonedDateTime compareFromDate = this.getModifiedDate();
+        if (compareFromDate == null) {
             return -1;
         } else if (compareToDate == null) {
             return 1;
         } else {
-            return localcompareFromDate.compareTo(compareToDate);
+            return compareFromDate.compareTo(compareToDate);
         }
     }
 
-    public boolean isOlderThan(Log hasMeasurementDate) {
-        return this.compareDateWith(hasMeasurementDate) < 0;
+    @Override
+    public boolean isNewerThan(Log hasModifiedDate) {
+        return compareDateWith(hasModifiedDate) > 0;
     }
 
-    public boolean isNewerThan(Log hasMeasurementDate) {
-        return this.compareDateWith(hasMeasurementDate) > 0;
+    @Override
+    public boolean isOlderThan(Log hasModifiedDate) {
+        return compareDateWith(hasModifiedDate) < 0;
     }
 }
