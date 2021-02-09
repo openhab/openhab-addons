@@ -24,29 +24,30 @@ import java.util.Map;
 public class Appliances extends PlugwiseHACollection<Appliance> {
 
     @Override
-    public void merge(Map<String, Appliance> appliances) {
-        if (appliances != null) {
-            for (Appliance applicance : appliances.values()) {
-                String id = applicance.getId();
+    public void merge(Map<String, Appliance> appliancesToMerge) {
+        if (appliancesToMerge != null) {
+            for (Appliance applianceToMerge : appliancesToMerge.values()) {
+                String id = applianceToMerge.getId();
                 Appliance originalAppliance = this.get(id);
 
                 Boolean originalApplianceIsOlder = false;
                 if (originalAppliance != null) {
-                    originalApplianceIsOlder = originalAppliance.isOlderThan(applicance);
+                    originalApplianceIsOlder = originalAppliance.isOlderThan(applianceToMerge);
                 }
 
                 if (originalAppliance != null && originalApplianceIsOlder) {
-                    Logs updatedPointLogs = applicance.getPointLogs();
+                    Logs updatedPointLogs = applianceToMerge.getPointLogs();
                     if (updatedPointLogs != null) {
                         updatedPointLogs.merge(originalAppliance.getPointLogs());
                     }
 
-                    ActuatorFunctionalities updatedActuatorFunctionalities = applicance.getActuatorFunctionalities();
+                    ActuatorFunctionalities updatedActuatorFunctionalities = applianceToMerge
+                            .getActuatorFunctionalities();
                     if (updatedActuatorFunctionalities != null) {
                         updatedActuatorFunctionalities.merge(originalAppliance.getActuatorFunctionalities());
                     }
 
-                    this.put(id, applicance);
+                    this.put(id, applianceToMerge);
                 }
             }
         }

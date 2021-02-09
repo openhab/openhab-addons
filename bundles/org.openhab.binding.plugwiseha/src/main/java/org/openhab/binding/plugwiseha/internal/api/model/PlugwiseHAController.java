@@ -179,7 +179,7 @@ public class PlugwiseHAController {
             if (!(domainObjects == null || domainObjects.getLocations() == null)) {
                 size = domainObjects.getLocations().size();
             }
-            this.logger.debug("Found {} Plugwise Home Automation location(s)", size);
+            this.logger.debug("Found {} Plugwise Home Automation Zone(s)", size);
             return mergeDomainObjects(domainObjects).getLocations();
         }
     }
@@ -188,7 +188,7 @@ public class PlugwiseHAController {
         Locations locations = this.getLocations(forceRefresh);
 
         if (!locations.containsKey(id)) {
-            this.logger.debug("Plugwise Home Automation Location with {id} is not known");
+            this.logger.debug("Plugwise Home Automation Zone with {} is not known", id);
             return null;
         } else {
             return locations.get(id);
@@ -406,10 +406,10 @@ public class PlugwiseHAController {
         return result;
     }
 
-    private @Nullable DomainObjects mergeDomainObjects(@Nullable DomainObjects domainObjects) {
+    private @Nullable DomainObjects mergeDomainObjects(@Nullable DomainObjects updatedDomainObjects) {
         if (this.domainObjects != null) {
-            Appliances appliances = domainObjects.getAppliances();
-            Locations locations = domainObjects.getLocations();
+            Appliances appliances = updatedDomainObjects.getAppliances();
+            Locations locations = updatedDomainObjects.getLocations();
 
             if (appliances != null) {
                 this.domainObjects.mergeAppliances(appliances);
@@ -419,7 +419,7 @@ public class PlugwiseHAController {
                 this.domainObjects.mergeLocations(locations);
             }
         } else {
-            this.domainObjects = domainObjects;
+            this.domainObjects = updatedDomainObjects;
         }
 
         return this.domainObjects;

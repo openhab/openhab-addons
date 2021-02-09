@@ -45,17 +45,17 @@ public class DomainObjects {
         return locations;
     }
 
-    public Appliances mergeAppliances(Appliances appliances) {
-        if (appliances != null) {
-            this.appliances.merge(appliances);
+    public Appliances mergeAppliances(Appliances updatedAppliances) {
+        if (updatedAppliances != null) {
+            this.appliances.merge(updatedAppliances);
         }
 
         return this.appliances;
     }
 
-    public Locations mergeLocations(Locations locations) {
-        if (locations != null) {
-            this.locations.merge(locations);
+    public Locations mergeLocations(Locations updatedLocations) {
+        if (updatedLocations != null) {
+            this.locations.merge(updatedLocations);
         }
 
         return this.locations;

@@ -108,13 +108,13 @@ public class PlugwiseHAHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (PlugwiseHABridgeHandler.supportsThingType(thingTypeUID)) {
-            this.logger.debug("Creating new Plugwise Home Automation Bridge");
+            this.logger.debug("Creating new Plugwise Home Automation Bridge: {}", thing.getLabel());
             return new PlugwiseHABridgeHandler((Bridge) thing, this.httpClient);
         } else if (PlugwiseHAZoneHandler.supportsThingType(thingTypeUID)) {
-            logger.debug("Creating new Plugwise Home Automation Zone");
+            logger.debug("Creating new Plugwise Home Automation Zone: {}", thing.getLabel());
             return new PlugwiseHAZoneHandler(thing);
         } else if (PlugwiseHAApplianceHandler.supportsThingType(thingTypeUID)) {
-            logger.debug("Creating new Plugwise Home Automation Appliance");
+            logger.debug("Creating new Plugwise Home Automation Appliance: {}", thing.getLabel());
             return new PlugwiseHAApplianceHandler(thing);
         }
         return null;
