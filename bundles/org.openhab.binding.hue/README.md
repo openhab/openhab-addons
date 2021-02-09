@@ -367,3 +367,11 @@ if (receivedEvent == "1000.0")) {
     //do stuff
 }       
 ```
+
+### UPnP Discovery: Inbox 'Grace Period'
+
+The Hue Bridge can sometimes be late in sending its UPnP 'ssdp:alive' notifications even though it has not really gone offline.
+This means that the Hue Bridge could be repeatedly removed from, and (re)added to, the InBox.
+Which would lead to confusion in the UI, and repeated logger messages.
+To prevent this, the binding tells the OpenHAB core to wait for a further period of time ('grace period') before actually removing the Bridge from the Inbox.
+The 'grace period' has a default value of 50 seconds, but it can be fine tuned in the main UI via Settings | Bindings | Hue | Configure.

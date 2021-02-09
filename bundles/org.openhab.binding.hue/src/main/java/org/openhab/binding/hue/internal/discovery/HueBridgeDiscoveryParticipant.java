@@ -15,7 +15,9 @@ package org.openhab.binding.hue.internal.discovery;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,13 +27,20 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
+import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueBridgeDiscoveryParticipant} is responsible for discovering new and
@@ -43,6 +52,18 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = UpnpDiscoveryParticipant.class)
 public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
+
+    private final Logger logger = LoggerFactory.getLogger(HueBridgeDiscoveryParticipant.class);
+
+    // Hue bridges have maxAge 100 seconds, so set the default grace period to half of that
+    private long removalGracePeriodSeconds = 50;
+
+    private final ConfigurationAdmin configAdmin;
+
+    @Activate
+    public HueBridgeDiscoveryParticipant(final @Reference ConfigurationAdmin configAdmin) {
+        this.configAdmin = configAdmin;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -91,5 +112,21 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
             }
         }
         return null;
+    }
+
+    @Override
+    public long getRemovalGracePeriodSeconds(RemoteDevice device) {
+        try {
+            Configuration conf = configAdmin.getConfiguration("binding.hue");
+            Dictionary<String, @Nullable Object> properties = conf.getProperties();
+            Object property = properties.get(HueBindingConstants.REMOVAL_GRACE_PERIOD);
+            if (property != null) {
+                removalGracePeriodSeconds = Long.parseLong(property.toString());
+            }
+        } catch (IOException | IllegalStateException | NumberFormatException e) {
+            // fall through to pre-initialised (default) value
+        }
+        logger.trace("getRemovalGracePeriodSeconds={}", removalGracePeriodSeconds);
+        return removalGracePeriodSeconds;
     }
 }

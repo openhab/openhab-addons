@@ -84,6 +84,9 @@ public class HueBindingConstants {
     public static final String EVENT_DIMMER_SWITCH = "dimmer_switch_event";
     public static final String EVENT_TAP_SWITCH = "tap_switch_event";
 
+    // Binding configuration properties
+    public static final String REMOVAL_GRACE_PERIOD = "removalGracePeriod";
+
     // Bridge config properties
     public static final String HOST = "ipAddress";
     public static final String PORT = "port";
