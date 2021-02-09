@@ -106,6 +106,18 @@ public class PlugwiseHABindingConstants {
     public static final String APPLIANCE_CHSTATE_CHANNEL = "chState";
     public static final String APPLIANCE_OFFSET_CHANNEL = "offsetTemperature";
     public static final String APPLIANCE_VALVEPOSITION_CHANNEL = "valvePosition";
+    public static final String APPLIANCE_COOLINGSTATE_CHANNEL = "coolingState";
+    public static final String APPLIANCE_INTENDEDBOILERTEMP_CHANNEL = "intendedBoilerTemp";
+    public static final String APPLIANCE_FLAMESTATE_CHANNEL = "flameState";
+    public static final String APPLIANCE_INTENDEDHEATINGSTATE_CHANNEL = "intendedHeatingState";
+    public static final String APPLIANCE_MODULATIONLEVEL_CHANNEL = "modulationLevel";
+    public static final String APPLIANCE_OTAPPLICATIONFAULTCODE_CHANNEL = "otAppFaultCode";
+    public static final String APPLIANCE_DHWTEMPERATURE_CHANNEL = "dhwTemperature";
+    public static final String APPLIANCE_OTOEMFAULTCODE_CHANNEL = "otOEMFaultCode";
+    public static final String APPLIANCE_BOILERTEMPERATURE_CHANNEL = "boilerTemperature";
+    public static final String APPLIANCE_DHWSETPOINT_CHANNEL = "dhwSetpoint";
+    public static final String APPLIANCE_MAXBOILERTEMPERATURE_CHANNEL = "maxBoilerTemperature";
+    public static final String APPLIANCE_DHWCOMFORTMODE_CHANNEL = "dhwComfortMode";
 
     // List of all Appliance Types
     public static final String APPLIANCE_TYPE_THERMOSTAT = "thermostat";
