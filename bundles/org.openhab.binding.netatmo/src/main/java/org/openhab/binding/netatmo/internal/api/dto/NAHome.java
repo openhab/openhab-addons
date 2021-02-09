@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,8 +32,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class NAHome extends NADevice<NAWelcome> {
     private NAObjectMap<NAPerson> persons = new NAObjectMap<>();
-    private List<NAHomeEvent> events = new ArrayList<>();
-    private List<NAThermProgram> thermSchedules = new ArrayList<>();
+    @SerializedName(value = "events")
+    private List<NAHomeEvent> events = List.of();
+    private List<NAThermProgram> thermSchedules = List.of();
     private int thermSetpointDefaultDuration;
     @SerializedName("coordinates")
     private double[] location = {};

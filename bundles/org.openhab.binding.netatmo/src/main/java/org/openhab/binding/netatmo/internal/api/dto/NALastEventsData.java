@@ -23,10 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-public class NAHomeData {
-    private List<NAHome> homes = List.of();
+public class NALastEventsData {
+    private List<NAHomeEvent> eventsList = List.of();
 
-    public List<NAHome> getHomes() {
-        return homes;
+    public List<NAHomeEvent> getEvents() {
+        return eventsList;
     }
 }

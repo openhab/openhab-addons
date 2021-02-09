@@ -25,6 +25,7 @@ import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.EventType;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NASnapshot;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
@@ -47,15 +48,30 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PersonHandler extends NetatmoDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(PersonHandler.class);
+    private long maxEventTime;
 
     public PersonHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
         super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
+        String lastEvent = editProperties().get(PROPERTY_MAX_EVENT_TIME);
+        maxEventTime = lastEvent != null ? Long.parseLong(lastEvent) : 0;
     }
 
     private @Nullable HomeSecurityHandler getHomeHandler() {
         NetatmoDeviceHandler handler = super.getBridgeHandler(getBridge());
         return handler != null ? (HomeSecurityHandler) handler : null;
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        HomeSecurityHandler homeHandler = getHomeHandler();
+        if (homeHandler != null) {
+            List<NAHomeEvent> lastEvents = homeHandler.getLastEventOf(config.id);
+            if (lastEvents.size() > 0) {
+                setEvent(lastEvents.get(0));
+            }
+        }
     }
 
     @Override
@@ -72,24 +88,29 @@ public class PersonHandler extends NetatmoDeviceHandler {
 
     @Override
     public void setEvent(NAEvent event) {
-        logger.debug("Updating person  with event : " + event.toString());
+        if (event.getTime() > maxEventTime) {
+            logger.debug("Updating person  with event : {}", event.toString());
 
-        updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime(), zoneId));
-        updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID, toStringType(event.getCameraId()));
-        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SUBTYPE,
-                event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
+            maxEventTime = event.getTime();
+            updateProperty(PROPERTY_MAX_EVENT_TIME, Long.toString(maxEventTime));
 
-        NASnapshot snapshot = event.getSnapshot();
-        if (snapshot != null) {
-            String url = snapshot.getUrl();
-            updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(url));
-            updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(url));
-        }
+            updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime(), zoneId));
+            updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID, toStringType(event.getCameraId()));
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SUBTYPE,
+                    event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
 
-        EventType eventType = event.getEventType();
-        if (eventType.appliesOn(ModuleType.NAPerson)) {
-            updateIfLinked(GROUP_PERSON, CHANNEL_PERSON_AT_HOME, OnOffType.from(eventType == EventType.PERSON));
-            triggerChannel(CHANNEL_HOME_EVENT, eventType.name());
+            NASnapshot snapshot = event.getSnapshot();
+            if (snapshot != null) {
+                String url = snapshot.getUrl();
+                updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(url));
+                updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(url));
+            }
+
+            EventType eventType = event.getEventType();
+            if (eventType.appliesOn(ModuleType.NAPerson)) {
+                updateIfLinked(GROUP_PERSON, CHANNEL_PERSON_AT_HOME, OnOffType.from(eventType == EventType.PERSON));
+                triggerChannel(CHANNEL_HOME_EVENT, eventType.name());
+            }
         }
     }
 

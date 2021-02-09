@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.handler;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.PROPERTY_MAX_EVENT_TIME;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +41,8 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link HomeSecurityHandler} is the class used to handle the plug
@@ -50,6 +53,7 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class HomeSecurityHandler extends NetatmoDeviceHandler {
+    private final Logger logger = LoggerFactory.getLogger(HomeSecurityHandler.class);
 
     private @Nullable NetatmoServlet webhookServlet;
     private long maxEventTime;
@@ -157,5 +161,17 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
 
     public List<NAWelcome> getCameras() {
         return this.cameras;
+    }
+
+    public List<NAHomeEvent> getLastEventOf(String personId) {
+        List<NAHomeEvent> events = new ArrayList<>();
+        apiBridge.getSecurityApi().ifPresent(api -> {
+            try {
+                events.addAll(api.getLastEventOf(config.id, personId));
+            } catch (NetatmoException e) {
+                logger.warn("Error retrieving last events of person '{}' : {}", personId, e.getMessage());
+            }
+        });
+        return events;
     }
 }

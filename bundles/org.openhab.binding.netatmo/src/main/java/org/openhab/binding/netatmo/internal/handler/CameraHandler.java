@@ -52,10 +52,13 @@ public class CameraHandler extends NetatmoDeviceHandler {
     private @Nullable CameraAddress cameraAddress;
     private @Nullable String vpnUrl;
     private boolean isLocal;
+    private long maxEventTime;
 
     public CameraHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             TimeZoneProvider timeZoneProvider, NetatmoDescriptionProvider descriptionProvider) {
         super(bridge, channelHelpers, apiBridge, timeZoneProvider, descriptionProvider);
+        String lastEvent = editProperties().get(PROPERTY_MAX_EVENT_TIME);
+        maxEventTime = lastEvent != null ? Long.parseLong(lastEvent) : 0;
     }
 
     private @Nullable HomeSecurityHandler getHomeHandler() {
@@ -112,25 +115,31 @@ public class CameraHandler extends NetatmoDeviceHandler {
 
     @Override
     public void setEvent(NAEvent event) {
-        logger.debug("Updating camera with event : " + event.toString());
-        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
-        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getMessage()));
-        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime(), zoneId));
-        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_PERSON_ID, toStringType(event.getPersonId()));
-        updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SUBTYPE,
-                event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
+        if (event.getTime() > maxEventTime) {
+            maxEventTime = event.getTime();
+            updateProperty(PROPERTY_MAX_EVENT_TIME, Long.toString(maxEventTime));
 
-        NASnapshot snapshot = event.getSnapshot();
-        if (snapshot != null) {
-            String url = snapshot.getUrl();
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(url));
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(url));
-        }
-        if (event instanceof NAHomeEvent) {
-            NAHomeEvent homeEvent = (NAHomeEvent) event;
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_STATUS, toStringType(homeEvent.getVideoStatus()));
-            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_URL,
-                    toStringType(getStreamURL(homeEvent.getVideoId())));
+            logger.debug("Updating camera with event : {}", event.toString());
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getMessage()));
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime(), zoneId));
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_PERSON_ID, toStringType(event.getPersonId()));
+            updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SUBTYPE,
+                    event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
+
+            NASnapshot snapshot = event.getSnapshot();
+            if (snapshot != null) {
+                String url = snapshot.getUrl();
+                updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(url));
+                updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(url));
+            }
+            if (event instanceof NAHomeEvent) {
+                NAHomeEvent homeEvent = (NAHomeEvent) event;
+                updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_STATUS,
+                        toStringType(homeEvent.getVideoStatus()));
+                updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_URL,
+                        toStringType(getStreamURL(homeEvent.getVideoId())));
+            }
         }
     }
 

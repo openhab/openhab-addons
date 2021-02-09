@@ -13,12 +13,15 @@
 package org.openhab.binding.netatmo.internal.api;
 
 import java.net.URI;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.HomeApi.NAHomesDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.NALastEventsData;
 
 /**
  *
@@ -93,5 +96,16 @@ public class SecurityApi extends RestManager {
             throw new NetatmoException(String.format("Unsuccessfull schedule change : %s", response.getStatus()));
         }
         return true;
+    }
+
+    public class NALastEventsDataResponse extends ApiResponse<NALastEventsData> {
+    }
+
+    public List<NAHomeEvent> getLastEventOf(String homeId, String personId) throws NetatmoException {
+        String req = "getlasteventof";
+        req += "?home_id=" + homeId;
+        req += "&person_id=" + personId;
+        NALastEventsDataResponse response = get(req, NALastEventsDataResponse.class);
+        return response.getBody().getEvents();
     }
 }
