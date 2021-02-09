@@ -87,7 +87,7 @@
 		<label>New File Name(s)</label>
 		<description>A new file name</description>
 		<category>String</category>
-		<state readOnly="true"></state>
+		<event />
 	</channel-type>
 
 	<thing-type id="localfolder">

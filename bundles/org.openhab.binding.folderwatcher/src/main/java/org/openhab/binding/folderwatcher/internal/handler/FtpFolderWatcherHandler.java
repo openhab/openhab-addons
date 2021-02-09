@@ -172,7 +172,6 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
 
                 if (!FTPReply.isPositiveCompletion(reply)) {
                     ftp.disconnect();
-                    logger.debug("FTP server refused connection.");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "FTP server refused connection.");
                     return;
@@ -182,7 +181,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                     try {
                         ftp.disconnect();
                     } catch (IOException e2) {
-                        logger.debug("Error disconneting, lost connection? : ", e2);
+                        logger.debug("Error disconneting, lost connection? : {}", e2.getMessage());
                     }
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -233,7 +232,6 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                 }
                 previousFtpListing = new ArrayList<>(currentFtpListing);
             } catch (IOException e) {
-                logger.debug("FTP connection lost.", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "FTP connection lost. " + e.getMessage());
                 try {
