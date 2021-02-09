@@ -357,10 +357,13 @@ public class MiotParser {
                 options.add(option);
                 MiIoDeviceAction miIoDeviceAction = new MiIoDeviceAction();
                 miIoDeviceAction.setCommand("action");
-                miIoDeviceAction.setparameterType("EMPTY");
+                miIoDeviceAction.setparameterType(CommandParameterType.EMPTY);
                 miIoDeviceAction.setSiid(service.siid);
                 miIoDeviceAction.setAiid(action.iid);
-                miIoDeviceAction.setParameters(new JsonParser().parse(GSON.toJson(action.in)).getAsJsonArray());
+                if (!action.in.isEmpty()) {
+                    miIoDeviceAction.setParameters(new JsonParser().parse(GSON.toJson(action.in)).getAsJsonArray());
+                    miIoDeviceAction.setparameterType("fromparameter");
+                }
                 MiIoDeviceActionCondition miIoDeviceActionCondition = new MiIoDeviceActionCondition();
                 String json = String.format("[{ \"matchValue\"=\"%s\"}]", description);
                 miIoDeviceActionCondition.setName("matchValue");
