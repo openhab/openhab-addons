@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
-import java.util.List;
+import java.time.DayOfWeek;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ChargeProfileUtils {
 
-    public static String formatDays(final List<String> weekdays) {
+    public static String formatDays(final Set<DayOfWeek> weekdays) {
         StringBuilder days = new StringBuilder();
         weekdays.forEach(entry -> {
             if (days.length() == 0) {

@@ -16,12 +16,12 @@ import static org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfile
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.NULL_LOCAL_TIME;
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.TIME_FORMATER;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.ChargingMode;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.ChargingPreference;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.Day;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargingWindow;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.Timer;
@@ -72,7 +71,7 @@ public class ChargeProfileWrapper {
 
     private final Map<ProfileKey, Boolean> enabled = new HashMap<>();
     private final Map<ProfileKey, LocalTime> times = new HashMap<>();
-    private final Map<ProfileKey, Set<Day>> daysOfWeek = new HashMap<>();
+    private final Map<ProfileKey, Set<DayOfWeek>> daysOfWeek = new HashMap<>();
 
     public static Optional<ChargeProfileWrapper> fromJson(final String content) {
         return Optional.ofNullable(Converter.getGson().fromJson(content, ChargeProfile.class))
@@ -125,8 +124,12 @@ public class ChargeProfileWrapper {
         return enabled.get(key);
     }
 
-    public void setEnabled(final ProfileKey key, final boolean enabled) {
-        this.enabled.put(key, enabled);
+    public void setEnabled(final ProfileKey key, @Nullable final Boolean enabled) {
+        if (enabled == null) {
+            this.enabled.remove(key);
+        } else {
+            this.enabled.put(key, enabled);
+        }
     }
 
     public @Nullable String getMode() {
@@ -161,36 +164,22 @@ public class ChargeProfileWrapper {
         this.preference = Optional.empty();
     }
 
-    public @Nullable List<String> getDays(final ProfileKey key) {
-        final Set<Day> daySet = daysOfWeek.get(key);
-        if (daySet != null) {
-            final ArrayList<String> days = new ArrayList<>();
-            for (Day day : daySet) {
-                days.add(day.name());
-            }
-            return days;
-        }
-        return null;
+    public @Nullable Set<DayOfWeek> getDays(final ProfileKey key) {
+        return daysOfWeek.get(key);
     }
 
-    public void setDays(final ProfileKey key, @Nullable final List<String> days) {
-        final EnumSet<Day> daySet = EnumSet.noneOf(Day.class);
-        if (days != null) {
-            for (String day : days) {
-                try {
-                    daySet.add(Day.valueOf(day));
-                } catch (IllegalArgumentException iae) {
-                    logger.warn("unexpected value for {} day: {}", key.name(), day);
-                }
-            }
-        }
-        daysOfWeek.put(key, daySet);
-    }
-
-    public void setDayEnabled(final ProfileKey key, final Day day, final boolean enabled) {
-        Set<Day> days = daysOfWeek.get(key);
+    public void setDays(final ProfileKey key, final @Nullable Set<DayOfWeek> days) {
         if (days == null) {
-            days = EnumSet.noneOf(Day.class);
+            daysOfWeek.remove(key);
+        } else {
+            daysOfWeek.put(key, days);
+        }
+    }
+
+    public void setDayEnabled(final ProfileKey key, final DayOfWeek day, final boolean enabled) {
+        Set<DayOfWeek> days = daysOfWeek.get(key);
+        if (days == null) {
+            days = EnumSet.noneOf(DayOfWeek.class);
             daysOfWeek.put(key, days);
         }
         if (enabled) {
@@ -200,8 +189,8 @@ public class ChargeProfileWrapper {
         }
     }
 
-    public @Nullable Boolean isDayEnabled(final ProfileKey key, final Day day) {
-        final Set<Day> daySet = daysOfWeek.get(key);
+    public @Nullable Boolean isDayEnabled(final ProfileKey key, final DayOfWeek day) {
+        final Set<DayOfWeek> daySet = daysOfWeek.get(key);
         if (daySet != null) {
             return daySet.contains(day);
         }
@@ -212,8 +201,12 @@ public class ChargeProfileWrapper {
         return times.get(key);
     }
 
-    public void setTime(final ProfileKey key, LocalTime time) {
-        times.put(key, time);
+    public void setTime(final ProfileKey key, @Nullable LocalTime time) {
+        if (time == null) {
+            times.remove(key);
+        } else {
+            times.put(key, time);
+        }
     }
 
     public void setHour(final ProfileKey key, final int hour) {
@@ -275,13 +268,23 @@ public class ChargeProfileWrapper {
             enabled.put(key, false);
             addTime(key, null);
             if (isWeekly()) {
-                setDays(key, null);
+                daysOfWeek.put(key, EnumSet.noneOf(DayOfWeek.class));
             }
         } else {
             enabled.put(key, timer.timerEnabled);
             addTime(key, timer.departureTime);
             if (isWeekly()) {
-                setDays(key, timer.weekdays);
+                final EnumSet<DayOfWeek> daySet = EnumSet.noneOf(DayOfWeek.class);
+                if (timer.weekdays != null) {
+                    for (String day : timer.weekdays) {
+                        try {
+                            daySet.add(DayOfWeek.valueOf(day));
+                        } catch (IllegalArgumentException iae) {
+                            logger.warn("unexpected value for {} day: {}", key.name(), day);
+                        }
+                    }
+                }
+                daysOfWeek.put(key, daySet);
             }
         }
     }
@@ -292,10 +295,10 @@ public class ChargeProfileWrapper {
         final LocalTime time = times.get(key);
         timer.departureTime = time == null ? null : time.format(TIME_FORMATER);
         if (isWeekly()) {
-            final Set<Day> days = daysOfWeek.get(key);
+            final Set<DayOfWeek> days = daysOfWeek.get(key);
             if (days != null) {
                 timer.weekdays = new ArrayList<>();
-                for (Day day : days) {
+                for (DayOfWeek day : days) {
                     timer.weekdays.add(day.name());
                 }
             }

@@ -14,6 +14,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -103,13 +104,13 @@ public class VehicleHandler extends VehicleChannelHandler {
     }
 
     private static class ChargeKeyDay {
-        ChargeKeyDay(final ProfileKey key, final Day day) {
+        ChargeKeyDay(final ProfileKey key, final DayOfWeek day) {
             this.key = key;
             this.day = day;
         }
 
         final ProfileKey key;
-        final Day day;
+        final DayOfWeek day;
     }
 
     @SuppressWarnings("serial")
@@ -143,27 +144,27 @@ public class VehicleHandler extends VehicleChannelHandler {
     @SuppressWarnings("serial")
     private static final Map<String, ChargeKeyDay> chargeDayChannelKeys = new HashMap<>() {
         {
-            put(CHARGE_TIMER1_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER1, Day.MONDAY));
-            put(CHARGE_TIMER1_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER1, Day.TUESDAY));
-            put(CHARGE_TIMER1_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER1, Day.WEDNESDAY));
-            put(CHARGE_TIMER1_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER1, Day.THURSDAY));
-            put(CHARGE_TIMER1_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER1, Day.FRIDAY));
-            put(CHARGE_TIMER1_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER1, Day.SATURDAY));
-            put(CHARGE_TIMER1_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER1, Day.SUNDAY));
-            put(CHARGE_TIMER2_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER2, Day.MONDAY));
-            put(CHARGE_TIMER2_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER2, Day.TUESDAY));
-            put(CHARGE_TIMER2_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER2, Day.WEDNESDAY));
-            put(CHARGE_TIMER2_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER2, Day.THURSDAY));
-            put(CHARGE_TIMER2_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER2, Day.FRIDAY));
-            put(CHARGE_TIMER2_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER2, Day.SATURDAY));
-            put(CHARGE_TIMER2_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER2, Day.SUNDAY));
-            put(CHARGE_TIMER3_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER3, Day.MONDAY));
-            put(CHARGE_TIMER3_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER3, Day.TUESDAY));
-            put(CHARGE_TIMER3_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER3, Day.WEDNESDAY));
-            put(CHARGE_TIMER3_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER3, Day.THURSDAY));
-            put(CHARGE_TIMER3_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER3, Day.FRIDAY));
-            put(CHARGE_TIMER3_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER3, Day.SATURDAY));
-            put(CHARGE_TIMER3_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER3, Day.SUNDAY));
+            put(CHARGE_TIMER1_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.MONDAY));
+            put(CHARGE_TIMER1_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.TUESDAY));
+            put(CHARGE_TIMER1_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.WEDNESDAY));
+            put(CHARGE_TIMER1_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.THURSDAY));
+            put(CHARGE_TIMER1_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.FRIDAY));
+            put(CHARGE_TIMER1_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.SATURDAY));
+            put(CHARGE_TIMER1_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.SUNDAY));
+            put(CHARGE_TIMER2_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.MONDAY));
+            put(CHARGE_TIMER2_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.TUESDAY));
+            put(CHARGE_TIMER2_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.WEDNESDAY));
+            put(CHARGE_TIMER2_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.THURSDAY));
+            put(CHARGE_TIMER2_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.FRIDAY));
+            put(CHARGE_TIMER2_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.SATURDAY));
+            put(CHARGE_TIMER2_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.SUNDAY));
+            put(CHARGE_TIMER3_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.MONDAY));
+            put(CHARGE_TIMER3_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.TUESDAY));
+            put(CHARGE_TIMER3_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.WEDNESDAY));
+            put(CHARGE_TIMER3_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.THURSDAY));
+            put(CHARGE_TIMER3_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.FRIDAY));
+            put(CHARGE_TIMER3_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.SATURDAY));
+            put(CHARGE_TIMER3_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.SUNDAY));
         }
     };
 
