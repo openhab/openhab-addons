@@ -42,6 +42,7 @@ public class AndroidDebugBridgeBindingConstants {
     public static final String STOP_PACKAGE_CHANNEL = "stop-package";
     public static final String STOP_CURRENT_PACKAGE_CHANNEL = "stop-current-package";
     public static final String CURRENT_PACKAGE_CHANNEL = "current-package";
+    public static final String AWAKE_STATE_CHANNEL = "awake-state";
     public static final String WAKE_LOCK_CHANNEL = "wake-lock";
     public static final String SCREEN_STATE_CHANNEL = "screen-state";
     // List of all Parameters

@@ -59,6 +59,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     private AndroidDebugBridgeConfiguration config = new AndroidDebugBridgeConfiguration();
     private @Nullable ScheduledFuture<?> connectionCheckerSchedule;
     private AndroidDebugBridgeMediaStatePackageConfig @Nullable [] packageConfigs = null;
+    private boolean deviceAwake = false;
 
     public AndroidDebugBridgeHandler(Thing thing) {
         super(thing);
@@ -133,6 +134,12 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 if (command instanceof RefreshType) {
                     int lock = adbConnection.getPowerWakeLock();
                     updateState(channelUID, new DecimalType(lock));
+                }
+                break;
+            case AWAKE_STATE_CHANNEL:
+                if (command instanceof RefreshType) {
+                    boolean awakeState = adbConnection.isAwake();
+                    updateState(channelUID, OnOffType.from(awakeState));
                 }
                 break;
             case SCREEN_STATE_CHANNEL:
@@ -277,6 +284,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 } catch (AndroidDebugBridgeDeviceException e) {
                     logger.debug("Error connecting to device; [{}]: {}", e.getClass().getCanonicalName(),
                             e.getMessage());
+                    adbConnection.disconnect();
                     updateStatus(ThingStatus.OFFLINE);
                     return;
                 }
@@ -294,6 +302,23 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     private void refreshStatus() throws InterruptedException, AndroidDebugBridgeDeviceException, ExecutionException {
+        boolean awakeState;
+        boolean prevDeviceAwake = deviceAwake;
+        try {
+            awakeState = adbConnection.isAwake();
+            deviceAwake = awakeState;
+        } catch (TimeoutException e) {
+            logger.warn("Unable to refresh awake state: Timeout");
+            return;
+        }
+        var awakeStateChannelUID = new ChannelUID(this.thing.getUID(), AWAKE_STATE_CHANNEL);
+        if (isLinked(awakeStateChannelUID)) {
+            updateState(awakeStateChannelUID, OnOffType.from(awakeState));
+        }
+        if (!awakeState && !prevDeviceAwake) {
+            logger.debug("device {} is sleeping", config.ip);
+            return;
+        }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), MEDIA_VOLUME_CHANNEL), RefreshType.REFRESH);
         } catch (AndroidDebugBridgeDeviceReadException e) {
