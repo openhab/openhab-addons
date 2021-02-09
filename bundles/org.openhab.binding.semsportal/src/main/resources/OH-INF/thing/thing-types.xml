@@ -29,6 +29,7 @@
 
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
+				<context>password</context>
 				<description>Password of the SEMS portal</description>
 			</parameter>
 
