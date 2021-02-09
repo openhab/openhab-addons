@@ -15,8 +15,6 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusSceneHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusScene} class represents the action Qbus Scene output.
@@ -27,30 +25,19 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusScene {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusScene.class);
-
     @Nullable
     private QbusCommunication QComm;
 
-    private String id = "";
-    private Integer state = 0;
+    @Nullable
+    public QbusSceneHandler thingHandler;
 
     @Nullable
-    private QbusSceneHandler thingHandler;
+    private Integer state;
+
+    private String id;
 
     QbusScene(String id) {
         this.id = id;
-    }
-
-    /**
-     * This method should be called if the ThingHandler for the thing corresponding to this scene is initialized.
-     * It keeps a record of the thing handler in this object so the thing can be updated when
-     * the scene receives an update from the Qbus IP-interface.
-     *
-     * @param handler
-     */
-    public void setThingHandler(QbusSceneHandler handler) {
-        this.thingHandler = handler;
     }
 
     /**
@@ -65,39 +52,30 @@ public final class QbusScene {
     }
 
     /**
-     * Get state of scene.
-     *
-     * @return scene state
-     */
-    public Integer getState() {
-        return this.state;
-    }
-
-    /**
-     * Sets state of Scene.
-     *
-     * @param scene state
-     */
-    void setState(int state) {
-        this.state = state;
-        QbusSceneHandler handler = thingHandler;
-        if (handler != null) {
-            logger.info("Update channel state for {} with {}", id, state);
-            handler.handleStateUpdate(this);
-        }
-    }
-
-    /**
      * Sends action to Qbus.
      */
     public void execute(int value, String sn) {
-        logger.info("Execute scene for {} ", this.id);
-
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeScene").withId(this.id).withState(value);
-
         QbusCommunication comm = QComm;
         if (comm != null) {
             comm.sendMessage(QCmd);
+        }
+    }
+
+    public void setThingHandler(QbusSceneHandler handler) {
+        this.thingHandler = handler;
+    }
+
+    /**
+     * Get state of bistabiel.
+     *
+     * @return bistabiel state
+     */
+    public @Nullable Integer getState() {
+        if (this.state != null) {
+            return this.state;
+        } else {
+            return null;
         }
     }
 }

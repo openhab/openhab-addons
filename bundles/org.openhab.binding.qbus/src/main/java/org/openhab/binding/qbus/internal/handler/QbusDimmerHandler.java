@@ -15,6 +15,8 @@ package org.openhab.binding.qbus.internal.handler;
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
@@ -28,8 +30,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusDimmerHandler} is responsible for handling the dimmable outputs of Qbus
@@ -40,20 +40,19 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class QbusDimmerHandler extends QbusGlobalHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusDimmerHandler.class);
-
     public QbusDimmerHandler(Thing thing) {
         super(thing);
     }
 
-    protected @Nullable QbusThingsConfig config;
+    protected @NonNullByDefault({}) QbusThingsConfig config;
 
-    int dimmerId = 0;
+    int dimmerId;
 
-    String sn = "";
+    @Nullable
+    private String sn;
 
     /**
-     * Main initialisation
+     * Main initialization
      */
     @Override
     public void initialize() {
@@ -72,17 +71,45 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
             return;
         }
 
-        QbusDimmer QDimmer = QComm.getDimmer().get(dimmerId);
+        setSN();
 
-        sn = QBridgeHandler.getSn();
-
-        if (QDimmer != null) {
-            QDimmer.setThingHandler(this);
-            handleStateUpdate(QDimmer);
-            logger.info("Dimmer intialized {}", dimmerId);
+        Map<Integer, QbusDimmer> dimmerComm = QComm.getDimmer();
+        if (dimmerComm != null) {
+            QbusDimmer QDimmer = dimmerComm.get(dimmerId);
+            if (QDimmer != null) {
+                QDimmer.setThingHandler(this);
+                handleStateUpdate(QDimmer);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Error while initializing the thing.");
+            }
         } else {
-            logger.warn("Dimmer not intialized {}", dimmerId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Error while initializing the thing.");
         }
+    }
+
+    /**
+     * Returns the serial number of the controller
+     *
+     * @return the serial nr
+     */
+    public @Nullable String getSN() {
+        return this.sn;
+    }
+
+    /**
+     * Sets the serial number of the controller
+     */
+    public void setSN() {
+        QbusBridgeHandler QBridgeHandler = getBridgeHandler("Dimmer", dimmerId);
+        if (QBridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "No communication with Qbus Bridge!");
+            return;
+        }
+        this.sn = QBridgeHandler.getSn();
+        ;
     }
 
     /**
@@ -98,43 +125,58 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
             return;
         }
 
-        QbusDimmer QDimmer = QComm.getDimmer().get(dimmerId);
+        Map<Integer, QbusDimmer> dimmerComm = QComm.getDimmer();
+        if (dimmerComm != null) {
+            QbusDimmer QDimmer = dimmerComm.get(dimmerId);
 
-        if (QDimmer == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge communication not initialized when trying to execute command for dimmer " + dimmerId);
-            return;
+            if (QDimmer == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Bridge communication not initialized when trying to execute command for dimmer " + dimmerId);
+                return;
+            } else {
+
+                scheduler.submit(() -> {
+                    if (!QComm.communicationActive()) {
+                        restartCommunication(QComm, "Dimmer", dimmerId);
+                    }
+
+                    if (QComm.communicationActive()) {
+
+                        if (command == REFRESH) {
+                            handleStateUpdate(QDimmer);
+                            return;
+                        }
+
+                        switch (channelUID.getId()) {
+                            case CHANNEL_SWITCH:
+                                handleSwitchCommand(QDimmer, command);
+                                updateStatus(ThingStatus.ONLINE);
+                                break;
+
+                            case CHANNEL_BRIGHTNESS:
+                                handleBrightnessCommand(QDimmer, command);
+                                updateStatus(ThingStatus.ONLINE);
+                                break;
+
+                            default:
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "Channel unknown " + channelUID.getId());
+                        }
+                    }
+                });
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Error while initializing the thing.");
         }
+    }
 
-        scheduler.submit(() -> {
-            if (!QComm.communicationActive()) {
-                restartCommunication(QComm, "Dimmer", dimmerId);
-            }
-
-            if (QComm.communicationActive()) {
-
-                if (command == REFRESH) {
-                    handleStateUpdate(QDimmer);
-                    return;
-                }
-
-                switch (channelUID.getId()) {
-                    case CHANNEL_SWITCH:
-                        handleSwitchCommand(QDimmer, command);
-                        updateStatus(ThingStatus.ONLINE);
-                        break;
-
-                    case CHANNEL_BRIGHTNESS:
-                        handleBrightnessCommand(QDimmer, command);
-                        updateStatus(ThingStatus.ONLINE);
-                        break;
-
-                    default:
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Channel unknown " + channelUID.getId());
-                }
-            }
-        });
+    /**
+     *
+     * @param message
+     */
+    public void thingOffline(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
     }
 
     /**
@@ -143,10 +185,21 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
     private void handleSwitchCommand(QbusDimmer QDimmer, Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
+            @Nullable
+            String snr = getSN();
+
             if (s == OnOffType.OFF) {
-                QDimmer.execute(0, sn);
+                if (snr != null) {
+                    QDimmer.execute(0, snr);
+                } else {
+                    thingOffline("No serial number configured for  " + dimmerId);
+                }
             } else {
-                QDimmer.execute(100, sn);
+                if (snr != null) {
+                    QDimmer.execute(1000, snr);
+                } else {
+                    thingOffline("No serial number configured for  " + dimmerId);
+                }
             }
         }
     }
@@ -155,35 +208,67 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      * Executes the brightness command
      */
     private void handleBrightnessCommand(QbusDimmer QDimmer, Command command) {
+        @Nullable
+        String snr = getSN();
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             if (s == OnOffType.OFF) {
-                QDimmer.execute(0, sn);
+                if (snr != null) {
+                    QDimmer.execute(0, snr);
+                } else {
+                    thingOffline("No serial number configured for  " + dimmerId);
+                }
             } else {
-                QDimmer.execute(100, sn);
+                if (snr != null) {
+                    QDimmer.execute(100, snr);
+                } else {
+                    thingOffline("No serial number configured for  " + dimmerId);
+                }
             }
         } else if (command instanceof IncreaseDecreaseType) {
             IncreaseDecreaseType s = (IncreaseDecreaseType) command;
             int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
-            int currentValue = QDimmer.getState();
-            int newValue;
-            if (s == IncreaseDecreaseType.INCREASE) {
-                newValue = currentValue + stepValue;
-                // round down to step multiple
-                newValue = newValue - newValue % stepValue;
-                QDimmer.execute(newValue > 100 ? 100 : newValue, sn);
-            } else {
-                newValue = currentValue - stepValue;
-                // round up to step multiple
-                newValue = newValue + newValue % stepValue;
-                QDimmer.execute(newValue < 0 ? 0 : newValue, sn);
+            Integer currentValue = QDimmer.getState();
+            Integer newValue;
+            Integer sendvalue;
+            if (currentValue != null) {
+                if (s == IncreaseDecreaseType.INCREASE) {
+                    newValue = currentValue + stepValue;
+                    // round down to step multiple
+                    newValue = newValue - newValue % stepValue;
+                    sendvalue = newValue > 100 ? 100 : newValue;
+                    if (snr != null) {
+                        QDimmer.execute(sendvalue, snr);
+                    } else {
+                        thingOffline("No serial number configured for  " + dimmerId);
+                    }
+                } else {
+                    newValue = currentValue - stepValue;
+                    // round up to step multiple
+                    newValue = newValue + newValue % stepValue;
+                    sendvalue = newValue < 0 ? 0 : newValue;
+                    if (snr != null) {
+                        QDimmer.execute(sendvalue, snr);
+                    } else {
+                        thingOffline("No serial number configured for  " + dimmerId);
+                    }
+                }
             }
         } else if (command instanceof PercentType) {
             PercentType p = (PercentType) command;
+            int pp = p.intValue();
             if (p == PercentType.ZERO) {
-                QDimmer.execute(0, sn);
+                if (snr != null) {
+                    QDimmer.execute(0, snr);
+                } else {
+                    thingOffline("No serial number configured for  " + dimmerId);
+                }
             } else {
-                QDimmer.execute(p.intValue(), sn);
+                if (snr != null) {
+                    QDimmer.execute(pp, snr);
+                } else {
+                    thingOffline("No serial number configured for  " + dimmerId);
+                }
             }
         }
     }
@@ -193,11 +278,11 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      */
     public void handleStateUpdate(QbusDimmer QDimmer) {
 
-        int dimmerState = QDimmer.getState();
-
-        updateState(CHANNEL_BRIGHTNESS, new PercentType(dimmerState));
-
-        updateStatus(ThingStatus.ONLINE);
+        Integer dimmerState = QDimmer.getState();
+        if (dimmerState != null) {
+            updateState(CHANNEL_BRIGHTNESS, new PercentType(dimmerState));
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     /**
@@ -212,8 +297,11 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
      *
      * @return dimmerId
      */
-    @SuppressWarnings("null")
     public int getId() {
-        return config.dimmerId;
+        if (config != null) {
+            return config.dimmerId;
+        } else {
+            return 0;
+        }
     }
 }

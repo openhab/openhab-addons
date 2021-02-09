@@ -63,6 +63,7 @@ public class QbusBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
+    public static final String CHANNEL_SCENE = "scene";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_MEASURED = "measured";
     public static final String CHANNEL_SETPOINT = "setpoint";

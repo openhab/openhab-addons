@@ -15,8 +15,6 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusThermostatHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusThermostat} class represents the thermostat Qbus communication object. It contains all
@@ -28,8 +26,6 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public final class QbusThermostat {
-
-    private final Logger logger = LoggerFactory.getLogger(QbusThermostat.class);
 
     @Nullable
     private QbusCommunication qComm;
@@ -60,7 +56,6 @@ public final class QbusThermostat {
 
         QbusThermostatHandler handler = thingHandler;
         if (handler != null) {
-            logger.info("Update channels for {}", id);
             handler.handleStateUpdate(this);
         }
     }
@@ -148,10 +143,7 @@ public final class QbusThermostat {
      * @param sn
      */
     public void executeMode(int mode, String sn) {
-        logger.info("Execute thermostat mode {} for {}", mode, id);
-
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withMode(mode);
-
         QbusCommunication comm = qComm;
         if (comm != null) {
             comm.sendMessage(qCmd);
@@ -164,10 +156,7 @@ public final class QbusThermostat {
      * @param d
      */
     public void executeSetpoint(double d, String sn) {
-        logger.info("Execute thermostat setpoint {} for {} ", d, id);
-
         QbusMessageCmd qCmd = new QbusMessageCmd(sn, "executeThermostat").withId(this.id).withSetPoint(setpoint);
-
         QbusCommunication comm = qComm;
         if (comm != null) {
             comm.sendMessage(qCmd);

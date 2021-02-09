@@ -27,8 +27,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link QbusBridgeHandler} is the handler for a Qbus controller
@@ -39,11 +37,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class QbusBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusBridgeHandler.class);
-
     private @Nullable QbusCommunication qbusComm;
 
-    protected @Nullable QbusConfiguration config;
+    protected @NonNullByDefault({}) QbusConfiguration config;
 
     private @Nullable ScheduledFuture<?> refreshTimer;
 
@@ -57,24 +53,33 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         readConfig();
-        InetAddress addr = null;
-        int port = getPort();
+        InetAddress addr;
+        Integer port = getPort();
+        Integer Refresh = getRefresh();
+
+        if (port == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "No port defined for Qbus Server");
+            return;
+        }
 
         try {
             addr = InetAddress.getByName(getAddress());
+            if (addr == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "No ip address defined for Qbus Server");
+                return;
+            } else {
+                createCommunicationObject(addr, port);
+            }
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "No or incorrect ip address set for Qbus Server");
+                    "Incorrect ip address set for Qbus Server");
         }
 
-        if (addr != null) {
-            createCommunicationObject(addr, port);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot connect to QbusServer with hostname " + addr);
+        if (Refresh != null) {
+            this.setupRefreshTimer(Refresh);
         }
-        int refreshInterval = getRefresh();
-        this.setupRefreshTimer(refreshInterval);
     }
 
     /**
@@ -159,8 +164,6 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
 
         // This timer will check connection with server and client periodically
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
-            logger.info("Checking connection with Qbus Server & Client.");
-
             QbusCommunication comm = getCommunication();
 
             if (comm != null) {
@@ -182,8 +185,6 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             }
-
-            logger.info("Connection with Qbus Server & Client is still active.");
             updateStatus(ThingStatus.ONLINE);
 
         }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
@@ -230,19 +231,25 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      *
      * @return the ip address
      */
-    @SuppressWarnings("null")
-    public String getAddress() {
-        return config.addr;
+    public @Nullable String getAddress() {
+        if (config != null) {
+            return config.addr;
+        } else {
+            return null;
+        }
     }
 
     /**
      * Get the listening port of the Qbus server.
      *
-     * @return the port
+     * @return
      */
-    @SuppressWarnings("null")
-    public int getPort() {
-        return config.port;
+    public @Nullable Integer getPort() {
+        if (config != null) {
+            return config.port;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -250,9 +257,12 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      *
      * @return the serial nr of the controller
      */
-    @SuppressWarnings("null")
-    public String getSn() {
-        return config.sn;
+    public @Nullable String getSn() {
+        if (config != null) {
+            return config.sn;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -260,9 +270,12 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      *
      * @return the refresh interval
      */
-    @SuppressWarnings("null")
-    public int getRefresh() {
-        return config.refresh;
+    public @Nullable Integer getRefresh() {
+        if (config != null) {
+            return config.refresh;
+        } else {
+            return null;
+        }
     }
 
     @Override

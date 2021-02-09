@@ -15,8 +15,6 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusRolHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusRol} class represents the action Qbus Shutter/Slats output.
@@ -27,14 +25,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusRol {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusRol.class);
-
     @Nullable
     private QbusCommunication QComm;
 
-    private String id = "";
-    private Integer state = 0;
-    private Integer slats = 0;
+    private String id;
+
+    @Nullable
+    private Integer state;
+    @Nullable
+    private Integer slats;
 
     @Nullable
     private QbusRolHandler thingHandler;
@@ -71,8 +70,12 @@ public final class QbusRol {
      *
      * @return shutter state
      */
-    public Integer getState() {
-        return this.state;
+    public @Nullable Integer getState() {
+        if (this.state != null) {
+            return this.state;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -80,8 +83,12 @@ public final class QbusRol {
      *
      * @return slats state
      */
-    public Integer getStateSlats() {
-        return this.slats;
+    public @Nullable Integer getStateSlats() {
+        if (this.slats != null) {
+            return this.slats;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -89,11 +96,10 @@ public final class QbusRol {
      *
      * @param shutter state
      */
-    public void setState(Integer Slats) {
-        this.state = Slats;
-        QbusRolHandler handler = thingHandler;
+    public void setState(Integer stat) {
+        this.state = stat;
+        QbusRolHandler handler = this.thingHandler;
         if (handler != null) {
-            logger.info("Update channel shutter for {} with {}", id, state);
             handler.handleStateUpdate(this);
         }
     }
@@ -105,9 +111,8 @@ public final class QbusRol {
      */
     public void setSlats(Integer Slats) {
         this.slats = Slats;
-        QbusRolHandler handler = thingHandler;
+        QbusRolHandler handler = this.thingHandler;
         if (handler != null) {
-            logger.info("Update channel slats for {} with {}", id, slats);
             handler.handleStateUpdate(this);
         }
     }
@@ -116,10 +121,7 @@ public final class QbusRol {
      * Sends shutter to Qbus.
      */
     public void execute(int value, String sn) {
-        logger.info("Execute position for {}", this.id);
-
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeStore").withId(this.id).withState(value);
-
         QbusCommunication comm = QComm;
         if (comm != null) {
             comm.sendMessage(QCmd);
@@ -130,10 +132,7 @@ public final class QbusRol {
      * Sends slats to Qbus.
      */
     public void executeSlats(int value, String sn) {
-        logger.info("Execute slats for {}", this.id);
-
-        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeStore").withId(this.id).withSlatState(value);
-
+        QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeSlats").withId(this.id).withSlatState(value);
         QbusCommunication comm = QComm;
         if (comm != null) {
             comm.sendMessage(QCmd);
