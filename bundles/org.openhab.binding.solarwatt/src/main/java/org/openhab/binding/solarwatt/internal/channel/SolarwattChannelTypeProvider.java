@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * the requested tags. It creates one {@link ChannelType} per tag value.
  *
  * @author Matthias Steigenberger - Initial contribution
- * @author Sven Carstend - Adapted to solarwatt binding
+ * @author Sven Carstens - Adapted to solarwatt binding
  *
  */
 @NonNullByDefault
@@ -59,6 +59,14 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
                 .findFirst().orElse(null);
     }
 
+    /**
+     * Assert that the {@link ChannelType} matching our requirements exists.
+     *
+     * Only create once for each tagname supplied via {@link SolarwattChannel}.
+     * 
+     * @param solarwattChannel channeltype requirements
+     * @return UID of existing channeltype
+     */
     public ChannelTypeUID assertChannelType(SolarwattChannel solarwattChannel) {
         @Nullable
         ChannelType existingChannel = this.channelMap.get(solarwattChannel.getTagName());
@@ -90,14 +98,14 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
             stateDescriptionBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID, solarwattChannel.getTagName()),
                             solarwattChannel.getTagName(), CoreItemFactory.NUMBER + dimension)
-                    .withCategory(solarwattChannel.getCategory())
+                    .withCategory(solarwattChannel.getCategory()).isAdvanced(solarwattChannel.getAdvanced())
                     .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
                             .withPattern("%.2f " + unitString).build());
         } else {
             stateDescriptionBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID, solarwattChannel.getTagName()),
                             solarwattChannel.getTagName(), CoreItemFactory.STRING)
-                    .withCategory(solarwattChannel.getCategory())
+                    .withCategory(solarwattChannel.getCategory()).isAdvanced(solarwattChannel.getAdvanced())
                     .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
         }
         return stateDescriptionBuilder.build();

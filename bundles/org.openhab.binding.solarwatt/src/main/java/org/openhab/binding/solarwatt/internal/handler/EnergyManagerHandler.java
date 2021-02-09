@@ -14,7 +14,8 @@ package org.openhab.binding.solarwatt.internal.handler;
 
 import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_PROPERTIES_GUID;
 
-import java.time.Duration;
+import java.math.BigDecimal;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,9 +60,8 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     private final EnergyManagerConnector connector;
     private final SolarwattChannelTypeProvider channelTypeProvider;
 
-    private Map<String, ThingHandler> childHandlers = new HashMap<>();
+    private final Map<String, ThingHandler> childHandlers = new HashMap<>();
     private @Nullable ExpiringCache<Map<String, Device>> devicesCache;
-    private @Nullable SolarwattConfiguration config;
     private @Nullable ScheduledFuture<?> refreshJob;
 
     /**
@@ -99,7 +99,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      *
      * Only service discovery is provided by
      * 
-     * @return
+     * @return collection containing our discovery service
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
@@ -127,7 +127,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * Dynnamically updates all known channel states of the energy manager.
      */
     public void updateChannels() {
-        this.logger.debug("{} updateChannels", this);
+        this.logger.trace("{} updateChannels", this);
         @Nullable
         Map<String, Device> devices = this.getDevices();
         if (devices != null) {
@@ -214,13 +214,10 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         this.logger.debug("{} initialize", this);
-        this.config = this.getConfigAs(SolarwattConfiguration.class);
         @Nullable
-        SolarwattConfiguration localConfig = this.config;
-        if (localConfig != null) {
-            this.initRefresh(localConfig);
-            this.initDeviceCache(localConfig);
-        }
+        SolarwattConfiguration localConfig = this.getConfigAs(SolarwattConfiguration.class);
+        this.initRefresh(localConfig);
+        this.initDeviceCache(localConfig);
     }
 
     private void initDeviceCache(SolarwattConfiguration localConfig) {
@@ -237,10 +234,8 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
             @Nullable
             ExpiringCache<Map<String, Device>> localDevicesCache = this.devicesCache;
             if (localDevicesCache != null) {
-                this.scheduler.execute(() -> {
-                    // trigger initial load
-                    localDevicesCache.getValue();
-                });
+                // trigger initial load
+                this.scheduler.execute(localDevicesCache::getValue);
             }
         }
     }
@@ -317,14 +312,47 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Convert the energy manager millisecond timestamps to {@link ZonedDateTime}
+     *
+     * The energy manager is the only point that knows about the timezone and
+     * it is available to all other devices. All timestamps used by all devices
+     * are in milliseconds since the epoch.
+     *
+     * @param timestamp milliseconds since the epoch
+     * @return date time in timezone
+     */
+    public ZonedDateTime getFromMilliTimestamp(BigDecimal timestamp) {
+        @Nullable
+        Map<String, Device> devices = this.getDevices();
+        if (devices != null) {
+            @Nullable
+            EnergyManager energyManager = (EnergyManager) devices.get(this.energyManagerGuid);
+            if (energyManager != null) {
+
+                BigDecimal[] bigDecimals = timestamp.divideAndRemainder(BigDecimal.valueOf(1_000));
+                Instant instant = Instant.ofEpochSecond(bigDecimals[0].longValue(),
+                        bigDecimals[1].multiply(BigDecimal.valueOf(1_000_000)).longValue());
+
+                @Nullable
+                ZoneId zoneId = energyManager.getZoneId();
+                if (zoneId != null) {
+                    return ZonedDateTime.ofInstant(instant, zoneId);
+                }
+            }
+        }
+
+        throw new DateTimeException("Timezone from energy manager missing.");
+    }
+
+    /**
      * Reload all devices from the energy manager.
      *
      * This method is called via the {@link ExpiringCache}.
      * 
-     * @return map from guid to {@linkink Device}}
+     * @return map from guid to {@link Device}}
      */
     private @Nullable Map<String, Device> refreshDevices() {
-        this.logger.debug("{} refreshdevices", this);
+        this.logger.trace("{} refreshdevices", this);
 
         try {
             final Map<String, Device> devicesData = this.connector.retrieveDevices().getDevices();
@@ -354,7 +382,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * The available child handlers are traced via childHandlerInitialized and childHandlerDisposed.
      */
     private void updateAllChildThings() {
-        this.logger.debug("{} updateAllChildThings", this);
+        this.logger.trace("{} updateAllChildThings", this);
 
         this.getThing().getThings().forEach(childThing -> {
             try {

@@ -35,6 +35,6 @@ public class MyReserve extends BatteryConverter {
 
     @Override
     protected String getSolarWattLabel() {
-        return "MyReserve";
+        return "BatteryConverter";
     }
 }

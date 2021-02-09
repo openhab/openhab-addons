@@ -32,7 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Class doing unknown things with the grid.
+ * Class planning the energy flow out/into the grid.
  *
  * This fields have been identified to exist:
  * com.kiwigrid.kiwiapp.gridflow.GridFlow=[
@@ -82,6 +82,7 @@ public class GridFlow extends Device {
 
         GridFlow.ConfigInverterControl localConfigInverterControl = this.configInverterControl;
         if (localConfigInverterControl != null) {
+            // the only interesting value is the derailing (i.e. limit power flowing into the grid)
             @Nullable
             BigDecimal feedInLimit = localConfigInverterControl.getFeedInLimit();
             if (feedInLimit != null) {

@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovery service to discovery devices attached to the energy manager.
+ * Discovery service to discover devices attached to the energy manager.
  *
  * @author Sven Carstens - Initial contribution
  */
@@ -61,7 +61,6 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
 
     public SolarwattDevicesDiscoveryService() {
         super(TIMEOUT_SECONDS);
-        this.logger.debug("{} created", this);
         this.scanningRunnable = new EnergymanagerScan();
 
         this.activate(null);
@@ -80,23 +79,15 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void activate() {
-        this.logger.debug("activated");
-        super.activate(null);
-    }
-
-    @Override
     public void deactivate() {
-        this.logger.debug("deactivated");
         this.stopBackgroundDiscovery();
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        this.logger.debug("Start Energymanager device background discovery");
-        @Nullable
         ScheduledFuture<?> localScanningJob = this.scanningJob;
         if (localScanningJob == null || localScanningJob.isCancelled()) {
+            this.logger.trace("scanningJob created");
             this.scanningJob = this.scheduler.scheduleWithFixedDelay(this.scanningRunnable, 5, 5 * 60,
                     TimeUnit.SECONDS);
         } else {
@@ -106,8 +97,6 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void stopBackgroundDiscovery() {
-        this.logger.debug("Stop EnergyManager device background discovery");
-
         @Nullable
         ScheduledFuture<?> localScanningJob = this.scanningJob;
         if (localScanningJob != null && !localScanningJob.isCancelled()) {
@@ -118,20 +107,21 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected synchronized void startScan() {
-        this.logger.debug("startScan");
         this.removeOlderResults(this.getTimestampOfLastScan());
-        final EnergyManagerHandler energyManagerHandler = this.energyManagerHandler;
+        final EnergyManagerHandler localEnergyManagerHandler = this.energyManagerHandler;
 
-        if (energyManagerHandler == null || energyManagerHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            this.logger.debug("Energymanager handler not available: {}", energyManagerHandler);
+        if (localEnergyManagerHandler == null
+                || localEnergyManagerHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+            this.logger.warn("Energymanager handler not available: {}", localEnergyManagerHandler);
             return;
         }
         this.scanForDeviceThings();
-        this.logger.debug("done Scan");
     }
 
     /**
      * Scans for device things.
+     *
+     * Walks through the list of devices and adds discovery results for the supported devices.
      */
     private void scanForDeviceThings() {
         @Nullable
@@ -143,8 +133,7 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
             final ThingUID bridgeUID = localEnergyManagerHandler.getThing().getUID();
 
             if (devices == null) {
-                this.logger.debug("No device data for solarwatt devices in discovery for energy manager {}.",
-                        bridgeUID);
+                this.logger.warn("No device data for solarwatt devices in discovery for energy manager {}.", bridgeUID);
             } else {
                 devices.forEach((key, entry) -> {
                     if (entry instanceof EnergyManager) {
@@ -167,13 +156,20 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
                         // deprecated class
                         this.logger.trace("Ignoring deprecated device {}", entry.getClass().getName());
                     } else {
-                        this.logger.warn("Ignoring device {}", entry.getClass().getName());
+                        this.logger.info("Ignoring device {}", entry.getClass().getName());
                     }
                 });
             }
         }
     }
 
+    /**
+     * Create a discovery result and add to result.
+     *
+     * @param bridgeID to which this device belongs
+     * @param entry describing the device
+     * @param typeUID for matching thing
+     */
     private void discover(final ThingUID bridgeID, final Device entry, final ThingTypeUID typeUID) {
         final ThingUID thingUID = new ThingUID(typeUID, bridgeID, this.rewriteGuid(entry.getGuid()));
         final Map<String, Object> properties = new HashMap<>(5);
@@ -185,14 +181,19 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
         this.thingDiscovered(discoveryResult);
     }
 
-    private String rewriteGuid(String serialNumber) {
-        return serialNumber.replaceAll(":", "-");
+    /**
+     * Rewrite energy manager guids to be acceptable to openhab.
+     *
+     * @param emGuid from energy manager
+     * @return guid for openhab
+     */
+    private String rewriteGuid(String emGuid) {
+        return emGuid.replaceAll(":", "-");
     }
 
     public class EnergymanagerScan implements Runnable {
         @Override
         public void run() {
-            SolarwattDevicesDiscoveryService.this.logger.debug("starting auto scan");
             SolarwattDevicesDiscoveryService.this.startScan();
         }
     }

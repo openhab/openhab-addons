@@ -89,27 +89,35 @@ public class Device {
     }
 
     protected void addWattHourQuantity(String tagName, DeviceDTO deviceDTO) {
+        this.addWattHourQuantity(tagName, deviceDTO, false);
+    }
+
+    protected void addWattHourQuantity(String tagName, DeviceDTO deviceDTO, Boolean advanced) {
         this.stateValues.put(tagName, deviceDTO.getState(
                 (jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.WATT_HOUR)), tagName));
         if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.WATT_HOUR, "energy"));
+            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.WATT_HOUR, "energy", advanced));
         }
     }
 
     protected void addWattQuantity(String tagName, DeviceDTO deviceDTO) {
+        this.addWattQuantity(tagName, deviceDTO, false);
+    }
+
+    protected void addWattQuantity(String tagName, DeviceDTO deviceDTO, Boolean advanced) {
         this.stateValues.put(tagName, deviceDTO
                 .getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.WATT)), tagName));
         if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.WATT, "energy"));
+            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.WATT, "energy", advanced));
         }
     }
 
     protected void addSecondsQuantity(String channelName, String tagName, String path, DeviceDTO deviceDTO) {
-        this.stateValues.put(tagName,
+        this.stateValues.put(channelName,
                 deviceDTO.getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigInteger(), Units.SECOND)),
                         channelName, tagName, path));
-        if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.SECOND, "time"));
+        if (!this.solarwattChannelSet.containsKey(channelName)) {
+            this.solarwattChannelSet.put(channelName, new SolarwattChannel(channelName, Units.SECOND, "time"));
         }
     }
 

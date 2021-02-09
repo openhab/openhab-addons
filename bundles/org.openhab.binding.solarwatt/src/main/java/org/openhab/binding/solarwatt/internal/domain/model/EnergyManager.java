@@ -14,7 +14,10 @@ package org.openhab.binding.solarwatt.internal.domain.model;
 
 import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*;
 
+import java.time.ZoneId;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
 
 /**
@@ -68,6 +71,9 @@ import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
 public class EnergyManager extends Device {
     public static final String solarWattClassname = "com.kiwigrid.devices.em.EnergyManager";
 
+    @Nullable
+    private ZoneId zoneId;
+
     public EnergyManager(DeviceDTO deviceDTO) {
         super(deviceDTO);
     }
@@ -77,12 +83,22 @@ public class EnergyManager extends Device {
         super.update(deviceDTO);
 
         this.addSecondsQuantity(CHANNEL_TIMESTAMP, "SettingsDatetimeMap", ".timestamp", deviceDTO);
+        this.addStringState(CHANNEL_IDTIMEZONE, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_TOTAL, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_USER, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_KERNEL, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_MINUTE, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_FIVE_MINUTES, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_FIFTEEN_MINUTES, deviceDTO);
+
+        String timezone = deviceDTO.getStringTag(CHANNEL_IDTIMEZONE);
+        if (timezone != null) {
+            this.zoneId = ZoneId.of(timezone);
+        }
+    }
+
+    public @Nullable ZoneId getZoneId() {
+        return this.zoneId;
     }
 
     @Override

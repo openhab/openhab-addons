@@ -24,6 +24,9 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class SolarwattBindingConstants {
 
+    private SolarwattBindingConstants() {
+    }
+
     public static final String BINDING_ID = "solarwatt";
 
     // List of all Thing Type UIDs
@@ -60,6 +63,7 @@ public class SolarwattBindingConstants {
     public static final String CHANNEL_MODE_STATION = "ModeStation";
     public static final String CHANNEL_CONNECTIVITY_STATUS = "ConnectivityStatus";
     public static final String CHANNEL_TIMESTAMP = "Timestamp";
+    public static final String CHANNEL_IDTIMEZONE = "IdTimezone";
     public static final String CHANNEL_FRACTION_CPU_LOAD_TOTAL = "FractionCPULoadTotal";
     public static final String CHANNEL_FRACTION_CPU_LOAD_USER = "FractionCPULoadUser";
     public static final String CHANNEL_FRACTION_CPU_LOAD_KERNEL = "FractionCPULoadKernel";

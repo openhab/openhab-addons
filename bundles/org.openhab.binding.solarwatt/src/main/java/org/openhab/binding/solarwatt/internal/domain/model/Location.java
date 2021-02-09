@@ -16,14 +16,11 @@ import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*
 
 import java.util.Set;
 
-import javax.measure.quantity.Energy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,73 +97,48 @@ public class Location extends Device {
     public void update(DeviceDTO deviceDTO) {
         super.update(deviceDTO);
 
+        // values to put on a overview dashboard
         this.addWattQuantity(CHANNEL_POWER_BUFFERED, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_BUFFERED_FROM_GRID, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_BUFFERED_FROM_PRODUCERS, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_CONSUMED, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_CONSUMED_FROM_GRID, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_CONSUMED_FROM_STORAGE, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_CONSUMED_FROM_PRODUCERS, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_IN, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_PRODUCED, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_OUT_FROM_PRODUCERS, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_OUT_FROM_STORAGE, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_RELEASED, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_SELF_CONSUMED, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_SELF_SUPPLIED, deviceDTO);
+        this.addWattQuantity(CHANNEL_POWER_CONSUMED_FROM_GRID, deviceDTO);
+        this.addWattQuantity(CHANNEL_POWER_CONSUMED_FROM_STORAGE, deviceDTO);
+        this.addWattQuantity(CHANNEL_POWER_CONSUMED, deviceDTO);
+        this.addWattQuantity(CHANNEL_POWER_PRODUCED, deviceDTO);
+        this.addWattQuantity(CHANNEL_POWER_OUT, deviceDTO);
         this.addWattHourQuantity(CHANNEL_WORK_BUFFERED, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_BUFFERED_FROM_GRID, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_BUFFERED_FROM_PRODUCERS, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_CONSUMED, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_CONSUMED_FROM_GRID, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_CONSUMED_FROM_STORAGE, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_CONSUMED_FROM_PRODUCERS, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_PRODUCED, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_OUT_FROM_PRODUCERS, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_OUT_FROM_STORAGE, deviceDTO);
-        this.addWattHourQuantity(CHANNEL_WORK_RELEASED, deviceDTO);
         this.addWattHourQuantity(CHANNEL_WORK_SELF_CONSUMED, deviceDTO);
         this.addWattHourQuantity(CHANNEL_WORK_SELF_SUPPLIED, deviceDTO);
+        this.addWattHourQuantity(CHANNEL_WORK_CONSUMED_FROM_GRID, deviceDTO);
+        this.addWattHourQuantity(CHANNEL_WORK_CONSUMED_FROM_STORAGE, deviceDTO);
+        this.addWattHourQuantity(CHANNEL_WORK_CONSUMED, deviceDTO);
+        this.addWattHourQuantity(CHANNEL_WORK_PRODUCED, deviceDTO);
+        this.addWattHourQuantity(CHANNEL_WORK_OUT, deviceDTO);
+
+        // not necessary for a dashboard, so marked as advanced
+        this.addWattQuantity(CHANNEL_POWER_BUFFERED_FROM_GRID, deviceDTO, true);
+        this.addWattQuantity(CHANNEL_POWER_BUFFERED_FROM_PRODUCERS, deviceDTO, true);
+        this.addWattQuantity(CHANNEL_POWER_CONSUMED_FROM_PRODUCERS, deviceDTO, true);
+        this.addWattQuantity(CHANNEL_POWER_IN, deviceDTO, true);
+        this.addWattQuantity(CHANNEL_POWER_OUT_FROM_PRODUCERS, deviceDTO, true);
+        this.addWattQuantity(CHANNEL_POWER_OUT_FROM_STORAGE, deviceDTO, true);
+        this.addWattQuantity(CHANNEL_POWER_RELEASED, deviceDTO, true);
+        this.addWattHourQuantity(CHANNEL_WORK_BUFFERED_FROM_GRID, deviceDTO, true);
+        this.addWattHourQuantity(CHANNEL_WORK_BUFFERED_FROM_PRODUCERS, deviceDTO, true);
+        this.addWattHourQuantity(CHANNEL_WORK_CONSUMED_FROM_PRODUCERS, deviceDTO, true);
+        this.addWattHourQuantity(CHANNEL_WORK_OUT_FROM_PRODUCERS, deviceDTO, true);
+        this.addWattHourQuantity(CHANNEL_WORK_OUT_FROM_STORAGE, deviceDTO, true);
+        this.addWattHourQuantity(CHANNEL_WORK_RELEASED, deviceDTO, true);
 
         // calculate direct consumption for display purposes
-        State powerSelfConsumed = this.stateValues.get(CHANNEL_POWER_SELF_CONSUMED);
-        State powerBuffered = this.stateValues.get(CHANNEL_POWER_BUFFERED);
-        if (powerSelfConsumed != null && powerBuffered != null) {
-            @Nullable
-            QuantityType<Energy> selfConsumedValue = powerSelfConsumed.as(QuantityType.class);
-            @Nullable
-            QuantityType<Energy> bufferedValue = powerBuffered.as(QuantityType.class);
-            if (selfConsumedValue != null && bufferedValue != null) {
-                QuantityType<?> powerDirectConsumed = new QuantityType<>(
-                        selfConsumedValue.toBigDecimal().subtract(bufferedValue.toBigDecimal()), Units.WATT);
-                this.stateValues.put(CHANNEL_POWER_DIRECT_CONSUMED, powerDirectConsumed);
-
-                if (!this.solarwattChannelSet.containsKey(CHANNEL_POWER_DIRECT_CONSUMED)) {
-                    this.solarwattChannelSet.put(CHANNEL_POWER_DIRECT_CONSUMED,
-                            new SolarwattChannel(CHANNEL_POWER_DIRECT_CONSUMED, Units.WATT, "energy"));
-                }
-            }
-        }
-        State workSelfConsumed = this.stateValues.get(CHANNEL_WORK_SELF_CONSUMED);
-        State workBuffered = this.stateValues.get(CHANNEL_WORK_BUFFERED);
-        if (workSelfConsumed != null && workBuffered != null) {
-            @Nullable
-            QuantityType<Energy> selfConsumedValue = workSelfConsumed.as(QuantityType.class);
-            @Nullable
-            QuantityType<Energy> bufferedValue = workBuffered.as(QuantityType.class);
-            if (selfConsumedValue != null && bufferedValue != null) {
-                QuantityType<?> workDirectConsumed = new QuantityType<>(
-                        selfConsumedValue.toBigDecimal().subtract(bufferedValue.toBigDecimal()), Units.WATT_HOUR);
-                this.stateValues.put(CHANNEL_WORK_DIRECT_CONSUMED, workDirectConsumed);
-
-                if (!this.solarwattChannelSet.containsKey(CHANNEL_WORK_DIRECT_CONSUMED)) {
-                    this.solarwattChannelSet.put(CHANNEL_WORK_DIRECT_CONSUMED,
-                            new SolarwattChannel(CHANNEL_WORK_DIRECT_CONSUMED, Units.WATT_HOUR, "energy"));
-                }
-            }
-        }
+        this.calculateDifferenceToState(CHANNEL_POWER_SELF_CONSUMED, CHANNEL_POWER_BUFFERED,
+                CHANNEL_POWER_DIRECT_CONSUMED, "energy");
+        this.calculateDifferenceToState(CHANNEL_WORK_SELF_CONSUMED, CHANNEL_WORK_BUFFERED, CHANNEL_WORK_DIRECT_CONSUMED,
+                "energy");
 
         // read IdDevicesMap to find out which devices are located/metered where
+        // to get the unmetered consumption we need to take Location.(Work|Power)Consumed
+        // and subtract the (Work|Power)(AC)In of the OUTER_CONSUMERs
         try {
             JsonObject rawDevicesMap = deviceDTO.getJsonObjectFromTag("IdDevicesMap");
             Gson gson = new GsonBuilder().create();
@@ -174,6 +146,30 @@ public class Location extends Device {
         } catch (Exception ex) {
             this.devicesMap = null;
             this.logger.error("Could not read IdDevicesMap", ex);
+        }
+    }
+
+    private void calculateDifferenceToState(String channelValue, String channelSubtract, String channelTarget,
+            String category) {
+        State stateValue = this.stateValues.get(channelValue);
+        State stateSubtract = this.stateValues.get(channelSubtract);
+        if (stateValue != null && stateSubtract != null) {
+            @Nullable
+            QuantityType quantityValue = stateValue.as(QuantityType.class);
+            @Nullable
+            QuantityType qunatitySubtract = stateSubtract.as(QuantityType.class);
+
+            if (quantityValue != null && qunatitySubtract != null) {
+                QuantityType quantityTarget = new QuantityType<>(
+                        quantityValue.toBigDecimal().subtract(qunatitySubtract.toBigDecimal()),
+                        qunatitySubtract.getUnit());
+                this.stateValues.put(channelTarget, quantityTarget);
+
+                if (!this.solarwattChannelSet.containsKey(channelTarget)) {
+                    this.solarwattChannelSet.put(channelTarget,
+                            new SolarwattChannel(channelTarget, qunatitySubtract.getUnit(), category));
+                }
+            }
         }
     }
 

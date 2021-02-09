@@ -28,6 +28,8 @@ import com.google.gson.*;
 /**
  * DTO class for the devices returned by the energy manager.
  *
+ * Properties without setters are only filled by gson JSON parsing.
+ *
  * @author Sven Carstens - Initial contribution
  */
 public class DeviceDTO {
@@ -53,6 +55,12 @@ public class DeviceDTO {
         return this.tagValues;
     }
 
+    /**
+     * Helper to get a string value from the list of tag values.
+     *
+     * @param tagName name of tag to read
+     * @return tag value
+     */
     public @Nullable String getStringTag(String tagName) {
         JsonPrimitive jsonPrimitive = this.getJsonPrimitiveFromTag(tagName);
         if (jsonPrimitive != null) {
@@ -62,6 +70,14 @@ public class DeviceDTO {
         return null;
     }
 
+    /**
+     * Helper to get a {@link JsonPrimitive} from the list of tag values.
+     *
+     * The primitves are later converted to the desired target type.
+     * 
+     * @param tagName name of tag to read
+     * @return raw json from tag value
+     */
     protected @Nullable JsonPrimitive getJsonPrimitiveFromTag(String tagName) {
         @Nullable
         Map<String, TagValueDTO> localTagValues = this.getTagValues();
@@ -75,6 +91,15 @@ public class DeviceDTO {
         return null;
     }
 
+    /**
+     * Helper to get a {@link JsonObject} from the list of tag values.
+     *
+     * The objects are used by the concrete devices to read interesting
+     * but deeply nested values.
+     *
+     * @param tagName name of tag to read
+     * @return raw json from tag value
+     */
     public @Nullable JsonObject getJsonObjectFromTag(String tagName) {
         @Nullable
         Map<String, TagValueDTO> localTagValues = this.getTagValues();
@@ -88,6 +113,15 @@ public class DeviceDTO {
         return null;
     }
 
+    /**
+     * Helper to get a {@link JsonObject} from a tag value which contains JSON.
+     *
+     * The objects are used by the concrete devices to read interesting
+     * but deeply nested values.
+     *
+     * @param tagName name of tag to read
+     * @return raw json from tag value
+     */
     public JsonPrimitive getJsonPrimitiveFromPath(String tagName, String path) {
         JsonElement jsonElement = this.getJsonFromPath(tagName, path);
 
@@ -97,6 +131,15 @@ public class DeviceDTO {
         return null;
     }
 
+    /**
+     * Helper to get a {@link JsonObject} from a tag value which contains JSON.
+     *
+     * The json path is traversed according to the supplied path. Only simple pathes
+     * are supported.
+     *
+     * @param tagName name of tag to read
+     * @return raw json from tag value
+     */
     public JsonElement getJsonFromPath(String tagName, String path) {
         JsonObject json = this.getJsonObjectFromTag(tagName);
         if (json != null) {
@@ -129,10 +172,26 @@ public class DeviceDTO {
         return null;
     }
 
+    /**
+     * Transform a value from a tag to a state.
+     *
+     * @param converter applied the the {@link JsonPrimitive}
+     * @param tagName to find value
+     * @return state for channel
+     */
     public State getState(JsonStateConverter converter, String tagName) {
         return this.getState(converter, tagName, tagName, null);
     }
 
+    /**
+     * Transform a value specified via JSON path from a tag to a state.
+     *
+     * @param converter applied the the {@link JsonPrimitive}
+     * @param channelName for the state
+     * @param tagName to find value
+     * @param jsonPath to find value
+     * @return state for channel
+     */
     public State getState(JsonStateConverter converter, String channelName, String tagName, String jsonPath) {
         State state = UnDefType.UNDEF;
         try {

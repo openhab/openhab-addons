@@ -18,6 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Aggregation of the interesting parts to write into a channel.
+ *
+ * From this the {@link ChannelType}s are created.
  *
  * @author Sven Carstens - Initial contribution
  */
@@ -26,17 +29,25 @@ public class SolarwattChannel {
     private final String tagName;
     private final @Nullable Unit<?> unit;
     private final String category;
+    private final Boolean advanced;
 
     public SolarwattChannel(String tagName, String category) {
-        this.tagName = tagName;
-        this.unit = null;
-        this.category = category;
+        this(tagName, category, false);
     }
 
     public SolarwattChannel(String tagName, Unit<?> unit, String category) {
+        this(tagName, unit, category, false);
+    }
+
+    public SolarwattChannel(String tagName, String category, Boolean advanced) {
+        this(tagName, null, category, advanced);
+    }
+
+    public SolarwattChannel(String tagName, @Nullable Unit<?> unit, String category, Boolean advanced) {
         this.tagName = tagName;
         this.unit = unit;
         this.category = category;
+        this.advanced = advanced;
     }
 
     public String getTagName() {
@@ -49,5 +60,9 @@ public class SolarwattChannel {
 
     public String getCategory() {
         return this.category;
+    }
+
+    public Boolean getAdvanced() {
+        return this.advanced;
     }
 }

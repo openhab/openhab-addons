@@ -23,7 +23,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The concrete device handlers process the device specific commands.
  *
- * This device handler is still pretty useless.
+ * This device handler is still pretty useless but will be handy when
+ * we start writing to the devices.
  *
  * @author Sven Carstens - Initial contribution
  */
@@ -42,7 +43,7 @@ public class DeviceHandler extends AbstractDeviceHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        this.logger.debug("handleCommand called for channel: {}, command: {}", channelUID, command);
+        this.logger.trace("handleCommand called for channel: {}, command: {}", channelUID, command);
         super.handleCommand(channelUID, command);
     }
 }

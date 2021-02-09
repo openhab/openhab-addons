@@ -17,7 +17,9 @@ import com.google.gson.JsonElement;
 /**
  * DTO class to encapsulate the tag values from the energy manager.
  *
- * The concrete tag values can be anything from JSON.
+ * Properties without setters are only filled by gson JSON parsing.
+ * The concrete tag values can be anything. {@link com.google.gson.JsonPrimitive},
+ * {@link com.google.gson.JsonObject} or even strings containing json structures.
  *
  * @author Sven Carstens - Initial contribution
  */
@@ -27,14 +29,14 @@ public class TagValueDTO {
     private JsonElement value;
 
     public String getTagName() {
-        return tagName;
+        return this.tagName;
     }
 
     public String getGuid() {
-        return guid;
+        return this.guid;
     }
 
     public JsonElement getValue() {
-        return value;
+        return this.value;
     }
 }

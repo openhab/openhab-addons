@@ -46,7 +46,7 @@ public class EnergyManagerCollection {
             }
         });
 
-        logger.debug("Found devices {}", this.devices);
+        logger.trace("found devices {}", this.devices);
     }
 
     public Map<String, Device> getDevices() {

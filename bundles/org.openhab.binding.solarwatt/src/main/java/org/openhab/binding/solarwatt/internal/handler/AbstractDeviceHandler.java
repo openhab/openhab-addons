@@ -117,7 +117,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
      * Assert that all {@link org.openhab.core.thing.type.ChannelType}s are registered for this thing.
      */
     protected void initDeviceChannels() {
-        this.logger.debug("initDeviceChannels for {}", this.getThing().getUID());
+        this.logger.trace("initDeviceChannels for {}", this.getThing().getUID());
         // find device for the thing
         @Nullable
         Device device = this.getDevice();

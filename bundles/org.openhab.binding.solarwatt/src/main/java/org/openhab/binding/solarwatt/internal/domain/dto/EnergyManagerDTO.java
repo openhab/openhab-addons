@@ -18,18 +18,20 @@ import java.util.Collection;
 /**
  * DTO class for the complete structure delivered by the energy manager.
  *
+ * Properties without setters are only filled by gson JSON parsing.
+ *
  * @author Sven Carstens - Initial contribution
  */
 public class EnergyManagerDTO {
     private Result result;
 
     public Collection<DeviceDTO> getItems() {
-        return result.getItems();
+        return this.result.getItems();
     }
 
     public static class Result {
         public Collection<DeviceDTO> getItems() {
-            return items;
+            return this.items;
         }
 
         private Collection<DeviceDTO> items = new ArrayList<>();
