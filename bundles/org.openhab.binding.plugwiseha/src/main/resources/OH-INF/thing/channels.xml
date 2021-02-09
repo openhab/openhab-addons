@@ -116,7 +116,7 @@
 		<label>Modulelation Level</label>
 		<description>Gets the modulation level of this boiler</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.1f"/>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="otAppFaultCode">
@@ -124,7 +124,7 @@
 		<label>Opentherm Application Faultcode</label>
 		<description>Gets the Opentherm application fault code of this boiler</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.1f"/>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="dhwTemperature">
@@ -140,7 +140,7 @@
 		<label>OEM Fault Code</label>
 		<description>Gets the OEM fault code of this boiler</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.1f"/>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="boilerTemperature">
@@ -188,7 +188,7 @@
 		<label>Valve Position</label>
 		<description>Gets the position of the valve (0% closed, 100% open)</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.1f"/>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 </thing:thing-descriptions>
