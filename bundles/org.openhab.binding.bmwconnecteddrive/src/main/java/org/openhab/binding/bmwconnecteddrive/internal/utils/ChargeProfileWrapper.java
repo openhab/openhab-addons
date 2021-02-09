@@ -67,8 +67,8 @@ public class ChargeProfileWrapper {
 
     final protected ProfileType type;
 
-    private Optional<ChargingMode> mode;
-    private Optional<ChargingPreference> preference;
+    private Optional<ChargingMode> mode = Optional.empty();
+    private Optional<ChargingPreference> preference = Optional.empty();
 
     private final Map<ProfileKey, Boolean> enabled = new HashMap<>();
     private final Map<ProfileKey, LocalTime> times = new HashMap<>();
