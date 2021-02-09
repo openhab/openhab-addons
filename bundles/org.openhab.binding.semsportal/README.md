@@ -20,16 +20,16 @@ The thing needs the username and password to connect and retreive the data. It a
 ## Channels
 
 
-| channel        | type      | description                                                                                                |
-| -------------- | --------- | ---------------------------------------------------------------------------------------------------------- |
-| online_state   | Switch    | If the powerStation is currently on and reporting to the portal                                            |
-| last_update    | DateTime  | Last time the powerStation sent information to the portal                                                  |
-| current_output | Number    | The current output of the powerStation in Watt                                                             |
-| today_total    | Number    | Todays total generation of the station in kWh                                                              |
-| month_total    | Number    | This month's total generation of the station in kWh                                                        |
-| overall_total  | Number    | The total generation of the station since installation, in kWh                                             |
-| today_income   | Number    | Todays income as reported by the portal, if you have configured the power rates of your energy provider    |
-| total_income   | Number    | The total income as reported by the portal, if you have configured the power rates of your energy provider |
+| channel       | type      | description                                                                                                |
+| ------------- | --------- | ---------------------------------------------------------------------------------------------------------- |
+| onlineState   | Switch    | If the powerStation is currently on and reporting to the portal                                            |
+| lastUpdate    | DateTime  | Last time the powerStation sent information to the portal                                                  |
+| currentOutput | Number    | The current output of the powerStation in Watt                                                             |
+| todayTotal    | Number    | Todays total generation of the station in kWh                                                              |
+| monthTotal    | Number    | This month's total generation of the station in kWh                                                        |
+| overallTotal  | Number    | The total generation of the station since installation, in kWh                                             |
+| todayIncome   | Number    | Todays income as reported by the portal, if you have configured the power rates of your energy provider    |
+| totalIncome   | Number    | The total income as reported by the portal, if you have configured the power rates of your energy provider |
 
 ## Parameters
 
