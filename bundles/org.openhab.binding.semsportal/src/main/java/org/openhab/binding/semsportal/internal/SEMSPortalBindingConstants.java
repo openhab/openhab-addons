@@ -34,14 +34,14 @@ public class SEMSPortalBindingConstants {
     public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "station");
 
     // List of all Channel ids
-    public static final String CHANNEL_ONLINE_STATE = "online_state";
-    public static final String CHANNEL_CURRENT_OUTPUT = "current_output";
-    public static final String CHANNEL_LASTUPDATE = "last_update";
-    public static final String CHANNEL_TODAY_TOTAL = "today_total";
-    public static final String CHANNEL_MONTH_TOTAL = "month_total";
-    public static final String CHANNEL_OVERALL_TOTAL = "overall_total";
-    public static final String CHANNEL_TODAY_INCOME = "today_income";
-    public static final String CHANNEL_TOTAL_INCOME = "total_income";
+    public static final String CHANNEL_ONLINE_STATE = "onlineState";
+    public static final String CHANNEL_CURRENT_OUTPUT = "currentOutput";
+    public static final String CHANNEL_LASTUPDATE = "lastUpdate";
+    public static final String CHANNEL_TODAY_TOTAL = "todayTotal";
+    public static final String CHANNEL_MONTH_TOTAL = "monthTotal";
+    public static final String CHANNEL_OVERALL_TOTAL = "overallTotal";
+    public static final String CHANNEL_TODAY_INCOME = "todayIncome";
+    public static final String CHANNEL_TOTAL_INCOME = "totalIncome";
 
     protected static final List<String> ALL_CHANNELS = Arrays.asList(CHANNEL_ONLINE_STATE, CHANNEL_LASTUPDATE,
             CHANNEL_CURRENT_OUTPUT, CHANNEL_TODAY_TOTAL, CHANNEL_MONTH_TOTAL, CHANNEL_OVERALL_TOTAL,
