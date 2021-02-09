@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +80,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> reconciliationFuture;
 
     // List of futures used for command retries
-    private List<ScheduledFuture<?>> retryFutures = new ArrayList<ScheduledFuture<?>>();
+    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
 
     /**
      * List of executions
