@@ -58,16 +58,6 @@ public class ConnectedDriveConstants {
         }
     }
 
-    public enum Day {
-        MONDAY,
-        TUESDAY,
-        WEDNESDAY,
-        THURSDAY,
-        FRIDAY,
-        SATURDAY,
-        SUNDAY
-    }
-
     public enum ChargingMode {
         IMMEDIATE_CHARGING,
         DELAYED_CHARGING

@@ -14,6 +14,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.NULL_TIME;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.Day;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -78,15 +78,15 @@ public class Constants {
     public static final LocalTime NULL_LOCAL_TIME = LocalTime.parse(NULL_TIME, TIME_FORMATER);
 
     @SuppressWarnings("serial")
-    public static final Map<String, String> DAYS = new HashMap<String, String>() {
+    public static final Map<DayOfWeek, String> DAYS = new HashMap<>() {
         {
-            put(Day.MONDAY.name(), "Mon");
-            put(Day.TUESDAY.name(), "Tue");
-            put(Day.WEDNESDAY.name(), "Wed");
-            put(Day.THURSDAY.name(), "Thu");
-            put(Day.FRIDAY.name(), "Fri");
-            put(Day.SATURDAY.name(), "Sat");
-            put(Day.SUNDAY.name(), "Sun");
+            put(DayOfWeek.MONDAY, "Mon");
+            put(DayOfWeek.TUESDAY, "Tue");
+            put(DayOfWeek.WEDNESDAY, "Wed");
+            put(DayOfWeek.THURSDAY, "Thu");
+            put(DayOfWeek.FRIDAY, "Fri");
+            put(DayOfWeek.SATURDAY, "Sat");
+            put(DayOfWeek.SUNDAY, "Sun");
         }
     };
 }
