@@ -13,7 +13,6 @@
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ByteResponseCallback} Interface for all raw byte results from ASYNC REST API
@@ -23,5 +22,5 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public interface ByteResponseCallback extends ResponseCallback {
 
-    public void onResponse(@Nullable byte[] result);
+    public void onResponse(byte[] result);
 }

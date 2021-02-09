@@ -605,8 +605,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     @NonNullByDefault({})
     public class ImageCallback implements ByteResponseCallback {
         @Override
-        public void onResponse(@Nullable byte[] content) {
-            if (content != null) {
+        public void onResponse(byte[] content) {
+            if (content.length > 0) {
                 imageCache = Optional.of(content);
                 String contentType = HttpUtil.guessContentTypeFromData(content);
                 updateState(imageChannel, new RawType(content, contentType));
