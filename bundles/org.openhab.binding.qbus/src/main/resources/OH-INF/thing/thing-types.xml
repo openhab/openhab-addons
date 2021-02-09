@@ -126,6 +126,25 @@
 		<description>Qbus Shutter control</description>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
+
+		</channels>
+		<config-description>
+			<parameter name="rolId" type="integer" required="true">
+				<label>Rol ID</label>
+				<description>Qbus rol Id</description>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="rollershutter_slats">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>RollerShutter</label>
+		<description>Qbus Shutter control</description>
+		<channels>
+			<channel id="rollershutter" typeId="rollershutter"/>
 			<channel id="slats" typeId="slats"/>
 		</channels>
 		<config-description>

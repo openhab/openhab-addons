@@ -15,8 +15,6 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusBistabielHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusBistabiel} class represents the Qbus BISTABIEL output.
@@ -27,13 +25,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusBistabiel {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusBistabiel.class);
-
     @Nullable
     private QbusCommunication QComm;
 
-    private String id = "";
-    private Integer state = 0;
+    private String id;
+
+    @Nullable
+    private Integer state;
 
     @Nullable
     private QbusBistabielHandler thingHandler;
@@ -69,8 +67,12 @@ public final class QbusBistabiel {
      *
      * @return bistabiel state
      */
-    public Integer getState() {
-        return this.state;
+    public @Nullable Integer getState() {
+        if (this.state != null) {
+            return this.state;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -82,7 +84,6 @@ public final class QbusBistabiel {
         this.state = state;
         QbusBistabielHandler handler = this.thingHandler;
         if (handler != null) {
-            logger.info("Update bistabiel channel state for {} with {}", id, state);
             handler.handleStateUpdate(this);
         }
     }
@@ -91,11 +92,7 @@ public final class QbusBistabiel {
      * Sends bistabiel to Qbus.
      */
     public void execute(int value, String sn) {
-
-        logger.info("Execute bistabiel for {}", this.id);
-
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeBistabiel").withId(this.id).withState(value);
-
         QbusCommunication comm = QComm;
         if (comm != null) {
             comm.sendMessage(QCmd);

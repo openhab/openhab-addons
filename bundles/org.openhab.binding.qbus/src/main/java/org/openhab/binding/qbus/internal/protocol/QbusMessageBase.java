@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.qbus.internal.protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class {@link QbusMessageBase} used as base class for output from gson for cmd or event feedback from the Qbus server.
  * This class only contains the common base fields required for the deserializer
@@ -22,16 +25,18 @@ package org.openhab.binding.qbus.internal.protocol;
  * @author Koen Schockaert - Initial Contribution
  */
 
+@NonNullByDefault
 abstract class QbusMessageBase {
 
-    private String CTD;
-    protected String cmd;
-    protected String id;
-    protected Integer state;
-    protected Integer mode;
-    protected Double setpoint;
-    protected Integer slatState;
+    private @Nullable String CTD;
+    protected @Nullable String cmd;
+    protected @Nullable String id;
+    protected @Nullable Integer state;
+    protected @Nullable Integer mode;
+    protected @Nullable Double setpoint;
+    protected @Nullable Integer slatState;
 
+    @Nullable
     String getSn() {
         return this.CTD;
     }
@@ -40,6 +45,7 @@ abstract class QbusMessageBase {
         this.CTD = CTD;
     }
 
+    @Nullable
     String getCmd() {
         return this.cmd;
     }
@@ -48,6 +54,7 @@ abstract class QbusMessageBase {
         this.cmd = cmd;
     }
 
+    @Nullable
     public String getId() {
         return id;
     }
@@ -56,7 +63,8 @@ abstract class QbusMessageBase {
         this.id = id;
     }
 
-    public int getState() {
+    @Nullable
+    public Integer getState() {
         return state;
     }
 
@@ -64,7 +72,8 @@ abstract class QbusMessageBase {
         this.state = state;
     }
 
-    public int getMode() {
+    @Nullable
+    public Integer getMode() {
         return mode;
     }
 
@@ -72,6 +81,7 @@ abstract class QbusMessageBase {
         this.mode = mode;
     }
 
+    @Nullable
     public Double getSetPoint() {
         return setpoint;
     }
@@ -80,7 +90,8 @@ abstract class QbusMessageBase {
         this.setpoint = setpoint;
     }
 
-    public int getSlatState() {
+    @Nullable
+    public Integer getSlatState() {
         return slatState;
     }
 

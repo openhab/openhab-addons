@@ -15,7 +15,10 @@ package org.openhab.binding.qbus.internal.handler;
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.CHANNEL_CO2;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusCO2;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
@@ -25,8 +28,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusCO2Handler} is responsible for handling commands, which are
@@ -38,17 +39,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class QbusCO2Handler extends QbusGlobalHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusCO2Handler.class);
-
     public QbusCO2Handler(Thing thing) {
         super(thing);
     }
 
-    protected QbusThingsConfig config = getConfig().as(QbusThingsConfig.class);;
+    protected @NonNullByDefault({}) QbusThingsConfig config;
 
     int co2Id = 0;
 
-    String sn = "";
+    @Nullable
+    String sn;
 
     /**
      * Main initialization
@@ -71,16 +71,22 @@ public class QbusCO2Handler extends QbusGlobalHandler {
             return;
         }
 
-        QbusCO2 QCo2 = QComm.getCo2().get(co2Id);
+        setSN();
 
-        sn = QBridgeHandler.getSn();
+        Map<Integer, QbusCO2> co2Comm = QComm.getCo2();
 
-        if (QCo2 != null) {
-            QCo2.setThingHandler(this);
-            handleStateUpdate(QCo2);
-            logger.info("CO2 intialized {}", co2Id);
+        if (co2Comm != null) {
+            QbusCO2 QCo2 = co2Comm.get(co2Id);
+            if (QCo2 != null) {
+                QCo2.setThingHandler(this);
+                handleStateUpdate(QCo2);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Error while initializing the thing.");
+            }
         } else {
-            logger.info("CO2 not intialized {}", co2Id);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Error while initializing the thing.");
         }
     }
 
@@ -96,38 +102,65 @@ public class QbusCO2Handler extends QbusGlobalHandler {
             return;
         }
 
-        QbusCO2 QCo2 = QComm.getCo2().get(co2Id);
+        Map<Integer, QbusCO2> co2Comm = QComm.getCo2();
 
-        if (QCo2 == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge communication not initialized when trying to execute command for CO2 " + co2Id);
-            return;
+        if (co2Comm != null) {
+            QbusCO2 QCo2 = co2Comm.get(co2Id);
+            if (QCo2 == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Bridge communication not initialized when trying to execute command for CO2 " + co2Id);
+                return;
+            } else {
+
+                scheduler.submit(() -> {
+                    if (!QComm.communicationActive()) {
+                        restartCommunication(QComm, "CO2", co2Id);
+                    }
+
+                    if (QComm.communicationActive()) {
+                        if (command == REFRESH) {
+                            handleStateUpdate(QCo2);
+                            return;
+                        }
+
+                    }
+                });
+            }
         }
-
-        scheduler.submit(() -> {
-            if (!QComm.communicationActive()) {
-                restartCommunication(QComm, "CO2", co2Id);
-            }
-
-            if (QComm.communicationActive()) {
-                if (command == REFRESH) {
-                    handleStateUpdate(QCo2);
-                    return;
-                }
-
-            }
-        });
     }
 
     /**
      * Method to update state of channel, called from Qbus CO2.
      */
     public void handleStateUpdate(QbusCO2 QCo2) {
+        Integer CO2State = QCo2.getState();
+        if (CO2State != null) {
+            updateState(CHANNEL_CO2, new DecimalType(CO2State));
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
 
-        int CO2State = QCo2.getState();
+    /**
+     * Returns the serial number of the controller
+     *
+     * @return the serial nr
+     */
+    public @Nullable String getSN() {
+        return this.sn;
+    }
 
-        updateState(CHANNEL_CO2, new DecimalType(CO2State));
-        updateStatus(ThingStatus.ONLINE);
+    /**
+     * Sets the serial number of the controller
+     */
+    public void setSN() {
+        QbusBridgeHandler QBridgeHandler = getBridgeHandler("CO2", co2Id);
+        if (QBridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "No communication with Qbus Bridge!");
+            return;
+        } else {
+            this.sn = QBridgeHandler.getSn();
+        }
     }
 
     /**
@@ -142,8 +175,11 @@ public class QbusCO2Handler extends QbusGlobalHandler {
      *
      * @return co2Id
      */
-
     public int getId() {
-        return config.co2Id;
+        if (config != null) {
+            return config.co2Id;
+        } else {
+            return 0;
+        }
     }
 }

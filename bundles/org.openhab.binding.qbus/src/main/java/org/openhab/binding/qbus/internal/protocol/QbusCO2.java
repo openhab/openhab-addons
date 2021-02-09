@@ -16,8 +16,6 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusCO2Handler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusCO2} class represents the action Qbus CO2 output.
@@ -28,17 +26,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusCO2 {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusCO2.class);
-
-    private String co2Id;
-    private Integer co2State = 0;
+    @Nullable
+    private Integer state;
 
     @Nullable
     private QbusCO2Handler thingHandler;
-
-    QbusCO2(String co2Id) {
-        this.co2Id = co2Id;
-    }
 
     /**
      * This method should be called if the ThingHandler for the thing corresponding to this CO2 is initialized.
@@ -56,8 +48,12 @@ public final class QbusCO2 {
      *
      * @return CO2 state
      */
-    public Integer getState() {
-        return this.co2State;
+    public @Nullable Integer getState() {
+        if (this.state != null) {
+            return this.state;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -66,10 +62,9 @@ public final class QbusCO2 {
      * @param CO2 state
      */
     public void setState(Integer co2) {
-        this.co2State = co2;
+        this.state = co2;
         QbusCO2Handler handler = thingHandler;
         if (handler != null) {
-            logger.info("Update channel state for {} with {}", co2Id, co2State);
             handler.handleStateUpdate(this);
         }
     }

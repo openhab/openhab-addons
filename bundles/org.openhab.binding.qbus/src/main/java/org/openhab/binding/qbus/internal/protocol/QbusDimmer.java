@@ -15,8 +15,6 @@ package org.openhab.binding.qbus.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qbus.internal.handler.QbusDimmerHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusDimmer} class represents the action Qbus Dimmer output.
@@ -27,13 +25,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class QbusDimmer {
 
-    private final Logger logger = LoggerFactory.getLogger(QbusDimmer.class);
-
     @Nullable
     private QbusCommunication QComm;
 
-    private String id = "";
-    private Integer state = 0;
+    private String id;
+
+    @Nullable
+    private Integer state;
 
     @Nullable
     private QbusDimmerHandler thingHandler;
@@ -52,7 +50,6 @@ public final class QbusDimmer {
 
         QbusDimmerHandler handler = thingHandler;
         if (handler != null) {
-            logger.info("Qbus: update channels for {}", id);
             handler.handleStateUpdate(this);
         }
     }
@@ -84,8 +81,12 @@ public final class QbusDimmer {
      *
      * @return dimmer state
      */
-    public Integer getState() {
-        return this.state;
+    public @Nullable Integer getState() {
+        if (this.state != null) {
+            return this.state;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -97,7 +98,6 @@ public final class QbusDimmer {
         this.state = state;
         QbusDimmerHandler handler = thingHandler;
         if (handler != null) {
-            logger.info("Update channel state for {} with {}", id, state);
             handler.handleStateUpdate(this);
         }
     }
@@ -106,10 +106,7 @@ public final class QbusDimmer {
      * Sends Dimmer state to Qbus.
      */
     public void execute(int percent, String sn) {
-        logger.info("Execute dimmer for {} ", this.id);
-
         QbusMessageCmd QCmd = new QbusMessageCmd(sn, "executeDimmer").withId(this.id).withState(percent);
-
         QbusCommunication comm = QComm;
         if (comm != null) {
             comm.sendMessage(QCmd);

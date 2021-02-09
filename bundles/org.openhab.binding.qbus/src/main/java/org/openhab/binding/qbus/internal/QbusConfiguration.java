@@ -14,6 +14,7 @@
 package org.openhab.binding.qbus.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Class {@link QbusConfiguration} Configuration Class
@@ -23,8 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class QbusConfiguration {
-    public String addr = "";
-    public int port;
-    public String sn = "";
-    public int refresh;
+    public @Nullable String addr;
+    public @Nullable Integer port;
+    public @Nullable String sn;
+    public @Nullable Integer refresh;
 }
