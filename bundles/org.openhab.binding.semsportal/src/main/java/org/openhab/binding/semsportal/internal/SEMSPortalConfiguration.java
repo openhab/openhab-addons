@@ -30,9 +30,6 @@ public class SEMSPortalConfiguration {
      * In the first version, you need to provide the station ID as well. Later we
      * can discover it from the SEMS portal.
      */
-    // Because of the strict compiler NonNull/Nullable checks and failing to see "if
-    // != null" checks,
-    // mark them nonnull and initialize with bogus values.
     public String username = "";
     public String password = "";
     public String station = "";
