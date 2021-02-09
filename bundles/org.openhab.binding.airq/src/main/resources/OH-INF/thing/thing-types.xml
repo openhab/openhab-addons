@@ -14,7 +14,7 @@
 			<!-- <channel id="DeviceID" typeId="devid"/> -->
 			<channel id="status" typeId="status"/>
 			<channel id="avgFineDustSize" typeId="typps"/>
-			<channel id="battery" typeId="bat"/>
+			<!-- <channel id="battery" typeId="bat"/> For future use -->
 			<channel id="fineDustCnt00_3" typeId="cnt0_3"/>
 			<channel id="fineDustCnt00_5" typeId="cnt0_5"/>
 			<channel id="fineDustCnt01" typeId="cnt1"/>
@@ -26,11 +26,11 @@
 			<channel id="dCO2dt" typeId="dco2dt"/>
 			<channel id="dHdt" typeId="dhdt"/>
 			<channel id="dewpt" typeId="dewpt"/>
-			<channel id="door_event" typeId="door"/>
+			<channel id="doorEvent" typeId="door"/>
 			<channel id="health" typeId="health"/>
-			<channel id="humidity" typeId="humidity"/>
-			<channel id="humidity_abs" typeId="humidity_abs"/>
-			<channel id="measuretime" typeId="mtime"/>
+			<channel id="humidityRelative" typeId="humidity"/>
+			<channel id="humidityAbsolute" typeId="humidity_abs"/>
+			<channel id="measureTime" typeId="mtime"/>
 			<channel id="no2" typeId="no2"/>
 			<channel id="o3" typeId="o3"/>
 			<channel id="o2" typeId="oxygen"/>
@@ -47,7 +47,7 @@
 			<channel id="uptime" typeId="uptime"/>
 
 			<!-- Maximum error -->
-			<!-- <channel id="bat_maxerr" typeId="bat_maxerr"/> -->
+			<!-- <channel id="bat_maxerr" typeId="bat_maxerr"/> For future use -->
 			<channel id="cnt0_3_maxerr" typeId="cnt0_3_maxerr"/>
 			<channel id="cnt0_5_maxerr" typeId="cnt0_5_maxerr"/>
 			<channel id="cnt1_maxerr" typeId="cnt1_maxerr"/>
@@ -167,12 +167,12 @@
 		<state readOnly="true" pattern="%.2f μm"></state>
 	</channel-type>
 
-	<channel-type id="bat" advanced="false">
+	<!-- <channel-type id="bat" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery State</label>
 		<state readOnly="true"></state>
-	</channel-type>
-
+		</channel-type>
+	-->
 	<channel-type id="cnt0_3" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fine Dust >0,3 μm</label>
@@ -263,7 +263,7 @@
 		<state readOnly="true" pattern="%.3f g/m³"></state>
 	</channel-type>
 
-	<channel-type id="mtime" advanced="false">
+	<channel-type id="mtime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Time used for Measurement</label>
 		<state readOnly="true" pattern="%f ms"></state>
@@ -347,18 +347,19 @@
 		<state readOnly="true" pattern="%.0f ppb"></state>
 	</channel-type>
 
-	<channel-type id="uptime" advanced="false">
+	<channel-type id="uptime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Uptime</label>
 		<state readOnly="true" pattern="%.0f s"></state>
 	</channel-type>
 
 	<!-- Maximum error -->
-	<channel-type id="bat_maxerr" advanced="true">
+	<!-- <channel-type id="bat_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Battery State</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
-	</channel-type>
+		</channel-type>
+	-->
 	<channel-type id="cnt0_3_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Fine Dust >0,3μm</label>
@@ -487,19 +488,19 @@
 
 	<!-- settings -->
 
-	<channel-type id="Wifi" advanced="false">
+	<channel-type id="Wifi" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use WLAN</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="WLANssid" advanced="false">
+	<channel-type id="WLANssid" advanced="true">
 		<item-type>String</item-type>
 		<label>WLAN SSID</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="pass" advanced="false">
+	<channel-type id="pass" advanced="true">
 		<item-type>String</item-type>
 		<label>Device Password</label>
 		<state readOnly="true"></state>
@@ -561,12 +562,12 @@
 		<label>Room Type</label>
 	</channel-type>
 
-	<channel-type id="Logging" advanced="false">
+	<channel-type id="Logging" advanced="true">
 		<item-type>String</item-type>
 		<label>Logging level</label>
 	</channel-type>
 
-	<channel-type id="DeleteKey" advanced="false">
+	<channel-type id="DeleteKey" advanced="true">
 		<item-type>String</item-type>
 		<label>Settings to be Deleted</label>
 		<state readOnly="true"></state>
@@ -577,37 +578,37 @@
 		<label>Fire Alarm</label>
 	</channel-type>
 
-	<channel-type id="WLAN_config_Gateway" advanced="false">
+	<channel-type id="WLAN_config_Gateway" advanced="true">
 		<item-type>String</item-type>
 		<label>Network Gateway</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="WLAN_config_MAC" advanced="false">
+	<channel-type id="WLAN_config_MAC" advanced="true">
 		<item-type>String</item-type>
 		<label>MAC Address</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="WLAN_config_SSID" advanced="false">
+	<channel-type id="WLAN_config_SSID" advanced="true">
 		<item-type>String</item-type>
 		<label>WLAN SSID</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="WLAN_config_IPAddress" advanced="false">
+	<channel-type id="WLAN_config_IPAddress" advanced="true">
 		<item-type>String</item-type>
 		<label>Assigned IP Address</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="WLAN_config_NetMask" advanced="false">
+	<channel-type id="WLAN_config_NetMask" advanced="true">
 		<item-type>String</item-type>
 		<label>Network Mask</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="WLAN_config_BSSID" advanced="false">
+	<channel-type id="WLAN_config_BSSID" advanced="true">
 		<item-type>String</item-type>
 		<label>Network BSSID</label>
 		<state readOnly="true"></state>
@@ -618,17 +619,17 @@
 		<label>Upload to air-Q Cloud</label>
 	</channel-type>
 
-	<channel-type id="SecondsMeasurementDelay" advanced="false">
+	<channel-type id="SecondsMeasurementDelay" advanced="true">
 		<item-type>Number</item-type>
 		<label>Rhythm historic Average</label>
 	</channel-type>
 
-	<channel-type id="Rejection" advanced="false">
+	<channel-type id="Rejection" advanced="true">
 		<item-type>String</item-type>
 		<label>Power Frequency</label>
 	</channel-type>
 
-	<channel-type id="AutoDriftCompensation" advanced="false">
+	<channel-type id="AutoDriftCompensation" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Compensate automatic Drift</label>
 	</channel-type>
@@ -638,7 +639,7 @@
 		<label>Automatic Firmware Update</label>
 	</channel-type>
 
-	<channel-type id="AdvancedDataProcessing" advanced="false">
+	<channel-type id="AdvancedDataProcessing" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Advanced Data Processing</label>
 	</channel-type>
@@ -663,24 +664,24 @@
 		<label>Share alarms with other air-Q</label>
 	</channel-type>
 
-	<channel-type id="usercalib" advanced="false">
+	<channel-type id="usercalib" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Sensor Calibration</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="InitialCalFinished" advanced="false">
+	<channel-type id="InitialCalFinished" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Initial Calibration Done</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="Averaging" advanced="false">
+	<channel-type id="Averaging" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Do an Average</label>
 	</channel-type>
 
-	<channel-type id="ErrorBars" advanced="false">
+	<channel-type id="ErrorBars" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Calculate Maximum Errors</label>
 	</channel-type>

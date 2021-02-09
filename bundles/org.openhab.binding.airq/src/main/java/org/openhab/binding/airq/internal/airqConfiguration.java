@@ -22,10 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class airqConfiguration {
-
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
     public @NonNullByDefault({}) String ipaddress;
     public @NonNullByDefault({}) String password;
 }

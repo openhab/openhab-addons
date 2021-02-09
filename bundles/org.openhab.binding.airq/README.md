@@ -4,7 +4,7 @@ The air-Q Binding integrates the air analyzer <a href="http://www.air-q.com">air
 
 With the binding, it is possible to subscribe to all data delivered by the air-Q device.
 
-<img src="https://uploads-ssl.webflow.com/5bd9feee2fb42232fe1d0196/5e4a8dc0e322ca33891b51e4_air-Q%20frontal-p-800.png" alt="air-Q image" width="400px" height="324px" />
+<img src="src/main/resources/image_air-Q.png" alt="air-Q image" width="400px" height="324px" />
 
 ## Supported Things
 
@@ -13,8 +13,7 @@ This Binding was tested with an `air-Q Pro` device with 14 sensors. It also work
 
 ## Discovery
 
-Auto-discovery is not possible in this version.
-Since the binding has to be configured at least with the password of the device, auto-discovery would be of limited value anyway.
+Auto-discovery is not yet supported.
 
 ## Binding Configuration
 
@@ -46,9 +45,8 @@ For the Maximum Error channels just add `_maxerr` to the channel names.
 
 | channel                   | type     | description                                                         |
 |---------------------------|----------|---------------------------------------------------------------------|
-| Status                    | String   | Status of the sensors                                               |
+| status                    | String   | Status of the sensors                                               |
 | avgFineDustSize           | Number   | Average size of Fine Dust [experimental]                            |
-| bat                       | Number   | Battery State                                                       |
 | fineDustCnt00_3           | Number   | Fine Dust >0,3 &mu;m                                                |
 | fineDustCnt00_5           | Number   | Fine Dust >0,5 &mu;m                                                |
 | fineDustCnt01             | Number   | Fine Dust >1 &mu;m                                                  |
@@ -60,11 +58,11 @@ For the Maximum Error channels just add `_maxerr` to the channel names.
 | dCO2dt                    | Number   | Change of CO<sub>2</sub> concentration                              |
 | dHdt                      | Number   | Change of Humidity                                                  |
 | dewpt                     | Number   | Dew Point                                                           |
-| door_event                | Switch   | Door Event (experimental)                                           |
+| doorEvent                 | Switch   | Door Event (experimental)                                           |
 | health                    | Number   | Health Index                                                        |
-| humidity                  | Number   | Humidity in percent                                                 |
-| humidity_abs              | Number   | Absolute Humidity                                                   |
-| measuretime               | Number   | Milliseconds needed for measurement                                 |
+| humidityRelative          | Number   | Humidity in percent                                                 |
+| humidityAbsolute          | Number   | Absolute Humidity                                                   |
+| measureTime               | Number   | Milliseconds needed for measurement                                 |
 | no2                       | Number   | NO<sub>2</sub> concentration                                        |
 | o3                        | Number   | Ozone (<sub>3</sub>) concentration                                  |
 | o2                        | Number   | Oxygen (O<sub>2</sub>) concentration                                |
@@ -131,7 +129,6 @@ Thing airq:airq:1 "air-Q" [ ipAddress="192.168.0.68", password="myAirQPassword" 
 ```
 String                airQ_status                 "Status of Sensors"                     {channel="airq:airq:1:status"}
 Number:Length         airQ_avgFineDustSize        "Average Size of Fine Dust"             {channel="airq:airq:1:avgFineDustSize"}
-Number:Dimensionless  airQ_battery                "Battery State"                         {channel="airq:airq:1:battery"}
 Number:Dimensionless  airQ_fineDustCnt00_3        "Fine Dust >0,3 µm"                     {channel="airq:airq:1:fineDustCnt00_3"}
 Number:Dimensionless  airQ_fineDustCnt00_5        "Fine Dust >0,5 µm"                     {channel="airq:airq:1:fineDustCnt00_5"}
 Number:Dimensionless  airQ_fineDustCnt01          "Fine Dust >1,0 µm"                     {channel="airq:airq:1:fineDustCnt01"}
@@ -143,11 +140,11 @@ Number                airQ_co2                    "CO2 Concentration"           
 Number                airQ_dCO2dt                 "Change of CO2 Concentration"           {channel="airq:airq:1:dCO2dt"}
 Number                airQ_dHdt                   "Change of Humidity"                    {channel="airq:airq:1:dHdt"}
 Number:Temperature    airQ_dewpt                  "Dew Point"                             {channel="airq:airq:1:dewpt"}
-Number                airQ_door_event             "Door Event (exp.)"                     {channel="airq:airq:1:door_event"}
+Number                airQ_doorEvent              "Door Event (exp.)"                     {channel="airq:airq:1:doorEvent"}
 Number:Dimensionless  airQ_health                 "Health Index"                          {channel="airq:airq:1:health"}
-Number:Dimensionless  airQ_humidity               "Humidity"                              {channel="airq:airq:1:humidity"}
-Number                airQ_humidity_abs           "Absolute Humidity"                     {channel="airq:airq:1:humidity_abs"}
-Number                airQ_measuretime            "Time needed for measurement"           {channel="airq:airq:1:measuretime"}
+Number:Dimensionless  airQ_humidityRelative       "Humidity"                              {channel="airq:airq:1:humidityRelative"}
+Number                airQ_humidityAbsolute       "Absolute Humidity"                     {channel="airq:airq:1:humidityAbsolute"}
+Number                airQ_measureTime            "Time needed for measurement"           {channel="airq:airq:1:measureTime"}
 Number                airQ_no2                    "NO2 concentration"                     {channel="airq:airq:1:no2"}
 Number                airQ_o3                     "O3 concentration"                      {channel="airq:airq:1:o3"}
 Number:Dimensionless  airQ_o2                     "Oxygen concentration"                  {channel="airq:airq:1:o2"}
