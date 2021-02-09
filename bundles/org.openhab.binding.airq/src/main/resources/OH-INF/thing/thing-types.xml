@@ -11,7 +11,7 @@
 		<category>Sensor</category>
 
 		<channels>
-<!-- 		<channel id="DeviceID" typeId="devid"/>  -->
+			<!-- <channel id="DeviceID" typeId="devid"/> -->
 			<channel id="status" typeId="status"/>
 			<channel id="avgFineDustSize" typeId="typps"/>
 			<channel id="battery" typeId="bat"/>
@@ -21,7 +21,7 @@
 			<channel id="fineDustCnt02_5" typeId="cnt2_5"/>
 			<channel id="fineDustCnt05" typeId="cnt5"/>
 			<channel id="fineDustCnt10" typeId="cnt10"/>
-            <channel id="co" typeId="co"/>
+			<channel id="co" typeId="co"/>
 			<channel id="co2" typeId="co2"/>
 			<channel id="dCO2dt" typeId="dco2dt"/>
 			<channel id="dHdt" typeId="dhdt"/>
@@ -47,14 +47,14 @@
 			<channel id="uptime" typeId="uptime"/>
 
 			<!-- Maximum error -->
-<!-- 		<channel id="bat_maxerr" typeId="bat_maxerr"/> -->
+			<!-- <channel id="bat_maxerr" typeId="bat_maxerr"/> -->
 			<channel id="cnt0_3_maxerr" typeId="cnt0_3_maxerr"/>
 			<channel id="cnt0_5_maxerr" typeId="cnt0_5_maxerr"/>
 			<channel id="cnt1_maxerr" typeId="cnt1_maxerr"/>
 			<channel id="cnt2_5_maxerr" typeId="cnt2_5_maxerr"/>
 			<channel id="cnt5_maxerr" typeId="cnt5_maxerr"/>
 			<channel id="cnt10_maxerr" typeId="cnt10_maxerr"/>
-            <channel id="co_maxerr" typeId="co_maxerr"/>
+			<channel id="co_maxerr" typeId="co_maxerr"/>
 			<channel id="co2_maxerr" typeId="co2_maxerr"/>
 			<channel id="dewpt_maxerr" typeId="dewpt_maxerr"/>
 			<channel id="humidity_maxerr" typeId="humidity_maxerr"/>
@@ -117,7 +117,7 @@
 			<channel id="errorBars" typeId="ErrorBars"/>
 
 			<!-- command data, not implemented yet
-			<channel id="getHistoryFiles" typeId="getHistoryFiles"/> -->
+				<channel id="getHistoryFiles" typeId="getHistoryFiles"/> -->
 		</channels>
 
 		<properties>
@@ -145,16 +145,16 @@
 	</thing-type>
 
 
-<!-- We have two places where the Device ID is delivered: with the measurement data and with the configuration.
-We take the info from the configuration and show it as a property, so we don't need this at this moment. We
-leave this as a reminder in case for some reason it will be needed in future, e.g. when an air-Q device
-also sends data from other devices (then with another Device ID)
-     <channel-type id="devid" advanced="true">
+	<!-- We have two places where the Device ID is delivered: with the measurement data and with the configuration.
+		We take the info from the configuration and show it as a property, so we don't need this at this moment. We
+		leave this as a reminder in case for some reason it will be needed in future, e.g. when an air-Q device
+		also sends data from other devices (then with another Device ID)
+		<channel-type id="devid" advanced="true">
 		<item-type>String</item-type>
 		<label>Device ID (from Data)</label>
 		<state readOnly="true"></state>
-	</channel-type>
--->
+		</channel-type>
+	-->
 	<channel-type id="status" advanced="false">
 		<item-type>String</item-type>
 		<label>Status of Sensors</label>
@@ -215,11 +215,11 @@ also sends data from other devices (then with another Device ID)
 		<state readOnly="true" pattern="%.0f mg/m³"></state>
 	</channel-type>
 
-    <channel-type id="co2" advanced="false">
-        <item-type>Number</item-type>
-        <label>CO2 Concentration</label>
-        <state readOnly="true" pattern="%.0f ppm"></state>
-    </channel-type>
+	<channel-type id="co2" advanced="false">
+		<item-type>Number</item-type>
+		<label>CO2 Concentration</label>
+		<state readOnly="true" pattern="%.0f ppm"></state>
+	</channel-type>
 
 	<channel-type id="dco2dt" advanced="false">
 		<item-type>Number</item-type>
@@ -685,10 +685,10 @@ also sends data from other devices (then with another Device ID)
 		<label>Calculate Maximum Errors</label>
 	</channel-type>
 
-<!--
- 	<channel-type id="getHistoryFiles" advanced="false">
+	<!--
+		<channel-type id="getHistoryFiles" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Retrieve History Files</label>
-	</channel-type>
--->
+		</channel-type>
+	-->
 </thing:thing-descriptions>

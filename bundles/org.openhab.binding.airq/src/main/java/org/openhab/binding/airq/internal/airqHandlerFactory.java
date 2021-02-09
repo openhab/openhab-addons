@@ -31,8 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link airqHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link airqHandlerFactory} is responsible for creating the air-Q thing and its handlers.
  *
  * @author Aurelio Caliaro - Initial contribution
  */

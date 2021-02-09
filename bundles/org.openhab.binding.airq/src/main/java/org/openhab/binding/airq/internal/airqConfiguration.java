@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.airq.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link airqConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Aurelio Caliaro - Initial contribution
  */
 
+@NonNullByDefault
 public class airqConfiguration {
 
     /**
      * Sample configuration parameter. Replace with your own.
      */
-    public String ipaddress;
-    public String password;
+    public @NonNullByDefault({}) String ipaddress;
+    public @NonNullByDefault({}) String password;
 }

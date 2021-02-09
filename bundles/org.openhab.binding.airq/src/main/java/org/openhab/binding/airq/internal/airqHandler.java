@@ -61,8 +61,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link airqHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link airqHandler} is responsible for retrieving all information from the air-Q device
+ * and change properties and channels accordingly.
  *
  * @author Aurelio Caliaro - Initial contribution
  */
@@ -371,8 +371,11 @@ public class airqHandler extends BaseThingHandler {
                             }
                         }
                     } catch (Exception e) {
-                        System.out.println("air-Q - airqHandler - polldata.run(): Error while retrieving air-Q data: "
-                                + e.toString());
+                        if (System.out != null) {
+                            System.out
+                                    .println("air-Q - airqHandler - polldata.run(): Error while retrieving air-Q data: "
+                                            + e.toString());
+                        }
                     }
                 }
             }
@@ -413,10 +416,14 @@ public class airqHandler extends BaseThingHandler {
             content = new String(decryptedText);
             logger.trace("air-Q - airqHandler - decrypt(): Text decoded as String: {}", content);
         } catch (BadPaddingException bpe) {
-            System.out.println("Error while decrypting. Probably the provided password is wrong.");
+            if (System.out != null) {
+                System.out.println("Error while decrypting. Probably the provided password is wrong.");
+            }
             return null;
         } catch (Exception e) {
-            System.out.println("air-Q - airqHandler - decrypt(): Error while decrypting: " + e.toString());
+            if (System.out != null) {
+                System.out.println("air-Q - airqHandler - decrypt(): Error while decrypting: " + e.toString());
+            }
             return null;
         }
         return content;
@@ -447,7 +454,9 @@ public class airqHandler extends BaseThingHandler {
             content = new String(encodedcontent);
             // logger.debug("air-Q - airqHandler - encrypt(): content={}", content);
         } catch (Exception e) {
-            System.out.println("air-Q - airqHandler - encrypt(): Error while encrypting: " + e.toString());
+            if (System.out != null) {
+                System.out.println("air-Q - airqHandler - encrypt(): Error while encrypting: " + e.toString());
+            }
         }
         return content;
     }
@@ -526,7 +535,13 @@ public class airqHandler extends BaseThingHandler {
                 return new Result(result.toString(StandardCharsets.UTF_8.name()), conn.getResponseCode());
             }
         } catch (IOException exc) {
-            System.out.println("air-Q - airqHandler - doNetwork(): Error while accessing air-Q: " + exc.toString());
+            if (System.out != null) {
+
+                {
+                    System.out.println(
+                            "air-Q - airqHandler - doNetwork(): Error while accessing air-Q: " + exc.toString());
+                }
+            }
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -631,7 +646,10 @@ public class airqHandler extends BaseThingHandler {
                         }
                     }
                 } catch (Exception e) {
-                    System.out.println("Error in processConfigData(): " + e.toString());
+                    if (System.out != null) {
+
+                        System.out.println("Error in processConfigData(): " + e.toString());
+                    }
                 }
             }
         }
@@ -824,9 +842,12 @@ public class airqHandler extends BaseThingHandler {
                     }
                 }
             } catch (Exception e) {
-                System.out.println(
-                        "air-Q - airqHandler - prepareChangeSettings(): Error while changing settings in air-Q data: "
-                                + e.toString());
+                if (System.out != null) {
+
+                    System.out.println(
+                            "air-Q - airqHandler - prepareChangeSettings(): Error while changing settings in air-Q data: "
+                                    + e.toString());
+                }
             }
         }
     }
