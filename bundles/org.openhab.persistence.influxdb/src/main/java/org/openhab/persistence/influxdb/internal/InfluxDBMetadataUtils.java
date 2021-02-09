@@ -30,24 +30,20 @@ public class InfluxDBMetadataUtils {
     private InfluxDBMetadataUtils() {
     }
 
-    public static String calculateMeasurementNameFromMetadata(InfluxDBConfiguration configuration,
+    public static String calculateMeasurementNameFromMetadataIfPresent(
             final @Nullable MetadataRegistry currentMetadataRegistry, String name, @Nullable String itemName) {
 
         if (itemName == null || currentMetadataRegistry == null) {
             return name;
         }
 
-        if (configuration.isUseMetadataMeasurementName()) {
-
-            MetadataKey key = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, itemName);
-            Metadata metadata = currentMetadataRegistry.get(key);
-            if (metadata != null) {
-                String metaName = metadata.getValue();
-                if (!metaName.isBlank()) {
-                    name = metaName;
-                }
+        MetadataKey key = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, itemName);
+        Metadata metadata = currentMetadataRegistry.get(key);
+        if (metadata != null) {
+            String metaName = metadata.getValue();
+            if (!metaName.isBlank()) {
+                name = metaName;
             }
-
         }
 
         return name;

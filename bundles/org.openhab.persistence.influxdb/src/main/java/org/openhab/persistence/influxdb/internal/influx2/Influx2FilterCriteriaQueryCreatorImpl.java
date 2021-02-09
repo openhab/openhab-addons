@@ -94,8 +94,10 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
     private String calculateMeasurementName(String itemName) {
         String name = itemName;
 
-        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadata(configuration, metadataRegistry, name,
-                itemName);
+        if (configuration.isUseMetadataMeasurementName()) {
+            name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name,
+                    itemName);
+        }
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');

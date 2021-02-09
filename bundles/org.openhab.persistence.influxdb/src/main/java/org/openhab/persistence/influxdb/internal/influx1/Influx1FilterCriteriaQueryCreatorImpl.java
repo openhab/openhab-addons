@@ -105,8 +105,10 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         String name = itemName;
 
-        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadata(configuration, metadataRegistry, name,
-                itemName);
+        if (configuration.isUseMetadataMeasurementName()) {
+            name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name,
+                    itemName);
+        }
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');
