@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SEMSPortalConfiguration {
 
-    private static final String INVALID = "INVALID";
     /**
      * We need username and password of the SEMS portal to access the solar plant
      * data.
@@ -34,12 +33,12 @@ public class SEMSPortalConfiguration {
     // Because of the strict compiler NonNull/Nullable checks and failing to see "if
     // != null" checks,
     // mark them nonnull and initialize with bogus values.
-    public String username = INVALID;
-    public String password = INVALID;
-    public String station = INVALID;
+    public String username = "";
+    public String password = "";
+    public String station = "";
     public int update = 5;
 
     public boolean isProperlyInitialized() {
-        return !username.equals(INVALID) && !password.equals(INVALID) && !station.equals(INVALID);
+        return !(username.isEmpty() || password.isEmpty() || station.isEmpty());
     }
 }
