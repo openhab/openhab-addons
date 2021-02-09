@@ -21,10 +21,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
@@ -63,7 +63,7 @@ import com.google.gson.JsonParseException;
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     private long refreshInterval;
     private long hardRefreshInterval;
@@ -75,9 +75,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
-    public HDPowerViewHubHandler(Bridge bridge, ClientBuilder clientBuilder) {
+    public HDPowerViewHubHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        webTargets = new HDPowerViewWebTargets(clientBuilder.build(), host);
+        webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
         hardRefreshInterval = config.hardRefresh;
         schedulePoll();

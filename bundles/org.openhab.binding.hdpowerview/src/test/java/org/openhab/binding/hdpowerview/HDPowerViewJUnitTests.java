@@ -23,11 +23,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
@@ -76,7 +75,7 @@ public class HDPowerViewJUnitTests {
 
     /**
      * Run a series of ONLINE tests on the communication with a hub
-     * 
+     *
      * @param hubIPAddress must be a valid hub IP address to run the
      *            tests on; or an INVALID IP address to
      *            suppress the tests
@@ -100,9 +99,8 @@ public class HDPowerViewJUnitTests {
 
         if (VALID_IP_V4_ADDRESS.matcher(hubIPAddress).matches()) {
             // initialize stuff
-            Client client = ClientBuilder.newClient();
+            HttpClient client = new HttpClient();
             assertNotNull(client);
-            // client.register(new Logger());
             HDPowerViewWebTargets webTargets = new HDPowerViewWebTargets(client, hubIPAddress);
             assertNotNull(webTargets);
 
@@ -256,6 +254,24 @@ public class HDPowerViewJUnitTests {
                     webTargets.activateScene(sceneId);
                 } catch (ProcessingException | HubMaintenanceException e) {
                     fail(e.getMessage());
+                }
+            }
+
+            // ==== test stop command ====
+            if (allowShadeMovementCommands) {
+                try {
+                    assertNotNull(sceneId);
+                    webTargets.stopShade(shadeId);
+                } catch (ProcessingException | HubMaintenanceException e) {
+                    fail(e.getMessage());
+                }
+            }
+
+            // stop the client
+            if (client.isRunning()) {
+                try {
+                    client.stop();
+                } catch (Exception e) {
                 }
             }
         }
