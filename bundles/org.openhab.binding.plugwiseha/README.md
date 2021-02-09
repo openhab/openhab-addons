@@ -14,15 +14,15 @@ The 'Adam' (from hereon called the gateway) needs to be accessible from the open
 
 ## Supported Things
 
-| Device Type                                              | Description                                                                                                        | Thing Type      |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------- |
-| -                                                        | A Plugwise heating zone configured with at least 1 of the devices below                                            | zone            |
-| [Adam](https://www.plugwise.com/en_US/products/adam-ha)  | The Plugwise Home Automation Bridge is needed to connect to the Adam boiler gateway                                | gateway         |
-| [Tom](https://www.plugwise.com/en_US/products/tom)       | A Plugwise Home Automation radiator valve                                                                          | appliance_valve |
-| [Floor](https://www.plugwise.com/en_US/products/floor)   | A Plugwise Home Automation radiator valve specificaly used for floor heating                                       | appliance_valve |
-| [Circle](https://www.plugwise.com/en_US/products/circle) | A power outlet plug that provides energy measurement and switching control of appliances (e.g. floor heating pump) | appliance_pump  |
+| Device Type                                              | Description                                                                                                        | Thing Type           |
+|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|----------------------|
+| -                                                        | A Plugwise heating zone configured with at least 1 of the devices below                                            | zone                 |
+| [Adam](https://www.plugwise.com/en_US/products/adam-ha)  | The Plugwise Home Automation Bridge is needed to connect to the Adam boiler gateway                                | gateway              |
+| [Tom](https://www.plugwise.com/en_US/products/tom)       | A Plugwise Home Automation radiator valve                                                                          | appliance_valve      |
+| [Floor](https://www.plugwise.com/en_US/products/floor)   | A Plugwise Home Automation radiator valve specificaly used for floor heating                                       | appliance_valve      |
+| [Circle](https://www.plugwise.com/en_US/products/circle) | A power outlet plug that provides energy measurement and switching control of appliances (e.g. floor heating pump) | appliance_pump       |
 | [Lisa](https://www.plugwise.com/en_US/products/lisa)     | A room thermostat (also supports the 'Anna' room thermostat)                                                       | appliance_thermostat |
-| [Boiler]                                                 | A central boiler used for heating and/or domestic hot water                                                        | appliance_boiler |
+| [Boiler]                                                 | A central boiler used for heating and/or domestic hot water                                                        | appliance_boiler     |
 
 
 
@@ -72,7 +72,7 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | --------- | ----------------------------------- | -------- | ------- |
 | id        | The unique ID of the pump appliance | Required | -       |
 
-#### Plugwise Home Automation zone (`zone`):
+#### Plugwise Home Automation boiler (`appliance_boiler`):
 
 | Parameter | Description                 | Config   | Default |
 | --------- | --------------------------- | -------- | ------- |
@@ -80,21 +80,33 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 
 ## Channels
 
-| channel             | type               | Read-only? | description                                                                                                                                                                                                                  |
-|---------------------|--------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| temperature         | Number:Temperature | Yes        | This channel is used to read the temperature of an appliance that supports the thermostat functionality                                                                                                                      |
-| setpointTemperature | Number:Temperature | No         | This channel is used to read or write the setpoint temperature of an appliance that supports the thermostat functionality                                                                                                    |
-| power               | Switch             | No         | This channel is used to toggle an appliance ON/OFF that supports the relay functionality                                                                                                                                     |
-| lock                | Switch             | No         | This channel is used to toggle an appliance lock ON/OFF that supports the relay functionality.(*When the lock is ON the gateway will not automatically control the corresponding relay switch depending on thermostat mode*) |
-| powerUsage          | Number:Power       | Yes        | This channel is used to read the current power usage in Watts of an appliance that supports this                                                                                                                             |
-| batteryLevel        | Number             | Yes        | This channel is used to read the current battery level of an appliance that is battery operated                                                                                                                              |
-| batteryLevelLow     | Switch             | Yes        | This channel will switch ON when the battery level of an appliance that is battery operated drops below a certain threshold                                                                                                  |
-| chState             | Switch             | Yes        | This channel is used to read the current central heating state of the boiler                                                                                                                                                 |
-| dhwState            | Switch             | Yes        | This channel is used to read the current domestic hot water state of the boiler                                                                                                                                              |
-| waterPressure       | Number:Pressure    | Yes        | This channel is used to read the current water pressure of the boiler                                                                                                                                                        |
-| presetScene         | String             | Yes        | This channel is used to read the current active scene for the zone                                                                                                                                                           |
-| valvePosition       | Number             | Yes        | This channel is used to read the current position of the valve                                                                                                                                                               |
-| preHeat             | Switch             | Yes        | This channel is used to toggle the pre heating of a zone ON/OFF                                                                                                                                                              |
+| channel              | type               | Read-only? | description                                                                                                                                                                                                                  |
+|----------------------|--------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| temperature          | Number:Temperature | Yes        | This channel is used to read the temperature of an appliance that supports the thermostat functionality                                                                                                                      |
+| setpointTemperature  | Number:Temperature | No         | This channel is used to read or write the setpoint temperature of an appliance that supports the thermostat functionality                                                                                                    |
+| power                | Switch             | No         | This channel is used to toggle an appliance ON/OFF that supports the relay functionality                                                                                                                                     |
+| lock                 | Switch             | No         | This channel is used to toggle an appliance lock ON/OFF that supports the relay functionality.(*When the lock is ON the gateway will not automatically control the corresponding relay switch depending on thermostat mode*) |
+| powerUsage           | Number:Power       | Yes        | This channel is used to read the current power usage in Watts of an appliance that supports this                                                                                                                             |
+| batteryLevel         | Number             | Yes        | This channel is used to read the current battery level of an appliance that is battery operated                                                                                                                              |
+| batteryLevelLow      | Switch             | Yes        | This channel will switch ON when the battery level of an appliance that is battery operated drops below a certain threshold                                                                                                  |
+| chState              | Switch             | Yes        | This channel is used to read the current central heating state of the boiler                                                                                                                                                 |
+| dhwState             | Switch             | Yes        | This channel is used to read the current domestic hot water state of the boiler                                                                                                                                              |
+| waterPressure        | Number:Pressure    | Yes        | This channel is used to read the current water pressure of the boiler                                                                                                                                                        |
+| presetScene          | String             | Yes        | This channel is used to read the current active scene for the zone                                                                                                                                                           |
+| valvePosition        | Number             | Yes        | This channel is used to read the current position of the valve                                                                                                                                                               |
+| preHeat              | Switch             | Yes        | This channel is used to toggle the pre heating of a zone ON/OFF                                                                                                                                                              |
+| coolingState         | Switch             | Yes        | This channel is used to read the current cooling state of the boiler                                                                                                                                                         |
+| intendedBoilerTemp   | Number:Temperature | Yes        | This channel is used to read the intended boiler temperature                                                                                                                                                                 |
+| flameState           | Switch             | Yes        | This channel is used to read the flame state of the boiler                                                                                                                                                                   |
+| intendedHeatingState | Switch             | Yes        | This channel is used to read the intended heating state of the boiler                                                                                                                                                        |
+| modulationLevel      | Number             | Yes        | This channel is used to read the current modulation level of the boiler                                                                                                                                                      |
+| otAppFaultCode       | Number             | Yes        | This channel is used to read the Opentherm application fault code of the boiler                                                                                                                                              |
+| dhwTemperature       | Number:Temperature | Yes        | This channel is used to read the current central heating state of the boiler                                                                                                                                                 |
+| otOEMFaultCode       | Number             | Yes        | This channel is used to read the Opentherm OEM fault code of the boiler                                                                                                                                                      |
+| boilerTemperature    | Number:Temperature | Yes        | This channel is used to read the current temperature of the boiler                                                                                                                                                           |
+| dhwSetpoint          | Number:Temperature | Yes        | This channel is used to read the domestic hot water setpoint                                                                                                                                                                 |
+| maxBoilerTemperature | Number:Temperature | Yes        | This channel is used to read the maximum temperature of the boiler                                                                                                                                                           |
+| dhwComfortMode       | Switch             | Yes        | This channel is used to read the domestic hot water confortmode                                                                                                                                                              |
 
 
 
@@ -137,6 +149,19 @@ Number:Power living_room_pump_power_usage "Floor heating pump power [%0.2fW]" {c
 Number:Pressure	main_boiler_waterpressure "Waterpressure" { channel="plugwiseha:appliance_boiler:home:main_boiler:waterPressure"}
 Switch	main_boiler_chState "Heating active" { channel="plugwiseha:appliance_boiler:home:main_boiler:chActive"}
 Switch	main_boiler_dhwState "Domestic hot water active" { channel="plugwiseha:appliance_boiler:home:main_boiler:dhwActive"}
+
+Switch main_boiler_coolingState "Cooling state" { channel="plugwiseha:appliance_boiler:home:main_boiler:coolingState"}
+Number:Temperature main_boiler_intendedBoilerTemp "Intended boiler temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:intendedBoilerTemp"}
+Switch main_boiler_flameState "Flame state" { channel="plugwiseha:appliance_boiler:home:main_boiler:flameState"}
+Switch main_boiler_intendedHeatingState "Intended heating state" { channel="plugwiseha:appliance_boiler:home:main_boiler:intendedHeatingState"}
+Number main_boiler_modulationLevel "Modulation level" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:modulationLevel"}
+Number main_boiler_otAppFaultCode "Opentherm app. faultcode" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:otAppFaultCode"}
+Number:Temperature main_boiler_dhwTemperature "DHW temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:dhwTemperature"}
+Number main_boiler_otOEMFaultCode "Opentherm OEM faultcode" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:otOEMFaultCode"}
+Number:Temperature main_boiler_boilerTemperature "Boiler temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:boilerTemperature"}
+Number:Temperature main_boiler_dhwSetpoint "DHW setpoint" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:dhwSetpoint"}
+Number:Temperature main_boiler_maxBoilerTemperature "Max. boiler temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:maxBoilerTemperature"}
+Switch main_boiler_dhwComfortMode "DHW comfort mode" { channel="plugwiseha:appliance_boiler:home:main_boiler:dhwComfortMode"}
 ```
 
 **transform/plugwiseha.map**
@@ -172,6 +197,19 @@ sitemap plugwiseha label="PlugwiseHA Binding"
 		Number item=main_boiler_waterpressure
 		Switch item=main_boiler_chState
 		Switch item=main_boiler_dhwState
+
+		Switch item=main_boiler_coolingState
+		Number item=main_boiler_intendedBoilerTemp
+		Switch item=main_boiler_flameState
+		Switch item=main_boiler_intendedHeatingState
+		Number item=main_boiler_modulationLevel
+		Number item=main_boiler_otAppFaultCode
+		Number item=main_boiler_dhwTemperature
+		Number item=main_boiler_otOEMFaultCode
+		Number item=main_boiler_boilerTemperature
+		Number item=main_boiler_dhwSetpoint
+		Number item=main_boiler_maxBoilerTemperature
+		Switch item=main_boiler_dhwComfortMode
 	}
 }
 ```

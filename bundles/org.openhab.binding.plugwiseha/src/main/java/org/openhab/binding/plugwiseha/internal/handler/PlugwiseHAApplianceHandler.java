@@ -206,6 +206,18 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_BATTERYLEVEL_CHANNEL:
             case APPLIANCE_CHSTATE_CHANNEL:
             case APPLIANCE_DHWSTATE_CHANNEL:
+            case APPLIANCE_COOLINGSTATE_CHANNEL:
+            case APPLIANCE_INTENDEDBOILERTEMP_CHANNEL:
+            case APPLIANCE_FLAMESTATE_CHANNEL:
+            case APPLIANCE_INTENDEDHEATINGSTATE_CHANNEL:
+            case APPLIANCE_MODULATIONLEVEL_CHANNEL:
+            case APPLIANCE_OTAPPLICATIONFAULTCODE_CHANNEL:
+            case APPLIANCE_DHWTEMPERATURE_CHANNEL:
+            case APPLIANCE_OTOEMFAULTCODE_CHANNEL:
+            case APPLIANCE_BOILERTEMPERATURE_CHANNEL:
+            case APPLIANCE_DHWSETPOINT_CHANNEL:
+            case APPLIANCE_MAXBOILERTEMPERATURE_CHANNEL:
+            case APPLIANCE_DHWCOMFORTMODE_CHANNEL:
             case APPLIANCE_OFFSET_CHANNEL:
             case APPLIANCE_POWER_USAGE_CHANNEL:
             case APPLIANCE_SETPOINT_CHANNEL:
@@ -318,6 +330,81 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     state = new QuantityType<Pressure>(entity.getWaterPressure().get(), unit);
                 }
                 break;
+            case APPLIANCE_COOLINGSTATE_CHANNEL:
+                if (entity.getCoolingState().isPresent()) {
+                    state = OnOffType.from(entity.getCoolingState().get());
+                }
+                break;
+            case APPLIANCE_INTENDEDBOILERTEMP_CHANNEL:
+                if (entity.getIntendedBoilerTemp().isPresent()) {
+                    Unit<Temperature> unit = entity.getIntendedBoilerTempUnit().orElse(UNIT_CELSIUS)
+                            .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getIntendedBoilerTemp().get(), unit);
+                }
+                break;
+            case APPLIANCE_FLAMESTATE_CHANNEL:
+                if (entity.getFlameState().isPresent()) {
+                    state = OnOffType.from(entity.getFlameState().get());
+                }
+                break;
+            case APPLIANCE_INTENDEDHEATINGSTATE_CHANNEL:
+                if (entity.getIntendedHeatingState().isPresent()) {
+                    state = OnOffType.from(entity.getIntendedHeatingState().get());
+                }
+                break;
+            case APPLIANCE_MODULATIONLEVEL_CHANNEL:
+                if (entity.getModulationLevel().isPresent()) {
+                    Double modulationLevel = entity.getModulationLevel().get() * 100;
+                    state = new QuantityType<Dimensionless>(modulationLevel.intValue(), Units.PERCENT);
+                }
+                break;
+            case APPLIANCE_OTAPPLICATIONFAULTCODE_CHANNEL:
+                if (entity.getOTAppFaultCode().isPresent()) {
+                    state = new QuantityType<Dimensionless>(entity.getOTAppFaultCode().get().intValue(), Units.PERCENT);
+                }
+                break;
+            case APPLIANCE_DHWTEMPERATURE_CHANNEL:
+                if (entity.getDHWTemp().isPresent()) {
+                    Unit<Temperature> unit = entity.getDHWTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
+                            ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getDHWTemp().get(), unit);
+                }
+                break;
+            case APPLIANCE_OTOEMFAULTCODE_CHANNEL:
+                if (entity.getOTOEMFaultcode().isPresent()) {
+                    state = new QuantityType<Dimensionless>(entity.getOTOEMFaultcode().get().intValue(), Units.PERCENT);
+                }
+                break;
+            case APPLIANCE_BOILERTEMPERATURE_CHANNEL:
+                if (entity.getBoilerTemp().isPresent()) {
+                    Unit<Temperature> unit = entity.getBoilerTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
+                            ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getBoilerTemp().get(), unit);
+                }
+                break;
+            case APPLIANCE_DHWSETPOINT_CHANNEL:
+                if (entity.getDHTSetpoint().isPresent()) {
+                    Unit<Temperature> unit = entity.getDHTSetpointUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
+                            ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getDHTSetpoint().get(), unit);
+                }
+                break;
+            case APPLIANCE_MAXBOILERTEMPERATURE_CHANNEL:
+                if (entity.getMaxBoilerTemp().isPresent()) {
+                    Unit<Temperature> unit = entity.getMaxBoilerTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
+                            ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getMaxBoilerTemp().get(), unit);
+                }
+                break;
+            case APPLIANCE_DHWCOMFORTMODE_CHANNEL:
+                if (entity.getDHWComfortMode().isPresent()) {
+                    state = OnOffType.from(entity.getDHWComfortMode().get());
+                }
+                break;
             default:
                 break;
         }
@@ -328,7 +415,8 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
     }
 
     protected synchronized void addBatteryChannels() {
-        logger.debug("Battery operated appliance detected: adding 'Battery level' and 'Battery low level' channels");
+        logger.debug("Battery operated appliance: {} detected: adding 'Battery level' and 'Battery low level' channels",
+                thing.getLabel());
 
         ChannelUID channelUIDBatteryLevel = new ChannelUID(getThing().getUID(), APPLIANCE_BATTERYLEVEL_CHANNEL);
         ChannelUID channelUIDBatteryLevelLow = new ChannelUID(getThing().getUID(), APPLIANCE_BATTERYLEVELLOW_CHANNEL);
@@ -375,7 +463,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
 
     protected void setApplianceProperties() {
         Map<String, String> properties = editProperties();
-        logger.debug("Setting thing properties");
+        logger.debug("Setting thing properties to {}", thing.getLabel());
         Appliance localAppliance = this.appliance;
         if (localAppliance != null) {
             properties.put(PlugwiseHABindingConstants.APPLIANCE_PROPERTY_DESCRIPTION, localAppliance.getDescription());

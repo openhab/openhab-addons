@@ -143,6 +143,74 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
         return this.pointLogs.getCHState();
     }
 
+    public Optional<Boolean> getCoolingState() {
+        return this.pointLogs.getCoolingState();
+    }
+
+    public Optional<Double> getIntendedBoilerTemp() {
+        return this.pointLogs.getIntendedBoilerTemp();
+    }
+
+    public Optional<String> getIntendedBoilerTempUnit() {
+        return this.pointLogs.getIntendedBoilerTempUnit();
+    }
+
+    public Optional<Boolean> getFlameState() {
+        return this.pointLogs.getFlameState();
+    }
+
+    public Optional<Boolean> getIntendedHeatingState() {
+        return this.pointLogs.getIntendedHeatingState();
+    }
+
+    public Optional<Double> getModulationLevel() {
+        return this.pointLogs.getModulationLevel();
+    }
+
+    public Optional<Double> getOTAppFaultCode() {
+        return this.pointLogs.getOTAppFaultCode();
+    }
+
+    public Optional<Double> getDHWTemp() {
+        return this.pointLogs.getDHWTemp();
+    }
+
+    public Optional<String> getDHWTempUnit() {
+        return this.pointLogs.getDHWTempUnit();
+    }
+
+    public Optional<Double> getOTOEMFaultcode() {
+        return this.pointLogs.getOTOEMFaultcode();
+    }
+
+    public Optional<Double> getBoilerTemp() {
+        return this.pointLogs.getBoilerTemp();
+    }
+
+    public Optional<String> getBoilerTempUnit() {
+        return this.pointLogs.getBoilerTempUnit();
+    }
+
+    public Optional<Double> getDHTSetpoint() {
+        return this.pointLogs.getDHTSetpoint();
+    }
+
+    public Optional<String> getDHTSetpointUnit() {
+        return this.pointLogs.getDHTSetpointUnit();
+    }
+
+    public Optional<Double> getMaxBoilerTemp() {
+        return this.pointLogs.getMaxBoilerTemp();
+    }
+
+    public Optional<String> getMaxBoilerTempUnit() {
+        return this.pointLogs.getMaxBoilerTempUnit();
+    }
+
+    public Optional<Boolean> getDHWComfortMode() {
+        return this.pointLogs.getDHWComfortMode();
+    }
+
     public Optional<Boolean> getDHWState() {
         return this.pointLogs.getDHWState();
     }

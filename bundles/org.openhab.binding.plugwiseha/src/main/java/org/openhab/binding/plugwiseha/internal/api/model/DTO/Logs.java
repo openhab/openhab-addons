@@ -32,101 +32,148 @@ public class Logs extends PlugwiseHACollection<Log> {
     private static final String POWER_USAGE = "electricity_consumed";
     private static final String RELAY = "relay";
     private static final String DHWSTATE = "domestic_hot_water_state";
+    private static final String COOLINGSTATE = "cooling_state";
+    private static final String INTENDEDBOILERTEMP = "intended_boiler_temperature";
+    private static final String FLAMESTATE = "flame_state";
+    private static final String INTENDEDHEATINGSTATE = "intended_central_heating_state";
+    private static final String MODULATIONLEVEL = "modulation_level";
+    private static final String OTAPPLICATIONFAULTCODE = "open_therm_application_specific_fault_code";
+    private static final String DHWTEMP = "domestic_hot_water_temperature";
+    private static final String OTOEMFAULTCODE = "open_therm_oem_fault_code";
+    private static final String BOILERTEMP = "boiler_temperature";
+    private static final String DHWSETPOINT = "domestic_hot_water_setpoint";
+    private static final String MAXBOILERTEMP = "maximum_boiler_temperature";
+    private static final String DHWCOMFORTMODE = "domestic_hot_water_comfort_mode";
     private static final String CHSTATE = "central_heating_state";
     private static final String VALVE_POSITION = "valve_position";
     private static final String WATER_PRESSURE = "central_heater_water_pressure";
 
+    public Optional<Boolean> getCoolingState() {
+        return this.getLog(COOLINGSTATE).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getIntendedBoilerTemp() {
+        return this.getLog(INTENDEDBOILERTEMP).map(logEntry -> logEntry.getMeasurementAsDouble())
+                .orElse(Optional.empty());
+    }
+
+    public Optional<String> getIntendedBoilerTempUnit() {
+        return this.getLog(INTENDEDBOILERTEMP).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+    }
+
+    public Optional<Boolean> getFlameState() {
+        return this.getLog(FLAMESTATE).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
+    }
+
+    public Optional<Boolean> getIntendedHeatingState() {
+        return this.getLog(INTENDEDHEATINGSTATE).map(logEntry -> logEntry.getMeasurementAsBoolean())
+                .orElse(Optional.empty());
+    }
+
+    public Optional<Double> getModulationLevel() {
+        return this.getLog(MODULATIONLEVEL).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getOTAppFaultCode() {
+        return this.getLog(OTAPPLICATIONFAULTCODE).map(logEntry -> logEntry.getMeasurementAsDouble())
+                .orElse(Optional.empty());
+    }
+
+    public Optional<Double> getDHWTemp() {
+        return this.getLog(DHWTEMP).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<String> getDHWTempUnit() {
+        return this.getLog(DHWTEMP).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getOTOEMFaultcode() {
+        return this.getLog(OTOEMFAULTCODE).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getBoilerTemp() {
+        return this.getLog(BOILERTEMP).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<String> getBoilerTempUnit() {
+        return this.getLog(BOILERTEMP).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getDHTSetpoint() {
+        return this.getLog(DHWSETPOINT).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<String> getDHTSetpointUnit() {
+        return this.getLog(DHWSETPOINT).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getMaxBoilerTemp() {
+        return this.getLog(MAXBOILERTEMP).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<String> getMaxBoilerTempUnit() {
+        return this.getLog(MAXBOILERTEMP).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+    }
+
+    public Optional<Boolean> getDHWComfortMode() {
+        return this.getLog(DHWCOMFORTMODE).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
+    }
+
     public Optional<Double> getTemperature() {
-        return this.getLogTemperature().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+        return this.getLog(TEMPERATURE).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
     public Optional<String> getTemperatureUnit() {
-        return this.getLogTemperature().map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+        return this.getLog(TEMPERATURE).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
     }
 
     public Optional<Double> getThermostatTemperature() {
-        return this.getLogThermostat().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+        return this.getLog(THERMOSTAT).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
     public Optional<String> getThermostatTemperatureUnit() {
-        return this.getLogThermostat().map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+        return this.getLog(THERMOSTAT).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
     }
 
     public Optional<Double> getOffsetTemperature() {
-        return this.getLogOffsetTemperature().map(logEntry -> logEntry.getMeasurementAsDouble())
+        return this.getLog(TEMPERATURE_OFFSET).map(logEntry -> logEntry.getMeasurementAsDouble())
                 .orElse(Optional.empty());
     }
 
     public Optional<String> getOffsetTemperatureUnit() {
-        return this.getLogOffsetTemperature().map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+        return this.getLog(TEMPERATURE_OFFSET).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
     }
 
     public Optional<Boolean> getRelayState() {
-        return this.getLogRelay().map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
+        return this.getLog(RELAY).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
     }
 
     public Optional<Boolean> getDHWState() {
-        return this.getLogDHWState().map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
+        return this.getLog(DHWSTATE).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
     }
 
     public Optional<Boolean> getCHState() {
-        return this.getLogCHState().map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
+        return this.getLog(CHSTATE).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
     }
 
     public Optional<Double> getValvePosition() {
-        return this.getLogValvePosition().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+        return this.getLog(VALVE_POSITION).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
     public Optional<Double> getWaterPressure() {
-        return this.getLogPressure().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+        return this.getLog(WATER_PRESSURE).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
     public Optional<Double> getBatteryLevel() {
-        return this.getLogBattery().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+        return this.getLog(BATTERY).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
     public Optional<Double> getPowerUsage() {
-        return this.getLogPowerUsage().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+        return this.getLog(POWER_USAGE).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
-    public Optional<Log> getLogThermostat() {
-        return Optional.ofNullable(this.get(THERMOSTAT));
-    }
-
-    public Optional<Log> getLogOffsetTemperature() {
-        return Optional.ofNullable(this.get(TEMPERATURE_OFFSET));
-    }
-
-    public Optional<Log> getLogTemperature() {
-        return Optional.ofNullable(this.get(TEMPERATURE));
-    }
-
-    public Optional<Log> getLogRelay() {
-        return Optional.ofNullable(this.get(RELAY));
-    }
-
-    public Optional<Log> getLogDHWState() {
-        return Optional.ofNullable(this.get(DHWSTATE));
-    }
-
-    public Optional<Log> getLogCHState() {
-        return Optional.ofNullable(this.get(CHSTATE));
-    }
-
-    public Optional<Log> getLogValvePosition() {
-        return Optional.ofNullable(this.get(VALVE_POSITION));
-    }
-
-    public Optional<Log> getLogPressure() {
-        return Optional.ofNullable(this.get(WATER_PRESSURE));
-    }
-
-    public Optional<Log> getLogBattery() {
-        return Optional.ofNullable(this.get(BATTERY));
-    }
-
-    public Optional<Log> getLogPowerUsage() {
-        return Optional.ofNullable(this.get(POWER_USAGE));
+    public Optional<Log> getLog(String logItem) {
+        return Optional.ofNullable(this.get(logItem));
     }
 
     @Override
