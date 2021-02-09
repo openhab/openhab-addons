@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +78,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * Future to set reconciliation flag
      */
     private @Nullable ScheduledFuture<?> reconciliationFuture;
+
+    // List of futures used for command retries
+    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
 
     /**
      * List of executions
@@ -275,6 +279,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("Doing cleanup");
         stopPolling();
         executions.clear();
+        // cancel all scheduled retries
+        retryFutures.forEach(x -> x.cancel(false));
+
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -561,13 +568,23 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        Boolean result = sendCommandInternal(io, command, params, url);
+        removeFinishedRetries();
+
+        boolean result = sendCommandInternal(io, command, params, url);
         if (!result) {
-            sendCommandInternal(io, command, params, url);
+            scheduleRetry(io, command, params, url, thingConfig.getRetries());
         }
     }
 
-    private Boolean sendCommandInternal(String io, String command, String params, String url) {
+    private void repeatSendCommandInternal(String io, String command, String params, String url, int retries) {
+        logger.debug("Retrying command, retries left: {}", retries);
+        boolean result = sendCommandInternal(io, command, params, url);
+        if (!result && (retries > 0)) {
+            scheduleRetry(io, command, params, url, retries - 1);
+        }
+    }
+
+    private boolean sendCommandInternal(String io, String command, String params, String url) {
         String value = params.equals("[]") ? command : params.replace("\"", "");
         String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value
                 + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\"" + command
@@ -585,6 +602,17 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return true;
         }
         return false;
+    }
+
+    private void removeFinishedRetries() {
+        retryFutures.removeIf(x -> x.isDone());
+        logger.debug("Currently {} retries are scheduled.", retryFutures.size());
+    }
+
+    private void scheduleRetry(String io, String command, String params, String url, int retries) {
+        retryFutures.add(scheduler.schedule(() -> {
+            repeatSendCommandInternal(io, command, params, url, retries);
+        }, thingConfig.getRetryDelay(), TimeUnit.MILLISECONDS));
     }
 
     private String getThingLabelByURL(String io) {
