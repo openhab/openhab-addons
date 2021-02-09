@@ -16,6 +16,7 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -138,21 +139,19 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     }
 
     private void updateLightColor(ColorControlModel colorControlModel, LevelControlModel levelControlModel) {
-        if (colorControlModel != null && levelControlModel != null) {
-            updateThingChannelState(CHANNEL_COLOR, new HSBType(new DecimalType(colorControlModel.hue), new PercentType(colorControlModel.saturation), new PercentType(levelControlModel.level )) );
-        }
+        DecimalType hue = new DecimalType(colorControlModel.hue);
+        PercentType brightness = new PercentType(levelControlModel.levelpercentage);
+        PercentType saturation = new PercentType(colorControlModel.saturation);
+        updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
+        updateThingChannelState(CHANNEL_BRIGHTNESS, brightness);
     }
 
     private void updateLightLevel(LevelControlModel levelControlModel) {
-        if (levelControlModel != null) {
-            updateThingChannelState(CHANNEL_BRIGHTNESS, new PercentType(levelControlModel.level));
-        }
+        updateThingChannelState(CHANNEL_BRIGHTNESS, new PercentType(levelControlModel.levelpercentage));
     }
 
     private void updateOnOffUnit(SimpleOnOffModel simpleOnOffUnit) {
-        if (simpleOnOffUnit != null) {
-            updateThingChannelState(CHANNEL_ONOFF_STATE, SimpleOnOffModel.asState(simpleOnOffUnit.getState()));
-        }
+        updateThingChannelState(CHANNEL_ONOFF_STATE, SimpleOnOffModel.asState(simpleOnOffUnit.getState()));
     }
 
     private void updateHANFUNAlarmSensor(@Nullable AlertModel alertModel) {
@@ -369,15 +368,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     }
                 }
                 break;
+            case CHANNEL_COLOR:
             case CHANNEL_BRIGHTNESS:
-                BigDecimal level = null;
-                if (command instanceof PercentType) {
-                    level = ((PercentType) command).toBigDecimal();
-                }
-                if (Objects.nonNull(level)) {
-                    fritzBox.setLevel(ain, level);
-                    updateLightLevel(state.getLevelControlModel());
-                }
+                processLightBulbActions(command, fritzBox, ain);
                 break;
             case CHANNEL_SETTEMP:
                 BigDecimal temperature = null;
@@ -437,6 +430,36 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             default:
                 logger.debug("Received unknown channel {}", channelId);
                 break;
+        }
+    }
+
+    /**
+     * logic to ececute command on a dect500 bulb
+     *
+     * @param command
+     * @param fritzBox
+     * @param ain
+     */
+    private void processLightBulbActions(Command command, FritzAhaWebInterface fritzBox, String ain) {
+        BigInteger level = null;
+        Integer hue = null;
+        Integer saturation = null;
+        if (command instanceof PercentType) {
+            level = ((PercentType) command).toBigDecimal().toBigInteger();
+        }
+        if (command instanceof HSBType) {
+            HSBType hsbType = (HSBType) command;
+            if (level == null) {
+                level = hsbType.getBrightness().toBigDecimal().toBigInteger();
+            }
+            hue = hsbType.getHue().intValue();
+            saturation = hsbType.getSaturation().intValue();
+        }
+        if (Objects.nonNull(level)) {
+            fritzBox.setLevel(ain, level);
+        }
+        if (Objects.nonNull(saturation) && Objects.nonNull(hue)) {
+            fritzBox.setHueAndSaturation(ain, hue, saturation);
         }
     }
 

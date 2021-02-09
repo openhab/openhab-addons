@@ -15,6 +15,7 @@ package org.openhab.binding.avmfritz.internal.hardware;
 import static org.eclipse.jetty.http.HttpMethod.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Joshua Bacher - Support for DECT!500 (being more detailed on http request)
  */
 @NonNullByDefault
 public class FritzAhaWebInterface {
@@ -257,8 +260,12 @@ public class FritzAhaWebInterface {
         }
 
         FritzAhaContentExchange getExchange = new FritzAhaContentExchange(callback);
-        httpClient.newRequest(getURL(path, addSID(args))).method(GET).onResponseSuccess(getExchange)
-                .onResponseFailure(getExchange).send(getExchange);
+        Request request = httpClient.newRequest(getURL(path, addSID(args))).method(GET).onResponseSuccess(getExchange)
+                .onResponseFailure(getExchange);
+        request.send(getExchange);
+
+        logger.trace("http request send: '{}'", getURL(path, addSID(args)));
+
         return getExchange;
     }
 
@@ -294,7 +301,7 @@ public class FritzAhaWebInterface {
         return asyncGet(callback);
     }
 
-    public FritzAhaContentExchange setLevel(String ain, BigDecimal level) {
+    public FritzAhaContentExchange setLevel(String ain, BigInteger level) {
         FritzAhaSetLevelCallback callback = new FritzAhaSetLevelCallback(this, ain, level);
         return asyncGet(callback);
     }
@@ -315,6 +322,12 @@ public class FritzAhaWebInterface {
 
     private FritzAhaContentExchange setHeatingMode(String ain, String command, long endTime) {
         FritzAhaSetHeatingModeCallback callback = new FritzAhaSetHeatingModeCallback(this, ain, command, endTime);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setHueAndSaturation(String ain, Integer hue, Integer saturation) {
+        FritzAhaSetHSCallback callback = new FritzAhaSetHSCallback(this, ain, hue, saturation);
+        logger.trace("calling asyncGet on callback.");
         return asyncGet(callback);
     }
 }
