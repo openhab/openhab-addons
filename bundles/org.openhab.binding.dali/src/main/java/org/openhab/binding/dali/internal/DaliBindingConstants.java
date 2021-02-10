@@ -39,8 +39,8 @@ public class DaliBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_DEVICE, THING_TYPE_GROUP, THING_TYPE_RGB));
 
-    public static final String CHANNEL_DIM_AT_FADE_RATE = "dim-at-fade-rate";
-    public static final String CHANNEL_DIM_IMMEDIATELY = "dim-immediately";
+    public static final String CHANNEL_DIM_AT_FADE_RATE = "dimAtFadeRate";
+    public static final String CHANNEL_DIM_IMMEDIATELY = "dimImmediately";
     public static final String CHANNEL_COLOR = "color";
 
     public static final String TARGET_ID = "targetId";

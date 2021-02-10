@@ -26,11 +26,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dali.internal.protocol.DaliBackwardFrame;
@@ -70,14 +68,6 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Command received on daliserver {}", command);
-
-        try {
-            // TODO: Send broadcast commands
-        } catch (DaliException e) {
-            logger.info("Error handling command: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
     }
 
     @Override
@@ -88,12 +78,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
         commandExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
 
         if (validConfiguration(config)) {
-            // start the keepalive process
-            if (heartbeat == null) {
-                logger.info("Starting heartbeat job every {} min", HEARTBEAT_MINUTES);
-                heartbeat = this.scheduler.scheduleWithFixedDelay(this::sendHeartbeat, 0, HEARTBEAT_MINUTES,
-                        TimeUnit.MINUTES);
-            }
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -103,7 +88,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        if (config.host.isEmpty() || config.port == 0) {
+        if (config.host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "daliserver address not specified");
             return false;
@@ -114,7 +99,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
 
     private Socket getConnection() throws IOException {
         try {
-            logger.debug("Getting connection to daliserver on: {}  Port: {}", config.host, config.port);
+            logger.debug("Creating connection to daliserver on: {}  port: {}", config.host, config.port);
             Socket socket = new Socket(config.host, config.port);
             socket.setSoTimeout(DALI_DEFAULT_TIMEOUT);
             return socket;
@@ -126,7 +111,6 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        cancelHeartbeat();
         dispose(commandExecutor);
     }
 
@@ -134,24 +118,6 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
         if (executor != null) {
             executor.shutdownNow();
         }
-    }
-
-    private void cancelHeartbeat() {
-        logger.debug("Stopping heartbeat");
-        ScheduledFuture<?> heartbeat = this.heartbeat;
-
-        if (heartbeat != null) {
-            logger.debug("Cancelling heartbeat job");
-            heartbeat.cancel(true);
-            this.heartbeat = null;
-        } else {
-            logger.debug("Heartbeat was not active");
-        }
-    }
-
-    private void sendHeartbeat() {
-        // TODO: Query states from time to time
-        updateStatus(ThingStatus.ONLINE);
     }
 
     public CompletableFuture<@Nullable Void> sendCommand(DaliCommandBase command) {
@@ -164,19 +130,23 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
         ExecutorService commandExecutor = this.commandExecutor;
         if (commandExecutor != null) {
             commandExecutor.submit(() -> {
-                byte[] message = ArrayUtils.addAll(new byte[] { 0x2, 0x0 }, command.frame.pack());
+                byte[] prefix = new byte[] { 0x2, 0x0 };
+                byte[] message = command.frame.pack();
+                byte[] frame = new byte[prefix.length + message.length];
+                System.arraycopy(prefix, 0, frame, 0, prefix.length);
+                System.arraycopy(message, 0, frame, prefix.length, message.length);
 
                 try (Socket socket = getConnection();
                         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                         DataInputStream in = new DataInputStream(socket.getInputStream())) {
 
                     // send the command
-                    logger.debug("Sending: {}", DatatypeConverter.printHexBinary(message));
-                    out.write(message);
+                    logger.debug("Sending: {}", DatatypeConverter.printHexBinary(frame));
+                    out.write(frame);
                     if (command.sendTwice) {
                         out.flush();
                         in.readNBytes(4); // discard
-                        out.write(message);
+                        out.write(frame);
                     }
                     out.flush();
 
@@ -191,13 +161,13 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
                         return;
                     }
                 } catch (SocketTimeoutException e) {
-                    logger.warn("Timeout sending command to daliserver: {} Message: {}", message, e.getMessage());
+                    logger.warn("Timeout sending command to daliserver: {} Message: {}", frame, e.getMessage());
                     future.completeExceptionally(new DaliException("Timeout sending command to daliserver", e));
                 } catch (IOException e) {
-                    logger.warn("Problem sending command to daliserver: {} Message: {}", message, e.getMessage());
+                    logger.warn("Problem sending command to daliserver: {} Message: {}", frame, e.getMessage());
                     future.completeExceptionally(new DaliException("Problem sending command to daliserver", e));
                 } catch (Exception e) {
-                    logger.warn("Unexpected exception while sending command to daliserver: {} Message: {}", message,
+                    logger.warn("Unexpected exception while sending command to daliserver: {} Message: {}", frame,
                             e.getMessage());
                     future.completeExceptionally(e);
                 }

@@ -58,8 +58,6 @@ public class DaliRgbHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.info("Bridge status changed to {} updating {}", bridgeStatusInfo.getStatus(), getThing().getLabel());
-
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
             initDeviceState();
@@ -73,15 +71,10 @@ public class DaliRgbHandler extends BaseThingHandler {
 
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-            logger.debug("Initialized device state for rgb {} {}", ThingStatus.OFFLINE,
-                    ThingStatusDetail.CONFIGURATION_ERROR);
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
-            logger.debug("Initialized device state for rgb {}", ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            logger.debug("Initialized device state for rgb {} {}", ThingStatus.OFFLINE,
-                    ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

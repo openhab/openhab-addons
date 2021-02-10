@@ -21,8 +21,8 @@
 		<label>DALI Device</label>
 		<description>Controls a single device/ballast</description>
 		<channels>
-			<channel id="dim-at-fade-rate" typeId="dimmer"/>
-			<channel id="dim-immediately" typeId="dimmer"/>
+			<channel id="dimAtFadeRate" typeId="dimmer"/>
+			<channel id="dimImmediately" typeId="dimmer"/>
 		</channels>
 
 		<config-description>
@@ -41,8 +41,8 @@
 		<label>DALI Group</label>
 		<description>Controls a group of devices/ballasts</description>
 		<channels>
-			<channel id="dim-at-fade-rate" typeId="dimmer"/>
-			<channel id="dim-immediately" typeId="dimmer"/>
+			<channel id="dimAtFadeRate" typeId="dimmer"/>
+			<channel id="dimImmediately" typeId="dimmer"/>
 		</channels>
 
 		<config-description>
@@ -57,7 +57,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Dimmer</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<!-- RGB Type -->

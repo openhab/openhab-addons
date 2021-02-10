@@ -13,10 +13,8 @@
 package org.openhab.binding.dali.internal.protocol;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -58,15 +56,18 @@ public class DaliFrame {
 
     public byte[] pack() {
         int remaining = length();
-        List<Byte> l = new ArrayList<Byte>();
-        int d = this.data;
+        List<Byte> bytesList = new ArrayList<Byte>();
+        int tmp = this.data;
         while (remaining > 0) {
-            l.add((byte) (d & 0xff));
-            d = d >> 8;
+            bytesList.add((byte) (tmp & 0xff));
+            tmp = tmp >> 8;
             remaining = remaining - 8;
         }
-        Collections.reverse(l);
-        Byte[] bytes = l.toArray(new Byte[l.size()]);
-        return ArrayUtils.toPrimitive(bytes);
+        byte[] result = new byte[bytesList.size()];
+        int i = 0;
+        for (byte b : bytesList) {
+            result[bytesList.size() - i++] = b;
+        }
+        return result;
     }
 }
