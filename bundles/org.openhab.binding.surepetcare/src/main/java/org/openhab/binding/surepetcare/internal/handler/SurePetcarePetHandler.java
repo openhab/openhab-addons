@@ -196,18 +196,16 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                         updateState(PET_CHANNEL_FEEDER_DEVICE, new StringType(device.name));
                         int bowlId = device.control.bowls.bowlId;
                         int numBowls = feeding.feedChange.size();
-                        for (int i = 0; (i < 2) && (i < numBowls); i++) {
-                            if (bowlId == 1) {
+                        if (numBowls > 0) {
+                            if (bowlId == BOWL_ID_ONE_BOWL_USED) {
                                 updateState(PET_CHANNEL_FEEDER_LAST_CHANGE,
-                                        new QuantityType<Mass>(feeding.feedChange.get(i), SIUnits.GRAM));
-                            } else if (bowlId == 4) {
-                                if ((i + 1) == 1) {
-                                    updateState(PET_CHANNEL_FEEDER_LAST_CHANGE_LEFT,
-                                            new QuantityType<Mass>(feeding.feedChange.get(i), SIUnits.GRAM));
-                                }
-                                if ((i + 1) == 2) {
+                                        new QuantityType<Mass>(feeding.feedChange.get(0), SIUnits.GRAM));
+                            } else if (bowlId == BOWL_ID_TWO_BOWLS_USED) {
+                                updateState(PET_CHANNEL_FEEDER_LAST_CHANGE_LEFT,
+                                        new QuantityType<Mass>(feeding.feedChange.get(0), SIUnits.GRAM));
+                                if (numBowls > 1) {
                                     updateState(PET_CHANNEL_FEEDER_LAST_CHANGE_RIGHT,
-                                            new QuantityType<Mass>(feeding.feedChange.get(i), SIUnits.GRAM));
+                                            new QuantityType<Mass>(feeding.feedChange.get(1), SIUnits.GRAM));
                                 }
                             }
                         }

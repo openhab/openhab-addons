@@ -56,6 +56,8 @@ public class SurePetcareConstants {
     public static final long DEFAULT_REFRESH_INTERVAL_STATUS = 300; // 5 mins
 
     public static final int FLAP_MAX_NUMBER_OF_CURFEWS = 4;
+    public static final int BOWL_ID_ONE_BOWL_USED = 1;
+    public static final int BOWL_ID_TWO_BOWLS_USED = 4;
 
     public static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)

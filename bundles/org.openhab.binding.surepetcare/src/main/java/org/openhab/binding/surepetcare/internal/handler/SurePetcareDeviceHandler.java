@@ -17,6 +17,7 @@ import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import javax.measure.quantity.Mass;
 
@@ -147,25 +148,25 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                     updateThingCurfews(device);
                     updateState(DEVICE_CHANNEL_LOCKING_MODE, new StringType(device.status.locking.modeId.toString()));
                 } else if (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE)) {
-                    int numBowls = device.control.bowls.bowlSettings.size();
-                    for (int i = 0; (i < 2) && (i < numBowls); i++) {
-                        BowlSettings bowlSettings = device.control.bowls.bowlSettings.get(i);
-                        if (device.control.bowls.bowlId.equals(1)) {
-                            updateState(DEVICE_CHANNEL_BOWLS_FOOD, new StringType(bowlSettings.foodId.toString()));
-                            updateState(DEVICE_CHANNEL_BOWLS_TARGET,
-                                    new QuantityType<Mass>(bowlSettings.targetId, SIUnits.GRAM));
-                        } else if (device.control.bowls.bowlId.equals(4)) {
-                            if (i == 0) {
-                                updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT,
-                                        new StringType(bowlSettings.foodId.toString()));
-                                updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT,
-                                        new QuantityType<Mass>(bowlSettings.targetId, SIUnits.GRAM));
-                            }
-                            if (i == 1) {
+                    int bowlId = device.control.bowls.bowlId;
+                    List<BowlSettings> bowlSettings = device.control.bowls.bowlSettings;
+                    int numBowls = bowlSettings.size();
+                    if (numBowls > 0) {
+                        if (bowlId == BOWL_ID_ONE_BOWL_USED) {
+                            updateState(DEVICE_CHANNEL_BOWLS_FOOD,
+                                    new StringType(bowlSettings.get(0).foodId.toString()));
+                            updateState(DEVICE_CHANNEL_BOWLS_TARGET, new QuantityType<Mass>(
+                                    device.control.bowls.bowlSettings.get(0).targetId, SIUnits.GRAM));
+                        } else if (bowlId == BOWL_ID_TWO_BOWLS_USED) {
+                            updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT,
+                                    new StringType(bowlSettings.get(0).foodId.toString()));
+                            updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT,
+                                    new QuantityType<Mass>(bowlSettings.get(0).targetId, SIUnits.GRAM));
+                            if (numBowls > 1) {
                                 updateState(DEVICE_CHANNEL_BOWLS_FOOD_RIGHT,
-                                        new StringType(bowlSettings.foodId.toString()));
+                                        new StringType(bowlSettings.get(1).foodId.toString()));
                                 updateState(DEVICE_CHANNEL_BOWLS_TARGET_RIGHT,
-                                        new QuantityType<Mass>(bowlSettings.targetId, SIUnits.GRAM));
+                                        new QuantityType<Mass>(bowlSettings.get(1).targetId, SIUnits.GRAM));
                             }
                         }
                     }
