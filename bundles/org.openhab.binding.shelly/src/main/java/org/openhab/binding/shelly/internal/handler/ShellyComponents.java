@@ -338,6 +338,10 @@ public class ShellyComponents {
                     thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
                 }
             }
+            if (sdata.externalPower != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_BAT_EXT_POWER,
+                        getOnOff(sdata.externalPower));
+            }
             if (sdata.motion != null) { // Shelly Sense
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
                         getOnOff(sdata.motion));

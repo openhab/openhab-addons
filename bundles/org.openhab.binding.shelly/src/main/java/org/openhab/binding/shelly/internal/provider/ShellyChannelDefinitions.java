@@ -202,7 +202,8 @@ public class ShellyChannelDefinitions {
 
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
-                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH));
+                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_BAT_EXT_POWER, "externalPower", ITEMT_SWITCH));
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -443,6 +444,7 @@ public class ShellyChannelDefinitions {
         if (sdata.bat != null) {
             addChannel(thing, newChannels, sdata.bat.value != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
             addChannel(thing, newChannels, sdata.bat.value != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
+            addChannel(thing, newChannels, sdata.externalPower != null, CHANNEL_GROUP_BATTERY, CHANNEL_BAT_EXT_POWER);
         }
 
         addChannel(thing, newChannels, sdata.sensorError != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);

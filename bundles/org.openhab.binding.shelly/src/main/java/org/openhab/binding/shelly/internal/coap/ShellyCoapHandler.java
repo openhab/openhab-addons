@@ -83,6 +83,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private boolean discovering = false;
     private int coiotPort = COIOT_PORT;
 
+    private long coiotMessages = 0;
+    private long coiotErrors = 0;
     private int lastSerial = -1;
     private String lastPayload = "";
     private Map<String, CoIotDescrBlk> blkMap = new LinkedHashMap<>();
@@ -157,6 +159,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     @Override
     public void processResponse(@Nullable Response response) {
         if (response == null) {
+            coiotErrors++;
             return; // other device instance
         }
         ResponseCode code = response.getCode();
@@ -164,6 +167,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             // error handling
             logger.debug("{}: Unknown Response Code {} received, payload={}", thingName, code,
                     response.getPayloadString());
+            coiotErrors++;
             return;
         }
 
@@ -172,9 +176,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         boolean match = ip.contains(config.deviceIp);
         if (!match) {
             // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
-            int i = 0;
-            while (i < options.size()) {
-                Option opt = options.get(i);
+            for (Option opt : options) {
                 if (opt.getNumber() == COIOT_OPTION_GLOBAL_DEVID) {
                     String devid = opt.getStringValue();
                     if (devid.contains("#")) {
@@ -186,7 +188,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         }
                     }
                 }
-                i++;
             }
         }
         if (!match) {
@@ -199,19 +200,19 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         String uri = "";
         int serial = -1;
         try {
+            coiotMessages++;
             if (logger.isDebugEnabled()) {
                 logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
                         response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
             }
             if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
                 logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
+                coiotErrors++;
                 return;
             }
 
             payload = response.getPayloadString();
-            int i = 0;
-            while (i < options.size()) {
-                Option opt = options.get(i);
+            for (Option opt : options) {
                 switch (opt.getNumber()) {
                     case OptionNumberRegistry.URI_PATH:
                         uri = COLOIT_URI_BASE + opt.getStringValue();
@@ -255,7 +256,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         logger.debug("{} ({}): COAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
                                 opt.getValue());
                 }
-                i++;
             }
 
             // If we received a CoAP message successful the thing must be online
@@ -281,6 +281,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 }
             } catch (ShellyApiException e) {
                 logger.debug("{}: Unable to process CoIoT message: {}", thingName, e.toString());
+                coiotErrors++;
             }
 
             if (!discovering) {
@@ -291,6 +292,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         } catch (JsonSyntaxException | IllegalArgumentException | NullPointerException e) {
             logger.debug("{}: Unable to process CoIoT Message for payload={}", thingName, payload, e);
             resetSerial();
+            coiotErrors++;
         }
     }
 
@@ -647,6 +649,14 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         }
         resetSerial();
         coiotBound = false;
+    }
+
+    public long getMessageCount() {
+        return coiotMessages;
+    }
+
+    public long getErrorCount() {
+        return coiotErrors;
     }
 
     public void dispose() {

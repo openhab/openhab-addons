@@ -265,6 +265,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_GROUP_BATTERY = "battery";
     public static final String CHANNEL_SENSOR_BAT_LEVEL = "batteryLevel";
     public static final String CHANNEL_SENSOR_BAT_LOW = "lowBattery";
+    public static final String CHANNEL_BAT_EXT_POWER = "externalPower";
 
     public static final String CHANNEL_GROUP_LIGHT_CONTROL = "control";
     public static final String CHANNEL_LIGHT_COLOR_MODE = "mode";

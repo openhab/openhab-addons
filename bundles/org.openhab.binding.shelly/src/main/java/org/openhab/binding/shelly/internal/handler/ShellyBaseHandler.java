@@ -177,7 +177,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     /**
-     * This routine is called every time the Thing configuration has been changed (e.g. PaperUI)
+     * This routine is called every time the Thing configuration has been changed
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
@@ -257,10 +257,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 tmpPrf.updatePeriod);
 
         // update thing properties
-        ShellySettingsStatus status = api.getStatus();
-        tmpPrf.updateFromStatus(status);
-        updateProperties(tmpPrf, status);
-        checkVersion(tmpPrf, status);
+        tmpPrf.status = api.getStatus();
+        tmpPrf.updateFromStatus(tmpPrf.status);
+        updateProperties(tmpPrf, tmpPrf.status);
+        checkVersion(tmpPrf, tmpPrf.status);
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
             config.eventsCoIoT = true;
@@ -273,8 +273,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         // All initialization done, so keep the profile and set Thing to ONLINE
-        profile = tmpPrf;
-        fillDeviceStatus(status, false);
+        fillDeviceStatus(tmpPrf.status, false);
         postEvent(ALARM_TYPE_NONE, false);
         api.setActionURLs(); // register event urls
         if (config.eventsCoIoT) {
@@ -283,6 +282,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         logger.debug("{}: Thing successfully initialized.", thingName);
+        profile = tmpPrf;
         setThingOnline(); // if API call was successful the thing must be online
 
         return true; // success
@@ -372,6 +372,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                 logger.trace("{}: Updating status", thingName);
                 ShellySettingsStatus status = api.getStatus();
+                profile.status = status;
                 profile.updateFromStatus(status);
 
                 // If status update was successful the thing must be online
@@ -507,7 +508,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             alarm = ALARM_TYPE_RESTARTED;
             force = true;
             stats.unexpectedRestarts++;
-            logger.info("{}: Unexpected device restart #{}", thingName, stats.unexpectedRestarts);
+            logger.debug("{}: Device restart #{} detected", thingName, stats.unexpectedRestarts);
 
             // Force re-initialization on next status update
             if (!profile.hasBattery || profile.isMotion) {
@@ -521,6 +522,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             alarm = ALARM_TYPE_LOADERR;
         }
         stats.lastUptime = getLong(status.uptime);
+        stats.coiotMessages = coap.getMessageCount();
+        stats.coiotErrors = coap.getErrorCount();
 
         if (!alarm.isEmpty()) {
             postEvent(alarm, force);
@@ -1180,6 +1183,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     public boolean updateDeviceStatus(ShellySettingsStatus status) throws ShellyApiException {
         return false;
+    }
+
+    public ShellyDeviceStats getStats() {
+        return stats;
     }
 
     public Map<String, String> getStatsProp() {

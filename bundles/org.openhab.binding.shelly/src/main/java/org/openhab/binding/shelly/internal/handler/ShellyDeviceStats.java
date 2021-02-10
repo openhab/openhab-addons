@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 /***
@@ -22,6 +23,7 @@ import org.openhab.binding.shelly.internal.util.ShellyUtils;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class ShellyDeviceStats {
     public long lastUptime = 0;
     public long unexpectedRestarts = 0;
@@ -31,6 +33,8 @@ public class ShellyDeviceStats {
     public long alarms = 0;
     public String lastAlarm = "";
     public long lastAlarmTs = 0;
+    public long coiotMessages = 0;
+    public long coiotErrors = 0;
 
     public Map<String, String> asProperties(String timeZone) {
         Map<String, String> prop = new HashMap<>();
@@ -43,6 +47,8 @@ public class ShellyDeviceStats {
         prop.put("lastAlarm", lastAlarm);
         prop.put("lastAlarmTs",
                 lastAlarmTs != 0 ? ShellyUtils.getTimestamp(timeZone, lastAlarmTs).format(null).replace('T', ' ') : "");
+        prop.put("coiotMessages", String.valueOf(coiotMessages));
+        prop.put("coiotErrors", String.valueOf(coiotErrors));
         return prop;
     }
 }
