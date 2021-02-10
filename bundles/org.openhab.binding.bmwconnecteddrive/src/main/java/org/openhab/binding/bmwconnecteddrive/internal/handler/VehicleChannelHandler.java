@@ -614,29 +614,22 @@ public class VehicleChannelHandler extends BaseThingHandler {
                         enabled == null ? UnDefType.UNDEF : OnOffType.from(enabled));
                 if (channels instanceof TimerDaysChannels) {
                     final Set<DayOfWeek> days = profile.getDays(key);
-                    final Boolean mon = profile.isDayEnabled(key, DayOfWeek.MONDAY);
-                    final Boolean tue = profile.isDayEnabled(key, DayOfWeek.TUESDAY);
-                    final Boolean wed = profile.isDayEnabled(key, DayOfWeek.WEDNESDAY);
-                    final Boolean thu = profile.isDayEnabled(key, DayOfWeek.THURSDAY);
-                    final Boolean fri = profile.isDayEnabled(key, DayOfWeek.FRIDAY);
-                    final Boolean sat = profile.isDayEnabled(key, DayOfWeek.SATURDAY);
-                    final Boolean sun = profile.isDayEnabled(key, DayOfWeek.SUNDAY);
                     updateState(((TimerDaysChannels) channels).days,
                             days == null ? UnDefType.UNDEF : StringType.valueOf(ChargeProfileUtils.formatDays(days)));
                     updateState(((TimerDaysChannels) channels).mon,
-                            mon == null ? UnDefType.UNDEF : OnOffType.from(mon));
+                            days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(DayOfWeek.MONDAY)));
                     updateState(((TimerDaysChannels) channels).tue,
-                            tue == null ? UnDefType.UNDEF : OnOffType.from(tue));
+                            days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(DayOfWeek.TUESDAY)));
                     updateState(((TimerDaysChannels) channels).wed,
-                            wed == null ? UnDefType.UNDEF : OnOffType.from(wed));
+                            days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(DayOfWeek.WEDNESDAY)));
                     updateState(((TimerDaysChannels) channels).thu,
-                            thu == null ? UnDefType.UNDEF : OnOffType.from(thu));
+                            days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(DayOfWeek.THURSDAY)));
                     updateState(((TimerDaysChannels) channels).fri,
-                            fri == null ? UnDefType.UNDEF : OnOffType.from(fri));
+                            days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(DayOfWeek.FRIDAY)));
                     updateState(((TimerDaysChannels) channels).sat,
-                            sat == null ? UnDefType.UNDEF : OnOffType.from(sat));
+                            days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(DayOfWeek.SATURDAY)));
                     updateState(((TimerDaysChannels) channels).sun,
-                            sun == null ? UnDefType.UNDEF : OnOffType.from(sun));
+                            days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(DayOfWeek.SUNDAY)));
                 }
             }
         }

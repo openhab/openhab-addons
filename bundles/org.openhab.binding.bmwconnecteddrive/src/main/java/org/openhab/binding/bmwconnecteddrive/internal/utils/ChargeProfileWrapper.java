@@ -189,14 +189,6 @@ public class ChargeProfileWrapper {
         }
     }
 
-    public @Nullable Boolean isDayEnabled(final ProfileKey key, final DayOfWeek day) {
-        final Set<DayOfWeek> daySet = daysOfWeek.get(key);
-        if (daySet != null) {
-            return daySet.contains(day);
-        }
-        return null;
-    }
-
     public @Nullable LocalTime getTime(final ProfileKey key) {
         return times.get(key);
     }
