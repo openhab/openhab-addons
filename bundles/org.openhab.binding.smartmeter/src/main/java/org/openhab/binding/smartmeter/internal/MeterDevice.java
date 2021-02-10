@@ -164,13 +164,13 @@ public abstract class MeterDevice<T> {
         return Flowable.fromPublisher(connector.getMeterValues(initMessage, period, executorService))
                 .timeout(timeout + period.toMillis(), TimeUnit.MILLISECONDS, Schedulers.from(executorService))
                 .doOnSubscribe(sub -> {
-                    logger.info("Opening connection to {}", getDeviceId());
+                    logger.debug("Opening connection to {}", getDeviceId());
                     connector.openConnection();
                 }).doOnError(ex -> {
                     if (ex instanceof TimeoutException) {
-                        logger.warn("Timeout occured for {}; {}", getDeviceId(), ex.getMessage());
+                        logger.debug("Timeout occured for {}; {}", getDeviceId(), ex.getMessage());
                     } else {
-                        logger.warn("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
+                        logger.debug("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
                                 ex.getMessage(), RETRY_DELAY, getDeviceId(), ex);
                     }
                     connector.closeConnection();

@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,20 +67,35 @@ public class Tr064PhonebookImpl implements Phonebook {
             InputStream xml = new ByteArrayInputStream(contentResponse.getContent());
 
             JAXBContext context = JAXBContext.newInstance(PhonebooksType.class);
+            XMLInputFactory xif = XMLInputFactory.newFactory();
+            xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            XMLStreamReader xsr = xif.createXMLStreamReader(new StreamSource(xml));
             Unmarshaller um = context.createUnmarshaller();
-            PhonebooksType phonebooksType = um.unmarshal(new StreamSource(xml), PhonebooksType.class).getValue();
+            PhonebooksType phonebooksType = um.unmarshal(xsr, PhonebooksType.class).getValue();
 
             phonebookName = phonebooksType.getPhonebook().getName();
 
             phonebook = phonebooksType.getPhonebook().getContact().stream().map(contact -> {
                 String contactName = contact.getPerson().getRealName();
                 return contact.getTelephony().getNumber().stream()
-                        .collect(Collectors.toMap(number -> normalizeNumber(number.getValue()), number -> contactName));
+                        .collect(Collectors.toMap(number -> normalizeNumber(number.getValue()), number -> contactName,
+                                this::mergeSameContactNames));
             }).collect(HashMap::new, HashMap::putAll, HashMap::putAll);
             logger.debug("Downloaded phonebook {}: {}", phonebookName, phonebook);
-        } catch (JAXBException | InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (JAXBException | InterruptedException | ExecutionException | TimeoutException | XMLStreamException e) {
             logger.warn("Failed to get phonebook with URL {}:", phonebookUrl, e);
         }
+    }
+
+    // in case there are multiple phone entries with same number -> name mapping, i.e. in phonebooks exported from
+    // mobiles containing multiple accounts like: local, cloudprovider1, messenger1, messenger2,...
+    private String mergeSameContactNames(String nameA, String nameB) {
+        if (nameA != null && nameA.equals(nameB)) {
+            return nameA;
+        }
+        throw new IllegalStateException(
+                "Found different names for the same number: '" + nameA + "' and '" + nameB + "'");
     }
 
     @Override

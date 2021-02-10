@@ -168,8 +168,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     }
 
     /**
-     * Update bridge properties with properties returned from Niko Home Control Controller, so they can be made visible
-     * in PaperUI.
+     * Update bridge properties with properties returned from Niko Home Control Controller.
      */
     protected abstract void updateProperties();
 

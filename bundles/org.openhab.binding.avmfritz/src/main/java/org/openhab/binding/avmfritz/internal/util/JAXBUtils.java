@@ -14,6 +14,7 @@ package org.openhab.binding.avmfritz.internal.util;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLInputFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +37,7 @@ public class JAXBUtils {
     public static final @Nullable JAXBContext JAXBCONTEXT_DEVICES = initJAXBContextDevices();
     public static final @Nullable JAXBContext JAXBCONTEXT_TEMPLATES = initJAXBContextTemplates();
     public static final @Nullable JAXBContext JAXBCONTEXT_COLORS = initJAXBColorDefault();
+    public static final XMLInputFactory XMLINPUTFACTORY = initXMLInputFactory();
 
     private static @Nullable JAXBContext initJAXBContextDevices() {
         try {
@@ -64,4 +66,10 @@ public class JAXBUtils {
         }
     }
 
+    private static XMLInputFactory initXMLInputFactory() {
+        XMLInputFactory xif = XMLInputFactory.newInstance();
+        xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        return xif;
+    }
 }
