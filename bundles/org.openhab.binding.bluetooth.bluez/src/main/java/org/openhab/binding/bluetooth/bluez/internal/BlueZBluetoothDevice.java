@@ -416,6 +416,12 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return true;
     }
 
+    /**
+     * Convert the flags of BluetoothGattCharacteristic to the int bitset used by BluetoothCharacteristic.
+     *
+     * @param dBusBlueZCharacteristic source characteristic to read the flags from
+     * @param characteristic destination characteristic to write to properties to
+     */
     private void convertCharacteristicProperties(BluetoothGattCharacteristic dBusBlueZCharacteristic,
             BluetoothCharacteristic characteristic) {
         int properties = 0;
