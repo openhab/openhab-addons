@@ -31,16 +31,16 @@ Use the value you find in the URL at the x-es (including the -s) in this example
 ## Channels
 
 
-| channel       | type      | description                                                                                                |
-| ------------- | --------- | ---------------------------------------------------------------------------------------------------------- |
-| onlineState   | Switch    | If the powerStation is currently on and reporting to the portal                                            |
-| lastUpdate    | DateTime  | Last time the powerStation sent information to the portal                                                  |
-| currentOutput | Number    | The current output of the powerStation in Watt                                                             |
-| todayTotal    | Number    | Todays total generation of the station in kWh                                                              |
-| monthTotal    | Number    | This month's total generation of the station in kWh                                                        |
-| overallTotal  | Number    | The total generation of the station since installation, in kWh                                             |
-| todayIncome   | Number    | Todays income as reported by the portal, if you have configured the power rates of your energy provider    |
-| totalIncome   | Number    | The total income as reported by the portal, if you have configured the power rates of your energy provider |
+| channel       | type             | description                                                                                                |
+| ------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| onlineState   | Switch           | If the powerStation is currently on and reporting to the portal                                            |
+| lastUpdate    | DateTime         | Last time the powerStation sent information to the portal                                                  |
+| currentOutput | Number:Power     | The current output of the powerStation in Watt                                                             |
+| todayTotal    | Number:Energy    | Todays total generation of the station in kWh                                                              |
+| monthTotal    | Number:Energy    | This month's total generation of the station in kWh                                                        |
+| overallTotal  | Number:Energy    | The total generation of the station since installation, in kWh                                             |
+| todayIncome   | Number           | Todays income as reported by the portal, if you have configured the power rates of your energy provider    |
+| totalIncome   | Number           | The total income as reported by the portal, if you have configured the power rates of your energy provider |
 
 ## Parameters
 
