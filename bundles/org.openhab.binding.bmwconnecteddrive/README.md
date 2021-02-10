@@ -638,7 +638,8 @@ Switch                  i3Timer3DayThu            "Timer 3 Thursday"            
 Switch                  i3Timer3DayFri            "Timer 3 Friday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-fri" } 
 Switch                  i3Timer3DaySat            "Timer 3 Saturday"                            <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-sat" } 
 Switch                  i3Timer3DaySun            "Timer 3 Sunday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-sun" } 
-Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-enabled" }  
+Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-enabled" }
+Switch                  i3OverrideEnabled         "Override Timer Enabled"                      <switch>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#override-enabled"}
 DateTime                i3OverrideDeparture       "Override Timer Departure [%1$tH:%1$tM]"      <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#override-departure" } 
 Number                  i3OverrideDepartureHour   "Override Timer Departure Hour [%d]"          <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#override-departure-hour" } 
 Number                  i3OverrideDepartureMinute "Override Timer Departure Minute [%d]"        <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#override-departure-minute" } 
