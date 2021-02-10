@@ -15,8 +15,6 @@ package org.openhab.binding.folderwatcher.internal;
 import static org.openhab.binding.folderwatcher.internal.FolderWatcherBindingConstants.*;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,8 +37,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.folderwatcher", service = ThingHandlerFactory.class)
 public class FolderWatcherHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_FTPFOLDER, THING_TYPE_LOCALFOLDER).collect(Collectors.toSet());
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_FTPFOLDER,
+            THING_TYPE_LOCALFOLDER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
