@@ -177,18 +177,16 @@ public class Logs extends PlugwiseHACollection<Log> {
     }
 
     @Override
-    public void merge(Map<String, Log> logs) {
-        if (logs != null) {
-            for (Log log : logs.values()) {
-                String type = log.getType();
+    public void merge(Map<String, Log> logsToMerge) {
+        if (logsToMerge != null) {
+            for (Log logToMerge : logsToMerge.values()) {
+                String type = logToMerge.getType();
                 Log originalLog = this.get(type);
-                Boolean originalLogIsOlder = false;
-                if (originalLog != null) {
-                    originalLogIsOlder = originalLog.isOlderThan(log);
-                }
 
-                if (originalLog == null || originalLogIsOlder) {
-                    this.put(type, log);
+                if (originalLog == null || originalLog.isOlderThan(logToMerge)) {
+                    this.put(type, logToMerge);
+                } else {
+                    this.put(type, originalLog);
                 }
             }
         }

@@ -92,8 +92,8 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
         if (compareTo == null) {
             return -1;
         }
-        ZonedDateTime compareToDate = compareTo.getModifiedDate();
-        ZonedDateTime compareFromDate = this.getModifiedDate();
+        ZonedDateTime compareToDate = compareTo.getMeasurementDate();
+        ZonedDateTime compareFromDate = this.getMeasurementDate();
         if (compareFromDate == null) {
             return -1;
         } else if (compareToDate == null) {
