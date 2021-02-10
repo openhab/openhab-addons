@@ -111,26 +111,37 @@ public class SEMSPortalHandler extends BaseThingHandler {
             return;
         }
         ensureRecentStatus();
-        if (CHANNEL_CURRENT_OUTPUT.equals(channelUID.getId())) {
+        switch (channelUID.getId()) {
+            case CHANNEL_CURRENT_OUTPUT:
             updateState(channelUID.getId(), StateHelper.getCurrentOutput(currentStatus));
-        } else if (CHANNEL_TODAY_TOTAL.equals(channelUID.getId())) {
+                break;
+            case CHANNEL_TODAY_TOTAL:
             updateState(channelUID.getId(), StateHelper.getDayTotal(currentStatus));
-        } else if (CHANNEL_MONTH_TOTAL.equals(channelUID.getId())) {
+                break;
+            case CHANNEL_MONTH_TOTAL:
             updateState(channelUID.getId(), StateHelper.getMonthTotal(currentStatus));
-        } else if (CHANNEL_OVERALL_TOTAL.equals(channelUID.getId())) {
+                break;
+            case CHANNEL_OVERALL_TOTAL:
             updateState(channelUID.getId(), StateHelper.getOverallTotal(currentStatus));
-        } else if (CHANNEL_ONLINE_STATE.equals(channelUID.getId())) {
+                break;
+            case CHANNEL_ONLINE_STATE:
             updateState(channelUID.getId(), StateHelper.getOnline(currentStatus));
             if (currentStatus != null && currentStatus.isOnline() != stationOnline) {
                 stationOnline = currentStatus.isOnline();
                 triggerChannel(channelUID, OnOffType.from(stationOnline).name());
             }
-        } else if (CHANNEL_TODAY_INCOME.equals(channelUID.getId())) {
+                break;
+            case CHANNEL_TODAY_INCOME:
             updateState(channelUID.getId(), StateHelper.getDayIncome(currentStatus));
-        } else if (CHANNEL_TOTAL_INCOME.equals(channelUID.getId())) {
+                break;
+            case CHANNEL_TOTAL_INCOME:
             updateState(channelUID.getId(), StateHelper.getTotalIncome(currentStatus));
-        } else if (CHANNEL_LASTUPDATE.equals(channelUID.getId())) {
+                break;
+            case CHANNEL_LASTUPDATE:
             updateState(channelUID.getId(), StateHelper.getLastUpdate(currentStatus));
+                break;
+            default:
+                logger.debug("No mapping found for channel {}", channelUID.getId());
         }
     }
 
