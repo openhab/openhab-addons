@@ -113,32 +113,32 @@ public class SEMSPortalHandler extends BaseThingHandler {
         ensureRecentStatus();
         switch (channelUID.getId()) {
             case CHANNEL_CURRENT_OUTPUT:
-            updateState(channelUID.getId(), StateHelper.getCurrentOutput(currentStatus));
+                updateState(channelUID.getId(), StateHelper.getCurrentOutput(currentStatus));
                 break;
             case CHANNEL_TODAY_TOTAL:
-            updateState(channelUID.getId(), StateHelper.getDayTotal(currentStatus));
+                updateState(channelUID.getId(), StateHelper.getDayTotal(currentStatus));
                 break;
             case CHANNEL_MONTH_TOTAL:
-            updateState(channelUID.getId(), StateHelper.getMonthTotal(currentStatus));
+                updateState(channelUID.getId(), StateHelper.getMonthTotal(currentStatus));
                 break;
             case CHANNEL_OVERALL_TOTAL:
-            updateState(channelUID.getId(), StateHelper.getOverallTotal(currentStatus));
+                updateState(channelUID.getId(), StateHelper.getOverallTotal(currentStatus));
                 break;
             case CHANNEL_ONLINE_STATE:
-            updateState(channelUID.getId(), StateHelper.getOnline(currentStatus));
-            if (currentStatus != null && currentStatus.isOnline() != stationOnline) {
-                stationOnline = currentStatus.isOnline();
-                triggerChannel(channelUID, OnOffType.from(stationOnline).name());
-            }
+                updateState(channelUID.getId(), StateHelper.getOnline(currentStatus));
+                if (currentStatus != null && currentStatus.isOnline() != stationOnline) {
+                    stationOnline = currentStatus.isOnline();
+                    triggerChannel(channelUID, OnOffType.from(stationOnline).name());
+                }
                 break;
             case CHANNEL_TODAY_INCOME:
-            updateState(channelUID.getId(), StateHelper.getDayIncome(currentStatus));
+                updateState(channelUID.getId(), StateHelper.getDayIncome(currentStatus));
                 break;
             case CHANNEL_TOTAL_INCOME:
-            updateState(channelUID.getId(), StateHelper.getTotalIncome(currentStatus));
+                updateState(channelUID.getId(), StateHelper.getTotalIncome(currentStatus));
                 break;
             case CHANNEL_LASTUPDATE:
-            updateState(channelUID.getId(), StateHelper.getLastUpdate(currentStatus));
+                updateState(channelUID.getId(), StateHelper.getLastUpdate(currentStatus));
                 break;
             default:
                 logger.debug("No mapping found for channel {}", channelUID.getId());
@@ -189,7 +189,6 @@ public class SEMSPortalHandler extends BaseThingHandler {
         }
         SEMSLoginResponse loginResponse = gson.fromJson(response, SEMSLoginResponse.class);
         if (loginResponse == null) {
-            logger.debug("SEMSPortal answer not understood: {}", loginResponse);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Check username / password");
             return;
         }
@@ -201,12 +200,15 @@ public class SEMSPortalHandler extends BaseThingHandler {
             loggedIn = true;
             updateStatus(ThingStatus.ONLINE);
         } else {
-            logger.warn("Invalid credentials provided. Server returned error.");
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR, "Check username / password");
         }
     }
 
     private void updateStation() {
+        if (!loggedIn) {
+            logger.debug("Not logged in. Not updating.");
+            return;
+        }
         String response = sendPost(STATUS_URL, gson.toJson(new StatusRequestBody(config.station)));
         if (response == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -215,7 +217,6 @@ public class SEMSPortalHandler extends BaseThingHandler {
         }
         SEMSResponse semsResponse = gson.fromJson(response, SEMSResponse.class);
         if (semsResponse == null) {
-            logger.debug("SEMSPortal answer not uderstood: {}", response);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Invalid response from SEMS portal");
             return;
@@ -236,14 +237,12 @@ public class SEMSPortalHandler extends BaseThingHandler {
             login();
             updateStation();
         } else if (semsResponse.isError()) {
-            String errorMessage = "ERROR status code received from SEMS portal. Please check your station ID";
-            logger.error(errorMessage);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "ERROR status code received from SEMS portal. Please check your station ID");
         } else {
-            String errorMessage = String.format("Unknown status code received from SEMS portal: %s - %s",
-                    semsResponse.getCode(), semsResponse.getMsg());
-            logger.error(errorMessage);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Unknown status code received from SEMS portal: %s - %s", semsResponse.getCode(),
+                            semsResponse.getMsg()));
         }
     }
 
@@ -263,7 +262,7 @@ public class SEMSPortalHandler extends BaseThingHandler {
                     .content(new StringContentProvider(payload, StandardCharsets.UTF_8.name()), "application/json");
             request.getHeaders().remove(HttpHeader.ACCEPT_ENCODING);
             ContentResponse response = request.send();
-            logger.debug("received response: {}", response.getContentAsString());
+            logger.trace("received response: {}", response.getContentAsString());
             return response.getContentAsString();
         } catch (Exception e) {
             logger.debug("{} when posting to url {}", e.getClass().getSimpleName(), url, e);
