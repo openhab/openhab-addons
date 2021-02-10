@@ -231,7 +231,7 @@ public class FritzAhaWebInterface {
     /**
      * Sends a HTTP GET request using the synchronous client
      *
-     * @param path Path of the requested resource
+     * @param url Path of the requested resource
      * @return response
      */
     public @Nullable String syncGet(String url) {
@@ -327,7 +327,6 @@ public class FritzAhaWebInterface {
 
     public FritzAhaContentExchange setHueAndSaturation(String ain, Integer hue, Integer saturation) {
         FritzAhaSetHSCallback callback = new FritzAhaSetHSCallback(this, ain, hue, saturation);
-        logger.trace("calling asyncGet on callback.");
         return asyncGet(callback);
     }
 }

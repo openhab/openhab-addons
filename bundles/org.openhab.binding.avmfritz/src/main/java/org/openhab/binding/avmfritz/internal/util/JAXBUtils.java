@@ -17,6 +17,7 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.avmfritz.internal.dto.ColorDefaultsModel;
 import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ public class JAXBUtils {
 
     public static final @Nullable JAXBContext JAXBCONTEXT_DEVICES = initJAXBContextDevices();
     public static final @Nullable JAXBContext JAXBCONTEXT_TEMPLATES = initJAXBContextTemplates();
+    public static final @Nullable JAXBContext JAXBCONTEXT_COLORS = initJAXBColorDefault();
 
     private static @Nullable JAXBContext initJAXBContextDevices() {
         try {
@@ -52,4 +54,14 @@ public class JAXBUtils {
             return null;
         }
     }
+
+    private static @Nullable JAXBContext initJAXBColorDefault() {
+        try {
+            return JAXBContext.newInstance(ColorDefaultsModel.class);
+        } catch (JAXBException e) {
+            LOGGER.error("Exception creating JAXBContext for templates: {}", e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
+
 }
