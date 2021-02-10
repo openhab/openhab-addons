@@ -69,13 +69,6 @@ public class DaliDeviceHandler extends BaseThingHandler {
     public void initDeviceState() {
         Bridge bridge = getBridge();
 
-        String type = "unknown";
-        if (THING_TYPE_DEVICE.equals(this.thing.getThingTypeUID())) {
-            type = "device";
-        } else if (THING_TYPE_GROUP.equals(this.thing.getThingTypeUID())) {
-            type = "group";
-        }
-
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
