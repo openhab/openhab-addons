@@ -143,12 +143,6 @@ public class SEMSPortalHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SEMSPortalConfiguration.class);
-        if (!config.isProperlyInitialized()) {
-            logger.warn("Username, password or station missing. Please provide the right values in the configuration.");
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Check username / password / station settings");
-            return;
-        }
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {

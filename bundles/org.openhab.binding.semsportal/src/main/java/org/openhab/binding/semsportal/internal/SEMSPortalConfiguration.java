@@ -34,8 +34,4 @@ public class SEMSPortalConfiguration {
     public String password = "";
     public String station = "";
     public int update = 5;
-
-    public boolean isProperlyInitialized() {
-        return !(username.isEmpty() || password.isEmpty() || station.isEmpty());
-    }
 }
