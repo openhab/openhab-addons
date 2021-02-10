@@ -134,7 +134,6 @@ public class SurePetcareAPIHelper {
      */
     public synchronized void updateTopologyCache() {
         try {
-
             SurePetcareTopology tc = SurePetcareConstants.GSON.fromJson(getDataFromApi(TOPOLOGY_URL),
                     SurePetcareTopology.class);
             if (tc != null) {

@@ -29,6 +29,8 @@ import com.google.gson.JsonSerializer;
 
 /**
  * GSON serialiser/deserialiser for converting {@link ZonedDateTime} objects.
+ *
+ * @author Rene Scherer - Initial Contribution
  */
 @NonNullByDefault
 public class GsonZonedDateTimeTypeAdapter implements JsonSerializer<ZonedDateTime>, JsonDeserializer<ZonedDateTime> {

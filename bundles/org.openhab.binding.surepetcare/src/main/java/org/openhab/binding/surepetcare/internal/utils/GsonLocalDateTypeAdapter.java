@@ -29,6 +29,8 @@ import com.google.gson.JsonSerializer;
 
 /**
  * GSON serialiser/deserialiser for converting {@link LocalDate} objects.
+ *
+ * @author Rene Scherer - Initial Contribution
  */
 @NonNullByDefault
 public class GsonLocalDateTypeAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
