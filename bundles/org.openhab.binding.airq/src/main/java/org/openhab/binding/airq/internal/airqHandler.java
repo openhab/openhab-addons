@@ -180,7 +180,7 @@ public class airqHandler extends BaseThingHandler {
                     changeSettings(newobj);
                     break;
                 /*
-                 * Not supported yet!
+                 * Not supported yet! Ready for implementation.
                  *
                  * case "getHistoryFiles":
                  * getDataFiles();
@@ -242,20 +242,69 @@ public class airqHandler extends BaseThingHandler {
                                 channelUID.getId(), command.toString());
                     }
                     break;
-                // TODO
                 case "location":
+                    PointType pt = (PointType) command;
+                    subjson.addProperty("lat", pt.getLatitude());
+                    subjson.addProperty("long", pt.getLongitude());
+                    newobj.add("geopos", subjson);
+                    changeSettings(newobj);
                     break;
                 case "nightmode_BrightnessDay":
+                    try {
+                        subjson.addProperty("BrightnessDay", Float.parseFloat(command.toString()));
+                        newobj.add("NightMode", subjson);
+                        changeSettings(newobj);
+                    } catch (Exception exc) {
+                        logger.error(
+                                "air-Q - airqHandler - handleCommand(): {} only accepts a float value, and {} is not.",
+                                channelUID.getId(), command.toString());
+                    }
                     break;
                 case "nightmode_BrightnessNight":
+                    try {
+                        subjson.addProperty("BrightnessNight", Float.parseFloat(command.toString()));
+                        newobj.add("NightMode", subjson);
+                        changeSettings(newobj);
+                    } catch (Exception exc) {
+                        logger.error(
+                                "air-Q - airqHandler - handleCommand(): {} only accepts a float value, and {} is not.",
+                                channelUID.getId(), command.toString());
+                    }
                     break;
                 case "roomType":
+                    newobj.addProperty("RoomType", command.toString());
+                    changeSettings(newobj);
                     break;
                 case "logLevel":
+                    String ll = command.toString();
+                    if (ll.equals("Error") || ll.equals("Warning") || ll.equals("Info")) {
+                        newobj.addProperty("Logging", ll);
+                        changeSettings(newobj);
+                    } else {
+                        logger.error(
+                                "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct setting for the power frequency suppression (only 50Hz or 60Hz)",
+                                channelUID.getId(), command.toString());
+                    }
                     break;
                 case "averagingRhythm":
+                    try {
+                        newobj.addProperty("SecondsMeasurementDelay", Integer.parseUnsignedInt(command.toString()));
+                    } catch (Exception exc) {
+                        logger.error(
+                                "air-Q - airqHandler - handleCommand(): {} only accepts an integer value, and {} is not.",
+                                channelUID.getId(), command.toString());
+                    }
                     break;
                 case "powerFreqSuppression":
+                    String newFreq = command.toString();
+                    if (newFreq.equals("50Hz") || newFreq.equals("60Hz") || newFreq.equals("50Hz+60Hz")) {
+                        newobj.addProperty("Rejection", newFreq);
+                        changeSettings(newobj);
+                    } else {
+                        logger.error(
+                                "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct setting for the power frequency suppression (only 50Hz or 60Hz)",
+                                channelUID.getId(), command.toString());
+                    }
                     break;
                 default:
                     logger.error(
@@ -267,11 +316,8 @@ public class airqHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("air-Q - airqHandler - initialize(): ipaddress={}, password={}",
-                getThing().getConfiguration().get("ipAddress"), getThing().getConfiguration().get("password"));
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
+        logger.debug("air-Q - airqHandler - initialize(): ipaddress={}",
+                getThing().getConfiguration().get("ipAddress"));
         updateStatus(ThingStatus.UNKNOWN);
         if (getThing().getConfiguration().get("ipAddress") != null) {
             ipaddress = getThing().getConfiguration().get("ipAddress").toString();
@@ -304,7 +350,7 @@ public class airqHandler extends BaseThingHandler {
     // AES decoding based on this tutorial: https://www.javainterviewpoint.com/aes-256-encryption-and-decryption/
     public @Nullable String decrypt(byte[] base64text, String password) {
         String content = "";
-        logger.trace("air-Q - airqHandler - decrypt(): password={}, content to decypt: {}", password, base64text);
+        logger.trace("air-Q - airqHandler - decrypt(): content to decypt: {}", base64text);
         byte[] encodedtextwithIV = Base64.getDecoder().decode(base64text);
         byte[] ciphertext = Arrays.copyOfRange(encodedtextwithIV, 16, encodedtextwithIV.length);
         byte[] passkey = Arrays.copyOf(password.getBytes(), 32);
@@ -500,6 +546,10 @@ public class airqHandler extends BaseThingHandler {
                     if (decEl != null) {
                         JsonObject decObj = decEl.getAsJsonObject();
                         logger.debug("air-Q - airqHandler - run(): decObj={}", decObj);
+                        // 'bat' is a field that is already delivered by air-Q but as
+                        // there are no air-Q devices which are powered with batteries
+                        // it is obsolete at this moment. We implemented the code anyway
+                        // to make it easier to add afterwords, but for the moment it is not applicable.
                         // processType(decObj, "bat", "battery", "pair");
                         processType(decObj, "cnt0_3", "fineDustCnt00_3", "pair");
                         processType(decObj, "cnt0_5", "fineDustCnt00_5", "pair");

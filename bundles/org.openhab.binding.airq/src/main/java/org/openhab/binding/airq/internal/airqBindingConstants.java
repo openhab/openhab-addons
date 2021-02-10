@@ -23,10 +23,6 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class airqBindingConstants {
-
     private static final String BINDING_ID = "airq";
-
-    // List of all Thing Type UIDs
-    // public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
     public static final ThingTypeUID THING_TYPE_AIRQ = new ThingTypeUID(BINDING_ID, "airq");
 }

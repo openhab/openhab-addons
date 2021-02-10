@@ -66,15 +66,5 @@ public class airqHandlerFactory extends BaseThingHandlerFactory {
         Thing th = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         logger.trace("air-Q - airqHandlerFactory - createThing: result Thing={}", th);
         return th;
-        /*
-         * if (airqBindingConstants.THING_TYPE_UID_BRIDGE.equals(thingTypeUID)) {
-         * logger.warn("Create Bridge: {}", adapterID);
-         * return super.createThing(thingTypeUID, configuration, thingUID, null);
-         * } else {
-         * if (supportsThingType(thingTypeUID)) {
-         * logger.trace("Create Thing: {}", adapterID);
-         * return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
-         * }
-         */
     }
 }
