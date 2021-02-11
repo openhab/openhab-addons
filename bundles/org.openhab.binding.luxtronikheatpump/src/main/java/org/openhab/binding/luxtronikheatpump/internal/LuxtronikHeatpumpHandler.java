@@ -306,7 +306,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(channelUpdaterJob, 0, config.refresh,
                         TimeUnit.SECONDS);
                 scheduledFutures.add(future);
-                logger.info("Scheduled {} every {} seconds", channelUpdaterJob, config.refresh);
+                logger.debug("Scheduled {} every {} seconds", channelUpdaterJob, config.refresh);
             }
         }
     }
