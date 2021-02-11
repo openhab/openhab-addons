@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DateTimeException;
@@ -40,6 +41,10 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.internal.Primitives;
+
 /**
  * {@link ShellyUtils} provides general utility functions
  *
@@ -47,6 +52,49 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class ShellyUtils {
+    private final static String PRE = "Unable to create object of type ";
+
+    public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ShellyApiException {
+        @Nullable
+        T o = fromJson(gson, json, classOfT, true);
+        if (o == null) {
+            throw new ShellyApiException("Unable to create JSON object");
+        }
+        return o;
+    }
+
+    public static @Nullable <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT, boolean exceptionOnNull)
+            throws ShellyApiException {
+        String className = substringAfter(classOfT.getName(), "$");
+
+        if (json == null) {
+            if (exceptionOnNull) {
+                throw new IllegalArgumentException(PRE + className + ": json is null!");
+            } else {
+                return null;
+            }
+        }
+
+        if (classOfT.isInstance(json)) {
+            return Primitives.wrap(classOfT).cast(json);
+        } else if (json.isEmpty()) { // update GSON might return null
+            throw new ShellyApiException(PRE + className + "from empty JSON");
+        } else {
+            try {
+                @Nullable
+                T obj = gson.fromJson(json, classOfT);
+                if ((obj == null) && exceptionOnNull) { // new in OH3: fromJson may return null
+                    throw new ShellyApiException(PRE + className + "from JSON: " + json);
+                }
+                return obj;
+            } catch (JsonSyntaxException e) {
+                throw new ShellyApiException(PRE + className + "from JSON (syntax/format error): " + json, e);
+            } catch (RuntimeException e) {
+                throw new ShellyApiException(PRE + className + "from JSON: " + json, e);
+            }
+        }
+    }
+
     public static String mkChannelId(String group, String channel) {
         return group + "#" + channel;
     }
@@ -171,7 +219,7 @@ public class ShellyUtils {
             return UnDefType.NULL;
         }
         BigDecimal bd = new BigDecimal(value.doubleValue());
-        return toQuantityType(bd.setScale(digits, BigDecimal.ROUND_HALF_UP), unit);
+        return toQuantityType(bd.setScale(digits, RoundingMode.HALF_UP), unit);
     }
 
     public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
@@ -233,7 +281,7 @@ public class ShellyUtils {
     }
 
     public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return profile.isBulb || profile.isDuo && !profile.inColor ? CHANNEL_GROUP_WHITE_CONTROL
+        return profile.isBulb || profile.isDuo ? CHANNEL_GROUP_WHITE_CONTROL
                 : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 

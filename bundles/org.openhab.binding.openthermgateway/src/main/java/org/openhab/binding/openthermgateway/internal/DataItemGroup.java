@@ -40,6 +40,8 @@ public class DataItemGroup {
                 new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 2, "cooling_enabled", CodeType.B),
                 new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 3, "otc_active", CodeType.B),
                 new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enable", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enablerequested", CodeType.T),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enableoverride", CodeType.R),
                 new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "0x00:5", CodeType.B),
                 new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "0x00:6", CodeType.B),
                 new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "0x00:7", CodeType.B),
@@ -104,7 +106,13 @@ public class DataItemGroup {
                 new DataItem(6, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "0x06:h6"),
                 new DataItem(6, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "0x06:h7") });
         g.put(7, new DataItem[] { new DataItem(7, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "0x07") });
-        g.put(8, new DataItem[] { new DataItem(8, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint2") });
+        g.put(8, new DataItem[] {
+                new DataItem(8, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint2", SIUnits.CELSIUS,
+                        CodeType.B),
+                new DataItem(8, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint2requested",
+                        SIUnits.CELSIUS, CodeType.T),
+                new DataItem(8, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint2override",
+                        SIUnits.CELSIUS, CodeType.R) });
         g.put(9, new DataItem[] { new DataItem(9, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "overridesetpoint") });
         g.put(10, new DataItem[] { new DataItem(10, Msg.WRITE, ByteType.HIGHBYTE, DataType.UINT8, 0, "0x0a:h"),
                 new DataItem(10, Msg.WRITE, ByteType.LOWBYTE, DataType.UINT8, 0, "0x0a:l") });

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.avmfritz.internal.callmonitor;
 
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.thing.ThingStatus;
@@ -32,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class handles all communication with the call monitor port of the fritzbox.
+ * This class handles all communication with the Call Monitor port of the FRITZ!Box.
  *
  * @author Kai Kreuzer - Initial contribution
  */
@@ -41,8 +42,8 @@ public class CallMonitor {
 
     protected final Logger logger = LoggerFactory.getLogger(CallMonitor.class);
 
-    // port number to connect to fritzbox
-    private final int MONITOR_PORT = 1012;
+    // port number to connect to FRITZ!Box
+    private static final int MONITOR_PORT = 1012;
 
     private @Nullable CallMonitorThread monitorThread;
     private final ScheduledFuture<?> reconnectJob;
@@ -62,12 +63,23 @@ public class CallMonitor {
             } catch (InterruptedException e) {
             }
 
-            // create a new thread for listening to the FritzBox
-            CallMonitorThread thread = new CallMonitorThread();
-            thread.setName("OH-binding-" + handler.getThing().getUID().getAsString());
+            // create a new thread for listening to the FRITZ!Box
+            CallMonitorThread thread = new CallMonitorThread("OH-binding-" + handler.getThing().getUID().getAsString());
             thread.start();
             this.monitorThread = thread;
         }, 0, 2, TimeUnit.HOURS);
+        // initialize states of Call Monitor channels
+        resetChannels();
+    }
+
+    /**
+     * Reset channels.
+     */
+    public void resetChannels() {
+        handler.updateState(CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
+        handler.updateState(CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
+        handler.updateState(CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
+        handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_IDLE);
     }
 
     /**
@@ -75,10 +87,7 @@ public class CallMonitor {
      */
     public void dispose() {
         reconnectJob.cancel(true);
-        CallMonitorThread monitorThread = this.monitorThread;
-        if (monitorThread != null) {
-            monitorThread.interrupt();
-        }
+        stopThread();
     }
 
     public class CallMonitorThread extends Thread {
@@ -92,7 +101,11 @@ public class CallMonitor {
         // time to wait before reconnecting
         private long reconnectTime = 60000L;
 
-        public CallMonitorThread() {
+        public CallMonitorThread(String threadName) {
+            super(threadName);
+            setUncaughtExceptionHandler((thread, throwable) -> {
+                logger.warn("Lost connection to FRITZ!Box because of an uncaught exception: ", throwable);
+            });
         }
 
         @Override
@@ -100,16 +113,16 @@ public class CallMonitor {
             while (!interrupted) {
                 BufferedReader reader = null;
                 try {
-                    logger.debug("Callmonitor thread [{}] attempting connection to FritzBox on {}:{}.",
+                    logger.debug("Call Monitor thread [{}] attempting connection to FRITZ!Box on {}:{}.",
                             Thread.currentThread().getId(), ip, MONITOR_PORT);
                     socket = new Socket(ip, MONITOR_PORT);
                     reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     // reset the retry interval
                     reconnectTime = 60000L;
-                } catch (Exception e) {
+                } catch (IOException e) {
                     handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Cannot connect to Fritz!Box call monitor - make sure to enable it by dialing '#96*5'!");
-                    logger.debug("Error attempting to connect to FritzBox. Retrying in {} seconds",
+                            "Cannot connect to FRITZ!Box Call Monitor - make sure to enable it by dialing '#96*5'!");
+                    logger.debug("Error attempting to connect to FRITZ!Box. Retrying in {} seconds",
                             reconnectTime / 1000L, e);
                     try {
                         Thread.sleep(reconnectTime);
@@ -120,24 +133,24 @@ public class CallMonitor {
                     reconnectTime += 60000L;
                 }
                 if (reader != null) {
-                    logger.debug("Connected to FritzBox call monitor at {}:{}.", ip, MONITOR_PORT);
+                    logger.debug("Connected to FRITZ!Box Call Monitor at {}:{}.", ip, MONITOR_PORT);
                     handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                     while (!interrupted) {
                         try {
                             if (reader.ready()) {
                                 String line = reader.readLine();
                                 if (line != null) {
-                                    logger.debug("Received raw call string from fbox: {}", line);
+                                    logger.debug("Received raw call string from FRITZ!Box: {}", line);
                                     CallEvent ce = new CallEvent(line);
                                     handleCallEvent(ce);
                                 }
                             }
                         } catch (IOException e) {
                             if (interrupted) {
-                                logger.debug("Lost connection to Fritzbox because of an interrupt.");
+                                logger.debug("Lost connection to FRITZ!Box because of an interrupt.");
                             } else {
                                 handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "Lost connection to Fritz!Box: " + e.getMessage());
+                                        "Lost connection to FRITZ!Box: " + e.getMessage());
                             }
                             break;
                         } finally {
@@ -161,12 +174,12 @@ public class CallMonitor {
             if (socket != null) {
                 try {
                     socket.close();
-                    logger.debug("Socket to FritzBox closed.");
+                    logger.debug("Socket to FRITZ!Box closed.");
                 } catch (IOException e) {
-                    logger.warn("Failed to close connection to FritzBox.", e);
+                    logger.warn("Failed to close connection to FRITZ!Box.", e);
                 }
             } else {
-                logger.debug("Socket to FritzBox not open, therefore not closing it.");
+                logger.debug("Socket to FRITZ!Box not open, therefore not closing it.");
             }
         }
 
@@ -176,54 +189,41 @@ public class CallMonitor {
          * @param ce call event to process
          */
         private void handleCallEvent(CallEvent ce) {
-            if (ce.getCallType().equals("DISCONNECT")) {
-                // reset states of call monitor channels
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
-                        AVMFritzBindingConstants.CALL_STATE_IDLE);
-            } else if (ce.getCallType().equals("RING")) { // first event when call is incoming
-                StringListType state = new StringListType(ce.getInternalNo(), ce.getExternalNo());
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, state);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
-                        AVMFritzBindingConstants.CALL_STATE_RINGING);
-            } else if (ce.getCallType().equals("CONNECT")) { // when call is answered/running
-                StringListType state = new StringListType(ce.getExternalNo(), "");
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, state);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
-                        AVMFritzBindingConstants.CALL_STATE_ACTIVE);
-            } else if (ce.getCallType().equals("CALL")) { // outgoing call
-                StringListType state = new StringListType(ce.getExternalNo(), ce.getInternalNo());
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, state);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
-                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
-                        AVMFritzBindingConstants.CALL_STATE_DIALING);
+            switch (ce.getCallType()) {
+                case CallEvent.CALL_TYPE_DISCONNECT:
+                    // reset states of Call Monitor channels
+                    resetChannels();
+                    break;
+                case CallEvent.CALL_TYPE_RING: // first event when call is incoming
+                    handler.updateState(CHANNEL_CALL_INCOMING,
+                            new StringListType(ce.getInternalNo(), ce.getExternalNo()));
+                    handler.updateState(CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_RINGING);
+                    break;
+                case CallEvent.CALL_TYPE_CONNECT: // when call is answered/running
+                    handler.updateState(CHANNEL_CALL_ACTIVE, new StringListType(ce.getExternalNo(), ""));
+                    handler.updateState(CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_OUTGOING, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_ACTIVE);
+                    break;
+                case CallEvent.CALL_TYPE_CALL: // outgoing call
+                    handler.updateState(CHANNEL_CALL_INCOMING, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_OUTGOING,
+                            new StringListType(ce.getExternalNo(), ce.getInternalNo()));
+                    handler.updateState(CHANNEL_CALL_ACTIVE, UnDefType.UNDEF);
+                    handler.updateState(CHANNEL_CALL_STATE, CALL_STATE_DIALING);
+                    break;
             }
         }
     }
 
     public void stopThread() {
-        logger.debug("Stopping call monitor thread...");
-        if (monitorThread != null) {
-            monitorThread.interrupt();
+        logger.debug("Stopping Call Monitor thread...");
+        CallMonitorThread thread = this.monitorThread;
+        if (thread != null) {
+            thread.interrupt();
             monitorThread = null;
         }
-    }
-
-    public void startThread() {
-        logger.debug("Starting call monitor thread...");
-        if (monitorThread != null) {
-            monitorThread.interrupt();
-            monitorThread = null;
-        }
-        // create a new thread for listening to the FritzBox
-        monitorThread = new CallMonitorThread();
-        monitorThread.start();
     }
 }

@@ -206,6 +206,7 @@ public class EpsonProjectorDevice {
     public void disconnect() throws EpsonProjectorException {
         connection.disconnect();
         connected = false;
+        ready = true;
         ScheduledFuture<?> timeoutJob = this.timeoutJob;
         if (timeoutJob != null) {
             timeoutJob.cancel(true);
@@ -232,8 +233,8 @@ public class EpsonProjectorDevice {
     /*
      * Key code
      */
-    public void sendKeyCode(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
-        sendCommand(String.format("KEY %02X", value));
+    public void sendKeyCode(String value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        sendCommand(String.format("KEY %s", value));
     }
 
     /*

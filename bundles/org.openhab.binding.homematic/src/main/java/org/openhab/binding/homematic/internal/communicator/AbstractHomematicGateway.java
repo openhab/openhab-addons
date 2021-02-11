@@ -29,7 +29,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.BinRpcClient;
@@ -249,7 +248,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (TransferMode mode : availableInterfaces.values()) {
             if (!rpcServers.containsKey(mode)) {
                 RpcServer rpcServer = mode == TransferMode.XML_RPC ? new XmlRpcServer(this, config)
-                        : new BinRpcServer(this, config);
+                        : new BinRpcServer(this, config, id);
                 rpcServers.put(mode, rpcServer);
                 rpcServer.start();
             }
@@ -471,13 +470,13 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     @Override
     public void loadChannelValues(HmChannel channel) throws IOException {
         if (channel.getDevice().isGatewayExtras()) {
-            if (channel.getNumber() != HmChannel.CHANNEL_NUMBER_EXTRAS) {
+            if (!HmChannel.CHANNEL_NUMBER_EXTRAS.equals(channel.getNumber())) {
                 List<HmDatapoint> datapoints = channel.getDatapoints();
 
-                if (channel.getNumber() == HmChannel.CHANNEL_NUMBER_VARIABLE) {
+                if (HmChannel.CHANNEL_NUMBER_VARIABLE.equals(channel.getNumber())) {
                     loadVariables(channel);
                     logger.debug("Loaded {} gateway variable(s)", datapoints.size());
-                } else if (channel.getNumber() == HmChannel.CHANNEL_NUMBER_SCRIPT) {
+                } else if (HmChannel.CHANNEL_NUMBER_SCRIPT.equals(channel.getNumber())) {
                     loadScripts(channel);
                     logger.debug("Loaded {} gateway script(s)", datapoints.size());
                 }
@@ -730,9 +729,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             logger.debug("Echo event detected, ignoring '{}'", dpInfo);
         } else {
             try {
-                if (connectionTrackerThread != null && dpInfo.isPong() && id.equals(newValue)) {
-                    connectionTrackerThread.pongReceived();
-                }
                 if (initialized) {
                     final HmDatapoint dp = getDatapoint(dpInfo);
                     HmDatapointConfig config = gatewayAdapter.getDatapointConfig(dp);
@@ -753,9 +749,9 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     }
 
     @Override
-    public void newDevices(List<String> adresses) {
+    public void newDevices(List<String> addresses) {
         if (initialized && newDeviceEventsEnabled) {
-            for (String address : adresses) {
+            for (String address : addresses) {
                 try {
                     logger.debug("New device '{}' detected on gateway with id '{}'", address, id);
                     List<HmDevice> deviceDescriptions = getDeviceDescriptions();
@@ -803,7 +799,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Creates a virtual device for handling variables, scripts and other special gateway functions.
      */
     private HmDevice createGatewayDevice() {
-        String type = String.format("%s-%s", HmDevice.TYPE_GATEWAY_EXTRAS, StringUtils.upperCase(id));
+        String type = String.format("%s-%s", HmDevice.TYPE_GATEWAY_EXTRAS, id.toUpperCase());
         HmDevice device = new HmDevice(HmDevice.ADDRESS_GATEWAY_EXTRAS, getDefaultInterface(), type,
                 config.getGatewayInfo().getId(), null, null);
         device.setName(HmDevice.TYPE_GATEWAY_EXTRAS);
@@ -900,53 +896,23 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      */
     private class ConnectionTrackerThread implements Runnable {
         private boolean connectionLost;
-        private boolean ping;
-        private boolean pong;
 
         @Override
         public void run() {
             try {
-                if (ping && !pong) {
-                    handleInvalidConnection("No Pong received!");
+                ListBidcosInterfacesParser parser = getRpcClient(getDefaultInterface())
+                        .listBidcosInterfaces(getDefaultInterface());
+                Integer dutyCycleRatio = parser.getDutyCycleRatio();
+                if (dutyCycleRatio != null) {
+                    gatewayAdapter.onDutyCycleRatioUpdate(dutyCycleRatio);
                 }
-
-                pong = false;
-                if (config.getGatewayInfo().isCCU1()) {
-                    // the CCU1 does not support the ping command, we need a workaround
-                    getRpcClient(getDefaultInterface()).listBidcosInterfaces(getDefaultInterface());
-                    // if there is no exception, connection is valid
-                    pongReceived();
-                } else {
-                    getRpcClient(getDefaultInterface()).ping(getDefaultInterface(), id);
-                }
-                ping = true;
-
-                try {
-                    updateDutyCycleRatio();
-                } catch (IOException e) {
-                    logger.debug("Could not read the duty cycle ratio: {}", e.getMessage());
-                }
+                connectionConfirmed();
             } catch (IOException ex) {
                 try {
                     handleInvalidConnection("IOException " + ex.getMessage());
                 } catch (IOException ex2) {
                     // ignore
                 }
-            }
-        }
-
-        public void pongReceived() {
-            pong = true;
-            connectionConfirmed();
-        }
-
-        private void updateDutyCycleRatio() throws IOException {
-            ListBidcosInterfacesParser parser = getRpcClient(getDefaultInterface())
-                    .listBidcosInterfaces(getDefaultInterface());
-            Integer dutyCycleRatio = parser.getDutyCycleRatio();
-
-            if (dutyCycleRatio != null) {
-                gatewayAdapter.onDutyCycleRatioUpdate(dutyCycleRatio);
             }
         }
 
@@ -959,7 +925,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
 
         private void handleInvalidConnection(String cause) throws IOException {
-            ping = false;
             if (!connectionLost) {
                 connectionLost = true;
                 logger.warn("Connection lost on gateway '{}', cause: \"{}\"", id, cause);

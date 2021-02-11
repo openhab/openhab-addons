@@ -53,7 +53,7 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
 
             commManager.sendAck(this, (byte) 0x02);
             updatedState = commManager.createNewState();
-            updatedState.setLastKeepAlive(System.currentTimeMillis());
+            updatedState.lastKeepAlive.setValue(System.currentTimeMillis());
         } else if (subType == 0x0A) {
             byte enroll = message[4];
 
@@ -64,7 +64,7 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
                 logger.debug("Powermax alarm binding: Enrolling Powerlink");
                 commManager.enrollPowerlink();
                 updatedState = commManager.createNewState();
-                updatedState.setDownloadSetupRequired(true);
+                updatedState.downloadSetupRequired.setValue(true);
             } else {
                 commManager.sendAck(this, (byte) 0x02);
             }

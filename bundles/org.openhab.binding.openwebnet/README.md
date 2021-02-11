@@ -5,7 +5,7 @@ This binding integrates BTicino / Legrand MyHOME&reg; BUS and ZigBee wireless (M
 The binding supports:
 
 - both wired BUS/SCS (MyHOME) and wireless setups (MyHOME ZigBee). The two networks can be configured simultaneously
-- auto discovery of BUS/SCS IP gateways and devices and auto discovery of ZigBee USB devices
+- auto discovery of BUS/SCS IP and ZigBee USB gateways; auto discovery of devices
 - commands from openHAB and feedback (events) from BUS/SCS and wireless network
 
 ![F454 Gateway](doc/F454_gateway.png)
@@ -29,7 +29,7 @@ These gateways have been tested with the binding:
 
 - **ZigBee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
 
-**NOTE** The new BTicino Living Now&reg; wireless system is not supported by this binding as it does not use the OpenWebNet protocol.
+**NOTE** The new BTicino Living Now&reg; and Livinglight Smart&reg; wireless systems are not supported by this binding as they do not use the OpenWebNet protocol.
 
 The following Things and OpenWebNet `WHOs` are supported:
 
@@ -58,19 +58,18 @@ Gateway and Things discovery is supported by this binding.
 - BUS Gateway automatic discovery will work only for newer gateways supporting UPnP: F454, MyHOMEServer1, MH201, MH202, MH200N, MyHOME_Screen 10.
 For other gateways you can add them manually, see [Thing Configuration](#thing-configuration) below.
 - After gateway is discovered and added a connection with default password (`12345`) is tested first: if it does not work the gateway will go offline and an error status will be set. A correct password must then be set in the gateway Thing configuration otherwise the gateway will not become online.
-- Once the gateway is online, a second Scan request from Inbox will discover BUS devices
+- Once the gateway is online, a second Inbox Scan will discover BUS devices
 - BUS/SCS Dimmers must be ON and dimmed (30%-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
 
 #### Discovery by Activation
 
-BUS devices can also be discovered if activated while an Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer) to have it discovered by the binding.
+BUS devices can also be discovered if activated while an Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_, activate the physical device (for example dim the dimmer) to have it discovered by the binding.
 
 If a device cannot be discovered automatically it's always possible to add it manually, see [Configuring Devices](#configuring-devices).
 
 ### ZigBee Discovery
 
-- ZigBee USB gateway discovery is *not supported* at the moment: the gateway thing must be added manually see [Thing Configuration](#thing-configuration) below
 - The ZigBee USB Gateway must be inserted in one of the USB ports of the openHAB computer before a discovery is started
 - ***IMPORTANT NOTE:*** As for other openHAB bindings using the USB/serial ports, on Linux the `openhab` user must be member of the `dialout` group to be able to use USB/serial port; set the group with the following command:
 
@@ -79,7 +78,7 @@ If a device cannot be discovered automatically it's always possible to add it ma
     ```
 
     The user will need to logout and login to see the new group added. If you added your user to this group and still cannot get permission, reboot Linux to ensure the new group permission is attached to the `openhab` user.
-- Once the USB gateway is configured/added, a discovery request from Inbox will discover devices connected to it. Because of the ZigBee radio network, discovery will take ~40-60 sec. Be patient!
+- Once the ZigBee USB Gateway is added and online, a second Inbox Scan will discover devices connected to it. Because of the ZigBee radio network, device discovery will take ~40-60 sec. Be patient!
 - Wireless devices must be part of the same ZigBee network of the ZigBee USB Gateway to discover them. Please refer to [this video by BTicino](https://www.youtube.com/watch?v=CoIgg_Xqhbo) to setup a ZigBee wireless network which includes the ZigBee USB Gateway 
 - Only powered wireless devices part of the same ZigBee network and within radio coverage of the ZigBee USB Gateway will be discovered. Unreachable or not powered devices will be discovered as *GENERIC* devices and cannot be controlled
 - Wireless control units cannot be discovered by the ZigBee USB Gateway and therefore are not supported
@@ -108,12 +107,14 @@ Configuration parameters are:
 - `serialPort` : the serial port where the ZigBee USB Gateway is connected (`String`, *mandatory*)
     - Examples: `/dev/ttyUSB0` (Linux/RaPi), `COM3` (Windows)
 
+Alternatively the ZigBee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
+
 ### Configuring Devices
 
-Devices can be discovered automatically after a gateway has been configured and connected.
-For any manually added devices, you must configure:
+Devices can be discovered automatically using an Inbox Scan after a gateway has been configured and connected.
+For any manually added device, you must configure:
 
-- the associated gateway (`Bridge Selection` menu)
+- the associated gateway (`Parent Bridge` menu)
 - the `where` config parameter (`OpenWebNet Device Address`):
   - example for BUS/SCS device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
   - example for BUS/SCS device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
@@ -160,7 +161,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
 ZigBee USB Gateway and things configuration - for radio devices:
 
 ```xtend
-Bridge openwebnet:zb_gateway:myZBgateway  [serialPort="COM3"] {
+Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
     zb_dimmer          myZB_dimmer     [ where="765432101#9"]
     zb_on_off_switch   myZB_switch     [ where="765432201#9"]
     zb_on_off_switch2u myZB_2U_switch  [ where="765432300#9"]
@@ -169,7 +170,7 @@ Bridge openwebnet:zb_gateway:myZBgateway  [serialPort="COM3"] {
 
 ### openwebnet.items:
 
-Items (Light, Dimmer, etc.) will be discovered by Google Assistant/Alexa/HomeKit if their tags are configured like in the example:
+Example items linked to BUS devices:
 
 ```xtend
 Switch          iLR_switch          "Light"                             <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
@@ -177,7 +178,7 @@ Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <Dimmabl
 Rollershutter   iLR_shutter         "Shutter [%.0f %%]"                 <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 ```
 
-Example items linked to ZigBee devices:
+Example items linked to OpenWebNet ZigBee devices:
 
 ```xtend
 Dimmer          iDimmer             "Dimmer [%.0f %%]"                  <DimmableLight>  (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_dimmer:myZBgateway:myZB_dimmer:brightness" }
@@ -202,7 +203,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 
 ## Notes
 
-- The Open Web Net protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/documentation/open-web-net-for-myhome/)
+- The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/documentation/open-web-net-for-myhome/)
 
 ## Special thanks
 

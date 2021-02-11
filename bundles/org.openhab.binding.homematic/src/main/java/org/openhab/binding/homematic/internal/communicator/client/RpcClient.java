@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -34,6 +33,7 @@ import org.openhab.binding.homematic.internal.communicator.parser.HomegearLoadDe
 import org.openhab.binding.homematic.internal.communicator.parser.ListBidcosInterfacesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.ListDevicesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.RssiInfoParser;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -88,7 +88,7 @@ public abstract class RpcClient<T> {
         request.addArg(getRpcCallbackUrl());
         request.addArg(clientId);
         if (config.getGatewayInfo().isHomegear()) {
-            request.addArg(new Integer(0x22));
+            request.addArg(Integer.valueOf(0x22));
         }
         sendMessage(config.getRpcPort(hmInterface), request);
     }
@@ -233,7 +233,7 @@ public abstract class RpcClient<T> {
 
         try {
             ddParser = getDeviceDescription(HmInterface.RF);
-            isHomegear = StringUtils.equalsIgnoreCase(ddParser.getType(), "Homegear");
+            isHomegear = "Homegear".equalsIgnoreCase(ddParser.getType());
         } catch (IOException ex) {
             // can't load gateway infos via RF interface
             ddParser = new GetDeviceDescriptionParser();
@@ -247,21 +247,23 @@ public abstract class RpcClient<T> {
 
         HmGatewayInfo gatewayInfo = new HmGatewayInfo();
         gatewayInfo.setAddress(biParser.getGatewayAddress());
+        String gwType = biParser.getType();
         if (isHomegear) {
             gatewayInfo.setId(HmGatewayInfo.ID_HOMEGEAR);
             gatewayInfo.setType(ddParser.getType());
             gatewayInfo.setFirmware(ddParser.getFirmware());
-        } else if ((StringUtils.startsWithIgnoreCase(biParser.getType(), "CCU")
-                || StringUtils.startsWithIgnoreCase(biParser.getType(), "HMIP_CCU")
-                || StringUtils.startsWithIgnoreCase(ddParser.getType(), "HM-RCV-50") || config.isCCUType())
+        } else if ((MiscUtils.strStartsWithIgnoreCase(gwType, "CCU")
+                || MiscUtils.strStartsWithIgnoreCase(gwType, "HMIP_CCU")
+                || MiscUtils.strStartsWithIgnoreCase(ddParser.getType(), "HM-RCV-50") || config.isCCUType())
                 && !config.isNoCCUType()) {
             gatewayInfo.setId(HmGatewayInfo.ID_CCU);
-            String type = StringUtils.isBlank(biParser.getType()) ? "CCU" : biParser.getType();
+            String type = gwType.isBlank() ? "CCU" : gwType;
             gatewayInfo.setType(type);
-            gatewayInfo.setFirmware(ddParser.getFirmware() != null ? ddParser.getFirmware() : biParser.getFirmware());
+            gatewayInfo
+                    .setFirmware(!ddParser.getFirmware().isEmpty() ? ddParser.getFirmware() : biParser.getFirmware());
         } else {
             gatewayInfo.setId(HmGatewayInfo.ID_DEFAULT);
-            gatewayInfo.setType(biParser.getType());
+            gatewayInfo.setType(gwType);
             gatewayInfo.setFirmware(biParser.getFirmware());
         }
 

@@ -239,14 +239,26 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private void checkAndCreateServices() {
         logger.debug("Check and create missing UPnP services");
 
+        boolean isOnline = false;
+
         for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
-            createService((RemoteDevice) device);
+            if (createService((RemoteDevice) device) == true) {
+                isOnline = true;
+            }
+        }
+
+        if (isOnline == true) {
+            logger.debug("Device was online");
+            putOnline();
+        } else {
+            logger.debug("Device was NOT online");
+            putOffline();
         }
 
         checkCreateManualConnection();
     }
 
-    private synchronized void createService(RemoteDevice device) {
+    private synchronized boolean createService(RemoteDevice device) {
         if (configuration.hostName != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
             String modelName = device.getDetails().getModelDetails().getModelName();
@@ -275,8 +287,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 logger.debug("Service rediscovered, clearing caches: {}, {} ({})", modelName, type, udn);
                 existingService.clearCache();
             }
-            putOnline();
+            return true;
         }
+        return false;
     }
 
     private @Nullable SamsungTvService findServiceInstance(String serviceName) {
@@ -325,7 +338,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     @Override
     public void remoteDeviceAdded(@Nullable Registry registry, @Nullable RemoteDevice device) {
         if (configuration.hostName != null && device != null && device.getIdentity() != null
-                && device.getIdentity().getDescriptorURL() == null
+                && device.getIdentity().getDescriptorURL() != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())
                 && device.getType() != null) {
             logger.debug("remoteDeviceAdded: {}, {}", device.getType().getType(),

@@ -198,7 +198,6 @@ public class TradfriLightHandler extends TradfriThingHandler {
         } else if (command instanceof OnOffType) {
             setState(((OnOffType) command));
         } else if (command instanceof PercentType) {
-            // PaperUI sends PercentType on color channel when changing Brightness
             setBrightness((PercentType) command);
         } else if (command instanceof IncreaseDecreaseType) {
             final TradfriLightData state = this.state;
