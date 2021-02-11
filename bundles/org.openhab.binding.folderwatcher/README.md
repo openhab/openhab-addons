@@ -49,8 +49,8 @@ This binding currently supports the following events:
 Thing configuration:
 
 ```java
-folderwatcher:localfolder:myLocalFolder [ localDir="/tmp/dumps", pollIntervalLocal=60, listHiddenLocal="false", listRecursiveLocal="false" ]
-folderwatcher:ftpfolder:myLocalFolder [ ftpAddress="192.168.0.222", ftpPort=21, secureMode="EXPLICIT", ftpUsername="ftpuser", ftpPassword="ftppass",ftpDir="/suvcams/192.168.0.209",listHidden="true",listRecursiveFtp="true",connectionTimeout=33,pollInterval=66,diffHours=25]
+folderwatcher:localfolder:myLocalFolder [ localDir="/myfolder", pollIntervalLocal=60, listHiddenLocal="false", listRecursiveLocal="false" ]
+folderwatcher:ftpfolder:myLocalFolder [ ftpAddress="X.X.X.X", ftpPort=21, secureMode="EXPLICIT", ftpUsername="username", ftpPassword="password",ftpDir="/myfolder/",listHidden="true",listRecursiveFtp="true",connectionTimeout=33,pollInterval=66,diffHours=25]
 ```
 
 ### Using in a rule:
