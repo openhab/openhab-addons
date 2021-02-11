@@ -82,8 +82,9 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
                 Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
 
-            stationDB = gson.fromJson(reader, StationDB.class);
-            registerDiscoveryService(stationDB);
+            StationDB stations = gson.fromJson(reader, StationDB.class);
+            registerDiscoveryService(stations);
+            this.stationDB = stations;
             logger.debug("Discovery service for Synop Stations registered.");
         } catch (IOException e) {
             logger.warn("Unable to read synop stations database");

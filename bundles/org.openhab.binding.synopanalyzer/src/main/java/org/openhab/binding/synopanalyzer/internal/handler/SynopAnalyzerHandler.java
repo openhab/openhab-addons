@@ -94,8 +94,9 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         logger.info("Scheduling Synop update thread to run every {} minute for Station '{}'",
                 configuration.refreshInterval, formattedStationId);
 
-        if (thing.getProperties().isEmpty() && stationDB != null) {
-            discoverAttributes(stationDB, configuration.stationId);
+        StationDB stations = stationDB;
+        if (thing.getProperties().isEmpty() && stations != null) {
+            discoverAttributes(stations, configuration.stationId);
         }
 
         executionJob = scheduler.scheduleWithFixedDelay(this::updateSynopChannels, 0, configuration.refreshInterval,
