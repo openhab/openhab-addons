@@ -66,16 +66,15 @@ import com.google.gson.JsonObject;
  * @author Aurelio Caliaro - Initial contribution
  */
 @NonNullByDefault
-public class airqHandler extends BaseThingHandler {
+public class AirqHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(airqHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AirqHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> getConfigDataJob;
-    private String ipaddress;
-    private String password;
     private @Nullable ThingStatus thStatus;
     protected static final int POLLING_PERIOD_DATA = 15000; // in milliseconds
     protected static final int POLLING_PERIOD_CONFIG = 1; // in minutes
+    AirqConfiguration config = new AirqConfiguration();
 
     final class ResultPair {
         private final float value;
@@ -97,20 +96,8 @@ public class airqHandler extends BaseThingHandler {
         }
     }
 
-    public airqHandler(Thing thing) {
+    public AirqHandler(Thing thing) {
         super(thing);
-        ipaddress = "";
-        password = "";
-    }
-
-    public Boolean ohCmd2airqCmd(String ohcmd) {
-        switch (ohcmd) {
-            case "ON":
-                return true;
-            case "OFF":
-                return false;
-        }
-        return false;
     }
 
     private boolean isTimeFormat(String str) {
@@ -124,7 +111,7 @@ public class airqHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info(
+        logger.trace(
                 "air-Q - airqHandler - handleCommand(): request received to handle value {} command {} of channelUID={}",
                 command, command.getClass(), channelUID);
         if ((command instanceof OnOffType) || (command instanceof StringType)) {
@@ -135,48 +122,48 @@ public class airqHandler extends BaseThingHandler {
                     // we do not allow to switch off Wifi because otherwise we can't connect to the air-Q device anymore
                     break;
                 case "wifiInfo":
-                    newobj.addProperty("WifiInfo", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("WifiInfo", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "fireAlarm":
-                    newobj.addProperty("FireAlarm", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("FireAlarm", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "cloudUpload":
-                    newobj.addProperty("cloudUpload", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("cloudUpload", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "autoDriftCompensation":
-                    newobj.addProperty("AutoDriftCompensation", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("AutoDriftCompensation", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "autoUpdate":
                     // note that this property is binary but uses 1 and 0 instead of true and false
-                    newobj.addProperty("AutoUpdate", command.toString() == "ON" ? 1 : 0);
+                    newobj.addProperty("AutoUpdate", command == OnOffType.ON ? 1 : 0);
                     changeSettings(newobj);
                     break;
                 case "advancedDataProcessing":
-                    newobj.addProperty("AdvancedDataProcessing", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("AdvancedDataProcessing", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "gasAlarm":
-                    newobj.addProperty("GasAlarm", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("GasAlarm", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "soundPressure":
-                    newobj.addProperty("SoundInfo", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("SoundInfo", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "alarmForwarding":
-                    newobj.addProperty("AlarmForwarding", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("AlarmForwarding", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "averaging":
-                    newobj.addProperty("averaging", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("averaging", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 case "errorBars":
-                    newobj.addProperty("ErrorBars", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("ErrorBars", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
                 /*
@@ -186,15 +173,15 @@ public class airqHandler extends BaseThingHandler {
                  * getDataFiles();
                  * break;
                  */ case "ppm_and_ppb":
-                    newobj.addProperty("ppm&ppb", ohCmd2airqCmd(command.toString()));
+                    newobj.addProperty("ppm&ppb", command == OnOffType.ON);
                     changeSettings(newobj);
                 case "nightmode_FanNightOff":
-                    subjson.addProperty("FanNightOff", ohCmd2airqCmd(command.toString()));
+                    subjson.addProperty("FanNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
                     changeSettings(newobj);
                     break;
                 case "nightmode_WifiNightOff":
-                    subjson.addProperty("WifiNightOff", ohCmd2airqCmd(command.toString()));
+                    subjson.addProperty("WifiNightOff", command == OnOffType.ON);
                     newobj.add("NightMode", subjson);
                     changeSettings(newobj);
                     break;
@@ -209,11 +196,9 @@ public class airqHandler extends BaseThingHandler {
                             newobj.addProperty("WiFibssid", bssid);
                         }
                         newobj.addProperty("reset", wifidataobj.get("reset").getAsString());
-                        logger.info("air-Q - airqHandler - handleCommand(): dummy to change settings: {}",
-                                newobj.toString());
                         changeSettings(newobj);
                     } else {
-                        logger.error("Cannot extract wlan data from this string: {}", wifidatael);
+                        logger.warn("Cannot extract wlan data from this string: {}", wifidatael);
                     }
                     break;
                 case "timeServer":
@@ -226,7 +211,7 @@ public class airqHandler extends BaseThingHandler {
                         newobj.add("NightMode", subjson);
                         changeSettings(newobj);
                     } else {
-                        logger.error(
+                        logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct time format (eg. 08:00)",
                                 channelUID.getId(), command.toString());
                     }
@@ -237,7 +222,7 @@ public class airqHandler extends BaseThingHandler {
                         newobj.add("NightMode", subjson);
                         changeSettings(newobj);
                     } else {
-                        logger.error(
+                        logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct time format (eg. 08:00)",
                                 channelUID.getId(), command.toString());
                     }
@@ -255,7 +240,7 @@ public class airqHandler extends BaseThingHandler {
                         newobj.add("NightMode", subjson);
                         changeSettings(newobj);
                     } catch (Exception exc) {
-                        logger.error(
+                        logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} only accepts a float value, and {} is not.",
                                 channelUID.getId(), command.toString());
                     }
@@ -266,7 +251,7 @@ public class airqHandler extends BaseThingHandler {
                         newobj.add("NightMode", subjson);
                         changeSettings(newobj);
                     } catch (Exception exc) {
-                        logger.error(
+                        logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} only accepts a float value, and {} is not.",
                                 channelUID.getId(), command.toString());
                     }
@@ -281,7 +266,7 @@ public class airqHandler extends BaseThingHandler {
                         newobj.addProperty("Logging", ll);
                         changeSettings(newobj);
                     } else {
-                        logger.error(
+                        logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct setting for the power frequency suppression (only 50Hz or 60Hz)",
                                 channelUID.getId(), command.toString());
                     }
@@ -290,7 +275,7 @@ public class airqHandler extends BaseThingHandler {
                     try {
                         newobj.addProperty("SecondsMeasurementDelay", Integer.parseUnsignedInt(command.toString()));
                     } catch (Exception exc) {
-                        logger.error(
+                        logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} only accepts an integer value, and {} is not.",
                                 channelUID.getId(), command.toString());
                     }
@@ -301,13 +286,13 @@ public class airqHandler extends BaseThingHandler {
                         newobj.addProperty("Rejection", newFreq);
                         changeSettings(newobj);
                     } else {
-                        logger.error(
+                        logger.warn(
                                 "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct setting for the power frequency suppression (only 50Hz or 60Hz)",
                                 channelUID.getId(), command.toString());
                     }
                     break;
                 default:
-                    logger.error(
+                    logger.warn(
                             "air-Q - airqHandler - handleCommand(): unknown command {} received (channelUID={}, value={})",
                             command, channelUID, command);
             }
@@ -316,23 +301,17 @@ public class airqHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("air-Q - airqHandler - initialize(): ipaddress={}",
-                getThing().getConfiguration().get("ipAddress"));
+        config = getThing().getConfiguration().as(AirqConfiguration.class);
+        logger.debug("air-Q - airqHandler - initialize(): config={}", config);
         updateStatus(ThingStatus.UNKNOWN);
-        if (getThing().getConfiguration().get("ipAddress") != null) {
-            ipaddress = getThing().getConfiguration().get("ipAddress").toString();
-        }
-        if (getThing().getConfiguration().get("password") != null) {
-            password = getThing().getConfiguration().get("password").toString();
-        }
-        if ((ipaddress.isEmpty()) || (password.isEmpty())) {
+        if ((config.ipAddress.isEmpty()) || (config.password.isEmpty())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "IP Address and the device password must be provided to access your air-Q.");
             return;
         } else {
             // we try if the device is reachable and the password is correct. Otherwise a corresponding message is
             // thrown in Thing manager.
-            String data = getDecryptedContentString("http://".concat(ipaddress.concat("/data")), "GET", null);
+            String data = getDecryptedContentString("http://".concat(config.ipAddress.concat("/data")), "GET", null);
             if (data == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "We tried to get data from the air-Q device, but failed. Probable cause: invalid password.");
@@ -429,14 +408,13 @@ public class airqHandler extends BaseThingHandler {
             JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
             if (ans != null) {
                 JsonObject jsonObj = ans.getAsJsonObject();
-                jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(),
-                        (String) (getThing().getConfiguration().get("password")));
+                jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
                 if (jsonAnswer == null) {
-                    logger.error("The air-Q data could not be decrypted. Probably the password is wrong.");
+                    logger.warn("The air-Q data could not be decrypted. Probably the password is wrong.");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Wrong password");
                 }
             } else {
-                logger.error("The air-Q data could not be extracted from this string: {}", ans);
+                logger.warn("The air-Q data could not be extracted from this string: {}", ans);
             }
         }
         return jsonAnswer;
@@ -448,7 +426,7 @@ public class airqHandler extends BaseThingHandler {
         res = doNetwork(address, "GET", body);
         if (res == null) {
             if (thStatus != ThingStatus.OFFLINE) {
-                logger.error("air-Q - airqHandler - run(): cannot reach air-Q device. Status set to OFFLINE.");
+                logger.warn("air-Q - airqHandler - run(): cannot reach air-Q device. Status set to OFFLINE.");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "air-Q device not reachable");
                 thStatus = ThingStatus.OFFLINE;
             } else {
@@ -456,7 +434,7 @@ public class airqHandler extends BaseThingHandler {
             }
         } else {
             if (thStatus == ThingStatus.OFFLINE) {
-                logger.error("air-Q - airqHandler - run(): can reach air-Q device again, Status set back to ONLINE.");
+                logger.warn("air-Q - airqHandler - run(): can reach air-Q device again, Status set back to ONLINE.");
                 thStatus = ThingStatus.ONLINE;
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -536,9 +514,9 @@ public class airqHandler extends BaseThingHandler {
 
     public void pollData() {
         logger.trace("air-Q - airqHandler - run(): starting polled data handler");
-        if ((!ipaddress.isEmpty()) && (!password.isEmpty())) {
+        if ((!config.ipAddress.isEmpty()) && (!config.password.isEmpty())) {
             try {
-                String url = "http://".concat(ipaddress.concat("/data"));
+                String url = "http://".concat(config.ipAddress.concat("/data"));
                 String jsonAnswer = getDecryptedContentString(url, "GET", null);
                 if (jsonAnswer != null) {
                     Gson gson = new Gson();
@@ -590,7 +568,7 @@ public class airqHandler extends BaseThingHandler {
                         processType(decObj, "uptime", "uptime", "number");
                         processType(decObj, "tvoc", "tvoc", "pair");
                     } else {
-                        logger.error("The air-Q data could not be extracted from this string: {}", decEl);
+                        logger.warn("The air-Q data could not be extracted from this string: {}", decEl);
                     }
                 }
             } catch (Exception e) {
@@ -605,9 +583,9 @@ public class airqHandler extends BaseThingHandler {
     public void getConfigData() {
         Result res = null;
         logger.trace("air-Q - airqHandler - processConfigData(): starting processing data");
-        if ((!ipaddress.isEmpty()) && (!password.isEmpty())) {
+        if ((!config.ipAddress.isEmpty()) && (!config.password.isEmpty())) {
             try {
-                String url = "http://".concat(ipaddress.concat("/config"));
+                String url = "http://".concat(config.ipAddress.concat("/config"));
                 res = getData(url, "GET", null);
                 if (res != null) {
                     String jsontext = res.getBody();
@@ -617,8 +595,7 @@ public class airqHandler extends BaseThingHandler {
                     JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
                     if (ans != null) {
                         JsonObject jsonObj = ans.getAsJsonObject();
-                        String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(),
-                                (String) (getThing().getConfiguration().get("password")));
+                        String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
                         if (jsonAnswer != null) {
                             JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
                             if (decEl != null) {
@@ -658,11 +635,11 @@ public class airqHandler extends BaseThingHandler {
                                 processType(decObj, "SensorInfo", "sensorInfo", "property");
                                 processType(decObj, "ErrorBars", "errorBars", "boolean");
                             } else {
-                                logger.error("The air-Q data could not be extracted from this string: {}", decEl);
+                                logger.warn("The air-Q data could not be extracted from this string: {}", decEl);
                             }
                         }
                     } else {
-                        logger.error("The air-Q data could not be extracted from this string: {}", ans);
+                        logger.warn("The air-Q data could not be extracted from this string: {}", ans);
                     }
                 }
             } catch (Exception e) {
@@ -728,7 +705,7 @@ public class airqHandler extends BaseThingHandler {
                         Float longitude = json_coord.get("long").getAsFloat();
                         updateState(channelName, new PointType(new DecimalType(latitude), new DecimalType(longitude)));
                     } else {
-                        logger.error("Cannot extract coordinates from this data: {}", dec.get(airqName).toString());
+                        logger.warn("Cannot extract coordinates from this data: {}", dec.get(airqName).toString());
                     }
                     break;
                 case "nightmode":
@@ -742,7 +719,7 @@ public class airqHandler extends BaseThingHandler {
                         processType(json_daynightdata, "FanNightOff", "nightMode_fanNightOff", "boolean");
                         processType(json_daynightdata, "WifiNightOff", "nightMode_wifiNightOff", "boolean");
                     } else {
-                        logger.error("Cannot extract day/night data: {}", dec.get(airqName).toString());
+                        logger.warn("Cannot extract day/night data: {}", dec.get(airqName).toString());
                     }
                     break;
                 case "wlan":
@@ -756,7 +733,7 @@ public class airqHandler extends BaseThingHandler {
                         processType(json_wlandata, "Net Mask", "WLAN_config_netMask", "string");
                         processType(json_wlandata, "BSSID", "WLAN_config_BSSID", "string");
                     } else {
-                        logger.error("Cannot extract WLAN data from this string: {}", dec.get(airqName).toString());
+                        logger.warn("Cannot extract WLAN data from this string: {}", dec.get(airqName).toString());
                     }
                     break;
                 case "arr":
@@ -771,8 +748,7 @@ public class airqHandler extends BaseThingHandler {
                                 str.substring(0, str.length() - 2));
                         updateState(channelName, new StringType(str.substring(0, str.length() - 2)));
                     } else {
-                        logger.error("air-Q - airqHandler - processType(): cannot handle this as an array: {}",
-                                jsonarr);
+                        logger.warn("air-Q - airqHandler - processType(): cannot handle this as an array: {}", jsonarr);
                     }
                     break;
                 case "calib":
@@ -795,7 +771,7 @@ public class airqHandler extends BaseThingHandler {
                                 str.substring(0, str.length() - 1));
                         updateState(channelName, new StringType(str.substring(0, str.length() - 1)));
                     } else {
-                        logger.error("Cannot extract calibration data from this string: {}",
+                        logger.warn("Cannot extract calibration data from this string: {}",
                                 dec.get(airqName).toString());
                     }
                     break;
@@ -816,8 +792,7 @@ public class airqHandler extends BaseThingHandler {
                                 arrstr.substring(0, arrstr.length() - 2));
                         getThing().setProperty(channelName, arrstr.substring(0, arrstr.length() - 2));
                     } else {
-                        logger.error("air-Q - airqHandler - processType(): cannot handle this as an array: {}",
-                                proparr);
+                        logger.warn("air-Q - airqHandler - processType(): cannot handle this as an array: {}", proparr);
                     }
                     break;
                 default:
@@ -829,11 +804,11 @@ public class airqHandler extends BaseThingHandler {
     private void changeSettings(JsonObject jsonchange) {
         String jsoncmd = jsonchange.toString();
         logger.trace("air-Q - airqHandler - changeSettings(): called with jsoncmd={}", jsoncmd);
-        if ((!ipaddress.isEmpty()) && (!password.isEmpty())) {
+        if ((!config.ipAddress.isEmpty()) && (!config.password.isEmpty())) {
             Result res = null;
             try {
-                String url = "http://".concat(ipaddress.concat("/config"));
-                String jsonbody = encrypt(jsoncmd.getBytes(), (String) (getThing().getConfiguration().get("password")));
+                String url = "http://".concat(config.ipAddress.concat("/config"));
+                String jsonbody = encrypt(jsoncmd.getBytes(), config.password);
                 String fullbody = "request=".concat(jsonbody);
                 logger.trace("air-Q - airqHandler - changeSettings(): doing call to url={}, method=POST, body={}", url,
                         fullbody);
@@ -843,11 +818,10 @@ public class airqHandler extends BaseThingHandler {
                     JsonElement ans = gson.fromJson(res.getBody(), JsonElement.class);
                     if (ans != null) {
                         JsonObject jsonObj = ans.getAsJsonObject();
-                        String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(),
-                                (String) (getThing().getConfiguration().get("password")));
+                        String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
                         logger.trace("air-Q - airqHandler - changeSettings(): call returned {}", jsonAnswer);
                     } else {
-                        logger.error("The air-Q data could not be extracted from this string: {}", ans);
+                        logger.warn("The air-Q data could not be extracted from this string: {}", ans);
                     }
                 }
             } catch (Exception e) {
@@ -864,7 +838,7 @@ public class airqHandler extends BaseThingHandler {
     /*
      * private void getDataFiles() {
      * Result res = null;
-     * String url = "http://".concat(ipaddress.concat("/dirbuff"));
+     * String url = "http://".concat(config.ipAddress.concat("/dirbuff"));
      * try {
      * File f_base = createDataDir("/air-q_data");
      * if (f_base.isDirectory()) {
@@ -872,8 +846,7 @@ public class airqHandler extends BaseThingHandler {
      * if (res != null) {
      * logger.trace("air-Q - airqHandler - getDataFiles(): Result from doNetwork is {} with body={}", res,
      * res.getBody());
-     * String answer = decrypt(res.getBody().getBytes(),
-     * (String) (getThing().getConfiguration().get("password")));
+     * String answer = decrypt(res.getBody().getBytes(), config.password);
      * logger.trace("air-Q - airqHandler - getDataFiles(): Result after decrypt: {}", answer);
      * // We got the directory and file structure. Now iterate through all files and copy them to the file
      * // system
@@ -906,18 +879,15 @@ public class airqHandler extends BaseThingHandler {
      * logger.trace("Element in year {}, month {}, day {}, file {}", year,
      * month, day, filename);
      * String encodedFileRequest = encrypt(
-     * (year + "/" + month + "/" + day + "/" + filename).getBytes(),
-     * (String) (getThing().getConfiguration().get("password")));
+     * (year + "/" + month + "/" + day + "/" + filename).getBytes(), config.password);
      * String fileurl = "http://".concat(
-     * ipaddress.concat("/file?request=").concat(encodedFileRequest));
+     * config.ipAddress.concat("/file?request=").concat(encodedFileRequest));
      * res = getData(fileurl, "GET", null);
      * if (res != null) {
      * FileWriter datafile = new FileWriter(fullfilename);
      * logger.debug("Writing data to {}", fullfilename);
      * for (String line : res.getBody().split("\\n")) {
-     * String decodedText = decrypt(line.getBytes(),
-     * (String) (getThing().getConfiguration()
-     * .get("password")));
+     * String decodedText = decrypt(line.getBytes(), config.password);
      * datafile.append(decodedText);
      * }
      * datafile.close();
@@ -931,7 +901,7 @@ public class airqHandler extends BaseThingHandler {
      * }
      * }
      * } else {
-     * logger.error("No data received; answer cannot be interpreted. Answer={}", answer);
+     * logger.warn("No data received; answer cannot be interpreted. Answer={}", answer);
      * }
      *
      * }
@@ -947,13 +917,13 @@ public class airqHandler extends BaseThingHandler {
      * File f = new File(System.getProperty("user.dir") + dir);
      * if (f.exists()) {
      * if (!f.isDirectory()) {
-     * logger.error(
+     * logger.warn(
      * "Cannot create or use directory {} as there is already a file (and not a directory) with that name",
      * dir);
      * }
      * } else {
      * if (!f.mkdir()) {
-     * logger.error("Cannot create or use directory {} as the directory could not be created.", dir);
+     * logger.warn("Cannot create or use directory {} as the directory could not be created.", dir);
      * }
      * }
      * return f;
@@ -963,20 +933,20 @@ public class airqHandler extends BaseThingHandler {
      * File f = new File(System.getProperty("user.dir") + dir);
      * if (f.exists()) {
      * if (!f.isFile()) {
-     * logger.error(
+     * logger.warn(
      * "Cannot create or use file {} as there is already such an entry, but not a file (maybe a directory) with that name"
      * ,
      * dir);
      * } else if (!f.canWrite()) {
-     * logger.error("Cannot write file {}", dir);
+     * logger.warn("Cannot write file {}", dir);
      * }
      * } else {
      * try {
      * if (!f.createNewFile()) {
-     * logger.error("Cannot create new file {}.", dir);
+     * logger.warn("Cannot create new file {}.", dir);
      * }
      * } catch (IOException exc) {
-     * logger.error("Error while creating data file {}: ", dir, exc);
+     * logger.warn("Error while creating data file {}: ", dir, exc);
      * }
      * }
      * return f;

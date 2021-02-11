@@ -52,7 +52,7 @@ public class airqHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_AIRQ.equals(thingTypeUID)) {
-            return new airqHandler(thing);
+            return new AirqHandler(thing);
         }
         return null;
     }

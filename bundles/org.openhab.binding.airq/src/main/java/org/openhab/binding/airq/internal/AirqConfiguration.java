@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-public class airqConfiguration {
-    public @NonNullByDefault({}) String ipaddress;
-    public @NonNullByDefault({}) String password;
+public class AirqConfiguration {
+    public String ipAddress = "";
+    public String password = "";
 }
