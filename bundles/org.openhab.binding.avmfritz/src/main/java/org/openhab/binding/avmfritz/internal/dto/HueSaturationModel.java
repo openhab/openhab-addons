@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import javax.xml.bind.annotation.*;
 import java.util.List;
 
@@ -30,8 +33,17 @@ import java.util.List;
 @XmlRootElement(name = "hs")
 public class HueSaturationModel {
 
+    public HueSaturationModel() {
+    }
+
+    public HueSaturationModel(int index, ColorNameModel colorNameModel, List<ColorDescriptionModel> colorDescriptionModels) {
+        this.index = index;
+        this.colorNameModel = colorNameModel;
+        this.colorDescriptionModels = colorDescriptionModels;
+    }
+
     @XmlAttribute(name = "hue_index")
-    public short index;
+    public int index;
 
     @XmlElement(name="name")
     public ColorNameModel colorNameModel;
@@ -39,4 +51,29 @@ public class HueSaturationModel {
     @XmlElement(name="color")
     public List<ColorDescriptionModel> colorDescriptionModels;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof HueSaturationModel)) return false;
+
+        HueSaturationModel that = (HueSaturationModel) o;
+
+        return new EqualsBuilder().append(index, that.index).append(colorNameModel, that.colorNameModel).append(colorDescriptionModels, that.colorDescriptionModels).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(index).append(colorNameModel).append(colorDescriptionModels).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("HueSaturationModel{");
+        sb.append("index=").append(index);
+        sb.append(", colorNameModel=").append(colorNameModel);
+        sb.append(", colorDescriptionModels=").append(colorDescriptionModels);
+        sb.append('}');
+        return sb.toString();
+    }
 }

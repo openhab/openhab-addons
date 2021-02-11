@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -113,8 +114,14 @@ public class AVMFritzDefaultColorsTest {
                 })
         );
         HueSaturationModel sel = defaultColors.hsDefaults.hueSaturationModelList.stream().filter(el -> el.index == 11).findAny().orElseThrow();
-        assertEquals("Magenta", sel.colorNameModel.name);
-        assertEquals(3, sel.colorDescriptionModels.size());
+        assertEquals(
+                new HueSaturationModel( 11, new ColorNameModel(5579, "Magenta"),
+                        List.of(
+                                new ColorDescriptionModel(1, 296, 140, 250),
+                                new ColorDescriptionModel(2, 296, 92, 252),
+                                new ColorDescriptionModel(3, 296, 46, 255)
+                        )), sel);
+
         assertNotNull(defaultColors.temperatureDefaultsModel.temperatureModelList);
         assertEquals(9, defaultColors.temperatureDefaultsModel.temperatureModelList.size());
         defaultColors.temperatureDefaultsModel.temperatureModelList.stream().map(

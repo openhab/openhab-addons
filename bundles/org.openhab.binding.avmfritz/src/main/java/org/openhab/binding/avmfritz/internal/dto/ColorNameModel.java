@@ -13,6 +13,9 @@
 package org.openhab.binding.avmfritz.internal.dto;
 
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import javax.xml.bind.annotation.*;
 
 /**
@@ -29,10 +32,43 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "name")
 public class ColorNameModel {
 
-    @XmlAttribute(name="enum")
+    @XmlAttribute(name = "enum")
     public int internalId;
-
     @XmlValue
     public String name;
+
+    public ColorNameModel() {
+    }
+
+    public ColorNameModel(int internalId, String name) {
+        this.internalId = internalId;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof ColorNameModel)) return false;
+
+        ColorNameModel that = (ColorNameModel) o;
+
+        return new EqualsBuilder().append(internalId, that.internalId).append(name, that.name).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(internalId).append(name).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ColorNameModel{");
+        sb.append("internalId=").append(internalId);
+        sb.append(", name='").append(name).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
+
 
 }
