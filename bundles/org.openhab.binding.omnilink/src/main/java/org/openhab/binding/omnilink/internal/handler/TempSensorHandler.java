@@ -126,12 +126,12 @@ public class TempSensorHandler extends AbstractOmnilinkStatusHandler<ExtendedAux
         switch (channelUID.getId()) {
             case CHANNEL_AUX_LOW_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_LOW_POINT.getNumber(),
-                        temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).intValue()),
+                        temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_AUX_HIGH_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_HIGH_POINT.getNumber(),
-                        temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).intValue()),
+                        temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).floatValue()),
                         thingID);
                 break;
             default:
