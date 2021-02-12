@@ -15,7 +15,10 @@
 	<channel-group-type id="th-temperature">
 		<label>Temperature</label>
 		<channels>
-			<channel id="value" typeId="temperature"/>
+			<channel id="value" typeId="system.outdoor-temperature">
+				<label>Temperature</label>
+				<description>Temperature of the room</description>
+			</channel>
 			<channel id="timestamp" typeId="timestamp">
 				<label>Measurement Time</label>
 				<description>Timestamp when data was measured</description>
@@ -38,7 +41,7 @@
 	<channel-group-type id="th-properties">
 		<label>Thermostat</label>
 		<channels>
-			<!-- channel id="temperature" typeId="temperature"/ -->
+			<!-- channel id="temperature" typeId="system.outdoor-temperature"/ -->
 			<channel id="relay-status" typeId="switch-ro">
 				<label>Heating Status</label>
 				<description>Indicates whether the furnace is heating or not</description>

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.PresenceLightMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
@@ -43,10 +44,13 @@ public class HomeApi extends RestManager {
         return response.getBody().getHomes();
     }
 
-    public NAHomeData getHomesData(ModuleType type) throws NetatmoException {
-        String req = "homesdata?gateway_types=" + type.name();
+    public List<NAHome> getHomeList(@Nullable ModuleType type) throws NetatmoException {
+        String req = "homesdata";
+        if (type != null) {
+            req += "?gateway_types=" + type.name();
+        }
         NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
-        return response.getBody();
+        return response.getBody().getHomes();
     }
 
     public NAHome getHomesData(String homeId) throws NetatmoException {

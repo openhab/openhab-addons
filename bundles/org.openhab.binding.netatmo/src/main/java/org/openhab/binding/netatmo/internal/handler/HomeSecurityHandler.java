@@ -19,7 +19,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +30,7 @@ import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.NAObjectMap;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
@@ -80,8 +80,11 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
         SecurityApi api = apiBridge.getRestManager(SecurityApi.class);
         if (api != null) {
             NAHome home = api.getWelcomeHomeData(config.id);
-            this.knownPersons = home.getKnownPersons();
-            this.cameras = home.getChilds().values().stream().collect(Collectors.toList());
+            List<NAPerson> known = home.getKnownPersons();
+            if (known != null) {
+                this.knownPersons = known;
+            }
+            this.cameras = home.getCameras();
             return home;
         }
         throw new NetatmoException("No api available to access Welcome Home");
@@ -101,8 +104,11 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
         super.updateChildModules();
         if (naThing instanceof NAHome) {
             NAHome localNaThing = (NAHome) naThing;
-            localNaThing.getPersons().entrySet().forEach(entry -> notifyListener(entry.getKey(), entry.getValue()));
-
+            localNaThing.getCameras().forEach(entry -> notifyListener(entry.getId(), entry));
+            NAObjectMap<NAPerson> persons = localNaThing.getPersons();
+            if (persons != null) {
+                persons.entrySet().forEach(entry -> notifyListener(entry.getKey(), entry.getValue()));
+            }
             localNaThing.getEvents().stream().filter(e -> e.getTime() > maxEventTime)
                     .sorted(Comparator.comparingLong(NAHomeEvent::getTime)).forEach(event -> {
                         String personId = event.getPersonId();

@@ -13,7 +13,9 @@
 package org.openhab.binding.netatmo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.NADynamicObjectMapDeserializer;
 import org.openhab.binding.netatmo.internal.api.NAObjectMapDeserializer;
+import org.openhab.binding.netatmo.internal.api.dto.NADynamicObjectMap;
 import org.openhab.binding.netatmo.internal.api.dto.NAObjectMap;
 import org.openhab.binding.netatmo.internal.webhook.NAPushType;
 import org.openhab.binding.netatmo.internal.webhook.NAPushTypeDeserializer;
@@ -38,6 +40,7 @@ public class NetatmoBindingConstants {
     public static final Gson NETATMO_GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
+            .registerTypeAdapter(NADynamicObjectMap.class, new NADynamicObjectMapDeserializer())
             .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
             .registerTypeAdapter(OnOffType.class,
                     (JsonDeserializer<OnOffType>) (json, type, jsonDeserializationContext) -> OnOffType

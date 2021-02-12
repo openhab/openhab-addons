@@ -15,28 +15,25 @@ package org.openhab.binding.netatmo.internal.api.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class NADevice<CHILDS extends NAModule> extends NAThing {
-    @SerializedName(value = "modules", alternate = { "cameras" })
-    private NAObjectMap<CHILDS> childs = new NAObjectMap<>();
+public class NADevice extends NAThing {
+    private NADynamicObjectMap modules = new NADynamicObjectMap();
     private boolean co2Calibrating;
     private long dateSetup;
     private long lastUpgrade;
-    private @NonNullByDefault({}) NAPlace place;
+    private @Nullable NAPlace place;
 
-    public NAObjectMap<CHILDS> getChilds() {
-        return childs;
+    public NADynamicObjectMap getModules() {
+        return modules;
     }
 
-    public @Nullable CHILDS getChild(String key) {
-        return childs.get(key);
+    public @Nullable NAThing getModule(String key) {
+        return modules.get(key);
     }
 
     public long getDateSetup() {
@@ -47,7 +44,7 @@ public class NADevice<CHILDS extends NAModule> extends NAThing {
         return lastUpgrade;
     }
 
-    public NAPlace getPlace() {
+    public @Nullable NAPlace getPlace() {
         return place;
     }
 

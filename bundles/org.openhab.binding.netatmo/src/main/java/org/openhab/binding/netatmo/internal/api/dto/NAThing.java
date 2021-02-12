@@ -38,6 +38,7 @@ public class NAThing extends NAObject {
     private @NonNullByDefault({}) ModuleType type;
     private @Nullable Boolean reachable;
     private @Nullable NADashboard dashboardData;
+    private @Nullable String bridge;
 
     public boolean isReachable() {
         // This is not implemented on all devices/modules, so if absent
@@ -71,5 +72,9 @@ public class NAThing extends NAObject {
 
     public long getLastSeen() {
         return lastSeen;
+    }
+
+    public @Nullable String getBridge() {
+        return bridge;
     }
 }

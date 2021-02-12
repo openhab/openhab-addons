@@ -28,7 +28,7 @@
 				<label>Last Seen</label>
 				<description>Last time this element has been seen</description>
 			</channel>
-			<channel id="location" typeId="location"/>
+			<channel id="location" typeId="system.location"/>
 		</channels>
 	</channel-group-type>
 

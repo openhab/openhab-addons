@@ -7,12 +7,15 @@
 	<channel-group-type id="temperature">
 		<label>Temperature</label>
 		<channels>
-			<channel id="value" typeId="temperature"/>
-			<channel id="min-today" typeId="temperature">
+			<channel id="value" typeId="system.outdoor-temperature">
+				<label>Temperature</label>
+				<description>Current Temperature</description>
+			</channel>
+			<channel id="min-today" typeId="system.outdoor-temperature">
 				<label>Today min</label>
 				<description>Minimum Temperature on current day</description>
 			</channel>
-			<channel id="max-today" typeId="temperature">
+			<channel id="max-today" typeId="system.outdoor-temperature">
 				<label>Today max</label>
 				<description>Maximum Temperature on current day</description>
 			</channel>
@@ -34,18 +37,18 @@
 	<channel-group-type id="humidity">
 		<label>Humidity</label>
 		<channels>
-			<channel id="value" typeId="humidity"/>
+			<channel id="value" typeId="system.atmospheric-humidity"/>
 			<channel id="humidex" typeId="humidex"/>
 			<channel id="humidex-scale" typeId="humidex-scale"/>
-			<channel id="heat-index" typeId="temperature">
+			<channel id="heat-index" typeId="system.outdoor-temperature">
 				<label>Heat Index</label>
 				<description>Computed Heat Index</description>
 			</channel>
-			<channel id="dewpoint" typeId="temperature">
+			<channel id="dewpoint" typeId="system.outdoor-temperature">
 				<label>Dewpoint</label>
 				<description>Computed Dewpoint Temperature</description>
 			</channel>
-			<channel id="dewpoint-depression" typeId="temperature">
+			<channel id="dewpoint-depression" typeId="system.outdoor-temperature">
 				<label>Dewpoint Depression</label>
 				<description>Computed Dewpoint Depression</description>
 			</channel>
@@ -69,8 +72,8 @@
 	<channel-group-type id="pressure">
 		<label>Pressure</label>
 		<channels>
-			<channel id="value" typeId="pressure"/>
-			<channel id="absolute" typeId="pressure">
+			<channel id="value" typeId="system.barometric-pressure"/>
+			<channel id="absolute" typeId="system.barometric-pressure">
 				<label>Absolute Pressure</label>
 				<description>Absolute pressure at sea level</description>
 			</channel>
@@ -99,9 +102,9 @@
 	<channel-group-type id="wind">
 		<label>Wind</label>
 		<channels>
-			<channel id="angle" typeId="wind-angle"/>
-			<channel id="strength" typeId="wind-speed"/>
-			<channel id="max-strength" typeId="wind-speed">
+			<channel id="angle" typeId="system.wind-direction"/>
+			<channel id="strength" typeId="system.wind-speed"/>
+			<channel id="max-strength" typeId="system.wind-speed">
 				<label>Max Wind Strength</label>
 				<description>Maximum wind strength recorded</description>
 			</channel>
@@ -109,11 +112,11 @@
 				<label>Date Max Wind Strength</label>
 				<description>Date maximum wind strength recorded</description>
 			</channel>
-			<channel id="gust-angle" typeId="wind-angle">
+			<channel id="gust-angle" typeId="system.wind-direction">
 				<label>Gust Angle</label>
 				<description>Direction of the last 5 minutes highest gust wind</description>
 			</channel>
-			<channel id="gust-strength" typeId="wind-speed">
+			<channel id="gust-strength" typeId="system.wind-speed">
 				<label>Gust Strength</label>
 				<description>Speed of the last 5 minutes highest gust wind</description>
 			</channel>

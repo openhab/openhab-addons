@@ -91,13 +91,8 @@ public class Therm1SetpointChannelHelper extends AbstractChannelHelper {
     private @Nullable NATimeTableItem getCurrentProgramMode(@Nullable NAThermProgram activeProgram) {
         if (activeProgram != null) {
             long diff = getTimeDiff();
-            // Optional<NATimeTableItem> pastPrograms = activeProgram.getTimetable().stream()
-            // .filter(t -> t.getMOffset() < diff).reduce((first, second) -> second);
             return activeProgram.getTimetable().stream().filter(t -> t.getMOffset() < diff)
                     .reduce((first, second) -> second).orElse(null);
-            // if (pastPrograms.isPresent()) {
-            // return pastPrograms.get();
-            // }
         }
         return null;
     }

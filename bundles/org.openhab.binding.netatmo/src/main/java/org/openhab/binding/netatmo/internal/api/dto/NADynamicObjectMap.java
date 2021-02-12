@@ -12,34 +12,17 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The {@link NADynamicObjectMap} defines an hashmap of NAObjects identified
+ * by their id, dynamically created upon API response
  *
  * @author Gaël L'hopital - Initial contribution
- *
  */
-
 @NonNullByDefault
-public class NAMain extends NADevice {
-    private boolean readOnly;
-    private boolean favorite;
-
-    /**
-     * true when the device is a user favorite and not owned by them
-     *
-     * @return favorite
-     **/
-    public boolean isFavorite() {
-        return favorite;
-    }
-
-    /**
-     * true when the user was invited to (or has favorited) a station, false when the user owns it
-     *
-     * @return readOnly
-     **/
-    public boolean isReadOnly() {
-        return readOnly;
-    }
+public class NADynamicObjectMap extends HashMap<String, NAThing> {
+    private static final long serialVersionUID = -7864636414965562293L;
 }

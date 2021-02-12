@@ -39,4 +39,8 @@ public class NAObject {
     public @Nullable String getName() {
         return name;
     }
+
+    public String getNonNullName() {
+        return name != null ? name : id;
+    }
 }

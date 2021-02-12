@@ -12,42 +12,30 @@
  */
 package org.openhab.binding.netatmo.internal.discovery;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.EQUIPMENT_ID;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.ConnectionListener;
 import org.openhab.binding.netatmo.internal.api.ConnectionStatus;
-import org.openhab.binding.netatmo.internal.api.EnergyApi;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
-import org.openhab.binding.netatmo.internal.api.SecurityApi;
-import org.openhab.binding.netatmo.internal.api.WeatherApi;
-import org.openhab.binding.netatmo.internal.api.dto.NADeviceDataBody;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeData;
-import org.openhab.binding.netatmo.internal.api.dto.NAMain;
-import org.openhab.binding.netatmo.internal.api.dto.NAPlug;
+import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -65,13 +53,10 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "binding.netatmo")
 @NonNullByDefault
 public class NetatmoDiscoveryService extends AbstractDiscoveryService implements ConnectionListener {
-    private static final int DISCOVER_TIMEOUT_SECONDS = 10;
-    private final Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+    private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
-    // private final Map<String, Object> configProperties;
     private final ApiBridge apiBridge;
 
-    // TODO : il ne faudrait pas que le discovery soit validé / lancé si l'API bridge n'est pas correctement connecté
     @Activate
     public NetatmoDiscoveryService(@Reference ApiBridge apiBridge, @Reference LocaleProvider localeProvider,
             @Reference TranslationProvider translationProvider/* , ComponentContext componentContext */) {
@@ -81,183 +66,53 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         this.apiBridge = apiBridge;
         this.localeProvider = localeProvider;
         this.i18nProvider = translationProvider;
-        // this.configProperties = BindingUtils.ComponentContextToMap(componentContext);
         apiBridge.addConnectionListener(this);
     }
 
     @Override
     public void notifyStatusChange(ConnectionStatus connectionStatus) {
         if (connectionStatus.isConnected()) {
-            super.activate(null /* configProperties */);
+            super.activate(null);
         } else {
             super.deactivate();
         }
     }
 
-    // @Override
-    // public void activate(@Nullable Map<String, Object> configProperties) {
-    // super.activate(configProperties);
-    // // netatmoBridgeHandler.registerDataListener(this);
-    // }
-    //
-    // @Override
-    // public void deactivate() {
-    // // netatmoBridgeHandler.unregisterDataListener(this);
-    // super.deactivate();
-    // }
-
     @Override
     public void startScan() {
-        apiBridge.getWeatherApi().ifPresent(api -> searchWeatherStation(api));
-        apiBridge.getEnergyApi().ifPresent(api -> searchThermostat(api));
-        apiBridge.getAirCareApi().ifPresent(api -> searchHomeCoach(api));
-        apiBridge.getSecurityApi().ifPresent(api -> searchCameras(api));
-        apiBridge.getAirCareApi().ifPresent(api -> searchHomeCoach(api));
-    }
-
-    private void searchCameras(SecurityApi api) {
+        HashMap<String, ThingUID> localBridges = new HashMap<>();
         try {
-            NAHomeData result = api.getWelcomeDataBody();
-            result.getHomes().forEach(device -> discoverHome(device));
-        } catch (NetatmoException e) {
-            logger.warn("Error retrieving camras(s)", e);
-        }
-    }
-
-    private void searchThermostat(EnergyApi api) {
-        try {
-            NADeviceDataBody<NAPlug> search = api.getThermostatsDataBody(null);
-            for (NAPlug plug : search.getDevices().values()) {
-                String plugId = plug.getId();
-                NAHomeData result = apiBridge.getHomeApi().getHomesData(plug.getType());
-                for (NAHome home : result.getHomes()) {
-                    if (home.getChild(plugId) != null) {
-                        discoverThermostat(plug, home);
-                        return;
+            List<NAHome> result = apiBridge.getHomeApi().getHomeList(null);
+            result.forEach(home -> {
+                List<NAPerson> persons = home.getKnownPersons();
+                // ThingUID homeUID = findThingUID(persons == null ? ModuleType.NAHomeEnergy :
+                // ModuleType.NAHomeSecurity,
+                // home.getId(), null);
+                // addDiscoveredThing(homeUID, home.getId(), home.getNonNullName(), null);
+                ThingUID homeUID = createDiscoveredThing(null, home,
+                        persons == null ? ModuleType.NAHomeEnergy : ModuleType.NAHomeSecurity);
+                home.getModules().values().stream().filter(module -> module.getBridge() == null).forEach(module -> {
+                    ThingUID moduleUID = createDiscoveredThing(homeUID, module, module.getType());
+                    // ThingUID moduleUID = findThingUID(module.getType(), module.getId(), homeUID);
+                    // addDiscoveredThing(moduleUID, module.getId(), module.getNonNullName(), homeUID);
+                    localBridges.put(module.getId(), moduleUID);
+                });
+                home.getModules().values().stream().filter(module -> module.getBridge() != null).forEach(module -> {
+                    ThingUID bridgeUID = localBridges.get(module.getBridge());
+                    if (bridgeUID != null) {
+                        // ThingUID moduleUID = findThingUID(module.getType(), module.getId(), bridgeUID);
+                        // addDiscoveredThing(moduleUID, module.getId(), module.getNonNullName(), homeUID);
+                        createDiscoveredThing(bridgeUID, module, module.getType());
                     }
+                });
+                if (persons != null) {
+                    persons.forEach(person -> createDiscoveredThing(homeUID, person, person.getType()));
                 }
-                throw new NetatmoException("No home attached to the thermostat plug");
-            }
-        } catch (NetatmoException e) {
-            logger.warn("Error retrieving thermostat(s)", e);
-        }
-    }
-
-    private void searchWeatherStation(WeatherApi api) {
-        try {
-            NADeviceDataBody<NAMain> search = api.getStationsDataBody(null);
-            for (NAMain station : search.getDevices().values()) {
-                discoverWeatherStation(station);
-            }
-        } catch (NetatmoException e) {
-            logger.warn("Error retrieving own weather stations", e);
-        }
-    }
-
-    private void searchHomeCoach(AircareApi api) {
-        try {
-            NADeviceDataBody<NAMain> result = api.getHomeCoachDataBody(null);
-            for (NAMain homeCoach : result.getDevices().values()) {
-                discoverHomeCoach(homeCoach);
-            }
-        } catch (NetatmoException e) {
-            logger.warn("Error retrieving thermostat(s)", e);
-        }
-    }
-
-    @Override
-    protected synchronized void stopScan() {
-        super.stopScan();
-        // removeOlderResults(getTimestampOfLastScan(), bridgeUID);
-    }
-
-    /*
-     * @Override
-     * public void onDataRefreshed(Object data) {
-     * if (!isBackgroundDiscoveryEnabled()) {
-     * return;
-     * }
-     * if (data instanceof NAMain) {
-     * discoverWeatherStation((NAMain) data);
-     * } else if (data instanceof NAPlug) {
-     * discoverThermostat((NAPlug) data);
-     * } else if (data instanceof NAHealthyHomeCoach) {
-     * discoverHomeCoach((NAHealthyHomeCoach) data);
-     * } else if (data instanceof NAWelcomeHome) {
-     * discoverWelcomeHome((NAWelcomeHome) data);
-     * }
-     * }
-     */
-
-    private void discoverThermostat(NAPlug plug, NAHome home) {
-        ThingUID homeUID = onDeviceAddedInternal(home.getId(), null, ModuleType.NAHomeEnergy, home.getName(), null);
-        ThingUID plugUID = onDeviceAddedInternal(plug.getId(), homeUID, plug.getType(), plug.getName(),
-                plug.getFirmware());
-        plug.getChilds().values().stream().forEach(thermostat -> {
-            onDeviceAddedInternal(thermostat.getId(), plugUID, thermostat.getType(), thermostat.getName(),
-                    thermostat.getFirmware());
-        });
-    }
-
-    private void discoverWeatherStation(NAMain station) {
-        final boolean isFavorite = station.isFavorite();
-        final String weatherStationName = createNAThingName(station, isFavorite);
-
-        ThingUID stationUID = onDeviceAddedInternal(station.getId(), null, station.getType(), weatherStationName,
-                station.getFirmware());
-
-        station.getChilds().values().forEach(module -> {
-            onDeviceAddedInternal(module.getId(), stationUID, module.getType(), createNAThingName(module, isFavorite),
-                    module.getFirmware());
-        });
-    }
-
-    private void discoverHomeCoach(NAMain homeCoach) {
-        onDeviceAddedInternal(homeCoach.getId(), null, homeCoach.getType(), homeCoach.getName(),
-                homeCoach.getFirmware());
-    }
-
-    private void discoverHome(NAHome home) {
-        Collection<NAWelcome> cameras = home.getChilds().values();
-        if (!cameras.isEmpty()) {// Thermostat homes are also reported here by Netatmo API, so ignore homes that have an
-                                 // empty list of cameras
-            ThingUID homeUID = onDeviceAddedInternal(home.getId(), null, ModuleType.NAHomeSecurity, home.getName(),
-                    null);
-            cameras.forEach(camera -> {
-                onDeviceAddedInternal(camera.getId(), homeUID, camera.getType(), camera.getName(), null);
             });
-            home.getKnownPersons().forEach(
-                    person -> onDeviceAddedInternal(person.getId(), homeUID, person.getType(), person.getName(), null));
+        } catch (NetatmoException e) {
+            logger.warn("Error getting Home List", e);
         }
-    }
-
-    private ThingUID onDeviceAddedInternal(String id, @Nullable ThingUID brigdeUID, ModuleType type,
-            @Nullable String name, @Nullable Integer firmwareVersion/* , @Nullable String homeId */) {
-        ThingUID thingUID = findThingUID(type, id, brigdeUID);
-        Map<String, Object> properties = new HashMap<>();
-
-        properties.put(EQUIPMENT_ID, id);
-        // if (homeId != null) {
-        // properties.put(HOME_ID, homeId);
-        // }
-        if (firmwareVersion != null) {
-            properties.put(Thing.PROPERTY_MODEL_ID, type);
-            properties.put(Thing.PROPERTY_VENDOR, VENDOR);
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);
-        }
-        addDiscoveredThing(thingUID, properties, name != null ? name : id, brigdeUID);
-        return thingUID;
-    }
-
-    private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel,
-            @Nullable ThingUID brigdeUID) {
-        DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withLabel(displayLabel).withRepresentationProperty(EQUIPMENT_ID);
-        if (brigdeUID != null) {
-            resultBuilder = resultBuilder.withBridge(brigdeUID);
-        }
-        thingDiscovered(resultBuilder.build());
+        // apiBridge.getAirCareApi().ifPresent(api -> searchHomeCoach(api));
     }
 
     private ThingUID findThingUID(ModuleType thingType, String thingId, @Nullable ThingUID brigdeUID)
@@ -275,38 +130,26 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
     }
 
-    private String createNAThingName(NAThing thing, boolean isFavorite) {
-        StringBuilder nameBuilder = new StringBuilder();
-        if (thing.getName() != null) {
-            nameBuilder.append(thing.getName());
-            nameBuilder.append(" - ");
+    private ThingUID createDiscoveredThing(@Nullable ThingUID bridgeUID, NAThing module, ModuleType moduleType) {
+        ThingUID moduleUID = findThingUID(moduleType, module.getId(), bridgeUID);
+        DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
+                .withProperty(EQUIPMENT_ID, module.getId()).withLabel(module.getNonNullName())
+                .withRepresentationProperty(EQUIPMENT_ID);
+        if (bridgeUID != null) {
+            resultBuilder = resultBuilder.withBridge(bridgeUID);
         }
-        nameBuilder.append(localizeLabel(thing.getType()));
-        if (isFavorite) {
-            nameBuilder.append(" (favorite)");
-        }
-        return nameBuilder.toString();
+        thingDiscovered(resultBuilder.build());
+        return moduleUID;
     }
 
-    // private String createWeatherModuleName(NAMain station, NAStationModule module, boolean isFavorite) {
-    // String modulePart = createNAThingName(module, false);
-    // String stationPart = createNAThingName(station, isFavorite);
-    // return modulePart + (" (" + stationPart + ")");
+    // private void searchHomeCoach(AircareApi api) {
+    // try {
+    // NADeviceDataBody<NAMain> result = api.getHomeCoachDataBody(null);
+    // for (NAMain homeCoach : result.getDevices().values()) {
+    // discoverHomeCoach(homeCoach);
     // }
-
-    private String localizeLabel(ModuleType moduleType) {
-        String typeName = moduleType.name();
-        String localizedType = i18nProvider.getText(bundle, "thing-type.netatmo." + typeName + ".label", null,
-                localeProvider.getLocale());
-
-        return localizedType != null ? localizedType : typeName;
-    }
-
-    // private String localizeDescription(ModuleType moduleType) {
-    // String typeName = moduleType.name();
-    // String localizedType = i18nProvider.getText(bundle, "thing-type.netatmo." + typeName + ".description", null,
-    // localeProvider.getLocale());
-    //
-    // return localizedType != null ? localizedType : typeName;
+    // } catch (NetatmoException e) {
+    // logger.warn("Error retrieving thermostat(s)", e);
+    // }
     // }
 }

@@ -30,11 +30,11 @@ import com.google.gson.annotations.SerializedName;
  */
 
 @NonNullByDefault
-public class NAHome extends NADevice<NAWelcome> {
-    private NAObjectMap<NAPerson> persons = new NAObjectMap<>();
-    @SerializedName(value = "events")
+public class NAHome extends NADevice {
+    private @Nullable NAObjectMap<NAPerson> persons;
     private List<NAHomeEvent> events = List.of();
     private List<NAThermProgram> thermSchedules = List.of();
+    private List<NAWelcome> cameras = List.of();
     private int thermSetpointDefaultDuration;
     @SerializedName("coordinates")
     private double[] location = {};
@@ -55,20 +55,29 @@ public class NAHome extends NADevice<NAWelcome> {
         return null;
     }
 
-    public NAObjectMap<NAPerson> getPersons() {
+    public @Nullable NAObjectMap<NAPerson> getPersons() {
         return persons;
     }
 
-    public List<NAPerson> getKnownPersons() {
-        return persons.values().stream().filter(person -> person.getName() != null).collect(Collectors.toList());
+    public @Nullable List<NAPerson> getKnownPersons() {
+        NAObjectMap<NAPerson> personList = persons;
+        if (personList != null) {
+            return personList.values().stream().filter(person -> person.getName() != null).collect(Collectors.toList());
+        }
+        return null;
     }
 
     public List<NAHomeEvent> getEvents() {
         return events;
     }
 
+    public List<NAWelcome> getCameras() {
+        return cameras;
+    }
+
     public Optional<NAPerson> getPerson(String id) {
-        return Optional.ofNullable(persons.get(id));
+        NAObjectMap<NAPerson> personList = persons;
+        return personList == null ? Optional.empty() : Optional.ofNullable(personList.get(id));
     }
 
     public void setEvents(List<NAHomeEvent> events) {

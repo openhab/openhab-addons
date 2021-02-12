@@ -31,8 +31,7 @@ import org.openhab.core.types.UnDefType;
  */
 
 @NonNullByDefault
-public class NAPlug extends NADevice<NAThermostat> {
-    // Apparently this has become a boolean in FW >= 222 : issue #9875
+public class NAPlug extends NADevice {
     private @Nullable OpenClosedType plugConnectedBoiler;
     private Map<String, @Nullable Integer> lastBilan = Map.of();
 

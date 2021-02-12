@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
+import org.openhab.binding.netatmo.internal.api.dto.NAObjectMap;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
@@ -61,11 +62,15 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
 
             logger.debug("welcome home '{}' counts Persons at home", home.getId());
 
-            List<NAPerson> present = home.getPersons().values().stream().filter(p -> !p.isOutOfSight())
-                    .collect(Collectors.toList());
-            persons = present.size();
-            present = present.stream().filter(p -> p.getName() != null).collect(Collectors.toList());
-            unknowns = persons - present.size();
+            NAObjectMap<NAPerson> personList = home.getPersons();
+            if (personList != null) {
+                List<NAPerson> present = personList.values().stream().filter(p -> !p.isOutOfSight())
+                        .collect(Collectors.toList());
+                persons = present.size();
+                present = present.stream().filter(p -> p.getName() != null).collect(Collectors.toList());
+                unknowns = persons - present.size();
+            }
+
         }
     }
 
@@ -78,8 +83,9 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
         }
         NAHome localThing = (NAHome) naThing;
         NAPlace place = localThing.getPlace();
-        return CHANNEL_HOME_CITY.equals(channelId) ? toStringType(place.getCity())
-                : CHANNEL_HOME_COUNTRY.equals(channelId) ? toStringType(place.getCountry())
-                        : CHANNEL_HOME_TIMEZONE.equals(channelId) ? toStringType(place.getTimezone()) : null;
+        return place == null ? null
+                : CHANNEL_HOME_CITY.equals(channelId) ? toStringType(place.getCity())
+                        : CHANNEL_HOME_COUNTRY.equals(channelId) ? toStringType(place.getCountry())
+                                : CHANNEL_HOME_TIMEZONE.equals(channelId) ? toStringType(place.getTimezone()) : null;
     }
 }

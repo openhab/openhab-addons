@@ -358,6 +358,13 @@ All these channels are read only.
 
 All these channels except setpoint, setpoint-mode and planning are read only.
 
+### Valve Module
+
+**Supported channels for the Valve module:**
+
+| Channel ID          | Item Type          | Description                                                |
+|---------------------|--------------------|------------------------------------------------------------|
+
 
 ### Welcome Home
 

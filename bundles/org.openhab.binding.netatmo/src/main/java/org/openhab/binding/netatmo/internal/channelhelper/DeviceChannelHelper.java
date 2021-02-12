@@ -48,8 +48,10 @@ public class DeviceChannelHelper extends AbstractChannelHelper {
             if (naThing instanceof NAHome) {
                 point = ((NAHome) naThing).getLocation();
             } else if (naThing instanceof NADevice) {
-                NAPlace place = ((NADevice<?>) naThing).getPlace();
-                point = place.getLocation();
+                NAPlace place = ((NADevice) naThing).getPlace();
+                if (place != null) {
+                    point = place.getLocation();
+                }
             }
             return point != null ? point : UnDefType.UNDEF;
         } else if (CHANNEL_LAST_SEEN.equals(channelId)) {
