@@ -103,16 +103,6 @@ public class HomematicConfig {
     }
 
     /**
-     * Sets the callback host port.
-     *
-     * @deprecated use setBinCallbackPort
-     */
-    @Deprecated
-    public void setCallbackPort(int callbackPort) {
-        this.binCallbackPort = callbackPort;
-    }
-
-    /**
      * Returns the XML-RPC callback host port.
      */
     public int getXmlCallbackPort() {
