@@ -43,7 +43,7 @@
 		<label>On/Off Light</label>
 		<description>A light that can be turned on or off.</description>
 		<channels>
-			<channel typeId="onoff" id="switch"/>
+			<channel typeId="system.power" id="switch"/>
 			<channel typeId="ontime" id="ontime"/>
 		</channels>
 
@@ -60,7 +60,7 @@
 		<description>A dimmable light.</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="brightness" id="brightness"/>
+			<channel typeId="system.brightness" id="brightness"/>
 			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
@@ -78,7 +78,7 @@
 		<description>A dimmable light with adjustable color temperature.</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="brightness" id="brightness"/>
+			<channel typeId="system.brightness" id="brightness"/>
 			<channel typeId="ct" id="color_temperature"/>
 			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
@@ -97,7 +97,7 @@
 		<description>A dimmable light with adjustable color.</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="color" id="color"/>
+			<channel typeId="system.color" id="color"/>
 			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
@@ -115,8 +115,8 @@
 		<description>A dimmable light with adjustable color.</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="color" id="color"/>
-			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="system.color" id="color"/>
+			<channel typeId="system.system.color-temperature-abs" id="color_temperature"/>
 			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
@@ -149,41 +149,12 @@
 		<state pattern="%.1f %%"/>
 	</channel-type>
 
-	<channel-type id="onoff">
-		<item-type>Switch</item-type>
-		<label>On/Off</label>
-		<category>Switch</category>
-		<tags>
-			<tag>Switchable</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<category>Slider</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-		<state pattern="%.1f %%"/>
-	</channel-type>
-
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
-		<category>Colorpicker</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
 	<channel-type id="ct">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-		<state pattern="%d K" min="15" max="100000" step="100"/>
+		<description>Controls the color temperature of the light in Kelvin</description>
+		<category>ColorLight</category>
+		<state pattern="%.0f K" min="1000" max="10000"/>
 	</channel-type>
 
 	<channel-type id="ontime">
@@ -226,4 +197,5 @@
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 	</channel-type>
+
 </thing:thing-descriptions>
