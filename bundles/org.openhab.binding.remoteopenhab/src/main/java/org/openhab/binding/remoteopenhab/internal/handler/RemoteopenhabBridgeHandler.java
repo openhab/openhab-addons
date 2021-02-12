@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -55,7 +54,6 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -136,14 +134,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                     "Undefined server address setting in the thing configuration");
             return;
         }
-        List<String> localIpAddresses = NetUtil.getAllInterfaceAddresses().stream()
-                .filter(a -> !a.getAddress().isLinkLocalAddress())
-                .map(a -> a.getAddress().getHostAddress().split("%")[0]).collect(Collectors.toList());
-        if (localIpAddresses.contains(host)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Do not use the local server as a remote server in the thing configuration");
-            return;
-        }
         String path = config.restPath.trim();
         if (path.length() == 0 || !path.startsWith("/")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -175,9 +165,9 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.submit(this::checkConnection);
+        scheduler.submit(() -> checkConnection(false));
         if (config.accessibilityInterval > 0) {
-            startCheckConnectionJob(config.accessibilityInterval, config.aliveInterval);
+            startCheckConnectionJob(config.accessibilityInterval, config.aliveInterval, config.restartIfNoActivity);
         }
     }
 
@@ -344,7 +334,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    public void checkConnection() {
+    public void checkConnection(boolean restartSse) {
         logger.debug("Try the root REST API...");
         try {
             restClient.tryApi();
@@ -368,6 +358,9 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                             "Dynamic creation of the channels for the remote server items failed");
                     stopStreamingUpdates();
                 }
+            } else if (restartSse) {
+                logger.debug("The SSE connection is restarted because there was no recent event received");
+                restartStreamingUpdates();
             }
         } catch (RemoteopenhabException e) {
             logger.debug("{}", e.getMessage());
@@ -376,7 +369,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void startCheckConnectionJob(int accessibilityInterval, int aliveInterval) {
+    private void startCheckConnectionJob(int accessibilityInterval, int aliveInterval, boolean restartIfNoActivity) {
         ScheduledFuture<?> localCheckConnectionJob = checkConnectionJob;
         if (localCheckConnectionJob == null || localCheckConnectionJob.isCancelled()) {
             checkConnectionJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -384,12 +377,12 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                 if (getThing().getStatus() != ThingStatus.ONLINE || aliveInterval == 0
                         || restClient.getLastEventTimestamp() == 0) {
                     logger.debug("Time to check server accessibility");
-                    checkConnection();
+                    checkConnection(restartIfNoActivity && aliveInterval != 0);
                 } else if (millisSinceLastEvent > (aliveInterval * 60000)) {
                     logger.debug(
                             "Time to check server accessibility (maybe disconnected from streaming events, millisSinceLastEvent={})",
                             millisSinceLastEvent);
-                    checkConnection();
+                    checkConnection(restartIfNoActivity);
                 } else {
                     logger.debug(
                             "Bypass server accessibility check (receiving streaming events, millisSinceLastEvent={})",

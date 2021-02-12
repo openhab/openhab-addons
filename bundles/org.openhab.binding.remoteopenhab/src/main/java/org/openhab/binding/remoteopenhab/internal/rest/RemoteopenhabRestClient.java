@@ -13,6 +13,7 @@
 package org.openhab.binding.remoteopenhab.internal.rest;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -194,7 +196,7 @@ public class RemoteopenhabRestClient {
     public void sendCommandToRemoteItem(String itemName, Command command) throws RemoteopenhabException {
         try {
             String url = String.format("%s/%s", getRestApiUrl("items"), itemName);
-            executeUrl(HttpMethod.POST, url, "application/json", command.toFullString(), "text/plain", false);
+            executeUrl(HttpMethod.POST, url, "application/json", command.toFullString(), "text/plain", false, true);
         } catch (RemoteopenhabException e) {
             throw new RemoteopenhabException("Failed to send command to the remote item " + itemName
                     + " using the items REST API: " + e.getMessage(), e);
@@ -482,11 +484,11 @@ public class RemoteopenhabRestClient {
     }
 
     public String executeGetUrl(String url, String acceptHeader, boolean asyncReading) throws RemoteopenhabException {
-        return executeUrl(HttpMethod.GET, url, acceptHeader, null, null, asyncReading);
+        return executeUrl(HttpMethod.GET, url, acceptHeader, null, null, asyncReading, true);
     }
 
     public String executeUrl(HttpMethod httpMethod, String url, String acceptHeader, @Nullable String content,
-            @Nullable String contentType, boolean asyncReading) throws RemoteopenhabException {
+            @Nullable String contentType, boolean asyncReading, boolean retryIfEOF) throws RemoteopenhabException {
         final Request request = httpClient.newRequest(url).method(httpMethod)
                 .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).followRedirects(false);
 
@@ -534,6 +536,16 @@ public class RemoteopenhabRestClient {
             }
         } catch (RemoteopenhabException e) {
             throw e;
+        } catch (ExecutionException e) {
+            // After a long network outage, the first HTTP request will fail with an EOFException exception.
+            // We retry the request a second time in this case.
+            Throwable cause = e.getCause();
+            if (retryIfEOF && cause instanceof EOFException) {
+                logger.debug("EOFException - retry the request");
+                return executeUrl(httpMethod, url, acceptHeader, content, contentType, asyncReading, false);
+            } else {
+                throw new RemoteopenhabException(e);
+            }
         } catch (Exception e) {
             throw new RemoteopenhabException(e);
         }

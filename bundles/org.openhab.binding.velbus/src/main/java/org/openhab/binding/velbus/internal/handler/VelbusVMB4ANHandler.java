@@ -268,4 +268,9 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     protected byte convertAnalogOutputChannelUIDToChannelByte(ChannelUID channelUID) {
         return Byte.parseByte(channelUID.getIdWithoutGroup());
     }
+
+    @Override
+    protected int getClockAlarmAndProgramSelectionIndexInModuleStatus() {
+        return 8;
+    }
 }
