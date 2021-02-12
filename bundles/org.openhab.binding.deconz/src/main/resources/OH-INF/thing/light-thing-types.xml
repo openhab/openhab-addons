@@ -79,7 +79,7 @@
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="system.brightness" id="brightness"/>
-			<channel typeId="system.system.color-temperature-abs" id="color_temperature"/>
+			<channel typeId="ct" id="color_temperature"/>
 			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
@@ -147,6 +147,14 @@
 		<label>Position</label>
 		<category>Rollershutter</category>
 		<state pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="ct">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<description>Controls the color temperature of the light in Kelvin</description>
+		<category>ColorLight</category>
+		<state pattern="%.0f K" min="1000" max="10000"/>
 	</channel-type>
 
 	<channel-type id="ontime">
