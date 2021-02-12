@@ -43,7 +43,7 @@
 			<parameter name="restPath" type="text" required="true">
 				<label>REST API Path</label>
 				<description>The subpath of the REST API on the remote openHAB server.</description>
-				<default>/rest</default>
+				<default>/rest/</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -66,6 +66,15 @@
 				<label>Password</label>
 				<description>The password to use when the remote openHAB server is setup to require basic authorization to run its
 					REST API.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="authenticateAnyway" type="boolean">
+				<label>Authenticate Anyway</label>
+				<description>Set it to true in case you want to pass authentication information even when the communicate with the
+					remote openHAB server is not secured (only HTTP). This is of course not recommended especially if your connection
+					is over the Internet. Default is false.</description>
+				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 
