@@ -166,13 +166,7 @@ public class AirqHandler extends BaseThingHandler {
                     newobj.addProperty("ErrorBars", command == OnOffType.ON);
                     changeSettings(newobj);
                     break;
-                /*
-                 * Not supported yet! Ready for implementation.
-                 *
-                 * case "getHistoryFiles":
-                 * getDataFiles();
-                 * break;
-                 */ case "ppm_and_ppb":
+                case "ppm_and_ppb":
                     newobj.addProperty("ppm&ppb", command == OnOffType.ON);
                     changeSettings(newobj);
                 case "nightmode_FanNightOff":
@@ -304,21 +298,16 @@ public class AirqHandler extends BaseThingHandler {
         config = getThing().getConfiguration().as(AirqConfiguration.class);
         logger.debug("air-Q - airqHandler - initialize(): config={}", config);
         updateStatus(ThingStatus.UNKNOWN);
-        if ((config.ipAddress.isEmpty()) || (config.password.isEmpty())) {
+        // We don't have to test if ipAddress and password have been set because we have defined them
+        // as being 'required' in thing-types.xml and OpenHAB will only initialize the handler if both are set.
+        String data = getDecryptedContentString("http://".concat(config.ipAddress.concat("/data")), "GET", null);
+        // we try if the device is reachable and the password is correct. Otherwise a corresponding message is
+        // thrown in Thing manager.
+        if (data == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "IP Address and the device password must be provided to access your air-Q.");
-            return;
+                    "Unable to retrieve get data from air-Q device. Probable cause: invalid password.");
         } else {
-            // we try if the device is reachable and the password is correct. Otherwise a corresponding message is
-            // thrown in Thing manager.
-            String data = getDecryptedContentString("http://".concat(config.ipAddress.concat("/data")), "GET", null);
-            if (data == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "We tried to get data from the air-Q device, but failed. Probable cause: invalid password.");
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-            }
-
+            updateStatus(ThingStatus.ONLINE);
         }
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA, TimeUnit.MILLISECONDS);
         getConfigDataJob = scheduler.scheduleWithFixedDelay(this::getConfigData, 0, POLLING_PERIOD_CONFIG,
@@ -337,10 +326,6 @@ public class AirqHandler extends BaseThingHandler {
             Arrays.fill(passkey, password.length(), 32, (byte) '0');
         }
         byte[] IV = Arrays.copyOf(encodedtextwithIV, 16);
-        // We comment this out because by setting the appropriate log level a third party could find the air-Q password.
-        // logger.trace("air-Q - airqHandler - decrypt(): passkey={}", passkey);
-        // logger.trace("air-Q - airqHandler - decrypt(): IV={}", IV);
-        // logger.trace("air-Q - airqHandler - decrypt(): text to decode: {}", ciphertext);
         SecretKey seckey = new SecretKeySpec(passkey, 0, passkey.length, "AES");
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -351,14 +336,10 @@ public class AirqHandler extends BaseThingHandler {
             content = new String(decryptedText);
             logger.trace("air-Q - airqHandler - decrypt(): Text decoded as String: {}", content);
         } catch (BadPaddingException bpe) {
-            if (System.out != null) {
-                System.out.println("Error while decrypting. Probably the provided password is wrong.");
-            }
+            logger.warn("Error while decrypting. Probably the provided password is wrong.");
             return null;
         } catch (Exception e) {
-            if (System.out != null) {
-                System.out.println("air-Q - airqHandler - decrypt(): Error while decrypting: " + e.toString());
-            }
+            logger.warn("air-Q - airqHandler - decrypt(): Error while decrypting: {}", e.toString());
             return null;
         }
         return content;
@@ -388,13 +369,12 @@ public class AirqHandler extends BaseThingHandler {
             logger.trace("air-Q - airqHandler - encrypt(): encrypted text: {}", encodedcontent);
             content = new String(encodedcontent);
         } catch (Exception e) {
-            if (System.out != null) {
-                System.out.println("air-Q - airqHandler - encrypt(): Error while encrypting: " + e.toString());
-            }
+            logger.warn("air-Q - airqHandler - encrypt(): Error while encrypting: {}", e.toString());
         }
         return content;
     }
 
+    // gets the data after online/offline management and does the JSON work, or at least the first step.
     protected @Nullable String getDecryptedContentString(String url, String requestMethod, @Nullable String body) {
         Result res = null;
         String jsonAnswer = null;
@@ -410,38 +390,39 @@ public class AirqHandler extends BaseThingHandler {
                 JsonObject jsonObj = ans.getAsJsonObject();
                 jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
                 if (jsonAnswer == null) {
-                    logger.warn("The air-Q data could not be decrypted. Probably the password is wrong.");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Wrong password");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Decryption not possible, probably wrong password");
                 }
             } else {
-                logger.warn("The air-Q data could not be extracted from this string: {}", ans);
+                logger.warn(
+                        "air-Q - airqHandler - getDecryptedContentString(): The air-Q data could not be extracted from this string: {}",
+                        ans);
             }
         }
         return jsonAnswer;
     }
 
-    // Do the networking job and in addition does additional tests for online/offline management
+    // calls the networking job and in addition does additional tests for online/offline management
     protected @Nullable Result getData(String address, String requestMethod, @Nullable String body) {
         Result res = null;
         res = doNetwork(address, "GET", body);
         if (res == null) {
             if (thStatus != ThingStatus.OFFLINE) {
-                logger.warn("air-Q - airqHandler - run(): cannot reach air-Q device. Status set to OFFLINE.");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "air-Q device not reachable");
                 thStatus = ThingStatus.OFFLINE;
             } else {
-                logger.warn("air-Q - airqHandler - run(): retried but still cannot reach the air-Q device.");
+                logger.warn("air-Q - airqHandler - getData(): retried but still cannot reach the air-Q device.");
             }
         } else {
             if (thStatus == ThingStatus.OFFLINE) {
-                logger.warn("air-Q - airqHandler - run(): can reach air-Q device again, Status set back to ONLINE.");
-                thStatus = ThingStatus.ONLINE;
                 updateStatus(ThingStatus.ONLINE);
+                thStatus = ThingStatus.ONLINE;
             }
         }
         return res;
     }
 
+    // does the networking job (and only that)
     protected @Nullable Result doNetwork(String address, String requestMethod, @Nullable String body) {
         int timeout = 10000;
         HttpURLConnection conn = null;
@@ -469,13 +450,7 @@ public class AirqHandler extends BaseThingHandler {
                 return new Result(result.toString(StandardCharsets.UTF_8.name()), conn.getResponseCode());
             }
         } catch (IOException exc) {
-            if (System.out != null) {
-
-                {
-                    System.out.println(
-                            "air-Q - airqHandler - doNetwork(): Error while accessing air-Q: " + exc.toString());
-                }
-            }
+            logger.warn("air-Q - airqHandler - doNetwork(): Error while accessing air-Q: {}", exc.toString());
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -523,7 +498,7 @@ public class AirqHandler extends BaseThingHandler {
                     JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
                     if (decEl != null) {
                         JsonObject decObj = decEl.getAsJsonObject();
-                        logger.debug("air-Q - airqHandler - run(): decObj={}", decObj);
+                        logger.debug("air-Q - airqHandler - run(): decObj={}, jsonAnswer={}", decObj, jsonAnswer);
                         // 'bat' is a field that is already delivered by air-Q but as
                         // there are no air-Q devices which are powered with batteries
                         // it is obsolete at this moment. We implemented the code anyway
@@ -572,25 +547,22 @@ public class AirqHandler extends BaseThingHandler {
                     }
                 }
             } catch (Exception e) {
-                if (System.out != null) {
-                    System.out.println(
-                            "air-Q - airqHandler - polldata.run(): Error while retrieving air-Q data: " + e.toString());
-                }
+                logger.warn("air-Q - airqHandler - polldata.run(): Error while retrieving air-Q data: {}", toString());
             }
         }
     }
 
     public void getConfigData() {
         Result res = null;
-        logger.trace("air-Q - airqHandler - processConfigData(): starting processing data");
+        logger.trace("air-Q - airqHandler - getConfigData(): starting processing data");
         if ((!config.ipAddress.isEmpty()) && (!config.password.isEmpty())) {
             try {
                 String url = "http://".concat(config.ipAddress.concat("/config"));
                 res = getData(url, "GET", null);
                 if (res != null) {
                     String jsontext = res.getBody();
-                    logger.trace("air-Q - airqHandler - processConfigData(): Result from doNetwork is {} with body={}",
-                            res, res.getBody());
+                    logger.trace("air-Q - airqHandler - getConfigData(): Result from doNetwork is {} with body={}", res,
+                            res.getBody());
                     Gson gson = new Gson();
                     JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
                     if (ans != null) {
@@ -600,7 +572,7 @@ public class AirqHandler extends BaseThingHandler {
                             JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
                             if (decEl != null) {
                                 JsonObject decObj = decEl.getAsJsonObject();
-                                logger.debug("air-Q - airqHandler - processConfigData(): decObj={}", decObj);
+                                logger.debug("air-Q - airqHandler - getConfigData(): decObj={}", decObj);
                                 processType(decObj, "Wifi", "wifi", "boolean");
                                 processType(decObj, "WLANssid", "SSID", "arr");
                                 processType(decObj, "pass", "password", "string");
@@ -635,18 +607,19 @@ public class AirqHandler extends BaseThingHandler {
                                 processType(decObj, "SensorInfo", "sensorInfo", "property");
                                 processType(decObj, "ErrorBars", "errorBars", "boolean");
                             } else {
-                                logger.warn("The air-Q data could not be extracted from this string: {}", decEl);
+                                logger.warn(
+                                        "air-Q - airqHandler - getConfigData(): The air-Q data could not be extracted from this string: {}",
+                                        decEl);
                             }
                         }
                     } else {
-                        logger.warn("The air-Q data could not be extracted from this string: {}", ans);
+                        logger.warn(
+                                "air-Q - airqHandler - getConfigData(): The air-Q data could not be extracted from this string: {}",
+                                ans);
                     }
                 }
             } catch (Exception e) {
-                if (System.out != null) {
-
-                    System.out.println("Error in processConfigData(): " + e.toString());
-                }
+                logger.warn("air-Q - airqHandler - getConfigData(): Error in processConfigData(): {}", e.toString());
             }
         }
     }
@@ -705,7 +678,9 @@ public class AirqHandler extends BaseThingHandler {
                         Float longitude = json_coord.get("long").getAsFloat();
                         updateState(channelName, new PointType(new DecimalType(latitude), new DecimalType(longitude)));
                     } else {
-                        logger.warn("Cannot extract coordinates from this data: {}", dec.get(airqName).toString());
+                        logger.warn(
+                                "air-Q - airqHandler - processType(): Cannot extract coordinates from this data: {}",
+                                dec.get(airqName).toString());
                     }
                     break;
                 case "nightmode":
@@ -719,7 +694,8 @@ public class AirqHandler extends BaseThingHandler {
                         processType(json_daynightdata, "FanNightOff", "nightMode_fanNightOff", "boolean");
                         processType(json_daynightdata, "WifiNightOff", "nightMode_wifiNightOff", "boolean");
                     } else {
-                        logger.warn("Cannot extract day/night data: {}", dec.get(airqName).toString());
+                        logger.warn("air-Q - airqHandler - processType(): Cannot extract day/night data: {}",
+                                dec.get(airqName).toString());
                     }
                     break;
                 case "wlan":
@@ -733,7 +709,9 @@ public class AirqHandler extends BaseThingHandler {
                         processType(json_wlandata, "Net Mask", "WLAN_config_netMask", "string");
                         processType(json_wlandata, "BSSID", "WLAN_config_BSSID", "string");
                     } else {
-                        logger.warn("Cannot extract WLAN data from this string: {}", dec.get(airqName).toString());
+                        logger.warn(
+                                "air-Q - airqHandler - processType(): Cannot extract WLAN data from this string: {}",
+                                dec.get(airqName).toString());
                     }
                     break;
                 case "arr":
@@ -771,7 +749,8 @@ public class AirqHandler extends BaseThingHandler {
                                 str.substring(0, str.length() - 1));
                         updateState(channelName, new StringType(str.substring(0, str.length() - 1)));
                     } else {
-                        logger.warn("Cannot extract calibration data from this string: {}",
+                        logger.warn(
+                                "air-Q - airqHandler - processType(): Cannot extract calibration data from this string: {}",
                                 dec.get(airqName).toString());
                     }
                     break;
@@ -796,6 +775,9 @@ public class AirqHandler extends BaseThingHandler {
                     }
                     break;
                 default:
+                    logger.warn(
+                            "air-Q - airqHandler - processType(): a setting of type {} should be changed but I don't know this type.",
+                            type);
                     break;
             }
         }
@@ -825,132 +807,9 @@ public class AirqHandler extends BaseThingHandler {
                     }
                 }
             } catch (Exception e) {
-                if (System.out != null) {
-
-                    System.out.println(
-                            "air-Q - airqHandler - prepareChangeSettings(): Error while changing settings in air-Q data: "
-                                    + e.toString());
-                }
+                logger.warn("air-Q - airqHandler - ChangeSettings(): Error while changing settings in air-Q data: {}",
+                        e.toString());
             }
         }
     }
-    // Getting the data files will be implemented in future, but it is not ready yet
-    /*
-     * private void getDataFiles() {
-     * Result res = null;
-     * String url = "http://".concat(config.ipAddress.concat("/dirbuff"));
-     * try {
-     * File f_base = createDataDir("/air-q_data");
-     * if (f_base.isDirectory()) {
-     * res = getData(url, "GET", null);
-     * if (res != null) {
-     * logger.trace("air-Q - airqHandler - getDataFiles(): Result from doNetwork is {} with body={}", res,
-     * res.getBody());
-     * String answer = decrypt(res.getBody().getBytes(), config.password);
-     * logger.trace("air-Q - airqHandler - getDataFiles(): Result after decrypt: {}", answer);
-     * // We got the directory and file structure. Now iterate through all files and copy them to the file
-     * // system
-     * Gson gson = new Gson();
-     * JsonElement gsonEl = gson.fromJson(answer, JsonElement.class);
-     * if (gsonEl != null) {
-     * JsonObject jsonObj = gsonEl.getAsJsonObject();
-     * Iterator<String> ityr = jsonObj.keySet().iterator();
-     * while (ityr.hasNext()) {
-     * String year = ityr.next();
-     * JsonObject jsonmonths = jsonObj.getAsJsonObject(year);
-     * Iterator<String> itmon = jsonmonths.keySet().iterator();
-     * while (itmon.hasNext()) {
-     * String month = itmon.next();
-     * JsonObject jsondays = jsonmonths.getAsJsonObject(month);
-     * Iterator<String> itday = jsondays.keySet().iterator();
-     * while (itday.hasNext()) {
-     * String day = itday.next();
-     * File f_day = createDataDir("/air-q_data/" + year + "/" + month + "/" + day);
-     * if (f_day.isDirectory()) {
-     * JsonArray jsonfilearr = jsondays.getAsJsonArray(day);
-     * for (JsonElement el : jsonfilearr) {
-     * String filename = el.getAsString();
-     * String fullfilename = "air-q_data/" + year + "/" + month + "/" + day + "/"
-     * + filename;
-     * // We test if the file exists already. If it does, we do not download it
-     * // again.
-     * File f = new File(fullfilename);
-     * if (f.isFile()) {
-     * logger.trace("Element in year {}, month {}, day {}, file {}", year,
-     * month, day, filename);
-     * String encodedFileRequest = encrypt(
-     * (year + "/" + month + "/" + day + "/" + filename).getBytes(), config.password);
-     * String fileurl = "http://".concat(
-     * config.ipAddress.concat("/file?request=").concat(encodedFileRequest));
-     * res = getData(fileurl, "GET", null);
-     * if (res != null) {
-     * FileWriter datafile = new FileWriter(fullfilename);
-     * logger.debug("Writing data to {}", fullfilename);
-     * for (String line : res.getBody().split("\\n")) {
-     * String decodedText = decrypt(line.getBytes(), config.password);
-     * datafile.append(decodedText);
-     * }
-     * datafile.close();
-     * }
-     * } else {
-     * logger.debug("Skipping file {} as it exists already", fullfilename);
-     * }
-     * }
-     * }
-     * }
-     * }
-     * }
-     * } else {
-     * logger.warn("No data received; answer cannot be interpreted. Answer={}", answer);
-     * }
-     *
-     * }
-     * }
-     * } catch (
-     *
-     * Exception e) {
-     * System.out.println("Error in getDataFiles(): " + e.toString());
-     * }
-     * }
-     *
-     * private File createDataDir(String dir) {
-     * File f = new File(System.getProperty("user.dir") + dir);
-     * if (f.exists()) {
-     * if (!f.isDirectory()) {
-     * logger.warn(
-     * "Cannot create or use directory {} as there is already a file (and not a directory) with that name",
-     * dir);
-     * }
-     * } else {
-     * if (!f.mkdir()) {
-     * logger.warn("Cannot create or use directory {} as the directory could not be created.", dir);
-     * }
-     * }
-     * return f;
-     * }
-     *
-     * private File createDataFile(String dir) {
-     * File f = new File(System.getProperty("user.dir") + dir);
-     * if (f.exists()) {
-     * if (!f.isFile()) {
-     * logger.warn(
-     * "Cannot create or use file {} as there is already such an entry, but not a file (maybe a directory) with that name"
-     * ,
-     * dir);
-     * } else if (!f.canWrite()) {
-     * logger.warn("Cannot write file {}", dir);
-     * }
-     * } else {
-     * try {
-     * if (!f.createNewFile()) {
-     * logger.warn("Cannot create new file {}.", dir);
-     * }
-     * } catch (IOException exc) {
-     * logger.warn("Error while creating data file {}: ", dir, exc);
-     * }
-     * }
-     * return f;
-     * }
-     *
-     */
 };
