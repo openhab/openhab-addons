@@ -47,10 +47,11 @@ public class Inverter extends Device {
         super.update(deviceDTO);
 
         this.addWattHourQuantity(CHANNEL_WORK_AC_OUT, deviceDTO);
-        this.addWattQuantity(CHANNEL_POWER_INSTALLED_PEAK, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_AC_OUT_MAX, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_AC_OUT, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_AC_OUT_LIMIT, deviceDTO);
+
+        this.addWattQuantity(CHANNEL_POWER_INSTALLED_PEAK, deviceDTO, true);
     }
 
     @Override

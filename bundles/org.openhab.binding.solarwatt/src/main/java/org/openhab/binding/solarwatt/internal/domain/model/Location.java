@@ -154,13 +154,16 @@ public class Location extends Device {
         State stateValue = this.stateValues.get(channelValue);
         State stateSubtract = this.stateValues.get(channelSubtract);
         if (stateValue != null && stateSubtract != null) {
+            @SuppressWarnings("rawtypes")
             @Nullable
             QuantityType quantityValue = stateValue.as(QuantityType.class);
+            @SuppressWarnings("rawtypes")
             @Nullable
             QuantityType qunatitySubtract = stateSubtract.as(QuantityType.class);
 
             if (quantityValue != null && qunatitySubtract != null) {
-                QuantityType quantityTarget = new QuantityType<>(
+                @SuppressWarnings("rawtypes")
+                QuantityType quantityTarget = new QuantityType(
                         quantityValue.toBigDecimal().subtract(qunatitySubtract.toBigDecimal()),
                         qunatitySubtract.getUnit());
                 this.stateValues.put(channelTarget, quantityTarget);

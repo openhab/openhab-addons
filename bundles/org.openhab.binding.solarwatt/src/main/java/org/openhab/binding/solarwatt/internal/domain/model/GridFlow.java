@@ -69,7 +69,7 @@ public class GridFlow extends Device {
     public void update(DeviceDTO deviceDTO) {
         super.update(deviceDTO);
 
-        this.addAmpereQuantity(CHANNEL_CURRENT_LIMIT, deviceDTO);
+        this.addAmpereQuantity(CHANNEL_CURRENT_LIMIT, deviceDTO, true);
 
         try {
             JsonObject rawConfigInverterControl = deviceDTO.getJsonObjectFromTag("ConfigInverterControl");

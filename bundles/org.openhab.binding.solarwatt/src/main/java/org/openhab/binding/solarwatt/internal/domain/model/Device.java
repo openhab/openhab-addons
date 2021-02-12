@@ -140,11 +140,15 @@ public class Device {
     }
 
     protected void addAmpereQuantity(String tagName, DeviceDTO deviceDTO) {
+        this.addAmpereQuantity(tagName, deviceDTO, false);
+    }
+
+    protected void addAmpereQuantity(String tagName, DeviceDTO deviceDTO, Boolean advanced) {
         this.stateValues.put(tagName, deviceDTO
                 .getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.AMPERE)), tagName));
 
         if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.AMPERE, "current"));
+            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.AMPERE, "current", advanced));
         }
     }
 
