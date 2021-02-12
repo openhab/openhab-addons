@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pilight.internal.dto.Action;
 import org.openhab.binding.pilight.internal.dto.Code;
+import org.openhab.binding.pilight.internal.dto.Device;
 import org.openhab.binding.pilight.internal.dto.Status;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -48,6 +49,10 @@ public class PilightSwitchHandler extends PilightBaseHandler {
         if (state != null) {
             updateState(CHANNEL_STATE, OnOffType.valueOf(state.toUpperCase()));
         }
+    }
+
+    @Override
+    void updateFromConfigDevice(Device device) {
     }
 
     @Override

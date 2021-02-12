@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Niklas Dörfler - Port pilight binding to openHAB 3 + add device discovery
  */
 @NonNullByDefault
-public class PilightBaseHandler extends BaseThingHandler {
+public abstract class PilightBaseHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PilightBaseHandler.class);
 
@@ -68,14 +68,13 @@ public class PilightBaseHandler extends BaseThingHandler {
     }
 
     public void updateFromStatusIfMatches(Status status) {
-        @Nullable
-        String device = status.getDevices().get(0);
-
-        if (name.equals(device)) {
-            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.ONLINE);
+        if (status.getDevices() != null && !status.getDevices().isEmpty()) {
+            if (name.equals(status.getDevices().get(0))) {
+                if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+                updateFromStatus(status);
             }
-            updateFromStatus(status);
         }
     }
 
@@ -86,18 +85,11 @@ public class PilightBaseHandler extends BaseThingHandler {
         }
     }
 
-    protected void updateFromStatus(Status status) {
-        // handled in derived class
-    }
+    abstract void updateFromStatus(Status status);
 
-    protected void updateFromConfigDevice(Device device) {
-        // may be handled in derived class
-    }
+    abstract void updateFromConfigDevice(Device device);
 
-    protected @Nullable Action createUpdateCommand(ChannelUID channelUID, Command command) {
-        // handled in the derived class
-        return null;
-    }
+    abstract @Nullable Action createUpdateCommand(ChannelUID channelUID, Command command);
 
     protected String getName() {
         return name;

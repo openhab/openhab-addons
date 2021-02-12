@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class PilightDimmerHandler extends PilightBaseHandler {
 
     private static final int MAX_DIM_LEVEL_DEFAULT = 15;
-    private static final BigDecimal PERCENTAGE_FROM_DIMLEVEL_MULTIPLICAND = new BigDecimal(100);
+    private static final BigDecimal BIG_DECIMAL_100 = new BigDecimal(100);
 
     private final Logger logger = LoggerFactory.getLogger(PilightDimmerHandler.class);
 
@@ -67,7 +67,7 @@ public class PilightDimmerHandler extends PilightBaseHandler {
             String stateAsString = status.getValues().get("state");
             if (stateAsString != null) {
                 State state = OnOffType.valueOf(stateAsString.toUpperCase());
-                dimLevel = state.equals(OnOffType.ON) ? new BigDecimal("100") : BigDecimal.ZERO;
+                dimLevel = state.equals(OnOffType.ON) ? BIG_DECIMAL_100 : BigDecimal.ZERO;
             }
         }
 
@@ -105,18 +105,17 @@ public class PilightDimmerHandler extends PilightBaseHandler {
 
     private BigDecimal getPercentageFromDimLevel(String string) {
         return new BigDecimal(string).setScale(2).divide(new BigDecimal(maxDimLevel), RoundingMode.HALF_UP)
-                .multiply(PERCENTAGE_FROM_DIMLEVEL_MULTIPLICAND);
+                .multiply(BIG_DECIMAL_100);
     }
 
     private void setDimmerValue(PercentType percent, Code code) {
-        if (BigDecimal.ZERO.equals(percent.toBigDecimal())) {
+        if (PercentType.ZERO.equals(percent)) {
             // pilight is not responding to commands that set both the dimlevel to 0 and state to off.
             // So, we're only updating the state for now
             code.setState(Code.STATE_OFF);
         } else {
-            BigDecimal dimlevel = percent.toBigDecimal().setScale(2)
-                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(maxDimLevel))
-                    .setScale(0, RoundingMode.HALF_UP);
+            BigDecimal dimlevel = percent.toBigDecimal().setScale(2).divide(BIG_DECIMAL_100, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(maxDimLevel)).setScale(0, RoundingMode.HALF_UP);
 
             Values values = new Values();
             values.setDimlevel(dimlevel.intValue());

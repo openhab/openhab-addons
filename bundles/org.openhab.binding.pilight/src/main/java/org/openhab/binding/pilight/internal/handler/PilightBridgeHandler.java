@@ -57,6 +57,9 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable PilightDeviceDiscoveryService discoveryService = null;
 
+    private final ExecutorService connectorExecutor = Executors
+            .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString(), true));
+
     public PilightBridgeHandler(Bridge bridge) {
         super(bridge);
     }
@@ -104,10 +107,7 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        final ExecutorService executor = Executors
-                .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString(), true));
-        executor.execute(connector);
-
+        connectorExecutor.execute(connector);
         this.connector = connector;
     }
 
@@ -123,6 +123,8 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
             connector.close();
             this.connector = null;
         }
+
+        connectorExecutor.shutdown();
     }
 
     /**

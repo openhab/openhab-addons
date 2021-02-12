@@ -17,6 +17,7 @@ import static org.openhab.binding.pilight.internal.PilightBindingConstants.CHANN
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pilight.internal.dto.Action;
+import org.openhab.binding.pilight.internal.dto.Device;
 import org.openhab.binding.pilight.internal.dto.Status;
 import org.openhab.binding.pilight.internal.types.PilightContactType;
 import org.openhab.core.thing.ChannelUID;
@@ -46,6 +47,10 @@ public class PilightContactHandler extends PilightBaseHandler {
         if (state != null) {
             updateState(CHANNEL_STATE, PilightContactType.valueOf(state.toUpperCase()).toOpenClosedType());
         }
+    }
+
+    @Override
+    void updateFromConfigDevice(Device device) {
     }
 
     @Override

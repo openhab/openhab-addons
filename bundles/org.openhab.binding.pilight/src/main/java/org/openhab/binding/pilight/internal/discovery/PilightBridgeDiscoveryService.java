@@ -18,8 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,52 +77,40 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
                     if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
                         DatagramSocket ssdp = new DatagramSocket(
                                 new InetSocketAddress(inetAddress.getHostAddress(), 0));
-                        byte[] buff = SSDP_DISCOVERY_REQUEST_MESSAGE.getBytes();
+                        byte[] buff = SSDP_DISCOVERY_REQUEST_MESSAGE.getBytes(StandardCharsets.UTF_8);
                         DatagramPacket sendPack = new DatagramPacket(buff, buff.length);
                         sendPack.setAddress(InetAddress.getByName(SSDP_MULTICAST_ADDRESS));
                         sendPack.setPort(SSDP_PORT);
                         ssdp.send(sendPack);
                         ssdp.setSoTimeout(SSDP_WAIT_TIMEOUT);
 
-                        boolean loop = true;
-                        while (loop) {
+                        final AtomicBoolean loop = new AtomicBoolean(true);
+                        while (loop.get()) {
                             DatagramPacket recvPack = new DatagramPacket(new byte[1024], 1024);
                             ssdp.receive(recvPack);
                             byte[] recvData = recvPack.getData();
-                            try (InputStreamReader recvInput = new InputStreamReader(new ByteArrayInputStream(recvData),
-                                    StandardCharsets.UTF_8)) {
-                                StringBuilder recvOutput = new StringBuilder();
-                                for (int value; (value = recvInput.read()) != -1;) {
-                                    recvOutput.append((char) value);
-                                }
-                                try (BufferedReader bufReader = new BufferedReader(
-                                        new StringReader(recvOutput.toString()))) {
-                                    Pattern pattern = Pattern.compile("Location:([0-9.]+):(.*)");
-                                    String line;
-                                    while ((line = bufReader.readLine()) != null) {
-                                        Matcher matcher = pattern.matcher(line);
-                                        if (matcher.matches()) {
-                                            String server = matcher.group(1);
-                                            Integer port = Integer.parseInt(matcher.group(2));
-                                            loop = false;
-                                            logger.debug("Found pilight daemon at {}:{}", server, port);
 
-                                            Map<String, Object> properties = new HashMap<>(2);
-                                            properties.put(PilightBindingConstants.PROPERTY_IP_ADDRESS, server);
-                                            properties.put(PilightBindingConstants.PROPERTY_PORT, port);
+                            final Scanner scanner = new Scanner(new ByteArrayInputStream(recvData),
+                                    StandardCharsets.UTF_8);
+                            scanner.findAll("Location:([0-9.]+):(.*)").forEach(matchResult -> {
+                                final String server = matchResult.group(1);
+                                final Integer port = Integer.parseInt(matchResult.group(2));
 
-                                            ThingUID uid = new ThingUID(PilightBindingConstants.THING_TYPE_BRIDGE,
-                                                    server.replace(".", "") + "" + port);
+                                logger.debug("Found pilight daemon at {}:{}", server, port);
 
-                                            DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                                                    .withProperties(properties)
-                                                    .withLabel("Pilight Bridge (" + server + ")").build();
+                                Map<String, Object> properties = new HashMap<>();
+                                properties.put(PilightBindingConstants.PROPERTY_IP_ADDRESS, server);
+                                properties.put(PilightBindingConstants.PROPERTY_PORT, port);
 
-                                            thingDiscovered(result);
-                                        }
-                                    }
-                                }
-                            }
+                                ThingUID uid = new ThingUID(PilightBindingConstants.THING_TYPE_BRIDGE,
+                                        server.replace(".", "") + "" + port);
+
+                                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                                        .withLabel("Pilight Bridge (" + server + ")").build();
+
+                                thingDiscovered(result);
+                                loop.set(false);
+                            });
                         }
                     }
                 }

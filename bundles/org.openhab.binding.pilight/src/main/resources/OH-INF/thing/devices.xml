@@ -67,6 +67,18 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Dim level of pilight dimmer.</description>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power State</label>
+		<description>Power ON/OFF the pilight switch.</description>
+	</channel-type>
+
 	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>Text Value</label>

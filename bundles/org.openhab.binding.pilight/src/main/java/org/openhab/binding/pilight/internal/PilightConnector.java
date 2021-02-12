@@ -12,13 +12,9 @@
  */
 package org.openhab.binding.pilight.internal;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @NonNullByDefault
-public class PilightConnector implements Runnable {
+public class PilightConnector implements Runnable, Closeable {
 
     private static final int RECONNECT_DELAY_MSEC = 10 * 1000; // 10 seconds
 
@@ -65,7 +61,7 @@ public class PilightConnector implements Runnable {
     private @Nullable PrintStream printStream;
 
     private final ScheduledExecutorService scheduler;
-    private final LinkedList<Action> delayedActionQueue = new LinkedList<>();
+    private final ConcurrentLinkedQueue<Action> delayedActionQueue = new ConcurrentLinkedQueue<>();
     private @Nullable ScheduledFuture<?> delayedActionWorkerFuture;
 
     public PilightConnector(final PilightBridgeConfiguration config, final IPilightCallback callback,
@@ -227,13 +223,13 @@ public class PilightConnector implements Runnable {
      *
      * @param action action to send
      */
-    public synchronized void sendAction(Action action) {
+    public void sendAction(Action action) {
         delayedActionQueue.add(action);
 
         if (delayedActionWorkerFuture == null || delayedActionWorkerFuture.isCancelled()) {
             delayedActionWorkerFuture = scheduler.scheduleWithFixedDelay(() -> {
                 if (!delayedActionQueue.isEmpty()) {
-                    doSendAction(delayedActionQueue.pop());
+                    doSendAction(delayedActionQueue.poll());
                 } else {
                     delayedActionWorkerFuture.cancel(false);
                     delayedActionWorkerFuture = null;

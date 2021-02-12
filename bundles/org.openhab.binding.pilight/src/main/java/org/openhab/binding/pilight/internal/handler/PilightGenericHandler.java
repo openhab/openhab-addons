@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pilight.internal.PilightChannelConfiguration;
 import org.openhab.binding.pilight.internal.dto.Action;
+import org.openhab.binding.pilight.internal.dto.Device;
 import org.openhab.binding.pilight.internal.dto.Status;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -70,6 +71,10 @@ public class PilightGenericHandler extends PilightBaseHandler {
             updateState(channel.getUID(),
                     getDynamicChannelState(channel, status.getValues().get(config.getProperty())));
         }
+    }
+
+    @Override
+    void updateFromConfigDevice(Device device) {
     }
 
     @Override
