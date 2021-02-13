@@ -116,7 +116,7 @@
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="system.color" id="color"/>
-			<channel typeId="system.system.color-temperature-abs" id="color_temperature"/>
+			<channel typeId="ct" id="color_temperature"/>
 			<channel typeId="ontime" id="ontime"/>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
