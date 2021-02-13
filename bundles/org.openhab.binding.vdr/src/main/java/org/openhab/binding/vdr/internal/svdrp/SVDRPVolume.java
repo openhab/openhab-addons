@@ -35,16 +35,17 @@ public class SVDRPVolume {
      * @throws SVDRPParseResponseException thrown if response data is not parseable
      */
     public static SVDRPVolume parse(String message) throws SVDRPParseResponseException {
-        String number = message.substring(message.lastIndexOf(" ") + 1, message.length());
         SVDRPVolume volume = new SVDRPVolume();
-        int val;
         try {
-            val = Integer.parseInt(number);
-        } catch (NumberFormatException e) {
-            throw new SVDRPParseResponseException(e.getMessage());
+            String number = message.substring(message.lastIndexOf(" ") + 1, message.length());
+            int val = Integer.parseInt(number);
+            val = val * 100 / 255;
+            volume.setVolume(val);
+        } catch (NumberFormatException nex) {
+            throw new SVDRPParseResponseException(nex.getMessage(), nex);
+        } catch (IndexOutOfBoundsException ie) {
+            throw new SVDRPParseResponseException(ie.getMessage(), ie);
         }
-        val = val * 100 / 255;
-        volume.setVolume(val);
         return volume;
     }
 

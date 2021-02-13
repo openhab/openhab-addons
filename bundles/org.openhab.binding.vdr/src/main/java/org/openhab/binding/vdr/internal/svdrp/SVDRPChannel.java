@@ -41,7 +41,7 @@ public class SVDRPChannel {
         try {
             channel.setNumber(Integer.parseInt(number));
         } catch (NumberFormatException e) {
-            throw new SVDRPParseResponseException(e.getMessage());
+            throw new SVDRPParseResponseException(e.getMessage(), e);
         }
         channel.setName(name);
         return channel;

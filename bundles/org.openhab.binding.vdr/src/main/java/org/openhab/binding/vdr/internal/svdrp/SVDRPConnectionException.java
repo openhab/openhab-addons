@@ -28,4 +28,8 @@ public class SVDRPConnectionException extends SVDRPException {
     public SVDRPConnectionException(@Nullable String message) {
         super(message);
     }
+
+    public SVDRPConnectionException(@Nullable String message, Throwable cause) {
+        super(message, cause);
+    }
 }

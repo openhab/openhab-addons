@@ -28,4 +28,8 @@ public abstract class SVDRPException extends Exception {
     public SVDRPException(@Nullable String message) {
         super(message);
     }
+
+    public SVDRPException(@Nullable String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -24,8 +24,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SVDRPClientImpl} encapsulates all calls to the SVDRP interface of a VDR
@@ -35,17 +33,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SVDRPClientImpl implements SVDRPClient {
 
-    private final Logger logger = LoggerFactory.getLogger(SVDRPClientImpl.class);
-
     private String host;
     private int port = 6419;
     private String charset = "UTF-8";
     private String version = "";
 
-    private final String welcomeMessagePattern = "([0-9]{3})([ -])(.*)";
-    private Pattern patternMessage = Pattern.compile(welcomeMessagePattern);
+    private static final String WELCOME_MESSAGE = "([0-9]{3})([ -])(.*)";
+    private static final Pattern PATTERN_WELCOME = Pattern.compile(WELCOME_MESSAGE);
 
-    private static int timeout = 3000;
+    private static final int TIMEOUT_MS = 3000;
 
     private @Nullable Socket socket = null;
     private @Nullable BufferedWriter out = null;
@@ -64,34 +60,34 @@ public class SVDRPClientImpl implements SVDRPClient {
         this.charset = charset;
     }
 
-    @Override
-    protected void finalize() {
-        try {
-            this.closeConnection();
-        } catch (Exception ex) {
-            logger.trace("Closing SVDRPConnection not successful: {}", ex.getMessage());
-        }
-    }
-
     /**
      *
      * Open VDR Socket Connection
      *
      * @throws IOException if an IO Error occurs
      */
-    @SuppressWarnings("null")
     @Override
     public void openConnection() throws SVDRPConnectionException, SVDRPParseResponseException {
-        if (socket == null || socket.isClosed()) {
-            socket = new Socket();
+        @Nullable
+        Socket localSocket = socket;
+        @Nullable
+        BufferedWriter localOut = out;
+        @Nullable
+        BufferedReader localIn = in;
+
+        if (localSocket == null || localSocket.isClosed()) {
+            localSocket = new Socket();
+            socket = localSocket;
         }
         try {
             InetSocketAddress isa = new InetSocketAddress(host, port);
-            socket.connect(isa, timeout);
-            socket.setSoTimeout(timeout);
+            localSocket.connect(isa, TIMEOUT_MS);
+            localSocket.setSoTimeout(TIMEOUT_MS);
 
-            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), charset), 8192);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), charset), 8192);
+            localOut = new BufferedWriter(new OutputStreamWriter(localSocket.getOutputStream(), charset), 8192);
+            out = localOut;
+            localIn = new BufferedReader(new InputStreamReader(localSocket.getInputStream(), charset), 8192);
+            in = localIn;
 
             // read welcome message and init version & charset
             SVDRPResponse res = null;
@@ -105,16 +101,17 @@ public class SVDRPClientImpl implements SVDRPClient {
             } else {
                 throw new SVDRPParseResponseException(res);
             }
-        } catch (IOException e1) {
+        } catch (IOException e) {
+            // cleanup after timeout
             try {
-                // cleanup after timeout
-                out.close();
-                in.close();
-
-                socket.close();
-            } catch (Exception e) {
+                if (localOut != null)
+                    localOut.close();
+                if (localIn != null)
+                    localIn.close();
+                localSocket.close();
+            } catch (IOException ex) {
             }
-            throw new SVDRPConnectionException(e1.getMessage());
+            throw new SVDRPConnectionException(e.getMessage(), e);
         }
     }
 
@@ -123,27 +120,32 @@ public class SVDRPClientImpl implements SVDRPClient {
      *
      * @throws IOException if an IO Error occurs
      */
-    @SuppressWarnings("null")
     @Override
     public void closeConnection() throws SVDRPConnectionException, SVDRPParseResponseException {
+        @Nullable
+        Socket localSocket = socket;
+        @Nullable
+        BufferedWriter localOut = out;
+        @Nullable
+        BufferedReader localIn = in;
         /*
-         * socket on vdr stays in FIN_WAIT2 without this
+         * socket on vdr stays in FIN_WAIT2 without closing connection
          */
         try {
-            if (out != null) {
-                out.write("QUIT");
-                out.newLine();
-                out.flush();
-                out.close();
+            if (localOut != null) {
+                localOut.write("QUIT");
+                localOut.newLine();
+                localOut.flush();
+                localOut.close();
             }
-            if (in != null) {
-                in.close();
+            if (localIn != null) {
+                localIn.close();
             }
-            if (socket != null) {
-                socket.close();
+            if (localSocket != null) {
+                localSocket.close();
             }
         } catch (IOException e) {
-            throw new SVDRPConnectionException(e.getMessage());
+            throw new SVDRPConnectionException(e.getMessage(), e);
         }
     }
 
@@ -155,50 +157,57 @@ public class SVDRPClientImpl implements SVDRPClient {
      * @return response of SVDRPCall
      * @throws SVDRPException exception from SVDRP call
      */
-    @SuppressWarnings("null")
     private SVDRPResponse execute(@Nullable String command)
             throws SVDRPConnectionException, SVDRPParseResponseException {
+        @Nullable
+        BufferedWriter localOut = out;
+        @Nullable
+        BufferedReader localIn = in;
+
         StringBuilder message = new StringBuilder();
-        // try {
         Matcher matcher = null;
 
         int code;
         try {
             if (command != null) {
-                if (out == null) {
+                if (localOut == null) {
                     throw new SVDRPConnectionException("OutputStream is null!");
                 } else {
-                    out.write(command);
-                    out.newLine();
-                    out.flush();
+                    localOut.write(command);
+                    localOut.newLine();
+                    localOut.flush();
                 }
             }
 
-            code = -1;
-            String line = null;
-            boolean cont = true;
-            while (cont && (line = in.readLine()) != null) {
-                matcher = patternMessage.matcher(line);
-                if (matcher.matches() && matcher.groupCount() > 2) {
-                    if (code < 0) {
-                        code = Integer.parseInt(matcher.group(1));
-                    }
-                    if (" ".equals(matcher.group(2))) {
+            if (localIn != null) {
+                code = -1;
+                String line = null;
+                boolean cont = true;
+                while (cont && (line = localIn.readLine()) != null) {
+                    matcher = PATTERN_WELCOME.matcher(line);
+                    if (matcher.matches() && matcher.groupCount() > 2) {
+                        if (code < 0) {
+                            code = Integer.parseInt(matcher.group(1));
+                        }
+                        if (" ".equals(matcher.group(2))) {
+                            cont = false;
+                        }
+                        message.append(matcher.group(3));
+                        if (cont) {
+                            message.append(System.lineSeparator());
+                        }
+                    } else {
                         cont = false;
                     }
-                    message.append(matcher.group(3));
-                    if (cont) {
-                        message.append(System.lineSeparator());
-                    }
-                } else {
-                    cont = false;
                 }
+                return new SVDRPResponse(code, message.toString());
+            } else {
+                throw new SVDRPConnectionException("SVDRP Input Stream is Null");
             }
-            return new SVDRPResponse(code, message.toString());
-        } catch (IOException e) {
-            throw new SVDRPConnectionException(e.getMessage());
+        } catch (IOException ioe) {
+            throw new SVDRPConnectionException(ioe.getMessage(), ioe);
         } catch (NumberFormatException ne) {
-            throw new SVDRPParseResponseException(ne.getMessage());
+            throw new SVDRPParseResponseException(ne.getMessage(), ne);
         }
     }
 
@@ -235,7 +244,6 @@ public class SVDRPClientImpl implements SVDRPClient {
     public SVDRPEpgEvent getEpgEvent(SVDRPEpgEvent.TYPE type)
             throws SVDRPConnectionException, SVDRPParseResponseException {
         SVDRPResponse res = null;
-
         SVDRPChannel channel = this.getCurrentSVDRPChannel();
         switch (type) {
             case NOW:
@@ -288,6 +296,7 @@ public class SVDRPClientImpl implements SVDRPClient {
     @Override
     public SVDRPVolume setSVDRPVolume(int newVolume) throws SVDRPConnectionException, SVDRPParseResponseException {
         SVDRPResponse res = null;
+
         double newVolumeDouble = newVolume * 255 / 100;
         res = execute(String.format("VOLU %s", String.valueOf(Math.round(newVolumeDouble))));
 
@@ -309,6 +318,7 @@ public class SVDRPClientImpl implements SVDRPClient {
     @Override
     public void sendSVDRPKey(String key) throws SVDRPConnectionException, SVDRPParseResponseException {
         SVDRPResponse res = null;
+
         res = execute(String.format("HITK %s", key));
 
         if (res.getCode() != 250) {
@@ -326,6 +336,7 @@ public class SVDRPClientImpl implements SVDRPClient {
     @Override
     public void sendSVDRPMessage(String message) throws SVDRPConnectionException, SVDRPParseResponseException {
         SVDRPResponse res = null;
+
         res = execute(String.format("MESG %s", message));
 
         if (res.getCode() != 250) {
@@ -386,11 +397,15 @@ public class SVDRPClientImpl implements SVDRPClient {
     @Override
     public boolean isRecordingActive() throws SVDRPConnectionException, SVDRPParseResponseException {
         SVDRPResponse res = null;
+
         res = execute("LSTT");
 
         if (res.getCode() == 250) {
             SVDRPTimerList timers = SVDRPTimerList.parse(res.getMessage());
             return timers.isRecordingActive();
+        } else if (res.getCode() == 550) {
+            // Error 550 is "No timers defined". Therefore there cannot be an active recording
+            return false;
         } else {
             throw new SVDRPParseResponseException(res);
         }

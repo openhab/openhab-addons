@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SVDRPDiskStatus {
-    private static Pattern diskStatusPattern = Pattern.compile("([\\d]*)MB ([\\d]*)MB ([\\d]*)%");
+    private static final Pattern PATTERN_DISK_STATUS = Pattern.compile("([\\d]*)MB ([\\d]*)MB ([\\d]*)%");
 
     private long megaBytesFree = -1;
     private long megaBytesTotal = -1;
@@ -42,7 +42,7 @@ public class SVDRPDiskStatus {
      */
     public static SVDRPDiskStatus parse(String message) throws SVDRPParseResponseException {
         SVDRPDiskStatus status = new SVDRPDiskStatus();
-        Matcher matcher = diskStatusPattern.matcher(message);
+        Matcher matcher = PATTERN_DISK_STATUS.matcher(message);
         if (matcher.find() && matcher.groupCount() == 3) {
             status.setMegaBytesTotal(Long.parseLong(matcher.group(1)));
             status.setMegaBytesFree(Long.parseLong(matcher.group(2)));

@@ -4,6 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>VDR Binding</name>
-	<description>This is the binding for VDR.</description>
+	<description>The Video Disk Recorder (VDR) binding allows openHAB to control your own Video Disk Recorder
+		(https://www.tvdr.de).</description>
 
 </binding:binding>

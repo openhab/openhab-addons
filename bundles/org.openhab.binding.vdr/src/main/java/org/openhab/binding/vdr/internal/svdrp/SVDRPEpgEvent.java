@@ -70,12 +70,12 @@ public class SVDRPEpgEvent {
                             begin *= 1000L;
                             entry.setBegin(new Date(begin));
                         } catch (NumberFormatException | NoSuchElementException e) {
-                            throw new SVDRPParseResponseException("Begin: " + e.getMessage());
+                            throw new SVDRPParseResponseException("Begin: " + e.getMessage(), e);
                         }
                         try {
                             entry.setDuration(Integer.parseInt(lt.nextToken()) / 60);
                         } catch (NumberFormatException | NoSuchElementException e) {
-                            throw new SVDRPParseResponseException("Duration: " + e.getMessage());
+                            throw new SVDRPParseResponseException("Duration: " + e.getMessage(), e);
                         }
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(entry.getBegin());

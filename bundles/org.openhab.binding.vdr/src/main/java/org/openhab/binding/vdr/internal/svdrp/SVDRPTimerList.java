@@ -55,7 +55,6 @@ public class SVDRPTimerList {
      */
     public boolean isRecordingActive() {
         for (String line : timers) {
-            // String recordingId = line.substring(0, line.indexOf(" "));
             String timerContent = line.substring(line.indexOf(" ") + 1);
             String timerStatus = timerContent.substring(0, timerContent.indexOf(":"));
             byte b = Byte.parseByte(timerStatus);

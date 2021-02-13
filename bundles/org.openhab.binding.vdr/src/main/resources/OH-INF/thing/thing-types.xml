@@ -4,14 +4,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="vdr">
-		<label>VDR - The Video Disk Recorder</label>
+		<label>VDR</label>
 		<description>VDR - The Video Disk Recorder (https://tvdr.de)</description>
 
 		<channels>
-			<channel id="power" typeId="vdrPower"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="channel" typeId="vdrChannel"/>
 			<channel id="channelName" typeId="vdrChannelName"/>
-			<channel id="volume" typeId="vdrVolume"/>
+			<channel id="volume" typeId="system.volume"/>
 			<channel id="recording" typeId="vdrRecordingActive"/>
 			<channel id="diskUsage" typeId="vdrDiskUsage"/>
 			<channel id="message" typeId="vdrMessage"/>
@@ -54,6 +54,7 @@
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
 				<label>Hostname</label>
 				<description>Hostname or IP Address of VDR instance</description>
 			</parameter>
@@ -95,18 +96,6 @@
 		<label>Recording Active</label>
 		<description>ON if a recording is active</description>
 		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="vdrVolume">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-		<description>Current Volume</description>
-		<state min="0" max="100" step="1" pattern="%d %%"/>
-	</channel-type>
-	<channel-type id="vdrPower">
-		<item-type>Switch</item-type>
-		<label>Power State</label>
-		<description>Power State (to switch off VDR)</description>
-		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="vdrDiskUsage">
 		<item-type>Number</item-type>
@@ -204,10 +193,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vdrEventDuration">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Event Duration </label>
 		<description>Duration of EPG Event in Minutes</description>
-		<state readOnly="true" pattern="%d min"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

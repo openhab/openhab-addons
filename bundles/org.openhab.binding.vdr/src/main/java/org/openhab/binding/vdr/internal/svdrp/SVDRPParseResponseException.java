@@ -29,8 +29,20 @@ public class SVDRPParseResponseException extends SVDRPException {
         super(response.getMessage());
     }
 
+    public SVDRPParseResponseException(SVDRPResponse response, Throwable cause) {
+        super(response.getMessage(), cause);
+    }
+
     public SVDRPParseResponseException(@Nullable String message) {
         super(message);
+        String newMessage = message;
+        if (newMessage == null) {
+            newMessage = "Null Value on Exception Message";
+        }
+    }
+
+    public SVDRPParseResponseException(@Nullable String message, Throwable cause) {
+        super(message, cause);
         String newMessage = message;
         if (newMessage == null) {
             newMessage = "Null Value on Exception Message";

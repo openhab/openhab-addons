@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.vdr.internal.svdrp;
 
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,12 +43,16 @@ public class SVDRPWelcome {
     public static SVDRPWelcome parse(String message) throws SVDRPParseResponseException {
         SVDRPWelcome welcome = new SVDRPWelcome();
         StringTokenizer st = new StringTokenizer(message, ";");
-        String hostAndVersion = st.nextToken();
-        String dateAndTime = st.nextToken();
-        String charset = st.nextToken();
-        welcome.setCharset(charset.trim());
-        welcome.setVersion(hostAndVersion.substring(hostAndVersion.lastIndexOf(" ")).trim());
-        welcome.setDateAndTime(dateAndTime.trim());
+        try {
+            String hostAndVersion = st.nextToken();
+            String dateAndTime = st.nextToken();
+            String charset = st.nextToken();
+            welcome.setCharset(charset.trim());
+            welcome.setVersion(hostAndVersion.substring(hostAndVersion.lastIndexOf(" ")).trim());
+            welcome.setDateAndTime(dateAndTime.trim());
+        } catch (NoSuchElementException nex) {
+            throw new SVDRPParseResponseException(nex.getMessage(), nex);
+        }
         return welcome;
     }
 
