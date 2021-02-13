@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.boschshc</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: BoschSHC Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Bosch Smart Home Binding</name>
 
   <dependencies>
     <dependency>
