@@ -54,7 +54,7 @@
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>Hostname / IP Address</label>
+				<label>Hostname</label>
 				<description>Hostname or IP Address of VDR instance</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
@@ -62,7 +62,7 @@
 				<description>SVDRP Port of VDR instance</description>
 				<default>6419</default>
 			</parameter>
-			<parameter name="refresh" type="integer">
+			<parameter name="refresh" type="integer" min="0" unit="s">
 				<label>Refresh Interval</label>
 				<description>Interval in seconds the data from VDR instance is refreshed</description>
 				<advanced>true</advanced>
@@ -93,7 +93,7 @@
 	<channel-type id="vdrRecordingActive">
 		<item-type>Switch</item-type>
 		<label>Recording Active</label>
-		<description>Is currently a Recording Active?</description>
+		<description>ON if a recording is active</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vdrVolume">

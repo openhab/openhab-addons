@@ -10,7 +10,7 @@ The binding provides only one thing type: VDR. You can create one thing for each
 
 ## Thing Configuration
 
-To configure a VDR Hostname or IP Address and the actual SVDRP Port are required. Please note that until VDR version 1.7.15 the standard SVDRP port was 2001 and after that version it changed to 6419. The VDR configuration file svdrphosts.conf needs to be configured to allow SVDRP access from host where openHAB instance is running. Please check VDR documentation if you are unsure about this.
+To configure a VDR, hostname or IP address and the actual SVDRP port are required. Please note that until VDR version 1.7.15 the standard SVDRP port was 2001 and after that version it changed to 6419. The VDR configuration file svdrphosts.conf needs to be configured to allow SVDRP access from host where openHAB instance is running. Please check VDR documentation if you are unsure about this.
 
 | Configuration Parameter | Default          | Required | Description                                                  |
 |-------------------------|------------------|:--------:|--------------------------------------------------------------|
