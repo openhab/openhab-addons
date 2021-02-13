@@ -74,8 +74,6 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     private ColorTemperature colorTemperatureCapabilties = new ColorTemperature();
     private long defaultFadeTime = 400;
 
-    private boolean propertiesInitializedSuccessfully;
-
     private @Nullable HueClient hueClient;
 
     private @Nullable ScheduledFuture<?> scheduledFuture;
@@ -128,11 +126,10 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     }
 
     private synchronized void initializeProperties(@Nullable FullGroup fullGroup) {
-        if (!propertiesInitializedSuccessfully && fullGroup != null) {
+        if (fullGroup != null) {
             Map<String, String> properties = editProperties();
             properties.put(PROPERTY_MEMBERS, fullGroup.getLightIds().stream().collect(Collectors.joining(",")));
             updateProperties(properties);
-            propertiesInitializedSuccessfully = true;
         }
     }
 
