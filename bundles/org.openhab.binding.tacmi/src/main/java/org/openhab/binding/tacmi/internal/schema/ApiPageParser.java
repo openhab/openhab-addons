@@ -14,6 +14,7 @@ package org.openhab.binding.tacmi.internal.schema;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -107,7 +108,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             try {
                 configDescriptionUriAPISchemaDefaults = new URI(
                         TACmiBindingConstants.CONFIG_DESCRIPTION_API_SCHEMA_DEFAULTS);
-            } catch (Exception ex) {
+            } catch (URISyntaxException ex) {
                 logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
                         TACmiBindingConstants.CONFIG_DESCRIPTION_API_SCHEMA_DEFAULTS);
             }
