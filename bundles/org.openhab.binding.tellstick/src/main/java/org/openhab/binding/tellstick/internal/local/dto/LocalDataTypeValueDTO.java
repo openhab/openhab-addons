@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.local.json;
+package org.openhab.binding.tellstick.internal.local.dto;
 
 import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
 
@@ -19,7 +19,7 @@ import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
  *
  * @author Jan Gustafsson - Initial contribution
  */
-public class LocalDataTypeValue {
+public class LocalDataTypeValueDTO {
 
     private String name;
     private int scale;

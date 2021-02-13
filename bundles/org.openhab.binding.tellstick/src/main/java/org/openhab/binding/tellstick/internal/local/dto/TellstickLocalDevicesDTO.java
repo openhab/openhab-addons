@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.local.json;
+package org.openhab.binding.tellstick.internal.local.dto;
 
 import java.util.List;
 
@@ -21,16 +21,16 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jan Gustafsson - Initial contribution
  */
-public class TellstickLocalSensors {
+public class TellstickLocalDevicesDTO {
 
-    @SerializedName("sensor")
-    private List<TellstickLocalSensor> sensors = null;
+    @SerializedName("device")
+    private List<TellstickLocalDeviceDTO> devices = null;
 
-    public List<TellstickLocalSensor> getSensors() {
-        return sensors;
+    public List<TellstickLocalDeviceDTO> getDevices() {
+        return devices;
     }
 
-    public void setSensors(List<TellstickLocalSensor> sensors) {
-        this.sensors = sensors;
+    public void setDevices(List<TellstickLocalDeviceDTO> devices) {
+        this.devices = devices;
     }
 }

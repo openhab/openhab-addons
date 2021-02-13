@@ -10,27 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.local.json;
-
-import java.util.List;
-
-import com.google.gson.annotations.SerializedName;
+package org.openhab.binding.tellstick.internal.local.dto;
 
 /**
  * Class used to deserialize JSON from Telldus local API.
  *
  * @author Jan Gustafsson - Initial contribution
  */
-public class TellstickLocalDevices {
+public class TelldusLocalResponseDTO {
 
-    @SerializedName("device")
-    private List<TellstickLocalDevice> devices = null;
+    private String error;
+    private String status;
 
-    public List<TellstickLocalDevice> getDevices() {
-        return devices;
+    public String getError() {
+        return error;
     }
 
-    public void setDevices(List<TellstickLocalDevice> devices) {
-        this.devices = devices;
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

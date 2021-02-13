@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.local.json;
+package org.openhab.binding.tellstick.internal.local.dto;
 
 import org.tellstick.device.iface.Device;
 import org.tellstick.enums.DeviceType;
@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jan Gustafsson - Initial contribution
  */
-public class TellstickLocalDevice implements Device {
+public class TellstickLocalDeviceDTO implements Device {
 
     @SerializedName("id")
     private int deviceId;

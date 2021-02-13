@@ -22,8 +22,8 @@ import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
 import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
-import org.openhab.binding.tellstick.internal.local.json.TellstickLocalDevice;
-import org.openhab.binding.tellstick.internal.local.json.TellstickLocalSensor;
+import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalDeviceDTO;
+import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalSensorDTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -143,8 +143,8 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
                         thingUID = new ThingUID(TellstickBindingConstants.SWITCH_THING_TYPE, bridge.getUID(),
                                 device.getUUId());
                     }
-                } else if (device instanceof TellstickLocalDevice) {
-                    if ((((TellstickLocalDevice) device).getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
+                } else if (device instanceof TellstickLocalDeviceDTO) {
+                    if ((((TellstickLocalDeviceDTO) device).getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
                         thingUID = new ThingUID(TellstickBindingConstants.DIMMER_THING_TYPE, bridge.getUID(),
                                 device.getUUId());
                     } else {
@@ -186,7 +186,7 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
                 sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
             }
         } else {
-            TellstickLocalSensor sensor = (TellstickLocalSensor) device;
+            TellstickLocalSensorDTO sensor = (TellstickLocalSensorDTO) device;
             if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE) || sensor.isSensorOfType(LiveDataType.WINDDIRECTION)
                     || sensor.isSensorOfType(LiveDataType.WINDGUST)) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;

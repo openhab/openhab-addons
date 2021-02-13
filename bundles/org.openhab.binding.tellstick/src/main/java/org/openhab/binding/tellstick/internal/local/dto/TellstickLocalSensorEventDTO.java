@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.local.json;
+package org.openhab.binding.tellstick.internal.local.dto;
 
 import org.openhab.binding.tellstick.internal.TellstickRuntimeException;
 import org.tellstick.device.TellstickSensorEvent;
@@ -22,17 +22,17 @@ import org.tellstick.enums.DataType;
  *
  * @author Jan Gustafsson - Initial contribution
  */
-public class TellstickLocalSensorEvent extends TellstickSensorEvent implements TellstickEvent {
+public class TellstickLocalSensorEventDTO extends TellstickSensorEvent implements TellstickEvent {
 
-    private LocalDataTypeValue dataType;
+    private LocalDataTypeValueDTO dataType;
 
-    public TellstickLocalSensorEvent(int sensorId, String data, LocalDataTypeValue dataValue, String protocol,
+    public TellstickLocalSensorEventDTO(int sensorId, String data, LocalDataTypeValueDTO dataValue, String protocol,
             String model, long timeStamp) {
         super(sensorId, data, null, protocol, model, timeStamp);
         this.dataType = dataValue;
     }
 
-    public LocalDataTypeValue getDataTypeValue() {
+    public LocalDataTypeValueDTO getDataTypeValue() {
         return dataType;
     }
 

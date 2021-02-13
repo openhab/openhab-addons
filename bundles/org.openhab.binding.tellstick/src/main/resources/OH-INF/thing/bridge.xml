@@ -34,12 +34,10 @@
 				<description>The private key from telldus</description>
 			</parameter>
 			<parameter name="publicKey" type="text" required="true">
-				<context>credentials</context>
 				<label>Public Key</label>
 				<description>The public key from telldus</description>
 			</parameter>
 			<parameter name="token" type="text" required="true">
-				<context>credentials</context>
 				<label>Access Token</label>
 				<description>The openauth token.</description>
 			</parameter>
@@ -48,7 +46,7 @@
 				<label>Token Secret</label>
 				<description>The openauth token secret.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false">
+			<parameter name="refreshInterval" type="integer" required="false" min="0" unit="ms">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in ms which is used to poll Telldus Live.
 				</description>
@@ -65,13 +63,13 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Local IP Address</label>
 				<description>The local IP address of the Tellstick.</description>
+				<context>network-address</context>
 			</parameter>
 			<parameter name="accessToken" type="text" required="true">
-				<context>credentials</context>
 				<label>Access Token</label>
 				<description>The access token.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false">
+			<parameter name="refreshInterval" type="integer" required="false" min="0" unit="ms">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in ms which is used to poll Telldus local API.
 				</description>

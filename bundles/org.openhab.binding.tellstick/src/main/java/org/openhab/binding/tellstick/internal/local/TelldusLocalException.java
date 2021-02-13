@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tellstick.internal.local;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.tellstick.device.TellstickException;
 
 /**
@@ -20,6 +22,7 @@ import org.tellstick.device.TellstickException;
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class TelldusLocalException extends TellstickException {
 
     public TelldusLocalException(Exception source) {
@@ -30,7 +33,14 @@ public class TelldusLocalException extends TellstickException {
     private static final long serialVersionUID = 3067179547449454711L;
 
     @Override
-    public String getMessage() {
-        return getCause().getMessage();
+    public @NonNull String getMessage() {
+        Throwable throwable = getCause();
+        if (throwable != null) {
+            String localMessage = throwable.getMessage();
+            if (localMessage != null) {
+                return localMessage;
+            }
+        }
+        return "";
     }
 }

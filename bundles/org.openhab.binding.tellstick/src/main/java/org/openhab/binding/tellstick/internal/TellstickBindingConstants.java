@@ -14,10 +14,7 @@ package org.openhab.binding.tellstick.internal;
 
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Angle;
@@ -99,13 +96,11 @@ public class TellstickBindingConstants {
     public static final String CHANNEL_AMPERE = "ampere";
     public static final String CHANNEL_LUX = "lux";
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(TELLDUSCOREBRIDGE_THING_TYPE, TELLDUSLIVEBRIDGE_THING_TYPE).collect(Collectors.toSet()));
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(DIMMER_THING_TYPE, SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE,
-                    WINDSENSOR_THING_TYPE, POWERSENSOR_THING_TYPE).collect(Collectors.toSet()));
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(DIMMER_THING_TYPE, SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE,
-                    WINDSENSOR_THING_TYPE, POWERSENSOR_THING_TYPE, TELLDUSCOREBRIDGE_THING_TYPE,
-                    TELLDUSLIVEBRIDGE_THING_TYPE, TELLDUSLOCALBRIDGE_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Set.of(TELLDUSCOREBRIDGE_THING_TYPE,
+            TELLDUSLIVEBRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DIMMER_THING_TYPE,
+            SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE, WINDSENSOR_THING_TYPE, POWERSENSOR_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(DIMMER_THING_TYPE, SWITCH_THING_TYPE,
+            SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE, WINDSENSOR_THING_TYPE, POWERSENSOR_THING_TYPE,
+            TELLDUSCOREBRIDGE_THING_TYPE, TELLDUSLIVEBRIDGE_THING_TYPE, TELLDUSLOCALBRIDGE_THING_TYPE);
 }
