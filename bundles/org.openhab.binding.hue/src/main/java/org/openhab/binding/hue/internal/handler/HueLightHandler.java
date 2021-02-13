@@ -81,15 +81,10 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT,
             THING_TYPE_ON_OFF_LIGHT, THING_TYPE_ON_OFF_PLUG, THING_TYPE_DIMMABLE_PLUG);
 
-    private static final Map<String, List<String>> VENDOR_MODEL_MAP = Map.of( //
-            "Philips", List.of("LCT001", "LCT002", "LCT003", "LCT007", "LLC001", "LLC006", "LLC007", "LLC010", //
-                    "LLC011", "LLC012", "LLC013", "LLC020", "LST001", "LST002", "LWB004", "LWB006", "LWB007", //
-                    "LWL001"),
-            "OSRAM", List.of("Classic_A60_RGBW", "PAR16_50_TW", "Surface_Light_TW", "Plug_01"));
-
-    private static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
+    public static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
 
     private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
+
     private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
 
     private @NonNullByDefault({}) String lightId;
@@ -170,13 +165,8 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             String modelId = fullLight.getNormalizedModelID();
             if (modelId != null) {
                 properties.put(PROPERTY_MODEL_ID, modelId);
-                String vendor = getVendor(modelId);
-                if (vendor != null) {
-                    properties.put(PROPERTY_VENDOR, vendor);
-                }
-            } else {
-                properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
             }
+            properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
             properties.put(PRODUCT_NAME, fullLight.getProductName());
             String uniqueID = fullLight.getUniqueID();
             if (uniqueID != null) {
@@ -213,15 +203,6 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             }
             capabilitiesInitializedSuccessfully = true;
         }
-    }
-
-    private @Nullable String getVendor(String modelId) {
-        for (String vendor : VENDOR_MODEL_MAP.keySet()) {
-            if (VENDOR_MODEL_MAP.get(vendor).contains(modelId)) {
-                return vendor;
-            }
-        }
-        return null;
     }
 
     @Override
