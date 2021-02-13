@@ -16,6 +16,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -60,6 +61,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HueGroupHandler extends BaseThingHandler implements GroupStatusListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GROUP);
+    public static final String PROPERTY_MEMBERS = "members";
 
     private final Logger logger = LoggerFactory.getLogger(HueGroupHandler.class);
     private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
@@ -120,6 +122,14 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-group-id");
+        }
+    }
+
+    private synchronized void initializeProperties(@Nullable FullGroup fullGroup) {
+        if (fullGroup != null) {
+            Map<String, String> properties = editProperties();
+            properties.put(PROPERTY_MEMBERS, fullGroup.getLightIds().stream().collect(Collectors.joining(",")));
+            updateProperties(properties);
         }
     }
 
@@ -378,6 +388,8 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         }
 
         logger.trace("New state for group {}", groupId);
+
+        initializeProperties(group);
 
         lastSentColorTemp = null;
         lastSentBrightness = null;
