@@ -290,8 +290,8 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
 
     @Override
     public boolean isNotifying(BluetoothCharacteristic characteristic) {
-        // TODO will be implemented in a followup PR
-        return false;
+        BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
+        return ch.isNotificationEnabled();
     }
 
     @Override
