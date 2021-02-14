@@ -98,9 +98,18 @@ public class HDPowerViewJUnitTests {
         boolean allowShadeMovementCommands = false;
 
         if (VALID_IP_V4_ADDRESS.matcher(hubIPAddress).matches()) {
-            // initialize stuff
+            // ==== initialize stuff ====
             HttpClient client = new HttpClient();
             assertNotNull(client);
+
+            // ==== start the client ====
+            try {
+                client.start();
+                assertTrue(client.isStarted());
+            } catch (Exception e) {
+                fail(e.getMessage());
+            }
+
             HDPowerViewWebTargets webTargets = new HDPowerViewWebTargets(client, hubIPAddress);
             assertNotNull(webTargets);
 
@@ -267,11 +276,12 @@ public class HDPowerViewJUnitTests {
                 }
             }
 
-            // stop the client
+            // ==== stop the client ====
             if (client.isRunning()) {
                 try {
                     client.stop();
                 } catch (Exception e) {
+                    fail(e.getMessage());
                 }
             }
         }

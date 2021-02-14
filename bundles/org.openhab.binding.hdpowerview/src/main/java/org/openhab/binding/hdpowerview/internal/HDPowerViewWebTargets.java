@@ -179,13 +179,6 @@ public class HDPowerViewWebTargets {
                 logger.trace("JSON command = {}", jsonCommand);
             }
         }
-        if (!httpClient.isRunning()) {
-            try {
-                httpClient.start();
-            } catch (Exception e) {
-                throw new ProcessingException(e.getMessage());
-            }
-        }
         Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*");
         if (query != null) {
             request.param(query.key(), query.value());
