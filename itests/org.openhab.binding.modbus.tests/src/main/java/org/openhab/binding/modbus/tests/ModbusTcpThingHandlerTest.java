@@ -46,6 +46,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testInitializeAndSlaveEndpoint() throws EndpointNotInitializedException {
+        // Using mocked modbus manager
         Configuration thingConfig = new Configuration();
         thingConfig.put("host", "thisishost");
         thingConfig.put("port", 44);
@@ -81,6 +82,8 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testTwoDifferentEndpointWithDifferentParameters() {
+        // Real implementation needed to validate this behaviour
+        swapModbusManagerToReal();
         // thing1
         {
             Configuration thingConfig = new Configuration();
