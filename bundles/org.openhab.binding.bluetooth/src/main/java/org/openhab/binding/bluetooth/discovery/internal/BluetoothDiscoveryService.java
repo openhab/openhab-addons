@@ -61,7 +61,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryService.class);
 
-    private static final int SEARCH_TIME = 15;
+    private static final int SEARCH_TIME = 60;
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
     private final Set<BluetoothDiscoveryParticipant> participants = new CopyOnWriteArraySet<>();
@@ -155,10 +155,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private static DiscoveryResult copyWithNewBridge(DiscoveryResult result, BluetoothAdapter adapter) {
         String label = result.getLabel();
-        String adapterLabel = adapter.getLabel();
-        if (adapterLabel != null) {
-            label = adapterLabel + " - " + label;
-        }
 
         return DiscoveryResultBuilder.create(createThingUIDWithBridge(result, adapter))//
                 .withBridge(adapter.getUID())//
