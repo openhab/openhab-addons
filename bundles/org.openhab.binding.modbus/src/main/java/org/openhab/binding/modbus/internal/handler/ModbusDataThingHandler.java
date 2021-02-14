@@ -271,7 +271,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         boolean writeMultiple = config.isWriteMultipleEvenWithSingleRegisterOrCoil();
         String writeType = config.getWriteType();
         ModbusPollerThingHandler pollerHandler = this.pollerHandler;
-        if (writeType == null || pollerHandler == null) {
+        if (writeType == null) {
+            // disposed thing
             return null;
         }
         if (writeType.equals(WRITE_TYPE_COIL)) {
@@ -304,6 +305,9 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 if (commandBool.isEmpty()) {
                     logger.warn(
                             "Data thing is configured to write individual bit but we received command that is not convertible to 0/1 bit. Ignoring.");
+                    return null;
+                } else if (pollerHandler == null) {
+                    logger.warn("Bug: sub index present but not child of poller. Should be in configuration erro");
                     return null;
                 }
 

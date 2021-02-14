@@ -508,10 +508,17 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         return dataHandler;
     }
 
-    @SuppressWarnings({ "null" })
     private ModbusDataThingHandler testWriteHandlingGeneric(String start, String transform, ValueType valueType,
             String writeType, ModbusWriteFunctionCode successFC, String channel, Command command, Exception error,
             BundleContext context) {
+        return testWriteHandlingGeneric(start, transform, valueType, writeType, successFC, channel, command, error,
+                context, false);
+    }
+
+    @SuppressWarnings({ "null" })
+    private ModbusDataThingHandler testWriteHandlingGeneric(String start, String transform, ValueType valueType,
+            String writeType, ModbusWriteFunctionCode successFC, String channel, Command command, Exception error,
+            BundleContext context, boolean parentIsEndpoint) {
         ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502, false);
 
         // Minimally mocked request
@@ -521,7 +528,13 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         doReturn(endpoint).when(task).getEndpoint();
         doReturn(request).when(task).getRequest();
 
-        Bridge poller = createPollerMock("poller1", task);
+        final Bridge parent;
+        if (parentIsEndpoint) {
+            parent = createTcpMock();
+            addThing(parent);
+        } else {
+            parent = createPollerMock("poller1", task);
+        }
 
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "");
@@ -532,7 +545,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         String thingId = "write";
 
-        ModbusDataThingHandler dataHandler = createDataHandler(thingId, poller,
+        ModbusDataThingHandler dataHandler = createDataHandler(thingId, parent,
                 builder -> builder.withConfiguration(dataConfig), context);
 
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
@@ -647,6 +660,25 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         assertSingleStateUpdate(dataHandler, CHANNEL_NUMBER, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_ROLLERSHUTTER, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_STRING, is(equalTo(new StringType("ON"))));
+    }
+
+    @Test
+    public void testWriteWithDataAsChildOfEndpoint() throws InvalidSyntaxException {
+        captureModbusWrites();
+        mockTransformation("MULTIPLY", new MultiplyTransformation());
+        ModbusDataThingHandler dataHandler = testWriteHandlingGeneric("50", "MULTIPLY(10)",
+                ModbusConstants.ValueType.BIT, "coil", ModbusWriteFunctionCode.WRITE_COIL, "number",
+                new DecimalType("2"), null, bundleContext, /* parent is endpoint */true);
+
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_SUCCESS, is(notNullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_ERROR, is(nullValue(State.class)));
+        assertThat(writeRequests.size(), is(equalTo(1)));
+        ModbusWriteRequestBlueprint writeRequest = writeRequests.get(0);
+        assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_COIL)));
+        assertThat(writeRequest.getReference(), is(equalTo(50)));
+        assertThat(((ModbusWriteCoilRequestBlueprint) writeRequest).getCoils().size(), is(equalTo(1)));
+        // Since transform output is non-zero, it is mapped as "true"
+        assertThat(((ModbusWriteCoilRequestBlueprint) writeRequest).getCoils().getBit(0), is(equalTo(true)));
     }
 
     @Test
@@ -1332,7 +1364,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     @Test
     public void testWriteTransformAndNecessary() {
         Configuration dataConfig = new Configuration();
-        // It's illegal to have start and transform. Just have transform or have all
         dataConfig.put("writeStart", "3");
         dataConfig.put("writeType", "holding");
         dataConfig.put("writeValueType", "int16");
