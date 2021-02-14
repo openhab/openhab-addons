@@ -172,7 +172,7 @@ public class KeContactHandler extends BaseThingHandler {
 
     private void pollingRunnable() {
         try {
-            logger.info("Running pollingRunnable to connect Keba wallbox");
+            logger.debug("Running pollingRunnable to connect Keba wallbox");
             long stamp = System.currentTimeMillis();
             if (!isKebaReachable()) {
                 logger.debug("Ping timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
