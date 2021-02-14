@@ -241,12 +241,12 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     @Override
     public boolean disableNotifications(BluetoothCharacteristic characteristic) {
         if (connection == -1) {
-            logger.debug("Cannot enable notifications, device not connected {}", this);
+            logger.debug("Cannot disable notifications, device not connected {}", this);
             return false;
         }
 
         BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
-        if (ch.isNotificationEnabled()) {
+        if (!ch.isNotificationEnabled()) {
             return true;
         }
 
