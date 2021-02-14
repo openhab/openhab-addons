@@ -33,11 +33,13 @@
 	<channel-type id="powerOn">
 		<item-type>Switch</item-type>
 		<label>Socket power</label>
+		<description>Socket power</description>
 		<category>PowerOutlet</category>
 	</channel-type>
 	<channel-type id="powerConsumption" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Power consumption</label>
+		<description>Power consumption</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="light">

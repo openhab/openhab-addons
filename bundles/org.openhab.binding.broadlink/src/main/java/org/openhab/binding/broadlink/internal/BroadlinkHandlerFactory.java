@@ -40,7 +40,6 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
         return BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet().contains(thingTypeUID);
     }
 
-    // FIXME: This function envies the ModelMapper and should be unified with it...
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (logger.isDebugEnabled())

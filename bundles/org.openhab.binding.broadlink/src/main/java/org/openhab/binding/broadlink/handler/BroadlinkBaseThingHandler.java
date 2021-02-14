@@ -69,16 +69,14 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     public BroadlinkBaseThingHandler(Thing thing, Logger logger) {
         super(thing);
         this.thingLogger = new ThingLogger(thing, logger);
+        thingLogger.logDebug("Constructing thing " + thing.getLabel());
         this.thingConfig = getConfigAs(BroadlinkConfiguration.class);
         count = (new Random()).nextInt(65535);
-
-        thingLogger.logInfo(String.format("constructed: resetting deviceKey to '%s', length %d",
-                BroadlinkBindingConstants.BROADLINK_AUTH_KEY, BroadlinkBindingConstants.BROADLINK_AUTH_KEY.length()));
-        thingLogger.logInfo("(HINT: this should start '0976', end '8b02' and have length 32)");
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
         this.deviceKey = HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_AUTH_KEY);
 
         this.socket = new RetryableSocket(thingConfig, thingLogger);
+        thingLogger.logDebug("Constructor finished for thing " + thing.getLabel());
     }
 
     // For test purposes
@@ -97,8 +95,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     public void initialize() {
         thingLogger.logDebug("initializing polling");
 
-        updateItemStatus();
-
         if (thingConfig.getPollingInterval() != 0) {
             refreshHandle = scheduler.scheduleWithFixedDelay(new Runnable() {
 
@@ -107,6 +103,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 }
             }, 1L, thingConfig.getPollingInterval(), TimeUnit.SECONDS);
         }
+        thingLogger.logDebug("initialize complete");
     }
 
     public void thingUpdated(Thing thing) {

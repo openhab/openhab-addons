@@ -20,7 +20,8 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 
     protected boolean getStatusFromDevice() {
         try {
-            thingLogger.logInfo("SP2/SP3 getting status...");
+            thingLogger.logDebug("SP2/SP3 getting status...");
             byte[] statusByte = getStatusByteFromDevice();
             updateState(BroadlinkBindingConstants.CHANNEL_POWER, derivePowerStateFromStatusByte(statusByte));
             updateState(BroadlinkBindingConstants.CHANNEL_NIGHTLIGHT_POWER,
@@ -117,7 +118,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
     // The returned values need to be treated as BCD - thanks to https://github.com/almazik
     protected void getPowerConsumptionFromDevice() {
         try {
-            thingLogger.logInfo("SP2/SP3 getting power consumption status...");
+            thingLogger.logDebug("SP2/SP3 getting power consumption status...");
             byte message[] = buildMessage((byte) 0x6a, POWER_CONSUMPTION_REQUEST_BYTES);
             byte response[] = sendAndReceiveDatagram(message, "SP2/3 power consumption status bytes");
             byte[] statusBytes = decodeDevicePacket(response);

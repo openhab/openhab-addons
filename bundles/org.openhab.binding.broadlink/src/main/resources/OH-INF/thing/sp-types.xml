@@ -18,7 +18,7 @@
 		<description>The Broadlink SP2 is a Wi-Fi smart socket with night light.</description>
 		<channels>
 			<channel id="powerOn" typeId="powerOn"/>
-			<channel id="nightLight" typeId="nightLight"/>
+			<channel id="nightLight" typeId="powerOn"/>
 			<channel id="powerConsumption" typeId="powerConsumption"/>
 		</channels>
 
