@@ -49,6 +49,27 @@
 			<channel id="thermalenergyWarmwater" typeId="thermalenergyWarmwater"/>
 			<channel id="thermalenergyPool" typeId="thermalenergyPool"/>
 			<channel id="thermalenergyTotal" typeId="thermalenergyTotal"/>
+			<channel id="temperatureSolarStorage" typeId="temperatureSolarStorage"/>
+			<channel id="heatingOperationMode" typeId="heatingOperationMode"/>
+			<channel id="heatingTemperature" typeId="heatingTemperature"/>
+			<channel id="warmwaterOperationMode" typeId="warmwaterOperationMode"/>
+			<channel id="warmwaterTemperature" typeId="warmwaterTemperature"/>
+			<channel id="coolingOperationMode" typeId="coolingOperationMode"/>
+			<channel id="coolingReleaseTemperature" typeId="coolingReleaseTemperature"/>
+			<channel id="coolingInletTemperature" typeId="coolingInletTemperature"/>
+			<channel id="coolingStartHours" typeId="coolingStartHours"/>
+			<channel id="coolingStopHours" typeId="coolingStopHours"/>
+			<channel id="outputAv" typeId="outputAv"/>
+			<channel id="outputBup" typeId="outputBup"/>
+			<channel id="outputHup" typeId="outputHup"/>
+			<channel id="outputVen" typeId="outputVen"/>
+			<channel id="outputVd1" typeId="outputVd1"/>
+			<channel id="outputVd2" typeId="outputVd2"/>
+			<channel id="outputZip" typeId="outputZip"/>
+			<channel id="outputZup" typeId="outputZup"/>
+			<channel id="outputZw1" typeId="outputZw1"/>
+			<channel id="outputZw2sst" typeId="outputZw2sst"/>
+			<channel id="outputZw3sst" typeId="outputZw3sst"/>
 		</channels>
 
 		<config-description>
@@ -292,5 +313,176 @@
 		<description>sum of all total energy in KWh</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<!-- new channel -->
+	<channel-type id="temperatureSolarStorage">
+		<item-type>Number:Temperature</item-type>
+		<label>TemperatureSolarStorage</label>
+		<description>the temperature of the solar storage</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="heatingOperationMode">
+		<item-type>Number</item-type>
+		<label>HeatingOperationMode</label>
+		<description>operation mode (0="Auto", 1="Zuheizer", 2="Party", 3="Ferien", 4="Aus")</description>
+		<category>Number</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Zuheizer</option>
+				<option value="2">Party</option>
+				<option value="3">Ferien</option>
+				<option value="4">Aus</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="heatingTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>HeatingTemperature</label>
+		<description>heating curve offset</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="warmwaterOperationMode">
+		<item-type>Number</item-type>
+		<label>WarmwaterOperationMode</label>
+		<description>operation mode (0="Auto", 1="Zuheizer", 2="Party", 3="Ferien", 4="Aus")</description>
+		<category>Number</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Zuheizer</option>
+				<option value="2">Party</option>
+				<option value="3">Ferien</option>
+				<option value="4">Aus</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="warmwaterTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>WarmwaterTemperature</label>
+		<description>target temperature for warm water</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="coolingOperationMode">
+		<item-type>Number</item-type>
+		<label>CoolingOperationMode</label>
+		<description>(1="Auto", 0="Off")</description>
+		<category>Number</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="coolingReleaseTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>CoolingReleaseTemperature</label>
+		<description>cooling release temeprature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="coolingInletTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>CoolingInletTemperature</label>
+		<description>cooling inlet temeprature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="coolingStartHours">
+		<item-type>Number</item-type>
+		<label>CoolingStartHours</label>
+		<description>cooling start after hours</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="coolingStopHours">
+		<item-type>Number</item-type>
+		<label>CoolingStopHours</label>
+		<description>cooling stop after hours</description>
+		<category>Time</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="outputAv">
+		<item-type>Switch</item-type>
+		<label>OutputAv</label>
+		<description>Output: defrosting (= Abtauventil)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputBup">
+		<item-type>Switch</item-type>
+		<label>OutputBup</label>
+		<description>Output: water pump (= Brauchwasserpumpe)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputHup">
+		<item-type>Switch</item-type>
+		<label>OutputHup</label>
+		<description>Output: heat pump (= Heizungsumwälzpumpe)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputVen">
+		<item-type>Switch</item-type>
+		<label>OutputVen</label>
+		<description>Output: ventilation</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputVd1">
+		<item-type>Switch</item-type>
+		<label>OutputVd1</label>
+		<description>Output: compressor 1</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputVd2">
+		<item-type>Switch</item-type>
+		<label>OutputVd2</label>
+		<description>Output: compressor 2</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputZip">
+		<item-type>Switch</item-type>
+		<label>OutputZip</label>
+		<description>Output: water circulation pump</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputZup">
+		<item-type>Switch</item-type>
+		<label>OutputZup</label>
+		<description>Output: additional water pump</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputZw1">
+		<item-type>Switch</item-type>
+		<label>OutputZw1</label>
+		<description>Output: additional heater 1</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputZw2sst">
+		<item-type>Switch</item-type>
+		<label>OutputZw2sst</label>
+		<description>Output: additional heater 2</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputZw3sst">
+		<item-type>Switch</item-type>
+		<label>OutputZw3sst</label>
+		<description>Output: additional heater 3</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

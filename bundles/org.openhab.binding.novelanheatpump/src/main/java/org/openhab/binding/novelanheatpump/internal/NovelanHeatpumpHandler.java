@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -242,6 +243,62 @@ public class NovelanHeatpumpHandler extends BaseThingHandler {
             case THERMALENERGY_TOTAL:
                 double thermalenergyTotal = (double) heatpumpResponse.getHeatpumpValues()[154] / 10;
                 return new QuantityType<>(thermalenergyTotal, API_POWER_UNIT);
+            case TEMPERATURE_SOLAR_STORAGE:
+                double temperatureSolarStorage = (double) heatpumpResponse.getHeatpumpValues()[27] / 10;
+                return new QuantityType<>(temperatureSolarStorage, API_TEMPERATURE_UNIT);
+            case HEATING_OPERATION_MODE:
+                int heatingOperationMode = heatpumpResponse.getHeatpumpParams()[PARAM_HEATING_OPERATION_MODE];
+                return new DecimalType(heatingOperationMode);
+            case HEATING_TEMPERATURE:
+                double heatingTemperature = (double) heatpumpResponse.getHeatpumpParams()[PARAM_HEATING_TEMPERATURE]
+                        / 10;
+                return new QuantityType<>(heatingTemperature, API_TEMPERATURE_UNIT);
+            case WARMWATER_OPERATION_MODE:
+                int warmwaterOperationMode = heatpumpResponse.getHeatpumpParams()[PARAM_WARMWATER_OPERATION_MODE];
+                return new DecimalType(warmwaterOperationMode);
+            case WARMWATER_TEMPERATURE:
+                double warmwaterTemperature = (double) heatpumpResponse.getHeatpumpParams()[PARAM_WARMWATER_TEMPERATURE]
+                        / 10;
+                return new QuantityType<>(warmwaterTemperature, API_TEMPERATURE_UNIT);
+            case COOLING_OPERATION_MODE:
+                int coolingOperationMode = heatpumpResponse.getHeatpumpParams()[PARAM_COOLING_OPERATION_MODE];
+                return new DecimalType(coolingOperationMode);
+            case COOLING_RELEASE_TEMPERATURE:
+                double coolingReleaseTemperature = (double) heatpumpResponse
+                        .getHeatpumpParams()[PARAM_COOLING_RELEASE_TEMP] / 10;
+                return new QuantityType<>(coolingReleaseTemperature, API_TEMPERATURE_UNIT);
+            case COOLING_INLET_TEMPERATURE:
+                double coolingInletTemperature = (double) heatpumpResponse.getHeatpumpParams()[PARAM_COOLING_INLET_TEMP]
+                        / 10;
+                return new QuantityType<>(coolingInletTemperature, API_TEMPERATURE_UNIT);
+            case COOLING_START_HOURS:
+                double coolingStartHours = (double) heatpumpResponse.getHeatpumpParams()[PARAM_COOLING_START] / 10;
+                return new DecimalType(coolingStartHours);
+            case COOLING_STOP_HOURS:
+                double coolingStopHours = (double) heatpumpResponse.getHeatpumpParams()[PARAM_COOLING_STOP] / 10;
+                return new DecimalType(coolingStopHours);
+            case OUTPUT_AV:
+                return heatpumpResponse.getHeatpumpValues()[37] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_BUP:
+                return heatpumpResponse.getHeatpumpValues()[38] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_HUP:
+                return heatpumpResponse.getHeatpumpValues()[39] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_VEN:
+                return heatpumpResponse.getHeatpumpValues()[42] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_VD1:
+                return heatpumpResponse.getHeatpumpValues()[44] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_VD2:
+                return heatpumpResponse.getHeatpumpValues()[45] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_ZIP:
+                return heatpumpResponse.getHeatpumpValues()[46] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_ZUP:
+                return heatpumpResponse.getHeatpumpValues()[47] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_ZW1:
+                return heatpumpResponse.getHeatpumpValues()[48] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_ZW2_SST:
+                return heatpumpResponse.getHeatpumpValues()[49] == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OUTPUT_ZW3_SST:
+                return heatpumpResponse.getHeatpumpValues()[50] == 0 ? OnOffType.OFF : OnOffType.ON;
             default:
                 return UnDefType.UNDEF;
         }
