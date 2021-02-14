@@ -18,7 +18,7 @@
 		</supported-bridge-type-refs>
 
 		<label>In-wall Switch</label>
-		<description>Bosch In-wall switch for light control</description>
+		<description>In-wall switch for light control</description>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -36,7 +36,7 @@
 		</supported-bridge-type-refs>
 
 		<label>TwinGuard</label>
-		<description>Bosch TwinGuard environmental sensor</description>
+		<description>TwinGuard environmental sensor</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -59,7 +59,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Window/Door Contact</label>
-		<description>Bosch Contact for windows and doors</description>
+		<description>Contact for windows and doors</description>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -75,7 +75,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Motion Detector</label>
-		<description>Bosch Motion Detector</description>
+		<description>Motion Detector</description>
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
@@ -91,7 +91,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Shutter Control</label>
-		<description>Bosch Shutter Control</description>
+		<description>Shutter Control</description>
 
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -107,7 +107,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Thermostat</label>
-		<description>Bosch Thermostat</description>
+		<description>Radiator thermostat</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -124,7 +124,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Climate Control</label>
-		<description>Bosch Climate Control. This is a virtual device which is automatically created for all rooms that have
+		<description>This is a virtual device which is automatically created for all rooms that have
 			thermostats in it.</description>
 
 		<channels>
