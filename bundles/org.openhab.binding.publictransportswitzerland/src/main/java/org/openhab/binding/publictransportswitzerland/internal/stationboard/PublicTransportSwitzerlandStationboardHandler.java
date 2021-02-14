@@ -18,11 +18,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -30,6 +26,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -38,7 +35,6 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +57,11 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             "stationboard/number", "stationboard/stop/departureTimestamp", "stationboard/stop/delay",
             "stationboard/stop/platform");
 
+    private static final String TSV_CHANNEL = "tsv";
+
     private final ChannelGroupUID stationboardChannelGroupUID = new ChannelGroupUID(getThing().getUID(),
             "stationboard");
     private final ChannelGroupUID dynamicChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "departures");
-
-    private final ChannelUID tsvChannelUID = new ChannelUID(stationboardChannelGroupUID, "tsv");
 
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
@@ -194,7 +190,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         if (jsonObject == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 
-            updateState(tsvChannelUID, UnDefType.UNDEF);
+            updateState(TSV_CHANNEL, UnDefType.UNDEF);
 
             for (Channel channel : getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId())) {
                 updateState(channel.getUID(), UnDefType.UNDEF);
@@ -253,7 +249,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             tsvRows.add(String.join("\t", identifier, departureTimeElement.toString(), destination, track, delay));
         }
 
-        updateState(tsvChannelUID, new StringType(String.join("\n", tsvRows)));
+        updateState(TSV_CHANNEL, new StringType(String.join("\n", tsvRows)));
     }
 
     private @Nullable String getStringValueOrNull(@Nullable JsonElement jsonElement) {
