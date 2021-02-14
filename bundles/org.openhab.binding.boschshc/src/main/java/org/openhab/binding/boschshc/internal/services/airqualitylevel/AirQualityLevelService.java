@@ -10,22 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services.latestmotion;
+package org.openhab.binding.boschshc.internal.services.airqualitylevel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
-import org.openhab.binding.boschshc.internal.services.latestmotion.dto.LatestMotionServiceState;
+import org.openhab.binding.boschshc.internal.services.airqualitylevel.dto.AirQualityLevelServiceState;
 
 /**
- * Detects every movement through an intelligent combination of passive infra-red technology and an additional
- * temperature sensor.
+ * This service constantly measures key air quality values to help you create a healthy room climate.
  * 
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public class LatestMotionService extends BoschSHCService<LatestMotionServiceState> {
+public class AirQualityLevelService extends BoschSHCService<AirQualityLevelServiceState> {
 
-    public LatestMotionService() {
-        super("LatestMotion", LatestMotionServiceState.class);
+    public AirQualityLevelService() {
+        super("AirQualityLevel", AirQualityLevelServiceState.class);
     }
 }

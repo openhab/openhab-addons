@@ -12,33 +12,36 @@
  */
 package org.openhab.binding.boschshc.internal.devices.twinguard;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_AIR_DESCRIPTION;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_COMBINED_RATING;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_HUMIDITY;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_HUMIDITY_RATING;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_PURITY;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_PURITY_RATING;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE_RATING;
+
+import java.util.List;
 
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.twinguard.dto.AirQualityLevelState;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.airqualitylevel.AirQualityLevelService;
+import org.openhab.binding.boschshc.internal.services.airqualitylevel.dto.AirQualityLevelServiceState;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link BoschSHCHandler} is responsible for handling commands for the TwinGuard handler.
+ * The {@link BoschTwinguardHandler} is responsible for handling commands for the TwinGuard handler.
  *
  * @author Stefan Kästle - Initial contribution
+ * @author Christian Oeing - Use service instead of custom logic
  */
 @NonNullByDefault
 public class TwinguardHandler extends BoschSHCHandler {
@@ -48,45 +51,22 @@ public class TwinguardHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        Bridge bridge = this.getBridge();
+    protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
 
-        if (bridge != null) {
-            logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
-
-            if (command instanceof RefreshType) {
-                AirQualityLevelState state = this.getState("AirQualityLevel", AirQualityLevelState.class);
-                if (state != null) {
-                    updateAirQualityState(state);
-                }
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge is NUL");
-        }
+        this.createService(AirQualityLevelService::new, this::updateChannels,
+                List.of(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_RATING, CHANNEL_HUMIDITY, CHANNEL_HUMIDITY_RATING,
+                        CHANNEL_PURITY, CHANNEL_PURITY_RATING, CHANNEL_AIR_DESCRIPTION, CHANNEL_COMBINED_RATING));
     }
 
-    void updateAirQualityState(AirQualityLevelState state) {
+    private void updateChannels(AirQualityLevelServiceState state) {
         updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(state.temperature, SIUnits.CELSIUS));
         updateState(CHANNEL_TEMPERATURE_RATING, new StringType(state.temperatureRating));
         updateState(CHANNEL_HUMIDITY, new QuantityType<Dimensionless>(state.humidity, Units.PERCENT));
         updateState(CHANNEL_HUMIDITY_RATING, new StringType(state.humidityRating));
         updateState(CHANNEL_PURITY, new QuantityType<Dimensionless>(state.purity, Units.PARTS_PER_MILLION));
-        updateState(CHANNEL_AIR_DESCRIPTION, new StringType(state.description));
         updateState(CHANNEL_PURITY_RATING, new StringType(state.purityRating));
+        updateState(CHANNEL_AIR_DESCRIPTION, new StringType(state.description));
         updateState(CHANNEL_COMBINED_RATING, new StringType(state.combinedRating));
-    }
-
-    @Override
-    public void processUpdate(String id, JsonElement state) throws JsonSyntaxException {
-        logger.debug("Twinguard: received update: {} {}", id, state);
-
-        AirQualityLevelState parsed = GSON.fromJson(state, AirQualityLevelState.class);
-        if (parsed == null) {
-            logger.warn("Received unknown update in in-wall switch: {}", state);
-            return;
-        }
-
-        logger.debug("Parsed switch state of {}: {}", this.getBoschID(), parsed);
-        updateAirQualityState(parsed);
     }
 }

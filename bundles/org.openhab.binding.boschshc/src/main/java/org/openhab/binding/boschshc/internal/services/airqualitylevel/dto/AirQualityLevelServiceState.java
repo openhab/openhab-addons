@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.twinguard.dto;
+package org.openhab.binding.boschshc.internal.services.airqualitylevel.dto;
 
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
@@ -19,9 +19,9 @@ import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
  *
  * @author Stefan Kästle - Initial contribution
  */
-public class AirQualityLevelState extends BoschSHCServiceState {
+public class AirQualityLevelServiceState extends BoschSHCServiceState {
 
-    public AirQualityLevelState() {
+    public AirQualityLevelServiceState() {
         super("airQualityLevelState");
     }
 
