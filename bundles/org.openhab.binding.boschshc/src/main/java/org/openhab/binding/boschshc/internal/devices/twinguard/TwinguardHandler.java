@@ -41,9 +41,9 @@ import com.google.gson.JsonSyntaxException;
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class BoschTwinguardHandler extends BoschSHCHandler {
+public class TwinguardHandler extends BoschSHCHandler {
 
-    public BoschTwinguardHandler(Thing thing) {
+    public TwinguardHandler(Thing thing) {
         super(thing);
     }
 

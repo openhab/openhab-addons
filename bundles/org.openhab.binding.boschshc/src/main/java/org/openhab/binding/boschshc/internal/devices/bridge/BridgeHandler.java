@@ -59,9 +59,9 @@ import com.google.gson.reflect.TypeToken;
  * @author Christian Oeing - refactorings of e.g. server registration
  */
 @NonNullByDefault
-public class BoschSHCBridgeHandler extends BaseBridgeHandler {
+public class BridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
 
     /**
      * gson instance to convert a class to json string and back.
@@ -77,7 +77,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> scheduledPairing;
 
-    public BoschSHCBridgeHandler(Bridge bridge) {
+    public BridgeHandler(Bridge bridge) {
         super(bridge);
 
         this.longPolling = new LongPolling(this.scheduler, this::handleLongPollResult, this::handleLongPollFailure);
@@ -89,7 +89,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 FrameworkUtil.getBundle(getClass()).getVersion());
 
         // Read configuration
-        BoschSHCBridgeConfiguration config = getConfigAs(BoschSHCBridgeConfiguration.class);
+        BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
 
         String ipAddress = config.ipAddress.trim();
         if (ipAddress.isEmpty()) {

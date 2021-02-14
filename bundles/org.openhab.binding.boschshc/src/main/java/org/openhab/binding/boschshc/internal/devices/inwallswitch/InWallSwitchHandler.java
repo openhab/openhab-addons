@@ -43,11 +43,11 @@ import com.google.gson.JsonElement;
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class BoschInWallSwitchHandler extends BoschSHCHandler {
+public class InWallSwitchHandler extends BoschSHCHandler {
 
     private final PowerSwitchService powerSwitchService;
 
-    public BoschInWallSwitchHandler(Thing thing) {
+    public InWallSwitchHandler(Thing thing) {
         super(thing);
         this.powerSwitchService = new PowerSwitchService();
     }

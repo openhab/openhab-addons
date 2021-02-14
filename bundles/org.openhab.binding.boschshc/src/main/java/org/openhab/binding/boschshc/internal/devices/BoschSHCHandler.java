@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
@@ -182,12 +182,12 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @return Bridge handler for this thing handler. Null if no or an invalid bridge was set in the configuration.
      * @throws BoschSHCException If bridge for handler is not set or an invalid bridge is set.
      */
-    protected BoschSHCBridgeHandler getBridgeHandler() throws BoschSHCException {
+    protected BridgeHandler getBridgeHandler() throws BoschSHCException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
             throw new BoschSHCException(String.format("No valid bridge set for %s", this.getThing()));
         }
-        BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
+        BridgeHandler bridgeHandler = (BridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             throw new BoschSHCException(String.format("Bridge of %s has no valid bridge handler", this.getThing()));
         }
@@ -208,7 +208,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             return null;
         }
         try {
-            BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+            BridgeHandler bridgeHandler = this.getBridgeHandler();
             return bridgeHandler.getState(deviceId, stateName, classOfT);
         } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -254,7 +254,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
             TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
             throws BoschSHCException {
-        BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+        BridgeHandler bridgeHandler = this.getBridgeHandler();
 
         String deviceId = this.getBoschID();
         if (deviceId == null) {

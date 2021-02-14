@@ -27,13 +27,13 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.climatecontrol.ClimateControlHandler;
-import org.openhab.binding.boschshc.internal.devices.inwallswitch.BoschInWallSwitchHandler;
+import org.openhab.binding.boschshc.internal.devices.inwallswitch.InWallSwitchHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
-import org.openhab.binding.boschshc.internal.devices.twinguard.BoschTwinguardHandler;
+import org.openhab.binding.boschshc.internal.devices.twinguard.TwinguardHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContactHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -66,9 +66,9 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private static final Collection<ThingTypeHandlerMapping> SUPPORTED_THING_TYPES = List.of(
-            new ThingTypeHandlerMapping(THING_TYPE_SHC, thing -> new BoschSHCBridgeHandler((Bridge) thing)),
-            new ThingTypeHandlerMapping(THING_TYPE_INWALL_SWITCH, BoschInWallSwitchHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, BoschTwinguardHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_SHC, thing -> new BridgeHandler((Bridge) thing)),
+            new ThingTypeHandlerMapping(THING_TYPE_INWALL_SWITCH, InWallSwitchHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, TwinguardHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT, WindowContactHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_MOTION_DETECTOR, MotionDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),

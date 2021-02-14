@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
     /**
      * Bridge to use for communication from/to the device
      */
-    private @Nullable BoschSHCBridgeHandler bridgeHandler;
+    private @Nullable BridgeHandler bridgeHandler;
 
     /**
      * Id of device the service belongs to
@@ -86,7 +86,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * @param deviceId Id of device this service is for
      * @param stateUpdateListener Function to call when a state update was received from the device.
      */
-    public void initialize(BoschSHCBridgeHandler bridgeHandler, String deviceId,
+    public void initialize(BridgeHandler bridgeHandler, String deviceId,
             @Nullable Consumer<TState> stateUpdateListener) {
         this.bridgeHandler = bridgeHandler;
         this.deviceId = deviceId;
@@ -142,7 +142,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
         if (deviceId == null) {
             return null;
         }
-        BoschSHCBridgeHandler bridgeHandler = this.bridgeHandler;
+        BridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler == null) {
             return null;
         }
@@ -162,7 +162,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
         if (deviceId == null) {
             return;
         }
-        BoschSHCBridgeHandler bridgeHandler = this.bridgeHandler;
+        BridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler == null) {
             return;
         }
