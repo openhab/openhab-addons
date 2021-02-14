@@ -22,14 +22,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.ProcessingException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
@@ -187,7 +186,7 @@ public class HDPowerViewJUnitTests {
                     String shadeName = shadexData.getName();
                     assertNotNull(shadeName);
                 }
-            } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
+            } catch (JsonParseException | HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -210,7 +209,7 @@ public class HDPowerViewJUnitTests {
                     String sceneName = scene.getName();
                     assertNotNull(sceneName);
                 }
-            } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
+            } catch (JsonParseException | HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -221,7 +220,7 @@ public class HDPowerViewJUnitTests {
                 assertNotEquals(0, shadeId);
                 shade = webTargets.refreshShade(shadeId);
                 assertNotNull(shade);
-            } catch (ProcessingException | HubMaintenanceException e) {
+            } catch (HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -252,7 +251,7 @@ public class HDPowerViewJUnitTests {
                 if (allowShadeMovementCommands) {
                     webTargets.moveShade(shadeId, newPos);
                 }
-            } catch (ProcessingException | HubMaintenanceException e) {
+            } catch (HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -261,7 +260,7 @@ public class HDPowerViewJUnitTests {
                 try {
                     assertNotNull(sceneId);
                     webTargets.activateScene(sceneId);
-                } catch (ProcessingException | HubMaintenanceException e) {
+                } catch (HubProcessingException | HubMaintenanceException e) {
                     fail(e.getMessage());
                 }
             }
@@ -271,7 +270,7 @@ public class HDPowerViewJUnitTests {
                 try {
                     assertNotNull(sceneId);
                     webTargets.stopShade(shadeId);
-                } catch (ProcessingException | HubMaintenanceException e) {
+                } catch (HubProcessingException | HubMaintenanceException e) {
                     fail(e.getMessage());
                 }
             }
