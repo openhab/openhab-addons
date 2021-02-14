@@ -196,7 +196,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
-        if (ch.isNotificationEnabled()) {
+        if (ch.isNotifying()) {
             return true;
         }
 
@@ -246,7 +246,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
-        if (!ch.isNotificationEnabled()) {
+        if (!ch.isNotifying()) {
             return true;
         }
 
@@ -291,7 +291,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     @Override
     public boolean isNotifying(BluetoothCharacteristic characteristic) {
         BlueGigaBluetoothCharacteristic ch = (BlueGigaBluetoothCharacteristic) characteristic;
-        return ch.isNotificationEnabled();
+        return ch.isNotifying();
     }
 
     @Override
@@ -619,7 +619,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                 if (!success) {
                     logger.debug("write to descriptor failed");
                 }
-                ((BlueGigaBluetoothCharacteristic) procedureCharacteristic).setNotificationEnabled(success);
+                ((BlueGigaBluetoothCharacteristic) procedureCharacteristic).setNotifying(success);
                 procedureProgress = BlueGigaProcedure.NONE;
                 procedureCharacteristic = null;
                 break;
@@ -628,7 +628,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                 if (!success) {
                     logger.debug("write to descriptor failed");
                 }
-                ((BlueGigaBluetoothCharacteristic) procedureCharacteristic).setNotificationEnabled(!success);
+                ((BlueGigaBluetoothCharacteristic) procedureCharacteristic).setNotifying(!success);
                 procedureProgress = BlueGigaProcedure.NONE;
                 procedureCharacteristic = null;
                 break;
@@ -662,7 +662,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         for (BlueGigaBluetoothCharacteristic ch : handleToCharacteristic.values()) {
-            ch.setNotificationEnabled(false);
+            ch.setNotifying(false);
         }
 
         cancelTimer(procedureTimer);
