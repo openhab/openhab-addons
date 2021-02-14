@@ -31,12 +31,12 @@ public class ModbusSerialConfiguration {
     private int dataBits;
     private @Nullable String encoding;
     private boolean echo;
-    private int receiveTimeoutMillis;
+    private int receiveTimeoutMillis = 1500;
     private @Nullable String flowControlIn;
     private @Nullable String flowControlOut;
-    private int timeBetweenTransactionsMillis;
-    private int connectMaxTries;
-    private int connectTimeoutMillis;
+    private int timeBetweenTransactionsMillis = 35;
+    private int connectMaxTries = 1;
+    private int connectTimeoutMillis = 10_000;
     private boolean enableDiscovery;
 
     public @Nullable String getPort() {
