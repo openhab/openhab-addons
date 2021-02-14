@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.discovery.internal;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -172,7 +174,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         private final Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
         private final Map<BluetoothAdapter, Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
 
-        private @Nullable BluetoothDeviceSnapshot latestSnapshot;
+        private ExpiringCache<BluetoothDeviceSnapshot> latestSnapshot = new ExpiringCache<>(Duration.ofMinutes(1),
+                () -> null);
 
         /**
          * This is meant to be used as part of a Map.compute function
@@ -209,7 +212,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             CompletableFuture<DiscoveryResult> future = null;
 
             BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(device);
-            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot;
+            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot.getValue();
             if (latestSnapshot != null) {
                 snapshot.merge(latestSnapshot);
 
@@ -236,7 +239,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                     }
                 }
             }
-            this.latestSnapshot = snapshot;
+            this.latestSnapshot.putValue(snapshot);
 
             if (future == null) {
                 // we pass in the snapshot since it acts as a delegate for the device. It will also retain any new
