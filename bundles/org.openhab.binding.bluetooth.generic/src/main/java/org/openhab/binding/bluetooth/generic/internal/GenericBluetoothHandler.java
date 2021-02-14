@@ -89,7 +89,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     this.device.getServices().forEach((service) -> {
                         service.getCharacteristics().forEach((characteristic) -> {
                             CharacteristicHandler charHandler;
-                            if (device.canNotify(characteristic)) {
+                            if (characteristic.canNotify()) {
                                 // If notifications can be enabled, we create the CharacteristicHandler
                                 // if it not exists so that we can register notifications.
                                 charHandler = charHandlers.computeIfAbsent(characteristic, CharacteristicHandler::new);
@@ -114,7 +114,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                                         return;
                                     }
                                 }
-                                if (device.canNotify(characteristic)) {
+                                if (characteristic.canNotify()) {
                                     ChannelUID channelUID = charHandler.getChannelUID(null);
                                     // Enabled/Disable notifications dependent on if the channel is linked.
                                     if (isLinked(channelUID)) {

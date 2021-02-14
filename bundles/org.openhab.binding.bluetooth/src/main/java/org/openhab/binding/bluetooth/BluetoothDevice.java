@@ -251,17 +251,6 @@ public abstract class BluetoothDevice {
     public abstract boolean writeCharacteristic(BluetoothCharacteristic characteristic);
 
     /**
-     * Returns if notifications can be enabled on the given characteristics.
-     *
-     * @param characteristic the {@link BluetoothCharacteristic} to check if notifications can be enabled.
-     * @return true if notifications can be enabled, false if notifications are not supported, characteristic is missing
-     *         on device or notifications are not supported.
-     */
-    public boolean canNotify(BluetoothCharacteristic characteristic) {
-        return characteristic.hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_NOTIFY);
-    }
-
-    /**
      * Returns if notification is enabled for the given characteristic.
      *
      * @param characteristic the {@link BluetoothCharacteristic} to check if notifications are enabled.

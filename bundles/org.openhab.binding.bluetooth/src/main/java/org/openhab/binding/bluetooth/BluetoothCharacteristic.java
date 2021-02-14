@@ -175,6 +175,16 @@ public class BluetoothCharacteristic {
     }
 
     /**
+     * Returns if notifications can be enabled on this characteristic.
+     *
+     * @return true if notifications can be enabled, false if notifications are not supported, characteristic is missing
+     *         on device or notifications are not supported.
+     */
+    public boolean canNotify() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_NOTIFY);
+    }
+
+    /**
      * Returns the permissions for this characteristic.
      */
     public int getPermissions() {
