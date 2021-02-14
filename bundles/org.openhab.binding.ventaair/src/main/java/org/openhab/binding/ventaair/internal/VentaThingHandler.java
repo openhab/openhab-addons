@@ -154,8 +154,8 @@ public class VentaThingHandler extends BaseThingHandler {
 
         Header header = new Header(config.macAddress, config.deviceType.intValue(), hash.toString(), "openHAB");
 
-        communicator = new Communicator(config.ipAddress, header, new StateUpdatedCallback());
-        communicator.startPollDataFromDevice(scheduler, config.pollingTime);
+        communicator = new Communicator(config.ipAddress, header, config.pollingTime, new StateUpdatedCallback());
+        communicator.startPollDataFromDevice(scheduler);
     }
 
     private @Nullable String validateConfig() {

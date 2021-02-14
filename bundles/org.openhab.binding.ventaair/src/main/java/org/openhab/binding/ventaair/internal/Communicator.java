@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.Socket;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -45,19 +46,24 @@ import com.google.gson.Gson;
  *
  */
 public class Communicator {
+    private final Duration COMMUNICATION_MARGIN = Duration.ofSeconds(5);
+
     private final Logger logger = LoggerFactory.getLogger(Communicator.class);
 
     private String ipAddress;
     private Header header;
+    private int pollingTimeInSeconds;
     private StateUpdatedCallback callback;
+    private long lastSuccessfulCommunicationTime;
 
     private Gson gson = new Gson();
 
     private ScheduledFuture<?> pollingJob;
 
-    public Communicator(String ipAddress, Header header, StateUpdatedCallback callback) {
+    public Communicator(String ipAddress, Header header, BigDecimal pollingTime, StateUpdatedCallback callback) {
         this.ipAddress = ipAddress;
         this.header = header;
+        this.pollingTimeInSeconds = pollingTime.intValue();
         this.callback = callback;
     }
 
@@ -78,10 +84,12 @@ public class Communicator {
             logger.debug("Sending request data message (bytes): [{}]", HexUtils.bytesToHex(dataToSend, ", "));
             output.write(dataToSend);
 
+            long timeOut = lastSuccessfulCommunicationTime + (pollingTimeInSeconds * 1000)
+                    + COMMUNICATION_MARGIN.toMillis();
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
             String reply = "";
-            while ((reply = br.readLine()) != null) {
-                if (reply.startsWith("{")) {
+            while (((reply = br.readLine()) != null) || System.currentTimeMillis() > timeOut) {
+                if (reply != null && reply.startsWith("{")) {
                     // remove padding byte(s) after JSON data
                     String data = String.valueOf(reply.toCharArray(), 0, reply.length() - 1);
                     logger.debug("Got Data: {}", data);
@@ -89,6 +97,7 @@ public class Communicator {
                     DeviceInfoMessage deviceInfoMessage = gson.fromJson(data, DeviceInfoMessage.class);
                     if (deviceInfoMessage != null) {
                         callback.stateUpdated(deviceInfoMessage);
+                        lastSuccessfulCommunicationTime = System.currentTimeMillis();
                     }
                 }
             }
@@ -142,9 +151,11 @@ public class Communicator {
      *
      * @param scheduler - The scheduler of the {@link ThingHandler}
      */
-    public void startPollDataFromDevice(ScheduledExecutorService scheduler, BigDecimal pollingTime) {
+    public void startPollDataFromDevice(ScheduledExecutorService scheduler) {
         stopPollDataFromDevice();
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDataFromDevice, 2, pollingTime.intValue(),
+        // initialize lastSuccessfulCommunicationTime here for the job that we will schedule
+        lastSuccessfulCommunicationTime = System.currentTimeMillis();
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDataFromDevice, 2, pollingTimeInSeconds,
                 TimeUnit.SECONDS);
     }
 
