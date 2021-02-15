@@ -41,6 +41,7 @@ public class NAObject {
     }
 
     public String getNonNullName() {
-        return name != null ? name : id;
+        String localName = name;
+        return localName != null ? localName : id;
     }
 }

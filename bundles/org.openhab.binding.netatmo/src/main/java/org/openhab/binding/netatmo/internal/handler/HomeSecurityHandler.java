@@ -70,8 +70,9 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (webhookServlet != null) {
-            webhookServlet.registerDataListener(config.id, this);
+        NetatmoServlet servlet = this.webhookServlet;
+        if (servlet != null) {
+            servlet.registerDataListener(config.id, this);
         }
     }
 
@@ -129,8 +130,9 @@ public class HomeSecurityHandler extends NetatmoDeviceHandler {
 
     @Override
     public void dispose() {
-        if (webhookServlet != null) {
-            webhookServlet.unregisterDataListener(this);
+        NetatmoServlet servlet = this.webhookServlet;
+        if (servlet != null) {
+            servlet.unregisterDataListener(this);
         }
         super.dispose();
     }

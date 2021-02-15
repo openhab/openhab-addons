@@ -92,9 +92,10 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
                 if (extensions != null) {
                     thingTypeBuilder.withExtensibleChannelTypeIds(extensions);
                 }
-                if (supportedThingType.bridgeThingType != null) {
-                    thingTypeBuilder.withSupportedBridgeTypeUIDs(
-                            Arrays.asList(supportedThingType.bridgeThingType.getAsString()));
+
+                ThingTypeUID thingType = supportedThingType.bridgeThingType;
+                if (thingType != null) {
+                    thingTypeBuilder.withSupportedBridgeTypeUIDs(Arrays.asList(thingType.getAsString()));
                 }
 
                 return thingTypeBuilder.buildBridge();

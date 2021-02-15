@@ -90,8 +90,9 @@ public class NetatmoServlet extends HttpServlet {
     protected void modified(Map<String, Object> config) {
         NetatmoBindingConfiguration configuration = new Configuration(config).as(NetatmoBindingConfiguration.class);
         SecurityApi localApi = api;
-        if (configuration.webHookUrl != null && !configuration.webHookUrl.isEmpty() && localApi != null) {
-            String tentative = configuration.webHookUrl + NETATMO_CALLBACK_URI;
+        String url = configuration.webHookUrl;
+        if (url != null && !url.isEmpty() && localApi != null) {
+            String tentative = url + NETATMO_CALLBACK_URI;
             try {
                 URI webhookURI = new URI(tentative);
                 logger.info("Setting Netatmo Welcome WebHook to {}", webhookURI.toString());

@@ -43,7 +43,8 @@ public class NAThing extends NAObject {
     public boolean isReachable() {
         // This is not implemented on all devices/modules, so if absent
         // we consider it is reachable
-        return reachable != null ? reachable : true;
+        Boolean localReachable = this.reachable;
+        return localReachable != null ? localReachable : true;
     }
 
     public @Nullable NADashboard getDashboardData() {

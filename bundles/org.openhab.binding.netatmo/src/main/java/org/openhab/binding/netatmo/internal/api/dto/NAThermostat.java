@@ -55,15 +55,18 @@ public class NAThermostat extends NAModule {
     }
 
     public double getSetpointTemp() {
-        return setpoint != null ? setpoint.getSetpointTemp() : Double.NaN;
+        NASetpoint localSetpoint = setpoint;
+        return localSetpoint != null ? localSetpoint.getSetpointTemp() : Double.NaN;
     }
 
     public long getSetpointEndtime() {
-        return setpoint != null ? setpoint.getSetpointEndtime() : 0;
+        NASetpoint localSetpoint = setpoint;
+        return localSetpoint != null ? localSetpoint.getSetpointEndtime() : 0;
     }
 
     public SetpointMode getSetpointMode() {
-        return setpoint != null ? setpoint.getMode() : SetpointMode.UNKNOWN;
+        NASetpoint localSetpoint = setpoint;
+        return localSetpoint != null ? localSetpoint.getMode() : SetpointMode.UNKNOWN;
     }
 
     public boolean isAnticipating() {
