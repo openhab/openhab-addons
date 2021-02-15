@@ -41,8 +41,7 @@ class SseStreamParser {
     private final Consumer<ServerSentEvent> onServerSentEventCallback;
     private final Consumer<@Nullable Throwable> onStreamClosedCallback;
 
-    @Nullable
-    private String event;
+    private @Nullable String event;
 
     SseStreamParser(InputStream inputStream, Consumer<ServerSentEvent> onServerSentEventCallback,
             Consumer<@Nullable Throwable> onStreamClosedCallback) {

@@ -53,8 +53,7 @@ public interface RetryStrategy {
     default void performRetryableOperation(Runnable operation, Consumer<Exception> onException) {
         performRetryableOperation(new Supplier<@Nullable Void>() {
             @Override
-            @Nullable
-            public Void get() {
+            public @Nullable Void get() {
                 operation.run();
                 return null;
             }

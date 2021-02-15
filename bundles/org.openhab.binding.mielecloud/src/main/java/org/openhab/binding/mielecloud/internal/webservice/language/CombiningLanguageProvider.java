@@ -24,10 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class CombiningLanguageProvider implements LanguageProvider {
-    @Nullable
-    private LanguageProvider prioritizedLanguageProvider;
-    @Nullable
-    private LanguageProvider fallbackLanguageProvider;
+    private @Nullable LanguageProvider prioritizedLanguageProvider;
+    private @Nullable LanguageProvider fallbackLanguageProvider;
 
     /**
      * Creates a new instance.
