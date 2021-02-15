@@ -187,7 +187,8 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
     @Override
     public Set<String> getAvailableVoices(Locale locale) {
-        String langtag = locale.toLanguageTag();
+        // all maps must be defined with key in lowercase
+        String langtag = locale.toLanguageTag().toLowercase();
         if (SUPPORTED_VOICES.containsKey(langtag)) {
             return SUPPORTED_VOICES.get(langtag);
         }
