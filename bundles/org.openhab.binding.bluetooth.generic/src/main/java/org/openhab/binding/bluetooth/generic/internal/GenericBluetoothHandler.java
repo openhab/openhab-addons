@@ -102,9 +102,9 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                             }
                         }
                         if (charHandler.characteristic.canNotify()) {
-                            ChannelUID channelUID = charHandler.getChannelUID(null);
                             // Enabled/Disable notifications dependent on if the channel is linked.
-                            if (isLinked(channelUID)) {
+                            // TODO check why isLinked() is true for not linked channels
+                            if (channelUids.stream().anyMatch(this::isLinked)) {
                                 if (!device.isNotifying(charHandler.characteristic)) {
                                     device.enableNotifications(charHandler.characteristic);
                                 }
