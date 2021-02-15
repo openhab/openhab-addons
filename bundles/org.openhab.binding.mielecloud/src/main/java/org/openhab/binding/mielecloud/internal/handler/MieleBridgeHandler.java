@@ -70,12 +70,9 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     private final CombiningLanguageProvider languageProvider;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Nullable
-    private CompletableFuture<@Nullable Void> logoutFuture;
-    @Nullable
-    private MieleWebservice webService;
-    @Nullable
-    private ThingDiscoveryService discoveryService;
+    private @Nullable CompletableFuture<@Nullable Void> logoutFuture;
+    private @Nullable MieleWebservice webService;
+    private @Nullable ThingDiscoveryService discoveryService;
 
     /**
      * Creates a new {@link MieleBridgeHandler}.
