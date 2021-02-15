@@ -288,11 +288,7 @@ public class ConnectedDriveProxy {
                         contentResponse.getReason());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Authorization exception: {}", e.getMessage());
-            StackTraceElement[] trace = e.getStackTrace();
-            for (int i = 0; i < trace.length; i++) {
-                logger.info("{}", trace[i]);
-            }
+            logger.debug("Authorization exception: {}", e.getMessage(), e);
         }
     }
 

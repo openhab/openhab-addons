@@ -44,6 +44,6 @@ public class ImageProperties {
 
     @Override
     public String toString() {
-        return new StringBuilder(viewport).append(Integer.toString(size)).toString();
+        return viewport + size;
     }
 }

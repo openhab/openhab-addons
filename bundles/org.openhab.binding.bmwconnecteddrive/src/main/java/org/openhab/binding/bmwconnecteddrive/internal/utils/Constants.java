@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.NULL_TIME;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;

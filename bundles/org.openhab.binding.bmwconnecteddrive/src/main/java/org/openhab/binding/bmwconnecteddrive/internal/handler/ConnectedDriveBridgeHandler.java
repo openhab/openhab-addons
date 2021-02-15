@@ -40,6 +40,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link ConnectedDriveBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -82,15 +84,11 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
 
     @Override
     public void dispose() {
-        if (initializerJob.isPresent()) {
-            initializerJob.get().cancel(true);
-        }
+        initializerJob.ifPresent(job -> job.cancel(true));
     }
 
     public void requestVehicles() {
-        if (proxy.isPresent()) {
-            proxy.get().requestVehicles(this);
-        }
+        proxy.ifPresent(prox -> prox.requestVehicles(this));
     }
 
     public String getDiscoveryFingerprint() {
@@ -144,26 +142,30 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
             if (discoveryService.isEmpty()) {
                 troubleshootFingerprint = Optional.of(response);
             } else {
-                VehiclesContainer container = Converter.getGson().fromJson(response, VehiclesContainer.class);
-                if (container != null) {
-                    if (container.vehicles != null) {
-                        discoveryService.get().onResponse(container);
-                        container.vehicles.forEach(entry -> {
-                            entry.vin = ANONYMOUS;
-                            entry.breakdownNumber = ANONYMOUS;
-                            if (entry.dealer != null) {
-                                Dealer d = entry.dealer;
-                                d.city = ANONYMOUS;
-                                d.country = ANONYMOUS;
-                                d.name = ANONYMOUS;
-                                d.phone = ANONYMOUS;
-                                d.postalCode = ANONYMOUS;
-                                d.street = ANONYMOUS;
-                            }
-                        });
+                try {
+                    VehiclesContainer container = Converter.getGson().fromJson(response, VehiclesContainer.class);
+                    if (container != null) {
+                        if (container.vehicles != null) {
+                            discoveryService.get().onResponse(container);
+                            container.vehicles.forEach(entry -> {
+                                entry.vin = ANONYMOUS;
+                                entry.breakdownNumber = ANONYMOUS;
+                                if (entry.dealer != null) {
+                                    Dealer d = entry.dealer;
+                                    d.city = ANONYMOUS;
+                                    d.country = ANONYMOUS;
+                                    d.name = ANONYMOUS;
+                                    d.phone = ANONYMOUS;
+                                    d.postalCode = ANONYMOUS;
+                                    d.street = ANONYMOUS;
+                                }
+                            });
+                        }
                     }
+                    troubleshootFingerprint = Optional.of(Converter.getGson().toJson(container));
+                } catch (JsonSyntaxException jse) {
+                    troubleshootFingerprint = Optional.of(response);
                 }
-                troubleshootFingerprint = Optional.of(Converter.getGson().toJson(container));
             }
         } else {
             troubleshootFingerprint = Optional.of(Constants.EMPTY_VEHICLES);
