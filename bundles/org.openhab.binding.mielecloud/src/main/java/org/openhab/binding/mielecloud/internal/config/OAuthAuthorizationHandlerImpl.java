@@ -124,11 +124,11 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
             // Although this method is called "get" it actually fetches and stores the token response as a side effect.
             oauthClientService.getAccessTokenResponseByAuthorizationCode(authorizationCode, redirectUri);
         } catch (IOException e) {
-            throw new OAuthException("Network error while retrieving token response: " + e.getMessage());
+            throw new OAuthException("Network error while retrieving token response: " + e.getMessage(), e);
         } catch (OAuthResponseException e) {
-            throw new OAuthException("Failed to retrieve token response: " + e.getMessage());
+            throw new OAuthException("Failed to retrieve token response: " + e.getMessage(), e);
         } catch (org.openhab.core.auth.client.oauth2.OAuthException e) {
-            throw new OAuthException("Error while processing Miele service response: " + e.getMessage());
+            throw new OAuthException("Error while processing Miele service response: " + e.getMessage(), e);
         } finally {
             this.oauthClientService = null;
             this.bridgeUid = null;
@@ -185,11 +185,12 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
                 return response.getAccessToken();
             }
         } catch (org.openhab.core.auth.client.oauth2.OAuthException e) {
-            throw new OAuthException("Failed to read access token from persistent storage: " + e.getMessage());
+            throw new OAuthException("Failed to read access token from persistent storage: " + e.getMessage(), e);
         } catch (IOException e) {
             throw new OAuthException(
                     "Network error during token refresh or error while reading from persistent storage: "
-                            + e.getMessage());
+                            + e.getMessage(),
+                    e);
         } catch (OAuthResponseException e) {
             throw new OAuthException("Failed to retrieve token response: " + e.getMessage(), e);
         }
