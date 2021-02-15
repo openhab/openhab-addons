@@ -176,6 +176,7 @@ public enum MiIoDevices {
     VIOMI_VACUUM_V6("viomi.vacuum.v6", "Viomi Cleaning Robot V-RVCLM21B", THING_TYPE_BASIC),
     VIOMI_VACUUM_V7("viomi.vacuum.v7", "Mi Robot Vacuum-Mop P", THING_TYPE_BASIC),
     VIOMI_VACUUM_V8("viomi.vacuum.v8", "Mi Robot Vacuum-Mop P", THING_TYPE_BASIC),
+    VIOMI_VACUUM_V18("viomi.vacuum.v18", "Viomi S9", THING_TYPE_BASIC),
     VIOMI_WATERHEATER_E1("viomi.waterheater.e1", "VIOMI Internet electric water heater 1A (60L)", THING_TYPE_BASIC),
     XIAOMI_AIRCONDITION_MA1("xiaomi.aircondition.ma1", "Mi Inverter Air Conditioner (1.5HP)", THING_TYPE_BASIC),
     XIAOMI_AIRCONDITION_MA2("xiaomi.aircondition.ma2",

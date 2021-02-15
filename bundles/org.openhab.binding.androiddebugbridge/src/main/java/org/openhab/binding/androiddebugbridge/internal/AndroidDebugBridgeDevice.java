@@ -120,12 +120,19 @@ public class AndroidDebugBridgeDevice {
         throw new AndroidDebugBridgeDeviceReadException("can read package name");
     }
 
+    public boolean isAwake()
+            throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        String devicesResp = runAdbShell("dumpsys", "activity", "|", "grep", "mWakefulness");
+        return devicesResp.contains("mWakefulness=Awake");
+    }
+
     public boolean isScreenOn() throws InterruptedException, AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         String devicesResp = runAdbShell("dumpsys", "power", "|", "grep", "'Display Power'");
         if (devicesResp.contains("=")) {
             try {
-                return devicesResp.split("=")[1].equals("ON");
+                var state = devicesResp.split("=")[1].trim();
+                return state.equals("ON");
             } catch (NumberFormatException e) {
                 logger.debug("Unable to parse device wake lock: {}", e.getMessage());
             }

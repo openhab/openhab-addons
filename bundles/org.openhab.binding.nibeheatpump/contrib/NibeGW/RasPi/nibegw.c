@@ -53,8 +53,9 @@
  *	3.6.2014    v1.04   
  *	4.6.2014    v1.10   More options.
  *	10.9.2014   v1.20   Bidirectional support.
- *  30.6.2015   v1.21   Some fixes.
- *  20.2.2017	v1.22	Separated read and write token support.
+ *	30.6.2015   v1.21   Some fixes.
+ *	20.2.2017   v1.22   Separated read and write token support.
+ *	7.2.2021    v1.23   Fixed compile error in RasPi.
  */
 
 #include <signal.h>
@@ -71,8 +72,9 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <time.h>
 
-#define VERSION	"1.22"
+#define VERSION	"1.23"
 
 #define FALSE	0
 #define TRUE	1
@@ -199,8 +201,8 @@ char* getTimeStamp(char* buffer)
 		   tm->tm_mon + 1,
 		   tm->tm_mday,
 		   tm->tm_hour,
-	       tm->tm_min, tm->tm_sec, tv.tv_usec
-	       );
+		   tm->tm_min, tm->tm_sec, tv.tv_usec
+		   );
 	return buffer;
 }
 
