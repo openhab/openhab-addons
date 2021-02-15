@@ -45,6 +45,7 @@ public class HomekitSettings {
     public String doorCurrentStateStopped = "STOPPED";
     public String doorTargetStateClosed = "CLOSED";
     public String doorTargetStateOpen = "OPEN";
+    public String networkInterface;
 
     @Override
     public int hashCode() {

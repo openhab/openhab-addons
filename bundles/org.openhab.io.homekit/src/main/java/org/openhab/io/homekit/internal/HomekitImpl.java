@@ -13,6 +13,7 @@
 package org.openhab.io.homekit.internal;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -22,6 +23,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.jmdns.JmDNS;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
@@ -30,6 +33,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.StorageService;
 import org.openhab.io.homekit.Homekit;
 import org.osgi.framework.Constants;
@@ -60,10 +64,12 @@ import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
 public class HomekitImpl implements Homekit {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
 
+    private final NetworkAddressService networkAddressService;
     private final ConfigurationAdmin configAdmin;
 
     private HomekitAuthInfoImpl authInfo;
     private HomekitSettings settings;
+    private @Nullable InetAddress networkInterface;
     private @Nullable HomekitServer homekitServer;
     private @Nullable HomekitRoot bridge;
     private MDNSClient mdnsClient;
@@ -75,9 +81,10 @@ public class HomekitImpl implements Homekit {
 
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
-            @Reference MetadataRegistry metadataRegistry, @Reference ConfigurationAdmin configAdmin,
-            @Reference MDNSClient mdnsClient, Map<String, Object> properties)
+            @Reference NetworkAddressService networkAddressService, @Reference MetadataRegistry metadataRegistry,
+            @Reference ConfigurationAdmin configAdmin, @Reference MDNSClient mdnsClient, Map<String, Object> properties)
             throws IOException, InvalidAlgorithmParameterException {
+        this.networkAddressService = networkAddressService;
         this.configAdmin = configAdmin;
         this.settings = processConfig(properties);
         this.mdnsClient = mdnsClient;
@@ -105,6 +112,10 @@ public class HomekitImpl implements Homekit {
 
         if (props == null) { // if null, the configuration is new
             props = new Hashtable<>();
+        }
+        if (settings.networkInterface == null) {
+            settings.networkInterface = networkAddressService.getPrimaryIpv4HostAddress();
+            props.put("networkInterface", settings.networkInterface);
         }
         if (settings.setupId == null) { // generate setupId very first time
             settings.setupId = HAPSetupCodeUtils.generateSetupId();
@@ -134,7 +145,11 @@ public class HomekitImpl implements Homekit {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
             changeListener.updateSettings(settings);
-            if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)
+            if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port) {
+                // the HomeKit server settings changed. we do a complete re-init
+                stopHomekitServer();
+                startHomekitServer();
+            } else if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)
                     || !oldSettings.setupId.equals(settings.setupId)) {
                 stopHomekitServer();
                 authInfo.setPin(settings.pin);
@@ -190,12 +205,25 @@ public class HomekitImpl implements Homekit {
 
     private void startHomekitServer() throws IOException {
         if (homekitServer == null) {
-            if (!mdnsClient.getClientInstances().isEmpty()) {
+            if ((settings.networkInterface == null) || (settings.networkInterface.isEmpty())) {
+                logger.trace(
+                        "No IP address configured in homekit settings. HomeKit will use the first configured address of openHAB");
                 homekitServer = new HomekitServer(mdnsClient.getClientInstances().iterator().next(), settings.port);
-                startBridge();
             } else {
-                logger.warn("openHAB MDNS service not found. HomeKit cannot be initialised.");
+                networkInterface = InetAddress.getByName(settings.networkInterface);
+                for (JmDNS mdns : mdnsClient.getClientInstances()) {
+                    if (mdns.getInetAddress().equals(networkInterface)) {
+                        logger.trace("suitable mDNS client for IP {} found. Reusing it.", networkInterface);
+                        homekitServer = new HomekitServer(mdns, settings.port);
+                    }
+                }
+                if (homekitServer == null) {
+                    logger.trace("Not suitable mDNS client fpr IP {} found. Create new mDNS instance.",
+                            networkInterface);
+                    homekitServer = new HomekitServer(networkInterface, settings.port);
+                }
             }
+            startBridge();
         } else {
             logger.warn("trying to start HomeKit server but it is already initialized");
         }
