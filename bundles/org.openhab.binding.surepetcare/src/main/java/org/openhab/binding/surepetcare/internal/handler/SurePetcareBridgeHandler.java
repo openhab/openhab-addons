@@ -68,7 +68,6 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    // @SuppressWarnings("null")
     public void initialize() {
         logger.debug("Initializing Sure Petcare bridge handler.");
         SurePetcareBridgeConfiguration config = getConfigAs(SurePetcareBridgeConfiguration.class);
@@ -89,8 +88,6 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 return;
             }
         } else {
-            logger.warn("Setting thing '{}' to OFFLINE: Parameter 'password' and 'username' must be configured.",
-                    getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-username-or-password");
         }
