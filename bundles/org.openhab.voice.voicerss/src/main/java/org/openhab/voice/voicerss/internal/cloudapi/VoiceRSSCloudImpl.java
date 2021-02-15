@@ -182,7 +182,6 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
                 allvoxes.add(langvox);
             }
         }
-        
         return allvoxes;
     }
 
@@ -192,7 +191,6 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         if (SUPPORTED_VOICES.containsKey(langtag)) {
             return SUPPORTED_VOICES.get(langtag);
         }
-        
         return new HashSet<>();
     }
 
