@@ -304,13 +304,6 @@ public class SurePetcareAPIHelper {
     }
 
     /**
-     * @return true, if the API is connected and successfully authenticated.
-     */
-    // public final boolean isOnline() {
-    // return online;
-    // }
-
-    /**
      * Returns a unique device id used during the authentication process with the Sure Petcare API. The id is derived
      * from the local MAC address or hostname.
      *

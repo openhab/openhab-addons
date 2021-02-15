@@ -90,6 +90,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-username-or-password");
+            return;
         }
 
         ScheduledFuture<?> job = topologyPollingJob;
