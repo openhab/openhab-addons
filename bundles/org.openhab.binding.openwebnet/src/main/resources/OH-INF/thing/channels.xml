@@ -37,4 +37,13 @@
 		</tags>
 	</channel-type>
 
+	<!-- Energy channels -->
+	<channel-type id="power">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>Actual active power usage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f W"></state>
+	</channel-type>
+
 </thing:thing-descriptions>
