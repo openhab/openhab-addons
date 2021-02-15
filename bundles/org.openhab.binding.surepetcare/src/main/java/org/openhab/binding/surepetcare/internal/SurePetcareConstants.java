@@ -55,6 +55,8 @@ public class SurePetcareConstants {
     public static final long DEFAULT_REFRESH_INTERVAL_TOPOLOGY = 36000; // 10 hours
     public static final long DEFAULT_REFRESH_INTERVAL_STATUS = 300; // 5 mins
 
+    public static final String PROPERTY_NAME_ID = "id";
+
     public static final int FLAP_MAX_NUMBER_OF_CURFEWS = 4;
     public static final int BOWL_ID_ONE_BOWL_USED = 1;
     public static final int BOWL_ID_TWO_BOWLS_USED = 4;

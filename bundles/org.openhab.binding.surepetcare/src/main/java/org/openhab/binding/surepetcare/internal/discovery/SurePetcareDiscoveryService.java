@@ -137,7 +137,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
         ThingUID thingsUID = new ThingUID(THING_TYPE_HOUSEHOLD, bridgeUID, household.id.toString());
         Map<String, Object> properties = new HashMap<String, Object>(household.getThingProperties());
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(household.name).withProperties(properties)
-                .withBridge(bridgeUID).build());
+                .withRepresentationProperty(PROPERTY_NAME_ID).withBridge(bridgeUID).build());
     }
 
     private void petDiscovered(SurePetcarePet pet) {
@@ -145,7 +145,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
         ThingUID thingsUID = new ThingUID(THING_TYPE_PET, bridgeUID, pet.id.toString());
         Map<String, Object> properties = new HashMap<String, Object>(pet.getThingProperties());
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(pet.name).withProperties(properties)
-                .withBridge(bridgeUID).build());
+                .withRepresentationProperty(PROPERTY_NAME_ID).withBridge(bridgeUID).build());
     }
 
     private void deviceDiscovered(SurePetcareDevice device) {
@@ -171,6 +171,6 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
         ThingUID thingsUID = new ThingUID(typeUID, bridgeUID, device.id.toString());
         Map<String, Object> properties = new HashMap<String, Object>(device.getThingProperties());
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(device.name).withProperties(properties)
-                .withBridge(bridgeUID).build());
+                .withRepresentationProperty(PROPERTY_NAME_ID).withBridge(bridgeUID).build());
     }
 }
