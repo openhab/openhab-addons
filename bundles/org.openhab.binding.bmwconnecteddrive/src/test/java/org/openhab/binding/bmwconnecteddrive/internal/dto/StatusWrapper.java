@@ -369,7 +369,7 @@ public class StatusWrapper {
                 wanted = StringType.valueOf(Converter.toTitleCase(vStatus.hood));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
-            case WINDOW_DOOR_DRIVER_FORNT:
+            case WINDOW_DOOR_DRIVER_FRONT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
                 wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowDriverFront));
