@@ -239,9 +239,11 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
      */
     private ContentResponse sendRequest(Request request) {
         try {
-            logger.debug("Send {} request to Miele webservice on uri {}",
-                    Optional.ofNullable(request).map(Request::getMethod).orElse("null"),
-                    Optional.ofNullable(request).map(Request::getURI).map(URI::toString).orElse("null"));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Send {} request to Miele webservice on uri {}",
+                        Optional.ofNullable(request).map(Request::getMethod).orElse("null"),
+                        Optional.ofNullable(request).map(Request::getURI).map(URI::toString).orElse("null"));
+            }
 
             ContentResponse response = request.send();
             logger.debug("Received response with status code {}", response.getStatus());
