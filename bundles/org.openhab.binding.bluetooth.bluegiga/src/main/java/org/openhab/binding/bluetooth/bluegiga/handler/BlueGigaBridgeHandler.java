@@ -153,7 +153,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     private final Map<Integer, BluetoothAddress> connections = new ConcurrentHashMap<>();
 
     private volatile boolean initComplete = false;
-    private volatile boolean initRequest = false;
 
     private CompletableFuture<SerialPort> serialPortFuture = CompletableFuture
             .failedFuture(new IllegalStateException("Uninitialized"));
@@ -173,30 +172,27 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     public void initialize() {
         super.initialize();
         updateStatus(ThingStatus.UNKNOWN);
-        initRequest = true;
         if (initTask == null) {
             initTask = scheduler.scheduleWithFixedDelay(this::checkInit, 0, 10, TimeUnit.SECONDS);
         }
     }
 
     protected void checkInit() {
-        if (!initRequest) {
-            try {
-                if (!serialHandler.get().isAlive()) {
-                    logger.debug("BLE serial handler seems to be dead, reinitilize");
-                    stop();
-                    initRequest = true;
-                }
-            } catch (InterruptedException e) {
-                return;
-            } catch (ExecutionException e) {
-                initRequest = true;
+        boolean init = false;
+        try {
+            if (!serialHandler.get().isAlive()) {
+                logger.debug("BLE serial handler seems to be dead, reinitilize");
+                stop();
+                init = true;
             }
+        } catch (InterruptedException e) {
+            return;
+        } catch (ExecutionException e) {
+            init = true;
         }
 
-        if (initRequest) {
+        if (init) {
             logger.debug("Initiliaze BlueGiga");
-            initRequest = false;
             start();
         }
     }
@@ -208,7 +204,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             configuration = cfg.get();
             serialPortFuture = RetryFuture.callWithRetry(() -> {
                 var localFuture = serialPortFuture;
-                logger.debug("Initialize BlueGiga");
                 logger.debug("Using configuration: {}", configuration);
 
                 String serialPortName = configuration.port;
@@ -802,7 +797,5 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     public void bluegigaClosed(Exception reason) {
         logger.debug("BlueGiga connection closed, request reinitialization, reason: {}", reason.getMessage());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason.getMessage());
-        stop();
-        initRequest = true;
     }
 }
