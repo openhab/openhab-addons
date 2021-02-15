@@ -69,6 +69,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     private final Map<ChannelUID, CharacteristicHandler> channelHandlers = new ConcurrentHashMap<>();
     private final BluetoothGattParser gattParser = BluetoothGattParserFactory.getDefault();
     private final CharacteristicChannelTypeProvider channelTypeProvider;
+    private final Map<CharacteristicHandler, List<ChannelUID>> handlerToChannels = new ConcurrentHashMap<>();
 
     private @Nullable ScheduledFuture<?> readCharacteristicJob = null;
 
@@ -85,50 +86,34 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         readCharacteristicJob = scheduler.scheduleWithFixedDelay(() -> {
             if (device.getConnectionState() == ConnectionState.CONNECTED) {
                 if (resolved) {
-                    // go through all characteristics of all services
-                    this.device.getServices().forEach((service) -> {
-                        service.getCharacteristics().forEach((characteristic) -> {
-                            CharacteristicHandler charHandler;
-                            if (characteristic.canNotify()) {
-                                // If notifications can be enabled, we create the CharacteristicHandler
-                                // if it not exists so that we can register notifications.
-                                charHandler = charHandlers.computeIfAbsent(characteristic, CharacteristicHandler::new);
+                    handlerToChannels.forEach((charHandler, channelUids) -> {
+                        // Only read the value manually if notification is not on.
+                        // Also read it the first time before we activate notifications below.
+                        if (!device.isNotifying(charHandler.characteristic) && charHandler.canRead()) {
+                            device.readCharacteristic(charHandler.characteristic);
+                            try {
+                                // TODO the ideal solution would be to use locks/conditions and timeouts
+                                // Kbetween this code and `onCharacteristicReadComplete` but
+                                // that would overcomplicate the code a bit and I plan
+                                // on implementing a better more generalized solution later
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                                return;
+                            }
+                        }
+                        if (charHandler.characteristic.canNotify()) {
+                            ChannelUID channelUID = charHandler.getChannelUID(null);
+                            // Enabled/Disable notifications dependent on if the channel is linked.
+                            if (isLinked(channelUID)) {
+                                if (!device.isNotifying(charHandler.characteristic)) {
+                                    device.enableNotifications(charHandler.characteristic);
+                                }
                             } else {
-                                // Otherwise we let it being created by getCharacteristicHandler() and do
-                                // nothing here if it is not created yet.
-                                charHandler = charHandlers.get(characteristic);
-                            }
-
-                            if (charHandler != null) {
-                                // Only read the value manually if notification is not on.
-                                // Also read it the first time before we activate notifications below.
-                                if (!device.isNotifying(characteristic) && charHandler.canRead()) {
-                                    device.readCharacteristic(characteristic);
-                                    try {
-                                        // TODO the ideal solution would be to use locks/conditions and timeouts
-                                        // between this code and `onCharacteristicReadComplete` but
-                                        // that would overcomplicate the code a bit and I plan
-                                        // on implementing a better more generalized solution later
-                                        Thread.sleep(50);
-                                    } catch (InterruptedException e) {
-                                        return;
-                                    }
-                                }
-                                if (characteristic.canNotify()) {
-                                    ChannelUID channelUID = charHandler.getChannelUID(null);
-                                    // Enabled/Disable notifications dependent on if the channel is linked.
-                                    if (isLinked(channelUID)) {
-                                        if (!device.isNotifying(characteristic)) {
-                                            device.enableNotifications(characteristic);
-                                        }
-                                    } else {
-                                        if (device.isNotifying(characteristic)) {
-                                            device.disableNotifications(characteristic);
-                                        }
-                                    }
+                                if (device.isNotifying(charHandler.characteristic)) {
+                                    device.disableNotifications(charHandler.characteristic);
                                 }
                             }
-                        });
+                        }
                     });
                 } else {
                     // if we are connected and still haven't been able to resolve the services, try disconnecting and
@@ -149,6 +134,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
         charHandlers.clear();
         channelHandlers.clear();
+        handlerToChannels.clear();
     }
 
     @Override
@@ -193,9 +179,11 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     logger.trace("{} processing characteristic {}", address, characteristic.getUuid());
                     CharacteristicHandler handler = getCharacteristicHandler(characteristic);
                     List<Channel> chans = handler.buildChannels();
+                    List<ChannelUID> chanUids = chans.stream().map(Channel::getUID).collect(Collectors.toList());
                     for (Channel channel : chans) {
                         channelHandlers.put(channel.getUID(), handler);
                     }
+                    handlerToChannels.put(handler, chanUids);
                     return chans.stream();
                 })//
                 .collect(Collectors.toList());
