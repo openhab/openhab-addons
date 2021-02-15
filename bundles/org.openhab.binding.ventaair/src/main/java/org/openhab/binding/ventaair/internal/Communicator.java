@@ -88,7 +88,7 @@ public class Communicator {
                     + COMMUNICATION_MARGIN.toMillis();
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
             String reply = "";
-            while (((reply = br.readLine()) != null) || System.currentTimeMillis() > timeOut) {
+            while (((reply = br.readLine()) != null) && System.currentTimeMillis() < timeOut) {
                 if (reply != null && reply.startsWith("{")) {
                     // remove padding byte(s) after JSON data
                     String data = String.valueOf(reply.toCharArray(), 0, reply.length() - 1);
