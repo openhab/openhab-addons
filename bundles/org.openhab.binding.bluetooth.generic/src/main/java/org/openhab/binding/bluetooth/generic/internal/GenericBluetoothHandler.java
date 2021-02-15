@@ -180,8 +180,8 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     CharacteristicHandler handler = getCharacteristicHandler(characteristic);
                     List<Channel> chans = handler.buildChannels();
                     List<ChannelUID> chanUids = chans.stream().map(Channel::getUID).collect(Collectors.toList());
-                    for (Channel channel : chans) {
-                        channelHandlers.put(channel.getUID(), handler);
+                    for (ChannelUID channel : chanUids) {
+                        channelHandlers.put(channel, handler);
                     }
                     handlerToChannels.put(handler, chanUids);
                     return chans.stream();
