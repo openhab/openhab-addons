@@ -73,7 +73,8 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
                 OAuthClientService clientService = getOAuthClientService(serviceHandle);
                 clientService.removeAccessTokenRefreshListener(refreshListener);
             } catch (OAuthException e) {
-                logger.warn("Failed to remove refresh listener: OAuth client service is unavailable.");
+                logger.warn("Failed to remove refresh listener: OAuth client service is unavailable. Cause: "
+                        + e.getMessage());
             }
         }
         listenerByServiceHandle.remove(serviceHandle);
