@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link MyQAccountHandler} is responsible for communicating with the MyQ API based on an account.
@@ -209,7 +210,6 @@ public class MyQAccountHandler extends BaseBridgeHandler {
                     getAccount();
                 }
             }
-
             if (securityToken != null) {
                 getDevices();
             }
@@ -221,16 +221,11 @@ public class MyQAccountHandler extends BaseBridgeHandler {
         HttpResult result = sendRequest(BASE_URL + "/v5/Login", HttpMethod.POST, null,
                 new StringContentProvider(gsonUpperCase.toJson(new LoginRequestDTO(username, password))),
                 "application/json");
-        if (HttpStatus.isSuccess(result.responseCode)) {
-            LoginResponseDTO loginResponse = gsonUpperCase.fromJson(result.content, LoginResponseDTO.class);
-            if (loginResponse != null) {
-                securityToken = loginResponse.securityToken;
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid Response Body");
-            }
+        LoginResponseDTO loginResponse = parseResultAndUpdateStatus(result, gsonUpperCase, LoginResponseDTO.class);
+        if (loginResponse != null) {
+            securityToken = loginResponse.securityToken;
         } else {
-            handleErrorResponse(result);
+            securityToken = null;
             if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
                 // bad credentials, stop trying to login
                 stopPolls();
@@ -240,11 +235,7 @@ public class MyQAccountHandler extends BaseBridgeHandler {
 
     private void getAccount() throws InterruptedException {
         HttpResult result = sendRequest(BASE_URL + "/v5/My?expand=account", HttpMethod.GET, securityToken, null, null);
-        if (HttpStatus.isSuccess(result.responseCode)) {
-            account = gsonUpperCase.fromJson(result.content, AccountDTO.class);
-        } else {
-            handleErrorResponse(result);
-        }
+        account = parseResultAndUpdateStatus(result, gsonUpperCase, AccountDTO.class);
     }
 
     private void getDevices() throws InterruptedException {
@@ -254,28 +245,21 @@ public class MyQAccountHandler extends BaseBridgeHandler {
         }
         HttpResult result = sendRequest(String.format("%s/v5.1/Accounts/%s/Devices", BASE_URL, localAccount.account.id),
                 HttpMethod.GET, securityToken, null, null);
-        if (HttpStatus.isSuccess(result.responseCode)) {
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-            DevicesDTO devices = gsonLowerCase.fromJson(result.content, DevicesDTO.class);
-            if (devices != null) {
-                devicesCache = devices;
-                devices.items.forEach(device -> {
-                    ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.deviceFamily);
-                    if (SUPPORTED_DISCOVERY_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                        for (Thing thing : getThing().getThings()) {
-                            ThingHandler handler = thing.getHandler();
-                            if (handler != null && ((MyQDeviceHandler) handler).getSerialNumber()
-                                    .equalsIgnoreCase(device.serialNumber)) {
-                                ((MyQDeviceHandler) handler).handleDeviceUpdate(device);
-                            }
+        DevicesDTO devices = parseResultAndUpdateStatus(result, gsonLowerCase, DevicesDTO.class);
+        if (devices != null) {
+            devicesCache = devices;
+            devices.items.forEach(device -> {
+                ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.deviceFamily);
+                if (SUPPORTED_DISCOVERY_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                    for (Thing thing : getThing().getThings()) {
+                        ThingHandler handler = thing.getHandler();
+                        if (handler != null && ((MyQDeviceHandler) handler).getSerialNumber()
+                                .equalsIgnoreCase(device.serialNumber)) {
+                            ((MyQDeviceHandler) handler).handleDeviceUpdate(device);
                         }
                     }
-                });
-            }
-        } else {
-            handleErrorResponse(result);
+                }
+            });
         }
     }
 
@@ -312,21 +296,32 @@ public class MyQAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private void handleErrorResponse(HttpResult result) {
+    @Nullable
+    private <T> T parseResultAndUpdateStatus(HttpResult result, Gson parser, Class<T> classOfT) {
         if (HttpStatus.isSuccess(result.responseCode)) {
-            return;
-        }
-        if (result.responseCode == HttpStatus.UNAUTHORIZED_401) {
+            try {
+                T responsObject = parser.fromJson(result.content, classOfT);
+                if (responsObject != null) {
+                    if (getThing().getStatus() != ThingStatus.ONLINE) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+                    return responsObject;
+                }
+            } catch (JsonSyntaxException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Invalid JSON Response " + result.content);
+            }
+        } else if (result.responseCode == HttpStatus.UNAUTHORIZED_401) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unauthorized - Check Credentials");
-            securityToken = null;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Invalid Response " + result.content);
+                    "Invalid Response Code " + result.responseCode + " : " + result.content);
         }
+        return null;
     }
 
-    public static class HttpResult {
+    private class HttpResult {
         public final int responseCode;
         public @Nullable String content;
 
@@ -339,7 +334,7 @@ public class MyQAccountHandler extends BaseBridgeHandler {
     private static String randomString(int length) {
         int low = 97; // a-z
         int high = 122; // A-Z
-        StringBuffer sb = new StringBuffer(length);
+        StringBuilder sb = new StringBuilder(length);
         Random random = new Random();
         for (int i = 0; i < length; i++) {
             sb.append((char) (low + (int) (random.nextFloat() * (high - low + 1))));
