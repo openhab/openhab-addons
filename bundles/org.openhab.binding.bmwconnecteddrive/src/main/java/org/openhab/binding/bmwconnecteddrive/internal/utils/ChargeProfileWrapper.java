@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
+import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.ChargeProfileWrapper.ProfileKey.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.NULL_LOCAL_TIME;
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.TIME_FORMATER;
@@ -61,6 +62,7 @@ public class ChargeProfileWrapper {
         TIMER1,
         TIMER2,
         TIMER3,
+        TIMER4,
         OVERRIDE,
         WINDOWSTART,
         WINDOWEND

@@ -118,55 +118,31 @@ public class VehicleHandler extends VehicleChannelHandler {
     @SuppressWarnings("serial")
     private static final Map<String, ProfileKey> chargeEnableChannelKeys = new HashMap<>() {
         {
+            VehicleChannelHandler.timedChannels.forEach((key, channel) -> {
+                put(channel.timer + CHARGE_ENABLED, key);
+            });
             put(CHARGE_PROFILE_CLIMATE, ProfileKey.CLIMATE);
-            put(CHARGE_TIMER1_ENABLED, ProfileKey.TIMER1);
-            put(CHARGE_TIMER2_ENABLED, ProfileKey.TIMER2);
-            put(CHARGE_TIMER3_ENABLED, ProfileKey.TIMER3);
-            put(CHARGE_OVERRIDE_ENABLED, ProfileKey.OVERRIDE);
         }
     };
 
     @SuppressWarnings("serial")
     private static final Map<String, ChargeKeyHour> chargeTimeChannelKeys = new HashMap<>() {
         {
-            put(CHARGE_WINDOW_START_HOUR, new ChargeKeyHour(ProfileKey.WINDOWSTART, true));
-            put(CHARGE_WINDOW_START_MINUTE, new ChargeKeyHour(ProfileKey.WINDOWSTART, false));
-            put(CHARGE_WINDOW_END_HOUR, new ChargeKeyHour(ProfileKey.WINDOWEND, true));
-            put(CHARGE_WINDOW_END_MINUTE, new ChargeKeyHour(ProfileKey.WINDOWEND, false));
-            put(CHARGE_TIMER1_DEPARTURE_HOUR, new ChargeKeyHour(ProfileKey.TIMER1, true));
-            put(CHARGE_TIMER1_DEPARTURE_MINUTE, new ChargeKeyHour(ProfileKey.TIMER1, false));
-            put(CHARGE_TIMER2_DEPARTURE_HOUR, new ChargeKeyHour(ProfileKey.TIMER2, true));
-            put(CHARGE_TIMER2_DEPARTURE_MINUTE, new ChargeKeyHour(ProfileKey.TIMER2, false));
-            put(CHARGE_TIMER3_DEPARTURE_HOUR, new ChargeKeyHour(ProfileKey.TIMER3, true));
-            put(CHARGE_TIMER3_DEPARTURE_MINUTE, new ChargeKeyHour(ProfileKey.TIMER3, false));
-            put(CHARGE_OVERRIDE_DEPARTURE_HOUR, new ChargeKeyHour(ProfileKey.OVERRIDE, true));
-            put(CHARGE_OVERRIDE_DEPARTURE_MINUTE, new ChargeKeyHour(ProfileKey.OVERRIDE, false));
+            VehicleChannelHandler.timedChannels.forEach((key, channel) -> {
+                put(channel.time + CHARGE_HOUR, new ChargeKeyHour(key, true));
+                put(channel.time + CHARGE_MINUTE, new ChargeKeyHour(key, false));
+            });
         }
     };
+
     @SuppressWarnings("serial")
     private static final Map<String, ChargeKeyDay> chargeDayChannelKeys = new HashMap<>() {
         {
-            put(CHARGE_TIMER1_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.MONDAY));
-            put(CHARGE_TIMER1_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.TUESDAY));
-            put(CHARGE_TIMER1_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.WEDNESDAY));
-            put(CHARGE_TIMER1_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.THURSDAY));
-            put(CHARGE_TIMER1_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.FRIDAY));
-            put(CHARGE_TIMER1_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.SATURDAY));
-            put(CHARGE_TIMER1_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER1, DayOfWeek.SUNDAY));
-            put(CHARGE_TIMER2_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.MONDAY));
-            put(CHARGE_TIMER2_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.TUESDAY));
-            put(CHARGE_TIMER2_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.WEDNESDAY));
-            put(CHARGE_TIMER2_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.THURSDAY));
-            put(CHARGE_TIMER2_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.FRIDAY));
-            put(CHARGE_TIMER2_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.SATURDAY));
-            put(CHARGE_TIMER2_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER2, DayOfWeek.SUNDAY));
-            put(CHARGE_TIMER3_DAY_MON, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.MONDAY));
-            put(CHARGE_TIMER3_DAY_TUE, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.TUESDAY));
-            put(CHARGE_TIMER3_DAY_WED, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.WEDNESDAY));
-            put(CHARGE_TIMER3_DAY_THU, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.THURSDAY));
-            put(CHARGE_TIMER3_DAY_FRI, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.FRIDAY));
-            put(CHARGE_TIMER3_DAY_SAT, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.SATURDAY));
-            put(CHARGE_TIMER3_DAY_SUN, new ChargeKeyDay(ProfileKey.TIMER3, DayOfWeek.SUNDAY));
+            VehicleChannelHandler.dayChannels.forEach((dayOfWeek, dayChannel) -> {
+                put(CHARGE_TIMER1 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER1, dayOfWeek));
+                put(CHARGE_TIMER2 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER2, dayOfWeek));
+                put(CHARGE_TIMER3 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER3, dayOfWeek));
+            });
         }
     };
 
@@ -247,7 +223,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                                 proxy.get().requestImage(configuration.get(), imageProperties, imageCallback);
                             }
                         }
-                        updateState(imageViewportChannel, StringType.valueOf(newViewport));
+                        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport));
                     }
                 }
                 if (command instanceof DecimalType) {
@@ -262,7 +238,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                                 }
                             }
                         }
-                        updateState(imageSizeChannel, new DecimalType(newImageSize));
+                        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE, new DecimalType(newImageSize));
                     }
                 }
             }
@@ -326,8 +302,10 @@ public class VehicleHandler extends VehicleChannelHandler {
                     imageProperties = new ImageProperties(configuration.get().imageViewport,
                             configuration.get().imageSize);
                 }
-                updateState(imageViewportChannel, StringType.valueOf((configuration.get().imageViewport)));
-                updateState(imageSizeChannel, new DecimalType((configuration.get().imageSize)));
+                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT,
+                        StringType.valueOf((configuration.get().imageViewport)));
+                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE,
+                        new DecimalType((configuration.get().imageSize)));
 
                 // check imperial setting is different to AutoDetect
                 if (!UNITS_AUTODETECT.equals(configuration.get().units)) {
@@ -524,7 +502,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 && ExecutionState.EXECUTED.toString().equals(status)) {
             saveChargeProfileSent();
         }
-        updateState(remoteStateChannel, StringType.valueOf(Converter.toTitleCase(
+        updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE, StringType.valueOf(Converter.toTitleCase(
                 new StringBuilder(service == null ? "-" : service).append(" ").append(status).toString())));
     }
 
@@ -621,7 +599,7 @@ public class VehicleHandler extends VehicleChannelHandler {
             if (content.length > 0) {
                 imageCache = Optional.of(content);
                 String contentType = HttpUtil.guessContentTypeFromData(content);
-                updateState(imageChannel, new RawType(content, contentType));
+                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_FORMAT, new RawType(content, contentType));
             } else {
                 synchronized (imageProperties) {
                     imageProperties.failed();
@@ -813,13 +791,13 @@ public class VehicleHandler extends VehicleChannelHandler {
                 switch (id) {
                     case CHARGE_PROFILE_PREFERENCE:
                         profile.setPreference(stringCommand);
-                        updateState(chargeProfilePreference,
+                        updateChannel(CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_PREFERENCE,
                                 StringType.valueOf(Converter.toTitleCase(profile.getPreference())));
                         processed = true;
                         break;
                     case CHARGE_PROFILE_MODE:
                         profile.setMode(stringCommand);
-                        updateState(chargeProfileChargeMode,
+                        updateChannel(CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_MODE,
                                 StringType.valueOf(Converter.toTitleCase(profile.getMode())));
                         processed = true;
                         break;
