@@ -54,7 +54,6 @@ public class Communicator {
     private Header header;
     private int pollingTimeInSeconds;
     private StateUpdatedCallback callback;
-    private long lastSuccessfulCommunicationTime;
 
     private Gson gson = new Gson();
 
@@ -84,8 +83,8 @@ public class Communicator {
             logger.debug("Sending request data message (bytes): [{}]", HexUtils.bytesToHex(dataToSend, ", "));
             output.write(dataToSend);
 
-            long timeOut = lastSuccessfulCommunicationTime + (pollingTimeInSeconds * 1000)
-                    + COMMUNICATION_MARGIN.toMillis();
+            long timeOut = System.currentTimeMillis() + COMMUNICATION_MARGIN.toMillis();
+
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
             String reply = "";
             while (((reply = br.readLine()) != null) && System.currentTimeMillis() < timeOut) {
@@ -97,7 +96,6 @@ public class Communicator {
                     DeviceInfoMessage deviceInfoMessage = gson.fromJson(data, DeviceInfoMessage.class);
                     if (deviceInfoMessage != null) {
                         callback.stateUpdated(deviceInfoMessage);
-                        lastSuccessfulCommunicationTime = System.currentTimeMillis();
                     }
                 }
             }
@@ -153,8 +151,6 @@ public class Communicator {
      */
     public void startPollDataFromDevice(ScheduledExecutorService scheduler) {
         stopPollDataFromDevice();
-        // initialize lastSuccessfulCommunicationTime here for the job that we will schedule
-        lastSuccessfulCommunicationTime = System.currentTimeMillis();
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDataFromDevice, 2, pollingTimeInSeconds,
                 TimeUnit.SECONDS);
     }
