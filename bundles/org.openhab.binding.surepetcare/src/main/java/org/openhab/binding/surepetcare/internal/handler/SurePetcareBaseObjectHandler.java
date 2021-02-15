@@ -44,7 +44,7 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
 
     protected final SurePetcareAPIHelper petcareAPI;
 
-    protected ExpiringCache<Void> updateThingCache = new ExpiringCache<>(Duration.ofSeconds(CACHE_TIMEOUT_SECOND),
+    protected ExpiringCache<Integer> updateThingCache = new ExpiringCache<>(Duration.ofSeconds(CACHE_TIMEOUT_SECOND),
             this::refreshCache);
 
     public SurePetcareBaseObjectHandler(Thing thing, final SurePetcareAPIHelper petcareAPI) {
@@ -69,11 +69,11 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
         super.updateProperties(properties);
     }
 
-    private @Nullable Void refreshCache() {
+    private @Nullable Integer refreshCache() {
         logger.debug("cache has timed out, we refresh the values in the thing");
         updateThing();
-        // we don't care about the cache content, we just return a zero
-        return null;
+        // we don't care about the cache content, we just return an empty object
+        return Integer.MIN_VALUE;
     }
 
     /**
