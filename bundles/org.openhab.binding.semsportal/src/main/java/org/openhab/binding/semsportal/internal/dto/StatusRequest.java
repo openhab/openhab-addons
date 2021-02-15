@@ -10,37 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.semsportal.internal;
+package org.openhab.binding.semsportal.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Request for the status of a Power Station. Answer can be deserialized in a {@link StatusResponse}
+ *
  * @author Iwan Bron - Initial contribution
  */
 
 @NonNullByDefault
-public class LoginRequestBody {
-    private String account;
-    private String pwd;
+public class StatusRequest {
+    private String powerStationId;
 
-    public LoginRequestBody(String account, String pwd) {
-        this.account = account;
-        this.pwd = pwd;
+    public StatusRequest(String powerStationId) {
+        this.powerStationId = powerStationId;
     }
 
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
+    public void setPowerStationId(String powerStationId) {
+        this.powerStationId = powerStationId;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public String getAccount() {
-        return account;
+    public String getPowerStationId() {
+        return powerStationId;
     }
 }

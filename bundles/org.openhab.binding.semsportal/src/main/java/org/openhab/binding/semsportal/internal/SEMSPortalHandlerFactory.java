@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.semsportal.internal;
 
-import static org.openhab.binding.semsportal.internal.SEMSPortalBindingConstants.THING_TYPE_STATION;
+import static org.openhab.binding.semsportal.internal.SEMSPortalBindingConstants.*;
 
+import java.util.Hashtable;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.semsportal.internal.discovery.StationDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -38,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.semsportal", service = ThingHandlerFactory.class)
 public class SEMSPortalHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_STATION);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_STATION, THING_TYPE_PORTAL);
     private HttpClientFactory httpClientFactory;
 
     @Activate
@@ -55,8 +60,14 @@ public class SEMSPortalHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
+        if (THING_TYPE_PORTAL.equals(thingTypeUID)) {
+            PortalHandler handler = new PortalHandler((Bridge) thing, httpClientFactory);
+            bundleContext.registerService(DiscoveryService.class.getName(), new StationDiscoveryService(handler),
+                    new Hashtable<@NonNull String, @NonNull Object>());
+            return handler;
+        }
         if (THING_TYPE_STATION.equals(thingTypeUID)) {
-            return new SEMSPortalHandler(thing, httpClientFactory);
+            return new StationHandler(thing);
         }
 
         return null;

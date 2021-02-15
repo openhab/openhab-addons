@@ -15,12 +15,15 @@ package org.openhab.binding.semsportal.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO for mapping the SEMS portal data response /data/inverter
+ * POJO for mapping the portal data response to the {@link StatusRequest} and the {@Link StationListRequest}
  *
  * @author Iwan Bron - Initial contribution
  *
  */
-public class Inverter {
+public class Station {
+    @SerializedName("powerstation_id")
+    private String stationId;
+    @SerializedName("stationname")
     private String name;
     @SerializedName("sn")
     private String serialNumber;
@@ -37,6 +40,10 @@ public class Inverter {
     private Double overallTotal;
     @SerializedName("d")
     private InverterDetails details;
+
+    public String getStationId() {
+        return stationId;
+    }
 
     public String getName() {
         return name;

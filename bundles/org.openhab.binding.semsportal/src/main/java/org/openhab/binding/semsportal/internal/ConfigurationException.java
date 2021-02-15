@@ -10,22 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.semsportal.internal.dto;
-
-import java.util.Date;
-
-import com.google.gson.annotations.SerializedName;
+package org.openhab.binding.semsportal.internal;
 
 /**
- * POJO containing details about the inverter. Only a very small subset of the available properties is mapped
+ * Exception indicating that the configuration of the portal was wrong, like an unknown account or invalid password.
  *
  * @author Iwan Bron - Initial contribution
+ *
  */
-public class InverterDetails {
-    @SerializedName("last_refresh_time")
-    private Date lastUpdate;
+public class ConfigurationException extends Exception {
+    private static final long serialVersionUID = -803416460838670618L;
 
-    public Date getLastUpdate() {
-        return lastUpdate;
+    public ConfigurationException(String message) {
+        super(message);
     }
 }

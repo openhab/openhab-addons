@@ -1,39 +1,42 @@
 # SEMSPortal Binding
 
-This binding can help you include statistics of your SEMS / GoodWe solar panel insallation into openHAB. 
-It is a readonly connection that maps collected parameters to openHAB channels. 
+This binding can help you include statistics of your SEMS / GoodWe solar panel installation into openHAB. 
+It is a read-only connection that maps collected parameters to openHAB channels. 
 It provides current, day, month and total yields, as well as some income statistics if you have configured these in the SEMS portal. 
 It requires a power station that is connected through the internet to the SEMS portal.
 
 ## Supported Things
 
-There is only one thing type supported in this binding, which is the powerStation. 
-You need to provide the identifying UUID of the solar system in your account yourself. 
-If you have multiple powerstations that report to the same account, you can configure the same account for each powerSation and only differ the unique id of the station in each Thing.
+This binding provides two Thing types: a bridge to the SEMS Portal, and the Power Stations which are found at the Portal.
+The Portal represents your account in the SEMS portal. 
+The Power Station is an installation of a Power Station or inverter that reports to the SEMS portal and is available to your account.
 
 ## Discovery
 
-At this moment there is no discovery possible. 
-Configuration of the powerStation unique id is done by hand in the Thing configuration page.
+Once you have configured a Portal Bridge, the binding will discover all Power Stations that are available to this account.
+You can trigger discovery in the add new Thing section of openHAB.
+Select the SEMS binding and press the Scan button.
+The discovered Power Stations will appear as new Things.
 
 ## Thing Configuration
 
-The configuration of the thing is pretty straight forward. 
+The configuration of the Portal Thing (Bridge) is pretty straight forward. 
 You need to have your power station set up in the SEMS portal, and you need to have an account that is allowed to view the power station data. 
 You should log in at least once in the portal with this account to activate it. 
+The Portal needs the username and password to connect and retrieve the data. 
+You can configure the update frequency between 1 and 60 minutes. 
+The default is 5 minutes.
 
-The thing needs the username and password to connect and retreive the data. 
-It also needs the unique id of the power station. 
-It can be found after you log in to the portal, on the URL. 
-Use the value you find in the URL at the x-es (including the -s) in this example: https://www.semsportal.com/powerstation/powerstatussnmin/xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-
+Power Stations have no settings and will be auto discovered when you add a Portal Bridge.
 
 ## Channels
 
+The Portal(Bridge) has no channels.
+The Power Station Thing has the following channels:
 
 | channel       | type             | description                                                                                                |
 | ------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| onlineState   | Switch           | If the powerStation is currently on and reporting to the portal                                            |
+| operational   | Switch           | If the powerStation is currently on and reporting to the portal                                            |
 | lastUpdate    | DateTime         | Last time the powerStation sent information to the portal                                                  |
 | currentOutput | Number:Power     | The current output of the powerStation in Watt                                                             |
 | todayTotal    | Number:Energy    | Todays total generation of the station in kWh                                                              |
@@ -44,11 +47,13 @@ Use the value you find in the URL at the x-es (including the -s) in this example
 
 ## Parameters
 
+The PowerStation Thing has no parameters.
+Only the Bridge has the following configuration parameters:
+
 | Parameter   | Required? | Description                                                                                                |
 | ----------- |:---------:| ---------------------------------------------------------------------------------------------------------- |
-| username    | X         | Account name (emailaddress) at the SEMS portal. Account must have been used at least once to log in.       |
+| username    | X         | Account name (email address) at the SEMS portal. Account must have been used at least once to log in.       |
 | password    | X         | Password of the SEMS portal                                                                                |
-| station     | X         | UUID of the station. See Thing Configuration which value to use here.                                      |
 | update      |           | Number of minutes between two updates. Between 1 and 60 minutes, defaults to 5 minutes                     |
 
 ## Credits

@@ -10,18 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.semsportal.internal.dto;
-
-import com.google.gson.annotations.SerializedName;
+package org.openhab.binding.semsportal.internal;
 
 /**
+ * Exception indicating there was a problem communicating with the portal. It can indicate either no response at all, or
+ * a response that was not expected.
+ *
  * @author Iwan Bron - Initial contribution
+ *
  */
-public class SEMSLoginResponse extends SEMSResponse {
-    @SerializedName("data")
-    private SEMSToken token;
+public class CommunicationException extends Exception {
+    private static final long serialVersionUID = 4175625868879971138L;
 
-    public SEMSToken getToken() {
-        return token;
+    public CommunicationException(String message) {
+        super(message);
     }
 }

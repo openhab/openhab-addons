@@ -32,6 +32,5 @@ public class SEMSPortalConfiguration {
      */
     public String username = "";
     public String password = "";
-    public String station = "";
-    public int update = 5;
+    public int update = SEMSPortalBindingConstants.DEFAULT_UPDATE_INTERVAL_MINUTES;
 }

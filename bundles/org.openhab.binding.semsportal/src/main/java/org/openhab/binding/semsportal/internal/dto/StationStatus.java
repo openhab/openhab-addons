@@ -19,31 +19,31 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Facade for easy access to the SEMS portal data reponse. Data is disptributed over different parts of the response
+ * Facade for easy access to the SEMS portal data response. Data is distributed over different parts of the response
  * object
  *
  * @author Iwan Bron - Initial contribution
  */
-public class SEMSStatus {
+public class StationStatus {
     @SerializedName("kpi")
     private KeyPerformanceIndicators keyPerformanceIndicators;
     @SerializedName("inverter")
-    private List<Inverter> inverters;
+    private List<Station> stations;
 
     public Double getCurrentOutput() {
         return keyPerformanceIndicators.getCurrentOutput();
     }
 
     public Double getDayTotal() {
-        return inverters.isEmpty() ? null : inverters.get(0).getDayTotal();
+        return stations.isEmpty() ? null : stations.get(0).getDayTotal();
     }
 
     public Double getMonthTotal() {
-        return inverters.isEmpty() ? null : inverters.get(0).getMonthTotal();
+        return stations.isEmpty() ? null : stations.get(0).getMonthTotal();
     }
 
     public Double getOverallTotal() {
-        return inverters.isEmpty() ? null : inverters.get(0).getOverallTotal();
+        return stations.isEmpty() ? null : stations.get(0).getOverallTotal();
     }
 
     public Double getDayIncome() {
@@ -55,14 +55,14 @@ public class SEMSStatus {
     }
 
     public boolean isOnline() {
-        return inverters.isEmpty() ? false : inverters.get(0).getStatus() == 1;
+        return stations.isEmpty() ? false : stations.get(0).getStatus() == 1;
     }
 
     public ZonedDateTime getLastUpdate() {
-        if (inverters.isEmpty()) {
+        if (stations.isEmpty()) {
             return null;
         }
-        return ZonedDateTime.ofInstant(inverters.get(0).getDetails().getLastUpdate().toInstant(),
+        return ZonedDateTime.ofInstant(stations.get(0).getDetails().getLastUpdate().toInstant(),
                 ZoneId.systemDefault());
     }
 }

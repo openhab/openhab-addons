@@ -12,19 +12,21 @@
  */
 package org.openhab.binding.semsportal.internal.dto;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO containing (a small subset of) the data received from the SEMS portal
+ * POJO containing the response to the {@link StationListRequest}
  *
  * @author Iwan Bron - Initial contribution
  */
-public class SEMSStatusResponse extends SEMSResponse {
+public class StationListResponse extends BaseResponse {
 
     @SerializedName("data")
-    private SEMSStatus status;
+    private List<Station> stations;
 
-    public SEMSStatus getStatus() {
-        return status;
+    public List<Station> getStations() {
+        return stations;
     }
 }

@@ -14,7 +14,7 @@ package org.openhab.binding.semsportal.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.semsportal.internal.dto.SEMSStatus;
+import org.openhab.binding.semsportal.internal.dto.StationStatus;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -35,18 +35,18 @@ public class StateHelper {
         // hide constructor, no initialisation possible
     }
 
-    public static State getOnline(@Nullable SEMSStatus currentStatus) {
+    public static State getOnline(@Nullable StationStatus currentStatus) {
         if (currentStatus == null) {
             return UnDefType.UNDEF;
         }
         return OnOffType.from(currentStatus.isOnline());
     }
 
-    public static State getLastUpdate(@Nullable SEMSStatus currentStatus) {
+    public static State getLastUpdate(@Nullable StationStatus currentStatus) {
         return currentStatus == null ? UnDefType.UNDEF : new DateTimeType(currentStatus.getLastUpdate());
     }
 
-    public static State getCurrentOutput(@Nullable SEMSStatus status) {
+    public static State getCurrentOutput(@Nullable StationStatus status) {
         if (status == null) {
             return UnDefType.UNDEF;
         }
@@ -56,7 +56,7 @@ public class StateHelper {
         return new QuantityType<>(status.getCurrentOutput(), Units.WATT);
     }
 
-    public static State getDayTotal(@Nullable SEMSStatus status) {
+    public static State getDayTotal(@Nullable StationStatus status) {
         if (status == null) {
             return UnDefType.UNDEF;
         }
@@ -66,7 +66,7 @@ public class StateHelper {
         return new QuantityType<>(status.getDayTotal(), Units.KILOWATT_HOUR);
     }
 
-    public static State getMonthTotal(@Nullable SEMSStatus status) {
+    public static State getMonthTotal(@Nullable StationStatus status) {
         if (status == null) {
             return UnDefType.UNDEF;
         }
@@ -76,7 +76,7 @@ public class StateHelper {
         return new QuantityType<>(status.getMonthTotal(), Units.KILOWATT_HOUR);
     }
 
-    public static State getOverallTotal(@Nullable SEMSStatus status) {
+    public static State getOverallTotal(@Nullable StationStatus status) {
         if (status == null) {
             return UnDefType.UNDEF;
         }
@@ -86,7 +86,7 @@ public class StateHelper {
         return new QuantityType<>(status.getOverallTotal(), Units.KILOWATT_HOUR);
     }
 
-    public static State getDayIncome(@Nullable SEMSStatus status) {
+    public static State getDayIncome(@Nullable StationStatus status) {
         if (status == null) {
             return UnDefType.UNDEF;
         }
@@ -96,7 +96,7 @@ public class StateHelper {
         return new DecimalType(status.getDayIncome());
     }
 
-    public static State getTotalIncome(@Nullable SEMSStatus status) {
+    public static State getTotalIncome(@Nullable StationStatus status) {
         if (status == null) {
             return UnDefType.UNDEF;
         }
