@@ -65,6 +65,8 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
 
     private static final String SSE_EVENT_TYPE_DEVICES = "devices";
 
+    private static final Gson GSON = new Gson();
+
     private final Logger logger = LoggerFactory.getLogger(DefaultMieleWebservice.class);
 
     private Optional<String> accessToken = Optional.empty();
@@ -177,7 +179,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
             throw new IllegalArgumentException("Process action must not be UNKNOWN.");
         }
 
-        String formattedProcessAction = new Gson().toJson(processAction, ProcessAction.class);
+        String formattedProcessAction = GSON.toJson(processAction, ProcessAction.class);
         formattedProcessAction = formattedProcessAction.substring(1, formattedProcessAction.length() - 1);
         String json = "{\"processAction\":" + formattedProcessAction + "}";
 
@@ -282,7 +284,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
                     accessToken.get());
             ContentResponse response = sendRequest(request);
             HttpUtil.checkHttpSuccess(response);
-            Actions actions = new Gson().fromJson(response.getContentAsString(), Actions.class);
+            Actions actions = GSON.fromJson(response.getContentAsString(), Actions.class);
             if (actions == null) {
                 throw new MieleWebserviceTransientException("Failed to parse response message.",
                         ConnectionError.RESPONSE_MALFORMED);
