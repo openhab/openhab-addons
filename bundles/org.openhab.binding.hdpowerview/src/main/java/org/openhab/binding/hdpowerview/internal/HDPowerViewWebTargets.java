@@ -192,7 +192,7 @@ public class HDPowerViewWebTargets {
                 logger.debug("Hub still undergoing maintenance");
                 throw new HubMaintenanceException("Hub still undergoing maintenance");
             }
-            throw new HubProcessingException(String.format("Communication error: \"%s\"", e.getMessage()));
+            throw new HubProcessingException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         }
         int statusCode = response.getStatus();
         if (statusCode == HttpStatus.LOCKED_423) {
