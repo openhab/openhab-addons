@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -84,39 +83,40 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
                         ssdp.send(sendPack);
                         ssdp.setSoTimeout(SSDP_WAIT_TIMEOUT);
 
-                        final AtomicBoolean loop = new AtomicBoolean(true);
-                        while (loop.get()) {
+                        boolean loop = true;
+                        while (loop) {
                             DatagramPacket recvPack = new DatagramPacket(new byte[1024], 1024);
                             ssdp.receive(recvPack);
                             byte[] recvData = recvPack.getData();
 
                             final Scanner scanner = new Scanner(new ByteArrayInputStream(recvData),
                                     StandardCharsets.UTF_8);
-                            scanner.findAll("Location:([0-9.]+):(.*)").forEach(matchResult -> {
+                            loop = scanner.findAll("Location:([0-9.]+):(.*)").peek(matchResult -> {
                                 final String server = matchResult.group(1);
                                 final Integer port = Integer.parseInt(matchResult.group(2));
+                                final String bridgeName = server.replace(".", "") + "" + port;
 
                                 logger.debug("Found pilight daemon at {}:{}", server, port);
 
                                 Map<String, Object> properties = new HashMap<>();
                                 properties.put(PilightBindingConstants.PROPERTY_IP_ADDRESS, server);
                                 properties.put(PilightBindingConstants.PROPERTY_PORT, port);
+                                properties.put(PilightBindingConstants.PROPERTY_NAME, bridgeName);
 
-                                ThingUID uid = new ThingUID(PilightBindingConstants.THING_TYPE_BRIDGE,
-                                        server.replace(".", "") + "" + port);
+                                ThingUID uid = new ThingUID(PilightBindingConstants.THING_TYPE_BRIDGE, bridgeName);
 
                                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                                        .withRepresentationProperty(PilightBindingConstants.PROPERTY_NAME)
                                         .withLabel("Pilight Bridge (" + server + ")").build();
 
                                 thingDiscovered(result);
-                                loop.set(false);
-                            });
+                            }).count() == 0;
                         }
                     }
                 }
             }
         } catch (IOException e) {
-            if (!e.getMessage().equals("Receive timed out")) {
+            if (e.getMessage() != null && !"Receive timed out".equals(e.getMessage())) {
                 logger.warn("Unable to enumerate the local network interfaces {}", e.getMessage());
             }
         }
@@ -131,8 +131,9 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Pilight device background discovery");
+        final @Nullable ScheduledFuture<?> backgroundDiscoveryJob = this.backgroundDiscoveryJob;
         if (backgroundDiscoveryJob == null || backgroundDiscoveryJob.isCancelled()) {
-            backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 5,
+            this.backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 5,
                     AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC, TimeUnit.SECONDS);
         }
     }
@@ -140,9 +141,10 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop Pilight device background discovery");
+        final @Nullable ScheduledFuture<?> backgroundDiscoveryJob = this.backgroundDiscoveryJob;
         if (backgroundDiscoveryJob != null) {
             backgroundDiscoveryJob.cancel(true);
-            backgroundDiscoveryJob = null;
+            this.backgroundDiscoveryJob = null;
         }
     }
 }

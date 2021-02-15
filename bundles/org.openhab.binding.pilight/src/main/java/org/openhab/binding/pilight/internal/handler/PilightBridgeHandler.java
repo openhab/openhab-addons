@@ -73,6 +73,7 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         PilightBridgeConfiguration config = getConfigAs(PilightBridgeConfiguration.class);
 
+        final @Nullable PilightDeviceDiscoveryService discoveryService = this.discoveryService;
         PilightConnector connector = new PilightConnector(config, new IPilightCallback() {
             @Override
             public void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail,
@@ -224,6 +225,7 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
             }
         }
 
+        final @Nullable PilightDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.setConfig(config);
         }

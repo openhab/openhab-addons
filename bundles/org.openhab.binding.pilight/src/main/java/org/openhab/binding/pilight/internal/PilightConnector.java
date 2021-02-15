@@ -78,30 +78,33 @@ public class PilightConnector implements Runnable, Closeable {
 
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    final Socket socket = this.socket;
+                    final @Nullable Socket socket = this.socket;
                     if (socket != null && !socket.isClosed()) {
                         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                             String line = in.readLine();
                             while (!Thread.currentThread().isInterrupted() && line != null) {
                                 if (!line.isEmpty()) {
                                     logger.trace("Received from pilight: {}", line);
+                                    final ObjectMapper inputMapper = this.inputMapper;
                                     if (line.startsWith("{\"message\":\"config\"")) {
-                                        callback.configReceived(inputMapper.readValue(line, Message.class).getConfig());
+                                        final @Nullable Message message = inputMapper.readValue(line, Message.class);
+                                        callback.configReceived(message.getConfig());
                                     } else if (line.startsWith("{\"message\":\"values\"")) {
-                                        AllStatus status = inputMapper.readValue(line, AllStatus.class);
+                                        final @Nullable AllStatus status = inputMapper.readValue(line, AllStatus.class);
                                         callback.statusReceived(status.getValues());
                                     } else if (line.startsWith("{\"version\":")) {
-                                        Version version = inputMapper.readValue(line, Version.class);
+                                        final @Nullable Version version = inputMapper.readValue(line, Version.class);
                                         callback.versionReceived(version);
                                     } else if (line.startsWith("{\"status\":")) {
-                                        Response response = inputMapper.readValue(line, Response.class);
+                                        // currently unused
                                     } else if (line.equals("1")) {
                                         throw new IOException("Connection to pilight lost");
                                     } else {
-                                        Status status = inputMapper.readValue(line, Status.class);
+                                        final @Nullable Status status = inputMapper.readValue(line, Status.class);
                                         callback.statusReceived(Collections.singletonList(status));
                                     }
                                 }
+
                                 line = in.readLine();
                             }
                         }
@@ -151,13 +154,13 @@ public class PilightConnector implements Runnable, Closeable {
     }
 
     private void disconnect() {
-        final PrintStream printStream = this.printStream;
+        final @Nullable PrintStream printStream = this.printStream;
         if (printStream != null) {
             printStream.close();
             this.printStream = null;
         }
 
-        final Socket socket = this.socket;
+        final @Nullable Socket socket = this.socket;
         if (socket != null) {
             try {
                 socket.close();
@@ -169,7 +172,7 @@ public class PilightConnector implements Runnable, Closeable {
     }
 
     private boolean isConnected() {
-        final Socket socket = this.socket;
+        final @Nullable Socket socket = this.socket;
         return socket != null && !socket.isClosed();
     }
 
@@ -195,7 +198,7 @@ public class PilightConnector implements Runnable, Closeable {
                 PrintStream printStream = new PrintStream(socket.getOutputStream(), true);
                 printStream.println(outputMapper.writeValueAsString(identification));
 
-                Response response = inputMapper.readValue(socket.getInputStream(), Response.class);
+                final @Nullable Response response = inputMapper.readValue(socket.getInputStream(), Response.class);
 
                 if (response.getStatus().equals(Response.SUCCESS)) {
                     logger.debug("Established connection to pilight server at {}:{}", config.getIpAddress(),
@@ -209,7 +212,10 @@ public class PilightConnector implements Runnable, Closeable {
                     logger.debug("pilight client not accepted: {}", response.getStatus());
                 }
             } catch (IOException e) {
-                this.printStream.close();
+                final @Nullable PrintStream printStream = this.printStream;
+                if (printStream != null) {
+                    printStream.close();
+                }
                 logger.debug("connect failed: {}", e.getMessage());
                 callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -225,14 +231,18 @@ public class PilightConnector implements Runnable, Closeable {
      */
     public void sendAction(Action action) {
         delayedActionQueue.add(action);
+        final @Nullable ScheduledFuture<?> delayedActionWorkerFuture = this.delayedActionWorkerFuture;
 
         if (delayedActionWorkerFuture == null || delayedActionWorkerFuture.isCancelled()) {
-            delayedActionWorkerFuture = scheduler.scheduleWithFixedDelay(() -> {
+            this.delayedActionWorkerFuture = scheduler.scheduleWithFixedDelay(() -> {
                 if (!delayedActionQueue.isEmpty()) {
                     doSendAction(delayedActionQueue.poll());
                 } else {
-                    delayedActionWorkerFuture.cancel(false);
-                    delayedActionWorkerFuture = null;
+                    final @Nullable ScheduledFuture<?> workerFuture = this.delayedActionWorkerFuture;
+                    if (workerFuture != null) {
+                        workerFuture.cancel(false);
+                    }
+                    this.delayedActionWorkerFuture = null;
                 }
             }, 0, config.getDelay(), TimeUnit.MILLISECONDS);
         }

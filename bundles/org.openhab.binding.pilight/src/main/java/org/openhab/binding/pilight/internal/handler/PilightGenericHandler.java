@@ -33,6 +33,7 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,14 +121,16 @@ public class PilightGenericHandler extends PilightBaseHandler {
                     logger.debug("initializeReadOnly {} {}", channelType, channelType.getState());
                 }
 
-                if (channelType != null && channelType.getState() != null) {
-                    channelReadOnlyMap.putIfAbsent(channel.getUID(), channelType.getState().isReadOnly());
+                if (channelType != null) {
+                    final @Nullable StateDescription state = channelType.getState();
+                    if (state != null) {
+                        channelReadOnlyMap.putIfAbsent(channel.getUID(), state.isReadOnly());
+                    }
                 }
             }
         }
     }
 
-    @SuppressWarnings("null")
     private boolean isChannelReadOnly(ChannelUID channelUID) {
         Boolean isReadOnly = channelReadOnlyMap.get(channelUID);
         return isReadOnly != null ? isReadOnly : true;
