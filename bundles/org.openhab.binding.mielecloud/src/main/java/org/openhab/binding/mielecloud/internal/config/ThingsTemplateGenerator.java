@@ -55,11 +55,11 @@ public class ThingsTemplateGenerator {
         result.append(" {\n");
 
         for (Thing thing : pairedThings) {
-            result.append("    " + createThingConfigurationTemplate(thing) + "\n");
+            result.append("    ").append(createThingConfigurationTemplate(thing)).append("\n");
         }
 
         for (DiscoveryResult discoveryResult : discoveryResults) {
-            result.append("    " + createThingConfigurationTemplate(discoveryResult) + "\n");
+            result.append("    ").append(createThingConfigurationTemplate(discoveryResult)).append("\n");
         }
 
         result.append("}");
@@ -68,11 +68,12 @@ public class ThingsTemplateGenerator {
 
     private String createThingConfigurationTemplate(Thing thing) {
         StringBuilder result = new StringBuilder();
-        result.append("Thing " + thing.getThingTypeUID().getId() + " " + thing.getUID().getId() + " ");
+        result.append("Thing ").append(thing.getThingTypeUID().getId()).append(" ").append(thing.getUID().getId())
+                .append(" ");
 
         final String label = thing.getLabel();
         if (label != null) {
-            result.append("\"" + label + "\" ");
+            result.append("\"").append(label).append("\" ");
         }
 
         result.append("[ ]");
