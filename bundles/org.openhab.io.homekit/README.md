@@ -128,8 +128,8 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
 
-If the first word in the item name matches with the room name in home app, then home app will hide it. 
-E.g. item with name "Kitchen Light" will be shown in "Kitchen" room as "Light". This is recommended naming convention for HomeKit items.
+If the first word in the item name match the room name in home app, home app will hide it. 
+E.g. item with the name "Kitchen Light" will be shown in "Kitchen" room as "Light". This is recommended naming convention for HomeKit items and rooms.
 
 ### UI based Configuration
 
