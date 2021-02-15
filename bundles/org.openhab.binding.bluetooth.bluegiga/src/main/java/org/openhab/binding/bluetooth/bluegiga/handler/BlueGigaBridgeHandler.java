@@ -192,7 +192,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         }
 
         if (init) {
-            logger.debug("Initiliaze BlueGiga");
+            logger.debug("Initialize BlueGiga");
             start();
         }
     }
