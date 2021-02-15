@@ -174,7 +174,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
     @Override
     public Set<String> getAvailableVoices() {
-        // different locales support different voices, so let's list all here in one big set
+        // different locales support different voices, so let's list all here in one big set when no locale is provided
         Set<String> allvoxes = new HashSet<>();
         for (Set<String> langvoxes : SUPPORTED_VOICES.values()) {
             for (String langvox : langvoxes) {
