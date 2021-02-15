@@ -37,6 +37,8 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link ChargeProfileWrapper} Wrapper for ChargeProfiles
  *
@@ -74,8 +76,14 @@ public class ChargeProfileWrapper {
     private final Map<ProfileKey, Set<DayOfWeek>> daysOfWeek = new HashMap<>();
 
     public static Optional<ChargeProfileWrapper> fromJson(final String content) {
-        return Optional.ofNullable(Converter.getGson().fromJson(content, ChargeProfile.class))
-                .map(cp -> new ChargeProfileWrapper(cp));
+        try {
+            final ChargeProfile cp = Converter.getGson().fromJson(content, ChargeProfile.class);
+            if (cp != null) {
+                return Optional.of(new ChargeProfileWrapper(cp));
+            }
+        } catch (JsonSyntaxException jse) {
+        }
+        return Optional.empty();
     }
 
     private ChargeProfileWrapper(final ChargeProfile profile) {
@@ -177,15 +185,15 @@ public class ChargeProfileWrapper {
     }
 
     public void setDayEnabled(final ProfileKey key, final DayOfWeek day, final boolean enabled) {
-        Set<DayOfWeek> days = daysOfWeek.get(key);
+        final Set<DayOfWeek> days = daysOfWeek.get(key);
         if (days == null) {
-            days = EnumSet.noneOf(DayOfWeek.class);
-            daysOfWeek.put(key, days);
-        }
-        if (enabled) {
-            daysOfWeek.get(key).add(day);
+            daysOfWeek.put(key, enabled ? EnumSet.of(day) : EnumSet.noneOf(DayOfWeek.class));
         } else {
-            daysOfWeek.get(key).remove(day);
+            if (enabled) {
+                days.add(day);
+            } else {
+                days.remove(day);
+            }
         }
     }
 

@@ -16,7 +16,6 @@ import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConst
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,18 +23,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveHandlerFactory;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Vehicle;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
-import org.openhab.binding.bmwconnecteddrive.internal.handler.VehicleHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -49,6 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleDiscovery extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+
     private final Logger logger = LoggerFactory.getLogger(VehicleDiscovery.class);
     private static final int DISCOVERY_TIMEOUT = 10;
     private Optional<ConnectedDriveBridgeHandler> bridgeHandler = Optional.empty();
@@ -58,10 +54,9 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
     }
 
     public void onResponse(VehiclesContainer container) {
-        List<Vehicle> vehicles = container.vehicles;
-        vehicles.forEach(vehicle -> {
-            if (bridgeHandler.isPresent()) {
-                ThingUID bridgeUID = bridgeHandler.get().getThing().getUID();
+        bridgeHandler.ifPresent(bridge -> {
+            final ThingUID bridgeUID = bridge.getThing().getUID();
+            container.vehicles.forEach(vehicle -> {
                 // the DriveTrain field in the delivered json is defining the Vehicle Type
                 String vehicleType = vehicle.driveTrain.toLowerCase();
                 SUPPORTED_THING_SET.forEach(entry -> {
@@ -91,11 +86,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
 
                         // Vehicle Properties
                         if (vehicle.supportedChargingModes != null) {
-                            StringBuilder chargingModes = new StringBuilder();
-                            vehicle.supportedChargingModes.forEach(e -> {
-                                chargingModes.append(e).append(Constants.SPACE);
-                            });
-                            properties.put("vehicleChargeModes", chargingModes.toString());
+                            properties.put("vehicleChargeModes",
+                                    String.join(Constants.SPACE, vehicle.supportedChargingModes));
                         }
                         if (vehicle.hasAlarmSystem) {
                             properties.put("vehicleAlarmSystem", "Available");
@@ -114,9 +106,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
 
                         // Check now if a thing with the same VIN exists
                         final AtomicBoolean foundVehicle = new AtomicBoolean(false);
-                        List<VehicleHandler> l = ConnectedDriveHandlerFactory.getHandlerRegistry();
-                        l.forEach(handler -> {
-                            Thing vehicleThing = handler.getThing();
+                        bridge.getThing().getThings().forEach(vehicleThing -> {
                             Configuration c = vehicleThing.getConfiguration();
                             if (c.containsKey("vin")) {
                                 String thingVIN = c.get("vin").toString();
@@ -145,9 +135,9 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         }
                     }
                 });
-            }
+            });
         });
-    }
+    };
 
     /**
      * Get all field names from a DTO with a specific value
@@ -162,14 +152,10 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
         for (Field field : dto.getClass().getDeclaredFields()) {
             try {
                 Object value = field.get(dto);
-                if (value != null) {
-                    if (value.equals(compare)) {
-                        buf.append(Converter.capitalizeFirst(field.getName()) + Constants.SPACE);
-                    }
+                if (compare.equals(value)) {
+                    buf.append(Converter.capitalizeFirst(field.getName()) + Constants.SPACE);
                 }
-            } catch (IllegalArgumentException e) {
-                logger.debug("Field {} not found {}", compare, e.getMessage());
-            } catch (IllegalAccessException e) {
+            } catch (IllegalArgumentException | IllegalAccessException e) {
                 logger.debug("Field {} not found {}", compare, e.getMessage());
             }
         }
@@ -186,11 +172,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        if (bridgeHandler.isPresent()) {
-            return bridgeHandler.get();
-        } else {
-            return null;
-        }
+        return bridgeHandler.orElse(null);
     }
 
     @Override
@@ -205,9 +187,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
 
     @Override
     protected void startScan() {
-        if (bridgeHandler.isPresent()) {
-            bridgeHandler.get().requestVehicles();
-        }
+        bridgeHandler.ifPresent(ConnectedDriveBridgeHandler::requestVehicles);
     }
 
     @Override

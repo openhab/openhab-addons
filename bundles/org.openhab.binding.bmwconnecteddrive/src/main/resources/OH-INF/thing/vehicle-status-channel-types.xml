@@ -13,7 +13,7 @@
 	</channel-type>
 	<channel-type id="lock-channel">
 		<item-type>String</item-type>
-		<label>Doors Locked </label>
+		<label>Doors Locked</label>
 	</channel-type>
 	<channel-type id="next-service-date-channel">
 		<item-type>DateTime</item-type>
@@ -21,7 +21,7 @@
 	</channel-type>
 	<channel-type id="next-service-mileage-channel">
 		<item-type>Number:Length</item-type>
-		<label>Mileage till Next Service</label>
+		<label>Mileage Till Next Service</label>
 	</channel-type>
 	<channel-type id="check-control-channel">
 		<item-type>String</item-type>
