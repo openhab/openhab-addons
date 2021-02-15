@@ -185,6 +185,25 @@ public class BluetoothCharacteristic {
     }
 
     /**
+     * Returns if the value can be read on this characteristic.
+     *
+     * @return true if the value can be read, false otherwise.
+     */
+    public boolean canRead() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_READ);
+    }
+
+    /**
+     * Returns if the value can be written on this characteristic.
+     *
+     * @return true if the value can be written with of without a response, false otherwise.
+     */
+    public boolean canWrite() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_WRITE)
+                || hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_WRITE_NO_RESPONSE);
+    }
+
+    /**
      * Returns the permissions for this characteristic.
      */
     public int getPermissions() {

@@ -361,8 +361,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
             if (gattParser.isKnownCharacteristic(charUUID)) {
                 return gattParser.isValidForRead(charUUID);
             }
-            // TODO: need to evaluate this from characteristic properties, but such properties aren't support yet
-            return true;
+            return characteristic.canRead();
         }
 
         public boolean canWrite() {
@@ -370,8 +369,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
             if (gattParser.isKnownCharacteristic(charUUID)) {
                 return gattParser.isValidForWrite(charUUID);
             }
-            // TODO: need to evaluate this from characteristic properties, but such properties aren't support yet
-            return true;
+            return characteristic.canWrite();
         }
 
         private boolean isAdvanced() {
