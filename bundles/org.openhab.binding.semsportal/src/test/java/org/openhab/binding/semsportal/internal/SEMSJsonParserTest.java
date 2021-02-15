@@ -21,9 +21,10 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.semsportal.internal.dto.SEMSLoginResponse;
-import org.openhab.binding.semsportal.internal.dto.SEMSResponse;
-import org.openhab.binding.semsportal.internal.dto.SEMSStatusResponse;
+import org.openhab.binding.semsportal.internal.dto.BaseResponse;
+import org.openhab.binding.semsportal.internal.dto.LoginResponse;
+import org.openhab.binding.semsportal.internal.dto.StationListResponse;
+import org.openhab.binding.semsportal.internal.dto.StatusResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,7 +37,7 @@ public class SEMSJsonParserTest {
     @Test
     public void testParseSuccessStatusResult() throws Exception {
         String json = Files.readString(Paths.get("src/test/resources/success_status.json"));
-        SEMSStatusResponse response = getGson().fromJson(json, SEMSStatusResponse.class);
+        StatusResponse response = getGson().fromJson(json, StatusResponse.class);
         assertNotNull(response, "Expected deserialized StatusResponse");
         // response cannot be null, was asserted before
         assertTrue(response.isOk(), "Successresponse should be OK");
@@ -49,24 +50,25 @@ public class SEMSJsonParserTest {
         assertEquals(17.2, response.getStatus().getMonthTotal(), "Month total parsed correctly");
         assertEquals(7379.0, response.getStatus().getOverallTotal(), "Overall total parsed correctly");
 
-        assertEquals(1623.38, response.getStatus().getTotalIncome(), "Total income parsed correctly");
+        assertEquals(823.38, response.getStatus().getTotalIncome(), "Total income parsed correctly");
     }
 
     @Test
     public void testParseErrorStatusResult() throws Exception {
         String json = Files.readString(Paths.get("src/test/resources/error_status.json"));
-        SEMSResponse response = getGson().fromJson(json, SEMSResponse.class);
+        BaseResponse response = getGson().fromJson(json, BaseResponse.class);
         assertNotNull(response, "Expected deserialized StatusResponse");
         // response cannot be null, was asserted before
-        assertEquals(response.getCode(), SEMSResponse.EXCEPTION, "Error response shoud have error code");
+        assertEquals(response.getCode(), BaseResponse.EXCEPTION, "Error response shoud have error code");
         assertTrue(response.isError(), "Error response should have isError = true");
     }
 
     @Test
     public void testParseSuccessLoginResult() throws Exception {
         String json = Files.readString(Paths.get("src/test/resources/success_login.json"));
-        SEMSLoginResponse response = getGson().fromJson(json, SEMSLoginResponse.class);
+        LoginResponse response = getGson().fromJson(json, LoginResponse.class);
         assertNotNull(response, "Expected deserialized LoginResponse");
+        // response cannot be null, was asserted before
         assertTrue(response.isOk(), "Success response should result in OK");
         assertNotNull(response.getToken(), "Success response should result in token");
     }
@@ -74,10 +76,22 @@ public class SEMSJsonParserTest {
     @Test
     public void testParseErrorLoginResult() throws Exception {
         String json = Files.readString(Paths.get("src/test/resources/error_login.json"));
-        SEMSLoginResponse response = getGson().fromJson(json, SEMSLoginResponse.class);
+        LoginResponse response = getGson().fromJson(json, LoginResponse.class);
         assertNotNull(response, "Expected deserialized LoginResponse");
+        // response cannot be null, was asserted before
         assertFalse(response.isOk(), "Error response should not result in OK");
         assertNull(response.getToken(), "Error response should have null token");
+    }
+
+    @Test
+    public void testParseSuccessListResult() throws Exception {
+        String json = Files.readString(Paths.get("src/test/resources/success_list.json"));
+        StationListResponse response = getGson().fromJson(json, StationListResponse.class);
+        assertNotNull(response, "Expected deserialized StationListResponse");
+        // response cannot be null, was asserted before
+        assertTrue(response.isOk(), "Success response should result in OK");
+        assertNotNull(response.getStations(), "List response should have station list");
+        assertEquals(1, response.getStations().size(), "List response should have station list");
     }
 
     private Gson getGson() {
