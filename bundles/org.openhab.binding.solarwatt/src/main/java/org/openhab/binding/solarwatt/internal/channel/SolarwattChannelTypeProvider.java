@@ -12,13 +12,6 @@
  */
 package org.openhab.binding.solarwatt.internal.channel;
 
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.SolarwattBindingConstants;
@@ -31,6 +24,12 @@ import org.openhab.core.types.util.UnitUtils;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.measure.Unit;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A {@link ChannelTypeProvider} that creates {@link ChannelType}s according to
@@ -87,7 +86,7 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
         if (unit != null) {
             @Nullable
             String dimension = UnitUtils.getDimensionName(unit);
-            String unitString = ":" + unit.toString();
+            String unitString = unit.toString();
 
             if (Units.PERCENT.equals(unit)) {
                 // strangely it is Angle
