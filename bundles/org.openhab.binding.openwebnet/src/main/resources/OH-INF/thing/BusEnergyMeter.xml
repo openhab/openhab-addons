@@ -5,13 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Thing for BUS Energy Management Central Unit (BTicino F52x) -->
-	<thing-type id="bus_energy_central_unit">
+	<thing-type id="bus_energy_meter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Energy Management Central Unit</label>
-		<description>A OpenWebNet BUS/SCS Energy Management Central Unit. BTicino models: F52x</description>
+		<label>Energy Meter</label>
+		<description>A OpenWebNet BUS/SCS Energy Meter. BTicino models: F52x</description>
 
 		<channels>
 			<channel id="power" typeId="power"/>

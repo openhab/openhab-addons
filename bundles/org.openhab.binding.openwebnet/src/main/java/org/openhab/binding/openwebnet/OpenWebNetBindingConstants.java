@@ -53,9 +53,8 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_DIMMER = "Dimmer";
     public static final ThingTypeUID THING_TYPE_BUS_AUTOMATION = new ThingTypeUID(BINDING_ID, "bus_automation");
     public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
-    public static final ThingTypeUID THING_TYPE_BUS_ENERGY_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID,
-            "bus_energy_central_unit");
-    public static final String THING_LABEL_BUS_ENERGY_CENTRAL_UNIT = "Energy Central Unit";
+    public static final ThingTypeUID THING_TYPE_BUS_ENERGY_METER = new ThingTypeUID(BINDING_ID, "bus_energy_meter");
+    public static final String THING_LABEL_BUS_ENERGY_METER = "Energy Meter";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -82,7 +81,7 @@ public class OpenWebNetBindingConstants {
 
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_BUS_ENERGY_CENTRAL_UNIT));
+            Arrays.asList(THING_TYPE_BUS_ENERGY_METER));
 
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
