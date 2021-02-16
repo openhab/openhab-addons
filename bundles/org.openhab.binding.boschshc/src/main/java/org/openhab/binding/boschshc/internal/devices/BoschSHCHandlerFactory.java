@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.climatecontrol.ClimateControlHandler;
-import org.openhab.binding.boschshc.internal.devices.inwallswitch.InWallSwitchHandler;
+import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControlHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
@@ -67,7 +67,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Collection<ThingTypeHandlerMapping> SUPPORTED_THING_TYPES = List.of(
             new ThingTypeHandlerMapping(THING_TYPE_SHC, thing -> new BridgeHandler((Bridge) thing)),
-            new ThingTypeHandlerMapping(THING_TYPE_INWALL_SWITCH, InWallSwitchHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_INWALL_SWITCH, LightControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, TwinguardHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT, WindowContactHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_MOTION_DETECTOR, MotionDetectorHandler::new),

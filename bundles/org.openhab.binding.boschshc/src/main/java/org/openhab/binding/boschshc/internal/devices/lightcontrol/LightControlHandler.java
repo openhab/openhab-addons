@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.inwallswitch;
+package org.openhab.binding.boschshc.internal.devices.lightcontrol;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
@@ -41,11 +41,11 @@ import org.openhab.core.types.State;
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class InWallSwitchHandler extends BoschSHCHandler {
+public class LightControlHandler extends BoschSHCHandler {
 
     private final PowerSwitchService powerSwitchService;
 
-    public InWallSwitchHandler(Thing thing) {
+    public LightControlHandler(Thing thing) {
         super(thing);
         this.powerSwitchService = new PowerSwitchService();
     }
