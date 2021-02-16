@@ -117,12 +117,12 @@ public class RemoteServiceHandler implements StringResponseCallback {
             }
             serviceExecuting = Optional.of(service.toString());
         }
-        MultiMap<String> dataMap = new MultiMap<String>();
+        final MultiMap<String> dataMap = new MultiMap<String>();
         dataMap.add(SERVICE_TYPE, service.toString());
         if (data.length > 0) {
             dataMap.add(DATA, data[0]);
         }
-        proxy.post(serviceExecutionAPI, Optional.of(dataMap), this);
+        proxy.post(serviceExecutionAPI, dataMap, this);
         return true;
     }
 
@@ -135,9 +135,9 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 handler.getData();
             }
             counter++;
-            MultiMap<String> dataMap = new MultiMap<String>();
+            final MultiMap<String> dataMap = new MultiMap<String>();
             dataMap.add(SERVICE_TYPE, serviceExecuting.get());
-            proxy.get(serviceExecutionStateAPI, Optional.of(dataMap), this);
+            proxy.get(serviceExecutionStateAPI, dataMap, this);
         }, () -> {
             logger.warn("No Service executed to get state");
         });

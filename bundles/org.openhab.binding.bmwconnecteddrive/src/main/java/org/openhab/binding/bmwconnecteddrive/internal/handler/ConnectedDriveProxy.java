@@ -16,12 +16,12 @@ import static org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -45,6 +45,8 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link ConnectedDriveProxy} This class holds the important constants for the BMW Connected Drive Authorization.
  * They
@@ -60,26 +62,26 @@ import org.slf4j.LoggerFactory;
 public class ConnectedDriveProxy {
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveProxy.class);
     private final Token token = new Token();
-    private HttpClient httpClient;
-    private HttpClient authHttpClient;
-    private String legacyAuthUri;
-    private ConnectedDriveConfiguration configuration;
+    private final HttpClient httpClient;
+    private final HttpClient authHttpClient;
+    private final String legacyAuthUri;
+    private final ConnectedDriveConfiguration configuration;
 
     /**
      * URLs taken from https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/const.py
      */
-    String baseUrl;
-    String vehicleUrl;
-    String legacyUrl;
-    String vehicleStatusAPI = "/status";
-    String lastTripAPI = "/statistics/lastTrip";
-    String allTripsAPI = "/statistics/allTrips";
-    String chargeAPI = "/chargingprofile";
-    String destinationAPI = "/destinations";
-    String imageAPI = "/image";
-    String rangeMapAPI = "/rangemap";
-    String serviceExecutionAPI = "/executeService";
-    String serviceExecutionStateAPI = "/serviceExecutionStatus";
+    final String baseUrl;
+    final String vehicleUrl;
+    final String legacyUrl;
+    final String vehicleStatusAPI = "/status";
+    final String lastTripAPI = "/statistics/lastTrip";
+    final String allTripsAPI = "/statistics/allTrips";
+    final String chargeAPI = "/chargingprofile";
+    final String destinationAPI = "/destinations";
+    final String imageAPI = "/image";
+    final String rangeMapAPI = "/rangemap";
+    final String serviceExecutionAPI = "/executeService";
+    final String serviceExecutionStateAPI = "/serviceExecutionStatus";
 
     public ConnectedDriveProxy(HttpClientFactory httpClientFactory, ConnectedDriveConfiguration config) {
         httpClient = httpClientFactory.getCommonHttpClient();
@@ -92,7 +94,7 @@ public class ConnectedDriveProxy {
         }
         configuration = config;
 
-        StringBuilder legacyAuth = new StringBuilder();
+        final StringBuilder legacyAuth = new StringBuilder();
         legacyAuth.append("https://");
         legacyAuth.append(BimmerConstants.AUTH_SERVER_MAP.get(configuration.region));
         legacyAuth.append(BimmerConstants.OAUTH_ENDPOINT);
@@ -102,8 +104,8 @@ public class ConnectedDriveProxy {
         legacyUrl = "https://" + getRegionServer() + "/api/vehicle/dynamic/v1/";
     }
 
-    private synchronized void call(String url, boolean post, Optional<MultiMap<String>> params,
-            ResponseCallback callback) {
+    private synchronized void call(final String url, final boolean post, final @Nullable MultiMap<String> params,
+            final ResponseCallback callback) {
         // only executed in "simulation mode"
         // SimulationTest.testSimulationOff() assures Injector is off when releasing
         if (Injector.isActive()) {
@@ -116,21 +118,21 @@ public class ConnectedDriveProxy {
             }
             return;
         }
-        Request req;
-        final StringBuilder completeUrl = new StringBuilder(url);
+        final Request req;
+        final String encoded = params == null || params.isEmpty() ? null
+                : UrlEncoded.encode(params, Charset.defaultCharset(), false);
+        final String completeUrl;
+
         if (post) {
-            req = httpClient.POST(completeUrl.toString());
-            if (params.isPresent()) {
-                String urlEncodedParameter = UrlEncoded.encode(params.get(), Charset.defaultCharset(), false);
-                req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, urlEncodedParameter,
-                        Charset.defaultCharset()));
+            completeUrl = url;
+            req = httpClient.POST(url);
+            if (encoded != null) {
+                req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, encoded, Charset.defaultCharset()));
             }
+            ;
         } else {
-            if (params.isPresent()) {
-                completeUrl.append(Constants.QUESTION)
-                        .append(UrlEncoded.encode(params.get(), Charset.defaultCharset(), false)).toString();
-            }
-            req = httpClient.newRequest(completeUrl.toString());
+            completeUrl = encoded == null ? url : url + Constants.QUESTION + encoded;
+            req = httpClient.newRequest(completeUrl);
         }
         req.header(HttpHeader.AUTHORIZATION, getToken().getBearerToken());
         req.header(HttpHeader.REFERER, BimmerConstants.REFERER_URL);
@@ -141,7 +143,7 @@ public class ConnectedDriveProxy {
             public void onComplete(org.eclipse.jetty.client.api.Result result) {
                 if (result.getResponse().getStatus() != 200) {
                     NetworkError error = new NetworkError();
-                    error.url = completeUrl.toString();
+                    error.url = completeUrl;
                     error.status = result.getResponse().getStatus();
                     if (result.getResponse().getReason() != null) {
                         error.reason = result.getResponse().getReason();
@@ -162,67 +164,60 @@ public class ConnectedDriveProxy {
         });
     }
 
-    public void get(String url, Optional<MultiMap<String>> params, ResponseCallback callback) {
+    public void get(String url, @Nullable MultiMap<String> params, ResponseCallback callback) {
         call(url, false, params, callback);
     }
 
-    public void post(String url, Optional<MultiMap<String>> params, ResponseCallback callback) {
+    public void post(String url, @Nullable MultiMap<String> params, ResponseCallback callback) {
         call(url, true, params, callback);
     }
 
     public void requestVehicles(StringResponseCallback callback) {
-        get(vehicleUrl, Optional.empty(), callback);
+        get(vehicleUrl, null, callback);
     }
 
     public void requestVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuilder(baseUrl).append(config.vin).append(vehicleStatusAPI).toString(), Optional.empty(),
-                callback);
+        get(baseUrl + config.vin + vehicleStatusAPI, null, callback);
     }
 
     public void requestLegacyVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
         // see https://github.com/jupe76/bmwcdapi/search?q=dynamic%2Fv1
-        get(new StringBuilder(legacyUrl).append(config.vin).append("?offset=-60").toString(), Optional.empty(),
-                callback);
+        get(legacyUrl + config.vin + "?offset=-60", null, callback);
     }
 
     public void requestLastTrip(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuilder(baseUrl).append(config.vin).append(lastTripAPI).toString(), Optional.empty(), callback);
+        get(baseUrl + config.vin + lastTripAPI, null, callback);
     }
 
     public void requestAllTrips(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuilder(baseUrl).append(config.vin).append(allTripsAPI).toString(), Optional.empty(), callback);
+        get(baseUrl + config.vin + allTripsAPI, null, callback);
     }
 
     public void requestChargingProfile(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuilder(baseUrl).append(config.vin).append(chargeAPI).toString(), Optional.empty(), callback);
+        get(baseUrl + config.vin + chargeAPI, null, callback);
     }
 
     public void requestDestinations(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuilder(baseUrl).append(config.vin).append(destinationAPI).toString(), Optional.empty(),
-                callback);
+        get(baseUrl + config.vin + destinationAPI, null, callback);
     }
 
-    public void requestRangeMap(VehicleConfiguration config, Optional<MultiMap<String>> params,
+    public void requestRangeMap(VehicleConfiguration config, @Nullable MultiMap<String> params,
             StringResponseCallback callback) {
-        get(new StringBuilder(baseUrl).append(config.vin).append(rangeMapAPI).toString(), params, callback);
+        get(baseUrl + config.vin + rangeMapAPI, params, callback);
     }
 
     public void requestImage(VehicleConfiguration config, ImageProperties props, ByteResponseCallback callback) {
-        String localImageUrl = new StringBuilder(baseUrl).append(config.vin).append(imageAPI).toString();
-        MultiMap<String> dataMap = new MultiMap<String>();
+        final String localImageUrl = baseUrl + config.vin + imageAPI;
+        final MultiMap<String> dataMap = new MultiMap<String>();
         dataMap.add("width", Integer.toString(props.size));
         dataMap.add("height", Integer.toString(props.size));
         dataMap.add("view", props.viewport);
-        get(localImageUrl, Optional.of(dataMap), callback);
+        get(localImageUrl, dataMap, callback);
     }
 
     private String getRegionServer() {
-        String retVal = BimmerConstants.SERVER_MAP.get(configuration.region);
-        if (retVal != null) {
-            return retVal;
-        } else {
-            return Constants.INVALID;
-        }
+        final String retVal = BimmerConstants.SERVER_MAP.get(configuration.region);
+        return retVal == null ? Constants.INVALID : retVal;
     }
 
     RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {
@@ -251,37 +246,46 @@ public class ConnectedDriveProxy {
      * @return
      */
     private synchronized void updateToken() {
-        Request req = authHttpClient.POST(legacyAuthUri);
+        final Request req = authHttpClient.POST(legacyAuthUri);
 
-        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
         req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
         req.header(HttpHeader.HOST, BimmerConstants.SERVER_MAP.get(configuration.region));
         req.header(HttpHeader.AUTHORIZATION, BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region));
         req.header(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
         req.header(HttpHeader.REFERER, BimmerConstants.REFERER_URL);
 
-        MultiMap<String> dataMap = new MultiMap<String>();
+        final MultiMap<String> dataMap = new MultiMap<String>();
         dataMap.add("grant_type", "password");
         dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
         dataMap.add(USERNAME, configuration.userName);
         dataMap.add(PASSWORD, configuration.password);
-        String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
-        req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
-        req.content(new StringContentProvider(urlEncodedData));
+        req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
+                UrlEncoded.encode(dataMap, Charset.defaultCharset(), false), Charset.defaultCharset()));
         try {
             ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             // Status needs to be 302 - Response is stored in Header
             if (contentResponse.getStatus() == 302) {
-                HttpFields fields = contentResponse.getHeaders();
-                HttpField field = fields.getField(HttpHeader.LOCATION);
+                final HttpFields fields = contentResponse.getHeaders();
+                final HttpField field = fields.getField(HttpHeader.LOCATION);
                 tokenFromUrl(field.getValue());
             } else if (contentResponse.getStatus() == 200) {
-                AuthResponse authResponse = Converter.getGson().fromJson(contentResponse.getContentAsString(),
-                        AuthResponse.class);
-                if (authResponse != null) {
-                    token.setToken(authResponse.accessToken);
-                    token.setType(authResponse.tokenType);
-                    token.setExpiration(authResponse.expiresIn);
+                final String stringContent = contentResponse.getContentAsString();
+                if (stringContent != null && !stringContent.isEmpty()) {
+                    try {
+                        final AuthResponse authResponse = Converter.getGson().fromJson(stringContent,
+                                AuthResponse.class);
+                        if (authResponse != null) {
+                            token.setToken(authResponse.accessToken);
+                            token.setType(authResponse.tokenType);
+                            token.setExpiration(authResponse.expiresIn);
+                        } else {
+                            logger.debug("not an Authorization response: {}", stringContent);
+                        }
+                    } catch (JsonSyntaxException jse) {
+                        logger.debug("Authorization response unparsable: {}", stringContent);
+                    }
+                } else {
+                    logger.debug("Authorization response has no content");
                 }
             } else {
                 logger.debug("Authorization status {} reason {}", contentResponse.getStatus(),
@@ -293,7 +297,7 @@ public class ConnectedDriveProxy {
     }
 
     void tokenFromUrl(String encodedUrl) {
-        MultiMap<String> tokenMap = new MultiMap<String>();
+        final MultiMap<String> tokenMap = new MultiMap<String>();
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         tokenMap.forEach((key, value) -> {
             if (value.size() > 0) {
