@@ -363,7 +363,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateChargeProfileFromContent(String content) {
-        ChargeProfileWrapper.fromJson(content).ifPresent(wrapper -> updateChargeProfile(wrapper));
+        ChargeProfileWrapper.fromJson(content).ifPresent(this::updateChargeProfile);
     }
 
     protected void updateChargeProfile(ChargeProfileWrapper wrapper) {

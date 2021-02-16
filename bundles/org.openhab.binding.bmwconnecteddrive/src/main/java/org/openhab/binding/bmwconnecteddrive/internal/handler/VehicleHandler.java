@@ -177,28 +177,28 @@ public class VehicleHandler extends VehicleChannelHandler {
             // Executing Remote Services
             if (command instanceof StringType) {
                 String serviceCommand = ((StringType) command).toFullString();
-                if (remote.isPresent()) {
+                remote.ifPresent(remot -> {
                     switch (serviceCommand) {
                         case REMOTE_SERVICE_LIGHT_FLASH:
-                            remote.get().execute(RemoteService.LIGHT_FLASH);
+                            remot.execute(RemoteService.LIGHT_FLASH);
                             break;
                         case REMOTE_SERVICE_AIR_CONDITIONING:
-                            remote.get().execute(RemoteService.AIR_CONDITIONING);
+                            remot.execute(RemoteService.AIR_CONDITIONING);
                             break;
                         case REMOTE_SERVICE_DOOR_LOCK:
-                            remote.get().execute(RemoteService.DOOR_LOCK);
+                            remot.execute(RemoteService.DOOR_LOCK);
                             break;
                         case REMOTE_SERVICE_DOOR_UNLOCK:
-                            remote.get().execute(RemoteService.DOOR_UNLOCK);
+                            remot.execute(RemoteService.DOOR_UNLOCK);
                             break;
                         case REMOTE_SERVICE_HORN:
-                            remote.get().execute(RemoteService.HORN);
+                            remot.execute(RemoteService.HORN);
                             break;
                         case REMOTE_SERVICE_VEHICLE_FINDER:
-                            remote.get().execute(RemoteService.VEHICLE_FINDER);
+                            remot.execute(RemoteService.VEHICLE_FINDER);
                             break;
                         case REMOTE_SERVICE_CHARGE_NOW:
-                            remote.get().execute(RemoteService.CHARGE_NOW);
+                            remot.execute(RemoteService.CHARGE_NOW);
                             break;
                         case REMOTE_SERVICE_CHARGING_CONTROL:
                             sendChargeProfile(chargeProfileEdit);
@@ -207,11 +207,11 @@ public class VehicleHandler extends VehicleChannelHandler {
                             logger.info("Remote service execution {} unknown", serviceCommand);
                             break;
                     }
-                }
+                });
             }
         } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
             // Image Change
-            if (configuration.isPresent()) {
+            configuration.ifPresent(config -> {
                 if (command instanceof StringType) {
                     if (channelUID.getIdWithoutGroup().equals(IMAGE_VIEWPORT)) {
                         String newViewport = command.toString();
@@ -219,7 +219,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                             if (!imageProperties.viewport.equals(newViewport)) {
                                 imageProperties = new ImageProperties(newViewport, imageProperties.size);
                                 imageCache = Optional.empty();
-                                proxy.get().requestImage(configuration.get(), imageProperties, imageCallback);
+                                proxy.ifPresent(prox -> prox.requestImage(config, imageProperties, imageCallback));
                             }
                         }
                         updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport));
@@ -233,14 +233,14 @@ public class VehicleHandler extends VehicleChannelHandler {
                                 if (imageProperties.size != newImageSize) {
                                     imageProperties = new ImageProperties(imageProperties.viewport, newImageSize);
                                     imageCache = Optional.empty();
-                                    proxy.get().requestImage(configuration.get(), imageProperties, imageCallback);
+                                    proxy.ifPresent(prox -> prox.requestImage(config, imageProperties, imageCallback));
                                 }
                             }
                         }
                         updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE, new DecimalType(newImageSize));
                     }
                 }
-            }
+            });
         } else if (CHANNEL_GROUP_DESTINATION.equals(group)) {
             if (command instanceof StringType) {
                 int index = Converter.getIndex(command.toFullString());
@@ -286,8 +286,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                     BridgeHandler handler = bridge.getHandler();
                     if (handler != null) {
                         bridgeHandler = Optional.of(((ConnectedDriveBridgeHandler) handler));
-                        remote = ((ConnectedDriveBridgeHandler) handler).getProxy()
-                                .map(proxy -> proxy.getRemoteServiceHandler(this));
+                        proxy = ((ConnectedDriveBridgeHandler) handler).getProxy();
+                        remote = proxy.map(prox -> prox.getRemoteServiceHandler(this));
                     } else {
                         logger.debug("Bridge Handler null");
                     }
@@ -316,21 +316,19 @@ public class VehicleHandler extends VehicleChannelHandler {
     }
 
     private void startSchedule(int interval) {
-        if (refreshJob.isPresent()) {
-            if (refreshJob.get().isCancelled()) {
+        refreshJob.ifPresentOrElse(job -> {
+            if (job.isCancelled()) {
                 refreshJob = Optional
                         .of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
             } // else - scheduler is already running!
-        } else {
+        }, () -> {
             refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
-        }
+        });
     }
 
     @Override
     public void dispose() {
-        if (refreshJob.isPresent()) {
-            refreshJob.get().cancel(true);
-        }
+        refreshJob.ifPresent(job -> job.cancel(true));
     }
 
     public void getData() {
