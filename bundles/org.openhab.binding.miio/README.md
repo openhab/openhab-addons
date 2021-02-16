@@ -173,11 +173,12 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 260 different models.
+Currently the miio binding supports more than 270 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
 | AUX Smart Air Conditioner    | miio:unsupported | aux.aircondition.v1    | No        |            |
+| Qingping Air Monitor Lite    | miio:basic       | [cgllc.airm.cgdn1](#cgllc-airm-cgdn1) | Yes       | Identified manual actions for execution<br />`action{"did":"settings-set-start-time","siid":9,"aiid":2,"in":[2.0]}`<br />`action{"did":"settings-set-end-time","siid":9,"aiid":3,"in":[3.0]}`<br />`action{"did":"settings-set-frequency","siid":9,"aiid":4,"in":[4.0]}`<br />`action{"did":"settings-set-screen-off","siid":9,"aiid":5,"in":[5.0]}`<br />`action{"did":"settings-set-device-off","siid":9,"aiid":6,"in":[6.0]}`<br />`action{"did":"settings-set-temp-unit","siid":9,"aiid":7,"in":[7.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Multifunction Air Monitor | miio:basic       | [cgllc.airmonitor.b1](#cgllc-airmonitor-b1) | Yes       |            |
 | Qingping Air Monitor         | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes       |            |
 | Mi Universal Remote          | miio:unsupported | chuangmi.ir.v2         | No        |            |
@@ -493,6 +494,27 @@ All devices have available the following channels (marked as advanced) besides t
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
 
+
+### Qingping Air Monitor Lite (<a name="cgllc-airm-cgdn1">cgllc.airm.cgdn1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  |            |
+| relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
+| pm2_5_density        | Number               | Environment - PM2 5 Density              |            |
+| pm10_density         | Number               | Environment - PM10 Density               |            |
+| temperature          | Number:Temperature   | Environment - Temperature                |            |
+| co2_density          | Number:Dimensionless | Environment - CO2 Density                |            |
+| battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping ["1"="Charging","2"="Not charging","3"="Not chargeable"] |
+| voltage              | Number               | Battery - Voltage                        |            |
+| mac                  | String               | Mac - Mac                                |            |
+| start_time           | Number               | Settings - Start Time                    |            |
+| end_time             | Number               | Settings - End Time                      |            |
+| monitoring_frequency | Number:Time          | Settings - Monitoring Frequency          | Value mapping ["1"="Second","60"="Second","300"="Second","600"="Second","0"="Null"] |
+| screen_off           | Number:Time          | Settings - Screen Off                    | Value mapping ["15"="Second","30"="Second","60"="Second","300"="Second","0"="Null"] |
+| device_off           | Number:Time          | Settings - Device Off                    | Value mapping ["15"="Minute","30"="Minute","60"="Minute","0"="Null"] |
+| tempature_unit       | String               | Settings - Tempature Unit                |            |
 
 ### Mi Multifunction Air Monitor (<a name="cgllc-airmonitor-b1">cgllc.airmonitor.b1</a>) Channels
 
@@ -2663,7 +2685,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
 | brightness           | Dimmer               | Brightness                               |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               |            |
@@ -2759,7 +2781,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
 | brightness           | Dimmer               | Brightness                               |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               |            |
@@ -4557,6 +4579,30 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Number  | actions#segment                   | Room Clean  (enter room #) |
 
 
+
+### Qingping Air Monitor Lite (cgllc.airm.cgdn1) item file lines
+
+note: Autogenerated example. Replace the id (airm) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_airm "Qingping Air Monitor Lite" <status>
+String actions "Actions" (G_airm) {channel="miio:basic:airm:actions"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airm) {channel="miio:basic:airm:relative_humidity"}
+Number pm2_5_density "Environment - PM2 5 Density" (G_airm) {channel="miio:basic:airm:pm2_5_density"}
+Number pm10_density "Environment - PM10 Density" (G_airm) {channel="miio:basic:airm:pm10_density"}
+Number:Temperature temperature "Environment - Temperature" (G_airm) {channel="miio:basic:airm:temperature"}
+Number:Dimensionless co2_density "Environment - CO2 Density" (G_airm) {channel="miio:basic:airm:co2_density"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_airm) {channel="miio:basic:airm:battery_level"}
+Number charging_state "Battery - Charging State" (G_airm) {channel="miio:basic:airm:charging_state"}
+Number voltage "Battery - Voltage" (G_airm) {channel="miio:basic:airm:voltage"}
+String mac "Mac - Mac" (G_airm) {channel="miio:basic:airm:mac"}
+Number start_time "Settings - Start Time" (G_airm) {channel="miio:basic:airm:start_time"}
+Number end_time "Settings - End Time" (G_airm) {channel="miio:basic:airm:end_time"}
+Number:Time monitoring_frequency "Settings - Monitoring Frequency" (G_airm) {channel="miio:basic:airm:monitoring_frequency"}
+Number:Time screen_off "Settings - Screen Off" (G_airm) {channel="miio:basic:airm:screen_off"}
+Number:Time device_off "Settings - Device Off" (G_airm) {channel="miio:basic:airm:device_off"}
+String tempature_unit "Settings - Tempature Unit" (G_airm) {channel="miio:basic:airm:tempature_unit"}
+```
 
 ### Mi Multifunction Air Monitor (cgllc.airmonitor.b1) item file lines
 
@@ -7155,7 +7201,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -7272,7 +7318,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight Crystal Pendant Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
