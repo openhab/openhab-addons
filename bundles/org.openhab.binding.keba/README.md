@@ -123,11 +123,19 @@ Receive port = UDP 7090
 This binding is providing the server
 UDP Port 7090 needs to be available on the openHAB server
 
-In order to enable the UDP port 7090 on the Keba station with all its features, `DIP switch 1.3` of Keba P30 must be `ON`.
-With `DIP 1.3 OFF` only ident-data can be read (`i` and `report 1`) but not the other parameters as well as the commands needed for the write access.
+In order to enable the UDP port 7090 on the Keba station with all its features, `DIP switch 1.3` must be `ON`.
+With `DIP switch 1.3 OFF` only ident-data can be read (`i` and `report 1`) but not the other parameters as well as the commands needed for the write access.
 After setting the DIP switch, you need to `power OFF` and `ON` the station. SW-reset via WebGUI seems not to be sufficient in order to apply the new configuration.
 The right configuration can be validated as follows:
 - WebGUI DSW Settings:
   - `DIP 1.3 | ON | UDP interface (SmartHome)`
 - UDP response of `report 1`:
   - "DIP-Sw1" "0x20" Bit is set (enable at least `DEBUG` log-level for the binding)
+
+### Supported stations
+
+- KeContact P20 charging station with network connection (LSA+ socket)
+  - Product code: `KC-P20-xxxxxx2x-xxx` or `KC-P20-xxxxxx3x-xxx`
+  - Firmware version: 2.5 or higher
+- KeContact P30 charging station (c- or x-series) or BMW wallbox
+  - Firmware version 3.05 of higher
