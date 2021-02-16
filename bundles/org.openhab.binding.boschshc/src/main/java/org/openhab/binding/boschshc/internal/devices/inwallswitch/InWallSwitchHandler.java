@@ -21,8 +21,9 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.inwallswitch.dto.PowerMeterState;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.powermeter.PowerMeterService;
+import org.openhab.binding.boschshc.internal.services.powermeter.dto.PowerMeterServiceState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchService;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
@@ -32,10 +33,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-
-import com.google.gson.JsonElement;
 
 /**
  * Represents Bosch in-wall switches.
@@ -57,46 +55,32 @@ public class InWallSwitchHandler extends BoschSHCHandler {
         super.initializeServices();
 
         this.registerService(this.powerSwitchService, this::updateChannels, List.of(CHANNEL_POWER_SWITCH));
+        this.createService(PowerMeterService::new, this::updateChannels,
+                List.of(CHANNEL_POWER_CONSUMPTION, CHANNEL_ENERGY_CONSUMPTION));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
 
-        logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
-
-        if (command instanceof RefreshType) {
-            switch (channelUID.getId()) {
-                case CHANNEL_POWER_CONSUMPTION: {
-                    PowerMeterState state = this.getState("PowerMeter", PowerMeterState.class);
-                    if (state != null) {
-                        updatePowerMeterState(state);
-                    }
-                    break;
+        switch (channelUID.getId()) {
+            case CHANNEL_POWER_SWITCH:
+                if (command instanceof OnOffType) {
+                    updatePowerSwitchState((OnOffType) command);
                 }
-                case CHANNEL_ENERGY_CONSUMPTION:
-                    // Nothing to do here, since the same update is received from POWER_CONSUMPTION
-                    break;
-                default:
-                    logger.warn("Received refresh request for unsupported channel: {}", channelUID);
-            }
-        } else {
-            switch (channelUID.getId()) {
-                case CHANNEL_POWER_SWITCH:
-                    if (command instanceof OnOffType) {
-                        updatePowerSwitchState((OnOffType) command);
-                    }
-                    break;
-            }
+                break;
         }
     }
 
-    void updatePowerMeterState(PowerMeterState state) {
-        logger.debug("Parsed power meter state of {}: energy {} - power {}", this.getBoschID(), state.energyConsumption,
-                state.energyConsumption);
-
-        updateState(CHANNEL_POWER_CONSUMPTION, new QuantityType<Power>(state.powerConsumption, Units.WATT));
-        updateState(CHANNEL_ENERGY_CONSUMPTION, new QuantityType<Energy>(state.energyConsumption, Units.WATT_HOUR));
+    /**
+     * Updates the channels which are linked to the {@link PowerMeterService} of the device.
+     * 
+     * @param state Current state of {@link PowerMeterService}.
+     */
+    private void updateChannels(PowerMeterServiceState state) {
+        super.updateState(CHANNEL_POWER_CONSUMPTION, new QuantityType<Power>(state.powerConsumption, Units.WATT));
+        super.updateState(CHANNEL_ENERGY_CONSUMPTION,
+                new QuantityType<Energy>(state.energyConsumption, Units.WATT_HOUR));
     }
 
     /**
@@ -113,21 +97,5 @@ public class InWallSwitchHandler extends BoschSHCHandler {
         PowerSwitchServiceState state = new PowerSwitchServiceState();
         state.switchState = PowerSwitchState.valueOf(command.toFullString());
         this.updateServiceState(this.powerSwitchService, state);
-    }
-
-    @Override
-    public void processUpdate(String id, JsonElement state) {
-        super.processUpdate(id, state);
-
-        logger.debug("in-wall switch: received update: ID {} state {}", id, state);
-
-        if (id.equals("PowerMeter")) {
-            PowerMeterState powerMeterState = GSON.fromJson(state, PowerMeterState.class);
-            if (powerMeterState == null) {
-                logger.warn("Received unknown update in in-wall switch: {}", state);
-            } else {
-                updatePowerMeterState(powerMeterState);
-            }
-        }
     }
 }

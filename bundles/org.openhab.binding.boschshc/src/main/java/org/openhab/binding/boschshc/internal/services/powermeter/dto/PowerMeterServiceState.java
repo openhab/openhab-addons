@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.inwallswitch.dto;
+package org.openhab.binding.boschshc.internal.services.powermeter.dto;
 
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
- * PowerMeterState
+ * State for {@link PowerMeterService}
  *
  * @author Stefan Kästle - Initial contribution
  */
-public class PowerMeterState extends BoschSHCServiceState {
+public class PowerMeterServiceState extends BoschSHCServiceState {
 
-    public PowerMeterState() {
+    public PowerMeterServiceState() {
         super("powerMeterState");
     }
 
