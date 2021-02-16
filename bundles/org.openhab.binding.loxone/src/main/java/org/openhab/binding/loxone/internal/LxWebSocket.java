@@ -78,6 +78,7 @@ public class LxWebSocket {
 
     private Session session;
     private String fwVersion;
+    private boolean httpsSession = false;
     private ScheduledFuture<?> timeout;
     private LxWsBinaryHeader header;
     private LxWsSecurity security;
@@ -455,7 +456,18 @@ public class LxWebSocket {
      * @param fwVersion Miniserver firmware version
      */
     void setFwVersion(String fwVersion) {
+        logger.debug("[{}] Firmware version: {}", debugId, fwVersion);
         this.fwVersion = fwVersion;
+    }
+
+    /**
+     * Sets information if session is over HTTPS or HTTP protocol
+     *
+     * @param httpsSession true when HTTPS session
+     */
+    void setHttps(boolean httpsSession) {
+        logger.debug("[{}] HTTPS session: {}", debugId, httpsSession);
+        this.httpsSession = httpsSession;
     }
 
     /**
@@ -536,7 +548,7 @@ public class LxWebSocket {
         try {
             if (session != null) {
                 String encrypted;
-                if (encrypt) {
+                if (encrypt && !httpsSession) {
                     encrypted = security.encrypt(command);
                     logger.debug("[{}] Sending encrypted string: {}", debugId, command);
                     logger.debug("[{}] Encrypted: {}", debugId, encrypted);
@@ -580,7 +592,9 @@ public class LxWebSocket {
         }
         logger.debug("[{}] Response: {}", debugId, message.trim());
         String control = resp.getCommand().trim();
-        control = security.decryptControl(control);
+        if (!httpsSession) {
+            control = security.decryptControl(control);
+        }
         // for some reason the responses to some commands starting with jdev begin with dev, not jdev
         // this seems to be a bug in the Miniserver
         if (control.startsWith("dev/")) {
