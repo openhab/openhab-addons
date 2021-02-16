@@ -289,10 +289,12 @@ Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:cc
 
 The GATEWAY-EXTRAS is a virtual device which contains a switch to reload all values from all devices and also a switch to put the gateway in the install mode to add new devices.
 If the gateway supports variables and scripts, you can handle them with this device too.
-The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
 
-**Example:** bridgeId=ccu, type=GATEWAY-EXTRAS-CCU
-Address: fixed GWE00000000
+The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
+Example: bridgeId=**ccu** -> type=GATEWAY-EXTRAS-**CCU**
+
+The address of the virtual device must be the default value `GWE00000000`.
+Usage of a custom ID is not supported.
 
 ### RELOAD_ALL_FROM_GATEWAY
 
