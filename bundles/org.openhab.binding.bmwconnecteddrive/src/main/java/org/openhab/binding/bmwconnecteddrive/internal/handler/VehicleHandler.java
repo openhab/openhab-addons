@@ -497,9 +497,9 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    public void updateRemoteExecutionStatus(@Nullable String service, String status) {
+    public void updateRemoteExecutionStatus(@Nullable String service, @Nullable String status) {
         if (RemoteService.CHARGING_CONTROL.toString().equals(service)
-                && ExecutionState.EXECUTED.toString().equals(status)) {
+                && ExecutionState.EXECUTED.name().equals(status)) {
             saveChargeProfileSent();
         }
         updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE, StringType.valueOf(Converter.toTitleCase(

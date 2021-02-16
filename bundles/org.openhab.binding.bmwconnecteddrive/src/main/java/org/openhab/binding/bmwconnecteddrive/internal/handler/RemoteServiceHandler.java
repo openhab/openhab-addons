@@ -19,13 +19,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link RemoteServiceHandler} handles executions of remote services towards your Vehicle
@@ -47,23 +48,12 @@ public class RemoteServiceHandler implements StringResponseCallback {
     private int counter = 0;
 
     public enum ExecutionState {
-        READY("READY"),
-        INITIATED("INITIATED"),
-        PENDING("PENDING"),
-        DELIVERED("DELIVERED"),
-        EXECUTED("EXECUTED"),
-        ERROR("ERROR");
-
-        private final String state;
-
-        ExecutionState(String s) {
-            state = s;
-        }
-
-        @Override
-        public String toString() {
-            return state;
-        }
+        READY,
+        INITIATED,
+        PENDING,
+        DELIVERED,
+        EXECUTED,
+        ERROR,
     }
 
     public enum RemoteService {
@@ -146,29 +136,31 @@ public class RemoteServiceHandler implements StringResponseCallback {
     @Override
     public void onResponse(@Nullable String result) {
         if (result != null) {
-            ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);
-            if (esc != null) {
-                ExecutionStatus execStatus = esc.executionStatus;
-                handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
-                if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
-                    handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
-                } else {
-                    // refresh loop ends - update of status handled in the normal refreshInterval. Earlier update
-                    // doesn't
-                    // show better results!
-                    reset();
+            try {
+                ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);
+                if (esc != null && esc.executionStatus != null) {
+                    String status = esc.executionStatus.status;
+                    handler.updateRemoteExecutionStatus(serviceExecuting.get(), status);
+                    if (ExecutionState.EXECUTED.name().equals(status)) {
+                        // refresh loop ends - update of status handled in the normal refreshInterval. Earlier update
+                        // doesn't
+                        // show better results!
+                        reset();
+                        return;
+                    }
                 }
+            } catch (JsonSyntaxException jse) {
+                logger.debug("RemoteService response is unparseable: {} {}", result, jse.getMessage());
             }
-        } else {
-            // schedule even if no result is present until retries exceeded
-            handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
         }
+        // schedule even if no result is present until retries exceeded
+        handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
     }
 
     @Override
     public void onError(NetworkError error) {
-        handler.updateRemoteExecutionStatus(serviceExecuting.get(), new StringBuilder(ExecutionState.ERROR.toString())
-                .append(Constants.SPACE).append(Integer.toString(error.status)).toString());
+        handler.updateRemoteExecutionStatus(serviceExecuting.get(),
+                ExecutionState.ERROR.name() + Constants.SPACE + Integer.toString(error.status));
         reset();
     }
 

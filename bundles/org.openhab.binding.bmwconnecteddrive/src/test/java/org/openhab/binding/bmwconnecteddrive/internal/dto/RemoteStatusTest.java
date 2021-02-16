@@ -38,6 +38,6 @@ public class RemoteStatusTest {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/remote-services/pending.json");
         ExecutionStatusContainer esc = GSON.fromJson(resource1, ExecutionStatusContainer.class);
         ExecutionStatus execStatus = esc.executionStatus;
-        assertEquals(ExecutionState.PENDING.toString(), execStatus.status, "Status");
+        assertEquals(ExecutionState.PENDING.name(), execStatus.status, "Status");
     }
 }

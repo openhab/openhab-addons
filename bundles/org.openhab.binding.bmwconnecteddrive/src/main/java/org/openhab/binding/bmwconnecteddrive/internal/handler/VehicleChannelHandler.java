@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
@@ -91,14 +92,14 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     // Charging
     protected static class TimedChannel {
-        TimedChannel(final String time, final String timer, final boolean hasDays) {
+        TimedChannel(final String time, @Nullable final String timer, final boolean hasDays) {
             this.time = time;
             this.timer = timer;
             this.hasDays = hasDays;
         }
 
         final String time;
-        final String timer;
+        final @Nullable String timer;
         final boolean hasDays;
     }
 
