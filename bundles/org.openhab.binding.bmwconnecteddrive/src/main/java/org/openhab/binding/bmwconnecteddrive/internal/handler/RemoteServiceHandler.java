@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
+import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
@@ -89,9 +90,9 @@ public class RemoteServiceHandler implements StringResponseCallback {
         handler = vehicleHandler;
         proxy = connectedDriveProxy;
         if (handler.getConfiguration().isPresent()) {
-            serviceExecutionAPI = proxy.baseUrl + handler.getConfiguration().get().vin + proxy.serviceExecutionAPI;
-            serviceExecutionStateAPI = proxy.baseUrl + handler.getConfiguration().get().vin
-                    + proxy.serviceExecutionStateAPI;
+            final VehicleConfiguration config = handler.getConfiguration().get();
+            serviceExecutionAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionAPI;
+            serviceExecutionStateAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionStateAPI;
         } else {
             serviceExecutionAPI = Constants.INVALID;
             serviceExecutionStateAPI = Constants.INVALID;
