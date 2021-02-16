@@ -73,13 +73,13 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
         configuration = Optional.of(getConfigAs(ConnectedDriveConfiguration.class));
-        if (configuration.isPresent()) {
-            proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, configuration.get()));
+        configuration.ifPresentOrElse(config -> {
+            proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, config));
             // give the system some time to create all predefined Vehicles
             initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS));
-        } else {
+        }, () -> {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        }
+        });
     }
 
     @Override
@@ -92,9 +92,8 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     }
 
     public String getDiscoveryFingerprint() {
-        if (troubleshootFingerprint.isPresent()) {
-            VehiclesContainer container = Converter.getGson().fromJson(troubleshootFingerprint.get(),
-                    VehiclesContainer.class);
+        return troubleshootFingerprint.map(fingerprint -> {
+            VehiclesContainer container = Converter.getGson().fromJson(fingerprint, VehiclesContainer.class);
             if (container != null) {
                 if (container.vehicles != null) {
                     if (container.vehicles.isEmpty()) {
@@ -115,13 +114,11 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                         });
                         return Converter.getGson().toJson(container);
                     }
-                } else {
-                    // Vehicles is empty so deliver fingerprint as it is
-                    return troubleshootFingerprint.get();
                 }
             }
-        }
-        return Constants.INVALID;
+            // Not a VehiclesContainer or Vehicles is empty so deliver fingerprint as it is
+            return fingerprint;
+        }).orElse(Constants.INVALID);
     }
 
     private void logFingerPrint() {
@@ -139,14 +136,12 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         boolean firstResponse = troubleshootFingerprint.isEmpty();
         if (response != null) {
             updateStatus(ThingStatus.ONLINE);
-            if (discoveryService.isEmpty()) {
-                troubleshootFingerprint = Optional.of(response);
-            } else {
+            troubleshootFingerprint = discoveryService.map(discovery -> {
                 try {
                     VehiclesContainer container = Converter.getGson().fromJson(response, VehiclesContainer.class);
                     if (container != null) {
                         if (container.vehicles != null) {
-                            discoveryService.get().onResponse(container);
+                            discovery.onResponse(container);
                             container.vehicles.forEach(entry -> {
                                 entry.vin = ANONYMOUS;
                                 entry.breakdownNumber = ANONYMOUS;
@@ -161,12 +156,13 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                                 }
                             });
                         }
+                        return Converter.getGson().toJson(container);
                     }
-                    troubleshootFingerprint = Optional.of(Converter.getGson().toJson(container));
                 } catch (JsonSyntaxException jse) {
-                    troubleshootFingerprint = Optional.of(response);
                 }
-            }
+                // Unparseable or not a VehiclesContainer:
+                return response;
+            });
         } else {
             troubleshootFingerprint = Optional.of(Constants.EMPTY_VEHICLES);
         }
