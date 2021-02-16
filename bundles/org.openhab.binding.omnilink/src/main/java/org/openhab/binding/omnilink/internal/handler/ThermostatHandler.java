@@ -157,22 +157,22 @@ public class ThermostatHandler extends AbstractOmnilinkStatusHandler<ExtendedThe
                 break;
             case CHANNEL_THERMO_HEAT_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_LOW_POINT.getNumber(),
-                        temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).intValue()),
+                        temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_THERMO_COOL_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_HIGH_POINT.getNumber(),
-                        temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).intValue()),
+                        temperatureFormat.get().formatToOmni(((QuantityType<Temperature>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_THERMO_HUMIDIFY_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HUMDIFY_POINT.getNumber(),
-                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).intValue()),
+                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_THERMO_DEHUMIDIFY_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_DEHUMIDIFY_POINT.getNumber(),
-                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).intValue()),
+                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             default:

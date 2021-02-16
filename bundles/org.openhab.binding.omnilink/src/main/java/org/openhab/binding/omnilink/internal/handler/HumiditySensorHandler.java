@@ -113,12 +113,12 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<Extende
         switch (channelUID.getId()) {
             case CHANNEL_AUX_LOW_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_LOW_POINT.getNumber(),
-                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).intValue()),
+                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             case CHANNEL_AUX_HIGH_SETPOINT:
                 sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_HIGH_POINT.getNumber(),
-                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).intValue()),
+                        TemperatureFormat.FAHRENHEIT.formatToOmni(((QuantityType<Dimensionless>) command).floatValue()),
                         thingID);
                 break;
             default:

@@ -33,7 +33,7 @@ public enum TemperatureFormat {
         }
 
         @Override
-        public int formatToOmni(int celsius) {
+        public int formatToOmni(float celsius) {
             return MessageUtils.CToOmni(celsius);
         }
     },
@@ -44,7 +44,7 @@ public enum TemperatureFormat {
         }
 
         @Override
-        public int formatToOmni(int fahrenheit) {
+        public int formatToOmni(float fahrenheit) {
             return MessageUtils.FtoOmni(fahrenheit);
         }
     };
@@ -69,7 +69,7 @@ public enum TemperatureFormat {
      * @param format Number in the current format.
      * @return Omni formatted number.
      */
-    public abstract int formatToOmni(int format);
+    public abstract int formatToOmni(float format);
 
     /**
      * Get the number which identifies this format as defined by the omniprotocol.
