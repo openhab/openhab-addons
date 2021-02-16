@@ -143,7 +143,7 @@ public class ChargeProfileWrapper {
     }
 
     public @Nullable String getMode() {
-        return mode.map(m -> m.name()).get();
+        return mode.map(m -> m.name()).orElse(null);
     }
 
     public void setMode(final @Nullable String mode) {
@@ -159,7 +159,7 @@ public class ChargeProfileWrapper {
     }
 
     public @Nullable String getPreference() {
-        return preference.map(pref -> pref.name()).get();
+        return preference.map(pref -> pref.name()).orElse(null);
     }
 
     public void setPreference(final @Nullable String preference) {
