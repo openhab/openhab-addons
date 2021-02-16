@@ -46,7 +46,7 @@ import com.google.gson.Gson;
  *
  */
 public class Communicator {
-    private final Duration COMMUNICATION_MARGIN = Duration.ofSeconds(5);
+    private final Duration COMMUNICATION_TIMEOUT = Duration.ofSeconds(5);
 
     private final Logger logger = LoggerFactory.getLogger(Communicator.class);
 
@@ -75,6 +75,7 @@ public class Communicator {
         logger.debug("Opening connection to device for polling");
 
         try (Socket socket = new Socket(ipAddress, VentaAirBindingConstants.PORT)) {
+            socket.setSoTimeout((int) COMMUNICATION_TIMEOUT.toMillis());
             InputStream input = socket.getInputStream();
             OutputStream output = socket.getOutputStream();
 
@@ -83,12 +84,12 @@ public class Communicator {
             logger.debug("Sending request data message (bytes): [{}]", HexUtils.bytesToHex(dataToSend, ", "));
             output.write(dataToSend);
 
-            long timeOut = System.currentTimeMillis() + COMMUNICATION_MARGIN.toMillis();
+            logger.debug("Data was sent to outputstream");
 
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
             String reply = "";
-            while (((reply = br.readLine()) != null) && System.currentTimeMillis() < timeOut) {
-                if (reply != null && reply.startsWith("{")) {
+            while ((reply = br.readLine()) != null) {
+                if (reply.startsWith("{")) {
                     // remove padding byte(s) after JSON data
                     String data = String.valueOf(reply.toCharArray(), 0, reply.length() - 1);
                     logger.debug("Got Data: {}", data);
