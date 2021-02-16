@@ -117,16 +117,34 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        this.config = getConfigAs(BoschSHCConfiguration.class);
+        var config = this.config = getConfigAs(BoschSHCConfiguration.class);
 
+        String deviceId = config.id;
+        if (deviceId == null || deviceId.isEmpty()) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.empty-device-id");
+            return;
+        }
+
+        // Try to get device info to make sure the device exists
+        try {
+            var bridgeHandler = this.getBridgeHandler();
+            var info = bridgeHandler.getDeviceInfo(deviceId);
+            logger.trace("Device initialized:\n%s", GSON.toJson(info));
+        } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        // Initialize device services
         try {
             this.initializeServices();
-
-            // Mark immediately as online - if the bridge is online, the thing is too.
-            this.updateStatus(ThingStatus.ONLINE);
         } catch (BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
         }
+
+        this.updateStatus(ThingStatus.ONLINE);
     }
 
     /**

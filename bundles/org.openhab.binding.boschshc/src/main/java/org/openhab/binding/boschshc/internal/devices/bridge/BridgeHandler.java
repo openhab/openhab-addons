@@ -397,6 +397,45 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    public Device getDeviceInfo(String deviceId)
+            throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
+        @Nullable
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            throw new BoschSHCException("HTTP client not initialized");
+        }
+
+        String url = httpClient.getBoschSmartHomeUrl(String.format("devices/%s", deviceId));
+        Request request = httpClient.createRequest(url, GET);
+
+        ContentResponse contentResponse = request.send();
+
+        String content = contentResponse.getContentAsString();
+
+        int statusCode = contentResponse.getStatus();
+        if (statusCode != 200) {
+            JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
+            if (errorResponse != null && JsonRestExceptionResponse.isValid(errorResponse)) {
+                if (errorResponse.errorCode.equals(JsonRestExceptionResponse.ENTITY_NOT_FOUND)) {
+                    throw new BoschSHCException("@text/offline.conf-error.invalid-device-id");
+                } else {
+                    throw new BoschSHCException(
+                            String.format("Request for info of device %s failed with status code %d and error code %s",
+                                    deviceId, errorResponse.statusCode, errorResponse.errorCode));
+                }
+            } else {
+                throw new BoschSHCException(String.format("Request for info for device %s failed with status code %d",
+                        deviceId, statusCode));
+            }
+        }
+
+        Device deviceInfo = gson.fromJson(content, Device.class);
+        if (deviceInfo == null || !Device.isValid(deviceInfo)) {
+            throw new BoschSHCException(String.format("Received invalid device info: %s", content));
+        }
+        return deviceInfo;
+    }
+
     /**
      * Query the Bosch Smart Home Controller for the state of the given thing.
      *
