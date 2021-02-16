@@ -6,8 +6,9 @@
 
 	<bridge-type id="portal">
 		<label>SEMS Portal</label>
-		<description>The SEMS Portal is where the data about powerstations is collected online. 
-        Configuration will only work if you have used this account at least once in the portal itsself.</description>
+		<description>The SEMS Portal is where the data about powerstations is collected online.
+			Configuration will only work if
+			you have used this account at least once in the portal itsself.</description>
 
 		<properties>
 			<property name="vendor">GoodWe</property>
@@ -34,21 +35,21 @@
 
 	<thing-type id="station" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="portal" />
+			<bridge-type-ref id="portal"/>
 		</supported-bridge-type-refs>
 
 		<label>Power Station</label>
 		<description>A Power Station is the GoodWe converter that is connected through the internet with the SEMSPortal.</description>
 
 		<channels>
-			<channel id="operational" typeId="operational" />
-			<channel id="lastUpdate" typeId="lastUpdate" />
-			<channel id="currentOutput" typeId="currentOutput" />
-			<channel id="todayTotal" typeId="todayTotal" />
-			<channel id="monthTotal" typeId="monthTotal" />
-			<channel id="overallTotal" typeId="overallTotal" />
-			<channel id="todayIncome" typeId="todayIncome" />
-			<channel id="totalIncome" typeId="totalIncome" />
+			<channel id="operational" typeId="operational"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
+			<channel id="currentOutput" typeId="currentOutput"/>
+			<channel id="todayTotal" typeId="todayTotal"/>
+			<channel id="monthTotal" typeId="monthTotal"/>
+			<channel id="overallTotal" typeId="overallTotal"/>
+			<channel id="todayIncome" typeId="todayIncome"/>
+			<channel id="totalIncome" typeId="totalIncome"/>
 		</channels>
 
 	</thing-type>
