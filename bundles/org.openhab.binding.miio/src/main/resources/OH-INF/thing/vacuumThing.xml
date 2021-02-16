@@ -16,7 +16,6 @@
 			<channel-group id="cleaning" typeId="cleaning"/>
 			<channel-group id="network" typeId="network"/>
 			<channel-group id="info" typeId="info"/>
-
 		</channel-groups>
 
 		<properties>
@@ -105,8 +104,9 @@
 		<channels>
 			<channel id="multi_maps_list" typeId="multi_maps_list"/>
 			<channel id="room_mapping" typeId="room_mapping"/>
-			<channel id="fw_capabilities" typeId="fw_capabilities"/>
+			<channel id="fw_features" typeId="fw_features"/>
 			<channel id="customize_clean_mode" typeId="customize_clean_mode"/>
+			<channel id="carpet_mode" typeId="carpet_mode"/>
 		</channels>
 	</channel-group-type>
 
@@ -389,11 +389,6 @@
 	</channel-type>
 
 	<!-- Info channels -->
-	<channel-type id="carpet_mode" advanced="true">
-		<item-type>String</item-type>
-		<label>Carpet Mode</label>
-	</channel-type>
-	<!-- Info channels -->
 	<channel-type id="fw_features" advanced="true">
 		<item-type>String</item-type>
 		<label>Firmware Features</label>
@@ -404,10 +399,17 @@
 		<label>Room Mapping</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<!-- Info channels -->
 	<channel-type id="multi_maps_list" advanced="true">
 		<item-type>String</item-type>
 		<label>Multi Map List</label>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="carpet_mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Carpet Mode</label>
+	</channel-type>
+	<channel-type id="customize_clean_mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Customized Clean Mode</label>
 	</channel-type>
 </thing:thing-descriptions>

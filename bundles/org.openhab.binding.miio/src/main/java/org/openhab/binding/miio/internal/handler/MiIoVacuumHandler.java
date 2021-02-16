@@ -96,7 +96,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream
             .of(RobotCababilities.SEGMENT_STATUS, RobotCababilities.MAP_STATUS, RobotCababilities.LED_STATUS,
                     RobotCababilities.CARPET_MODE, RobotCababilities.FW_FEATURES, RobotCababilities.ROOM_MAPPING,
-                    RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZED_CLEAN_MODE)
+                    RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZE_CLEAN_MODE)
             .collect(Collectors.toSet()));
 
     private ExpiringCache<String> status;
@@ -299,6 +299,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         safeUpdateState(CHANNEL_IN_CLEANING, statusInfo.getInCleaning());
         safeUpdateState(CHANNEL_MAP_PRESENT, statusInfo.getMapPresent());
         if (statusInfo.getState() != null) {
+            stateId = statusInfo.getState();
             StatusType state = StatusType.getType(statusInfo.getState());
             updateState(CHANNEL_STATE, new StringType(state.getDescription()));
             updateState(CHANNEL_STATE_ID, new DecimalType(statusInfo.getState()));
@@ -479,9 +480,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     sendCommand(cmd.getCommand());
                 }
             }
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             logger.debug("Error while updating '{}': '{}", getThing().getUID().toString(), e.getLocalizedMessage());
         }
     }
@@ -550,6 +549,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case GET_MAP_STATUS:
             case GET_SEGMENT_STATUS:
             case GET_LED_STATUS:
+                updateNumericChannel(response);
+                break;
             case GET_CARPET_MODE:
             case GET_FW_FEATURES:
             case GET_CUSTOMIZED_CLEAN_MODE:
@@ -557,11 +558,39 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case GET_ROOM_MAPPING:
                 for (RobotCababilities cmd : FEATURES_CHANNELS) {
                     if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
-                        updateState(cmd.getChannel(), new StringType(response.getResult().getAsString()));
+                        updateState(cmd.getChannel(), new StringType(response.getResult().toString()));
+                        break;
                     }
                 }
+                break;
             default:
                 break;
+        }
+    }
+
+    private void updateNumericChannel(MiIoSendCommand response) {
+        RobotCababilities capabilityChannel = null;
+        for (RobotCababilities cmd : FEATURES_CHANNELS) {
+            if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
+                capabilityChannel = cmd;
+                break;
+            }
+        }
+        if (capabilityChannel != null) {
+            if (response.getResult().isJsonArray() && response.getResult().getAsJsonArray().get(0).isJsonPrimitive()) {
+                try {
+                    Integer stat = response.getResult().getAsJsonArray().get(0).getAsInt();
+                    updateState(capabilityChannel.getChannel(), new DecimalType(stat));
+                    return;
+                } catch (ClassCastException | IllegalStateException e) {
+                    logger.debug("Could not update numeric channel {} with '{}': {}", capabilityChannel.getChannel(),
+                            response.getResult(), e.getMessage());
+                }
+            } else {
+                logger.debug("Could not update numeric channel {} with '{}': Not in expected format",
+                        capabilityChannel.getChannel(), response.getResult());
+            }
+            updateState(capabilityChannel.getChannel(), UnDefType.UNDEF);
         }
     }
 
