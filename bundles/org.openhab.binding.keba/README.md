@@ -4,12 +4,13 @@ This binding integrates the [Keba KeContact EV Charging Stations](https://www.ke
 
 ## Supported Things
 
-The Keba KeContact P20 and P30 stations are supported by this binding, the thing type id is `kecontact`.
+The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series) are supported by this binding, the thing type id is `kecontact`.
 
 
 ## Thing Configuration
 
-The Keba KeContact P20/30 requires the ip address as the configuration parameter `ipAddress`. Optionally, a refresh interval (in seconds) can be defined as parameter `refreshInterval` that defines the polling of values from the charging station.
+The Keba KeContact P20/30 requires the IP address as the configuration parameter `ipAddress`.
+Optionally, a refresh interval (in seconds) can be defined as parameter `refreshInterval` that defines the polling of values from the charging station.
 
 
 ## Channels
@@ -103,3 +104,49 @@ sitemap demo label="Main Menu"
 			}
 }
 ```
+
+## Troubleshooting
+
+### Enable Verbose Logging
+
+Enable `DEBUG` or `TRACE` (even more verbose) logging for the logger named:
+
+    org.openhab.binding.keba
+
+If everything is working fine, you see the cyclic reception of `report 1`, `2` & `3` from the station. The frequency is according to the `refreshInterval` configuration.
+
+### UDP Ports used
+
+Send port = UDP 7090
+
+The Keba station is the server
+
+Receive port = UDP 7090
+
+This binding is providing the server
+
+UDP Port 7090 needs to be available on the openHAB server
+
+
+In order to enable the UDP port 7090 on the Keba station with all its features, `DIP switch 1.3` must be `ON`.
+
+
+With `DIP switch 1.3 OFF` only ident-data can be read (`i` and `report 1`) but not the other parameters as well as the commands needed for the write access.
+
+
+After setting the DIP switch, you need to `power OFF` and `ON` the station. SW-reset via WebGUI seems not to be sufficient in order to apply the new configuration.
+
+
+The right configuration can be validated as follows:
+- WebGUI DSW Settings:
+  - `DIP 1.3 | ON | UDP interface (SmartHome)`
+- UDP response of `report 1`:
+  - `DIP-Sw1` `0x20` Bit is set (enable at least `DEBUG` log-level for the binding)
+
+### Supported stations
+
+- KeContact P20 charging station with network connection (LSA+ socket)
+  - Product code: `KC-P20-xxxxxx2x-xxx` or `KC-P20-xxxxxx3x-xxx`
+  - Firmware version: 2.5 or higher
+- KeContact P30 charging station (c- or x-series) or BMW wallbox
+  - Firmware version 3.05 or higher

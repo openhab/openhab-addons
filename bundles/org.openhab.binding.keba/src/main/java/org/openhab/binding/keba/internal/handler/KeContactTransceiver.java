@@ -48,11 +48,9 @@ import org.slf4j.LoggerFactory;
 public class KeContactTransceiver {
 
     public static final int LISTENER_PORT_NUMBER = 7090;
-    public static final int REMOTE_PORT_NUMBER = 7090;
     public static final int LISTENING_INTERVAL = 100;
     public static final int BUFFER_SIZE = 1024;
     public static final String IP_ADDRESS = "ipAddress";
-    public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
 
     private DatagramChannel broadcastChannel;
     private SelectionKey broadcastKey;
@@ -439,7 +437,7 @@ public class KeContactTransceiver {
                     }
 
                     InetSocketAddress remoteAddress = new InetSocketAddress(
-                            (String) handler.getConfig().get(IP_ADDRESS), REMOTE_PORT_NUMBER);
+                            (String) handler.getConfig().get(IP_ADDRESS), LISTENER_PORT_NUMBER);
 
                     try {
                         if (logger.isTraceEnabled()) {
@@ -450,7 +448,7 @@ public class KeContactTransceiver {
                         handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
                     } catch (Exception e) {
                         logger.debug("An exception occurred while connecting connecting to '{}:{}' : {}", new Object[] {
-                                (String) handler.getConfig().get(IP_ADDRESS), REMOTE_PORT_NUMBER, e.getMessage() });
+                                (String) handler.getConfig().get(IP_ADDRESS), LISTENER_PORT_NUMBER, e.getMessage() });
                         handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "An exception occurred while connecting");
                     }
