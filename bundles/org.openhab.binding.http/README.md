@@ -23,7 +23,7 @@ It can be extended with different channels.
 | `commandMethod`   | no       |   GET   | Method used for sending commands: `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
 | `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  
-| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`| 
+| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value".| 
 | `ignoreSSLErrors` | no       |  false  | If set to true ignores invalid SSL certificate errors. This is potentially dangerous.|
 
 *Note:* Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
@@ -168,18 +168,4 @@ is transformed to
 
 ```
 http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
-```
-
-## Examples
-
-### `demo.things`
-
-```
-Thing http:url:foo "Foo" [ 
-	baseURL="https://example.com/api/v1/metadata-api/web/metadata", 
-	headers="key1=value1", "key2=value2", "key3=value3",
-	refresh=15] {
-		Channels:
-			Type string : text "Text" [ stateTransformation="JSONPATH:$.metadata.data" ]
-}
 ```
