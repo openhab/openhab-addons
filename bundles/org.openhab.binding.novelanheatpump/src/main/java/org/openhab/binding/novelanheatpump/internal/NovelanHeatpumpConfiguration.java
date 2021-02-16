@@ -20,10 +20,15 @@ package org.openhab.binding.novelanheatpump.internal;
 public class NovelanHeatpumpConfiguration {
 
     /**
-     * Sample configuration parameter. Replace with your own.
+     * Port of the Heatpump API
      */
-    // public String config1;
     public Integer port;
+    /**
+     * Heatpump data fetches interval (in seconds)
+     */
     public Integer refresh;
+    /**
+     * The Network Address of the Heatpump
+     */
     public String address;
 }
