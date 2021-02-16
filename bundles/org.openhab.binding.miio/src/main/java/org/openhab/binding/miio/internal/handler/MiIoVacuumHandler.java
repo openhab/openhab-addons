@@ -22,10 +22,14 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
@@ -88,6 +92,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
+
+    private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream
+            .of(RobotCababilities.SEGMENT_STATUS, RobotCababilities.MAP_STATUS, RobotCababilities.LED_STATUS,
+                    RobotCababilities.CARPET_MODE, RobotCababilities.FW_FEATURES, RobotCababilities.ROOM_MAPPING,
+                    RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZED_CLEAN_MODE)
+            .collect(Collectors.toSet()));
 
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
@@ -464,7 +474,14 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     map.getValue();
                 }
             }
-        } catch (Exception e) {
+            for (RobotCababilities cmd : FEATURES_CHANNELS) {
+                if (isLinked(cmd.getChannel())) {
+                    sendCommand(cmd.getCommand());
+                }
+            }
+        } catch (
+
+        Exception e) {
             logger.debug("Error while updating '{}': '{}", getThing().getUID().toString(), e.getLocalizedMessage());
         }
     }
@@ -530,6 +547,19 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     }
                 }
                 break;
+            case GET_MAP_STATUS:
+            case GET_SEGMENT_STATUS:
+            case GET_LED_STATUS:
+            case GET_CARPET_MODE:
+            case GET_FW_FEATURES:
+            case GET_CUSTOMIZED_CLEAN_MODE:
+            case GET_MULTI_MAP_LIST:
+            case GET_ROOM_MAPPING:
+                for (RobotCababilities cmd : FEATURES_CHANNELS) {
+                    if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
+                        updateState(cmd.getChannel(), new StringType(response.getResult().getAsString()));
+                    }
+                }
             default:
                 break;
         }
