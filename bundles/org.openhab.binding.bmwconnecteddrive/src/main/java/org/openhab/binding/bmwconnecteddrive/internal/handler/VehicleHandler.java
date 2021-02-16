@@ -167,9 +167,8 @@ public class VehicleHandler extends VehicleChannelHandler {
             } else if (CHANNEL_GROUP_STATUS.equals(group)) {
                 vehicleStatusCache.ifPresent(vehicleStatus -> vehicleStatusCallback.onResponse(vehicleStatus));
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
-                chargeProfileEdit.ifPresentOrElse(profileEdit -> updateChargeProfile(profileEdit),
-                        () -> chargeProfileCache
-                                .ifPresent(profileCache -> updateChargeProfileFromContent(profileCache)));
+                chargeProfileEdit.ifPresentOrElse(this::updateChargeProfile,
+                        () -> chargeProfileCache.ifPresent(this::updateChargeProfileFromContent));
             } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
                 imageCache.ifPresent(image -> imageCallback.onResponse(image));
             }
@@ -278,20 +277,19 @@ public class VehicleHandler extends VehicleChannelHandler {
     public void initialize() {
         callbackCounter = Optional.of(new ArrayList<ResponseCallback>());
         updateStatus(ThingStatus.UNKNOWN);
-        configuration = Optional.of(getConfigAs(VehicleConfiguration.class));
-        if (configuration.isPresent()) {
+        final VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
+        if (config != null) {
+            configuration = Optional.of(config);
             scheduler.execute(() -> {
                 Bridge bridge = getBridge();
                 if (bridge != null) {
                     BridgeHandler handler = bridge.getHandler();
                     if (handler != null) {
                         bridgeHandler = Optional.of(((ConnectedDriveBridgeHandler) handler));
-                        proxy = bridgeHandler.get().getProxy();
-                        if (proxy.isPresent()) {
-                            remote = Optional.of(proxy.get().getRemoteServiceHandler(this));
-                        }
+                        remote = ((ConnectedDriveBridgeHandler) handler).getProxy()
+                                .map(proxy -> proxy.getRemoteServiceHandler(this));
                     } else {
-                        logger.debug("Brdige Handler null");
+                        logger.debug("Bridge Handler null");
                     }
                 } else {
                     logger.debug("Bridge null");
@@ -299,21 +297,18 @@ public class VehicleHandler extends VehicleChannelHandler {
 
                 // get Image after init with config values
                 synchronized (imageProperties) {
-                    imageProperties = new ImageProperties(configuration.get().imageViewport,
-                            configuration.get().imageSize);
+                    imageProperties = new ImageProperties(config.imageViewport, config.imageSize);
                 }
-                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT,
-                        StringType.valueOf((configuration.get().imageViewport)));
-                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE,
-                        new DecimalType((configuration.get().imageSize)));
+                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf((config.imageViewport)));
+                updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE, new DecimalType((config.imageSize)));
 
                 // check imperial setting is different to AutoDetect
-                if (!UNITS_AUTODETECT.equals(configuration.get().units)) {
-                    imperial = UNITS_IMPERIAL.equals(configuration.get().units);
+                if (!UNITS_AUTODETECT.equals(config.units)) {
+                    imperial = UNITS_IMPERIAL.equals(config.units);
                 }
 
                 // start update schedule
-                startSchedule(configuration.get().refreshInterval);
+                startSchedule(config.refreshInterval);
             });
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -483,7 +478,7 @@ public class VehicleHandler extends VehicleChannelHandler {
      * @return
      */
     private boolean isSupported(String service) {
-        String services = thing.getProperties().get(Constants.SERVICES_SUPPORTED);
+        final String services = thing.getProperties().get(Constants.SERVICES_SUPPORTED);
         if (services != null) {
             if (services.contains(service)) {
                 return true;
