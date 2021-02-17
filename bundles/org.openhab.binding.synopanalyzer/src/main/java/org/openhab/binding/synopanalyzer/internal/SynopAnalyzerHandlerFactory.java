@@ -18,9 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
 import java.util.Hashtable;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,28 +54,25 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SYNOP);
     private final LocationProvider locationProvider;
-    private final Gson gson;
-    private @NonNullByDefault({}) StationDB stationDB;
+    private final Gson gson = new Gson();
+    private @Nullable StationDB stationDB;
     private @Nullable ServiceRegistration<?> serviceReg;
 
     @Activate
     public SynopAnalyzerHandlerFactory(@Reference LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
-        this.gson = new Gson();
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return THING_SYNOP.equals(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        return thingTypeUID.equals(THING_SYNOP) ? new SynopAnalyzerHandler(thing, locationProvider, stationDB) : null;
+        return supportsThingType(thing.getThingTypeUID()) ? new SynopAnalyzerHandler(thing, locationProvider, stationDB)
+                : null;
     }
 
     @Override
@@ -84,14 +80,14 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
 
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
-                Reader reader = new InputStreamReader(is, "UTF-8");) {
+                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
 
-            stationDB = gson.fromJson(reader, StationDB.class);
-            registerDiscoveryService();
+            StationDB stations = gson.fromJson(reader, StationDB.class);
+            registerDiscoveryService(stations);
+            this.stationDB = stations;
             logger.debug("Discovery service for Synop Stations registered.");
         } catch (IOException e) {
             logger.warn("Unable to read synop stations database");
-            stationDB = new StationDB();
         }
     }
 
@@ -101,8 +97,8 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
         super.deactivate(componentContext);
     }
 
-    private void registerDiscoveryService() {
-        SynopAnalyzerDiscoveryService discoveryService = new SynopAnalyzerDiscoveryService(stationDB, locationProvider);
+    private void registerDiscoveryService(StationDB stations) {
+        SynopAnalyzerDiscoveryService discoveryService = new SynopAnalyzerDiscoveryService(stations, locationProvider);
 
         serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<>());
