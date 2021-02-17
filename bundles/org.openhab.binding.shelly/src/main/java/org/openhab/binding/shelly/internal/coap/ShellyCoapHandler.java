@@ -247,7 +247,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         }
                         break;
                     case COIOT_OPTION_STATUS_VALIDITY:
-                        // validity = o.getIntegerValue();
                         break;
                     case COIOT_OPTION_STATUS_SERIAL:
                         serial = opt.getIntegerValue();
