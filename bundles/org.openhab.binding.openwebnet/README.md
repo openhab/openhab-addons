@@ -131,7 +131,7 @@ Devices support some of the following channels:
 | `switch` or `switch_01`/`02` for ZigBee | Switch        | To switch the device `ON` and `OFF`                   |    R/W     |
 | `brightness`                               | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
 | `shutter`                                   | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
-| `power`                  | Number:Power        | The actual active power usage from Energy Management Central Unit       |     R      |
+| `power`                  | Number:Power        | The current active power usage from Energy Meter       |     R      |
 ### Notes on channels
 
 #### `shutter` position
