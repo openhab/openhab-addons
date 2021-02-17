@@ -111,10 +111,9 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
             throws TellstickException, InterruptedException {
         TellstickLocalDevicesDTO newList = controller
                 .callRestMethod(TelldusLocalDeviceController.HTTP_LOCAL_API_DEVICES, TellstickLocalDevicesDTO.class);
-        logger.trace("Device list {}", newList.getDevices());
+        logger.debug("Device list {}", newList.getDevices());
         if (newList.getDevices() != null) {
             if (previouslist == null) {
-                logger.trace("updateDevices, Creating devices.");
                 for (TellstickLocalDeviceDTO device : newList.getDevices()) {
                     device.setUpdated(true);
                     synchronized (deviceStatusListeners) {
@@ -125,10 +124,9 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
                 }
                 this.deviceList = newList;
             } else {
-                logger.trace("updateDevices, Updating devices.");
                 for (TellstickLocalDeviceDTO device : newList.getDevices()) {
                     int index = previouslist.getDevices().indexOf(device);
-                    logger.trace("Device:{} found at {}", device, index);
+                    logger.debug("Device:{} found at {}", device, index);
                     if (index >= 0) {
                         TellstickLocalDeviceDTO orgDevice = previouslist.getDevices().get(index);
                         if (device.getState() != orgDevice.getState()) {
@@ -137,7 +135,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
                             orgDevice.setUpdated(true);
                         }
                     } else {
-                        logger.trace("New Device - Adding:{}", device);
+                        logger.debug("New Device - Adding:{}", device);
                         previouslist.getDevices().add(device);
                         device.setUpdated(true);
                         synchronized (deviceStatusListeners) {
@@ -151,7 +149,6 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
 
             for (TellstickLocalDeviceDTO device : deviceList.getDevices()) {
                 if (device.isUpdated()) {
-                    logger.trace("Updated device:{}", device);
                     synchronized (deviceStatusListeners) {
                         for (DeviceStatusListener listener : deviceStatusListeners) {
                             listener.onDeviceStateChanged(getThing(), device,
@@ -168,10 +165,9 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
             throws TellstickException, InterruptedException {
         TellstickLocalSensorsDTO newList = controller
                 .callRestMethod(TelldusLocalDeviceController.HTTP_LOCAL_API_SENSORS, TellstickLocalSensorsDTO.class);
-        logger.trace("Updated sensors:{}", newList.getSensors());
+        logger.debug("Updated sensors:{}", newList.getSensors());
         if (newList.getSensors() != null) {
             if (previouslist == null) {
-                logger.trace("First update of sensors");
                 this.sensorList = newList;
                 for (TellstickLocalSensorDTO sensor : sensorList.getSensors()) {
                     sensor.setUpdated(true);
@@ -182,17 +178,14 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
                     }
                 }
             } else {
-                logger.trace("Update sensors, reset updated flag");
                 for (TellstickLocalSensorDTO sensor : previouslist.getSensors()) {
                     sensor.setUpdated(false);
                 }
-                logger.trace("Update sensors, reset updated flag1");
 
                 for (TellstickLocalSensorDTO sensor : newList.getSensors()) {
                     int index = this.sensorList.getSensors().indexOf(sensor);
                     if (index >= 0) {
                         TellstickLocalSensorDTO orgSensor = this.sensorList.getSensors().get(index);
-                        logger.trace("Update for sensor:{}", sensor);
                         orgSensor.setData(sensor.getData());
                         orgSensor.setUpdated(true);
                         sensor.setUpdated(true);
