@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class StationListRequest extends BaseResponse {
+public class StationListRequest {
     @SerializedName("page_size")
     private int pageSize = 5;
     @SerializedName("page_index")
