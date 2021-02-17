@@ -71,12 +71,12 @@
 
 	</thing-type>
 
-	<thing-type id="pvpplant">
+	<thing-type id="pvplant">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="energymanager"/>
 		</supported-bridge-type-refs>
 
-		<label>PVPPlant</label>
+		<label>PVPlant</label>
 		<description>Photovoltaic Producing Plant</description>
 
 		<representation-property>IdName</representation-property>

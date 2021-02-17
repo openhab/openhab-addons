@@ -37,7 +37,7 @@ public class SolarwattBindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERYCONVERTER = new ThingTypeUID(BINDING_ID, "batteryconverter");
     public static final ThingTypeUID THING_TYPE_POWERMETER = new ThingTypeUID(BINDING_ID, "powermeter");
     public static final ThingTypeUID THING_TYPE_EVSTATION = new ThingTypeUID(BINDING_ID, "evstation");
-    public static final ThingTypeUID THING_TYPE_PVPPLANT = new ThingTypeUID(BINDING_ID, "pvpplant");
+    public static final ThingTypeUID THING_TYPE_PVPLANT = new ThingTypeUID(BINDING_ID, "pvplant");
     public static final ThingTypeUID THING_TYPE_GRIDFLOW = new ThingTypeUID(BINDING_ID, "gridflow");
 
     public static final String PROPERTY_ID_NAME = "IdName";

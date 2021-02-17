@@ -149,7 +149,7 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
                     } else if (entry instanceof Location) {
                         this.discover(bridgeUID, entry, THING_TYPE_LOCATION);
                     } else if (entry instanceof PVPlant) {
-                        this.discover(bridgeUID, entry, THING_TYPE_PVPPLANT);
+                        this.discover(bridgeUID, entry, THING_TYPE_PVPLANT);
                     } else if (entry instanceof GridFlow) {
                         this.discover(bridgeUID, entry, THING_TYPE_GRIDFLOW);
                     } else if (entry instanceof SmartEnergyManagement || entry instanceof SimpleSwitcher) {
