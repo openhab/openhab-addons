@@ -454,7 +454,7 @@ Currently the miio binding supports more than 270 different models.
 | Mi Air Purifier v5           | miio:basic       | [zhimi.airpurifier.v5](#zhimi-airpurifier-v5) | Yes       |            |
 | Mi Air Purifier Pro v6       | miio:basic       | [zhimi.airpurifier.v6](#zhimi-airpurifier-v6) | Yes       |            |
 | Mi Air Purifier Pro v7       | miio:basic       | [zhimi.airpurifier.v7](#zhimi-airpurifier-v7) | Yes       |            |
-| Mi Air Purifier Pro H        | miio:basic       | [zhimi.airpurifier.vb2](#zhimi-airpurifier-vb2) | Yes       | Identified manual actions for execution<br />`action{"did":"button-toggle","siid":8,"aiid":1,"in":[]}`<br />`action{"did":"button-toggle-mode","siid":8,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Air Purifier Pro H        | miio:basic       | [zhimi.airpurifier.vb2](#zhimi-airpurifier-vb2) | Yes       |            |
 | Mi Air Purifier virtual      | miio:unsupported | zhimi.airpurifier.virtual | No        |            |
 | Mi Air Purifier 2(Virtual)   | miio:unsupported | zhimi.airpurifier.vtl_m1 | No        |            |
 | Mi Standing Fan              | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
@@ -4212,7 +4212,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | fault                | Number               | Air Purifier - Device Fault              | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"] |
 | on                   | Switch               | Air Purifier - Power                     |            |
 | fan_level            | Number               | Air Purifier - Fan Level                 | Value mapping ["1"="Level1","2"="Level2","3"="Level3","0"="Sleep"] |
-| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Sleep","2"="Favorite","3"="None"] |
+| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Night","2"="Manual","3"="Max"] |
 | pm2_5_density        | Number               | Environment - PM2 5 Density              |            |
 | relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |

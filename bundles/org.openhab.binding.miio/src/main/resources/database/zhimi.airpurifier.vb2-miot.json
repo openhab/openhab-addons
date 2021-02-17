@@ -168,15 +168,15 @@
 						},
 						{
 							"value": "1",
-							"label": "Sleep"
+							"label": "Night"
 						},
 						{
 							"value": "2",
-							"label": "Favorite"
+							"label": "Manual"
 						},
 						{
 							"value": "3",
-							"label": "None"
+							"label": "Max"
 						}
 					]
 				},
@@ -187,7 +187,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\",\"3\"\u003d\"None\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Night\",\"2\"\u003d\"Manual\",\"3\"\u003d\"Max\"]"
 			},
 			{
 				"property": "pm2.5-density",
@@ -1092,7 +1092,6 @@
 				"readmeComment": "Value mapping [\"91\"\u003d\"India\",\"44\"\u003d\"UK\",\"852\"\u003d\"Hong Kong\",\"886\"\u003d\"Taiwan\",\"82\"\u003d\"Korea\"]"
 			}
 		],
-		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"button-toggle\",\"siid\":8,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle-mode\",\"siid\":8,\"aiid\":2,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
-		"experimental": true
+		"experimental": false
 	}
 }
