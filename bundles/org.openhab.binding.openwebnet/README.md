@@ -180,8 +180,8 @@ Example items linked to BUS devices:
 Switch          iLR_switch          "Light"                             <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
 Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
 Rollershutter   iLR_shutter         "Shutter [%.0f %%]"                 <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
-Number:Power    iCENTRAL_Ta "Power [%.0f %unit%]"         <energy>            { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
-Number:Power    iCENTRAL_Tb "Power [%.0f %unit%]]"         <energy>            { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
+Number:Power    iCENTRAL_Ta         "Power [%.0f %unit%]"               <energy>         { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
+Number:Power    iCENTRAL_Tb         "Power [%.0f %unit%]"               <energy>         { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
 
 ```
 
