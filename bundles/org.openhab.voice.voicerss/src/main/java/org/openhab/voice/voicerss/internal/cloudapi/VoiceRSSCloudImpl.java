@@ -21,10 +21,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -34,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Cloud service from VoiceRSS. For more information,
- * see API documentation at http://www.voicerss.org/api/documentation.aspx.
+ * see API documentation at http://www.voicerss.org/api .
  *
  * Current state of implementation:
  * <ul>
@@ -47,8 +49,11 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Hiller - Initial contribution
  * @author Laurent Garnier - add support for all API languages
  * @author Laurent Garnier - add support for OGG and AAC audio formats
+ * @author cURLy bOi - add support for all API languages (again) and their respective voices
  */
 public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
+
+    public static final String DEFAULT_VOICE = "default";
 
     private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
 
@@ -63,8 +68,8 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("cs-cz"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("da-dk"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("de-at"));
-        SUPPORTED_LOCALES.add(Locale.forLanguageTag("de-ch"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("de-de"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("de-ch"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("el-gr"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("en-au"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("en-ca"));
@@ -76,8 +81,8 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("es-mx"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("fi-fi"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("fr-ca"));
-        SUPPORTED_LOCALES.add(Locale.forLanguageTag("fr-ch"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("fr-fr"));
+        SUPPORTED_LOCALES.add(Locale.forLanguageTag("fr-ch"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("he-il"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("hi-in"));
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("hr-hr"));
@@ -107,7 +112,58 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         SUPPORTED_LOCALES.add(Locale.forLanguageTag("zh-tw"));
     }
 
-    private static final Set<String> SUPPORTED_VOICES = Collections.singleton("VoiceRSS");
+    private static final Map<String, Set<String>> SUPPORTED_VOICES = new HashMap<>();
+    static {
+        SUPPORTED_VOICES.put("ar-eg", new HashSet<>(Arrays.asList("Oda")));
+        SUPPORTED_VOICES.put("ar-sa", new HashSet<>(Arrays.asList("Salim")));
+        SUPPORTED_VOICES.put("bg-bg", new HashSet<>(Arrays.asList("Dimo")));
+        SUPPORTED_VOICES.put("ca-es", new HashSet<>(Arrays.asList("Rut")));
+        SUPPORTED_VOICES.put("cs-cz", new HashSet<>(Arrays.asList("Josef")));
+        SUPPORTED_VOICES.put("da-dk", new HashSet<>(Arrays.asList("Freja")));
+        SUPPORTED_VOICES.put("de-at", new HashSet<>(Arrays.asList("Lukas")));
+        SUPPORTED_VOICES.put("de-de", new HashSet<>(Arrays.asList("Hanna", "Lina", "Jonas")));
+        SUPPORTED_VOICES.put("de-ch", new HashSet<>(Arrays.asList("Tim")));
+        SUPPORTED_VOICES.put("el-gr", new HashSet<>(Arrays.asList("Neo")));
+        SUPPORTED_VOICES.put("en-au", new HashSet<>(Arrays.asList("Zoe", "Isla", "Evie", "Jack")));
+        SUPPORTED_VOICES.put("en-ca", new HashSet<>(Arrays.asList("Rose", "Clara", "Emma", "Mason")));
+        SUPPORTED_VOICES.put("en-gb", new HashSet<>(Arrays.asList("Alice", "Nancy", "Lily", "Harry")));
+        SUPPORTED_VOICES.put("en-ie", new HashSet<>(Arrays.asList("Oran")));
+        SUPPORTED_VOICES.put("en-in", new HashSet<>(Arrays.asList("Eka", "Jai", "Ajit")));
+        SUPPORTED_VOICES.put("en-us", new HashSet<>(Arrays.asList("Linda", "Amy", "Mary", "John", "Mike")));
+        SUPPORTED_VOICES.put("es-es", new HashSet<>(Arrays.asList("Camila", "Sofia", "Luna", "Diego")));
+        SUPPORTED_VOICES.put("es-mx", new HashSet<>(Arrays.asList("Juana", "Silvia", "Teresa", "Jose")));
+        SUPPORTED_VOICES.put("fi-fi", new HashSet<>(Arrays.asList("Aada")));
+        SUPPORTED_VOICES.put("fr-ca", new HashSet<>(Arrays.asList("Emile", "Olivia", "Logan", "Felix")));
+        SUPPORTED_VOICES.put("fr-fr", new HashSet<>(Arrays.asList("Bette", "Iva", "Zola", "Axel")));
+        SUPPORTED_VOICES.put("fr-ch", new HashSet<>(Arrays.asList("Theo")));
+        SUPPORTED_VOICES.put("he-il", new HashSet<>(Arrays.asList("Rami")));
+        SUPPORTED_VOICES.put("hi-in", new HashSet<>(Arrays.asList("Puja", "Kabir")));
+        SUPPORTED_VOICES.put("hr-hr", new HashSet<>(Arrays.asList("Nikola")));
+        SUPPORTED_VOICES.put("hu-hu", new HashSet<>(Arrays.asList("Mate")));
+        SUPPORTED_VOICES.put("id-id", new HashSet<>(Arrays.asList("Intan")));
+        SUPPORTED_VOICES.put("it-it", new HashSet<>(Arrays.asList("Bria", "Mia", "Pietro")));
+        SUPPORTED_VOICES.put("ja-jp", new HashSet<>(Arrays.asList("Hina", "Airi", "Fumi", "Akira")));
+        SUPPORTED_VOICES.put("ko-kr", new HashSet<>(Arrays.asList("Nari")));
+        SUPPORTED_VOICES.put("ms-my", new HashSet<>(Arrays.asList("Aqil")));
+        SUPPORTED_VOICES.put("nb-no", new HashSet<>(Arrays.asList("Marte", "Erik")));
+        SUPPORTED_VOICES.put("nl-be", new HashSet<>(Arrays.asList("Daan")));
+        SUPPORTED_VOICES.put("nl-nl", new HashSet<>(Arrays.asList("Lotte", "Bram")));
+        SUPPORTED_VOICES.put("pl-pl", new HashSet<>(Arrays.asList("Julia", "Jan")));
+        SUPPORTED_VOICES.put("pt-br", new HashSet<>(Arrays.asList("Marcia", "Ligia", "Yara", "Dinis")));
+        SUPPORTED_VOICES.put("pt-pt", new HashSet<>(Arrays.asList("Leonor")));
+        SUPPORTED_VOICES.put("ro-ro", new HashSet<>(Arrays.asList("Doru")));
+        SUPPORTED_VOICES.put("ru-ru", new HashSet<>(Arrays.asList("Olga", "Marina", "Peter")));
+        SUPPORTED_VOICES.put("sk-sk", new HashSet<>(Arrays.asList("Beda")));
+        SUPPORTED_VOICES.put("sl-si", new HashSet<>(Arrays.asList("Vid")));
+        SUPPORTED_VOICES.put("sv-se", new HashSet<>(Arrays.asList("Molly", "Hugo")));
+        SUPPORTED_VOICES.put("ta-in", new HashSet<>(Arrays.asList("Sai")));
+        SUPPORTED_VOICES.put("th-th", new HashSet<>(Arrays.asList("Ukrit")));
+        SUPPORTED_VOICES.put("tr-tr", new HashSet<>(Arrays.asList("Omer")));
+        SUPPORTED_VOICES.put("vi-vn", new HashSet<>(Arrays.asList("Chi")));
+        SUPPORTED_VOICES.put("zh-cn", new HashSet<>(Arrays.asList("Luli", "Shu", "Chow", "Wang")));
+        SUPPORTED_VOICES.put("zh-hk", new HashSet<>(Arrays.asList("Jia", "Xia", "Chen")));
+        SUPPORTED_VOICES.put("zh-tw", new HashSet<>(Arrays.asList("Akemi", "Lin", "Lee")));
+    }
 
     @Override
     public Set<String> getAvailableAudioFormats() {
@@ -121,17 +177,29 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
     @Override
     public Set<String> getAvailableVoices() {
-        return SUPPORTED_VOICES;
+        // different locales support different voices, so let's list all here in one big set when no locale is provided
+        Set<String> allvoxes = new HashSet<>();
+        allvoxes.add(DEFAULT_VOICE);
+        for (Set<String> langvoxes : SUPPORTED_VOICES.values()) {
+            for (String langvox : langvoxes) {
+                allvoxes.add(langvox);
+            }
+        }
+        return allvoxes;
     }
 
     @Override
     public Set<String> getAvailableVoices(Locale locale) {
-        for (Locale voiceLocale : SUPPORTED_LOCALES) {
-            if (voiceLocale.toLanguageTag().equalsIgnoreCase(locale.toLanguageTag())) {
-                return SUPPORTED_VOICES;
+        Set<String> allvoxes = new HashSet<>();
+        allvoxes.add(DEFAULT_VOICE);
+        // all maps must be defined with key in lowercase
+        String langtag = locale.toLanguageTag().toLowerCase();
+        if (SUPPORTED_VOICES.containsKey(langtag)) {
+            for (String langvox : SUPPORTED_VOICES.get(langtag)) {
+                allvoxes.add(langvox);
             }
         }
-        return new HashSet<>();
+        return allvoxes;
     }
 
     /**
@@ -142,9 +210,9 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
      * dependencies.
      */
     @Override
-    public InputStream getTextToSpeech(String apiKey, String text, String locale, String audioFormat)
+    public InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioFormat)
             throws IOException {
-        String url = createURL(apiKey, text, locale, audioFormat);
+        String url = createURL(apiKey, text, locale, voice, audioFormat);
         logger.debug("Call {}", url);
         URLConnection connection = new URL(url).openConnection();
 
@@ -188,7 +256,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
      *
      * It is in package scope to be accessed by tests.
      */
-    private String createURL(String apiKey, String text, String locale, String audioFormat) {
+    private String createURL(String apiKey, String text, String locale, String voice, String audioFormat) {
         String encodedMsg;
         try {
             encodedMsg = URLEncoder.encode(text, "UTF-8");
@@ -197,7 +265,11 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
             // fall through and use msg un-encoded
             encodedMsg = text;
         }
-        return "http://api.voicerss.org/?key=" + apiKey + "&hl=" + locale + "&c=" + audioFormat
-                + "&f=44khz_16bit_mono&src=" + encodedMsg;
+        String url = "http://api.voicerss.org/?key=" + apiKey + "&hl=" + locale + "&c=" + audioFormat;
+        if (!DEFAULT_VOICE.equals(voice)) {
+            url += "&v=" + voice;
+        }
+        url += "&f=44khz_16bit_mono&src=" + encodedMsg;
+        return url;
     }
 }
