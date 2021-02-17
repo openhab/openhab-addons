@@ -86,7 +86,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     private @NonNullByDefault({}) String url;
     private @NonNullByDefault({}) String db;
-    private @NonNullByDefault({}) String collection;
+    private String collection;
+    private boolean collectionPerItem;
 
     private boolean initialized = false;
 
@@ -117,13 +118,14 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         collection = (String) config.get("collection");
         logger.debug("MongoDB collection {}", collection);
         if (collection == null || collection.isBlank()) {
-            logger.warn(
-                    "The MongoDB database collection is missing - please configure the mongodb:collection parameter.");
-            return;
+            collectionPerItem = false;
+        }
+        else{
+            collectionPerItem = true;
         }
 
         disconnectFromDatabase();
-        connectToDatabase();
+        connectToDatabase(collectionPerItem);
 
         // connection has been established... initialization completed!
         initialized = true;
@@ -160,7 +162,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
         // Connect to mongodb server if we're not already connected
         if (!isConnected()) {
-            connectToDatabase();
+            connectToDatabase(collectionPerItem);
         }
 
         // If we still didn't manage to connect, then return!
@@ -172,6 +174,12 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         String realName = item.getName();
+
+        // If collection Per Item is active, connect to the item Collection
+        if (collectionPerItem) {
+            connectToCollection(realName);
+        }
+
         String name = (alias != null) ? alias : realName;
         Object value = this.convertValue(item.getState());
 
@@ -182,6 +190,11 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         obj.put(FIELD_TIMESTAMP, new Date());
         obj.put(FIELD_VALUE, value);
         this.mongoCollection.save(obj);
+
+        // If collection Per Item is active, disconnect after save.
+        if (collectionPerItem) {
+            disconnectFromCollection();
+        }
 
         logger.debug("MongoDB save {}={}", name, value);
     }
@@ -225,20 +238,46 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     /**
      * Connects to the database
      */
-    private void connectToDatabase() {
+    private void connectToDatabase(boolean collectionPerItem) {
         try {
             logger.debug("Connect MongoDB");
             this.cl = new MongoClient(new MongoClientURI(this.url));
-            mongoCollection = cl.getDB(this.db).getCollection(this.collection);
+            if(collectionPerItem) {
+                mongoCollection = cl.getDB(this.db).getCollection(this.collection);
 
-            BasicDBObject idx = new BasicDBObject();
-            idx.append(FIELD_TIMESTAMP, 1).append(FIELD_ITEM, 1);
-            this.mongoCollection.createIndex(idx);
+                BasicDBObject idx = new BasicDBObject();
+                idx.append(FIELD_TIMESTAMP, 1).append(FIELD_ITEM, 1);
+                this.mongoCollection.createIndex(idx);
+            }
+            
             logger.debug("Connect MongoDB ... done");
         } catch (Exception e) {
             logger.error("Failed to connect to database {}", this.url);
             throw new RuntimeException("Cannot connect to database", e);
         }
+    }
+
+    /**
+     * Connects to the Collection
+     */
+    private void connectToCollection(String collectionName) {
+        try{
+            mongoCollection = cl.getDB(this.db).getCollection(collectionName);
+
+            BasicDBObject idx = new BasicDBObject();
+            idx.append(FIELD_TIMESTAMP, 1).append(FIELD_ITEM, 1);
+            this.mongoCollection.createIndex(idx);
+        } catch (Exception e) {
+            logger.error("Failed to connect to collection {}", collectionName);
+            throw new RuntimeException("Cannot connect to collection", e);
+        }
+    }
+
+    /**
+     * Disconnects from the Collection
+     */
+    private void disconnectFromCollection() {
+        this.mongoCollection = null;
     }
 
     /**
@@ -267,6 +306,11 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         String name = filter.getItemName();
+
+        // If collection Per Item is active, connect to the item Collection
+        if (collectionPerItem) {
+            connectToCollection(realName);
+        }
         Item item = getItem(name);
 
         List<HistoricItem> items = new ArrayList<>();
@@ -314,7 +358,11 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             items.add(new MongoDBItem(name, state,
                     ZonedDateTime.ofInstant(obj.getDate(FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
         }
-
+        
+        // If collection Per Item is active, disconnect after save.
+        if (collectionPerItem) {
+            disconnectFromCollection();
+        }
         return items;
     }
 
