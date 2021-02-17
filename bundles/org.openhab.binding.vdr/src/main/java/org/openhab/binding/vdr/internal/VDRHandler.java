@@ -13,8 +13,8 @@
 package org.openhab.binding.vdr.internal;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +40,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -96,14 +97,16 @@ public class VDRHandler extends BaseThingHandler {
                 con.openConnection();
                 updateStatus(ThingStatus.ONLINE);
                 updateProperties(con);
-            } catch (SVDRPException se) {
+            } catch (SVDRPConnectionException ce) {
                 // also update power channel when thing is offline when initializing
                 thing.getChannels().stream().map(c -> c.getUID()).filter(this::isLinked).forEach(channelUID -> {
                     if (VDRBindingConstants.CHANNEL_UID_POWER.equals(channelUID.getIdWithoutGroup())) {
                         updateState(channelUID, OnOffType.OFF);
                     }
                 });
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ce.getMessage());
+            } catch (SVDRPParseResponseException se) {
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
             } finally {
                 try {
                     con.closeConnection();
@@ -256,15 +259,13 @@ public class VDRHandler extends BaseThingHandler {
                             break;
                         case VDRBindingConstants.CHANNEL_UID_CURRENT_EVENT_BEGIN:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NOW);
-                            result = new DateTimeType(LocalDateTime
-                                    .ofInstant(entry.getBegin().toInstant(), timeZoneProvider.getTimeZone())
-                                    .atZone(TimeZone.getDefault().toZoneId()));
+                            result = new DateTimeType(LocalDateTime.ofInstant(entry.getBegin(), ZoneId.systemDefault())
+                                    .atZone(timeZoneProvider.getTimeZone()));
                             break;
                         case VDRBindingConstants.CHANNEL_UID_CURRENT_EVENT_END:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NOW);
-                            result = new DateTimeType(
-                                    LocalDateTime.ofInstant(entry.getEnd().toInstant(), timeZoneProvider.getTimeZone())
-                                            .atZone(TimeZone.getDefault().toZoneId()));
+                            result = new DateTimeType(LocalDateTime.ofInstant(entry.getEnd(), ZoneId.systemDefault())
+                                    .atZone(timeZoneProvider.getTimeZone()));
                             break;
                         case VDRBindingConstants.CHANNEL_UID_NEXT_EVENT_TITLE:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NEXT);
@@ -280,15 +281,13 @@ public class VDRHandler extends BaseThingHandler {
                             break;
                         case VDRBindingConstants.CHANNEL_UID_NEXT_EVENT_BEGIN:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NEXT);
-                            result = new DateTimeType(LocalDateTime
-                                    .ofInstant(entry.getBegin().toInstant(), timeZoneProvider.getTimeZone())
-                                    .atZone(TimeZone.getDefault().toZoneId()));
+                            result = new DateTimeType(LocalDateTime.ofInstant(entry.getBegin(), ZoneId.systemDefault())
+                                    .atZone(timeZoneProvider.getTimeZone()));
                             break;
                         case VDRBindingConstants.CHANNEL_UID_NEXT_EVENT_END:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NEXT);
-                            result = new DateTimeType(
-                                    LocalDateTime.ofInstant(entry.getEnd().toInstant(), timeZoneProvider.getTimeZone())
-                                            .atZone(TimeZone.getDefault().toZoneId()));
+                            result = new DateTimeType(LocalDateTime.ofInstant(entry.getEnd(), ZoneId.systemDefault())
+                                    .atZone(timeZoneProvider.getTimeZone()));
                             break;
 
                     }
@@ -305,7 +304,7 @@ public class VDRHandler extends BaseThingHandler {
 
             });
 
-        } catch (SVDRPException ce) {
+        } catch (SVDRPConnectionException ce) {
             if (thing.getStatus() == ThingStatus.ONLINE) {
                 // also update power channel when thing is offline before setting it offline
                 thing.getChannels().stream().map(c -> c.getUID()).filter(this::isLinked).forEach(channelUID -> {
@@ -314,8 +313,9 @@ public class VDRHandler extends BaseThingHandler {
                     }
                 });
             }
-            updateStatus(ThingStatus.OFFLINE);
-
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ce.getMessage());
+        } catch (SVDRPParseResponseException se) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
         } finally {
             try {
                 con.closeConnection();

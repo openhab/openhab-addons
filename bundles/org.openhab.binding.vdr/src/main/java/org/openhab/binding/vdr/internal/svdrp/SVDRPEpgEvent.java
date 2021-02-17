@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.vdr.internal.svdrp;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -34,8 +34,8 @@ public class SVDRPEpgEvent {
 
     private String title = "";
     private String subtitle = "";
-    private Date begin = new Date();
-    private Date end = new Date();
+    private Instant begin = Instant.now();
+    private Instant end = Instant.now();
     private int duration;
 
     private SVDRPEpgEvent() {
@@ -67,8 +67,7 @@ public class SVDRPEpgEvent {
                         lt.nextToken(); // event id
                         try {
                             long begin = Long.parseLong(lt.nextToken());
-                            begin *= 1000L;
-                            entry.setBegin(new Date(begin));
+                            entry.setBegin(Instant.ofEpochSecond(begin));
                         } catch (NumberFormatException | NoSuchElementException e) {
                             throw new SVDRPParseResponseException("Begin: " + e.getMessage(), e);
                         }
@@ -77,10 +76,7 @@ public class SVDRPEpgEvent {
                         } catch (NumberFormatException | NoSuchElementException e) {
                             throw new SVDRPParseResponseException("Duration: " + e.getMessage(), e);
                         }
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(entry.getBegin());
-                        calendar.add(Calendar.MINUTE, entry.getDuration());
-                        entry.setEnd(calendar.getTime());
+                        entry.setEnd(entry.getBegin().plus(entry.getDuration(), ChronoUnit.MINUTES));
                     default:
                         break;
                 }
@@ -133,7 +129,7 @@ public class SVDRPEpgEvent {
      *
      * @return Event Begin
      */
-    public Date getBegin() {
+    public Instant getBegin() {
         return begin;
     }
 
@@ -142,7 +138,7 @@ public class SVDRPEpgEvent {
      *
      * @param begin Event Begin
      */
-    public void setBegin(Date begin) {
+    public void setBegin(Instant begin) {
         this.begin = begin;
     }
 
@@ -151,7 +147,7 @@ public class SVDRPEpgEvent {
      *
      * @return Event End
      */
-    public Date getEnd() {
+    public Instant getEnd() {
         return end;
     }
 
@@ -160,7 +156,7 @@ public class SVDRPEpgEvent {
      *
      * @param end Event End
      */
-    public void setEnd(Date end) {
+    public void setEnd(Instant end) {
         this.end = end;
     }
 

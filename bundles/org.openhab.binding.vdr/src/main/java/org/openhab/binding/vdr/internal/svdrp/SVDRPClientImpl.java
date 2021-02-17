@@ -68,11 +68,8 @@ public class SVDRPClientImpl implements SVDRPClient {
      */
     @Override
     public void openConnection() throws SVDRPConnectionException, SVDRPParseResponseException {
-        @Nullable
         Socket localSocket = socket;
-        @Nullable
         BufferedWriter localOut = out;
-        @Nullable
         BufferedReader localIn = in;
 
         if (localSocket == null || localSocket.isClosed()) {
@@ -122,11 +119,8 @@ public class SVDRPClientImpl implements SVDRPClient {
      */
     @Override
     public void closeConnection() throws SVDRPConnectionException, SVDRPParseResponseException {
-        @Nullable
         Socket localSocket = socket;
-        @Nullable
         BufferedWriter localOut = out;
-        @Nullable
         BufferedReader localIn = in;
         /*
          * socket on vdr stays in FIN_WAIT2 without closing connection
@@ -159,9 +153,7 @@ public class SVDRPClientImpl implements SVDRPClient {
      */
     private SVDRPResponse execute(@Nullable String command)
             throws SVDRPConnectionException, SVDRPParseResponseException {
-        @Nullable
         BufferedWriter localOut = out;
-        @Nullable
         BufferedReader localIn = in;
 
         StringBuilder message = new StringBuilder();

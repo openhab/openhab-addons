@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.vdr.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -64,9 +66,9 @@ public class SVDRPEpgEventTest {
         assertEquals("Tagesschau", event.getTitle());
         assertEquals("Aktuelle Nachrichten aus der Welt", event.getSubtitle());
         assertEquals(15, event.getDuration());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-        assertEquals(sdf.parse("2021-01-11 19:00:00 UTC"), event.getBegin());
-        assertEquals(sdf.parse("2021-01-11 19:15:00 UTC"), event.getEnd());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
+        assertEquals(ZonedDateTime.parse("2021-01-11 19:00:00 UTC", dtf).toInstant(), event.getBegin());
+        assertEquals(ZonedDateTime.parse("2021-01-11 19:15:00 UTC", dtf).toInstant(), event.getEnd());
     }
 
     @Test
@@ -89,9 +91,9 @@ public class SVDRPEpgEventTest {
         assertEquals("Tagesschau", event.getTitle());
         assertEquals("", event.getSubtitle());
         assertEquals(15, event.getDuration());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-        assertEquals(sdf.parse("2021-01-11 19:00:00 UTC"), event.getBegin());
-        assertEquals(sdf.parse("2021-01-11 19:15:00 UTC"), event.getEnd());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
+        assertEquals(ZonedDateTime.parse("2021-01-11 19:00:00 UTC", dtf).toInstant(), event.getBegin());
+        assertEquals(ZonedDateTime.parse("2021-01-11 19:15:00 UTC", dtf).toInstant(), event.getEnd());
     }
 
     @Test
