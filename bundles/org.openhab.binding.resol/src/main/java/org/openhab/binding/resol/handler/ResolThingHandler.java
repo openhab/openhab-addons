@@ -61,18 +61,19 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ResolThingHandler.class);
 
-    @Nullable
-    ResolBridgeHandler bridgeHandler;
     private ResolStateDescriptionOptionProvider stateDescriptionProvider;
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
             DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
 
-    public ResolThingHandler(Thing thing, ResolStateDescriptionOptionProvider stateDescriptionProvider) {
-        super(thing);
+    static {
         synchronized (DATE_FORMAT) {
             DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         }
+    }
+
+    public ResolThingHandler(Thing thing, ResolStateDescriptionOptionProvider stateDescriptionProvider) {
+        super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -84,7 +85,6 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     @Override
     public void initialize() {
         ResolBridgeHandler bridgeHandler = getBridgeHandler();
-        this.bridgeHandler = bridgeHandler;
         if (bridgeHandler != null) {
             updateStatus(bridgeHandler.getStatus());
         }

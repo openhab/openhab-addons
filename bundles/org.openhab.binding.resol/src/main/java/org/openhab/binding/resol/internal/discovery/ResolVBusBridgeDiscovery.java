@@ -46,7 +46,7 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(ResolVBusBridgeDiscovery.class);
 
-    private boolean discoveryRunning = false;
+    private volatile boolean discoveryRunning = false;
 
     public ResolVBusBridgeDiscovery() throws IllegalArgumentException {
         super(ResolBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 35, false);
@@ -73,7 +73,7 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
 
             TcpDataSource[] dataSources = TcpDataSourceProvider.discoverDataSources(broadcastAddress, 3, 500, false);
 
-            HashMap<String, TcpDataSource> currentDataSourceById = new HashMap<String, TcpDataSource>();
+            Map<String, TcpDataSource> currentDataSourceById = new HashMap<String, TcpDataSource>();
             for (TcpDataSource ds : dataSources) {
                 if (!discoveryRunning) {
                     break;
