@@ -120,7 +120,7 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
 
         if (properties.get("passivePorts") != null) {
             String strPassivePorts = properties.get("passivePorts").toString();
-            if (StringUtils.isNotEmpty(strPassivePorts)) {
+            if (!strPassivePorts.isEmpty()) {
                 try {
                     dataConnectionConfigurationFactory.setPassivePorts(strPassivePorts);
                 } catch (IllegalArgumentException e) {
