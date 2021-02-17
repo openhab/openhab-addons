@@ -26,7 +26,7 @@
 				<default>5000</default>
 			</parameter>
 			<parameter name="delay" type="integer" required="false" min="1" max="65335">
-				<label>Delay between commands</label>
+				<label>Delay between Commands</label>
 				<description>Delay (in millisecond) between consecutive commands. Recommended value without band pass filter: 1000.
 					Recommended value with band pass filter: somewhere between 200-500.</description>
 				<default>500</default>
