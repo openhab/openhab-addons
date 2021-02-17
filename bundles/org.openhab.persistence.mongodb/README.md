@@ -13,4 +13,8 @@ This service can be configured in the file `services/mongodb.cfg`.
 | database   |         |   Yes    | database name                                                                |
 | collection |         |   Yes    | collection name                                                              |
 
+If you have a username and password it looks like this: url = mongodb://[username]:[password]@[localhost]:27017/[database]
+The database is required: http://mongodb.github.io/mongo-java-driver/3.9/javadoc/com/mongodb/MongoClientURI.html
+
+
 All item and event related configuration is done in the file `persistence/mongodb.persist`.
