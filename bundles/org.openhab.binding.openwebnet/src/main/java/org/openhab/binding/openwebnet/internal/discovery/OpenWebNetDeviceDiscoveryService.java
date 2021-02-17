@@ -131,7 +131,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 break;
             }
 
-            case SCS_ENERGY_CENTRAL_UNIT: {
+            case SCS_ENERGY_METER: {
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ENERGY_METER;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ENERGY_METER;
                 deviceWho = Who.ENERGY_MANAGEMENT;
