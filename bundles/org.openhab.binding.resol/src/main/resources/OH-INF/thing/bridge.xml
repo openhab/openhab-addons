@@ -31,7 +31,6 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" min="5" max="1800" unit="s">
-				<context>refresh</context>
 				<label>Refresh Interval</label>
 				<description>Refresh time in seconds to check the connection to the VBus gateway. Data updates are propagated to
 					openHAB independently from this setting as soon as they are received on the VBus.</description>

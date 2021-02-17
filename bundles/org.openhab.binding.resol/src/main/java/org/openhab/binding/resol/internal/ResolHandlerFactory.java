@@ -40,9 +40,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.resol", service = ThingHandlerFactory.class)
 public class ResolHandlerFactory extends BaseThingHandlerFactory {
 
-    private LocaleProvider localeProvider;
+    private final LocaleProvider localeProvider;
 
-    private ResolStateDescriptionOptionProvider stateDescriptionProvider;
+    private final ResolStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
     public ResolHandlerFactory(final @Reference ResolStateDescriptionOptionProvider stateDescriptionProvider,

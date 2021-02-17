@@ -22,46 +22,116 @@
 		<description>Emulation of an Extension Module (EM) device which can be connected through the VBUS to Resol controllers
 			which support the EM devices. Replaces a physically available EM by openHAB.</description>
 		<channels>
-			<channel id="relay_1" typeId="relay"/>
-			<channel id="relay_2" typeId="relay"/>
-			<channel id="relay_3" typeId="relay"/>
-			<channel id="relay_4" typeId="relay"/>
-			<channel id="relay_5" typeId="relay"/>
+			<channel id="relay_1" typeId="relay">
+				<label>Relay 1</label>
+			</channel>
+			<channel id="relay_2" typeId="relay">
+				<label>Relay 2</label>
+			</channel>
+			<channel id="relay_3" typeId="relay">
+				<label>Relay 3</label>
+			</channel>
+			<channel id="relay_4" typeId="relay">
+				<label>Relay 4</label>
+			</channel>
+			<channel id="relay_5" typeId="relay">
+				<label>Relay 5</label>
+			</channel>
 
-			<channel id="switch_1" typeId="switch"/>
-			<channel id="switch_2" typeId="switch"/>
-			<channel id="switch_3" typeId="switch"/>
-			<channel id="switch_4" typeId="switch"/>
-			<channel id="switch_5" typeId="switch"/>
-			<channel id="switch_6" typeId="switch"/>
+			<channel id="switch_1" typeId="switch">
+				<label>Switch 1</label>
+			</channel>
+			<channel id="switch_2" typeId="switch">
+				<label>Switch 2</label>
+			</channel>
+			<channel id="switch_3" typeId="switch">
+				<label>Switch 3</label>
+			</channel>
+			<channel id="switch_4" typeId="switch">
+				<label>Switch 4</label>
+			</channel>
+			<channel id="switch_5" typeId="switch">
+				<label>Switch 5</label>
+			</channel>
+			<channel id="switch_6" typeId="switch">
+				<label>Switch 6</label>
+			</channel>
 
-			<channel id="temperature_1" typeId="temperature"/>
-			<channel id="temperature_2" typeId="temperature"/>
-			<channel id="temperature_3" typeId="temperature"/>
-			<channel id="temperature_4" typeId="temperature"/>
-			<channel id="temperature_5" typeId="temperature"/>
-			<channel id="temperature_6" typeId="temperature"/>
+			<channel id="temperature_1" typeId="temperature">
+				<label>Temperature 1</label>
+			</channel>
+			<channel id="temperature_2" typeId="temperature">
+				<label>Temperature 2</label>
+			</channel>
+			<channel id="temperature_3" typeId="temperature">
+				<label>Temperature 3</label>
+			</channel>
+			<channel id="temperature_4" typeId="temperature">
+				<label>Temperature 4</label>
+			</channel>
+			<channel id="temperature_5" typeId="temperature">
+				<label>Temperature 5</label>
+			</channel>
+			<channel id="temperature_6" typeId="temperature">
+				<label>Temperature 6</label>
+			</channel>
 
-			<channel id="resistor_1" typeId="resistance"/>
-			<channel id="resistor_2" typeId="resistance"/>
-			<channel id="resistor_3" typeId="resistance"/>
-			<channel id="resistor_4" typeId="resistance"/>
-			<channel id="resistor_5" typeId="resistance"/>
-			<channel id="resistor_6" typeId="resistance"/>
+			<channel id="resistor_1" typeId="resistance">
+				<label>Resistor 1</label>
+			</channel>
+			<channel id="resistor_2" typeId="resistance">
+				<label>Resistor 2</label>
+			</channel>
+			<channel id="resistor_3" typeId="resistance">
+				<label>Resistor 3</label>
+			</channel>
+			<channel id="resistor_4" typeId="resistance">
+				<label>Resistor 4</label>
+			</channel>
+			<channel id="resistor_5" typeId="resistance">
+				<label>Resistor 5</label>
+			</channel>
+			<channel id="resistor_6" typeId="resistance">
+				<label>Resistor 6</label>
+			</channel>
 
-			<channel id="bas_temp_adjust_1" typeId="temperatureAdjust"/>
-			<channel id="bas_temp_adjust_2" typeId="temperatureAdjust"/>
-			<channel id="bas_temp_adjust_3" typeId="temperatureAdjust"/>
-			<channel id="bas_temp_adjust_4" typeId="temperatureAdjust"/>
-			<channel id="bas_temp_adjust_5" typeId="temperatureAdjust"/>
-			<channel id="bas_temp_adjust_6" typeId="temperatureAdjust"/>
+			<channel id="bas_temp_adjust_1" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 1</label>
+			</channel>
+			<channel id="bas_temp_adjust_2" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 2</label>
+			</channel>
+			<channel id="bas_temp_adjust_3" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 3</label>
+			</channel>
+			<channel id="bas_temp_adjust_4" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 4</label>
+			</channel>
+			<channel id="bas_temp_adjust_5" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 5</label>
+			</channel>
+			<channel id="bas_temp_adjust_6" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 6</label>
+			</channel>
 
-			<channel id="bas_mode_1" typeId="operationmode"/>
-			<channel id="bas_mode_2" typeId="operationmode"/>
-			<channel id="bas_mode_3" typeId="operationmode"/>
-			<channel id="bas_mode_4" typeId="operationmode"/>
-			<channel id="bas_mode_5" typeId="operationmode"/>
-			<channel id="bas_mode_6" typeId="operationmode"/>
+			<channel id="bas_mode_1" typeId="operationmode">
+				<label>Operating Mode 1</label>
+			</channel>
+			<channel id="bas_mode_2" typeId="operationmode">
+				<label>Operating Mode 2</label>
+			</channel>
+			<channel id="bas_mode_3" typeId="operationmode">
+				<label>Operating Mode 3</label>
+			</channel>
+			<channel id="bas_mode_4" typeId="operationmode">
+				<label>Operating Mode 4</label>
+			</channel>
+			<channel id="bas_mode_5" typeId="operationmode">
+				<label>Operating Mode 5</label>
+			</channel>
+			<channel id="bas_mode_6" typeId="operationmode">
+				<label>Operating Mode 6</label>
+			</channel>
 		</channels>
 
 		<config-description>
