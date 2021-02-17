@@ -107,13 +107,13 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusOSGiTest.class);
 
     protected @Mock @NonNullByDefault({}) ModbusManager mockedModbusManager;
+    protected @NonNullByDefault({}) ModbusManager realModbusManager;
     protected @NonNullByDefault({}) ManagedThingProvider thingProvider;
     protected @NonNullByDefault({}) ManagedItemProvider itemProvider;
     protected @NonNullByDefault({}) ManagedItemChannelLinkProvider itemChannelLinkProvider;
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;
     protected @NonNullByDefault({}) CoreItemFactory coreItemFactory;
 
-    private @NonNullByDefault({}) ModbusManager realModbusManager;
     private Set<Item> addedItems = new HashSet<>();
     private Set<Thing> addedThings = new HashSet<>();
     private Set<ItemChannelLink> addedLinks = new HashSet<>();
