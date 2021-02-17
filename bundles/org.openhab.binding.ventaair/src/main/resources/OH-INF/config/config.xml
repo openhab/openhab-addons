@@ -21,8 +21,8 @@
 		<parameter name="pollingTime" type="integer" required="false">
 			<label>Polling interval (s)</label>
 			<default>10</default>
-				<description>Time in seconds between fetching data from the device</description>
-			</parameter>
+			<description>Time in seconds between fetching data from the device</description>
+		</parameter>
 		<parameter name="hash" type="integer" required="false">
 			<label>Hash</label>
 			<description>Optional negative number that relates to a connection (like from the VentaApp) to the device</description>

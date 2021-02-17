@@ -25,5 +25,4 @@ public class PowerAction implements Action {
     public PowerAction(boolean on) {
         this.Power = on;
     }
-
 }

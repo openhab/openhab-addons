@@ -60,7 +60,7 @@
 		<item-type>Number</item-type>
 		<label>Timer Time Passed</label>
 		<description>Time that has passed since set by the Timer (in min)</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="sleepMode">
@@ -92,7 +92,7 @@
 		<label>Temperature</label>
 		<description>Current Temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="humidity">
@@ -100,7 +100,7 @@
 		<label>Humidity</label>
 		<description>Current Humidity</description>
 		<category>Humidity</category>
-		<state pattern="%.1f %%" readOnly="true" />
+		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="waterLevel">
@@ -121,35 +121,35 @@
 		<item-type>Number</item-type>
 		<label>Fan RPM</label>
 		<description>Fan RPM</description>
-		<state pattern="%d" readOnly="true" />
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cleanMode">
 		<item-type>Switch</item-type>
 		<label>Cleaning Mode</label>
 		<description>Device is in cleaning mode (ON)</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="operationTime">
 		<item-type>Number</item-type>
 		<label>Operation Time</label>
 		<description>Operation Time</description>
-		<state pattern="%d" readOnly="true" />
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="discReplaceTime">
 		<item-type>Number</item-type>
 		<label>Hygiene Disc replacement</label>
 		<description>Time in hours until Hygiene Disc schould be replaced</description>
-		<state pattern="%d" readOnly="true" />
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cleaningTime">
 		<item-type>Number</item-type>
 		<label>CleaningTime</label>
 		<description>Time in hours until next cleaning</description>
-		<state pattern="%d" readOnly="true" />
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
