@@ -16,9 +16,12 @@ import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_
 
 import java.util.Set;
 
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -116,8 +119,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         Integer activePower;
         try {
             activePower = Integer.parseInt(msg.getDimValues()[0]);
-            updateState(CHANNEL_POWER, new DecimalType(activePower));
-
+            updateState(CHANNEL_POWER, new QuantityType<Power>(activePower, Units.WATT));
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
             updateState(CHANNEL_POWER, UnDefType.UNDEF);

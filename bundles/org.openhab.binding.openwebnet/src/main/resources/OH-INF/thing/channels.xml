@@ -41,9 +41,8 @@
 	<channel-type id="power">
 		<item-type>Number</item-type>
 		<label>Power</label>
-		<description>Actual active power usage</description>
+		<description>Current active power</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f W"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
-
 </thing:thing-descriptions>

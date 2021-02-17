@@ -131,7 +131,7 @@ Devices support some of the following channels:
 | `switch` or `switch_01`/`02` for ZigBee | Switch        | To switch the device `ON` and `OFF`                   |    R/W     |
 | `brightness`                               | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
 | `shutter`                                   | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
-| `power`                  | Number        | The actual active power usage from Energy Management Central Unit       |     R      |
+| `power`                  | Number:Power        | The actual active power usage from Energy Management Central Unit       |     R      |
 ### Notes on channels
 
 #### `shutter` position
@@ -180,8 +180,8 @@ Example items linked to BUS devices:
 Switch          iLR_switch          "Light"                             <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
 Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
 Rollershutter   iLR_shutter         "Shutter [%.0f %%]"                 <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
-Number          iCENTRAL_Ta "Power [%.0f W]"         <energy>            { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
-Number          iCENTRAL_Tb "Power [%.0f W]"         <energy>            { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
+Number:Power    iCENTRAL_Ta "Power [%.0f %unit%]"         <energy>            { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
+Number:Power    iCENTRAL_Tb "Power [%.0f %unit%]]"         <energy>            { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
 
 ```
 
