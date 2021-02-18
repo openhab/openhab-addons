@@ -130,9 +130,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
             }
             if (functionalGroup.equals(FunctionalColorGroupEnum.GREY)) {
                 if (outputChannels != null && (outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_INDOOR)
-                        || outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE)
-                        || outputChannels.contains(OutputChannelEnum.SHADE_POSITION_INDOOR)
-                        || outputChannels.contains(OutputChannelEnum.SHADE_POSITION_OUTSIDE))) {
+                        || outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE))) {
                     return buildIdentifier(SHADE, ANGLE);
                 } else {
                     return buildIdentifier(SHADE);
