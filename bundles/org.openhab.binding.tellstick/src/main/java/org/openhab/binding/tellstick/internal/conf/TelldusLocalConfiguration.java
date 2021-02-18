@@ -14,14 +14,12 @@ package org.openhab.binding.tellstick.internal.conf;
 
 /**
  * Configuration class for {@link TellstickBridge} bridge used to connect to the
- * Telldus Live service.
+ * Telldus local API.
  *
- * @author Jarle Hjortland - Initial contribution
+ * @author Jan Gustafsson - Initial contribution
  */
-public class TelldusLiveConfiguration {
-    public String publicKey;
-    public String privateKey;
-    public String token;
-    public String tokenSecret;
+public class TelldusLocalConfiguration {
+    public String ipAddress;
+    public String accessToken;
     public long refreshInterval;
 }
