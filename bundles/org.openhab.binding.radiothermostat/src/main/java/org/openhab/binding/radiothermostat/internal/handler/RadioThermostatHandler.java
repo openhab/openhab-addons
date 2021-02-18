@@ -251,7 +251,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         rthermData.getThermostatData().setProgramMode(-1);
                         updateChannel(PROGRAM_MODE, rthermData);
 
-                        // now just trigger a refresh of the thermost to get the new active setpoint
+                        // now just trigger a refresh of the thermostat to get the new active setpoint
                         // this takes a while for the JSON request to complete (async).
                         connector.getAsyncThermostatData(DEFAULT_RESOURCE);
                     }
