@@ -26,6 +26,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ventaair.internal.VentaThingHandler.StateUpdatedCallback;
 import org.openhab.binding.ventaair.internal.message.CommandMessage;
 import org.openhab.binding.ventaair.internal.message.DeviceInfoMessage;
@@ -42,27 +44,33 @@ import com.google.gson.Gson;
 /**
  * The {@link Communicator} is responsible for sending/receiving commands to/from the device
  *
- * @author Stefan Triller
+ * @author Stefan Triller - Initial contribution
  *
  */
+@NonNullByDefault
 public class Communicator {
     private final Duration COMMUNICATION_TIMEOUT = Duration.ofSeconds(5);
 
     private final Logger logger = LoggerFactory.getLogger(Communicator.class);
 
-    private String ipAddress;
+    private @Nullable String ipAddress;
     private Header header;
     private int pollingTimeInSeconds;
     private StateUpdatedCallback callback;
 
     private Gson gson = new Gson();
 
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    public Communicator(String ipAddress, Header header, BigDecimal pollingTime, StateUpdatedCallback callback) {
+    public Communicator(@Nullable String ipAddress, Header header, @Nullable BigDecimal pollingTime,
+            StateUpdatedCallback callback) {
         this.ipAddress = ipAddress;
         this.header = header;
-        this.pollingTimeInSeconds = pollingTime.intValue();
+        if (pollingTime != null) {
+            this.pollingTimeInSeconds = pollingTime.intValue();
+        } else {
+            this.pollingTimeInSeconds = 60;
+        }
         this.callback = callback;
     }
 

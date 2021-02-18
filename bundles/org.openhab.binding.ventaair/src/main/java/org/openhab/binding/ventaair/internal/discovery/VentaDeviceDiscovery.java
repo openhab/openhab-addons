@@ -41,6 +41,12 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * Discovers Venta Air humidifier and cleaner devices by listening for UDP messages
+ *
+ * @author Stefan Triller - Initial contribution
+ *
+ */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.ventaair")
 public class VentaDeviceDiscovery extends AbstractDiscoveryService {

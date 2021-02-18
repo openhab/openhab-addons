@@ -14,15 +14,19 @@ package org.openhab.binding.ventaair.internal;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link VentaAirDeviceConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Stefan Triller - Initial contribution
  */
+@NonNullByDefault
 public class VentaAirDeviceConfiguration {
-    public String ipAddress;
-    public String macAddress;
-    public BigDecimal deviceType;
-    public BigDecimal hash;
-    public BigDecimal pollingTime;
+    public @Nullable String ipAddress;
+    public @Nullable String macAddress;
+    public @Nullable BigDecimal deviceType;
+    public @Nullable BigDecimal hash;
+    public @Nullable BigDecimal pollingTime;
 }
