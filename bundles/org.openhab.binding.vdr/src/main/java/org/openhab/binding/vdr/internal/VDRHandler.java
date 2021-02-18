@@ -104,9 +104,9 @@ public class VDRHandler extends BaseThingHandler {
                         updateState(channelUID, OnOffType.OFF);
                     }
                 });
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ce.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ce.getMessage());
             } catch (SVDRPParseResponseException se) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
             } finally {
                 try {
                     con.closeConnection();
@@ -313,9 +313,9 @@ public class VDRHandler extends BaseThingHandler {
                     }
                 });
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ce.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ce.getMessage());
         } catch (SVDRPParseResponseException se) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, se.getMessage());
         } finally {
             try {
                 con.closeConnection();
