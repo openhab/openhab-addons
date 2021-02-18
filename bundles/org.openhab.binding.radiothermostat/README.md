@@ -173,7 +173,7 @@ sitemap radiotherm label="My Thermostat" {
         Text item=Therm_Override icon="smoke"
         Switch item=Therm_Hold icon="smoke"
 
-        // Example of overriding the themostat's temperature reading
+        // Example of overriding the thermostat's temperature reading
         Switch item=Therm_Rtemp label="Remote Temp" icon="temperature" mappings=[60="60", 75="75", 80="80", -1="Reset"]
 
         // Virtual switch/button to trigger a rule to send a custom command
