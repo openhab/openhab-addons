@@ -280,14 +280,16 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
                         && (currentChannelID == null
                                 || !currentChannelID.contains(DsChannelTypeProvider.TEMPERATURE_CONTROLLED))
                         && !controlState.equals(ControlStates.EMERGENCY)) {
+                    // FIXME get proper outputchannel
                     currentChannelID = DsChannelTypeProvider.getOutputChannelTypeID(FunctionalColorGroupEnum.BLUE,
-                            OutputModeEnum.TEMPRETURE_PWM);
+                            OutputModeEnum.TEMPRETURE_PWM, null);
                     loadChannel();
                     currentValue = tempControlStatus.getNominalValue();
                     updateState(currentChannelID, new DecimalType(currentValue.doubleValue()));
                 } else if (!controlMode.equals(ControlModes.PID_CONTROL) && !controlMode.equals(ControlModes.OFF)) {
+                    // FIXME get propert outputchannel
                     currentChannelID = DsChannelTypeProvider.getOutputChannelTypeID(FunctionalColorGroupEnum.BLUE,
-                            OutputModeEnum.HEATING_PWM);
+                            OutputModeEnum.HEATING_PWM, null);
                     loadChannel();
                     currentValue = tempControlStatus.getControlValue();
                     updateState(currentChannelID, new PercentType(fixPercent(currentValue.intValue())));

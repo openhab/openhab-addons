@@ -458,7 +458,8 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                 } else if (this.device.isBlind()) {
                     // load channel for set the angle of jalousie devices
                     String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(
-                            ((Device) device).getFunctionalColorGroup(), ((Device) device).getOutputMode());
+                            ((Device) device).getFunctionalColorGroup(), ((Device) device).getOutputMode(),
+                            ((Device) device).getOutputChannels());
                     loadOutputChannel(new ChannelTypeUID(BINDING_ID, channelTypeID),
                             DsChannelTypeProvider.getItemType(channelTypeID));
                 }
@@ -713,9 +714,10 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
             loadOutputChannel(null, null);
         }
         String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(device.getFunctionalColorGroup(),
-                device.getOutputMode());
+                device.getOutputMode(), device.getOutputChannels());
         logger.debug("load channel: typeID={}, itemType={}",
-                DsChannelTypeProvider.getOutputChannelTypeID(device.getFunctionalColorGroup(), device.getOutputMode()),
+                DsChannelTypeProvider.getOutputChannelTypeID(device.getFunctionalColorGroup(), device.getOutputMode(),
+                        device.getOutputChannels()),
                 DsChannelTypeProvider.getItemType(channelTypeID));
         if (channelTypeID != null && (currentChannel == null || !currentChannel.equals(channelTypeID))) {
             loadOutputChannel(new ChannelTypeUID(BINDING_ID, channelTypeID),

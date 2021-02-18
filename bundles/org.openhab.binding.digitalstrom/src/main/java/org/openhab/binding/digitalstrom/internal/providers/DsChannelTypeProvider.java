@@ -29,6 +29,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.MeteringTypeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.MeteringUnitsEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.openhab.core.i18n.TranslationProvider;
@@ -120,18 +121,21 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
      * @param outputMode of the {@link Device}
      * @return the output channel type id or null
      */
-    public static String getOutputChannelTypeID(FunctionalColorGroupEnum functionalGroup, OutputModeEnum outputMode) {
+    public static String getOutputChannelTypeID(FunctionalColorGroupEnum functionalGroup, OutputModeEnum outputMode,
+            List<OutputChannelEnum> outputChannels) {
         if (functionalGroup != null && outputMode != null) {
             String channelPreID = GENERAL;
             if (functionalGroup.equals(FunctionalColorGroupEnum.YELLOW)) {
                 channelPreID = LIGHT;
             }
             if (functionalGroup.equals(FunctionalColorGroupEnum.GREY)) {
-                if (outputMode.equals(OutputModeEnum.POSITION_CON)) {
-                    return buildIdentifier(SHADE);
-                }
-                if (outputMode.equals(OutputModeEnum.POSITION_CON_US)) {
+                if (outputChannels != null && (outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_INDOOR)
+                        || outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE)
+                        || outputChannels.contains(OutputChannelEnum.SHADE_POSITION_INDOOR)
+                        || outputChannels.contains(OutputChannelEnum.SHADE_POSITION_OUTSIDE))) {
                     return buildIdentifier(SHADE, ANGLE);
+                } else {
+                    return buildIdentifier(SHADE);
                 }
             }
             if (functionalGroup.equals(FunctionalColorGroupEnum.BLUE)) {
