@@ -420,9 +420,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     public boolean isBlind() {
         return (outputMode == OutputModeEnum.POSITION_CON || outputMode == OutputModeEnum.POSITION_CON_US)
                 && (outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_INDOOR)
-                        || outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE)
-                        || outputChannels.contains(OutputChannelEnum.SHADE_POSITION_INDOOR)
-                        || outputChannels.contains(OutputChannelEnum.SHADE_POSITION_OUTSIDE));
+                        || outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE));
     }
 
     @Override
