@@ -8,6 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="telldus-core"/>
 			<bridge-type-ref id="telldus-live"/>
+			<bridge-type-ref id="telldus-local"/>
 		</supported-bridge-type-refs>
 
 		<label>Sensor</label>
@@ -91,14 +92,14 @@
 		<item-type>Number:Length</item-type>
 		<label>Rainrate</label>
 		<description>The current rain rate</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="raintotal">
 		<item-type>Number:Length</item-type>
 		<label>Total Rain</label>
 		<description>Total rain</description>
-		<state pattern="%d %unit%" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
@@ -126,9 +127,9 @@
 
 	<channel-type id="watt">
 		<item-type>Number:Power</item-type>
-		<label>Watt</label>
-		<description>Current kWatt</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<label>Power</label>
+		<description>Current power</description>
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 
