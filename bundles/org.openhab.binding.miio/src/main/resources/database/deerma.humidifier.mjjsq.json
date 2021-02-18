@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"deerma.humidifier.mjjsq"
+			"deerma.humidifier.mjjsq",
+			"deerma.humidifier.jsq"
 		],
 		"channels": [
 			{
