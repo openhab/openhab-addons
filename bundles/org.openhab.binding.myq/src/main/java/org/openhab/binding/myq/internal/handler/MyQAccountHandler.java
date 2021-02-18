@@ -300,12 +300,12 @@ public class MyQAccountHandler extends BaseBridgeHandler {
     private <T> T parseResultAndUpdateStatus(HttpResult result, Gson parser, Class<T> classOfT) {
         if (HttpStatus.isSuccess(result.responseCode)) {
             try {
-                T responsObject = parser.fromJson(result.content, classOfT);
-                if (responsObject != null) {
+                T responseObject = parser.fromJson(result.content, classOfT);
+                if (responseObject != null) {
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
                     }
-                    return responsObject;
+                    return responseObject;
                 }
             } catch (JsonSyntaxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
