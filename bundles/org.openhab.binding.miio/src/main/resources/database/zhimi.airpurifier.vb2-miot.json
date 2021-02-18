@@ -4,7 +4,7 @@
 			"zhimi.airpurifier.vb2"
 		],
 		"propertyMethod": "get_properties",
-		"maxProperties": 1,
+		"maxProperties": 3,
 		"channels": [
 			{
 				"property": "",
@@ -172,11 +172,11 @@
 						},
 						{
 							"value": "2",
-							"label": "Manual"
+							"label": "Favourite"
 						},
 						{
 							"value": "3",
-							"label": "Max"
+							"label": "Manual"
 						}
 					]
 				},
@@ -187,7 +187,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Night\",\"2\"\u003d\"Manual\",\"3\"\u003d\"Max\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Night\",\"2\"\u003d\"Favourite\",\"3\"\u003d\"Manual\"]"
 			},
 			{
 				"property": "pm2.5-density",
@@ -265,7 +265,7 @@
 				"piid": 5,
 				"friendlyName": "Filter - Filter Used Time",
 				"channel": "filter_used_time",
-				"type": "Number:Time",
+				"type": "Number:Duration",
 				"unit": "hours",
 				"stateDescription": {
 					"minimum": 0,
@@ -444,7 +444,7 @@
 					"minimum": 300,
 					"maximum": 2300,
 					"step": 10,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -465,7 +465,7 @@
 					"minimum": 300,
 					"maximum": 2300,
 					"step": 10,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -486,7 +486,7 @@
 					"minimum": 300,
 					"maximum": 2300,
 					"step": 10,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -507,7 +507,7 @@
 					"minimum": 300,
 					"maximum": 2300,
 					"step": 10,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -528,7 +528,7 @@
 					"minimum": 300,
 					"maximum": 2300,
 					"step": 10,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -549,7 +549,7 @@
 					"minimum": 300,
 					"maximum": 2300,
 					"step": 10,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -570,7 +570,7 @@
 					"minimum": 300,
 					"maximum": 2300,
 					"step": 10,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -587,7 +587,7 @@
 					"minimum": 0,
 					"maximum": 10000,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -604,7 +604,7 @@
 					"minimum": 0,
 					"maximum": 10000,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -621,7 +621,7 @@
 					"minimum": 0,
 					"maximum": 9,
 					"step": 1,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -637,7 +637,7 @@
 				"piid": 1,
 				"friendlyName": "Use Time - Use Time",
 				"channel": "use_time",
-				"type": "Number:Time",
+				"type": "Number:Duration",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
@@ -660,7 +660,7 @@
 					"minimum": 0,
 					"maximum": 2147483647,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -677,7 +677,7 @@
 					"minimum": 0,
 					"maximum": 600,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -694,7 +694,7 @@
 					"minimum": 0,
 					"maximum": 2147483647,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -748,7 +748,7 @@
 					"minimum": 0,
 					"maximum": 255,
 					"step": 1,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -902,7 +902,7 @@
 					"minimum": 0,
 					"maximum": 2147483647,
 					"step": 1,
-					"pattern": "%.1f"
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -923,7 +923,7 @@
 					"minimum": 0,
 					"maximum": 2147483647,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -940,7 +940,7 @@
 					"minimum": 0,
 					"maximum": 2147483647,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -1040,12 +1040,13 @@
 				"piid": 8,
 				"friendlyName": "Others - Powertime",
 				"channel": "powertime",
-				"type": "Number",
+				"type": "Number:duration",
+				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 2147483647,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,

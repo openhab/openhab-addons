@@ -4212,12 +4212,12 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | fault                | Number               | Air Purifier - Device Fault              | Value mapping ["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"] |
 | on                   | Switch               | Air Purifier - Power                     |            |
 | fan_level            | Number               | Air Purifier - Fan Level                 | Value mapping ["1"="Level1","2"="Level2","3"="Level3","0"="Sleep"] |
-| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Night","2"="Manual","3"="Max"] |
+| mode                 | Number               | Air Purifier - Mode                      | Value mapping ["0"="Auto","1"="Night","2"="Favourite","3"="Manual"] |
 | pm2_5_density        | Number               | Environment - PM2 5 Density              |            |
 | relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
 | temperature          | Number:Temperature   | Environment - Temperature                |            |
 | filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter_used_time     | Number:Time          | Filter - Filter Used Time                |            |
+| filter_used_time     | Number:Duration      | Filter - Filter Used Time                |            |
 | alarm                | Switch               | Alarm - Alarm                            |            |
 | volume               | Number:Dimensionless | Alarm - Volume                           |            |
 | brightness           | Number               | Indicator Light - Brightness             | Value mapping ["0"="brightest","1"="glimmer","2"="not bright"] |
@@ -4236,7 +4236,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | motor1_speed         | Number               | Motor Speed - Motor1 Speed               |            |
 | motor1_set_speed     | Number               | Motor Speed - Motor1 Set Speed           |            |
 | favorite_level       | Number               | Motor Speed - Favorite Level             |            |
-| use_time             | Number:Time          | Use Time - Use Time                      |            |
+| use_time             | Number:Duration      | Use Time - Use Time                      |            |
 | purify_volume        | Number               | Aqi - Purify Volume                      |            |
 | average_aqi          | Number               | Aqi - Average Aqi                        |            |
 | average_aqi_cnt      | Number               | Aqi - Average_aqi Read Times             |            |
@@ -4257,7 +4257,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | buttom_door          | String               | Others - Buttom Door                     |            |
 | reboot_cause         | Number               | Others - Reboot_cause                    | Value mapping ["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"] |
 | manual_level         | Number               | Others - Manual Level                    | Value mapping ["1"="level1","2"="level2","3"="level3"] |
-| powertime            | Number               | Others - Powertime                       |            |
+| powertime            | Number:duration      | Others - Powertime                       |            |
 | country_code         | Number               | Others - Country Code                    | Value mapping ["91"="India","44"="UK","852"="Hong Kong","886"="Taiwan","82"="Korea"] |
 
 ### Mi Standing Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
@@ -9017,7 +9017,7 @@ Number pm2_5_density "Environment - PM2 5 Density" (G_airpurifier) {channel="mii
 Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
-Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Number:Duration filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
 Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
 Number:Dimensionless volume "Alarm - Volume" (G_airpurifier) {channel="miio:basic:airpurifier:volume"}
 Number brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
@@ -9036,7 +9036,7 @@ Number m1_favorite "Motor Speed - M1 Favorite" (G_airpurifier) {channel="miio:ba
 Number motor1_speed "Motor Speed - Motor1 Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1_speed"}
 Number motor1_set_speed "Motor Speed - Motor1 Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1_set_speed"}
 Number favorite_level "Motor Speed - Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_level"}
-Number:Time use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
+Number:Duration use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
 Number purify_volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
 Number average_aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
 Number average_aqi_cnt "Aqi - Average_aqi Read Times" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi_cnt"}
@@ -9057,7 +9057,7 @@ String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:col
 String buttom_door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom_door"}
 Number reboot_cause "Others - Reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
 Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual_level"}
-Number powertime "Others - Powertime" (G_airpurifier) {channel="miio:basic:airpurifier:powertime"}
+Number:duration powertime "Others - Powertime" (G_airpurifier) {channel="miio:basic:airpurifier:powertime"}
 Number country_code "Others - Country Code" (G_airpurifier) {channel="miio:basic:airpurifier:country_code"}
 ```
 
