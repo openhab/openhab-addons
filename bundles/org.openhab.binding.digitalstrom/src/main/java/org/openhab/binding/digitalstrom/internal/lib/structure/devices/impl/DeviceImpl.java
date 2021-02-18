@@ -37,6 +37,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FuncNameAndColorGroupEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSID;
@@ -93,6 +94,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private final List<DeviceBinaryInput> deviceBinaryInputs = Collections.synchronizedList(new ArrayList<>());
     private final List<SensorEnum> devicePowerSensorTypes = new ArrayList<>();
     private final List<SensorEnum> deviceClimateSensorTypes = new ArrayList<>();
+    private final List<OutputChannelEnum> outputChannels = Collections.synchronizedList(new ArrayList<>());
 
     // for scenes
     private short activeSceneNumber = -1;
@@ -109,11 +111,11 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private final List<DeviceStateUpdate> deviceStateUpdates = Collections.synchronizedList(new LinkedList<>());
 
     /*
-     * Saves the refresh priorities and reading initialized flag of power sensors as an matrix.
-     * The first array fields are 0 = active power, 1 = output current, 2 = electric meter, 3 = power consumption and in
-     * each field is a
-     * string array with the fields 0 = refresh priority 1 = reading initial flag (true = reading is initialized,
-     * otherwise false)
+     * Saves the refresh priorities and reading initialized flag of power sensors as
+     * an matrix. The first array fields are 0 = active power, 1 = output current, 2
+     * = electric meter, 3 = power consumption and in each field is a string array
+     * with the fields 0 = refresh priority 1 = reading initial flag (true = reading
+     * is initialized, otherwise false)
      */
     private final Object[] powerSensorRefresh = new Object[] { new String[] { Config.REFRESH_PRIORITY_NEVER, "false" },
             new String[] { Config.REFRESH_PRIORITY_NEVER, "false" },
@@ -128,9 +130,10 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     public static final int REFRESH_ELECTRIC_METER_ARRAY_FIELD = 2;
     public static final int REFRESH_POWER_CONSUMPTION_ARRAY_FIELD = 3;
     /*
-     * Cache the last power sensor value to get power sensor value directly
-     * the key is the output value and the value is an Integer array for the sensor values (0 = active power, 1 =
-     * output current, 2 = power consumption, 3 = output current high)
+     * Cache the last power sensor value to get power sensor value directly the key
+     * is the output value and the value is an Integer array for the sensor values
+     * (0 = active power, 1 = output current, 2 = power consumption, 3 = output
+     * current high)
      */
     private final Map<Short, Integer[]> cachedSensorPowerValues = Collections.synchronizedMap(new HashMap<>());
 
@@ -139,14 +142,18 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     public static final int POWER_CONSUMPTION_ARRAY_FIELD = 2;
     public static final int OUTPUT_CURRENT_HIGH_ARRAY_FIELD = 3;
 
-    // Preparing for the advance device property setting "Turn 'switched' output off if value below:", but the
-    // configuration currently not work in digitalSTROM, because of that the value is fix 1.
+    // Preparing for the advance device property setting "Turn 'switched' output off
+    // if value below:", but the
+    // configuration currently not work in digitalSTROM, because of that the value
+    // is fix 1.
     private final int switchPercentOff = 1;
 
     /**
-     * Creates a new {@link DeviceImpl} from the given DigitalSTROM-Device {@link JsonObject}.
+     * Creates a new {@link DeviceImpl} from the given DigitalSTROM-Device
+     * {@link JsonObject}.
      *
-     * @param deviceJsonObject json response of the digitalSTROM-Server, must not be null
+     * @param deviceJsonObject json response of the digitalSTROM-Server, must not be
+     *            null
      */
     public DeviceImpl(JsonObject deviceJsonObject) {
         super(deviceJsonObject);
@@ -220,7 +227,34 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
                 }
             }
         }
+
+        outputChannels.addAll(getOutputChannels(deviceJsonObject));
+
         init();
+    }
+
+    private List<OutputChannelEnum> getOutputChannels(JsonObject deviceJsonObject) {
+        List<OutputChannelEnum> outputChannels = new ArrayList<>();
+        JsonElement jsonOutputChannels = deviceJsonObject.get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey());
+        if (jsonOutputChannels != null && jsonOutputChannels.isJsonArray()) {
+            JsonArray array = deviceJsonObject.get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey()).getAsJsonArray();
+            logger.debug("multiple channels ({}) found", array.size());
+            for (int i = 0; i < array.size(); i++) {
+                if (array.get(i) != null) {
+                    int channelId = array.get(i).getAsJsonObject().get("channelID").getAsInt();
+                    outputChannels.add(OutputChannelEnum.getChannel(channelId));
+                }
+            }
+        } else if (jsonOutputChannels != null && jsonOutputChannels.isJsonObject()) {
+            logger.debug("single channel found");
+            for (Entry<String, JsonElement> entry : deviceJsonObject
+                    .get(JSONApiResponseKeysEnum.OUTPUT_CHANNELS.getKey()).getAsJsonObject().entrySet()) {
+                int channelId = entry.getValue().getAsJsonObject().get("channelID").getAsInt();
+                outputChannels.add(OutputChannelEnum.getChannel(channelId));
+            }
+        }
+
+        return outputChannels;
     }
 
     private void initAddGroup(Short groupID) {
@@ -384,7 +418,11 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public boolean isBlind() {
-        return outputMode.equals(OutputModeEnum.POSITION_CON_US);
+        return (outputMode == OutputModeEnum.POSITION_CON || outputMode == OutputModeEnum.POSITION_CON_US)
+                && (outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_INDOOR)
+                        || outputChannels.contains(OutputChannelEnum.SHADE_OPENING_ANGLE_OUTSIDE)
+                        || outputChannels.contains(OutputChannelEnum.SHADE_POSITION_INDOOR)
+                        || outputChannels.contains(OutputChannelEnum.SHADE_POSITION_OUTSIDE));
     }
 
     @Override
@@ -401,6 +439,11 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     @Override
     public OutputModeEnum getOutputMode() {
         return outputMode;
+    }
+
+    @Override
+    public List<OutputChannelEnum> getOutputChannels() {
+        return outputChannels;
     }
 
     @Override
@@ -1423,7 +1466,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     }
 
     /**
-     * Checks output current sensor to return automatically high output current sensor, if the sensor exists.
+     * Checks output current sensor to return automatically high output current
+     * sensor, if the sensor exists.
      *
      * @param devSenVal
      * @return output current high DeviceSensorValue or the given DeviceSensorValue
@@ -1655,7 +1699,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     }
 
     /**
-     * if an {@link DeviceStatusListener} is registered inform him about the new state otherwise do nothing.
+     * if an {@link DeviceStatusListener} is registered inform him about the new
+     * state otherwise do nothing.
      *
      * @param deviceStateUpdate
      */

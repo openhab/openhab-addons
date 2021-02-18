@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonModel {
-	public JsonModel(int outputMode, List<OutputChannel> outputChannels) {
-		super();
-		this.outputMode = outputMode;
-		this.outputChannels = new ArrayList<>();
-		if (outputChannels != null) {
-			this.outputChannels = outputChannels;
-		}
-	}
+    public JsonModel(int outputMode, List<OutputChannel> outputChannels) {
+        super();
+        this.outputMode = outputMode;
+        this.outputChannels = new ArrayList<>();
+        if (outputChannels != null) {
+            this.outputChannels = outputChannels;
+        }
+    }
 
-	int outputMode;
+    int outputMode;
 
-	List<OutputChannel> outputChannels;
+    List<OutputChannel> outputChannels;
 }
