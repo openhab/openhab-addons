@@ -250,16 +250,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
                 nodeIndex, userIndex, nodes);
     }
 
-    /*
-     * public String getGatewayIP() {
-     * bridge = (Bridge) thingGeneric.getBridgeUID();
-     * if (thingGeneric.getBridgeUID() != null) {
-     * return ((SoulissGatewayHandler) (Bridge) this.getThingByUID(bridge.getUID()).getHandler()).ipAddressOnLAN;
-     * }
-     * return null;
-     * }
-     */
-
     public void setNodes(int nodes) {
         this.nodes = nodes;
     }
@@ -288,17 +278,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         return maxNode + 1;
     }
 
-    // public void setMaxnodes(int maxnodes) {
-    // this.maxnodes = maxnodes;
-    // }
-
     public void setMaxTypicalXnode(int maxTypicalXnode) {
         this.maxTypicalXnode = maxTypicalXnode;
     }
-
-    // public void setMaxrequests(int maxrequests) {
-    // this.maxrequests = maxrequests;
-    // }
 
     public int getMaxTypicalXnode() {
         return maxTypicalXnode;
@@ -323,8 +305,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void pingSent() {
         if (++countPingKo > 3) {
-            // if GW do not respond to ping it is setted to OFFLINE
-            logger.debug("Gateway do not respond to {} ping packet - setting OFFLINE", countPingKo);
+
             if (bridge.getHandler() != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Gateway "
                         + bridge.getHandler().getThing().getUID() + " do not respond to " + countPingKo + " ping");
