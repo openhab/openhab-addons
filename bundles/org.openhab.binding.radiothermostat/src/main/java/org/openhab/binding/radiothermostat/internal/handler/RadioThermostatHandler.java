@@ -216,7 +216,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     }
 
     public void handleRawCommand(@Nullable String rawCommand) {
-        connector.sendCommand(null, null, rawCommand);
+        connector.sendCommand(null, null, rawCommand, DEFAULT_RESOURCE);
     }
 
     @Override
@@ -226,21 +226,19 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         } else {
             Integer cmdInt = -1;
             String cmdStr = command.toString();
-            if (cmdStr != null) {
-                try {
-                    // parse out an Integer from the string
-                    // ie '70.5 F' becomes 70, also handles negative numbers
-                    cmdInt = NumberFormat.getInstance().parse(cmdStr).intValue();
-                } catch (ParseException e) {
-                    logger.debug("Command: {} -> Not an integer", cmdStr);
-                }
+            try {
+                // parse out an Integer from the string
+                // ie '70.5 F' becomes 70, also handles negative numbers
+                cmdInt = NumberFormat.getInstance().parse(cmdStr).intValue();
+            } catch (ParseException e) {
+                logger.debug("Command: {} -> Not an integer", cmdStr);
             }
 
             switch (channelUID.getId()) {
                 case MODE:
                     // only do if commanded mode is different than current mode
                     if (!cmdInt.equals(rthermData.getThermostatData().getMode())) {
-                        connector.sendCommand("tmode", cmdStr);
+                        connector.sendCommand("tmode", cmdStr, DEFAULT_RESOURCE);
 
                         // set the new operating mode, reset everything else,
                         // because refreshing the tstat data below is really slow.
@@ -260,19 +258,19 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     break;
                 case FAN_MODE:
                     rthermData.getThermostatData().setFanMode(cmdInt);
-                    connector.sendCommand("fmode", cmdStr);
+                    connector.sendCommand("fmode", cmdStr, DEFAULT_RESOURCE);
                     break;
                 case PROGRAM_MODE:
                     rthermData.getThermostatData().setProgramMode(cmdInt);
-                    connector.sendCommand("program_mode", cmdStr);
+                    connector.sendCommand("program_mode", cmdStr, DEFAULT_RESOURCE);
                     break;
                 case HOLD:
                     if (command instanceof OnOffType && command == OnOffType.ON) {
                         rthermData.getThermostatData().setHold(1);
-                        connector.sendCommand("hold", "1");
+                        connector.sendCommand("hold", "1", DEFAULT_RESOURCE);
                     } else if (command instanceof OnOffType && command == OnOffType.OFF) {
                         rthermData.getThermostatData().setHold(0);
-                        connector.sendCommand("hold", "0");
+                        connector.sendCommand("hold", "0", DEFAULT_RESOURCE);
                     }
                     break;
                 case SET_POINT:
@@ -287,7 +285,14 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         // don't do anything if we are not in heat or cool mode
                         break;
                     }
-                    connector.sendCommand(cmdKey, cmdInt.toString());
+                    connector.sendCommand(cmdKey, cmdInt.toString(), DEFAULT_RESOURCE);
+                    break;
+                case REMOTE_TEMP:
+                    if (cmdInt != -1) {
+                        connector.sendCommand("rem_temp", cmdInt.toString(), REMOTE_TEMP_RESOURCE);
+                    } else {
+                        connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
+                    }
                     break;
                 default:
                     logger.warn("Unsupported command: {}", command.toString());
@@ -320,7 +325,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     updateAllChannels();
                     break;
                 case HUMIDITY_RESOURCE:
-                    rthermData.setHumidity(gson.fromJson(evtVal, RadioThermostatHumidityDTO.class).getHumidity());
+                    RadioThermostatHumidityDTO dto = gson.fromJson(evtVal, RadioThermostatHumidityDTO.class);
+                    if (dto != null) {
+                        rthermData.setHumidity(dto.getHumidity());
+                    }
                     updateChannel(HUMIDITY, rthermData);
                     break;
                 case RUNTIME_RESOURCE:
@@ -382,7 +390,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     /**
      * Update a given channelId from the thermostat data
-     * 
+     *
      * @param the channel id to be updated
      * @param data the RadioThermostat dto
      * @return the value to be set in the state
@@ -456,7 +464,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     /**
      * Build a list of fan modes based on what model thermostat is used
-     * 
+     *
      * @return list of state options for thermostat fan modes
      */
     private List<StateOption> getFanModeOptions() {
