@@ -6,7 +6,7 @@ There also are nice tools on the web for visualizing InfluxDB time series, such 
 ## Database Structure
 
 - This service allows you to persist and query states using the time series database.
-- The states of an item are persisted in _measurements_ points with names equal to the name of the item, or the alias, if one is provided. In both variants, a _tag_ named "item" is added, containing the item name.
+- The states of an item are persisted in _measurements_ points with names equal to the name of the item, its alias, or from some metadata depending on the configuration. In all variants, a tag named "item" is added, containing the item name.
   All values are stored in a _field_ called "value" using the following types:
   - **float** for DecimalType and QuantityType
   - **integer** for `OnOffType` and `OpenClosedType` (values are stored using 0 or 1) and `DateTimeType` (milliseconds since 1970-01-01T00:00:00Z)

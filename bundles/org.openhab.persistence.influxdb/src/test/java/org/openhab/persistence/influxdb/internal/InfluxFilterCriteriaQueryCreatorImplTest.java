@@ -84,18 +84,6 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testEscapeSimpleItem() {
-        FilterCriteria criteria = createBaseCriteria("sample.Item");
-
-        String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT value FROM origin.\"sample.Item\";"));
-
-        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                + "|> filter(fn: (r) => r[\"_measurement\"] == \"sample.Item\")"));
-    }
-
-    @Test
     public void testSimpleUnboundedItemWithoutParams() {
         FilterCriteria criteria = new FilterCriteria();
         criteria.setOrdering(null);
