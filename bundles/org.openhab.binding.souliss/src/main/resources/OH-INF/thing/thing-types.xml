@@ -180,8 +180,8 @@
 		<channels>
 			<channel id="onOff" typeId="onoff"/>
 			<channel id="whitemode" typeId="whitemode"/>
-			<channel id="roller_brightness" typeId="roller_brightness"/>
-			<channel id="dimmer_brightness" typeId="dimmer_brightness"/>
+			<channel id="rollerBrightness" typeId="rollerBrightness"/>
+			<channel id="dimmerBrightness" typeId="dimmerBrightness"/>
 			<channel id="ledcolor" typeId="ledcolor"/>
 			<channel id="sleep" typeId="sleep"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
@@ -243,8 +243,8 @@
 
 		<channels>
 			<channel id="onOff" typeId="onoff"/>
-			<channel id="roller_brightness" typeId="roller_brightness"/>
-			<channel id="dimmer_brightness" typeId="dimmer_brightness"/>
+			<channel id="rollerBrightness" typeId="rollerBrightness"/>
+			<channel id="dimmerBrightness" typeId="dimmerBrightness"/>
 			<channel id="sleep" typeId="sleep"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
@@ -918,7 +918,7 @@
 		<category>ColorLight</category>
 	</channel-type>
 
-	<channel-type id="dimmer_brightness">
+	<channel-type id="dimmerBrightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
@@ -933,7 +933,7 @@
 		<category>DimmableLight</category>
 	</channel-type>
 
-	<channel-type id="roller_brightness">
+	<channel-type id="rollerBrightness">
 		<item-type>Rollershutter</item-type>
 		<label>Brightness</label>
 		<description>Brightness Up/Down</description>
