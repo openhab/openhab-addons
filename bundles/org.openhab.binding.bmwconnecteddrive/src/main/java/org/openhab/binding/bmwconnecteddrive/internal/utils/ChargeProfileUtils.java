@@ -14,6 +14,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
 import java.time.DayOfWeek;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,14 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ChargeProfileUtils {
 
     public static String formatDays(final Set<DayOfWeek> weekdays) {
-        StringBuilder days = new StringBuilder();
-        weekdays.forEach(entry -> {
-            if (days.length() == 0) {
-                days.append(Constants.DAYS.get(entry));
-            } else {
-                days.append(Constants.COMMA).append(Constants.DAYS.get(entry));
-            }
-        });
-        return days.toString();
+        return weekdays.stream().map(day -> Constants.DAYS.get(day)).collect(Collectors.joining(Constants.COMMA));
     }
 }
