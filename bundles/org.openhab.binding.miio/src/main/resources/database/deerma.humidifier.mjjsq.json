@@ -4,6 +4,7 @@
 			"deerma.humidifier.mjjsq",
 			"deerma.humidifier.jsq"
 		],
+		"maxProperties": 1,
 		"channels": [
 			{
 				"property": "OnOff_State",
@@ -16,6 +17,10 @@
 						"command": "Set_OnOff",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -35,34 +40,46 @@
 				"property": "Humidity_Value",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
-				"actions": [
-					{
-						"command": "Set_HumiValue",
-						"parameterType": "NUMBER"
-					}
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
 				]
 			},
 			{
 				"property": "HumiSet_Value",
 				"friendlyName": "Humidity Setting",
 				"channel": "humidity_set",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "Set_HumiValue",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "humidity",
+				"tags": [
+					"SetPoint",
+					"Humidity"
+				]
 			},
 			{
 				"property": "Led_State",
 				"friendlyName": "LED",
-				"channel": "ked",
+				"channel": "led",
 				"type": "Number",
 				"refresh": true,
 				"actions": []
 			},
 			{
 				"property": "TipSound_State",
-				"friendlyName": "TipSound_State",
+				"friendlyName": "TipSound State",
 				"channel": "sound",
 				"type": "String",
 				"refresh": true,
@@ -70,7 +87,7 @@
 			},
 			{
 				"property": "wet_and_protect",
-				"friendlyName": "wet_and_protect",
+				"friendlyName": "Wet and Protect",
 				"channel": "wet_and_protect",
 				"type": "Number",
 				"refresh": true,
