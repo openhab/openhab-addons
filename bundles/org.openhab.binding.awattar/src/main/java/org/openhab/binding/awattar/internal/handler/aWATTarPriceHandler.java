@@ -17,8 +17,7 @@ import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -113,26 +112,25 @@ public class aWATTarPriceHandler extends BaseThingHandler {
 
         String group = channelUID.getGroupId();
 
-        GregorianCalendar target;
+        ZonedDateTime target;
 
         if (group.equals(CHANNEL_GROUP_CURRENT)) {
-            target = new GregorianCalendar();
+            target = ZonedDateTime.now(bridgeHandler.getTimeZone());
         } else if (group.startsWith("today")) {
-            target = getCalendarForHour(Integer.valueOf(group.substring(5)));
+            target = getCalendarForHour(Integer.valueOf(group.substring(5)), bridgeHandler.getTimeZone());
         } else if (group.startsWith("tomorrow")) {
-            target = getCalendarForHour(Integer.valueOf(group.substring(8)));
-            target.add(Calendar.DATE, 1);
+            target = getCalendarForHour(Integer.valueOf(group.substring(8)), bridgeHandler.getTimeZone()).plusDays(1);
         } else {
             logger.warn("Unsupported channel group {}", group);
             updateState(channelUID, state);
             return;
         }
-        logger.trace("Got target date: {}", target.toZonedDateTime().toString());
+        logger.trace("Got target date: {}", target.toString());
 
-        aWATTarPrice price = bridgeHandler.getPriceFor(target.getTimeInMillis());
+        aWATTarPrice price = bridgeHandler.getPriceFor(target.toInstant().toEpochMilli());
 
         if (price == null) {
-            logger.trace("No price found for hour {}", target.toZonedDateTime().toString());
+            logger.trace("No price found for hour {}", target.toString());
             updateState(channelUID, state);
             return;
         }

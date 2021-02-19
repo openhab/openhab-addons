@@ -32,6 +32,7 @@ Auto discovery is not supported.
 |-------------|-------------------------------------------------------------------------------------------------------------------------------|
 | vatPercent  | Percentage of the value added tax to apply to net prices. Optional, defaults to 19.                                           |
 | basePrice   | The net(!) base price you have to pay for every kWh. Optional, but you most probably want to set it based on you delivery contract.  |
+| timeZone    | The time zone the hour definitions of the things below refer to. Default is `CET`, as it corresponds to the aWATTar API. It is strongly recommended not to change this. However, if you do so, be aware that the prices delivered by the API will not cover a whole calendar day in this timezone. **Advanced** |
 
 ### Prices Thing
 

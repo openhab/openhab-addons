@@ -2,16 +2,19 @@ package org.openhab.binding.awattar.internal;
 
 import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.TreeSet;
 
 public class aWATTarNonConsecutiveBestPriceResult extends aWATTarBestPriceResult {
 
     private TreeSet<aWATTarPrice> members;
+    private ZoneId zoneId;
 
-    public aWATTarNonConsecutiveBestPriceResult(int size) {
+    public aWATTarNonConsecutiveBestPriceResult(int size, ZoneId zoneId) {
         super();
+        this.zoneId = zoneId;
         members = new TreeSet<>(new Comparator<aWATTarPrice>() {
             @Override
             public int compare(aWATTarPrice o1, aWATTarPrice o2) {
@@ -28,7 +31,7 @@ public class aWATTarNonConsecutiveBestPriceResult extends aWATTarBestPriceResult
 
     @Override
     public boolean isActive() {
-        return members.stream().anyMatch(x -> x.contains(new Date().getTime()));
+        return members.stream().anyMatch(x -> x.contains(Instant.now().toEpochMilli()));
     }
 
     public String toString() {
@@ -42,7 +45,7 @@ public class aWATTarNonConsecutiveBestPriceResult extends aWATTarBestPriceResult
             if (second) {
                 res.append(',');
             }
-            res.append(getHourFrom(price.getStartTimestamp()));
+            res.append(getHourFrom(price.getStartTimestamp(), zoneId));
             second = true;
         }
         return res.toString();

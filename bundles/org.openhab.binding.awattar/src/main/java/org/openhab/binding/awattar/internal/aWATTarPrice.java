@@ -1,7 +1,8 @@
 package org.openhab.binding.awattar.internal;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,13 +16,11 @@ public class aWATTarPrice implements Comparable<aWATTarPrice> {
 
     private final int hour;
 
-    public aWATTarPrice(double price, long startTimestamp, long endTimestamp) {
+    public aWATTarPrice(double price, long startTimestamp, long endTimestamp, ZoneId zoneId) {
         this.price = price;
         this.endTimestamp = endTimestamp;
         this.startTimestamp = startTimestamp;
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTimeInMillis(startTimestamp);
-        this.hour = calendar.get(Calendar.HOUR_OF_DAY);
+        this.hour = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startTimestamp), zoneId).getHour();
     }
 
     public long getStartTimestamp() {

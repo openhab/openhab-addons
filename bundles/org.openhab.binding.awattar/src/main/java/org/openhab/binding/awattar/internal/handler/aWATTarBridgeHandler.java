@@ -5,7 +5,10 @@ import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.BINDING_ID;
 import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
 
-import java.util.*;
+import java.time.*;
+import java.time.zone.ZoneRulesException;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -19,6 +22,7 @@ import org.openhab.binding.awattar.internal.dto.Datum;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -39,14 +43,14 @@ import com.google.gson.Gson;
  */
 public class aWATTarBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(aWATTarBridgeHandler.class);
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> dataRefresher;
 
-    private String URL = "https://api.awattar.de/v1/marketdata";
+    private final String URL = "https://api.awattar.de/v1/marketdata";
 
     // This cache stores price data for up to two days
     private SortedMap<Long, aWATTarPrice> priceMap = null;
-    private int dataRefreshInterval = 60;
+    private final int dataRefreshInterval = 60;
     private @Nullable aWATTarBridgeConfiguration config = null;
     private double vatFactor = 0;
 
@@ -55,6 +59,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     private double basePrice = 0;
     private long minTimestamp = 0;
     private long maxTimestamp = 0;
+    private ZoneId zone = null;
 
     public aWATTarBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
@@ -69,6 +74,18 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(aWATTarBridgeConfiguration.class);
         vatFactor = 1 + (config.vatPercent / 100);
         basePrice = config.basePrice;
+        try {
+            zone = ZoneId.of(config.timeZone);
+            logger.trace("Using time zone {}", zone);
+        } catch (ZoneRulesException ex) {
+            logger.error("Zone ID not found: {}, {}", zone, ex.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown timezone");
+            return;
+        } catch (DateTimeException ex) {
+            logger.error("Invalid Timezone format: {}, {}", config.timeZone, ex.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid timezone format");
+            return;
+        }
 
         logger.trace("Start Data refresh job at interval {} seconds.", dataRefreshInterval);
         dataRefresher = scheduler.scheduleAtFixedRate(this::refreshIfNeeded,
@@ -92,15 +109,10 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
 
     private void getPrices() {
         try {
-            GregorianCalendar cal = new GregorianCalendar();
-
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            long start = cal.getTimeInMillis();
-            cal.add(Calendar.DATE, 2);
-            long end = cal.getTimeInMillis();
+            ZonedDateTime zdt = LocalDate.now(zone).atStartOfDay(zone);
+            long start = zdt.toInstant().toEpochMilli();
+            zdt = zdt.plusDays(2);
+            long end = zdt.toInstant().toEpochMilli();
 
             StringBuilder request = new StringBuilder(URL);
             request.append("?start=").append(start).append("&end=").append(end);
@@ -115,13 +127,13 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
             switch (httpStatus) {
                 case OK_200:
                     Gson gson = new Gson();
-                    SortedMap<Long, aWATTarPrice> result = new TreeMap<Long, aWATTarPrice>();
+                    SortedMap<Long, aWATTarPrice> result = new TreeMap<>();
                     minTimestamp = 0;
                     maxTimestamp = 0;
                     AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
                     for (Datum d : apiData.data) {
                         result.put(d.startTimestamp,
-                                new aWATTarPrice(d.marketprice / 10.0, d.startTimestamp, d.endTimestamp));
+                                new aWATTarPrice(d.marketprice / 10.0, d.startTimestamp, d.endTimestamp, zone));
                         updateMin(d.startTimestamp);
                         updateMax(d.endTimestamp);
                     }
@@ -151,17 +163,14 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         if (priceMap == null) {
             return true;
         }
-        if (priceMap.lastKey() < new Date().getTime() + 9 * 3600 * 1000) {
-            return true;
-        }
-        return false;
+        return priceMap.lastKey() < Instant.now().toEpochMilli() + 9 * 3600 * 1000;
     }
 
     private void refresh() {
         logger.trace("Refreshing aWATTar data ...");
         try {
             getPrices();
-            lastUpdated = new Date().getTime();
+            lastUpdated = Instant.now().toEpochMilli();
             updateStatus(ThingStatus.ONLINE);
         } catch (aWATTarConnectionException e) {
             logger.error(e.getMessage());
@@ -183,6 +192,10 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
 
     public long getLastUpdated() {
         return lastUpdated;
+    }
+
+    public ZoneId getTimeZone() {
+        return zone;
     }
 
     public SortedMap<Long, aWATTarPrice> getPriceMap() {
@@ -211,6 +224,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean containsPriceFor(long timestamp) {
+        logger.trace("containsPriceFor: ts: {}, min: {}, max: {}", timestamp, minTimestamp, maxTimestamp);
         return minTimestamp <= timestamp && maxTimestamp >= timestamp;
     }
 

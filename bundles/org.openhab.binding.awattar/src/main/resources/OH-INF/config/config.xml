@@ -4,19 +4,6 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="bridge-type:awattar:awattar-bridge">
-		<parameter name="vatPercent" type="decimal">
-			<label>VAT Percent</label>
-			<description>Specifies the value added tax percentage</description>
-			<default>19</default>
-		</parameter>
-		<parameter name="basePrice" type="decimal">
-			<label>Base price</label>
-			<description>Specifies the net base price per kWh</description>
-			<default>0</default>
-		</parameter>
-	</config-description>
-
 	<config-description uri="thing-type:awattar:prices">
 
 	</config-description>

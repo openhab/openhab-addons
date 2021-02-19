@@ -1,10 +1,9 @@
 package org.openhab.binding.awattar.internal;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.temporal.ChronoUnit;
 
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -17,28 +16,20 @@ public class aWATTarUtil {
 
     public static long getMillisToNextMinute(int mod) {
 
-        long now = new Date().getTime();
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.set(Calendar.SECOND, 0);
-        int min = cal.get(Calendar.MINUTE);
+        long now = Instant.now().toEpochMilli();
+        ZonedDateTime dt = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        int min = dt.getMinute();
         int offset = min % mod;
         offset = offset == 0 ? mod : offset;
-        cal.add(Calendar.MINUTE, offset);
-        long result = cal.getTimeInMillis() - now;
-        logger.trace("Now: {}, mod: {}, Target Time: {}, difference: {}", now, mod, cal.toZonedDateTime().toString(),
-                result);
+        dt = dt.plusMinutes(offset);
+        long result = dt.toInstant().toEpochMilli() - now;
+        logger.trace("Now: {}, mod: {}, Target Time: {}, difference: {}", now, mod, dt.toString(), result);
 
         return result;
     }
 
-    public static GregorianCalendar getCalendarForHour(int hour) {
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.clear(Calendar.MILLISECOND);
-        calendar.clear(Calendar.SECOND);
-        calendar.clear(Calendar.MINUTE);
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        return calendar;
+    public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {
+        return ZonedDateTime.now(zone).truncatedTo(ChronoUnit.DAYS).plus(hour, ChronoUnit.HOURS);
     }
 
     public static DateTimeType getDateTimeType(long time, TimeZoneProvider tz) {
@@ -51,19 +42,12 @@ public class aWATTarUtil {
         return String.format("%02d:%02d", hours, minutes);
     }
 
-    public static String formatDate(GregorianCalendar date) {
-        return date.toZonedDateTime().toString();
+    public static String formatDate(long date, ZoneId zoneId) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(date), zoneId).toString();
     }
 
-    public static String formatDate(long date) {
-        GregorianCalendar c = new GregorianCalendar();
-        c.setTimeInMillis(date);
-        return formatDate(c);
-    }
-
-    public static String getHourFrom(long timestamp) {
-        GregorianCalendar c = new GregorianCalendar();
-        c.setTimeInMillis(timestamp);
-        return String.format("%02d", c.get(Calendar.HOUR_OF_DAY));
+    public static String getHourFrom(long timestamp, ZoneId zoneId) {
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneId);
+        return String.format("%02d", zdt.getHour());
     }
 }

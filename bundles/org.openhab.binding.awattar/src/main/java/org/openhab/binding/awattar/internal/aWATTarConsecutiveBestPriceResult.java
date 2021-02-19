@@ -2,7 +2,8 @@ package org.openhab.binding.awattar.internal;
 
 import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 public class aWATTarConsecutiveBestPriceResult extends aWATTarBestPriceResult {
@@ -10,9 +11,11 @@ public class aWATTarConsecutiveBestPriceResult extends aWATTarBestPriceResult {
     private double priceSum = 0;
     private int length = 0;
     private String hours;
+    private ZoneId zoneId;
 
-    public aWATTarConsecutiveBestPriceResult(List<aWATTarPrice> prices) {
+    public aWATTarConsecutiveBestPriceResult(List<aWATTarPrice> prices, ZoneId zoneId) {
         super();
+        this.zoneId = zoneId;
         StringBuilder hours = new StringBuilder();
         boolean second = false;
         for (aWATTarPrice price : prices) {
@@ -23,7 +26,7 @@ public class aWATTarConsecutiveBestPriceResult extends aWATTarBestPriceResult {
             if (second) {
                 hours.append(',');
             }
-            hours.append(getHourFrom(price.getStartTimestamp()));
+            hours.append(getHourFrom(price.getStartTimestamp(), zoneId));
             second = true;
         }
         this.hours = hours.toString();
@@ -31,7 +34,7 @@ public class aWATTarConsecutiveBestPriceResult extends aWATTarBestPriceResult {
 
     @Override
     public boolean isActive() {
-        return contains(new Date().getTime());
+        return contains(Instant.now().toEpochMilli());
     }
 
     public boolean contains(long timestamp) {
@@ -43,7 +46,8 @@ public class aWATTarConsecutiveBestPriceResult extends aWATTarBestPriceResult {
     }
 
     public String toString() {
-        return String.format("{%s, %s, %.2f}", formatDate(getStart()), formatDate(getEnd()), priceSum / length);
+        return String.format("{%s, %s, %.2f}", formatDate(getStart(), zoneId), formatDate(getEnd(), zoneId),
+                priceSum / length);
     }
 
     public String getHours() {

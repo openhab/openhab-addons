@@ -5,7 +5,13 @@ import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
 import static org.openhab.binding.awattar.internal.aWATTarUtil.getMillisToNextMinute;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -29,12 +35,11 @@ import org.slf4j.LoggerFactory;
 public class aWATTarBestpriceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(aWATTarBestpriceHandler.class);
-    private static final long INITIAL_DELAY_IN_SECONDS = 1;
 
-    private int thingRefreshInterval = 60;
+    private final int thingRefreshInterval = 60;
     private @Nullable ScheduledFuture<?> thingRefresher;
     private @Nullable aWATTarBestpriceConfiguration config = null;
-    private TimeZoneProvider timeZoneProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     public aWATTarBestpriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -110,30 +115,31 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
     public void refreshChannel(ChannelUID channelUID) {
         logger.trace("refreshing channel {}", channelUID);
         State state = UnDefType.UNDEF;
-        var bridgeHandler = (aWATTarBridgeHandler) getBridge().getHandler();
+        aWATTarBridgeHandler bridgeHandler = (aWATTarBridgeHandler) getBridge().getHandler();
         if (bridgeHandler.getPriceMap() == null) {
+            logger.debug("No prices available, so can't refresh channel.");
             // no prices available, can't continue
             updateState(channelUID, state);
             return;
         }
         assert config != null;
-        Timerange timerange = getRange(config.rangeStart, config.rangeDuration);
+        Timerange timerange = getRange(config.rangeStart, config.rangeDuration, bridgeHandler.getTimeZone());
         if (!(bridgeHandler.containsPriceFor(timerange.start) && bridgeHandler.containsPriceFor(timerange.end))) {
             updateState(channelUID, state);
             return;
         }
 
-        aWATTarBestPriceResult result = null;
+        aWATTarBestPriceResult result;
         if (config.consecutive) {
             ArrayList<aWATTarPrice> range = new ArrayList<aWATTarPrice>(config.rangeDuration);
             range.addAll(
                     getPriceRange(timerange, (o1, o2) -> Long.compare(o1.getStartTimestamp(), o2.getStartTimestamp())));
             aWATTarConsecutiveBestPriceResult res = new aWATTarConsecutiveBestPriceResult(
-                    range.subList(0, config.length));
+                    range.subList(0, config.length), bridgeHandler.getTimeZone());
 
             for (int i = 1; i <= range.size() - config.length; i++) {
                 aWATTarConsecutiveBestPriceResult res2 = new aWATTarConsecutiveBestPriceResult(
-                        range.subList(i, i + config.length));
+                        range.subList(i, i + config.length), bridgeHandler.getTimeZone());
                 if (res2.getPriceSum() < res.getPriceSum()) {
                     res = res2;
                 }
@@ -142,7 +148,8 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
         } else {
             SortedSet<aWATTarPrice> range = getPriceRange(timerange,
                     (o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
-            aWATTarNonConsecutiveBestPriceResult res = new aWATTarNonConsecutiveBestPriceResult(config.length);
+            aWATTarNonConsecutiveBestPriceResult res = new aWATTarNonConsecutiveBestPriceResult(config.length,
+                    bridgeHandler.getTimeZone());
             logger.trace("Bestprice Candidate range: {}", range);
             int ct = 0;
             for (aWATTarPrice price : range) {
@@ -167,13 +174,13 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
                 state = getDateTimeType(result.getEnd(), timeZoneProvider);
                 break;
             case CHANNEL_COUNTDOWN:
-                diff = result.getStart() - new Date().getTime();
+                diff = result.getStart() - Instant.now().toEpochMilli();
                 if (diff >= 0) {
                     state = new StringType(getDuration(diff));
                 }
                 break;
             case CHANNEL_REMAINING:
-                diff = result.getEnd() - new Date().getTime();
+                diff = result.getEnd() - Instant.now().toEpochMilli();
                 if (result.isActive()) {
                     state = new StringType(getDuration(diff));
                 }
@@ -200,28 +207,25 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
     private SortedSet<aWATTarPrice> getPriceRange(Timerange range, Comparator<aWATTarPrice> comparator) {
 
         aWATTarBridgeHandler bridgeHandler = (aWATTarBridgeHandler) getBridge().getHandler();
-        TreeSet<aWATTarPrice> result = new TreeSet<aWATTarPrice>(comparator);
+        TreeSet<aWATTarPrice> result = new TreeSet<>(comparator);
         result.addAll(bridgeHandler.getPriceMap().values().stream().filter(x -> x.isBetween(range.start, range.end))
                 .collect(Collectors.toSet()));
         logger.trace("getPriceRange result: {}", result);
         return result;
     }
 
-    private Timerange getRange(int start, int duration) {
-        GregorianCalendar startCal = getCalendarForHour(start);
-        GregorianCalendar endCal = getCalendarForHour(start);
-        endCal.add(Calendar.HOUR_OF_DAY, duration);
+    private Timerange getRange(int start, int duration, ZoneId zoneId) {
+        ZonedDateTime startCal = getCalendarForHour(start, zoneId);
+        ZonedDateTime endCal = getCalendarForHour(start, zoneId).plusHours(duration);
 
-        logger.trace("getPriceRange: startCal: {}, endCal: {} ", startCal.toZonedDateTime().toString(),
-                endCal.toZonedDateTime().toString());
-        if (endCal.getTimeInMillis() < new GregorianCalendar().getTimeInMillis()) {
+        logger.trace("getRange: startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
+        if (endCal.toInstant().toEpochMilli() < Instant.now().toEpochMilli()) {
             // span is in the past, add one day
-            startCal.add(Calendar.DATE, 1);
-            endCal.add(Calendar.DATE, 1);
+            startCal = startCal.plusDays(1);
+            endCal = endCal.plusDays(1);
         }
-        logger.trace("getPriceRange - 2: startCal: {}, endCal: {} ", startCal.toZonedDateTime().toString(),
-                endCal.toZonedDateTime().toString());
-        return new Timerange(startCal.getTimeInMillis(), endCal.getTimeInMillis());
+        logger.trace("getRange - 2: startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
+        return new Timerange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
     }
 
     private class Timerange {
