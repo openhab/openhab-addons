@@ -208,10 +208,10 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
                     soulissGatewayJobSubscriptionRunnable.getSubscriptionRefreshInterval(), TimeUnit.MINUTES);
 
-            SoulissGatewayJobHealty soulissGatewayJobHealtyRunnable = new SoulissGatewayJobHealty(bridge);
+            SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
             // Changes from scheduleAtFixedRate - Luca Calcaterra
-            scheduler.scheduleWithFixedDelay(soulissGatewayJobHealtyRunnable, 5,
-                    soulissGatewayJobHealtyRunnable.gethealthRefreshInterval(), TimeUnit.SECONDS);
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
+                    soulissGatewayJobHealthyRunnable.gethealthRefreshInterval(), TimeUnit.SECONDS);
 
             // il ciclo Send è schedulato con la costante
             // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
