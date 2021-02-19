@@ -17,6 +17,7 @@ import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,6 +30,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import javax.crypto.Cipher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -109,6 +112,18 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        try {
+            int maxKeyLen = Cipher.getMaxAllowedKeyLength("AES/ECB/NoPadding");
+            if (maxKeyLen <= 128) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Java Cryptography Extension (JCE) have to be installed");
+                logger.warn("Java Cryptography Extension (JCE) have to be installed");
+                return;
+            }
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn("AES encoding not supported", e);
+            return;
+        }
         if (!getDevice().getInited()) {
             logger.info("Update KM50/100/200 gateway configuration, it takes a minute....");
             getConfiguration();
