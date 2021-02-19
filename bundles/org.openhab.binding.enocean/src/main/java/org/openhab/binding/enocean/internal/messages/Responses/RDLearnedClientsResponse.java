@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.messages.Responses;
 
+import java.util.Arrays;
+
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.Response;
 
@@ -46,8 +48,8 @@ public class RDLearnedClientsResponse extends Response {
         learnedClients = new LearnedClient[(payload.length - 1) / 9];
         for (int i = 0; i < learnedClients.length; i++) {
             LearnedClient client = new LearnedClient();
-            client.clientId = java.util.Arrays.copyOfRange(payload, 1 + i * 9, 1 + i * 9 + 4);
-            client.controllerId = java.util.Arrays.copyOfRange(payload, 5 + i * 9, 5 + i * 9 + 4);
+            client.clientId = Arrays.copyOfRange(payload, 1 + i * 9, 1 + i * 9 + 4);
+            client.controllerId = Arrays.copyOfRange(payload, 5 + i * 9, 5 + i * 9 + 4);
             client.mailboxIndex = payload[9 + i * 9] & 0xFF;
             learnedClients[i] = client;
         }

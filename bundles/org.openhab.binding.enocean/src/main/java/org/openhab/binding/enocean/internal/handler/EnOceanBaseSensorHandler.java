@@ -190,7 +190,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                 triggerChannel(prepareAnswer, "requestAnswer");
                 // Send response after 100ms
                 if (responseFuture == null || responseFuture.isDone()) {
-                    responseFuture = scheduler.schedule(() -> sendRequestResponse(), 100, TimeUnit.MILLISECONDS);
+                    responseFuture = scheduler.schedule(this::sendRequestResponse, 100, TimeUnit.MILLISECONDS);
                 }
             }
         }

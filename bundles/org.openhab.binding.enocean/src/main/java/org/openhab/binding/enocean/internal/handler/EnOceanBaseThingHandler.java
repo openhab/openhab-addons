@@ -65,8 +65,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
 
     private ItemChannelLinkRegistry itemChannelLinkRegistry;
 
-    @NonNull
-    protected ChannelUID prepareAnswer;
+    protected @NonNull ChannelUID prepareAnswer;
 
     public EnOceanBaseThingHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
@@ -81,7 +80,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         this.config = null;
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "A bridge is required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "A bridge is required");
         } else {
             initializeThing(bridge.getStatus());
         }

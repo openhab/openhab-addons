@@ -115,7 +115,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
                 .findFirst().ifPresentOrElse(t -> {
                     // If repeated learn is not allowed => send teach out
                     // otherwise do nothing
-                    if (!bridgeHandler.isRepeatedLearnAllowed()) {
+                    if (bridgeHandler.sendTeachOuts()) {
                         sendTeachOutResponse(msg, enoceanId, t);
                         thingManager.setEnabled(t.getUID(), false);
                     }
@@ -131,14 +131,14 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
                     if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0] & UTEResponse.ResponseNeeded_MASK) == 0) {
                         // if ute => send response if needed
-                        logger.info("Sending UTE response to {}", enoceanId);
+                        logger.debug("Sending UTE response to {}", enoceanId);
                         senderIdOffset = sendTeachInResponse(msg, enoceanId);
                         if (senderIdOffset == null) {
                             return;
                         }
                     } else if ((eep instanceof _4BSMessage) && ((_4BSMessage) eep).isTeachInVariation3Supported()) {
                         // if 4BS teach in variation 3 => send response
-                        logger.info("Sending 4BS teach in variation 3 response to {}", enoceanId);
+                        logger.debug("Sending 4BS teach in variation 3 response to {}", enoceanId);
                         senderIdOffset = sendTeachInResponse(msg, enoceanId);
                         if (senderIdOffset == null) {
                             return;
@@ -158,7 +158,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
             }
 
             SMACKTeachInResponse response = EEPFactory.buildResponseFromSMACKTeachIn(event,
-                    bridgeHandler.isRepeatedLearnAllowed());
+                    bridgeHandler.sendTeachOuts());
             if (response != null) {
                 bridgeHandler.sendMessage(response, null);
 
@@ -194,7 +194,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
             EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, newSenderId, true);
             if (response != null) {
                 bridgeHandler.sendMessage(response.getERP1Message(), null);
-                logger.info("Teach in response for {} with new senderId {} (= offset {}) sent", enoceanId,
+                logger.debug("Teach in response for {} with new senderId {} (= offset {}) sent", enoceanId,
                         HexUtils.bytesToHex(newSenderId), offset);
             } else {
                 logger.warn("Teach in response for enoceanId {} not supported!", enoceanId);
@@ -213,7 +213,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, senderId, false);
         if (response != null) {
             bridgeHandler.sendMessage(response.getERP1Message(), null);
-            logger.info("Teach out response for thing {} with EnOceanId {} sent", thing.getUID().getId(), enoceanId);
+            logger.debug("Teach out response for thing {} with EnOceanId {} sent", thing.getUID().getId(), enoceanId);
         } else {
             logger.warn("Teach out response for enoceanId {} not supported!", enoceanId);
         }

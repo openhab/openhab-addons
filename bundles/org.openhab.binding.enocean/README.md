@@ -138,7 +138,7 @@ You can see the paired SMACK devices and their mailbox index in the gateway prop
 SMACK devices send periodically status updates followed by a response request.
 Whenever such a request is received a `requestAnswer` event is triggered for channel `statusRequestEvent`.
 Afterwards you have 100ms time to recalculate your items states and update them.
-A message with the updated item states is build, put into the corresponding mailbox and automatically send upon request of the device.
+A message with the updated item states is built, put into the corresponding mailbox and automatically sent upon request of the device.
 Pairing and unpairing can be done through a discovery scan.
 The corresponding thing of an unpaired device gets disabled, you have to delete it manually if you want to.
 
@@ -173,7 +173,7 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | rs485             | If gateway is directly connected to a RS485 bus the BaseId is set to 0x00 | true, false
 |                                 | rs485BaseId       | Override BaseId 0x00 if your bus contains a telegram duplicator (FTD14 for ex) | 4 byte hex value |
 |                                 | enableSmack       | Enables SMACK pairing and handling of SMACK messages | true, false |
-|                                 | allowRepeatedLearn| Defines if a repeated teach in request should be answered with a teach in or teach out response | true, false |
+|                                 | sendTeachOuts     | Defines if a repeated teach in request should be answered with a learned in or teach out response | true, false |
 | pushButton                      | receivingEEPId    | EEP used for receiving msg  | F6_01_01, D2_03_0A |
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |

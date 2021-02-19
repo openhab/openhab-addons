@@ -164,7 +164,7 @@ public class EEPFactory {
                 int type = ((db_3 & 0b11) << 5) + ((db_2 & 0xFF) >>> 3);
                 int manufId = ((db_2 & 0b111) << 8) + (db_1 & 0xff);
 
-                logger.info("Received 4BS Teach In with EEP A5-{}-{} and manufacturerID {}",
+                logger.debug("Received 4BS Teach In with EEP A5-{}-{} and manufacturerID {}",
                         HexUtils.bytesToHex(new byte[] { (byte) func }),
                         HexUtils.bytesToHex(new byte[] { (byte) type }),
                         HexUtils.bytesToHex(new byte[] { (byte) manufId }));
@@ -226,7 +226,7 @@ public class EEPFactory {
 
         byte[] senderId = Arrays.copyOfRange(payload, 12, 12 + 4);
 
-        logger.info("Received SMACK Teach In with EEP {}-{}-{} and manufacturerID {}",
+        logger.debug("Received SMACK Teach In with EEP {}-{}-{} and manufacturerID {}",
                 HexUtils.bytesToHex(new byte[] { (byte) rorg }), HexUtils.bytesToHex(new byte[] { (byte) func }),
                 HexUtils.bytesToHex(new byte[] { (byte) type }), HexUtils.bytesToHex(new byte[] { (byte) manufId }));
 
@@ -255,27 +255,27 @@ public class EEPFactory {
         }
     }
 
-    public static SMACKTeachInResponse buildResponseFromSMACKTeachIn(EventMessage event, boolean allowRepeatedLearn) {
+    public static SMACKTeachInResponse buildResponseFromSMACKTeachIn(EventMessage event, boolean sendTeachOuts) {
         SMACKTeachInResponse response = new SMACKTeachInResponse();
 
         byte priority = event.getPayload()[1];
         if ((priority & 0b1001) == 0b1001) {
-            logger.info("gtw is already postmaster");
-            if (!allowRepeatedLearn) {
-                logger.info("Repeated learn is not allow hence send teach out");
+            logger.debug("gtw is already postmaster");
+            if (sendTeachOuts) {
+                logger.debug("Repeated learn is not allow hence send teach out");
                 response.setTeachOutResponse();
             } else {
-                logger.info("Send a repeated learn in");
+                logger.debug("Send a repeated learn in");
                 response.setRepeatedTeachInResponse();
             }
         } else if ((priority & 0b100) == 0) {
-            logger.info("no place for further mailbox");
+            logger.debug("no place for further mailbox");
             response.setNoPlaceForFurtherMailbox();
         } else if ((priority & 0b10) == 0) {
-            logger.info("rssi is not good enough");
+            logger.debug("rssi is not good enough");
             response.setBadRSSI();
         } else if ((priority & 0b1) == 0b1) {
-            logger.info("gtw is candidate for postmaster => teach in");
+            logger.debug("gtw is candidate for postmaster => teach in");
             response.setTeachIn();
         }
 

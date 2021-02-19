@@ -84,7 +84,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     private SerialPortManager serialPortManager;
 
     private boolean smackAvailable = false;
-    private boolean allowRepeatedLearn = false;
+    private boolean sendTeachOuts = true;
     private Set<String> smackClients = Set.of();
 
     public EnOceanBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
@@ -189,11 +189,11 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 case ESP2:
                     transceiver = new EnOceanESP2Transceiver(c.path, this, scheduler, serialPortManager);
                     smackAvailable = false;
-                    allowRepeatedLearn = false;
+                    sendTeachOuts = false;
                     break;
                 case ESP3:
                     transceiver = new EnOceanESP3Transceiver(c.path, this, scheduler, serialPortManager);
-                    allowRepeatedLearn = c.allowRepeatedLearn;
+                    sendTeachOuts = c.sendTeachOuts;
                     break;
                 default:
                     break;
@@ -413,9 +413,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                             }
                         });
             } catch (IOException e) {
-                logger.debug("Exception during activating smack teach in: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Smack packet could not be send");
+                        "Smack packet could not be send: " + e.getMessage());
             }
         }
     }
@@ -427,8 +426,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             transceiver.sendBasePacket(ESP3PacketFactory.SA_WR_LEARNMODE(false), null);
             refreshProperties();
         } catch (IOException e) {
-            logger.debug("Exception during deactivating smack teach in: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Smack packet could not be send");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Smack packet could not be send: " + e.getMessage());
         }
     }
 
@@ -458,9 +457,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                             }
                         });
             } catch (IOException e) {
-                logger.debug("Exception during refresh of properties {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Smack packet could not be send");
+                        "Smack packet could not be send: " + e.getMessage());
 
             }
         }
@@ -473,7 +471,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
     }
 
-    public boolean isRepeatedLearnAllowed() {
-        return allowRepeatedLearn;
+    public boolean sendTeachOuts() {
+        return sendTeachOuts;
     }
 }

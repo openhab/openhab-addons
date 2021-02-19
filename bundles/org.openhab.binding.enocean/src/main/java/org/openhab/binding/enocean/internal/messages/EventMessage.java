@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
+import java.util.stream.Stream;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
@@ -45,13 +47,7 @@ public class EventMessage extends BasePacket {
         }
 
         public static EventMessageType getEventMessageType(byte value) {
-            for (EventMessageType t : EventMessageType.values()) {
-                if (t.value == value) {
-                    return t;
-                }
-            }
-
-            return UNKNOWN;
+            return Stream.of(EventMessageType.values()).filter(t -> t.value == value).findFirst().orElse(UNKNOWN);
         }
     }
 
