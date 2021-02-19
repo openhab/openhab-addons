@@ -29,9 +29,12 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
 				"unit": "CELCIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"category": "temperature",
@@ -234,7 +237,6 @@
 				"friendlyName": "Light Mode",
 				"channel": "lightMode",
 				"type": "Number",
-				"refresh": true,
 				"stateDescription": {
 					"options": [
 						{
@@ -247,6 +249,7 @@
 						}
 					]
 				},
+				"refresh": true,
 				"actions": [
 					{
 						"command": "set_lightMode",

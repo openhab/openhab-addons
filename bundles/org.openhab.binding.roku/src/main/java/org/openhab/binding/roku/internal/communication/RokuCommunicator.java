@@ -20,6 +20,8 @@ import java.util.concurrent.TimeoutException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -94,14 +96,16 @@ public class RokuCommunicator {
             if (ctx != null) {
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    DeviceInfo device = (DeviceInfo) unmarshaller.unmarshal(new StringReader(getCommand(urlQryDevice)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
+                            .createXMLStreamReader(new StringReader(getCommand(urlQryDevice)));
+                    DeviceInfo device = (DeviceInfo) unmarshaller.unmarshal(xsr);
                     if (device != null) {
                         return device;
                     }
                 }
             }
             throw new RokuHttpException("No DeviceInfo model in response");
-        } catch (JAXBException e) {
+        } catch (JAXBException | XMLStreamException e) {
             throw new RokuHttpException("Exception creating DeviceInfo Unmarshaller: " + e.getLocalizedMessage());
         }
     }
@@ -118,15 +122,16 @@ public class RokuCommunicator {
             if (ctx != null) {
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    ActiveApp activeApp = (ActiveApp) unmarshaller
-                            .unmarshal(new StringReader(getCommand(urlQryActiveApp)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
+                            .createXMLStreamReader(new StringReader(getCommand(urlQryActiveApp)));
+                    ActiveApp activeApp = (ActiveApp) unmarshaller.unmarshal(xsr);
                     if (activeApp != null) {
                         return activeApp;
                     }
                 }
             }
             throw new RokuHttpException("No ActiveApp model in response");
-        } catch (JAXBException e) {
+        } catch (JAXBException | XMLStreamException e) {
             throw new RokuHttpException("Exception creating ActiveApp Unmarshaller: " + e.getLocalizedMessage());
         }
     }
@@ -143,14 +148,16 @@ public class RokuCommunicator {
             if (ctx != null) {
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    Apps appList = (Apps) unmarshaller.unmarshal(new StringReader(getCommand(urlQryApps)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
+                            .createXMLStreamReader(new StringReader(getCommand(urlQryApps)));
+                    Apps appList = (Apps) unmarshaller.unmarshal(xsr);
                     if (appList != null) {
                         return appList.getApp();
                     }
                 }
             }
             throw new RokuHttpException("No AppList model in response");
-        } catch (JAXBException e) {
+        } catch (JAXBException | XMLStreamException e) {
             throw new RokuHttpException("Exception creating AppList Unmarshaller: " + e.getLocalizedMessage());
         }
     }
@@ -167,14 +174,16 @@ public class RokuCommunicator {
             if (ctx != null) {
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
-                    Player playerInfo = (Player) unmarshaller.unmarshal(new StringReader(getCommand(urlQryPlayer)));
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
+                            .createXMLStreamReader(new StringReader(getCommand(urlQryPlayer)));
+                    Player playerInfo = (Player) unmarshaller.unmarshal(xsr);
                     if (playerInfo != null) {
                         return playerInfo;
                     }
                 }
             }
             throw new RokuHttpException("No Player info model in response");
-        } catch (JAXBException e) {
+        } catch (JAXBException | XMLStreamException e) {
             throw new RokuHttpException("Exception creating Player info Unmarshaller: " + e.getLocalizedMessage());
         }
     }

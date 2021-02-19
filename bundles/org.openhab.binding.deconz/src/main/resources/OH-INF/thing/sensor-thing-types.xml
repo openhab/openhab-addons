@@ -106,7 +106,7 @@
 		</supported-bridge-type-refs>
 		<label>Color Controller</label>
 		<channels>
-			<channel typeId="color" id="color"/>
+			<channel typeId="system.color" id="color"/>
 			<channel typeId="buttonevent" id="buttonevent"/>
 			<channel typeId="button" id="button"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -116,13 +116,6 @@
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
-
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
-		<description>Allows to control a color</description>
-		<state readOnly="true"></state>
-	</channel-type>
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>

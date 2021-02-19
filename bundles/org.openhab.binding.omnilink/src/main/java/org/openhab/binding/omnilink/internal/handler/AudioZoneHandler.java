@@ -90,7 +90,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
 
         if (command instanceof RefreshType) {
             retrieveStatus().ifPresentOrElse(this::updateChannels, () -> updateStatus(ThingStatus.OFFLINE,
-                    ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Received null staus update!"));
+                    ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Received null status update!"));
             return;
         }
 

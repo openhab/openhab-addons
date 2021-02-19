@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="kostalinverter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="piko1020">
+		<label>KOSTAL PIKO 10-20</label>
+		<description>Bindings for the KOSTAL PIKO 10-20</description>
+		<category>Inverter</category>
+		<channels>
+			<channel typeId="device-local-grid-output-power" id="gridOutputPower"/>
+			<channel typeId="statistic-yield-day-second-gen" id="yieldDaySecondGen"/>
+			<channel typeId="statistic-yield-total-second-gen" id="yieldTotalSecondGen"/>
+			<channel typeId="device-local-operating-status" id="operatingStatus"/>
+			<channel typeId="device-local-grid-voltage-l1" id="gridVoltageL1"/>
+			<channel typeId="device-local-grid-current-l1" id="gridCurrentL1"/>
+			<channel typeId="device-local-grid-power-l1" id="gridPowerL1"/>
+			<channel typeId="device-local-grid-voltage-l2" id="gridVoltageL2"/>
+			<channel typeId="device-local-grid-current-l2" id="gridCurrentL2"/>
+			<channel typeId="device-local-grid-power-l2" id="gridPowerL2"/>
+			<channel typeId="device-local-grid-voltage-l3" id="gridVoltageL3"/>
+			<channel typeId="device-local-grid-current-l3" id="gridCurrentL3"/>
+			<channel typeId="device-local-grid-power-l3" id="gridPowerL3"/>
+			<channel typeId="device-local-dc-power-pv" id="dcPowerPV"/>
+			<channel typeId="device-local-dc1-voltage" id="dc1Voltage"/>
+			<channel typeId="device-local-dc1-current" id="dc1Current"/>
+			<channel typeId="device-local-dc1-power" id="dc1Power"/>
+			<channel typeId="device-local-dc2-voltage" id="dc2Voltage"/>
+			<channel typeId="device-local-dc2-current" id="dc2Current"/>
+			<channel typeId="device-local-dc2-power" id="dc2Power"/>
+			<channel typeId="device-local-dc3-voltage" id="dc3Voltage"/>
+			<channel typeId="device-local-dc3-current" id="dc3Current"/>
+			<channel typeId="device-local-dc3-power" id="dc3Power"/>
+			<channel typeId="device-local-akt-home-consumption-solar" id="aktHomeConsumptionSolar"/>
+			<channel typeId="device-local-akt-home-consumption-bat" id="aktHomeConsumptionBat"/>
+			<channel typeId="device-local-akt-home-consumption-grid" id="aktHomeConsumptionGrid"/>
+			<channel typeId="device-local-phase-sel-home-consump-l1" id="phaseSelHomeConsumpL1"/>
+			<channel typeId="device-local-phase-sel-home-consump-l2" id="phaseSelHomeConsumpL2"/>
+			<channel typeId="device-local-phase-sel-home-consump-l3" id="phaseSelHomeConsumpL3"/>
+			<channel typeId="device-local-grid-freq" id="gridFreq"/>
+			<channel typeId="device-local-grid-cos-phi" id="gridCosPhi"/>
+			<channel typeId="statistic-home-consumption-day" id="homeConsumptionDay"/>
+			<channel typeId="statistic-own-consumption-day" id="ownConsumptionDay"/>
+			<channel typeId="statistic-own-cons-rate-day" id="ownConsRateDay"/>
+			<channel typeId="statistic-autonomy-degree-day" id="autonomyDegreeDay"/>
+			<channel typeId="statistic-home-consumption-total" id="homeConsumptionTotal"/>
+			<channel typeId="statistic-own-consumption-total" id="ownConsumptionTotal"/>
+			<channel typeId="statistic-operating-time-total" id="operatingTimeTotal"/>
+			<channel typeId="device-local-current" id="current"/>
+			<channel typeId="device-local-current-dir" id="currentDir"/>
+			<channel typeId="device-local-charge-cycles" id="chargeCycles"/>
+			<channel typeId="device-local-battery-temperature" id="batteryTemperature"/>
+			<channel typeId="device-local-loginterval" id="loginterval"/>
+			<channel typeId="device-local-s0-inpulse-cnt" id="s0InPulseCnt"/>
+			<channel typeId="statistic-own-cons-rate-total" id="ownConsRateTotal"/>
+			<channel typeId="statistic-autonomy-degree-total" id="autonomyDegreeTotal"/>
+			<channel typeId="device-local-battery-voltage" id="batteryVoltage"/>
+			<channel typeId="device-local-bat-state-of-charge" id="batStateOfCharge"/>
+			<channel typeId="device-local-self-consumption" id="selfConsumption"/>
+			<channel typeId="device-local-battery-usage-consumption" id="batteryUsageConsumption"/>
+			<channel typeId="device-local-smart-battery-control" id="smartBatteryControl"/>
+			<channel typeId="device-local-max-depth-of-discharge" id="maxDepthOfDischarge"/>
+			<channel typeId="device-local-shadow-management" id="shadowManagement"/>
+			<channel typeId="device-local-external-module-control" id="externalModuleControl"/>
+			<channel typeId="device-local-battery-usage-consumption-set" id="batteryUsageConsumptionSet"/>
+			<channel typeId="device-local-battery-usage-strategy-set" id="batteryUsageStrategySet"/>
+			<channel typeId="device-local-smart-battery-control-set" id="smartBatteryControlSet"/>
+			<channel typeId="device-local-battery-charge-time-from-set" id="batteryChargeTimeFromSet"/>
+			<channel typeId="device-local-battery-charge-time-to-set" id="batteryChargeTimeToSet"/>
+			<channel typeId="device-local-max-depth-of-discharge-set" id="maxDepthOfDischargeSet"/>
+			<channel typeId="device-local-shadow-management-set" id="shadowManagementSet"/>
+			<channel typeId="device-local-external-module-control-set" id="externalModuleControlSet"/>
+		</channels>
+		<properties>
+			<property name="vendor">KOSTAL Solar Electric GmbH</property>
+		</properties>
+		<config-description-ref uri="thing-type:kostalpiko1020_config"/>
+	</thing-type>
+</thing:thing-descriptions>

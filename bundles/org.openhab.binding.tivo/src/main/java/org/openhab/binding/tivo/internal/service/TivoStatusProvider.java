@@ -141,8 +141,12 @@ public class TivoStatusProvider {
         logger.debug(" statusParse '{}' - running on string '{}'", tivoConfigData.getCfgIdentifier(), rawStatus);
 
         if (rawStatus.contentEquals("COMMAND_TIMEOUT")) {
-            // Ignore COMMAND_TIMEOUT, they occur a few seconds after each successful command, just return existing
-            // status again
+            // If connection status was UNKNOWN, COMMAND_TIMEOUT indicates the Tivo is alive, so update the status
+            if (this.tivoStatusData.getConnectionStatus() == ConnectionStatus.UNKNOWN) {
+                return new TivoStatusData(false, -1, -1, false, "COMMAND_TIMEOUT", false, ConnectionStatus.ONLINE);
+            }
+            // Otherwise ignore COMMAND_TIMEOUT, they occur a few seconds after each successful command, just return
+            // existing status again
             return this.tivoStatusData;
         } else {
             switch (rawStatus) {
@@ -181,7 +185,7 @@ public class TivoStatusProvider {
                 chNum = Integer.parseInt(matcher.group(1).trim());
                 logger.debug(" statusParse '{}' - parsed channel '{}'", tivoConfigData.getCfgIdentifier(), chNum);
             }
-            if (matcher.groupCount() == 2) {
+            if (matcher.groupCount() == 2 && matcher.group(2) != null) {
                 subChNum = Integer.parseInt(matcher.group(2).trim());
                 logger.debug(" statusParse '{}' - parsed sub-channel '{}'", tivoConfigData.getCfgIdentifier(),
                         subChNum);
@@ -252,6 +256,8 @@ public class TivoStatusProvider {
                         tivoConfigData.getCfgIdentifier());
                 StreamReader streamReader = this.streamReader;
                 if (streamReader != null && streamReader.isAlive()) {
+                    // Send a newline to poke the Tivo to verify it responds with INVALID_COMMAND/COMMAND_TIMEOUT
+                    streamWriter.println("\r");
                     return true;
                 }
             } else {
