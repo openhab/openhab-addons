@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.km200.internal.KM200Device;
 import org.openhab.binding.km200.internal.KM200ServiceObject;
@@ -68,11 +67,10 @@ public class KM200SwitchProgramServiceHandler {
     private static List<String> days = new ArrayList<>(Arrays.asList(TYPE_MONDAY, TYPE_TUESDAY, TYPE_WEDNESDAY,
             TYPE_THURSDAY, TYPE_FRIDAY, TYPE_SATURDAY, TYPE_SUNDAY));
 
-    public static List<@NonNull StateOption> daysList = new ArrayList<>(
-            Arrays.asList(new StateOption(TYPE_MONDAY, "Monday"), new StateOption(TYPE_TUESDAY, "Tuesday"),
-                    new StateOption(TYPE_WEDNESDAY, "Wednesday"), new StateOption(TYPE_THURSDAY, "Thursday"),
-                    new StateOption(TYPE_FRIDAY, "Friday"), new StateOption(TYPE_SATURDAY, "Saturday"),
-                    new StateOption(TYPE_SUNDAY, "Sunday")));
+    public static List<StateOption> daysList = new ArrayList<>(Arrays.asList(new StateOption(TYPE_MONDAY, "Monday"),
+            new StateOption(TYPE_TUESDAY, "Tuesday"), new StateOption(TYPE_WEDNESDAY, "Wednesday"),
+            new StateOption(TYPE_THURSDAY, "Thursday"), new StateOption(TYPE_FRIDAY, "Friday"),
+            new StateOption(TYPE_SATURDAY, "Saturday"), new StateOption(TYPE_SUNDAY, "Sunday")));
 
     /* List with setpoints */
     private List<String> setpoints = new ArrayList<>();
