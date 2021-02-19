@@ -81,6 +81,14 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
+    public void testEscapeSimpleItem() {
+        NumberItem item = ItemTestHelper.createNumberItem("sample.Item", 5);
+        InfluxPoint point = instance.convert(item, null);
+
+        assertThat(point.getMeasurementName(), equalTo(item.getName()));
+    }
+
+    @Test
     public void shouldUseAliasAsMeasurementNameIfProvided() {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         InfluxPoint point = instance.convert(item, "aliasName");
