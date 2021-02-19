@@ -172,6 +172,8 @@ public class DataItemGroup {
                         new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "rof5"),
                         new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "rof6"),
                         new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "rof7") });
+        g.put(113, new DataItem[] {
+                new DataItem(113, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "unsuccessfulburnerstarts") });
         g.put(115, new DataItem[] { new DataItem(115, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "oemdiagcode") });
         g.put(116, new DataItem[] { new DataItem(116, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "burnerstarts") });
         g.put(117, new DataItem[] { new DataItem(117, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "chpumpstarts") });
