@@ -176,8 +176,8 @@ public final class SoulissBindingConstants {
     public static final String T4N_ARMED_MESSAGE_CHANNEL = "ARMED";
 
     public static final String WHITE_MODE_CHANNEL = "whitemode";
-    public static final String ROLLER_BRIGHTNESS_CHANNEL = "roller_brightness";
-    public static final String DIMMER_BRIGHTNESS_CHANNEL = "dimmer_brightness";
+    public static final String ROLLER_BRIGHTNESS_CHANNEL = "rollerBrightness";
+    public static final String DIMMER_BRIGHTNESS_CHANNEL = "dimmerBrightness";
     public static final String LED_COLOR_CHANNEL = "ledcolor";
 
     public static final String LASTMESSAGE_CHANNEL = "lastMessage";
