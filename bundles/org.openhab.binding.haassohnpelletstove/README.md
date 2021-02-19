@@ -82,6 +82,7 @@ Number TemperaturFeuer "TemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemp
 ```
 
 ## Google Assistant configuation
+
 See also: https://www.openhab.org/docs/ecosystem/google-assistant/
 
 googleassistantdemo.items
