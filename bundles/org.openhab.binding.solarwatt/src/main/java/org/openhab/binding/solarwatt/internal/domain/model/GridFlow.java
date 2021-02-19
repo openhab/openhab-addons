@@ -88,11 +88,11 @@ public class GridFlow extends Device {
             if (feedInLimit != null) {
                 QuantityType<?> state = new QuantityType<>(feedInLimit.multiply(BigDecimal.valueOf(100)),
                         Units.PERCENT);
-                this.stateValues.put(CHANNEL_FEED_IN_LIMIT, state);
+                this.stateValues.put(CHANNEL_FEED_IN_LIMIT.getChannelName(), state);
 
-                if (!this.solarwattChannelSet.containsKey(CHANNEL_FEED_IN_LIMIT)) {
-                    this.solarwattChannelSet.put(CHANNEL_FEED_IN_LIMIT,
-                            new SolarwattChannel(CHANNEL_FEED_IN_LIMIT, Units.PERCENT, "status"));
+                if (!this.solarwattChannelSet.containsKey(CHANNEL_FEED_IN_LIMIT.getChannelName())) {
+                    this.solarwattChannelSet.put(CHANNEL_FEED_IN_LIMIT.getChannelName(),
+                            new SolarwattChannel(CHANNEL_FEED_IN_LIMIT.getChannelName(), Units.PERCENT, "status"));
                 }
             }
         }

@@ -26,32 +26,32 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SolarwattChannel {
-    private final String tagName;
+    private final String channelName;
     private final @Nullable Unit<?> unit;
     private final String category;
     private final Boolean advanced;
 
-    public SolarwattChannel(String tagName, String category) {
-        this(tagName, category, false);
+    public SolarwattChannel(String channelName, String category) {
+        this(channelName, category, false);
     }
 
-    public SolarwattChannel(String tagName, Unit<?> unit, String category) {
-        this(tagName, unit, category, false);
+    public SolarwattChannel(String channelName, Unit<?> unit, String category) {
+        this(channelName, unit, category, false);
     }
 
-    public SolarwattChannel(String tagName, String category, Boolean advanced) {
-        this(tagName, null, category, advanced);
+    public SolarwattChannel(String channelName, String category, Boolean advanced) {
+        this(channelName, null, category, advanced);
     }
 
-    public SolarwattChannel(String tagName, @Nullable Unit<?> unit, String category, Boolean advanced) {
-        this.tagName = tagName;
+    public SolarwattChannel(String channelName, @Nullable Unit<?> unit, String category, Boolean advanced) {
+        this.channelName = channelName;
         this.unit = unit;
         this.category = category;
         this.advanced = advanced;
     }
 
-    public String getTagName() {
-        return this.tagName;
+    public String getChannelName() {
+        return this.channelName;
     }
 
     public @Nullable Unit<?> getUnit() {

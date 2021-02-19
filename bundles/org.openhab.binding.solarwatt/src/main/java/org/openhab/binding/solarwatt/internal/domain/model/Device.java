@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarwatt.internal.domain.SolarwattChannel;
+import org.openhab.binding.solarwatt.internal.domain.SolarwattTag;
 import org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -88,27 +89,31 @@ public class Device {
         return this.solarwattChannelSet;
     }
 
-    protected void addWattHourQuantity(String tagName, DeviceDTO deviceDTO) {
-        this.addWattHourQuantity(tagName, deviceDTO, false);
+    protected void addWattHourQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.addWattHourQuantity(solarwattTag, deviceDTO, false);
     }
 
-    protected void addWattHourQuantity(String tagName, DeviceDTO deviceDTO, Boolean advanced) {
-        this.stateValues.put(tagName, deviceDTO.getState(
-                (jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.WATT_HOUR)), tagName));
-        if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.WATT_HOUR, "energy", advanced));
+    protected void addWattHourQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO, Boolean advanced) {
+        this.stateValues.put(solarwattTag.getChannelName(),
+                deviceDTO.getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.WATT_HOUR)),
+                        solarwattTag.getTagName()));
+        if (!this.solarwattChannelSet.containsKey(solarwattTag.getChannelName())) {
+            this.solarwattChannelSet.put(solarwattTag.getChannelName(),
+                    new SolarwattChannel(solarwattTag.getChannelName(), Units.WATT_HOUR, "energy", advanced));
         }
     }
 
-    protected void addWattQuantity(String tagName, DeviceDTO deviceDTO) {
-        this.addWattQuantity(tagName, deviceDTO, false);
+    protected void addWattQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.addWattQuantity(solarwattTag, deviceDTO, false);
     }
 
-    protected void addWattQuantity(String tagName, DeviceDTO deviceDTO, Boolean advanced) {
-        this.stateValues.put(tagName, deviceDTO
-                .getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.WATT)), tagName));
-        if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.WATT, "energy", advanced));
+    protected void addWattQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO, Boolean advanced) {
+        this.stateValues.put(solarwattTag.getChannelName(),
+                deviceDTO.getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.WATT)),
+                        solarwattTag.getTagName()));
+        if (!this.solarwattChannelSet.containsKey(solarwattTag.getChannelName())) {
+            this.solarwattChannelSet.put(solarwattTag.getChannelName(),
+                    new SolarwattChannel(solarwattTag.getChannelName(), Units.WATT, "energy", advanced));
         }
     }
 
@@ -121,43 +126,50 @@ public class Device {
         }
     }
 
-    protected void addPercentQuantity(String tagName, DeviceDTO deviceDTO) {
-        this.stateValues.put(tagName, deviceDTO
-                .getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.PERCENT)), tagName));
+    protected void addPercentQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.stateValues.put(solarwattTag.getChannelName(),
+                deviceDTO.getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.PERCENT)),
+                        solarwattTag.getTagName()));
 
-        if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.PERCENT, "status"));
+        if (!this.solarwattChannelSet.containsKey(solarwattTag.getChannelName())) {
+            this.solarwattChannelSet.put(solarwattTag.getChannelName(),
+                    new SolarwattChannel(solarwattTag.getChannelName(), Units.PERCENT, "status"));
         }
     }
 
-    protected void addCelsiusQuantity(String tagName, DeviceDTO deviceDTO) {
-        this.stateValues.put(tagName, deviceDTO.getState(
-                (jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), SIUnits.CELSIUS)), tagName));
+    protected void addCelsiusQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.stateValues.put(solarwattTag.getChannelName(),
+                deviceDTO.getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), SIUnits.CELSIUS)),
+                        solarwattTag.getTagName()));
 
-        if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, SIUnits.CELSIUS, "temperature"));
+        if (!this.solarwattChannelSet.containsKey(solarwattTag.getChannelName())) {
+            this.solarwattChannelSet.put(solarwattTag.getChannelName(),
+                    new SolarwattChannel(solarwattTag.getChannelName(), SIUnits.CELSIUS, "temperature"));
         }
     }
 
-    protected void addAmpereQuantity(String tagName, DeviceDTO deviceDTO) {
-        this.addAmpereQuantity(tagName, deviceDTO, false);
+    protected void addAmpereQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.addAmpereQuantity(solarwattTag, deviceDTO, false);
     }
 
-    protected void addAmpereQuantity(String tagName, DeviceDTO deviceDTO, Boolean advanced) {
-        this.stateValues.put(tagName, deviceDTO
-                .getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.AMPERE)), tagName));
+    protected void addAmpereQuantity(SolarwattTag solarwattTag, DeviceDTO deviceDTO, Boolean advanced) {
+        this.stateValues.put(solarwattTag.getChannelName(),
+                deviceDTO.getState((jsonElement -> new QuantityType<>(jsonElement.getAsBigDecimal(), Units.AMPERE)),
+                        solarwattTag.getTagName()));
 
-        if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, Units.AMPERE, "current", advanced));
+        if (!this.solarwattChannelSet.containsKey(solarwattTag.getChannelName())) {
+            this.solarwattChannelSet.put(solarwattTag.getChannelName(),
+                    new SolarwattChannel(solarwattTag.getChannelName(), Units.AMPERE, "current", advanced));
         }
     }
 
-    protected void addStringState(String tagName, DeviceDTO deviceDTO) {
-        this.stateValues.put(tagName,
-                deviceDTO.getState((jsonElement -> new StringType(jsonElement.getAsString())), tagName));
+    protected void addStringState(SolarwattTag solarwattTag, DeviceDTO deviceDTO) {
+        this.stateValues.put(solarwattTag.getChannelName(), deviceDTO
+                .getState((jsonElement -> new StringType(jsonElement.getAsString())), solarwattTag.getTagName()));
 
-        if (!this.solarwattChannelSet.containsKey(tagName)) {
-            this.solarwattChannelSet.put(tagName, new SolarwattChannel(tagName, "status"));
+        if (!this.solarwattChannelSet.containsKey(solarwattTag.getChannelName())) {
+            this.solarwattChannelSet.put(solarwattTag.getChannelName(),
+                    new SolarwattChannel(solarwattTag.getChannelName(), "status"));
         }
     }
 

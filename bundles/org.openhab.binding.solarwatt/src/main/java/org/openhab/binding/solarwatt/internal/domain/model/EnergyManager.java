@@ -82,7 +82,7 @@ public class EnergyManager extends Device {
     public void update(DeviceDTO deviceDTO) {
         super.update(deviceDTO);
 
-        this.addSecondsQuantity(CHANNEL_TIMESTAMP, "SettingsDatetimeMap", ".timestamp", deviceDTO);
+        this.addSecondsQuantity(CHANNEL_TIMESTAMP.getChannelName(), "SettingsDatetimeMap", ".timestamp", deviceDTO);
         this.addStringState(CHANNEL_IDTIMEZONE, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_TOTAL, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_USER, deviceDTO);
@@ -91,7 +91,7 @@ public class EnergyManager extends Device {
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_FIVE_MINUTES, deviceDTO);
         this.addPercentQuantity(CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_FIFTEEN_MINUTES, deviceDTO);
 
-        String timezone = deviceDTO.getStringTag(CHANNEL_IDTIMEZONE);
+        String timezone = deviceDTO.getStringTag(CHANNEL_IDTIMEZONE.getTagName());
         if (timezone != null) {
             this.zoneId = ZoneId.of(timezone);
         }

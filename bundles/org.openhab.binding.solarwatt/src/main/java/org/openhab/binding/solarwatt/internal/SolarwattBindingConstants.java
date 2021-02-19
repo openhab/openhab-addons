@@ -13,6 +13,7 @@
 package org.openhab.binding.solarwatt.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarwatt.internal.domain.SolarwattTag;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -45,65 +46,72 @@ public class SolarwattBindingConstants {
     public static final String PROPERTY_ID_MANUFACTURER = "IdManufacturer";
 
     // List of all Channel ids, taken from the tagNames
-    public static final String CHANNEL_WORK_AC_OUT = "WorkACOut";
-    public static final String CHANNEL_WORK_AC_IN = "WorkACIn";
-    public static final String CHANNEL_WORK_AC_IN_SESSION = "WorkACInSession";
-    public static final String CHANNEL_POWER_INSTALLED_PEAK = "PowerInstalledPeak";
-    public static final String CHANNEL_POWER_AC_OUT_MAX = "PowerACOutMax";
-    public static final String CHANNEL_POWER_AC_OUT = "PowerACOut";
-    public static final String CHANNEL_POWER_AC_IN = "PowerACIn";
-    public static final String CHANNEL_POWER_AC_OUT_LIMIT = "PowerACOutLimit";
-    public static final String CHANNEL_DIRECTION_METERING = "DirectionMetering";
-    public static final String CHANNEL_POWER_IN = "PowerIn";
-    public static final String CHANNEL_POWER_OUT = "PowerOut";
-    public static final String CHANNEL_WORK_IN = "WorkIn";
-    public static final String CHANNEL_WORK_OUT = "WorkOut";
-    public static final String CHANNEL_CONSUMPTION_ENERGY_SUM = "ConsumptionEnergySum";
-    public static final String CHANNEL_STATE_DEVICE = "StateDevice";
-    public static final String CHANNEL_MODE_STATION = "ModeStation";
-    public static final String CHANNEL_CONNECTIVITY_STATUS = "ConnectivityStatus";
-    public static final String CHANNEL_TIMESTAMP = "Timestamp";
-    public static final String CHANNEL_IDTIMEZONE = "IdTimezone";
-    public static final String CHANNEL_FRACTION_CPU_LOAD_TOTAL = "FractionCPULoadTotal";
-    public static final String CHANNEL_FRACTION_CPU_LOAD_USER = "FractionCPULoadUser";
-    public static final String CHANNEL_FRACTION_CPU_LOAD_KERNEL = "FractionCPULoadKernel";
-    public static final String CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_MINUTE = "FractionCPULoadAverageLastMinute";
-    public static final String CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_FIVE_MINUTES = "FractionCPULoadAverageLastFiveMinutes";
-    public static final String CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_FIFTEEN_MINUTES = "FractionCPULoadAverageLastFifteenMinutes";
-    public static final String CHANNEL_MODE_CONVERTER = "ModeConverter";
-    public static final String CHANNEL_STATE_OF_CHARGE = "StateOfCharge";
-    public static final String CHANNEL_STATE_OF_HEALTH = "StateOfHealth";
-    public static final String CHANNEL_TEMPERATURE_BATTERY = "TemperatureBattery";
-    public static final String CHANNEL_POWER_BUFFERED = "PowerBuffered";
-    public static final String CHANNEL_POWER_BUFFERED_FROM_GRID = "PowerBufferedFromGrid";
-    public static final String CHANNEL_POWER_BUFFERED_FROM_PRODUCERS = "PowerBufferedFromProducers";
-    public static final String CHANNEL_POWER_CONSUMED = "PowerConsumed";
-    public static final String CHANNEL_POWER_CONSUMED_FROM_GRID = "PowerConsumedFromGrid";
-    public static final String CHANNEL_POWER_CONSUMED_FROM_STORAGE = "PowerConsumedFromStorage";
-    public static final String CHANNEL_POWER_CONSUMED_FROM_PRODUCERS = "PowerConsumedFromProducers";
-    public static final String CHANNEL_POWER_PRODUCED = "PowerProduced";
-    public static final String CHANNEL_POWER_OUT_FROM_PRODUCERS = "PowerOutFromProducers";
-    public static final String CHANNEL_POWER_OUT_FROM_STORAGE = "PowerOutFromStorage";
-    public static final String CHANNEL_POWER_RELEASED = "PowerReleased";
-    public static final String CHANNEL_POWER_SELF_CONSUMED = "PowerSelfConsumed";
-    public static final String CHANNEL_POWER_DIRECT_CONSUMED = "PowerDirectConsumed";
-    public static final String CHANNEL_POWER_SELF_SUPPLIED = "PowerSelfSupplied";
-    public static final String CHANNEL_WORK_BUFFERED = "WorkBuffered";
-    public static final String CHANNEL_WORK_BUFFERED_FROM_GRID = "WorkBufferedFromGrid";
-    public static final String CHANNEL_WORK_BUFFERED_FROM_PRODUCERS = "WorkBufferedFromProducers";
-    public static final String CHANNEL_WORK_CONSUMED = "WorkConsumed";
-    public static final String CHANNEL_WORK_CONSUMED_FROM_GRID = "WorkConsumedFromGrid";
-    public static final String CHANNEL_WORK_CONSUMED_FROM_STORAGE = "WorkConsumedFromStorage";
-    public static final String CHANNEL_WORK_CONSUMED_FROM_PRODUCERS = "WorkConsumedFromProducers";
-    public static final String CHANNEL_WORK_PRODUCED = "WorkProduced";
-    public static final String CHANNEL_WORK_OUT_FROM_PRODUCERS = "WorkOutFromProducers";
-    public static final String CHANNEL_WORK_OUT_FROM_STORAGE = "WorkOutFromStorage";
-    public static final String CHANNEL_WORK_RELEASED = "WorkReleased";
-    public static final String CHANNEL_WORK_SELF_CONSUMED = "WorkSelfConsumed";
-    public static final String CHANNEL_WORK_DIRECT_CONSUMED = "WorkDirectConsumed";
-    public static final String CHANNEL_WORK_SELF_SUPPLIED = "WorkSelfSupplied";
-    public static final String CHANNEL_CURRENT_LIMIT = "CurrentLimit";
-    public static final String CHANNEL_FEED_IN_LIMIT = "FeedInLimit";
+    public static final SolarwattTag CHANNEL_WORK_AC_OUT = new SolarwattTag("WorkACOut");
+    public static final SolarwattTag CHANNEL_WORK_AC_IN = new SolarwattTag("WorkACIn");
+    public static final SolarwattTag CHANNEL_WORK_AC_IN_SESSION = new SolarwattTag("WorkACInSession");
+    public static final SolarwattTag CHANNEL_POWER_INSTALLED_PEAK = new SolarwattTag("PowerInstalledPeak");
+    public static final SolarwattTag CHANNEL_POWER_AC_OUT_MAX = new SolarwattTag("PowerACOutMax");
+    public static final SolarwattTag CHANNEL_POWER_AC_OUT = new SolarwattTag("PowerACOut");
+    public static final SolarwattTag CHANNEL_POWER_AC_IN = new SolarwattTag("PowerACIn");
+    public static final SolarwattTag CHANNEL_POWER_AC_OUT_LIMIT = new SolarwattTag("PowerACOutLimit");
+    public static final SolarwattTag CHANNEL_DIRECTION_METERING = new SolarwattTag("DirectionMetering");
+    public static final SolarwattTag CHANNEL_POWER_IN = new SolarwattTag("PowerIn");
+    public static final SolarwattTag CHANNEL_POWER_OUT = new SolarwattTag("PowerOut");
+    public static final SolarwattTag CHANNEL_WORK_IN = new SolarwattTag("WorkIn");
+    public static final SolarwattTag CHANNEL_WORK_OUT = new SolarwattTag("WorkOut");
+    public static final SolarwattTag CHANNEL_CONSUMPTION_ENERGY_SUM = new SolarwattTag("ConsumptionEnergySum");
+    public static final SolarwattTag CHANNEL_STATE_DEVICE = new SolarwattTag("StateDevice");
+    public static final SolarwattTag CHANNEL_MODE_STATION = new SolarwattTag("ModeStation");
+    public static final SolarwattTag CHANNEL_CONNECTIVITY_STATUS = new SolarwattTag("ConnectivityStatus");
+    public static final SolarwattTag CHANNEL_TIMESTAMP = new SolarwattTag("Timestamp");
+    public static final SolarwattTag CHANNEL_IDTIMEZONE = new SolarwattTag("IdTimezone");
+    public static final SolarwattTag CHANNEL_FRACTION_CPU_LOAD_TOTAL = new SolarwattTag("FractionCPULoadTotal");
+    public static final SolarwattTag CHANNEL_FRACTION_CPU_LOAD_USER = new SolarwattTag("FractionCPULoadUser");
+    public static final SolarwattTag CHANNEL_FRACTION_CPU_LOAD_KERNEL = new SolarwattTag("FractionCPULoadKernel");
+    public static final SolarwattTag CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_MINUTE = new SolarwattTag(
+            "FractionCPULoadAverageLastMinute");
+    public static final SolarwattTag CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_FIVE_MINUTES = new SolarwattTag(
+            "FractionCPULoadAverageLastFiveMinutes");
+    public static final SolarwattTag CHANNEL_FRACTION_CPU_LOAD_AVERAGE_LAST_FIFTEEN_MINUTES = new SolarwattTag(
+            "FractionCPULoadAverageLastFifteenMinutes");
+    public static final SolarwattTag CHANNEL_MODE_CONVERTER = new SolarwattTag("ModeConverter");
+    public static final SolarwattTag CHANNEL_STATE_OF_CHARGE = new SolarwattTag("StateOfCharge");
+    public static final SolarwattTag CHANNEL_STATE_OF_HEALTH = new SolarwattTag("StateOfHealth");
+    public static final SolarwattTag CHANNEL_TEMPERATURE_BATTERY = new SolarwattTag("TemperatureBattery");
+    public static final SolarwattTag CHANNEL_POWER_BUFFERED = new SolarwattTag("PowerBuffered");
+    public static final SolarwattTag CHANNEL_POWER_BUFFERED_FROM_GRID = new SolarwattTag("PowerBufferedFromGrid");
+    public static final SolarwattTag CHANNEL_POWER_BUFFERED_FROM_PRODUCERS = new SolarwattTag(
+            "PowerBufferedFromProducers");
+    public static final SolarwattTag CHANNEL_POWER_CONSUMED = new SolarwattTag("PowerConsumed");
+    public static final SolarwattTag CHANNEL_POWER_CONSUMED_FROM_GRID = new SolarwattTag("PowerConsumedFromGrid");
+    public static final SolarwattTag CHANNEL_POWER_CONSUMED_FROM_STORAGE = new SolarwattTag("PowerConsumedFromStorage");
+    public static final SolarwattTag CHANNEL_POWER_CONSUMED_FROM_PRODUCERS = new SolarwattTag(
+            "PowerConsumedFromProducers");
+    public static final SolarwattTag CHANNEL_POWER_PRODUCED = new SolarwattTag("PowerProduced");
+    public static final SolarwattTag CHANNEL_POWER_OUT_FROM_PRODUCERS = new SolarwattTag("PowerOutFromProducers");
+    public static final SolarwattTag CHANNEL_POWER_OUT_FROM_STORAGE = new SolarwattTag("PowerOutFromStorage");
+    public static final SolarwattTag CHANNEL_POWER_RELEASED = new SolarwattTag("PowerReleased");
+    public static final SolarwattTag CHANNEL_POWER_SELF_CONSUMED = new SolarwattTag("PowerSelfConsumed");
+    public static final SolarwattTag CHANNEL_POWER_DIRECT_CONSUMED = new SolarwattTag("PowerDirectConsumed");
+    public static final SolarwattTag CHANNEL_POWER_SELF_SUPPLIED = new SolarwattTag("PowerSelfSupplied");
+    public static final SolarwattTag CHANNEL_WORK_BUFFERED = new SolarwattTag("WorkBuffered");
+    public static final SolarwattTag CHANNEL_WORK_BUFFERED_FROM_GRID = new SolarwattTag("WorkBufferedFromGrid");
+    public static final SolarwattTag CHANNEL_WORK_BUFFERED_FROM_PRODUCERS = new SolarwattTag(
+            "WorkBufferedFromProducers");
+    public static final SolarwattTag CHANNEL_WORK_CONSUMED = new SolarwattTag("WorkConsumed");
+    public static final SolarwattTag CHANNEL_WORK_CONSUMED_FROM_GRID = new SolarwattTag("WorkConsumedFromGrid");
+    public static final SolarwattTag CHANNEL_WORK_CONSUMED_FROM_STORAGE = new SolarwattTag("WorkConsumedFromStorage");
+    public static final SolarwattTag CHANNEL_WORK_CONSUMED_FROM_PRODUCERS = new SolarwattTag(
+            "WorkConsumedFromProducers");
+    public static final SolarwattTag CHANNEL_WORK_PRODUCED = new SolarwattTag("WorkProduced");
+    public static final SolarwattTag CHANNEL_WORK_OUT_FROM_PRODUCERS = new SolarwattTag("WorkOutFromProducers");
+    public static final SolarwattTag CHANNEL_WORK_OUT_FROM_STORAGE = new SolarwattTag("WorkOutFromStorage");
+    public static final SolarwattTag CHANNEL_WORK_RELEASED = new SolarwattTag("WorkReleased");
+    public static final SolarwattTag CHANNEL_WORK_SELF_CONSUMED = new SolarwattTag("WorkSelfConsumed");
+    public static final SolarwattTag CHANNEL_WORK_DIRECT_CONSUMED = new SolarwattTag("WorkDirectConsumed");
+    public static final SolarwattTag CHANNEL_WORK_SELF_SUPPLIED = new SolarwattTag("WorkSelfSupplied");
+    public static final SolarwattTag CHANNEL_CURRENT_LIMIT = new SolarwattTag("CurrentLimit");
+    public static final SolarwattTag CHANNEL_FEED_IN_LIMIT = new SolarwattTag("FeedInLimit");
 
     // thing configuration and properties keys
     public static final String THING_PROPERTIES_GUID = "guid";

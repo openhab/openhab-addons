@@ -124,7 +124,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
 
         if (device != null) {
             device.getSolarwattChannelSet().forEach((channelTag, solarwattChannel) -> {
-                this.logger.trace("{}: {}", this.getThing().getUID(), solarwattChannel.getTagName());
+                this.logger.trace("{}: {}", this.getThing().getUID(), solarwattChannel.getChannelName());
                 this.assertChannel(solarwattChannel);
             });
         }
@@ -163,7 +163,7 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
      * @param solarwattChannel channel description with name and unit
      */
     protected void assertChannel(SolarwattChannel solarwattChannel) {
-        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), solarwattChannel.getTagName());
+        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), solarwattChannel.getChannelName());
         ChannelTypeUID channelType = this.channelTypeProvider.assertChannelType(solarwattChannel);
         if (this.getThing().getChannel(channelUID) == null) {
             ThingBuilder thingBuilder = this.editThing();
@@ -203,8 +203,8 @@ public abstract class AbstractDeviceHandler extends BaseThingHandler {
         }
         ChannelBuilder channelBuilder = ChannelBuilder.create(channelUID, itemType);
 
-        channelBuilder.withLabel(solarwattChannel.getTagName()).withType(channelType).withDescription(MessageFormat
-                .format("Value for {0} with Unit: {1}", solarwattChannel.getTagName(), solarwattChannel.getUnit()))
+        channelBuilder.withLabel(solarwattChannel.getChannelName()).withType(channelType).withDescription(MessageFormat
+                .format("Value for {0} with Unit: {1}", solarwattChannel.getChannelName(), solarwattChannel.getUnit()))
                 .withKind(ChannelKind.STATE);
         return channelBuilder;
     }

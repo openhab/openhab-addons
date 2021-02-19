@@ -131,10 +131,10 @@ public class Location extends Device {
         this.addWattHourQuantity(CHANNEL_WORK_RELEASED, deviceDTO, true);
 
         // calculate direct consumption for display purposes
-        this.calculateDifferenceToState(CHANNEL_POWER_SELF_CONSUMED, CHANNEL_POWER_BUFFERED,
-                CHANNEL_POWER_DIRECT_CONSUMED, "energy");
-        this.calculateDifferenceToState(CHANNEL_WORK_SELF_CONSUMED, CHANNEL_WORK_BUFFERED, CHANNEL_WORK_DIRECT_CONSUMED,
-                "energy");
+        this.calculateDifferenceToState(CHANNEL_POWER_SELF_CONSUMED.getChannelName(),
+                CHANNEL_POWER_BUFFERED.getChannelName(), CHANNEL_POWER_DIRECT_CONSUMED.getChannelName(), "energy");
+        this.calculateDifferenceToState(CHANNEL_WORK_SELF_CONSUMED.getChannelName(),
+                CHANNEL_WORK_BUFFERED.getChannelName(), CHANNEL_WORK_DIRECT_CONSUMED.getChannelName(), "energy");
 
         // read IdDevicesMap to find out which devices are located/metered where
         // to get the unmetered consumption we need to take Location.(Work|Power)Consumed

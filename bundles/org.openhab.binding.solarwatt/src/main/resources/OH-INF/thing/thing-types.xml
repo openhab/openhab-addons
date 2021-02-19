@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="energymanager">
-		<label>Solarwatt</label>
-		<description>Solarwatt Energymanager</description>
+		<label>Solarwatt Energymanager</label>
+		<description>Solarwatt Energymanager is the bridge to all things attached to the PV production system.</description>
 
 		<representation-property>hostname</representation-property>
 
@@ -40,8 +40,8 @@
 			<bridge-type-ref id="energymanager"/>
 		</supported-bridge-type-refs>
 
-		<label>EVStation</label>
-		<description>Electric Vehicle Charger</description>
+		<label>EV Station</label>
+		<description>Electric vehicle charger station</description>
 
 		<representation-property>IdName</representation-property>
 
@@ -52,8 +52,8 @@
 			<bridge-type-ref id="energymanager"/>
 		</supported-bridge-type-refs>
 
-		<label>BatteryConverter</label>
-		<description>Battery Converter</description>
+		<label>Battery Converter</label>
+		<description>Battery converter to supply AC from battery storage.</description>
 
 		<representation-property>IdName</representation-property>
 
@@ -65,7 +65,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Location</label>
-		<description>Location</description>
+		<description>Location aggregates all things taking part in the production process.</description>
 
 		<representation-property>IdName</representation-property>
 
@@ -76,8 +76,8 @@
 			<bridge-type-ref id="energymanager"/>
 		</supported-bridge-type-refs>
 
-		<label>PVPlant</label>
-		<description>Photovoltaic Producing Plant</description>
+		<label>PV Plant</label>
+		<description>Photovoltaic plant generating DC from solar energy.</description>
 
 		<representation-property>IdName</representation-property>
 
@@ -89,7 +89,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Gridflow</label>
-		<description>Gridflow</description>
+		<description>Gridflow regulates interaction with the external power grid.</description>
 
 		<representation-property>IdName</representation-property>
 
@@ -100,8 +100,8 @@
 			<bridge-type-ref id="energymanager"/>
 		</supported-bridge-type-refs>
 
-		<label>PowerMeter</label>
-		<description>PowerMeter</description>
+		<label>Power Meter</label>
+		<description>Power meter for produced or consumed energy</description>
 
 		<representation-property>IdName</representation-property>
 
@@ -113,7 +113,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Inverter</label>
-		<description>Inverter</description>
+		<description>Inverter supplying AC from DC.</description>
 
 		<representation-property>IdName</representation-property>
 

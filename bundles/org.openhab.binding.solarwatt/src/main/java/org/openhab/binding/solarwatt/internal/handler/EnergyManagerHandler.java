@@ -163,7 +163,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
         this.logger.debug("{}: initDeviceChannels for device {}", this, this.getThing().getUID());
 
         device.getSolarwattChannelSet().forEach((channelTag, solarwattChannel) -> {
-            this.logger.trace("{}: {}", this.getThing().getUID(), solarwattChannel.getTagName());
+            this.logger.trace("{}: {}", this.getThing().getUID(), solarwattChannel.getChannelName());
             this.assertChannel(solarwattChannel);
         });
     }
@@ -176,7 +176,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
      * @param solarwattChannel channel description with name and unit
      */
     protected void assertChannel(SolarwattChannel solarwattChannel) {
-        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), solarwattChannel.getTagName());
+        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), solarwattChannel.getChannelName());
         ChannelTypeUID channelType = this.channelTypeProvider.assertChannelType(solarwattChannel);
         if (this.getThing().getChannel(channelUID) == null) {
             ThingBuilder thingBuilder = this.editThing();

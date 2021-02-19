@@ -69,11 +69,11 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
      */
     public ChannelTypeUID assertChannelType(SolarwattChannel solarwattChannel) {
         @Nullable
-        ChannelType existingChannel = this.channelMap.get(solarwattChannel.getTagName());
+        ChannelType existingChannel = this.channelMap.get(solarwattChannel.getChannelName());
         if (existingChannel == null) {
-            this.logger.trace("Creating ChannelType for TagName {}", solarwattChannel.getTagName());
+            this.logger.trace("Creating ChannelType for TagName {}", solarwattChannel.getChannelName());
             ChannelType createdChannel = this.getChannelType(solarwattChannel);
-            this.channelMap.put(solarwattChannel.getTagName(), createdChannel);
+            this.channelMap.put(solarwattChannel.getChannelName(), createdChannel);
             return createdChannel.getUID();
         } else {
             return existingChannel.getUID();
@@ -96,15 +96,15 @@ public class SolarwattChannelTypeProvider implements ChannelTypeProvider {
             }
 
             stateDescriptionBuilder = ChannelTypeBuilder
-                    .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID, solarwattChannel.getTagName()),
-                            solarwattChannel.getTagName(), CoreItemFactory.NUMBER + dimension)
+                    .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID, solarwattChannel.getChannelName()),
+                            solarwattChannel.getChannelName(), CoreItemFactory.NUMBER + dimension)
                     .withCategory(solarwattChannel.getCategory()).isAdvanced(solarwattChannel.getAdvanced())
                     .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
                             .withPattern("%.2f " + unitString).build());
         } else {
             stateDescriptionBuilder = ChannelTypeBuilder
-                    .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID, solarwattChannel.getTagName()),
-                            solarwattChannel.getTagName(), CoreItemFactory.STRING)
+                    .state(new ChannelTypeUID(SolarwattBindingConstants.BINDING_ID, solarwattChannel.getChannelName()),
+                            solarwattChannel.getChannelName(), CoreItemFactory.STRING)
                     .withCategory(solarwattChannel.getCategory()).isAdvanced(solarwattChannel.getAdvanced())
                     .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
         }
