@@ -54,7 +54,6 @@ public class ItemToStorePointCreatorTest {
         when(influxDBConfiguration.isAddLabelTag()).thenReturn(false);
         when(influxDBConfiguration.isAddTypeTag()).thenReturn(false);
         when(influxDBConfiguration.isReplaceUnderscore()).thenReturn(false);
-        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(false);
 
         instance = new ItemToStorePointCreator(influxDBConfiguration, metadataRegistry);
     }
@@ -150,22 +149,22 @@ public class ItemToStorePointCreatorTest {
         InfluxPoint point = instance.convert(item, null);
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
 
-        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(true);
-
         point = instance.convert(item, null);
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
-        assertThat(point.getTags(), hasEntry("item", "myitem"));
+        assertThat(point.getTags(), hasEntry("item", item.getName()));
 
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "measurementName", Map.of("key1", "val1", "key2", "val2")));
 
         point = instance.convert(item, null);
         assertThat(point.getMeasurementName(), equalTo("measurementName"));
-        assertThat(point.getTags(), hasEntry("item", "myitem"));
+        assertThat(point.getTags(), hasEntry("item", item.getName()));
 
-        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(false);
+        when(metadataRegistry.get(metadataKey))
+                .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
         point = instance.convert(item, null);
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
+        assertThat(point.getTags(), hasEntry("item", item.getName()));
     }
 }

@@ -36,7 +36,6 @@ public class InfluxDBConfiguration {
     public static final String RETENTION_POLICY_PARAM = "retentionPolicy";
     public static final String VERSION_PARAM = "version";
     public static final String REPLACE_UNDERSCORE_PARAM = "replaceUnderscore";
-    public static final String META_MEASUREMENT_NAME = "useMetadataMeasurementName";
     public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
@@ -50,7 +49,6 @@ public class InfluxDBConfiguration {
     private final String retentionPolicy;
     private final InfluxDBVersion version;
 
-    private final boolean useMetadataMeasurementName;
     private final boolean replaceUnderscore;
     private final boolean addCategoryTag;
     private final boolean addTypeTag;
@@ -65,7 +63,6 @@ public class InfluxDBConfiguration {
         retentionPolicy = (String) config.getOrDefault(RETENTION_POLICY_PARAM, "autogen");
         version = parseInfluxVersion(config.getOrDefault(VERSION_PARAM, InfluxDBVersion.V1.name()));
 
-        useMetadataMeasurementName = getConfigBooleanValue(config, META_MEASUREMENT_NAME, false);
         replaceUnderscore = getConfigBooleanValue(config, REPLACE_UNDERSCORE_PARAM, false);
         addCategoryTag = getConfigBooleanValue(config, ADD_CATEGORY_TAG_PARAM, false);
         addLabelTag = getConfigBooleanValue(config, ADD_LABEL_TAG_PARAM, false);
@@ -145,10 +142,6 @@ public class InfluxDBConfiguration {
 
     public boolean isReplaceUnderscore() {
         return replaceUnderscore;
-    }
-
-    public boolean isUseMetadataMeasurementName() {
-        return useMetadataMeasurementName;
     }
 
     public boolean isAddCategoryTag() {

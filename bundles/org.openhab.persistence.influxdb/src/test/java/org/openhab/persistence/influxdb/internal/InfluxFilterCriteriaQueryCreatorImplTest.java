@@ -59,8 +59,6 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
 
     @BeforeEach
     public void before() {
-        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(false);
-
         instanceV1 = new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
         instanceV2 = new Influx2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
     }
@@ -83,45 +81,6 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
                 + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")"));
-    }
-
-    @Test
-    public void testMeasurementNameFromMetadata() {
-        FilterCriteria criteria = createBaseCriteria();
-        MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, "sampleItem");
-
-        when(metadataRegistry.get(metadataKey))
-                .thenReturn(new Metadata(metadataKey, "measurementName", Map.of("key1", "val1", "key2", "val2")));
-
-        String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT value FROM origin.sampleItem;"));
-
-        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")"));
-
-        when(influxDBConfiguration.isUseMetadataMeasurementName()).thenReturn(true);
-
-        queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT value FROM origin.measurementName WHERE item = 'sampleItem';"));
-
-        queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2,
-                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"measurementName\")\n\t"
-                        + "|> filter(fn: (r) => r[\"item\"] == \"sampleItem\")"));
-
-        when(metadataRegistry.get(metadataKey))
-                .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
-
-        queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT value FROM origin.sampleItem WHERE item = 'sampleItem';"));
-
-        queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2,
-                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
-                        + "|> filter(fn: (r) => r[\"item\"] == \"sampleItem\")"));
     }
 
     @Test
@@ -224,5 +183,33 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setItemName(sampleItem);
         criteria.setOrdering(null);
         return criteria;
+    }
+
+    @Test
+    public void testMeasurementNameFromMetadata() {
+        FilterCriteria criteria = createBaseCriteria();
+        MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, "sampleItem");
+
+        when(metadataRegistry.get(metadataKey))
+                .thenReturn(new Metadata(metadataKey, "measurementName", Map.of("key1", "val1", "key2", "val2")));
+
+        String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
+        assertThat(queryV1, equalTo("SELECT value FROM origin.measurementName WHERE item = 'sampleItem';"));
+
+        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
+        assertThat(queryV2,
+                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"measurementName\")\n\t"
+                        + "|> filter(fn: (r) => r[\"item\"] == \"sampleItem\")"));
+
+        when(metadataRegistry.get(metadataKey))
+                .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
+
+        queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
+        assertThat(queryV1, equalTo("SELECT value FROM origin.sampleItem;"));
+
+        queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
+        assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")"));
     }
 }

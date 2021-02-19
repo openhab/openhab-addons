@@ -64,10 +64,8 @@ public class ItemToStorePointCreator {
     private String calculateMeasurementName(Item item, @Nullable String storeAlias) {
         String name = storeAlias != null && !storeAlias.isBlank() ? storeAlias : item.getName();
 
-        if (configuration.isUseMetadataMeasurementName()) {
-            name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name,
-                    item.getName());
-        }
+        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name,
+                item.getName());
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');

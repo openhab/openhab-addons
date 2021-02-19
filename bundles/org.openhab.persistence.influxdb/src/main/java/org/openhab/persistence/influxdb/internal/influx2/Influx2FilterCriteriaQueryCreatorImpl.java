@@ -65,8 +65,9 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         String itemName = criteria.getItemName();
         if (itemName != null) {
-            flux = flux.filter(measurement().equal(calculateMeasurementName(itemName)));
-            if (configuration.isUseMetadataMeasurementName()) {
+            String measurementName = calculateMeasurementName(itemName);
+            flux = flux.filter(measurement().equal(measurementName));
+            if (!measurementName.equals(itemName)) {
                 flux = flux.filter(tag("item").equal(itemName));
             }
         }
@@ -94,10 +95,7 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
     private String calculateMeasurementName(String itemName) {
         String name = itemName;
 
-        if (configuration.isUseMetadataMeasurementName()) {
-            name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name,
-                    itemName);
-        }
+        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name, itemName);
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');
