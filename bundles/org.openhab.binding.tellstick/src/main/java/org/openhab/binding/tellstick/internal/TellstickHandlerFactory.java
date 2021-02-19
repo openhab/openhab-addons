@@ -16,19 +16,24 @@ import static org.openhab.binding.tellstick.internal.TellstickBindingConstants.*
 
 import java.util.Hashtable;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tellstick.internal.core.TelldusCoreBridgeHandler;
 import org.openhab.binding.tellstick.internal.discovery.TellstickDiscoveryService;
 import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
 import org.openhab.binding.tellstick.internal.handler.TelldusDevicesHandler;
 import org.openhab.binding.tellstick.internal.live.TelldusLiveBridgeHandler;
+import org.openhab.binding.tellstick.internal.local.TelldusLocalBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +42,18 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Jarle Hjortland - Initial contribution
+ * @author Jan Gustafsson - Adding support for local API
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tellstick")
 public class TellstickHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(TellstickHandlerFactory.class);
     private TellstickDiscoveryService discoveryService = null;
+    private final HttpClient httpClient;
+
+    @Activate
+    public TellstickHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -66,6 +78,10 @@ public class TellstickHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (thing.getThingTypeUID().equals(TELLDUSLIVEBRIDGE_THING_TYPE)) {
             TelldusLiveBridgeHandler handler = new TelldusLiveBridgeHandler((Bridge) thing);
+            registerDeviceDiscoveryService(handler);
+            return handler;
+        } else if (thing.getThingTypeUID().equals(TELLDUSLOCALBRIDGE_THING_TYPE)) {
+            TelldusLocalBridgeHandler handler = new TelldusLocalBridgeHandler((Bridge) thing, httpClient);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (supportsThingType(thing.getThingTypeUID())) {

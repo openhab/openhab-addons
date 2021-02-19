@@ -1,5 +1,5 @@
 ---
-name: "\U0001F41B Bug report"
+name: "🐛 Bug report"
 about: Something isn't working correctly with an add-on. This is the wrong place for user-interfaces or openHAB Core issues.
 labels: bug
 

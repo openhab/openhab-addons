@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Bosch Smart Home Binding</name>
-	<description>This is the binding for Bosch Smart Home Controller.</description>
+	<description>This is the binding for Bosch Smart Home.</description>
 	<author>Stefan Kästle</author>
 
 </binding:binding>

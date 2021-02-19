@@ -75,7 +75,7 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         properties.put(Thing.PROPERTY_MODEL_ID, modelId);
         properties.put(Thing.PROPERTY_VENDOR, "Nanoleaf");
         String qualifiedName = service.getQualifiedName();
-        logger.debug("AVR found: {}", qualifiedName);
+        logger.debug("Device found: {}", qualifiedName);
 
         logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {} qualifiedName: {}", host, port,
                 firmwareVersion, modelId, qualifiedName);

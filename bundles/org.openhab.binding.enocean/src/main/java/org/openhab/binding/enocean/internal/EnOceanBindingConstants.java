@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.enocean.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.measure.quantity.Angle;
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Illuminance;
@@ -78,13 +75,16 @@ public class EnOceanBindingConstants {
     public static final ThingTypeUID THING_TYPE_MULTFUNCTIONSMOKEDETECTOR = new ThingTypeUID(BINDING_ID,
             "multiFunctionSmokeDetector");
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(
-            THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE, THING_TYPE_CENTRALCOMMAND,
-            THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
-            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR,
-            THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_OCCUPANCYSENSOR,
-            THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_ENVIRONMENTALSENSOR,
-            THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR));
+    public static final ThingTypeUID THING_TYPE_HEATRECOVERYVENTILATION = new ThingTypeUID(BINDING_ID,
+            "heatRecoveryVentilation");
+
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_PUSHBUTTON,
+            THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE, THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL,
+            THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,
+            THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER,
+            THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
+            THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT,
+            THING_TYPE_MULTFUNCTIONSMOKEDETECTOR, THING_TYPE_HEATRECOVERYVENTILATION);
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
     // this makes it a lot easier as we do not have to manage a type id and an id, drawback long channel names
@@ -179,215 +179,356 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_STATUS_REQUEST_EVENT = "statusRequestEvent";
     public static final String CHANNEL_SEND_COMMAND = "sendCommand";
 
-    public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Collections
-            .unmodifiableMap(new HashMap<String, EnOceanChannelDescription>() {
-                private static final long serialVersionUID = 1L;
+    public static final String CHANNEL_VENTILATIONOPERATIONMODE = "ventilationOperationMode";
+    public static final String CHANNEL_FIREPLACESAFETYMODE = "fireplaceSafetyMode";
+    public static final String CHANNEL_HEATEXCHANGERBYPASSSTATUS = "heatExchangerBypassStatus";
+    public static final String CHANNEL_SUPPLYAIRFLAPSTATUS = "supplyAirFlapStatus";
+    public static final String CHANNEL_EXHAUSTAIRFLAPSTATUS = "exhaustAirFlapStatus";
+    public static final String CHANNEL_DEFROSTMODE = "defrostMode";
+    public static final String CHANNEL_COOLINGPROTECTIONMODE = "coolingProtectionMode";
+    public static final String CHANNEL_OUTDOORAIRHEATERSTATUS = "outdoorAirHeaterStatus";
+    public static final String CHANNEL_SUPPLYAIRHEATERSTATUS = "supplyAirHeaterStatus";
+    public static final String CHANNEL_DRAINHEATERSTATUS = "drainHeaterStatus";
+    public static final String CHANNEL_TIMEROPERATIONMODE = "timerOperationMode";
+    public static final String CHANNEL_WEEKLYTIMERPROGRAMSTATUS = "weeklyTimerProgramStatus";
+    public static final String CHANNEL_ROOMTEMPERATURECONTROLSTATUS = "roomTemperatureControlStatus";
+    public static final String CHANNEL_AIRQUALITYVALUE1 = "airQualityValue1";
+    public static final String CHANNEL_AIRQUALITYVALUE2 = "airQualityValue2";
+    public static final String CHANNEL_OUTDOORAIRTEMPERATURE = "outdoorAirTemperature";
+    public static final String CHANNEL_SUPPLYAIRTEMPERATURE = "supplyAirTemperature";
+    public static final String CHANNEL_INDOORAIRTEMPERATURE = "indoorAirTemperature";
+    public static final String CHANNEL_EXHAUSTAIRTEMPERATURE = "exhaustAirTemperature";
+    public static final String CHANNEL_SUPPLYAIRFANAIRFLOWRATE = "supplyAirFanAirFlowRate";
+    public static final String CHANNEL_EXHAUSTAIRFANAIRFLOWRATE = "exhaustAirFanAirFlowRate";
+    public static final String CHANNEL_SUPPLYFANSPEED = "supplyFanSpeed";
+    public static final String CHANNEL_EXHAUSTFANSPEED = "exhaustFanSpeed";
 
-                {
-                    put(CHANNEL_GENERAL_SWITCHING, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERAL_SWITCHING), CoreItemFactory.SWITCH));
+    public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Map.ofEntries(
+            Map.entry(CHANNEL_GENERAL_SWITCHING,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERAL_SWITCHING),
+                            CoreItemFactory.SWITCH)),
 
-                    put(CHANNEL_GENERAL_SWITCHINGA, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERAL_SWITCHINGA), CoreItemFactory.SWITCH));
-                    put(CHANNEL_GENERAL_SWITCHINGB, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERAL_SWITCHINGB), CoreItemFactory.SWITCH));
+            Map.entry(CHANNEL_GENERAL_SWITCHINGA,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERAL_SWITCHINGA),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_GENERAL_SWITCHINGB,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERAL_SWITCHINGB),
+                            CoreItemFactory.SWITCH)),
 
-                    put(CHANNEL_DIMMER, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_DIMMER),
-                            CoreItemFactory.DIMMER));
-                    put(CHANNEL_ROLLERSHUTTER, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ROLLERSHUTTER), CoreItemFactory.ROLLERSHUTTER));
-                    put(CHANNEL_ANGLE, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ANGLE),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Angle.class.getSimpleName()));
-                    put(CHANNEL_TEMPERATURE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
-                    put(CHANNEL_HUMIDITY, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_HUMIDITY), CoreItemFactory.NUMBER));
-                    put(CHANNEL_FANSPEEDSTAGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_FANSPEEDSTAGE), CoreItemFactory.STRING));
-                    put(CHANNEL_OCCUPANCY, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY), CoreItemFactory.SWITCH));
-                    put(CHANNEL_MOTIONDETECTION, new EnOceanChannelDescription(
-                            DefaultSystemChannelTypeProvider.SYSTEM_MOTION.getUID(), CoreItemFactory.SWITCH));
-                    put(CHANNEL_VIBRATION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_VIBRATION), CoreItemFactory.SWITCH));
-                    put(CHANNEL_ILLUMINATION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
-                    put(CHANNEL_ILLUMINATIONWEST, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONWEST),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
-                    put(CHANNEL_ILLUMINATIONSOUTHNORTH, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONSOUTHNORTH),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
-                    put(CHANNEL_ILLUMINATIONEAST, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONEAST),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
-                    put(CHANNEL_WINDSPEED, new EnOceanChannelDescription(
-                            DefaultSystemChannelTypeProvider.SYSTEM_WIND_SPEED.getUID(),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Speed.class.getSimpleName()));
-                    put(CHANNEL_RAINSTATUS, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_RAINSTATUS), CoreItemFactory.SWITCH));
-                    put(CHANNEL_COUNTER, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_COUNTER),
-                            CoreItemFactory.NUMBER));
-                    put(CHANNEL_CURRENTNUMBER, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTNUMBER), CoreItemFactory.NUMBER));
-                    put(CHANNEL_SMOKEDETECTION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SMOKEDETECTION), CoreItemFactory.SWITCH));
-                    put(CHANNEL_SENSORFAULT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT), CoreItemFactory.SWITCH));
-                    put(CHANNEL_MAINTENANCESTATUS, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT), CoreItemFactory.SWITCH));
-                    put(CHANNEL_SENSORANALYSISHUMIDITYRANGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT), CoreItemFactory.SWITCH));
-                    put(CHANNEL_SENSORANALYSISTEMPERATURRANGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT), CoreItemFactory.SWITCH));
-                    put(CHANNEL_TIMESINCELASTMAINTENANCE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TIMESINCELASTMAINTENANCE),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Time.class.getSimpleName()));
-                    put(CHANNEL_REMAININGPLT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_REMAININGPLT),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Time.class.getSimpleName()));
-                    put(CHANNEL_HYGROCOMFORTINDEX, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_HYGROCOMFORTINDEX), CoreItemFactory.STRING));
-                    put(CHANNEL_INDOORAIRANALYSIS, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_INDOORAIRANALYSIS), CoreItemFactory.STRING));
-                    put(CHANNEL_SETPOINT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SETPOINT), CoreItemFactory.NUMBER));
-                    put(CHANNEL_CONTACT, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CONTACT),
-                            CoreItemFactory.CONTACT));
-                    put(CHANNEL_WINDOWHANDLESTATE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWHANDLESTATE), CoreItemFactory.STRING));
-                    put(CHANNEL_BATTERY_VOLTAGE,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_VOLTAGE),
-                                    CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
-                                            + ElectricPotential.class.getSimpleName()));
-                    put(CHANNEL_ENERGY_STORAGE,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE),
-                                    CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
-                                            + ElectricPotential.class.getSimpleName()));
-                    put(CHANNEL_BATTERY_LEVEL,
-                            new EnOceanChannelDescription(
-                                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID(),
-                                    CoreItemFactory.NUMBER));
-                    put(CHANNEL_BATTERYLOW,
-                            new EnOceanChannelDescription(
-                                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY.getUID(),
-                                    CoreItemFactory.SWITCH));
-                    put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD), CoreItemFactory.SWITCH));
+            Map.entry(CHANNEL_DIMMER,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_DIMMER),
+                            CoreItemFactory.DIMMER)),
+            Map.entry(CHANNEL_ROLLERSHUTTER,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ROLLERSHUTTER),
+                            CoreItemFactory.ROLLERSHUTTER)),
+            Map.entry(CHANNEL_ANGLE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ANGLE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Angle.class.getSimpleName())),
+            Map.entry(CHANNEL_TEMPERATURE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName())),
+            Map.entry(CHANNEL_HUMIDITY,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_HUMIDITY),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_FANSPEEDSTAGE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_FANSPEEDSTAGE),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_OCCUPANCY,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_MOTIONDETECTION,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_MOTION.getUID(),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_VIBRATION,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIBRATION),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_ILLUMINATION,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName())),
+            Map.entry(CHANNEL_ILLUMINATIONWEST,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONWEST),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName())),
+            Map.entry(CHANNEL_ILLUMINATIONSOUTHNORTH,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONSOUTHNORTH),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName())),
+            Map.entry(CHANNEL_ILLUMINATIONEAST,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONEAST),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName())),
+            Map.entry(CHANNEL_WINDSPEED,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_WIND_SPEED.getUID(),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Speed.class.getSimpleName())),
+            Map.entry(CHANNEL_RAINSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_RAINSTATUS),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_COUNTER,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_COUNTER),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_CURRENTNUMBER,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTNUMBER),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_SMOKEDETECTION,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SMOKEDETECTION),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_SENSORFAULT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_MAINTENANCESTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_SENSORANALYSISHUMIDITYRANGE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_SENSORANALYSISTEMPERATURRANGE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_TIMESINCELASTMAINTENANCE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TIMESINCELASTMAINTENANCE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Time.class.getSimpleName())),
+            Map.entry(CHANNEL_REMAININGPLT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_REMAININGPLT),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Time.class.getSimpleName())),
+            Map.entry(CHANNEL_HYGROCOMFORTINDEX,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_HYGROCOMFORTINDEX),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_INDOORAIRANALYSIS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_INDOORAIRANALYSIS),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_SETPOINT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SETPOINT),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_CONTACT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CONTACT),
+                            CoreItemFactory.CONTACT)),
+            Map.entry(CHANNEL_WINDOWHANDLESTATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWHANDLESTATE),
+                            CoreItemFactory.STRING)),
+            Map.entry(
+                    CHANNEL_BATTERY_VOLTAGE,
+                    new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_VOLTAGE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + ElectricPotential.class.getSimpleName())),
+            Map.entry(CHANNEL_ENERGY_STORAGE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + ElectricPotential.class.getSimpleName())),
+            Map.entry(CHANNEL_BATTERY_LEVEL, new EnOceanChannelDescription(
+                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID(), CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_BATTERYLOW,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY.getUID(),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_TEACHINCMD,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD),
+                            CoreItemFactory.SWITCH)),
 
-                    put(CHANNEL_PUSHBUTTON,
-                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
-                                    null, "Push button", false, true));
-                    put(CHANNEL_DOUBLEPRESS,
-                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
-                                    null, "Double press", false, true));
-                    put(CHANNEL_LONGPRESS,
-                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
-                                    null, "Long press", false, true));
+            Map.entry(CHANNEL_PUSHBUTTON,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(), null,
+                            "Push button", false, true)),
+            Map.entry(CHANNEL_DOUBLEPRESS,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(), null,
+                            "Double press", false, true)),
+            Map.entry(CHANNEL_LONGPRESS,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(), null,
+                            "Long press", false, true)),
 
-                    put(CHANNEL_ROCKERSWITCH_CHANNELA,
-                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
-                                    null, "Rocker Switch - Channel A", false, false));
-                    put(CHANNEL_ROCKERSWITCH_CHANNELB,
-                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
-                                    null, "Rocker Switch - Channel B", false, false));
+            Map.entry(CHANNEL_ROCKERSWITCH_CHANNELA,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(), null,
+                            "Rocker Switch - Channel A", false, false)),
+            Map.entry(CHANNEL_ROCKERSWITCH_CHANNELB,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(), null,
+                            "Rocker Switch - Channel B", false, false)),
 
-                    put(CHANNEL_VIRTUALSWITCHA,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALSWITCHA),
-                                    CoreItemFactory.SWITCH, "", true, false));
-                    put(CHANNEL_VIRTUALROLLERSHUTTERA,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALROLLERSHUTTERA),
-                                    CoreItemFactory.ROLLERSHUTTER, "", true, false));
-                    put(CHANNEL_VIRTUALROCKERSWITCHB,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALROCKERSWITCHB),
-                                    CoreItemFactory.STRING, "Rocker Switch - Channel B", true, false));
-                    put(CHANNEL_ROCKERSWITCHLISTENERSWITCH,
-                            new EnOceanChannelDescription(
-                                    new ChannelTypeUID(BINDING_ID, CHANNEL_ROCKERSWITCHLISTENERSWITCH),
-                                    CoreItemFactory.SWITCH, "Rocker Switch Listener (Switch)", true, false));
-                    put(CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER, new EnOceanChannelDescription(
+            Map.entry(CHANNEL_VIRTUALSWITCHA,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALSWITCHA),
+                            CoreItemFactory.SWITCH, "", true, false)),
+            Map.entry(CHANNEL_VIRTUALROLLERSHUTTERA,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALROLLERSHUTTERA),
+                            CoreItemFactory.ROLLERSHUTTER, "", true, false)),
+            Map.entry(CHANNEL_VIRTUALROCKERSWITCHB,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALROCKERSWITCHB),
+                            CoreItemFactory.STRING, "Rocker Switch - Channel B", true, false)),
+            Map.entry(CHANNEL_ROCKERSWITCHLISTENERSWITCH,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ROCKERSWITCHLISTENERSWITCH),
+                            CoreItemFactory.SWITCH, "Rocker Switch Listener (Switch)", true, false)),
+            Map.entry(CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER,
+                    new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER),
-                            CoreItemFactory.ROLLERSHUTTER, "Rocker Switch Listener (Rollershutter)", true, false));
+                            CoreItemFactory.ROLLERSHUTTER, "Rocker Switch Listener (Rollershutter)", true, false)),
 
-                    put(CHANNEL_INSTANTPOWER, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Power.class.getSimpleName()));
-                    put(CHANNEL_TOTALUSAGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Energy.class.getSimpleName()));
-                    put(CHANNEL_CURRENTFLOW,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTFLOW),
-                                    CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
-                                            + VolumetricFlowRate.class.getSimpleName()));
-                    put(CHANNEL_CUMULATIVEVALUE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_CUMULATIVEVALUE),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Volume.class.getSimpleName()));
-                    put(CHANNEL_AUTOOFF, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AUTOOFF),
-                            CoreItemFactory.NUMBER));
-                    put(CHANNEL_DELAYRADIOOFF, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_DELAYRADIOOFF), CoreItemFactory.NUMBER));
-                    put(CHANNEL_EXTERNALINTERFACEMODE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_EXTERNALINTERFACEMODE), CoreItemFactory.STRING));
-                    put(CHANNEL_TWOSTATESWITCH, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TWOSTATESWITCH), CoreItemFactory.SWITCH));
-                    put(CHANNEL_ECOMODE, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ECOMODE),
-                            CoreItemFactory.SWITCH));
+            Map.entry(CHANNEL_INSTANTPOWER,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Power.class.getSimpleName())),
+            Map.entry(CHANNEL_TOTALUSAGE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Energy.class.getSimpleName())),
+            Map.entry(CHANNEL_CURRENTFLOW,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTFLOW),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + VolumetricFlowRate.class.getSimpleName())),
+            Map.entry(CHANNEL_CUMULATIVEVALUE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CUMULATIVEVALUE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Volume.class.getSimpleName())),
+            Map.entry(CHANNEL_AUTOOFF,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AUTOOFF),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_DELAYRADIOOFF,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_DELAYRADIOOFF),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_EXTERNALINTERFACEMODE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_EXTERNALINTERFACEMODE),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_TWOSTATESWITCH,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TWOSTATESWITCH),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_ECOMODE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ECOMODE),
+                            CoreItemFactory.SWITCH)),
 
-                    put(CHANNEL_RSSI, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_RSSI),
-                            CoreItemFactory.NUMBER));
-                    put(CHANNEL_REPEATCOUNT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_REPEATCOUNT), CoreItemFactory.NUMBER));
-                    put(CHANNEL_LASTRECEIVED, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_LASTRECEIVED), CoreItemFactory.DATETIME));
+            Map.entry(CHANNEL_RSSI,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_RSSI),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_REPEATCOUNT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_REPEATCOUNT),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_LASTRECEIVED,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_LASTRECEIVED),
+                            CoreItemFactory.DATETIME)),
 
-                    put(CHANNEL_GENERIC_SWITCH, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_SWITCH), CoreItemFactory.SWITCH));
-                    put(CHANNEL_GENERIC_ROLLERSHUTTER,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_ROLLERSHUTTER),
-                                    CoreItemFactory.ROLLERSHUTTER));
-                    put(CHANNEL_GENERIC_DIMMER, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_DIMMER), CoreItemFactory.DIMMER));
-                    put(CHANNEL_GENERIC_NUMBER, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_NUMBER), CoreItemFactory.NUMBER));
-                    put(CHANNEL_GENERIC_STRING, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_STRING), CoreItemFactory.STRING));
-                    put(CHANNEL_GENERIC_COLOR, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_COLOR), CoreItemFactory.COLOR));
-                    put(CHANNEL_GENERIC_TEACHINCMD, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_TEACHINCMD), CoreItemFactory.SWITCH));
+            Map.entry(CHANNEL_GENERIC_SWITCH,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_SWITCH),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_GENERIC_ROLLERSHUTTER,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_ROLLERSHUTTER),
+                            CoreItemFactory.ROLLERSHUTTER)),
+            Map.entry(CHANNEL_GENERIC_DIMMER,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_DIMMER),
+                            CoreItemFactory.DIMMER)),
+            Map.entry(CHANNEL_GENERIC_NUMBER,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_NUMBER),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_GENERIC_STRING,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_STRING),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_GENERIC_COLOR,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_COLOR),
+                            CoreItemFactory.COLOR)),
+            Map.entry(CHANNEL_GENERIC_TEACHINCMD,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_TEACHINCMD),
+                            CoreItemFactory.SWITCH)),
 
-                    put(CHANNEL_VALVE_POSITION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_VALVE_POSITION), CoreItemFactory.NUMBER));
-                    put(CHANNEL_BUTTON_LOCK, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_BUTTON_LOCK), CoreItemFactory.SWITCH));
-                    put(CHANNEL_DISPLAY_ORIENTATION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_DISPLAY_ORIENTATION), CoreItemFactory.NUMBER));
-                    put(CHANNEL_TEMPERATURE_SETPOINT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE_SETPOINT),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
-                    put(CHANNEL_FEED_TEMPERATURE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_FEED_TEMPERATURE),
-                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
-                    put(CHANNEL_MEASUREMENT_CONTROL, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_MEASUREMENT_CONTROL), CoreItemFactory.SWITCH));
-                    put(CHANNEL_FAILURE_CODE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_FAILURE_CODE), CoreItemFactory.NUMBER));
-                    put(CHANNEL_WAKEUPCYCLE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_WAKEUPCYCLE), CoreItemFactory.NUMBER));
-                    put(CHANNEL_SERVICECOMMAND, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SERVICECOMMAND), CoreItemFactory.NUMBER));
+            Map.entry(CHANNEL_VALVE_POSITION,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VALVE_POSITION),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_BUTTON_LOCK,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_BUTTON_LOCK),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_DISPLAY_ORIENTATION,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_DISPLAY_ORIENTATION),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_TEMPERATURE_SETPOINT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE_SETPOINT),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName())),
+            Map.entry(CHANNEL_FEED_TEMPERATURE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_FEED_TEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName())),
+            Map.entry(CHANNEL_MEASUREMENT_CONTROL,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_MEASUREMENT_CONTROL),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_FAILURE_CODE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_FAILURE_CODE),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_WAKEUPCYCLE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WAKEUPCYCLE),
+                            CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_SERVICECOMMAND,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SERVICECOMMAND),
+                            CoreItemFactory.NUMBER)),
 
-                    put(CHANNEL_STATUS_REQUEST_EVENT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT), null, "", false, true));
-                    put(CHANNEL_SEND_COMMAND, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SEND_COMMAND), CoreItemFactory.SWITCH));
+            Map.entry(CHANNEL_STATUS_REQUEST_EVENT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT), null,
+                            "", false, true)),
+            Map.entry(CHANNEL_SEND_COMMAND,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SEND_COMMAND),
+                            CoreItemFactory.SWITCH)),
 
-                    put(CHANNEL_REPEATERMODE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_REPEATERMODE), CoreItemFactory.STRING));
-                }
-            });
+            Map.entry(CHANNEL_VENTILATIONOPERATIONMODE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VENTILATIONOPERATIONMODE),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_FIREPLACESAFETYMODE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_FIREPLACESAFETYMODE),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_HEATEXCHANGERBYPASSSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_HEATEXCHANGERBYPASSSTATUS),
+                            CoreItemFactory.CONTACT)),
+            Map.entry(CHANNEL_SUPPLYAIRFLAPSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYAIRFLAPSTATUS),
+                            CoreItemFactory.CONTACT)),
+            Map.entry(CHANNEL_EXHAUSTAIRFLAPSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTAIRFLAPSTATUS),
+                            CoreItemFactory.CONTACT)),
+            Map.entry(CHANNEL_DEFROSTMODE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_DEFROSTMODE),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_COOLINGPROTECTIONMODE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_COOLINGPROTECTIONMODE),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_OUTDOORAIRHEATERSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_OUTDOORAIRHEATERSTATUS),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_SUPPLYAIRHEATERSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYAIRHEATERSTATUS),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_DRAINHEATERSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_DRAINHEATERSTATUS),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_TIMEROPERATIONMODE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TIMEROPERATIONMODE),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_WEEKLYTIMERPROGRAMSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WEEKLYTIMERPROGRAMSTATUS),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_ROOMTEMPERATURECONTROLSTATUS,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ROOMTEMPERATURECONTROLSTATUS),
+                            CoreItemFactory.SWITCH)),
+            Map.entry(CHANNEL_AIRQUALITYVALUE1,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AIRQUALITYVALUE1),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + Dimensionless.class.getSimpleName())),
+            Map.entry(CHANNEL_AIRQUALITYVALUE2,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AIRQUALITYVALUE2),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + Dimensionless.class.getSimpleName())),
+            Map.entry(CHANNEL_OUTDOORAIRTEMPERATURE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_OUTDOORAIRTEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName())),
+            Map.entry(CHANNEL_SUPPLYAIRTEMPERATURE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYAIRTEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName())),
+            Map.entry(CHANNEL_INDOORAIRTEMPERATURE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_INDOORAIRTEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName())),
+            Map.entry(CHANNEL_EXHAUSTAIRTEMPERATURE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTAIRTEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName())),
+            Map.entry(CHANNEL_SUPPLYAIRFANAIRFLOWRATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYAIRFANAIRFLOWRATE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + VolumetricFlowRate.class.getSimpleName())),
+            Map.entry(CHANNEL_EXHAUSTAIRFANAIRFLOWRATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTAIRFANAIRFLOWRATE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + VolumetricFlowRate.class.getSimpleName())),
+            Map.entry(CHANNEL_SUPPLYFANSPEED,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYFANSPEED),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + Dimensionless.class.getSimpleName())),
+            Map.entry(CHANNEL_EXHAUSTFANSPEED,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTFANSPEED),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                    + Dimensionless.class.getSimpleName())),
+
+            Map.entry(CHANNEL_REPEATERMODE, new EnOceanChannelDescription(
+                    new ChannelTypeUID(BINDING_ID, CHANNEL_REPEATERMODE), CoreItemFactory.STRING)));
 
     // List of all repeater mode states
     public static final String REPEATERMODE_OFF = "OFF";

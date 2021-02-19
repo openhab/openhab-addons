@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="controller"
-		extensible="switch, contact, number, dimmmer, datetime, string, rollershutter, pulse-output, rf-device-battery-level, rf-device-signal-strength, push-button-trigger">
+		extensible="switch, contact, number, dimmer, datetime, string, rollershutter, rf-device-low-battery, rf-device-signal-strength, push-button-trigger">
 
 		<label>IHC / ELKO Controller</label>
 		<description></description>

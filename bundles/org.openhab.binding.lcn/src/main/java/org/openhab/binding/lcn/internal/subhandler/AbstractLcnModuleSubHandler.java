@@ -120,7 +120,7 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
      * @param pck the message to process
      * @return true, if the message could be processed successfully
      */
-    public boolean tryParse(String pck) {
+    public void tryParse(String pck) {
         Optional<Matcher> firstSuccessfulMatcher = getPckStatusMessagePatterns().stream().map(p -> p.matcher(pck))
                 .filter(Matcher::matches).filter(m -> handler.isMyAddress(m.group("segId"), m.group("modId")))
                 .findAny();
@@ -132,8 +132,6 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
                 logger.warn("Parse error: {}", e.getMessage());
             }
         });
-
-        return firstSuccessfulMatcher.isPresent();
     }
 
     /**

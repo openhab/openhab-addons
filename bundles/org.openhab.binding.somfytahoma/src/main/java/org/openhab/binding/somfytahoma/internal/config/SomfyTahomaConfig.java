@@ -26,6 +26,8 @@ public class SomfyTahomaConfig {
     private String password = "";
     private int refresh = 30;
     private int statusTimeout = 300;
+    private int retries = 10;
+    private int retryDelay = 1000;
 
     public String getEmail() {
         return email;
@@ -43,11 +45,27 @@ public class SomfyTahomaConfig {
         return statusTimeout;
     }
 
+    public int getRetries() {
+        return retries;
+    }
+
+    public int getRetryDelay() {
+        return retryDelay;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public void setRetryDelay(int retryDelay) {
+        this.retryDelay = retryDelay;
     }
 }

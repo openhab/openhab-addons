@@ -18,6 +18,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -187,15 +189,33 @@ public class MiIoAsyncCommunication {
             decryptedResponse = decryptedResponse.replace(",,", ",");
             JsonElement response;
             response = parser.parse(decryptedResponse);
-            if (response.isJsonObject()) {
+            if (!response.isJsonObject()) {
+                errorMsg = "Received message is not a JSON object ";
+            } else {
                 needPing = false;
                 logger.trace("Received  JSON message {}", response.toString());
-                miIoSendCommand.setResponse(response.getAsJsonObject());
-                return miIoSendCommand;
-            } else {
-                errorMsg = "Received message is invalid JSON";
-                logger.debug("{}: {}", errorMsg, decryptedResponse);
+                JsonObject resJson = response.getAsJsonObject();
+                if (resJson.has("id")) {
+                    int id = resJson.get("id").getAsInt();
+                    if (id == miIoSendCommand.getId()) {
+                        miIoSendCommand.setResponse(response.getAsJsonObject());
+                        return miIoSendCommand;
+                    } else {
+                        if (id < miIoSendCommand.getId()) {
+                            errorMsg = String.format(
+                                    "Received message out of sync, extend timeout time. Expected id: %d, received id: %d",
+                                    miIoSendCommand.getId(), id);
+                        } else {
+                            errorMsg = String.format("Received message out of sync. Expected id: %d, received id: %d",
+                                    miIoSendCommand.getId(), id);
+                        }
+                    }
+                } else {
+                    errorMsg = "Received message is without id";
+                }
+
             }
+            logger.debug("{}: {}", errorMsg, decryptedResponse);
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Send command '{}'  -> {} (Device: {}) gave error {}", miIoSendCommand.getCommandString(), ip,
                     Utils.getHex(deviceId), e.getMessage());
@@ -272,10 +292,13 @@ public class MiIoAsyncCommunication {
 
     private String sendCommand(String command, byte[] token, String ip, byte[] deviceId)
             throws MiIoCryptoException, IOException {
-        byte[] encr;
-        encr = MiIoCrypto.encrypt(command.getBytes(), token);
-        timeStamp = (int) TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTime().getTime());
-        byte[] sendMsg = Message.createMsgData(encr, token, deviceId, timeStamp + timeDelta);
+        byte[] sendMsg = new byte[0];
+        if (!command.isBlank()) {
+            byte[] encr;
+            encr = MiIoCrypto.encrypt(command.getBytes(StandardCharsets.UTF_8), token);
+            timeStamp = (int) Instant.now().getEpochSecond();
+            sendMsg = Message.createMsgData(encr, token, deviceId, timeStamp + timeDelta);
+        }
         Message miIoResponseMsg = sendData(sendMsg, ip);
         if (miIoResponseMsg == null) {
             if (logger.isTraceEnabled()) {
@@ -374,12 +397,14 @@ public class MiIoAsyncCommunication {
         DatagramPacket receivePacket = new DatagramPacket(new byte[MSG_BUFFER_SIZE], MSG_BUFFER_SIZE);
         try {
             logger.trace("Connection {}:{}", ip, clientSocket.getLocalPort());
-            byte[] sendData = new byte[MSG_BUFFER_SIZE];
-            sendData = message;
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress,
-                    MiIoBindingConstants.PORT);
-            clientSocket.send(sendPacket);
-            sendPacket.setData(new byte[MSG_BUFFER_SIZE]);
+            if (message.length > 0) {
+                byte[] sendData = new byte[MSG_BUFFER_SIZE];
+                sendData = message;
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress,
+                        MiIoBindingConstants.PORT);
+                clientSocket.send(sendPacket);
+                sendPacket.setData(new byte[MSG_BUFFER_SIZE]);
+            }
             clientSocket.receive(receivePacket);
             byte[] response = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
                     receivePacket.getOffset() + receivePacket.getLength());

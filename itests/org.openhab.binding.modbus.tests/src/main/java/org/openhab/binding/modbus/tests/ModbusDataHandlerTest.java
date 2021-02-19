@@ -31,7 +31,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +59,6 @@ import org.openhab.core.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.core.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
-import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -191,6 +189,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         Map<String, ChannelUID> toBeLinked = new HashMap<>();
         for (Entry<String, String> entry : CHANNEL_TO_ACCEPTED_TYPE.entrySet()) {
             String channelId = entry.getKey();
+            // accepted item type
             String channelAcceptedType = entry.getValue();
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
             builder = builder.withChannel(ChannelBuilder.create(channelUID, channelAcceptedType).build());
@@ -199,11 +198,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 // Create item of correct type and link it to channel
                 String itemName = getItemName(channelUID);
                 final GenericItem item;
-                if (channelId.startsWith("last") || channelId.equals("datetime")) {
-                    item = new DateTimeItem(itemName);
-                } else {
-                    item = coreItemFactory.createItem(StringUtils.capitalize(channelId), itemName);
-                }
+                item = coreItemFactory.createItem(channelAcceptedType, itemName);
                 assertThat(String.format("Could not determine correct item type for %s", channelId), item,
                         is(notNullValue()));
                 assertNotNull(item);
@@ -717,6 +712,39 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0),
                     is(equalTo(3)));
         }
+    }
+
+    @Test
+    public void testWriteRealTransformation5() throws InvalidSyntaxException {
+        captureModbusWrites();
+        mockTransformation("PLUS", new TransformationService() {
+
+            @Override
+            public String transform(String arg, String source) throws TransformationException {
+                return String.valueOf(Integer.parseInt(arg) + Integer.parseInt(source));
+            }
+        });
+        mockTransformation("CONCAT", new TransformationService() {
+
+            @Override
+            public String transform(String function, String source) throws TransformationException {
+                return source + function;
+            }
+        });
+        mockTransformation("MULTIPLY", new MultiplyTransformation());
+        ModbusDataThingHandler dataHandler = testWriteHandlingGeneric("50", "MULTIPLY:3∩PLUS(2)∩CONCAT(0)",
+                ModbusConstants.ValueType.INT16, "holding", ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER, "number",
+                new DecimalType("2"), null, bundleContext);
+
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_SUCCESS, is(notNullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_ERROR, is(nullValue(State.class)));
+        assertThat(writeRequests.size(), is(equalTo(1)));
+        ModbusWriteRequestBlueprint writeRequest = writeRequests.get(0);
+        assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER)));
+        assertThat(writeRequest.getReference(), is(equalTo(50)));
+        assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), is(equalTo(1)));
+        assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0),
+                is(equalTo(/* (2*3 + 2) + '0' */ 80)));
     }
 
     private void testValueTypeGeneric(ModbusReadFunctionCode functionCode, ValueType valueType,
