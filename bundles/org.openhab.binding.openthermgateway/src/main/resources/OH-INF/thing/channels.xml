@@ -337,7 +337,7 @@
 
 	<channel-type id="dhwpvhours">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Domestic Hot Water Pump/Valve Hours starts</label>
+		<label>Domestic Hot Water Pump/Valve Hours</label>
 		<description>Domestic hot water pump/valve hours</description>
 		<state readOnly="true"/>
 	</channel-type>
