@@ -159,11 +159,9 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                     updateLinkedChannels();
                 }
             } else {
-                logger.info("Setting thing '{}' to OFFLINE: {}", getThing().getUID(), errors);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
             }
         } else {
-            logger.info("Setting thing '{}' to OFFLINE: {}", getThing().getUID(), errors);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
         }
     }
@@ -180,7 +178,6 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
         verifyLinkedChannel(CHANNELCONSUMPTION);
         verifyLinkedChannel(CHANNELONTIME);
         if (!linkedChannels.isEmpty()) {
-            logger.info("Start automatic refreshing");
             updateOvenData(null);
             for (Channel channel : getThing().getChannels()) {
                 updateChannel(channel.getUID().getId());
@@ -198,7 +195,6 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.info("Disposing Haas and Sohn Pellet stove handler.");
         stopScheduler();
     }
 
@@ -222,14 +218,9 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     }
 
     private void run() {
-        try {
-            updateOvenData(null);
-
-            for (Channel channel : getThing().getChannels()) {
-                updateChannel(channel.getUID().getId());
-            }
-        } catch (Exception e) {
-            logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+        updateOvenData(null);
+        for (Channel channel : getThing().getChannels()) {
+            updateChannel(channel.getUID().getId());
         }
     }
 

@@ -49,6 +49,7 @@ Switch power { channel="oven:power" }
 ```
 
 ## Google Assistant configuation
+
 See also: https://www.openhab.org/docs/ecosystem/google-assistant/
 
 googleassistantdemo.items
