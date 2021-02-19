@@ -119,9 +119,11 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         try {
             Configuration conf = configAdmin.getConfiguration("binding.hue");
             Dictionary<String, @Nullable Object> properties = conf.getProperties();
-            Object property = properties.get(HueBindingConstants.REMOVAL_GRACE_PERIOD);
-            if (property != null) {
-                removalGracePeriodSeconds = Long.parseLong(property.toString());
+            if (properties != null) {
+                Object property = properties.get(HueBindingConstants.REMOVAL_GRACE_PERIOD);
+                if (property != null) {
+                    removalGracePeriodSeconds = Long.parseLong(property.toString());
+                }
             }
         } catch (IOException | IllegalStateException | NumberFormatException e) {
             // fall through to pre-initialised (default) value
