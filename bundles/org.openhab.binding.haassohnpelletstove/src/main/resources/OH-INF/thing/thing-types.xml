@@ -6,9 +6,10 @@
 
 	<!-- Haas Sohn Thing Type -->
 	<thing-type id="oven">
-		<label>Haas and Sohn Oven Thing</label>
-		<description>The thing for Haas and Sohn Pelletstove communicates with a Haas and Sohn Pelletstove through the
-			optional WIFI-Modul. More information can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion. It allows
+		<label>Haas+Sohn Oven</label>
+		<description>The binding for Haas and Sohn Pelletstove communicates with a Haas and Sohn Pelletstove through the
+			optional
+			WLAN-Modul. More information can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion. It allows
 			to power on/off the stove as well as receiving different operation information about the stove.</description>
 
 
