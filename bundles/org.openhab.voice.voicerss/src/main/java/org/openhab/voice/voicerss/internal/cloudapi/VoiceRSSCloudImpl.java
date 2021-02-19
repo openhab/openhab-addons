@@ -21,7 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Hiller - Initial contribution
  * @author Laurent Garnier - add support for all API languages
  * @author Laurent Garnier - add support for OGG and AAC audio formats
- * @author cURLy bOi - add support for all API languages (again) and their respective voices
  */
 public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
@@ -114,55 +112,55 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
     private static final Map<String, Set<String>> SUPPORTED_VOICES = new HashMap<>();
     static {
-        SUPPORTED_VOICES.put("ar-eg", new HashSet<>(Arrays.asList("Oda")));
-        SUPPORTED_VOICES.put("ar-sa", new HashSet<>(Arrays.asList("Salim")));
-        SUPPORTED_VOICES.put("bg-bg", new HashSet<>(Arrays.asList("Dimo")));
-        SUPPORTED_VOICES.put("ca-es", new HashSet<>(Arrays.asList("Rut")));
-        SUPPORTED_VOICES.put("cs-cz", new HashSet<>(Arrays.asList("Josef")));
-        SUPPORTED_VOICES.put("da-dk", new HashSet<>(Arrays.asList("Freja")));
-        SUPPORTED_VOICES.put("de-at", new HashSet<>(Arrays.asList("Lukas")));
-        SUPPORTED_VOICES.put("de-de", new HashSet<>(Arrays.asList("Hanna", "Lina", "Jonas")));
-        SUPPORTED_VOICES.put("de-ch", new HashSet<>(Arrays.asList("Tim")));
-        SUPPORTED_VOICES.put("el-gr", new HashSet<>(Arrays.asList("Neo")));
-        SUPPORTED_VOICES.put("en-au", new HashSet<>(Arrays.asList("Zoe", "Isla", "Evie", "Jack")));
-        SUPPORTED_VOICES.put("en-ca", new HashSet<>(Arrays.asList("Rose", "Clara", "Emma", "Mason")));
-        SUPPORTED_VOICES.put("en-gb", new HashSet<>(Arrays.asList("Alice", "Nancy", "Lily", "Harry")));
-        SUPPORTED_VOICES.put("en-ie", new HashSet<>(Arrays.asList("Oran")));
-        SUPPORTED_VOICES.put("en-in", new HashSet<>(Arrays.asList("Eka", "Jai", "Ajit")));
-        SUPPORTED_VOICES.put("en-us", new HashSet<>(Arrays.asList("Linda", "Amy", "Mary", "John", "Mike")));
-        SUPPORTED_VOICES.put("es-es", new HashSet<>(Arrays.asList("Camila", "Sofia", "Luna", "Diego")));
-        SUPPORTED_VOICES.put("es-mx", new HashSet<>(Arrays.asList("Juana", "Silvia", "Teresa", "Jose")));
-        SUPPORTED_VOICES.put("fi-fi", new HashSet<>(Arrays.asList("Aada")));
-        SUPPORTED_VOICES.put("fr-ca", new HashSet<>(Arrays.asList("Emile", "Olivia", "Logan", "Felix")));
-        SUPPORTED_VOICES.put("fr-fr", new HashSet<>(Arrays.asList("Bette", "Iva", "Zola", "Axel")));
-        SUPPORTED_VOICES.put("fr-ch", new HashSet<>(Arrays.asList("Theo")));
-        SUPPORTED_VOICES.put("he-il", new HashSet<>(Arrays.asList("Rami")));
-        SUPPORTED_VOICES.put("hi-in", new HashSet<>(Arrays.asList("Puja", "Kabir")));
-        SUPPORTED_VOICES.put("hr-hr", new HashSet<>(Arrays.asList("Nikola")));
-        SUPPORTED_VOICES.put("hu-hu", new HashSet<>(Arrays.asList("Mate")));
-        SUPPORTED_VOICES.put("id-id", new HashSet<>(Arrays.asList("Intan")));
-        SUPPORTED_VOICES.put("it-it", new HashSet<>(Arrays.asList("Bria", "Mia", "Pietro")));
-        SUPPORTED_VOICES.put("ja-jp", new HashSet<>(Arrays.asList("Hina", "Airi", "Fumi", "Akira")));
-        SUPPORTED_VOICES.put("ko-kr", new HashSet<>(Arrays.asList("Nari")));
-        SUPPORTED_VOICES.put("ms-my", new HashSet<>(Arrays.asList("Aqil")));
-        SUPPORTED_VOICES.put("nb-no", new HashSet<>(Arrays.asList("Marte", "Erik")));
-        SUPPORTED_VOICES.put("nl-be", new HashSet<>(Arrays.asList("Daan")));
-        SUPPORTED_VOICES.put("nl-nl", new HashSet<>(Arrays.asList("Lotte", "Bram")));
-        SUPPORTED_VOICES.put("pl-pl", new HashSet<>(Arrays.asList("Julia", "Jan")));
-        SUPPORTED_VOICES.put("pt-br", new HashSet<>(Arrays.asList("Marcia", "Ligia", "Yara", "Dinis")));
-        SUPPORTED_VOICES.put("pt-pt", new HashSet<>(Arrays.asList("Leonor")));
-        SUPPORTED_VOICES.put("ro-ro", new HashSet<>(Arrays.asList("Doru")));
-        SUPPORTED_VOICES.put("ru-ru", new HashSet<>(Arrays.asList("Olga", "Marina", "Peter")));
-        SUPPORTED_VOICES.put("sk-sk", new HashSet<>(Arrays.asList("Beda")));
-        SUPPORTED_VOICES.put("sl-si", new HashSet<>(Arrays.asList("Vid")));
-        SUPPORTED_VOICES.put("sv-se", new HashSet<>(Arrays.asList("Molly", "Hugo")));
-        SUPPORTED_VOICES.put("ta-in", new HashSet<>(Arrays.asList("Sai")));
-        SUPPORTED_VOICES.put("th-th", new HashSet<>(Arrays.asList("Ukrit")));
-        SUPPORTED_VOICES.put("tr-tr", new HashSet<>(Arrays.asList("Omer")));
-        SUPPORTED_VOICES.put("vi-vn", new HashSet<>(Arrays.asList("Chi")));
-        SUPPORTED_VOICES.put("zh-cn", new HashSet<>(Arrays.asList("Luli", "Shu", "Chow", "Wang")));
-        SUPPORTED_VOICES.put("zh-hk", new HashSet<>(Arrays.asList("Jia", "Xia", "Chen")));
-        SUPPORTED_VOICES.put("zh-tw", new HashSet<>(Arrays.asList("Akemi", "Lin", "Lee")));
+        SUPPORTED_VOICES.put("ar-eg", Set.of("Oda"));
+        SUPPORTED_VOICES.put("ar-sa", Set.of("Salim"));
+        SUPPORTED_VOICES.put("bg-bg", Set.of("Dimo"));
+        SUPPORTED_VOICES.put("ca-es", Set.of("Rut"));
+        SUPPORTED_VOICES.put("cs-cz", Set.of("Josef"));
+        SUPPORTED_VOICES.put("da-dk", Set.of("Freja"));
+        SUPPORTED_VOICES.put("de-at", Set.of("Lukas"));
+        SUPPORTED_VOICES.put("de-de", Set.of("Hanna", "Lina", "Jonas"));
+        SUPPORTED_VOICES.put("de-ch", Set.of("Tim"));
+        SUPPORTED_VOICES.put("el-gr", Set.of("Neo"));
+        SUPPORTED_VOICES.put("en-au", Set.of("Zoe", "Isla", "Evie", "Jack"));
+        SUPPORTED_VOICES.put("en-ca", Set.of("Rose", "Clara", "Emma", "Mason"));
+        SUPPORTED_VOICES.put("en-gb", Set.of("Alice", "Nancy", "Lily", "Harry"));
+        SUPPORTED_VOICES.put("en-ie", Set.of("Oran"));
+        SUPPORTED_VOICES.put("en-in", Set.of("Eka", "Jai", "Ajit"));
+        SUPPORTED_VOICES.put("en-us", Set.of("Linda", "Amy", "Mary", "John", "Mike"));
+        SUPPORTED_VOICES.put("es-es", Set.of("Camila", "Sofia", "Luna", "Diego"));
+        SUPPORTED_VOICES.put("es-mx", Set.of("Juana", "Silvia", "Teresa", "Jose"));
+        SUPPORTED_VOICES.put("fi-fi", Set.of("Aada"));
+        SUPPORTED_VOICES.put("fr-ca", Set.of("Emile", "Olivia", "Logan", "Felix"));
+        SUPPORTED_VOICES.put("fr-fr", Set.of("Bette", "Iva", "Zola", "Axel"));
+        SUPPORTED_VOICES.put("fr-ch", Set.of("Theo"));
+        SUPPORTED_VOICES.put("he-il", Set.of("Rami"));
+        SUPPORTED_VOICES.put("hi-in", Set.of("Puja", "Kabir"));
+        SUPPORTED_VOICES.put("hr-hr", Set.of("Nikola"));
+        SUPPORTED_VOICES.put("hu-hu", Set.of("Mate"));
+        SUPPORTED_VOICES.put("id-id", Set.of("Intan"));
+        SUPPORTED_VOICES.put("it-it", Set.of("Bria", "Mia", "Pietro"));
+        SUPPORTED_VOICES.put("ja-jp", Set.of("Hina", "Airi", "Fumi", "Akira"));
+        SUPPORTED_VOICES.put("ko-kr", Set.of("Nari"));
+        SUPPORTED_VOICES.put("ms-my", Set.of("Aqil"));
+        SUPPORTED_VOICES.put("nb-no", Set.of("Marte", "Erik"));
+        SUPPORTED_VOICES.put("nl-be", Set.of("Daan"));
+        SUPPORTED_VOICES.put("nl-nl", Set.of("Lotte", "Bram"));
+        SUPPORTED_VOICES.put("pl-pl", Set.of("Julia", "Jan"));
+        SUPPORTED_VOICES.put("pt-br", Set.of("Marcia", "Ligia", "Yara", "Dinis"));
+        SUPPORTED_VOICES.put("pt-pt", Set.of("Leonor"));
+        SUPPORTED_VOICES.put("ro-ro", Set.of("Doru"));
+        SUPPORTED_VOICES.put("ru-ru", Set.of("Olga", "Marina", "Peter"));
+        SUPPORTED_VOICES.put("sk-sk", Set.of("Beda"));
+        SUPPORTED_VOICES.put("sl-si", Set.of("Vid"));
+        SUPPORTED_VOICES.put("sv-se", Set.of("Molly", "Hugo"));
+        SUPPORTED_VOICES.put("ta-in", Set.of("Sai"));
+        SUPPORTED_VOICES.put("th-th", Set.of("Ukrit"));
+        SUPPORTED_VOICES.put("tr-tr", Set.of("Omer"));
+        SUPPORTED_VOICES.put("vi-vn", Set.of("Chi"));
+        SUPPORTED_VOICES.put("zh-cn", Set.of("Luli", "Shu", "Chow", "Wang"));
+        SUPPORTED_VOICES.put("zh-hk", Set.of("Jia", "Xia", "Chen"));
+        SUPPORTED_VOICES.put("zh-tw", Set.of("Akemi", "Lin", "Lee"));
     }
 
     @Override
