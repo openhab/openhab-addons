@@ -20,25 +20,30 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Time;
 
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -72,7 +77,7 @@ public class KeContactHandler extends BaseThingHandler {
     private static final String CACHE_REPORT_2 = "REPORT_2";
     private static final String CACHE_REPORT_3 = "REPORT_3";
     private static final String CACHE_REPORT_100 = "REPORT_100";
-    public static final int SOCKET_TIME_OUT = 3000;
+    public static final int SOCKET_TIME_OUT_MS = 3000;
     public static final int SOCKET_CHECK_PORT_NUMBER = 80;
 
     private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
@@ -97,7 +102,6 @@ public class KeContactHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Keba binding");
         try {
             if (isKebaReachable()) {
                 transceiver.registerHandler(this);
@@ -123,17 +127,17 @@ public class KeContactHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "IP address or port number not set");
             }
-        } catch (Exception e) {
-            logger.error("Exception during Ping check and Http Backup check", e);
+        } catch (IOException e) {
+            logger.debug("Exception during initialization of binding", e);
         }
     }
 
     private boolean isKebaReachable() throws IOException {
         boolean isReachable = false;
-        SocketAddress sockAddr = new InetSocketAddress((String) getConfig().get(IP_ADDRESS), SOCKET_CHECK_PORT_NUMBER);
+        SocketAddress sockAddr = new InetSocketAddress(getIPAddress(), SOCKET_CHECK_PORT_NUMBER);
         Socket socket = new Socket();
         try {
-            socket.connect(sockAddr, SOCKET_TIME_OUT);
+            socket.connect(sockAddr, SOCKET_TIME_OUT_MS);
             isReachable = true;
         } finally {
             socket.close();
@@ -175,7 +179,7 @@ public class KeContactHandler extends BaseThingHandler {
             logger.debug("Running pollingRunnable to connect Keba wallbox");
             long stamp = System.currentTimeMillis();
             if (!isKebaReachable()) {
-                logger.debug("Ping timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
+                logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
                 transceiver.unRegisterHandler(getHandler());
             } else {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
@@ -323,12 +327,13 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Curr HW": {
                         int state = entry.getValue().getAsInt();
                         maxSystemCurrent = state;
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
                             if (maxSystemCurrent < maxPresetCurrent) {
                                 transceiver.send("curr " + String.valueOf(maxSystemCurrent), this);
-                                updateState(CHANNEL_MAX_PRESET_CURRENT, new DecimalType(maxSystemCurrent));
+                                updateState(CHANNEL_MAX_PRESET_CURRENT,
+                                        new QuantityType<ElectricCurrent>(maxSystemCurrent / 1000.0, Units.AMPERE));
                                 updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE,
                                         new PercentType((maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000)));
                             }
@@ -340,7 +345,8 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Curr user": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
-                        updateState(CHANNEL_MAX_PRESET_CURRENT, new DecimalType(state));
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_MAX_PRESET_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
                             updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE,
                                     new PercentType(Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000))));
@@ -349,15 +355,21 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     case "Curr FS": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_FAILSAFE_CURRENT, newState);
                         break;
                     }
                     case "Max curr": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
-                        updateState(CHANNEL_PILOT_CURRENT, new DecimalType(state));
-                        updateState(CHANNEL_PILOT_PWM, new DecimalType(state));
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_PILOT_CURRENT, newState);
+                        break;
+                    }
+                    case "Max curr %": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<Dimensionless>(state / 10.0, Units.PERCENT);
+                        updateState(CHANNEL_PILOT_PWM, newState);
                         break;
                     }
                     case "Output": {
@@ -390,73 +402,67 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     case "Sec": {
                         long state = entry.getValue().getAsLong();
-
-                        Calendar uptime = Calendar.getInstance();
-                        uptime.setTimeZone(TimeZone.getTimeZone("GMT"));
-                        uptime.setTimeInMillis(state * 1000);
-                        SimpleDateFormat pFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                        pFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-                        updateState(CHANNEL_UPTIME, new DateTimeType(pFormatter.format(uptime.getTime())));
+                        State newState = new QuantityType<Time>(state, Units.SECOND);
+                        updateState(CHANNEL_UPTIME, newState);
                         break;
                     }
                     case "U1": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
                         updateState(CHANNEL_U1, newState);
                         break;
                     }
                     case "U2": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
                         updateState(CHANNEL_U2, newState);
                         break;
                     }
                     case "U3": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
                         updateState(CHANNEL_U3, newState);
                         break;
                     }
                     case "I1": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I1, newState);
                         break;
                     }
                     case "I2": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I2, newState);
                         break;
                     }
                     case "I3": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new DecimalType(state);
+                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I3, newState);
                         break;
                     }
                     case "P": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new DecimalType(state / 1000);
+                        State newState = new QuantityType<Power>(state / 1000.0, Units.WATT);
                         updateState(CHANNEL_POWER, newState);
                         break;
                     }
                     case "PF": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new PercentType(state / 10);
+                        State newState = new QuantityType<Dimensionless>(state / 10.0, Units.PERCENT);
                         updateState(CHANNEL_POWER_FACTOR, newState);
                         break;
                     }
                     case "E pres": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new DecimalType(state / 10);
+                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_SESSION_CONSUMPTION, newState);
                         break;
                     }
                     case "E total": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new DecimalType(state / 10);
+                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_TOTAL_CONSUMPTION, newState);
                         break;
                     }
@@ -491,8 +497,8 @@ public class KeContactHandler extends BaseThingHandler {
                         break;
                     }
                     case "Setenergy": {
-                        int state = entry.getValue().getAsInt() / 10;
-                        State newState = new DecimalType(state);
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_SETENERGY, newState);
                         break;
                     }
@@ -511,10 +517,11 @@ public class KeContactHandler extends BaseThingHandler {
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
-                    if (command instanceof DecimalType) {
+                    if (command instanceof QuantityType<?>) {
+                        QuantityType<?> value = ((QuantityType<?>) command).toUnit("mA");
+
                         transceiver.send(
-                                "curr " + String.valueOf(
-                                        Math.min(Math.max(6000, ((DecimalType) command).intValue()), maxSystemCurrent)),
+                                "curr " + String.valueOf(Math.min(Math.max(6000, value.intValue()), maxSystemCurrent)),
                                 this);
                     }
                     break;
@@ -578,10 +585,11 @@ public class KeContactHandler extends BaseThingHandler {
                     break;
                 }
                 case CHANNEL_SETENERGY: {
-                    if (command instanceof DecimalType) {
+                    if (command instanceof QuantityType<?>) {
+                        QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.WATT_HOUR);
                         transceiver.send(
                                 "setenergy " + String.valueOf(
-                                        Math.min(Math.max(0, ((DecimalType) command).intValue() * 10), 999999999)),
+                                        Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999)),
                                 this);
                     }
                     break;
