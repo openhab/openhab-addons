@@ -10,21 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.config;
+package org.openhab.binding.enocean.internal.messages.Responses;
 
-import org.openhab.core.config.core.Configuration;
+import org.openhab.binding.enocean.internal.Helper;
+import org.openhab.binding.enocean.internal.messages.Response;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-public class EnOceanChannelTransformationConfig extends Configuration {
+public class BaseResponse extends Response {
 
-    public String transformationType;
-    public String transformationFunction;
-
-    public EnOceanChannelTransformationConfig() {
-        put("transformationType", "");
-        put("transformationFunction", "");
+    public BaseResponse(Response response) {
+        super(response.getPayload().length + response.getOptionalPayload().length, 0,
+                Helper.concatAll(response.getPayload(), response.getOptionalPayload()));
     }
 }
