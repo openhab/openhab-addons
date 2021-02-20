@@ -98,7 +98,8 @@ public class D2_05_00 extends _VLDMessage {
 
     @Override
     public void addConfigPropertiesTo(DiscoveryResultBuilder discoveredThingResultBuilder) {
-        discoveredThingResultBuilder.withProperty(PARAMETER_EEPID, getEEPType().getId());
+        discoveredThingResultBuilder.withProperty(PARAMETER_SENDINGEEPID, getEEPType().getId())
+                .withProperty(PARAMETER_RECEIVINGEEPID, getEEPType().getId());
     }
 
     @Override

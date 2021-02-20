@@ -57,7 +57,7 @@ public class Response extends BasePacket {
     protected ResponseType responseType;
     protected boolean _isValid = false;
 
-    protected Response(int dataLength, int optionalDataLength, byte[] payload) {
+    public Response(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, ESPPacketType.RESPONSE, payload);
 
         try {

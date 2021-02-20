@@ -71,7 +71,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     }
 
     @Override
-    public long getSenderIdToListenTo() {
+    public long getEnOceanIdToListenTo() {
         return 0;
     }
 
