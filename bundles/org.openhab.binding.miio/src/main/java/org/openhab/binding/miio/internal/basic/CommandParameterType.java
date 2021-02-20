@@ -27,11 +27,12 @@ public enum CommandParameterType {
     ONOFFPARA("onoffpara"),
     ONOFFBOOL("onoffbool"),
     ONOFFBOOLSTRING("onoffboolstring"),
+    ONOFFNUMBER("onoffnumber"),
     STRING("string"),
     CUSTOMSTRING("customstring"),
     NUMBER("number"),
     COLOR("color"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),;
 
     private String text;
 

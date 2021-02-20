@@ -2,7 +2,8 @@
 	"deviceMapping": {
 		"id": [
 			"deerma.humidifier.mjjsq",
-			"deerma.humidifier.jsq"
+			"deerma.humidifier.jsq",
+			"deerma.humidifier.jsq1"
 		],
 		"maxProperties": 1,
 		"channels": [
@@ -15,7 +16,7 @@
 				"actions": [
 					{
 						"command": "Set_OnOff",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFFNUMBER"
 					}
 				],
 				"category": "switch",
@@ -27,12 +28,32 @@
 				"property": "Humidifier_Gear",
 				"friendlyName": "Mode",
 				"channel": "mode",
-				"type": "String",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						},
+						{
+							"value": "4",
+							"label": "Humidity "
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "Set_HumidifierGears",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				]
 			},
