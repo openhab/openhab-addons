@@ -10,18 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages;
-
-import org.openhab.binding.enocean.internal.Helper;
+package org.openhab.binding.enocean.internal.transceiver;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-public class BaseResponse extends Response {
+public interface TeachInListener extends PacketListener, EventListener {
 
-    public BaseResponse(Response response) {
-        super(response.getPayload().length + response.getOptionalPayload().length, 0,
-                Helper.concatAll(response.getPayload(), response.getOptionalPayload()));
-    }
 }

@@ -10,21 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.config;
+package org.openhab.binding.enocean.internal.transceiver;
 
-import org.openhab.core.config.core.Configuration;
+import org.openhab.binding.enocean.internal.messages.EventMessage;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-public class EnOceanChannelTransformationConfig extends Configuration {
-
-    public String transformationType;
-    public String transformationFunction;
-
-    public EnOceanChannelTransformationConfig() {
-        put("transformationType", "");
-        put("transformationFunction", "");
-    }
+public interface EventListener {
+    public void eventReceived(EventMessage event);
 }

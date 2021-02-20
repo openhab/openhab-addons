@@ -31,6 +31,11 @@
 				<required>true</required>
 				<default>ESP3</default>
 			</parameter>
+			<parameter name="enableSmack" type="boolean">
+				<label>Handle SMACK Messages</label>
+				<description>Declare Gateway as a SMACK Postmaster and handle SMACK messages</description>
+				<default>true</default>
+			</parameter>
 			<parameter name="rs485" type="boolean">
 				<advanced>true</advanced>
 				<label>Gateway Connected Directly to RS485 BUS</label>
@@ -41,9 +46,15 @@
 				<label>Use following BaseId when connected directly to RS485 BUS</label>
 				<default>00000000</default>
 			</parameter>
-			<parameter name="nextSenderId" type="integer">
+			<parameter name="sendTeachOuts" type="boolean">
 				<advanced>true</advanced>
-				<label>Next Device Id</label>
+				<label>Send TeachOuts</label>
+				<description>Should a learned in or teach out response been send on a repeated smack teach in request</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="nextSenderId" type="integer" min="1" max="127">
+				<advanced>true</advanced>
+				<label>Next Sender Id Offset</label>
 				<description>Defines the next device Id, if empty, the next device id is automatically determined</description>
 			</parameter>
 		</config-description>

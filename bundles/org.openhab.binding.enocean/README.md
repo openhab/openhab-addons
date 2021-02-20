@@ -126,7 +126,21 @@ The corresponding channels are created dynamically, too.
 If the actuator supports UTE teach-in, the corresponding thing can be created and paired automatically.
 First you have to **start the discovery scan for a gateway**.
 Then press the teach-in button of the actuator.
-If the EEP of the actuator is known, the binding sends an UTE teach-in response with a new SenderId and creates a new thing with its channels. 
+If the EEP of the actuator is known, the binding sends an UTE teach-in response with a new SenderId and creates a new thing with its channels.
+
+This binding supports so called smart acknowlegde (SMACK) devices too.
+Before you can pair a SMACK device you have to configure your gateway bridge as a SMACK postmaster.
+If this option is enabled you can pair up to 20 SMACK devices with your gateway.
+
+Communication between your gateway and a SMACK device is handled through mailboxes.
+A mailbox is created for each paired SMACK device and deleted after teach out.
+You can see the paired SMACK devices and their mailbox index in the gateway properties.
+SMACK devices send periodically status updates followed by a response request.
+Whenever such a request is received a `requestAnswer` event is triggered for channel `statusRequestEvent`.
+Afterwards you have 100ms time to recalculate your items states and update them.
+A message with the updated item states is built, put into the corresponding mailbox and automatically sent upon request of the device.
+Pairing and unpairing can be done through a discovery scan.
+The corresponding thing of an unpaired device gets disabled, you have to delete it manually if you want to.
 
 If the actuator does not support UTE teach-ins, you have to create, configure and choose the right EEP of the thing manually.
 It is important to link the teach-in channel of this thing to a switch item.
@@ -158,6 +172,8 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | espVersion        | ESP Version of gateway | ESP3, ESP2 |
 |                                 | rs485             | If gateway is directly connected to a RS485 bus the BaseId is set to 0x00 | true, false
 |                                 | rs485BaseId       | Override BaseId 0x00 if your bus contains a telegram duplicator (FTD14 for ex) | 4 byte hex value |
+|                                 | enableSmack       | Enables SMACK pairing and handling of SMACK messages | true, false |
+|                                 | sendTeachOuts     | Defines if a repeated teach in request should be answered with a learned in or teach out response | true, false |
 | pushButton                      | receivingEEPId    | EEP used for receiving msg  | F6_01_01, D2_03_0A |
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
@@ -300,6 +316,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
 | repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
 | lastReceived         | DateTime                 | Date and time the last telegram was received |
+| statusRequestEvent   | Trigger                  | Emits event 'requestAnswer' | 
 
 Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
 This is especially true for Eltako rollershutter, as their position is calculated out of the current position and the moving time.

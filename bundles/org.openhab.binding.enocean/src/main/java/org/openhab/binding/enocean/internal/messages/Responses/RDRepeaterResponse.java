@@ -10,11 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages;
+package org.openhab.binding.enocean.internal.messages.Responses;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.enocean.internal.messages.Response;
 import org.openhab.core.library.types.StringType;
 
 /**

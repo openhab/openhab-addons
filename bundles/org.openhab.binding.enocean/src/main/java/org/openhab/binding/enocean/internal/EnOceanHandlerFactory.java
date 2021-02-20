@@ -28,6 +28,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingManager;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -59,6 +60,9 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference
     ItemChannelLinkRegistry itemChannelLinkRegistry;
+
+    @Reference
+    ThingManager thingManager;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -96,7 +100,7 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void registerDeviceDiscoveryService(EnOceanBridgeHandler handler) {
-        EnOceanDeviceDiscoveryService discoveryService = new EnOceanDeviceDiscoveryService(handler);
+        EnOceanDeviceDiscoveryService discoveryService = new EnOceanDeviceDiscoveryService(handler, thingManager);
         discoveryService.activate();
         this.discoveryServiceRegs.put(handler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
