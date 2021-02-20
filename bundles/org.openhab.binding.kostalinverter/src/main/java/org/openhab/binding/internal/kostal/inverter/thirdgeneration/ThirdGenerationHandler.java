@@ -214,6 +214,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
      * @param value value
      */
     private void updateChannelValue(String channeluid, ThirdGenerationChannelDatatypes dataType, Double value) {
+        logger.trace("update channel {} value {}", channeluid, value);
         switch (dataType) {
             case INTEGER: {
                 updateState(channeluid, new DecimalType(value.longValue()));
