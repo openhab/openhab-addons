@@ -70,6 +70,7 @@ public class KeContactHandler extends BaseThingHandler {
 
     public static final String IP_ADDRESS = "ipAddress";
     public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
+    public static final int POLLING_REFRESH_INTERVAL_DEFAULT = 15;
     public static final int REPORT_INTERVAL = 3000;
     public static final int BUFFER_SIZE = 1024;
     public static final int REMOTE_PORT_NUMBER = 7090;
@@ -106,8 +107,8 @@ public class KeContactHandler extends BaseThingHandler {
             if (isKebaReachable()) {
                 transceiver.registerHandler(this);
 
-                cache = new ExpiringCacheMap<>(
-                        Math.max((((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()) - 5, 0) * 1000);
+                int refreshInterval = getRefreshInterval();
+                cache = new ExpiringCacheMap<>(Math.max(refreshInterval - 5, 0) * 1000);
 
                 cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
                 cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
@@ -115,13 +116,8 @@ public class KeContactHandler extends BaseThingHandler {
                 cache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
 
                 if (pollingJob == null || pollingJob.isCancelled()) {
-                    try {
-                        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0,
-                                ((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue(), TimeUnit.SECONDS);
-                    } catch (Exception e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                "An exception occurred while scheduling the polling job");
-                    }
+                    pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0, refreshInterval,
+                            TimeUnit.SECONDS);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -158,6 +154,12 @@ public class KeContactHandler extends BaseThingHandler {
 
     public String getIPAddress() {
         return getConfig().get(IP_ADDRESS) != null ? (String) getConfig().get(IP_ADDRESS) : "";
+    }
+
+    public int getRefreshInterval() {
+        return getConfig().get(POLLING_REFRESH_INTERVAL) != null
+                ? ((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()
+                : POLLING_REFRESH_INTERVAL_DEFAULT;
     }
 
     private KeContactHandler getHandler() {

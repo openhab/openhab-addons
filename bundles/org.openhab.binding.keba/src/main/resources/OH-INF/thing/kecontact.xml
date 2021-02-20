@@ -62,7 +62,7 @@
 				<label>Network Address</label>
 				<description>Network address of the wallbox</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="true">
+			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>15</default>
