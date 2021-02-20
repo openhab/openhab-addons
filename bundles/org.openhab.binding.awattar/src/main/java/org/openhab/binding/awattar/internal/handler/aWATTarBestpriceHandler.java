@@ -38,7 +38,7 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
 
     private final int thingRefreshInterval = 60;
     private @Nullable ScheduledFuture<?> thingRefresher;
-    private @Nullable aWATTarBestpriceConfiguration config = null;
+    protected @Nullable aWATTarBestpriceConfiguration config = null;
     private final TimeZoneProvider timeZoneProvider;
 
     public aWATTarBestpriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
@@ -215,16 +215,23 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
     }
 
     private Timerange getRange(int start, int duration, ZoneId zoneId) {
-        ZonedDateTime startCal = getCalendarForHour(start, zoneId);
-        ZonedDateTime endCal = getCalendarForHour(start, zoneId).plusHours(duration);
 
-        logger.trace("getRange: startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
+        ZonedDateTime startCal = getCalendarForHour(start, zoneId);
+        ZonedDateTime endCal = startCal.plusHours(duration);
+        logger.trace("getRange(1): startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
+        ZonedDateTime now = ZonedDateTime.now(zoneId);
+        if (now.getHour() < start) {
+            // we are before the range, so we might be still within the last range
+            startCal = startCal.minusDays(1);
+            endCal = endCal.minusDays(1);
+        }
+        logger.trace("getRange(2): startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
         if (endCal.toInstant().toEpochMilli() < Instant.now().toEpochMilli()) {
             // span is in the past, add one day
             startCal = startCal.plusDays(1);
             endCal = endCal.plusDays(1);
         }
-        logger.trace("getRange - 2: startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
+        logger.trace("getRange(3): startCal: {}, endCal: {} ", startCal.toString(), endCal.toString());
         return new Timerange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
     }
 

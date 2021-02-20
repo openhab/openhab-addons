@@ -32,6 +32,7 @@ public class aWATTarBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "awattar-bridge");
     public static final ThingTypeUID THING_TYPE_PRICE = new ThingTypeUID(BINDING_ID, "prices");
     public static final ThingTypeUID THING_TYPE_BESTPRICE = new ThingTypeUID(BINDING_ID, "bestprice");
+    public static final ThingTypeUID THING_TYPE_BESTNEXT = new ThingTypeUID(BINDING_ID, "bestnext");
 
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_HOURLY_PRICES = new ChannelGroupTypeUID(BINDING_ID,
             "hourly-prices");
@@ -50,4 +51,7 @@ public class aWATTarBindingConstants {
     public static final String CHANNEL_COUNTDOWN = "countdown";
     public static final String CHANNEL_REMAINING = "remaining";
     public static final String CHANNEL_HOURS = "hours";
+    public static final String CHANNEL_DURATION = "rangeDuration";
+    public static final String CHANNEL_LOOKUP_HOURS = "lookupHours";
+    public static final String CHANNEL_CONSECUTIVE = "consecutive";
 }

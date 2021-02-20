@@ -290,12 +290,63 @@
 
 	</thing-type>
 
+	<thing-type id="bestnext">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="awattar-bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>
+			Best next prices
+		</label>
+
+		<description>Dynamically evaluates the best price period for the next given hours</description>
+		<channels>
+			<channel id="active" typeId="switch-type">
+				<label>Active</label>
+			</channel>
+			<channel id="start" typeId="start-time-stamp"/>
+			<channel id="end" typeId="end-time-stamp"/>
+			<channel id="countdown" typeId="countdown-type"/>
+			<channel id="remaining" typeId="remaining-type"/>
+			<channel id="hours" typeId="hours-type"/>
+			<channel id="rangeDuration" typeId="input-duration"/>
+			<channel id="lookupHours" typeId="input-hours"/>
+			<channel id="consecutive" typeId="input-switch"/>
+		</channels>
+		<config-description>
+
+		</config-description>
+
+	</thing-type>
+
 	<channel-type id="price">
 		<item-type>Number</item-type>
 		<label>ct/kWh</label>
 		<description>Price in ct/kWh</description>
 		<state readOnly="true" pattern="%.3f ct"/>
 	</channel-type>
+
+	<channel-type id="input-duration">
+		<item-type>Number</item-type>
+		<label>Duration</label>
+		<description>Length of the bestprice period to search for</description>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="input-hours">
+		<item-type>Number</item-type>
+		<label>Lookup time</label>
+		<description>How many hours from now should be checked?</description>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="input-switch">
+		<item-type>Switch</item-type>
+		<label>Consecutive</label>
+		<description>Consecutive range needed?</description>
+		<state readOnly="false"/>
+	</channel-type>
+
 
 	<channel-type id="switch-type">
 		<item-type>Switch</item-type>
